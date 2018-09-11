@@ -28,7 +28,7 @@ import sensor_modules.RP_senseHAT as RP_senseHAT
 sensorDB_Location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
 
 
-def create_or_check_DB():
+def create_or_check_db():
     '''
     Connect to DB, and if nessisary, create it and or its columns
     Each Column is tried individually to ensure they are ALL checked
@@ -149,7 +149,7 @@ def create_or_check_DB():
     conn.close()
 
 
-def get_RP_system_readings():
+def get_rp_system_readings():
     sql_database_columns = "hostName, ip, uptime, cpuTemp"
     sql_database_values = "'" + str(RP_system.get_hostname()) + \
                        "', '" + str(RP_system.get_ip()) + \

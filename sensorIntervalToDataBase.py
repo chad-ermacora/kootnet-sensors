@@ -61,7 +61,7 @@ def get_installed_sensors():
 
 def write_sensor_readings_to_database(installed_sensors):
     # See top of file for installed_sensors[] order
-    DB_Interval_Operations.create_or_check_DB()
+    DB_Interval_Operations.create_or_check_db()
     sql_query_columns_final = ""
     sql_query_values_final = ""
 
@@ -69,7 +69,7 @@ def write_sensor_readings_to_database(installed_sensors):
     if int(installed_sensors[0]) == 1:
         print("\nRP_system Installed")
         sql_query_columns , sql_query_values = \
-            DB_Interval_Operations.get_RP_system_readings()
+            DB_Interval_Operations.get_rp_system_readings()
         sql_query_columns_final = sql_query_columns_final + sql_query_columns
         sql_query_values_final = sql_query_values_final + sql_query_values
         count = count + 1
