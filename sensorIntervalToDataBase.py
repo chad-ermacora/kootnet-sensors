@@ -1,4 +1,4 @@
-'''
+"""
     KootNet Sensors is a collection of programs and scripts to deploy,
     interact with, and collect readings from various Sensors.  
     Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com  
@@ -25,7 +25,7 @@ Pimoroni_bh1745
 Pimoroni_BME680
 Pimoroni_Enviro
 Pimoroni_LSM303D
-'''
+"""
 import DB_Interval_Operations
 
 sensor_ver_file = "/home/pi/config/sensor_type.txt"
