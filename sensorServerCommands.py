@@ -79,16 +79,14 @@ while True:
             connection.sendall(pickle.dumps(sensor_data))
             print('Sensor Data Sent to ' + str(client_address[0]))
         elif connection_command == "inkupg":
-            os.system("sudo bash /home/sensors/upgrade/" +
-                      "update_progs_e-Ink.sh")
-            print('/home/sensors/upgrade/update_progs_e-Ink.sh Finished')
+            os.system("sudo bash /home/sensors/upgrade/update_programs_e-Ink.sh")
+            print('/home/sensors/upgrade/update_programs_e-Ink.sh Finished')
         elif connection_command == "online":
-            os.system("sudo bash /home/sensors/upgrade/update_progs_online.sh")
-            print('/home/sensors/upgrade/update_progs_online.sh Finished')
+            os.system("sudo bash /home/sensors/upgrade/update_programs_online.sh")
+            print('/home/sensors/upgrade/update_programs_online.sh Finished')
         elif connection_command == "nasupg":
-            os.system("sudo bash /home/sensors/upgrade/" +
-                      "install_update_sensor_nas.sh")
-            print('/home/sensors/upgrade/install_update_sensor_nas.sh Finished')
+            os.system("sudo bash /home/sensors/upgrade/update_programs_smb.sh")
+            print('/home/sensors/upgrade/update_programs_smb.sh Finished')
         elif connection_command == "reboot":
             os.system("sudo reboot")
         elif connection_command == "shutdn":
