@@ -82,7 +82,7 @@ EOF
   # Install crontab entries
   bash /home/sensors/upgrade/update_crontab.sh
   # Make sure permissions are correct
-  bash /home/sensors/upgrade/update_file_settings.sh
+  bash /home/sensors/upgrade/update_file_permissions.sh
   printf '\nInstall Done\n\n'
 fi
 nano /etc/network/interfaces

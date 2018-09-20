@@ -38,7 +38,7 @@ cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online
 cp /home/sensors/upgrade/install_sensors.sh /home/pi/sensor_edit_configs.sh
 cp /home/sensors/test* /home/pi 2>/dev/null
 # Make sure permissions are correct
-bash /home/sensors/upgrade/update_file_settings.sh
+bash /home/sensors/upgrade/update_file_permissions.sh
 # Save datetime to last updated file
 date > /home/pi/config/LastUpdated.txt
 echo ' Updated with HTTP ' >> /home/pi/config/LastUpdated.txt
