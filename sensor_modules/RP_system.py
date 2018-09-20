@@ -28,20 +28,19 @@ def cpu_temperature():
 
 
 def get_primary_db_size():
-    db_size_MB = os.path.getsize(primary_database_location) / 1024000
+    db_size_mb = os.path.getsize(primary_database_location) / 1024000
 
-    return round(db_size_MB,2)
+    return round(db_size_mb, 2)
 
 
 def get_motion_db_size():
-    db_size_MB = os.path.getsize(motion_database_location) / 1024000
+    db_size_mb = os.path.getsize(motion_database_location) / 1024000
 
-    return round(db_size_MB,2)
+    return round(db_size_mb, 2)
 
 
 def get_hostname():
     hostname = str(socket.gethostname())
-
     return hostname
 
 
@@ -51,7 +50,8 @@ def get_ip():
         s.connect(("8.8.8.8", 80))
         ip_address = (s.getsockname()[0])
         s.close()
-    except BaseException:
+    except Exception as error:
+        print("Unable to get IP - " + str(error))
         ip_address = "0.0.0.0"
 
     return ip_address

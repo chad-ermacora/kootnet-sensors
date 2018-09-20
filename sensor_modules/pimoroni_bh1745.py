@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 """
-This module is for the Pimoroni bh1745 RGB + Lumens
+This module is for the Pimoroni bh1745 rgb + Lumens
 It Retrieves & Returns Sensor data to be written to the DB
 
 BH1745 Luminance and Colour Sensor Breakout
@@ -26,27 +25,25 @@ from bh1745 import BH1745
 round_decimal_to = 5
 
 
-def lumens():
+def lumen():
     bh1745 = BH1745()
     bh1745.setup()
     try:
-        r, g, b, lumens = bh1745.get_rgbc_raw()
-    except:
-        print("Sensor 'bh1745 lumens' Failed")
-        lumens = 0
+        r, g, b, var_lumen = bh1745.get_rgbc_raw()
+    except Exception as error:
+        print("Sensor 'bh1745 lumen' Failed - " + str(error))
+        var_lumen = 0
 
-    return round(lumens, round_decimal_to)
+    return round(var_lumen, round_decimal_to)
 
 
-def RGB():
+def rgb():
     bh1745 = BH1745()
     bh1745.setup()
     try:
-        rgb_red, rgb_green, rgb_blue, lumens = bh1745.get_rgbc_raw()
-    except:
-        print("Sensor 'bh1745 RGB' Failed")
+        rgb_red, rgb_green, rgb_blue, var_lumen = bh1745.get_rgbc_raw()
+    except Exception as error:
+        print("Sensor 'bh1745 rgb' Failed - " + str(error))
         rgb_red, rgb_green, rgb_blue = 0, 0, 0
 
-    return round(rgb_red, round_decimal_to), \
-           round(rgb_green, round_decimal_to), \
-           round(rgb_blue, round_decimal_to)
+    return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)

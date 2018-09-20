@@ -31,8 +31,8 @@ def distance_from_sensor():
         time_of_flight.start_ranging(2)
         distance_in_mm = time_of_flight.get_distance()
         time_of_flight.stop_ranging()
-    except:
-        print("Sensor 'VL53L1X distance_from_sensor' Failed")
+    except Exception as error:
+        print("Sensor 'VL53L1X distance_from_sensor' Failed - " + str(error))
         distance_in_mm = 0
 
     return distance_in_mm

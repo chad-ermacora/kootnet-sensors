@@ -24,27 +24,23 @@ lsm303d_address = 0x1d
 round_decimal_to = 5
 
 
-def magnetometer_XYZ():
+def magnetometer_xyz():
     lsm = LSM303D(lsm303d_address)
     try:
         mag_x, mag_y, mag_z = lsm.magnetometer()
-    except:
+    except Exception as error:
         mag_x, mag_y, mag_z = 0, 0, 0
-        print("Sensor 'LSM303D Magnetometer' Failed")
+        print("Sensor 'LSM303D Magnetometer' Failed - " + str(error))
 
-    return round(mag_x, round_decimal_to), \
-           round(mag_y, round_decimal_to), \
-           round(mag_z, round_decimal_to)
+    return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
 
-def accelerometer_XYZ():
+def accelerometer_xyz():
     lsm = LSM303D(lsm303d_address)
     try:
         acc_x, acc_y, acc_z = lsm.accelerometer()
-    except:
-        print("Sensor 'LSM303D Accelerometer' Failed")
+    except Exception as error:
+        print("Sensor 'LSM303D Accelerometer' Failed - " + str(error))
         acc_x, acc_y, acc_z = 0, 0, 0
 
-    return round(acc_x, round_decimal_to), \
-           round(acc_y, round_decimal_to), \
-           round(acc_z, round_decimal_to)
+    return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)

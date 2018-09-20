@@ -1,4 +1,4 @@
-'''
+"""
     KootNet Sensors is a collection of programs and scripts to deploy,
     interact with, and collect readings from various Sensors.  
     Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com  
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
+"""
 import sqlite3, socket
 from envirophat import motion
 from time import sleep

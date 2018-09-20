@@ -27,8 +27,8 @@ def temperature():
     try:
         sensor.get_sensor_data()
         temp_var = float(sensor.data.temperature)
-    except:
-        print("Sensor 'bme680 Temperature' Failed")
+    except Exception as error:
+        print("Sensor 'bme680 Temperature' Failed - " + str(error))
         temp_var = 0
 
     return round(temp_var, round_decimal_to)
@@ -40,12 +40,12 @@ def pressure():
     sensor.set_filter(bme680.FILTER_SIZE_3)
     try:
         sensor.get_sensor_data()
-        pressure_hPa = sensor.data.pressure
-    except:
-        print("Sensor 'bme680 Pressure' Failed")
-        pressure_hPa = 0
+        pressure_hpa = sensor.data.pressure
+    except Exception as error:
+        print("Sensor 'bme680 Pressure' Failed - " + str(error))
+        pressure_hpa = 0
 
-    return int(pressure_hPa)
+    return int(pressure_hpa)
 
 
 def humidity():
@@ -54,12 +54,12 @@ def humidity():
     sensor.set_filter(bme680.FILTER_SIZE_3)
     try:
         sensor.get_sensor_data()
-        humidity = sensor.data.humidity
-    except:
-        print("Sensor 'bme680 humidity' Failed")
-        humidity = 0
+        var_humidity = sensor.data.humidity
+    except Exception as error:
+        print("Sensor 'bme680 humidity' Failed - " + str(error))
+        var_humidity = 0
 
-    return round(humidity, round_decimal_to)
+    return round(var_humidity, round_decimal_to)
 
 
 def gas_resistance():
@@ -73,8 +73,8 @@ def gas_resistance():
     try:
         sensor.get_sensor_data()
         gas_var = sensor.data.gas_resistance
-    except:
-        print("Sensor 'bme680 gas resistance' Failed")
+    except Exception as error:
+        print("Sensor 'bme680 gas resistance' Failed - " + str(error))
         gas_var = 0
 
     return gas_var

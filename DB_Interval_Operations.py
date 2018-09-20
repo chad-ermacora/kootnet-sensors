@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-'''
+"""
     KootNet Sensors is a collection of programs and scripts to deploy,
     interact with, and collect readings from various Sensors.  
     Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com  
@@ -16,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
+"""
 import sqlite3
 import sensor_modules.pimoroni_bh1745 as pimoroni_bh1745
 import sensor_modules.pimoroni_BME680 as pimoroni_BME680
@@ -29,124 +28,124 @@ sensorDB_Location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
 
 
 def create_or_check_db():
-    '''
-    Connect to DB, and if nessisary, create it and or its columns
+    """
+    Connect to DB, and if necessary, create it and or its columns
     Each Column is tried individually to ensure they are ALL checked
     Any new columns will be automatically added to DataBase
-    '''
+    """
     try:
-        conn = sqlite3.connect(sensorDB_Location)
-        c = conn.cursor()
-    except:
-        print("DB Connection Failed")
+        db_connection = sqlite3.connect(sensorDB_Location)
+        db_cursor = db_connection.cursor()
+    except Exception as error:
+        print("DB Connection Failed: " + str(error))
 
     try:
-        c.execute('CREATE TABLE {tn} ({nf} {ft})'\
-            .format(tn='Sensor_Data', nf='Time', ft='TEXT'))
+        db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'\
+                          .format(tn='Sensor_Data', nf='Time', ft='TEXT'))
         print("Table 'Sensor_Data' - Created")
-    except:
-        print("Table 'Sensor_Data' - OK")
+    except Exception as error:
+        print("Table 'Sensor_Data' - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                  .format(tn='Sensor_Data', cn='hostName', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='hostName', ct='TEXT'))
         print("COLUMN hostName - Created")
-    except:
-        print("COLUMN hostName - OK")
+    except Exception as error:
+        print("COLUMN hostName - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='uptime', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='uptime', ct='TEXT'))
         print("COLUMN uptime - Created")
-    except:
-        print("COLUMN uptime - OK")
+    except Exception as error:
+        print("COLUMN uptime - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='ip', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='ip', ct='TEXT'))
         print("COLUMN ip - Created")
-    except:
-        print("COLUMN ip - OK")
+    except Exception as error:
+        print("COLUMN ip - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='cpuTemp', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='cpuTemp', ct='TEXT'))
         print("COLUMN cpuTemp -  Created")
-    except:
-        print("COLUMN cpuTemp - OK")
+    except Exception as error:
+        print("COLUMN cpuTemp - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='hatTemp', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='hatTemp', ct='TEXT'))
         print("COLUMN hatTemp - Created")
-    except:
-        print("COLUMN hatTemp - OK")
+    except Exception as error:
+        print("COLUMN hatTemp - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='pressure', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='pressure', ct='TEXT'))
         print("COLUMN pressure - Created")
-    except:
-        print("COLUMN pressure - OK")
+    except Exception as error:
+        print("COLUMN pressure - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='humidity', ct='TEXT'))
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='humidity', ct='TEXT'))
         print("COLUMN humidity - Created")
-    except:
-        print("COLUMN humidity - OK")
+    except Exception as error:
+        print("COLUMN humidity - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='lumens', ct='TEXT'))
-        print("COLUMN lumens - Created")
-    except:
-        print("COLUMN lumens - OK")
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+                          .format(tn='Sensor_Data', cn='lumen', ct='TEXT'))
+        print("COLUMN lumen - Created")
+    except Exception as error:
+        print("COLUMN lumen - " + str(error))
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='red', ct='TEXT'))
         print("COLUMN red - Created")
     except:
         print("COLUMN red - OK")
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='green', ct='TEXT'))
         print("COLUMN green - Created")
     except:
         print("COLUMN green - OK")
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='blue', ct='TEXT'))
         print("COLUMN blue - Created")
     except:
         print("COLUMN blue - OK")
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='mg_X', ct='TEXT'))
         print("COLUMN mg_X - Created")
     except:
         print("COLUMN mg_X - OK")
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='mg_Y', ct='TEXT'))
         print("COLUMN mg_Y - Created")
     except:
         print("COLUMN mg_Y - OK")
 
     try:
-        c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
                 .format(tn='Sensor_Data', cn='mg_Z', ct='TEXT'))
         print("COLUMN mg_Z - Created")
     except:
         print("COLUMN mg_Z - OK")
     
-    conn.commit()
-    conn.close()
+    db_connection.commit()
+    db_connection.close()
 
 
 def get_rp_system_readings():
@@ -162,7 +161,7 @@ def get_rp_system_readings():
 def get_RP_senseHAT_readings():
     sql_database_columns = "hatTemp, pressure, humidity, mg_X, mg_Y, mg_Z"
 
-    mg_XYZ = RP_senseHAT.magnetometer_XYZ()
+    mg_XYZ = RP_senseHAT.magnetometer_xyz()
     sql_database_values = "'" + str(RP_senseHAT.temperature()) + \
                        "', '" + str(RP_senseHAT.pressure()) + \
                        "', '" + str(RP_senseHAT.humidity()) + \
@@ -174,10 +173,10 @@ def get_RP_senseHAT_readings():
 
 
 def get_pimoroni_bh1745_readings():
-    sql_database_columns = "lumens, red, green, blue"
+    sql_database_columns = "lumen, red, green, blue"
 
-    colour_RGB = pimoroni_bh1745.RGB()
-    sql_database_values = "'" + str(pimoroni_bh1745.lumens()) + \
+    colour_RGB = pimoroni_bh1745.rgb()
+    sql_database_values = "'" + str(pimoroni_bh1745.lumen()) + \
                        "', '" + str(colour_RGB[0]) + \
                        "', '" + str(colour_RGB[1]) + \
                        "', '" + str(colour_RGB[2]) + "'"
@@ -185,7 +184,7 @@ def get_pimoroni_bh1745_readings():
     return sql_database_columns, sql_database_values
 
 
-def get_pimoroni_BME680_readings():
+def get_pimoroni_bme680_readings():
     sql_database_columns = "hatTemp, pressure, humidity"
     sql_database_values = "'" + str(pimoroni_BME680.temperature()) + \
                        "', '" + str(pimoroni_BME680.pressure()) + \
@@ -194,48 +193,43 @@ def get_pimoroni_BME680_readings():
     return sql_database_columns, sql_database_values
 
 
-def get_pimoroni_Enviro_readings():
-    sql_database_columns = "hatTemp, pressure, lumens, red, green, blue, " + \
+def get_pimoroni_enviro_readings():
+    sql_database_columns = "hatTemp, pressure, lumen, red, green, blue, " + \
                         "mg_X, mg_Y, mg_Z"
 
-    colour_RGB = pimoroni_enviro.RGB()
-    mg_XYZ = pimoroni_enviro.magnetometer_XYZ()
+    colour_rgb = pimoroni_enviro.rgb()
+    mg_xyz = pimoroni_enviro.magnetometer_xyz()
     sql_database_values = "'" + str(pimoroni_enviro.temperature()) + \
-                       "', '" + str(pimoroni_enviro.pressure()) + \
-                       "', '" + str(pimoroni_enviro.lumens()) + \
-                       "', '" + str(colour_RGB[0]) + \
-                       "', '" + str(colour_RGB[1]) + \
-                       "', '" + str(colour_RGB[2]) + \
-                       "', '" + str(mg_XYZ[0]) + \
-                       "', '" + str(mg_XYZ[1]) + \
-                       "', '" + str(mg_XYZ[2]) + "'"
+                          "', '" + str(pimoroni_enviro.pressure()) + \
+                          "', '" + str(pimoroni_enviro.lumen()) + \
+                          "', '" + str(colour_rgb[0]) + \
+                          "', '" + str(colour_rgb[1]) + \
+                          "', '" + str(colour_rgb[2]) + \
+                          "', '" + str(mg_xyz[0]) + \
+                          "', '" + str(mg_xyz[1]) + \
+                          "', '" + str(mg_xyz[2]) + "'"
 
     return sql_database_columns, sql_database_values
 
 
-def get_pimoroni_LSM303D_readings():
+def get_pimoroni_lsm303d_readings():
     sql_database_columns = "mg_X, mg_Y, mg_Z"
 
-    mg_XYZ = pimoroni_LSM303D.magnetometer_XYZ()
-    sql_database_values = "'" + str(mg_XYZ[0]) + \
-                       "', '" + str(mg_XYZ[1]) + \
-                       "', '" + str(mg_XYZ[2]) + "'"
+    mg_xyz = pimoroni_LSM303D.magnetometer_xyz()
+    sql_database_values = "'" + str(mg_xyz[0]) + "', '" + str(mg_xyz[1]) + "', '" + str(mg_xyz[2]) + "'"
 
     return sql_database_columns, sql_database_values
 
 
 def write_to_sql_database(sql_command):
     print("\nSQL String to execute\n'''\n" + str(sql_command) + "\n'''\n")
-#    skipdatabase = "Get from config n stuff..."
-#    if skipdatabase == 1:
-#        print("Don't forget to add / finish this")
     try:
-        conn = sqlite3.connect(sensorDB_Location)
-        c = conn.cursor()
-        c.execute(sql_command)
-        conn.commit()
+        db_connection = sqlite3.connect(sensorDB_Location)
+        db_cursor = db_connection.cursor()
+        db_cursor.execute(sql_command)
+        db_connection.commit()
         print("Write to DataBase - OK")
-        conn.close()
+        db_connection.close()
     except:
         print("Write to DataBase - Failed")
 
