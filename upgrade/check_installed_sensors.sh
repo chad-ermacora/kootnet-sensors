@@ -2,8 +2,7 @@
 bash /home/sensors/upgrade/check_folders.sh
 if [ -f "/home/pi/KootNetSensors/installed_sensors.txt" ]
 then
-  printf '\n\nInstalled Sensors File Already Installed, Opening File\n\n'
-  nano /home/pi/KootNetSensors/installed_sensors.txt
+  printf '\n\nInstalled Sensors File Already Installed\n\n'
 else
   printf '\n\Setting up Installed Sensors File\n\n'
   cat > /home/pi/KootNetSensors/installed_sensors.txt << "EOF"

@@ -6,6 +6,7 @@ bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
   printf '\nSensors Already Installed\n'
+  nano /home/pi/KootNetSensors/installed_sensors.txt
 else
   # Create folder in root, download files, then install
   printf '\nCopying Program to system ... \n'
