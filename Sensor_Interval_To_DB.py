@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('/home/pi/config/logs/Interval_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Interval_DB_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -45,7 +45,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 sensor_db_location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
-sensor_ver_file = "/home/pi/config/sensor_type.txt"
+sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 sql_query_start = "INSERT OR IGNORE INTO Sensor_Data (Time, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"

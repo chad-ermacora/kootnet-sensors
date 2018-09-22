@@ -1,34 +1,12 @@
 # This will copy all the needed files, install the dependencies and update the system
 # In crontab under root, scripts are auto run to keep 3 programs running as well as
-# The primary interval sensor program recording to a SQL DB. 
-if [ -f "/home/pi/config/zInstalled.txt" ]
+# The primary interval sensor program recording to a SQL DB.
+bash /home/sensors/upgrade/check_folders.sh
+bash /home/sensors/upgrade/check_installed_sensors.sh
+if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
-  printf '\n\nSensors Already Installed, Opening Configuration Files Only\n\n'
-  nano /home/pi/config/sensor_type.txt
+  printf '\nSensors Already Installed\n'
 else
-  printf '\n\nStarting KootNet Sensor Install\n\n'
-  mkdir /home/pi/config 2>/dev/null
-  mkdir /home/pi/config/logs 2>/dev/null
-  cat > /home/pi/config/sensor_type.txt << "EOF"
-Change the number in front of each line. Enable = 1 & Disable = 0
-1 = RP_system
-0 = RP_senseHAT
-0 = Pimoroni_bh1745
-0 = Pimoroni_BME680
-0 = Pimoroni_Enviro
-0 = Pimoroni_LSM303D
-0 = Pimoroni_VL53L1X
-EOF
-  nano /home/pi/config/sensor_type.txt
-  # Make sure folders are created
-  printf 'Checking & Making Folders\n\n'
-  mkdir /mnt/supernas 2>/dev/null
-  mkdir /home/sensors 2>/dev/null
-  mkdir /home/sensors/auto_start 2>/dev/null
-  mkdir /home/sensors/sensor_modules 2>/dev/null
-  mkdir /home/sensors/upgrade 2>/dev/null
-  mkdir /home/sensors/data 2>/dev/null
-  mkdir /home/sensors/data/Old 2>/dev/null
   # Create folder in root, download files, then install
   printf '\nCopying Program to system ... \n'
   mkdir /root/SensorInstallFiles 2>/dev/null
@@ -37,7 +15,7 @@ EOF
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-  cp /home/sensors/upgrade/install_sensors.sh /home/pi/sensor_edit_configs.sh
+  cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
   cp /home/sensors/test* /home/pi 2>/dev/null
   # Upgrade System and install sensor Dependencies
   printf '\nStarting System Update, this will take awhile...\n'
@@ -91,7 +69,7 @@ network={
         key_mgmt=WPA-PSK
 }
 EOF
-  date > /home/pi/config/zInstalled.txt
+  date > /home/pi/KootNetSensors/zInstalled.txt
   # Install crontab entries
   bash /home/sensors/upgrade/update_crontab.sh
   # Make sure permissions are correct
