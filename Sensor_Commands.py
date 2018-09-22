@@ -36,7 +36,7 @@ def get_sensor_data():
         str_sensor_data = str_sensor_data + "," + str(Linux_System.get_motion_db_size())
         str_sensor_data = str_sensor_data + "\n"
     except Exception as error_msg:
-        print("Sensor reading failed - " + str(error_msg))
+        print("Sensor reading  failed - " + str(error_msg))
 
     return str_sensor_data
 
