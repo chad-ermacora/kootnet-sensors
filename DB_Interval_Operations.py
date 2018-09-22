@@ -151,7 +151,6 @@ def create_or_check_db(sensor_db_location):
 
         db_connection.commit()
         db_connection.close()
-        logger.info("Interval Database Checked - OK")
     except Exception as error:
         logger.error("DB Connection Failed: " + str(error))
 
@@ -255,7 +254,6 @@ def write_to_sql_database(sql_command, sensor_db_location):
         db_cursor = db_connection.cursor()
         db_cursor.execute(sql_command)
         db_connection.commit()
-        logger.info("Write to DataBase - OK")
         db_connection.close()
     except Exception as error:
         logger.error("Write to DataBase - Failed - " + str(error))
