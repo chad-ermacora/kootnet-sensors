@@ -27,7 +27,24 @@ Pimoroni_Enviro
 Pimoroni_LSM303D
 """
 import DB_Interval_Operations
+import logging
+from logging.handlers import RotatingFileHandler
 
+logger = logging.getLogger(__name__)
+
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
+
+file_handler = RotatingFileHandler('/home/pi/config/logs/Interval_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
+
+sensor_db_location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
 sensor_ver_file = "/home/pi/config/sensor_type.txt"
 sql_query_start = "INSERT OR IGNORE INTO Sensor_Data (Time, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
@@ -51,25 +68,23 @@ def get_installed_sensors():
 
         return sensors_enabled
     except Exception as error:
-        print("\nChecking Installed Sensors File Failed\nUnable to open: " + sensor_ver_file + "\n" + str(error))
+        logger.error("Unable to open: " + sensor_ver_file + " - " + str(error))
 
 
 def write_sensor_readings_to_database(var_installed_sensors):
     # See top of file for installed_sensors[] order
-    DB_Interval_Operations.create_or_check_db()
+    DB_Interval_Operations.create_or_check_db(sensor_db_location)
     sql_query_columns_final = ""
     sql_query_values_final = ""
 
     count = 0
     if int(var_installed_sensors[0]) == 1:
-        print("\nRP_system Installed")
         rp_database_data = DB_Interval_Operations.get_rp_system_readings()
         sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
         sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[1]) == 1:
-        print("\nRP_senseHAT Installed")
         if count > 0:
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
@@ -80,7 +95,6 @@ def write_sensor_readings_to_database(var_installed_sensors):
         count = count + 1
 
     if int(var_installed_sensors[2]) == 1:
-        print("\nPimoroni_bh1745 Installed")
         if count > 0:
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
@@ -91,7 +105,6 @@ def write_sensor_readings_to_database(var_installed_sensors):
         count = count + 1
 
     if int(var_installed_sensors[3]) == 1:
-        print("\nPimoroni_BME680 Installed")
         if count > 0:
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
@@ -102,7 +115,6 @@ def write_sensor_readings_to_database(var_installed_sensors):
         count = count + 1
 
     if int(var_installed_sensors[4]) == 1:
-        print("\nPimoroni_Enviro Installed")
         if count > 0:
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
@@ -113,7 +125,6 @@ def write_sensor_readings_to_database(var_installed_sensors):
         count = count + 1
 
     if int(var_installed_sensors[5]) == 1:
-        print("\nPimoroni_LSM303D Installed")
         if count > 0:
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
@@ -125,7 +136,7 @@ def write_sensor_readings_to_database(var_installed_sensors):
     sql_command = sql_query_start + sql_query_columns_final + sql_query_values_start + \
         sql_query_values_final + sql_query_values_end
 
-    DB_Interval_Operations.write_to_sql_database(sql_command)
+    DB_Interval_Operations.write_to_sql_database(sql_command, sensor_db_location)
 
 
 '''

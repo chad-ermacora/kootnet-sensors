@@ -41,8 +41,6 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-sensorDB_Location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
-
 
 class SensorDatabaseData:
 
@@ -51,14 +49,14 @@ class SensorDatabaseData:
         self.sensor_readings = ""
 
 
-def create_or_check_db():
+def create_or_check_db(sensor_db_location):
     """
     Connect to DB, and if necessary, create it and or its columns
     Each Column is tried individually to ensure they are ALL checked
     Any new columns will be automatically added to DataBase
     """
     try:
-        db_connection = sqlite3.connect(sensorDB_Location)
+        db_connection = sqlite3.connect(sensor_db_location)
         db_cursor = db_connection.cursor()
 
         try:
@@ -250,10 +248,10 @@ def get_pimoroni_lsm303d_readings():
     return lsm303d_database_data
 
 
-def write_to_sql_database(sql_command):
+def write_to_sql_database(sql_command, sensor_db_location):
     logger.debug("SQL String to execute: " + str(sql_command))
     try:
-        db_connection = sqlite3.connect(sensorDB_Location)
+        db_connection = sqlite3.connect(sensor_db_location)
         db_cursor = db_connection.cursor()
         db_cursor.execute(sql_command)
         db_connection.commit()
