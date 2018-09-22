@@ -4,7 +4,8 @@ chown pi:root /home/pi -R
 chown pi:root /home/sensors -R
 chmod 754 /home/pi/*.sh
 chmod 754 /home/pi/*.py 2>/dev/null
-chmod 644 /home/pi/config/*
+chmod 664 /home/pi/config/*
+chmod 664 /home/pi/config/logs/*
 chmod 755 /home/sensors -R
 chmod 754 /home/sensors/*.py
 chmod 754 /home/sensors/auto_start/*.sh
