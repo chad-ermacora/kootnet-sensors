@@ -19,21 +19,21 @@
 import os
 import socket
 import pickle
-import sensor_modules.pimoroni_enviro
-import sensor_modules.RP_system
+import sensor_modules.RaspberryPi_Sensors as RaspberryPi_Sensors
+import sensor_modules.Linux_System as Linux_System
 from time import sleep
 
 
 def get_sensor_data():
     str_sensor_data = ""
     try:
-        str_sensor_data = str(sensor_modules.RP_system.get_hostname())
-        str_sensor_data = str_sensor_data + "," + str(sensor_modules.RP_system.get_ip())
-        str_sensor_data = str_sensor_data + "," + str(sensor_modules.RP_system.get_sys_datetime())
-        str_sensor_data = str_sensor_data + "," + str(sensor_modules.RP_system.get_uptime())
-        str_sensor_data = str_sensor_data + "," + str(round(sensor_modules.RP_system.cpu_temperature(), 2))
-        str_sensor_data = str_sensor_data + "," + str(sensor_modules.RP_system.get_primary_db_size())
-        str_sensor_data = str_sensor_data + "," + str(sensor_modules.RP_system.get_motion_db_size())
+        str_sensor_data = str(Linux_System.get_hostname())
+        str_sensor_data = str_sensor_data + "," + str(Linux_System.get_ip())
+        str_sensor_data = str_sensor_data + "," + str(Linux_System.get_sys_datetime())
+        str_sensor_data = str_sensor_data + "," + str(Linux_System.get_uptime())
+        str_sensor_data = str_sensor_data + "," + str(round(RaspberryPi_Sensors.cpu_temperature(), 2))
+        str_sensor_data = str_sensor_data + "," + str(Linux_System.get_primary_db_size())
+        str_sensor_data = str_sensor_data + "," + str(Linux_System.get_motion_db_size())
         str_sensor_data = str_sensor_data + "\n"
     except Exception as error_msg:
         print("Sensor reading failed - " + str(error_msg))

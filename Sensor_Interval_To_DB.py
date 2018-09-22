@@ -63,10 +63,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
     count = 0
     if int(var_installed_sensors[0]) == 1:
         print("\nRP_system Installed")
-        sql_query_columns, sql_query_values = \
-            DB_Interval_Operations.get_rp_system_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        rp_database_data = DB_Interval_Operations.get_rp_system_readings()
+        sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[1]) == 1:
@@ -75,9 +74,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
 
-        sql_query_columns, sql_query_values = DB_Interval_Operations.get_RP_senseHAT_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        rp_sense_hat_database_data = DB_Interval_Operations.get_rp_sense_hat_readings()
+        sql_query_columns_final = sql_query_columns_final + rp_sense_hat_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + rp_sense_hat_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[2]) == 1:
@@ -86,9 +85,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
 
-        sql_query_columns, sql_query_values = DB_Interval_Operations.get_pimoroni_bh1745_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        bh1745_database_data = DB_Interval_Operations.get_pimoroni_bh1745_readings()
+        sql_query_columns_final = sql_query_columns_final + bh1745_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + bh1745_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[3]) == 1:
@@ -97,9 +96,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
 
-        sql_query_columns, sql_query_values = DB_Interval_Operations.get_pimoroni_bme680_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        bme680_database_data = DB_Interval_Operations.get_pimoroni_bme680_readings()
+        sql_query_columns_final = sql_query_columns_final + bme680_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + bme680_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[4]) == 1:
@@ -108,9 +107,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
 
-        sql_query_columns, sql_query_values = DB_Interval_Operations.get_pimoroni_enviro_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        enviro_database_data = DB_Interval_Operations.get_pimoroni_enviro_readings()
+        sql_query_columns_final = sql_query_columns_final + enviro_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + enviro_database_data.sensor_readings
         count = count + 1
 
     if int(var_installed_sensors[5]) == 1:
@@ -119,9 +118,9 @@ def write_sensor_readings_to_database(var_installed_sensors):
             sql_query_columns_final = sql_query_columns_final + ", "
             sql_query_values_final = sql_query_values_final + ", "
 
-        sql_query_columns, sql_query_values = DB_Interval_Operations.get_pimoroni_lsm303d_readings()
-        sql_query_columns_final = sql_query_columns_final + sql_query_columns
-        sql_query_values_final = sql_query_values_final + sql_query_values
+        lsm303d_database_data = DB_Interval_Operations.get_pimoroni_lsm303d_readings()
+        sql_query_columns_final = sql_query_columns_final + lsm303d_database_data.sensor_types
+        sql_query_values_final = sql_query_values_final + lsm303d_database_data.sensor_readings
 
     sql_command = sql_query_start + sql_query_columns_final + sql_query_values_start + \
         sql_query_values_final + sql_query_values_end

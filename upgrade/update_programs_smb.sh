@@ -10,6 +10,7 @@ then
 else
   printf '\nInstalling Sensor Type Config'
   mkdir /home/pi/config 2>/dev/null
+  mkdir /home/pi/config/logs 2>/dev/null
   cat > /home/pi/config/sensor_type.txt << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
 1 = RP_system

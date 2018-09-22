@@ -8,6 +8,7 @@ then
 else
   printf '\n\nStarting KootNet Sensor Install\n\n'
   mkdir /home/pi/config 2>/dev/null
+  mkdir /home/pi/config/logs 2>/dev/null
   cat > /home/pi/config/sensor_type.txt << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
 1 = RP_system
@@ -52,6 +53,11 @@ EOF
   cat >> /etc/network/interfaces << "EOF"
 
 # Be sure to Change the IP to match your network
+#
+# To let your wireless router assign the IP
+# Change 'iface wlan0 inet static' to 'iface wlan0 inet dhcp'
+# Then remove all lines below EXCEPT for the one with wpa-conf
+
 allow-hotplug wlan0
 iface wlan0 inet static
   address 192.168.10.254
@@ -61,8 +67,15 @@ iface wlan0 inet static
   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 EOF
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
-# Be sure to update to your networks Needs.
-# Add additional network sections to auto connect to other networks when in range. 
+# Be sure to update to your wireless network
+#
+# Which ever wireless network has more signal strength
+# Is the one that will connect, assuming settings are correct
+#
+# To add additional wireless network connections
+# Copy one of the network blocks, including both { } and
+# Paste it at the bottom of the file & Modify as needed
+
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 country=CA

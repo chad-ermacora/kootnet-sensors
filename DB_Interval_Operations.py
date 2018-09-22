@@ -17,14 +17,38 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
-import sensor_modules.pimoroni_bh1745 as pimoroni_bh1745
-import sensor_modules.pimoroni_BME680 as pimoroni_BME680
-import sensor_modules.pimoroni_enviro as pimoroni_enviro
-import sensor_modules.pimoroni_LSM303D as pimoroni_LSM303D
-import sensor_modules.RP_system as RP_system
-import sensor_modules.RP_senseHAT as RP_senseHAT
+import logging
+import sensor_modules.Pimoroni_BH1745 as Pimoroni_BH1745
+import sensor_modules.Pimoroni_BME680 as Pimoroni_BME680
+import sensor_modules.Pimoroni_Enviro as Pimoroni_Enviro
+import sensor_modules.Pimoroni_LSM303D as Pimoroni_LSM303D
+import sensor_modules.RaspberryPi_Sensors as RaspberryPi_Sensors
+import sensor_modules.Linux_System as Linux_System
+import sensor_modules.RaspberryPi_SenseHAT as RaspberryPi_SenseHAT
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger(__name__)
+
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
+
+file_handler = RotatingFileHandler('/home/pi/config/logs/Interval_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 sensorDB_Location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
+
+
+class SensorDatabaseData:
+
+    def __init__(self):
+        self.sensor_types = ""
+        self.sensor_readings = ""
 
 
 def create_or_check_db():
@@ -36,200 +60,204 @@ def create_or_check_db():
     try:
         db_connection = sqlite3.connect(sensorDB_Location)
         db_cursor = db_connection.cursor()
+
+        try:
+            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='Sensor_Data', nf='Time', ft='TEXT'))
+            logger.debug("Table 'Sensor_Data' - Created")
+        except Exception as error:
+            logger.debug("Table 'Sensor_Data' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='hostName', ct='TEXT'))
+            logger.debug("COLUMN hostName - Created")
+        except Exception as error:
+            logger.debug("COLUMN hostName - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='uptime', ct='TEXT'))
+            logger.debug("COLUMN uptime - Created")
+        except Exception as error:
+            logger.debug("COLUMN uptime - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='ip', ct='TEXT'))
+            logger.debug("COLUMN ip - Created")
+        except Exception as error:
+            logger.debug("COLUMN ip - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='cpuTemp', ct='TEXT'))
+            logger.debug("COLUMN cpuTemp -  Created")
+        except Exception as error:
+            logger.debug("COLUMN cpuTemp - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='hatTemp', ct='TEXT'))
+            logger.debug("COLUMN hatTemp - Created")
+        except Exception as error:
+            logger.debug("COLUMN hatTemp - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='pressure', ct='TEXT'))
+            logger.debug("COLUMN pressure - Created")
+        except Exception as error:
+            logger.debug("COLUMN pressure - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='humidity', ct='TEXT'))
+            logger.debug("COLUMN humidity - Created")
+        except Exception as error:
+            logger.debug("COLUMN humidity - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='lumen', ct='TEXT'))
+            logger.debug("COLUMN lumen - Created")
+        except Exception as error:
+            logger.debug("COLUMN lumen - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='red', ct='TEXT'))
+            logger.debug("COLUMN red - Created")
+        except Exception as error:
+            logger.debug("COLUMN red - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='green', ct='TEXT'))
+            logger.debug("COLUMN green - Created")
+        except Exception as error:
+            logger.debug("COLUMN green - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='blue', ct='TEXT'))
+            logger.debug("COLUMN blue - Created")
+        except Exception as error:
+            logger.debug("COLUMN blue - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='mg_X', ct='TEXT'))
+            logger.debug("COLUMN mg_X - Created")
+        except Exception as error:
+            logger.debug("COLUMN mg_X - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='mg_Y', ct='TEXT'))
+            logger.debug("COLUMN mg_Y - Created")
+        except Exception as error:
+            logger.debug("COLUMN mg_Y - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='Sensor_Data', cn='mg_Z', ct='TEXT'))
+            logger.debug("COLUMN mg_Z - Created")
+        except Exception as error:
+            logger.debug("COLUMN mg_Z - " + str(error))
+
+        db_connection.commit()
+        db_connection.close()
+        logger.info("Interval Database Checked - OK")
     except Exception as error:
-        print("DB Connection Failed: " + str(error))
-
-    try:
-        db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'\
-                          .format(tn='Sensor_Data', nf='Time', ft='TEXT'))
-        print("Table 'Sensor_Data' - Created")
-    except Exception as error:
-        print("Table 'Sensor_Data' - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='hostName', ct='TEXT'))
-        print("COLUMN hostName - Created")
-    except Exception as error:
-        print("COLUMN hostName - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='uptime', ct='TEXT'))
-        print("COLUMN uptime - Created")
-    except Exception as error:
-        print("COLUMN uptime - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='ip', ct='TEXT'))
-        print("COLUMN ip - Created")
-    except Exception as error:
-        print("COLUMN ip - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='cpuTemp', ct='TEXT'))
-        print("COLUMN cpuTemp -  Created")
-    except Exception as error:
-        print("COLUMN cpuTemp - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='hatTemp', ct='TEXT'))
-        print("COLUMN hatTemp - Created")
-    except Exception as error:
-        print("COLUMN hatTemp - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='pressure', ct='TEXT'))
-        print("COLUMN pressure - Created")
-    except Exception as error:
-        print("COLUMN pressure - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='humidity', ct='TEXT'))
-        print("COLUMN humidity - Created")
-    except Exception as error:
-        print("COLUMN humidity - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                          .format(tn='Sensor_Data', cn='lumen', ct='TEXT'))
-        print("COLUMN lumen - Created")
-    except Exception as error:
-        print("COLUMN lumen - " + str(error))
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='red', ct='TEXT'))
-        print("COLUMN red - Created")
-    except:
-        print("COLUMN red - OK")
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='green', ct='TEXT'))
-        print("COLUMN green - Created")
-    except:
-        print("COLUMN green - OK")
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='blue', ct='TEXT'))
-        print("COLUMN blue - Created")
-    except:
-        print("COLUMN blue - OK")
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='mg_X', ct='TEXT'))
-        print("COLUMN mg_X - Created")
-    except:
-        print("COLUMN mg_X - OK")
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='mg_Y', ct='TEXT'))
-        print("COLUMN mg_Y - Created")
-    except:
-        print("COLUMN mg_Y - OK")
-
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-                .format(tn='Sensor_Data', cn='mg_Z', ct='TEXT'))
-        print("COLUMN mg_Z - Created")
-    except:
-        print("COLUMN mg_Z - OK")
-    
-    db_connection.commit()
-    db_connection.close()
+        logger.error("DB Connection Failed: " + str(error))
 
 
 def get_rp_system_readings():
-    sql_database_columns = "hostName, ip, uptime, cpuTemp"
-    sql_database_values = "'" + str(RP_system.get_hostname()) + \
-                       "', '" + str(RP_system.get_ip()) + \
-                       "', '" + str(RP_system.get_uptime()) + \
-                       "', '" + str(RP_system.cpu_temperature()) + "'"
+    logger.info("Retrieving Raspberry Pi System Readings")
+    rp_database_data = SensorDatabaseData()
+    rp_database_data.sensor_types = "hostName, ip, uptime, cpuTemp"
 
-    return sql_database_columns, sql_database_values
+    rp_database_data.sensor_readings = "'" + str(Linux_System.get_hostname()) + "', '" + \
+                                       str(Linux_System.get_ip()) + "', '" + \
+                                       str(Linux_System.get_uptime()) + "', '" + \
+                                       str(RaspberryPi_Sensors.cpu_temperature()) + "'"
+
+    return rp_database_data
 
 
-def get_RP_senseHAT_readings():
-    sql_database_columns = "hatTemp, pressure, humidity, mg_X, mg_Y, mg_Z"
+def get_rp_sense_hat_readings():
+    logger.info("Retrieving Raspberry Pi SenseHAT Readings")
+    rp_sense_hat_database_data = SensorDatabaseData()
+    rp_sense_hat_database_data.sensor_types = "hatTemp, pressure, humidity, mg_X, mg_Y, mg_Z"
 
-    mg_XYZ = RP_senseHAT.magnetometer_xyz()
-    sql_database_values = "'" + str(RP_senseHAT.temperature()) + \
-                       "', '" + str(RP_senseHAT.pressure()) + \
-                       "', '" + str(RP_senseHAT.humidity()) + \
-                       "', '" + str(mg_XYZ[0]) + \
-                       "', '" + str(mg_XYZ[1]) + \
-                       "', '" + str(mg_XYZ[2]) + "'"
+    mg_xyz = RaspberryPi_SenseHAT.magnetometer_xyz()
 
-    return sql_database_columns, sql_database_values
+    rp_sense_hat_database_data.sensor_readings = "'" + str(RaspberryPi_SenseHAT.temperature()) + "', '" + \
+                                                 str(RaspberryPi_SenseHAT.pressure()) + "', '" + \
+                                                 str(RaspberryPi_SenseHAT.humidity()) + "', '" + \
+                                                 str(mg_xyz[0]) + "', '" + \
+                                                 str(mg_xyz[1]) + "', '" + \
+                                                 str(mg_xyz[2]) + "'"
+
+    return rp_sense_hat_database_data
 
 
 def get_pimoroni_bh1745_readings():
-    sql_database_columns = "lumen, red, green, blue"
+    logger.info("Retrieving Pimoroni BH1745 Readings")
+    bh1745_database_data = SensorDatabaseData()
+    bh1745_database_data.sensor_types = "lumen, red, green, blue"
 
-    colour_RGB = pimoroni_bh1745.rgb()
-    sql_database_values = "'" + str(pimoroni_bh1745.lumen()) + \
-                       "', '" + str(colour_RGB[0]) + \
-                       "', '" + str(colour_RGB[1]) + \
-                       "', '" + str(colour_RGB[2]) + "'"
+    colour_rgb = Pimoroni_BH1745.rgb()
 
-    return sql_database_columns, sql_database_values
+    bh1745_database_data.sensor_readings = "'" + str(Pimoroni_BH1745.lumen()) + "', '" + \
+                                           str(colour_rgb[0]) + "', '" + \
+                                           str(colour_rgb[1]) + "', '" + \
+                                           str(colour_rgb[2]) + "'"
+
+    return bh1745_database_data
 
 
 def get_pimoroni_bme680_readings():
-    sql_database_columns = "hatTemp, pressure, humidity"
-    sql_database_values = "'" + str(pimoroni_BME680.temperature()) + \
-                       "', '" + str(pimoroni_BME680.pressure()) + \
-                       "', '" + str(pimoroni_BME680.humidity()) + "'"
+    logger.info("Retrieving Pimoroni BME680 Readings")
+    bme680_database_data = SensorDatabaseData()
+    bme680_database_data.sensor_types = "hatTemp, pressure, humidity"
 
-    return sql_database_columns, sql_database_values
+    bme680_database_data.sensor_readings = "'" + str(Pimoroni_BME680.temperature()) + "', '" + \
+                                           str(Pimoroni_BME680.pressure()) + "', '" + \
+                                           str(Pimoroni_BME680.humidity()) + "'"
+
+    return bme680_database_data
 
 
 def get_pimoroni_enviro_readings():
-    sql_database_columns = "hatTemp, pressure, lumen, red, green, blue, " + \
-                        "mg_X, mg_Y, mg_Z"
+    logger.info("Retrieving Pimoroni Enviro Readings")
+    enviro_database_data = SensorDatabaseData()
+    enviro_database_data.sensor_types = "hatTemp, pressure, lumen, red, green, blue, mg_X, mg_Y, mg_Z"
 
-    colour_rgb = pimoroni_enviro.rgb()
-    mg_xyz = pimoroni_enviro.magnetometer_xyz()
-    sql_database_values = "'" + str(pimoroni_enviro.temperature()) + \
-                          "', '" + str(pimoroni_enviro.pressure()) + \
-                          "', '" + str(pimoroni_enviro.lumen()) + \
-                          "', '" + str(colour_rgb[0]) + \
-                          "', '" + str(colour_rgb[1]) + \
-                          "', '" + str(colour_rgb[2]) + \
-                          "', '" + str(mg_xyz[0]) + \
-                          "', '" + str(mg_xyz[1]) + \
-                          "', '" + str(mg_xyz[2]) + "'"
+    colour_rgb = Pimoroni_Enviro.rgb()
+    mg_xyz = Pimoroni_Enviro.magnetometer_xyz()
 
-    return sql_database_columns, sql_database_values
+    enviro_database_data.sensor_readings = "'" + str(Pimoroni_Enviro.temperature()) + "', '" + \
+                                           str(Pimoroni_Enviro.pressure()) + "', '" + \
+                                           str(Pimoroni_Enviro.lumen()) + "', '" + \
+                                           str(colour_rgb[0]) + "', '" + \
+                                           str(colour_rgb[1]) + "', '" + \
+                                           str(colour_rgb[2]) + "', '" + \
+                                           str(mg_xyz[0]) + "', '" + \
+                                           str(mg_xyz[1]) + "', '" + \
+                                           str(mg_xyz[2]) + "'"
+
+    return enviro_database_data
 
 
 def get_pimoroni_lsm303d_readings():
-    sql_database_columns = "mg_X, mg_Y, mg_Z"
+    logger.info("Retrieving Pimoroni LSM303D Readings")
+    lsm303d_database_data = SensorDatabaseData()
+    lsm303d_database_data.sensor_types = "mg_X, mg_Y, mg_Z"
 
-    mg_xyz = pimoroni_LSM303D.magnetometer_xyz()
-    sql_database_values = "'" + str(mg_xyz[0]) + "', '" + str(mg_xyz[1]) + "', '" + str(mg_xyz[2]) + "'"
+    mg_xyz = Pimoroni_LSM303D.magnetometer_xyz()
 
-    return sql_database_columns, sql_database_values
+    lsm303d_database_data.sensor_readings = "'" + str(mg_xyz[0]) + "', '" + \
+                                            str(mg_xyz[1]) + "', '" + \
+                                            str(mg_xyz[2]) + "'"
+
+    return lsm303d_database_data
 
 
 def write_to_sql_database(sql_command):
-    print("\nSQL String to execute\n'''\n" + str(sql_command) + "\n'''\n")
+    logger.debug("SQL String to execute: " + str(sql_command))
     try:
         db_connection = sqlite3.connect(sensorDB_Location)
         db_cursor = db_connection.cursor()
         db_cursor.execute(sql_command)
         db_connection.commit()
-        print("Write to DataBase - OK")
+        logger.info("Write to DataBase - OK")
         db_connection.close()
-    except:
-        print("Write to DataBase - Failed")
-
+    except Exception as error:
+        logger.error("Write to DataBase - Failed - " + str(error))
