@@ -44,7 +44,7 @@ logger.addHandler(stream_handler)
 def get_rp_system_readings():
     logger.info("Retrieving Raspberry Pi System Readings")
     rp_database_data = SensorData()
-    rp_database_data.sensor_types = "SensorName, IP, UpTime, CPUtemp"
+    rp_database_data.sensor_types = "SensorName, IP, SensorUpTime, SystemTemp"
 
     rp_database_data.sensor_readings = "'" + str(Linux_System.get_hostname()) + "', '" + \
                                        str(Linux_System.get_ip()) + "', '" + \

@@ -130,16 +130,16 @@ def check_interval_db(sensor_db_location):
             logger.debug("COLUMN 'IP' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='UpTime', ct='TEXT'))
-            logger.debug("COLUMN 'UpTime' - Created")
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorUpTime', ct='TEXT'))
+            logger.debug("COLUMN 'SensorUpTime' - Created")
         except Exception as error:
-            logger.debug("COLUMN 'UpTime' - " + str(error))
+            logger.debug("COLUMN 'SensorUpTime' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='CPUtemp', ct='TEXT'))
-            logger.debug("COLUMN 'CPUtemp' -  Created")
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SystemTemp', ct='TEXT'))
+            logger.debug("COLUMN 'SystemTemp' -  Created")
         except Exception as error:
-            logger.debug("COLUMN 'CPUtemp' - " + str(error))
+            logger.debug("COLUMN 'SystemTemp' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='EnvironmentTemp', ct='TEXT'))
