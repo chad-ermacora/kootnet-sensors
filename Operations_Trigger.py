@@ -16,10 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import sqlite3
 import logging
 from logging.handlers import RotatingFileHandler
-
+from Operations_DB import SensorData
+import sensor_modules.Linux_System as Linux_System
+import sensor_modules.RaspberryPi_Sensors as RaspberryPi_Sensors
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
@@ -35,6 +36,17 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 trigger_db_location = '/home/sensors/data/SensorTriggerDatabase.sqlite'
+
+
+def get_rp_system_readings():
+    logger.info("Retrieving Raspberry Pi System Readings")
+    rp_database_data = SensorData()
+    rp_database_data.sensor_types = "SensorName, IP"
+
+    rp_database_data.sensor_readings = "'" + str(Linux_System.get_hostname()) + "', '" + \
+                                       str(Linux_System.get_ip()) + "'"
+
+    return rp_database_data
 
 
 def get_accelerometer_xyz():

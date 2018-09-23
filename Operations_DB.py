@@ -48,11 +48,16 @@ class InstalledSensors:
         self.pimoroni_vl53l1x = False
 
 
-class SensorDatabaseData:
-
+class SensorData:
     def __init__(self):
         self.sensor_types = ""
         self.sensor_readings = ""
+
+
+class SQLCommandData:
+    def __init__(self):
+        self.database_location = ""
+        self.sql_execute = ""
 
 
 def get_installed_sensors():
@@ -114,87 +119,69 @@ def check_interval_db(sensor_db_location):
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorName', ct='TEXT'))
-            logger.debug("COLUMN SensorName - Created")
+            logger.debug("COLUMN 'SensorName' - Created")
         except Exception as error:
-            logger.debug("COLUMN SensorName - " + str(error))
-
-        try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='UpTime', ct='TEXT'))
-            logger.debug("COLUMN UpTime - Created")
-        except Exception as error:
-            logger.debug("COLUMN UpTime - " + str(error))
+            logger.debug("COLUMN 'SensorName' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='IP', ct='TEXT'))
-            logger.debug("COLUMN IP - Created")
+            logger.debug("COLUMN 'IP' - Created")
         except Exception as error:
-            logger.debug("COLUMN IP - " + str(error))
+            logger.debug("COLUMN 'IP' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='UpTime', ct='TEXT'))
+            logger.debug("COLUMN 'UpTime' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'UpTime' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='CPUtemp', ct='TEXT'))
-            logger.debug("COLUMN CPUtemp -  Created")
+            logger.debug("COLUMN 'CPUtemp' -  Created")
         except Exception as error:
-            logger.debug("COLUMN CPUtemp - " + str(error))
+            logger.debug("COLUMN 'CPUtemp' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='EnvironmentTemp', ct='TEXT'))
-            logger.debug("COLUMN EnvironmentTemp - Created")
+            logger.debug("COLUMN 'EnvironmentTemp' - Created")
         except Exception as error:
-            logger.debug("COLUMN EnvironmentTemp - " + str(error))
+            logger.debug("COLUMN 'EnvironmentTemp' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Pressure', ct='TEXT'))
-            logger.debug("COLUMN Pressure - Created")
+            logger.debug("COLUMN 'Pressure' - Created")
         except Exception as error:
-            logger.debug("COLUMN Pressure - " + str(error))
+            logger.debug("COLUMN 'Pressure' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Humidity', ct='TEXT'))
-            logger.debug("COLUMN Humidity - Created")
+            logger.debug("COLUMN 'Humidity' - Created")
         except Exception as error:
-            logger.debug("COLUMN Humidity - " + str(error))
+            logger.debug("COLUMN 'Humidity' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Lumen', ct='TEXT'))
-            logger.debug("COLUMN Lumen - Created")
+            logger.debug("COLUMN 'Lumen' - Created")
         except Exception as error:
-            logger.debug("COLUMN Lumen - " + str(error))
+            logger.debug("COLUMN 'Lumen' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Red', ct='TEXT'))
-            logger.debug("COLUMN Red - Created")
+            logger.debug("COLUMN 'Red' - Created")
         except Exception as error:
-            logger.debug("COLUMN Red - " + str(error))
+            logger.debug("COLUMN 'Red' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Green', ct='TEXT'))
-            logger.debug("COLUMN Green - Created")
+            logger.debug("COLUMN 'Green' - Created")
         except Exception as error:
-            logger.debug("COLUMN Green - " + str(error))
+            logger.debug("COLUMN 'Green' - " + str(error))
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Blue', ct='TEXT'))
-            logger.debug("COLUMN Blue - Created")
+            logger.debug("COLUMN 'Blue' - Created")
         except Exception as error:
-            logger.debug("COLUMN Blue - " + str(error))
-
-        try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='mg_X', ct='TEXT'))
-            logger.debug("COLUMN mg_X - Created")
-        except Exception as error:
-            logger.debug("COLUMN mg_X - " + str(error))
-
-        try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='mg_Y', ct='TEXT'))
-            logger.debug("COLUMN mg_Y - Created")
-        except Exception as error:
-            logger.debug("COLUMN mg_Y - " + str(error))
-
-        try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='mg_Z', ct='TEXT'))
-            logger.debug("COLUMN mg_Z - Created")
-        except Exception as error:
-            logger.debug("COLUMN mg_Z - " + str(error))
+            logger.debug("COLUMN 'Blue' - " + str(error))
 
         db_connection.commit()
         db_connection.close()
@@ -213,16 +200,16 @@ def check_trigger_db(db_location):
             logger.debug("Table 'TriggerData' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='IP', ct='TEXT'))
-            logger.debug("Column 'IP' - Created")
-        except Exception as error:
-            logger.debug("Column 'IP' - " + str(error))
-
-        try:
             c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='SensorName', ct='TEXT'))
             logger.debug("Column 'SensorName' - Created")
         except Exception as error:
             logger.debug("Column 'SensorName' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='IP', ct='TEXT'))
+            logger.debug("Column 'IP' - Created")
+        except Exception as error:
+            logger.debug("Column 'IP' - " + str(error))
 
         try:
             c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_X', ct='BLOB'))
@@ -242,20 +229,38 @@ def check_trigger_db(db_location):
         except Exception as error:
             logger.debug("Column 'acc_Z' - " + str(error))
 
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_X', ct='TEXT'))
+            logger.debug("COLUMN 'mg_X' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_X' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_Y', ct='TEXT'))
+            logger.debug("COLUMN 'mg_Y' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_Y' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_Z', ct='TEXT'))
+            logger.debug("COLUMN 'mg_Z' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_Z' - " + str(error))
+
         c.close()
         conn.close()
     except Exception as error:
         logger.error("DB Connection Failed: " + str(error))
 
 
-def write_to_sql_database(sql_command, sensor_db_location):
-    logger.debug("SQL String to execute: " + str(sql_command))
+def write_to_sql_database(sql_data):
+    logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
     try:
-        db_connection = sqlite3.connect(sensor_db_location)
+        db_connection = sqlite3.connect(sql_data.database_location)
         db_cursor = db_connection.cursor()
-        db_cursor.execute(sql_command)
+        db_cursor.execute(sql_data.sql_execute)
         db_connection.commit()
         db_connection.close()
-        logger.info("SQL Write to DataBase - OK - " + str(sensor_db_location))
+        logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
     except Exception as error:
         logger.error("SQL Write to DataBase - Failed - " + str(error))
