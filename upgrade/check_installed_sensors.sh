@@ -4,7 +4,7 @@ if [ -f "/home/pi/KootNetSensors/installed_sensors.txt" ]
 then
   printf '\n\nInstalled Sensors File Already Installed\n\n'
 else
-  printf '\n\Setting up Installed Sensors File\n\n'
+  printf '\n\nSetting up Installed Sensors File\n\n'
   cat > /home/pi/KootNetSensors/installed_sensors.txt << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
 1 = RP_system

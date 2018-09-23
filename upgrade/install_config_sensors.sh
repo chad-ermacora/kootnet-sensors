@@ -14,19 +14,6 @@ else
   wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
   bash /home/sensors/upgrade/check_installed_sensors.sh
-  # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-  cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-  cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
-  cp /home/sensors/test* /home/pi 2>/dev/null
-  # Upgrade System and install sensor Dependencies
-  printf '\nStarting System Update, this will take awhile...\n'
-  # Remove wolfram-egine due to size of upgrades
-  apt-get -y remove wolfram-engine
-  apt-get update
-  apt-get -y upgrade
-  printf '\nInstalling Dependencies\n\n'
-  apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
-  pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
   # Add and edit TCP/IP v4 Network + Wireless
   printf '\nConfiguring Network\n'
   cat >> /etc/network/interfaces << "EOF"
@@ -70,6 +57,19 @@ network={
         key_mgmt=WPA-PSK
 }
 EOF
+  # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
+  cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
+  cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
+  cp /home/sensors/test* /home/pi 2>/dev/null
+  # Upgrade System and install sensor Dependencies
+  printf '\nStarting System Update, this will take awhile...\n'
+  # Remove wolfram-egine due to size of upgrades
+  apt-get -y remove wolfram-engine
+  apt-get update
+  apt-get -y upgrade
+  printf '\nInstalling Dependencies\n\n'
+  apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
+  pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
   date > /home/pi/KootNetSensors/zInstalled.txt
   # Install crontab entries
   bash /home/sensors/upgrade/update_crontab.sh
