@@ -1,6 +1,5 @@
 # Upgrade from Online HTTP server 
 clear
-bash /home/sensors/upgrade/check_folders.sh
 bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then

@@ -15,5 +15,5 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Pimoroni_LSM303D
 0 = Pimoroni_VL53L1X
 EOF
-  nano /home/pi/KootNetSensors/sensor_type.txt
+  nano /home/pi/KootNetSensors/installed_sensors.txt
 fi

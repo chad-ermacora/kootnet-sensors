@@ -13,7 +13,6 @@ else
   cd /root/SensorInstallFiles
   wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
-  bash /home/sensors/upgrade/check_folders.sh
   bash /home/sensors/upgrade/check_installed_sensors.sh
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
