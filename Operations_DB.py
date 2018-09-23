@@ -212,19 +212,19 @@ def check_trigger_db(db_location):
             logger.debug("Column 'IP' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_X', ct='BLOB'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_X', ct='TEXT'))
             logger.debug("Column 'acc_X' - Created")
         except Exception as error:
             logger.debug("Column 'acc_X' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Y', ct='BLOB'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Y', ct='TEXT'))
             logger.debug("Column 'acc_Y' - Created")
         except Exception as error:
             logger.debug("Column 'acc_Y' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Z', ct='BLOB'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Z', ct='TEXT'))
             logger.debug("Column 'acc_Z' - Created")
         except Exception as error:
             logger.debug("Column 'acc_Z' - " + str(error))
