@@ -16,13 +16,53 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import sqlite3, socket
-from envirophat import motion
+import sqlite3
+import socket
 from time import sleep
+import logging
+from logging.handlers import RotatingFileHandler
+
+logger = logging.getLogger(__name__)
+
+logger.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
+
+file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Trigger_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler.setFormatter(formatter)
+
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
+logger.addHandler(stream_handler)
 
 sensorDB_Location = '/home/sensors/data/SensorTriggerDatabase.sqlite'
+sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
+sql_query_start = "INSERT OR IGNORE INTO Motion_Data (DateTime, "
+sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
+sql_query_values_end = ")"
+
 var_motion_variance = 0.045
-sleep(10)
+
+
+def get_installed_sensors():
+    # See top of file for sensor_list[] order
+    try:
+        sensor_list_file = open(sensor_ver_file, 'r')
+        sensor_list = sensor_list_file.readlines()
+        rp_system = sensor_list[1]
+        rp_sense_hat = sensor_list[2]
+        pimoroni_bh1745 = sensor_list[3]
+        pimoroni_bme680 = sensor_list[4]
+        pimoroni_enviro = sensor_list[5]
+        pimoroni_lsm303d = sensor_list[6]
+
+        sensors_enabled = rp_system[:1], rp_sense_hat[:1], pimoroni_bh1745[:1], \
+            pimoroni_bme680[:1], pimoroni_enviro[:1], pimoroni_lsm303d[:1]
+
+        return sensors_enabled
+    except Exception as error:
+        logger.error("Unable to open: " + sensor_ver_file + " - " + str(error))
 
 
 def database_write(wvar_motion):
@@ -46,86 +86,39 @@ def database_write(wvar_motion):
     print("x: " + str(var1))
     print("y: " + str(var2))
     print("z: " + str(var3))
-    c.execute("INSERT OR IGNORE INTO Motion_Data (Time,IP, X, Y, Z, hostName) VALUES ((CURRENT_TIMESTAMP),?,?,?,?,?)",(testIP,var1,var2,var3,var_host))
+    c.execute("INSERT OR IGNORE INTO TriggerData (DateTime,IP, X, Y, Z, SensorName) " +
+              "VALUES ((CURRENT_TIMESTAMP),?,?,?,?,?)", (testIP, var1, var2, var3, var_host))
     conn.commit()
     c.close()
     conn.close()
 
-conn = sqlite3.connect(sensorDB_Location)
-c = conn.cursor()
-try:
-    c.execute('CREATE TABLE {tn} ({nf} {ft})'\
-        .format(tn='Motion_Data', nf='Time', ft='TEXT'))
-    print("Table Created")
-except:
-    print("Table Already Created")
-
-try:
-    c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-        .format(tn='Motion_Data', cn='IP', ct='TEXT'))
-except:
-    print("Column Already Created")
-
-try:
-    c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-            .format(tn='Motion_Data', cn='X', ct='BLOB'))
-except:
-    print("Column Already Created")
-
-try:
-    c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-        .format(tn='Motion_Data', cn='Y', ct='BLOB'))
-except:
-    print("Column Already Created")
-
-try:
-    c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-        .format(tn='Motion_Data', cn='Z', ct='BLOB'))
-except:
-    print("Column Already Created")
-
-try:
-    c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"\
-        .format(tn='Motion_Data', cn='hostName', ct='TEXT'))
-except:
-    print("Column Already Created")
-
-c.close()
-conn.close()
 
 var_real = motion.accelerometer()
 database_write(var_real)
-var_motion_last1 = round(float(var_real[0]),3)
-var_motion_last2 = round(float(var_real[1]),3)
-var_motion_last3 = round(float(var_real[2]),3)
+var_acc_last_x = round(float(var_real[0]), 3)
+var_acc_last_y = round(float(var_real[1]), 3)
+var_acc_last_z = round(float(var_real[2]), 3)
 
 while True:
     sleep(0.25)
     var_real = motion.accelerometer()
-    var_motion_now1 = round(float(var_real[0]),3)
-    var_motion_now2 = round(float(var_real[1]),3)
-    var_motion_now3 = round(float(var_real[2]),3)
+    var_acc_now_x = round(float(var_real[0]), 3)
+    var_acc_now_y = round(float(var_real[1]), 3)
+    var_acc_now_z = round(float(var_real[2]), 3)
 
-#    print("now1: " + str(var_motion_now1))
-#    print("now2: " + str(var_motion_now2))
-#    print("now3: " + str(var_motion_now3))
-    
-    if var_motion_last1 > (var_motion_now1 + var_motion_variance):
+    if var_acc_last_x > (var_acc_now_x + var_motion_variance):
         database_write(var_real)
-    elif var_motion_last1 < (var_motion_now1 - var_motion_variance):
+    elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
         database_write(var_real)
-    elif var_motion_last2 > (var_motion_now2 + var_motion_variance):
+    elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
         database_write(var_real)
-    elif var_motion_last2 < (var_motion_now2 - var_motion_variance):
+    elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
         database_write(var_real)
-    elif var_motion_last3 > (var_motion_now3 + var_motion_variance):
+    elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
         database_write(var_real)
-    elif var_motion_last3 < (var_motion_now3 - var_motion_variance):
+    elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
         database_write(var_real)
 
-    var_motion_last1 = var_motion_now1
-    var_motion_last2 = var_motion_now2
-    var_motion_last3 = var_motion_now3
-        
-c.close()
-conn.close()
+    var_acc_last_x = var_acc_now_x
+    var_acc_last_y = var_acc_now_y
+    var_acc_last_z = var_acc_now_z

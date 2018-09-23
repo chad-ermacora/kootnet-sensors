@@ -1,5 +1,5 @@
 """
-This module is for the Pimoroni bh1745 rgb + Lumens
+This module is for the Pimoroni bh1745 rgb + Lumen
 It Retrieves & Returns Sensor data to be written to the DB
 
 BH1745 Luminance and Colour Sensor Breakout
