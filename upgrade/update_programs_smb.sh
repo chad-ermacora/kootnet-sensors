@@ -4,7 +4,6 @@
 # Later to do -> apparently anything added to cli during run, such as ./script.sh me me2
 # Is accessible in the script through $1 $2 etc.
 clear
-bash /home/sensors/upgrade/check_folders.sh
 bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
