@@ -2,7 +2,7 @@
 # In crontab under root, scripts are auto run to keep 3 programs running as well as
 # The primary interval sensor program recording to a SQL DB. 
 # Later to do -> apparently anything added to cli during run, such as ./script.sh me me2
-# Is accessable in the script through $1 $2 etc. 
+# Is accessible in the script through $1 $2 etc.
 clear
 bash /home/sensors/upgrade/check_folders.sh
 bash /home/sensors/upgrade/check_installed_sensors.sh
