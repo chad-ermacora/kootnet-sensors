@@ -20,7 +20,8 @@ import logging
 from logging.handlers import RotatingFileHandler
 from Operations_DB import SensorData
 import sensor_modules.Linux_System as Linux_System
-import sensor_modules.RaspberryPi_Sensors as RaspberryPi_Sensors
+from sensor_modules.Linux_System import get_hostname, get_ip
+
 logger = logging.getLogger(__name__)
 
 logger.setLevel(logging.INFO)
@@ -40,13 +41,13 @@ trigger_db_location = '/home/sensors/data/SensorTriggerDatabase.sqlite'
 
 def get_rp_system_readings():
     logger.info("Retrieving Raspberry Pi System Readings")
-    rp_database_data = SensorData()
-    rp_database_data.sensor_types = "SensorName, IP"
+    rp_sensor_data = SensorData()
+    rp_sensor_data.sensor_types = "SensorName, IP"
 
-    rp_database_data.sensor_readings = "'" + str(Linux_System.get_hostname()) + "', '" + \
-                                       str(Linux_System.get_ip()) + "'"
+    rp_sensor_data.sensor_readings = "'" + str(Linux_System.get_hostname()) + "', '" + \
+        str(Linux_System.get_ip()) + "'"
 
-    return rp_database_data
+    return rp_sensor_data
 
 
 def get_accelerometer_xyz():
@@ -57,10 +58,5 @@ def get_magnetometer_xyz():
     pass
 
 
-def get_pimoroni_VL53L1X():
-    sql_query_columns = ""
-    sql_query_values = str() + \
-                       ", " + str() + \
-                       ", " + str()
-
-    return sql_query_columns, sql_query_values
+def get_distance():
+    pass

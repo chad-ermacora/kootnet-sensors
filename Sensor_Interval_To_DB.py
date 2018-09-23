@@ -51,9 +51,9 @@ def write_interval_readings_to_database(installed_sensors_var):
 
     count = 0
     if installed_sensors_var.rp_system:
-        rp_database_data = Operations_Interval.get_rp_system_readings()
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + rp_database_data.sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + rp_database_data.sensor_readings
+        rp_sensor_data = Operations_Interval.get_rp_system_readings()
+        interval_sql_data.sensor_types = interval_sql_data.sensor_types + rp_sensor_data.sensor_types
+        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + rp_sensor_data.sensor_readings
         count = count + 1
 
     if installed_sensors_var.rp_sense_hat:
@@ -61,9 +61,9 @@ def write_interval_readings_to_database(installed_sensors_var):
             interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
             interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
 
-        rp_sense_hat_database_data = Operations_Interval.get_rp_sense_hat_readings()
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + rp_sense_hat_database_data.sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + rp_sense_hat_database_data.sensor_readings
+        rp_sense_hat_data = Operations_Interval.get_rp_sense_hat_readings()
+        interval_sql_data.sensor_types = interval_sql_data.sensor_types + rp_sense_hat_data.sensor_types
+        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + rp_sense_hat_data.sensor_readings
         count = count + 1
 
     if installed_sensors_var.pimoroni_bh1745:
@@ -71,9 +71,9 @@ def write_interval_readings_to_database(installed_sensors_var):
             interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
             interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
 
-        bh1745_database_data = Operations_Interval.get_pimoroni_bh1745_readings()
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + bh1745_database_data.sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + bh1745_database_data.sensor_readings
+        bh1745_data = Operations_Interval.get_pimoroni_bh1745_readings()
+        interval_sql_data.sensor_types = interval_sql_data.sensor_types + bh1745_data.sensor_types
+        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + bh1745_data.sensor_readings
         count = count + 1
 
     if installed_sensors_var.pimoroni_bme680:
@@ -81,9 +81,9 @@ def write_interval_readings_to_database(installed_sensors_var):
             interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
             interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
 
-        bme680_database_data = Operations_Interval.get_pimoroni_bme680_readings()
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + bme680_database_data.sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + bme680_database_data.sensor_readings
+        bme680_data = Operations_Interval.get_pimoroni_bme680_readings()
+        interval_sql_data.sensor_types = interval_sql_data.sensor_types + bme680_data.sensor_types
+        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + bme680_data.sensor_readings
         count = count + 1
 
     if installed_sensors_var.pimoroni_enviro:
@@ -91,9 +91,9 @@ def write_interval_readings_to_database(installed_sensors_var):
             interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
             interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
 
-        enviro_database_data = Operations_Interval.get_pimoroni_enviro_readings()
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + enviro_database_data.sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + enviro_database_data.sensor_readings
+        enviro_data = Operations_Interval.get_pimoroni_enviro_readings()
+        interval_sql_data.sensor_types = interval_sql_data.sensor_types + enviro_data.sensor_types
+        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + enviro_data.sensor_readings
 
     interval_sql_command_data.sql_execute = sql_query_start + interval_sql_data.sensor_types + \
         sql_query_values_start + interval_sql_data.sensor_readings + sql_query_values_end
