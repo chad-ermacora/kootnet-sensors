@@ -1,8 +1,6 @@
 # This will copy all the needed files, install the dependencies and update the system
 # In crontab under root, scripts are auto run to keep 3 programs running as well as
 # The primary interval sensor program recording to a SQL DB.
-bash /home/sensors/upgrade/check_folders.sh
-bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
   printf '\nSensors Already Installed\n'
@@ -11,9 +9,12 @@ else
   # Create folder in root, download files, then install
   printf '\nCopying Program to system ... \n'
   mkdir /root/SensorInstallFiles 2>/dev/null
+  mkdir /home/sensors 2>/dev/null
   cd /root/SensorInstallFiles
   wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
+  bash /home/sensors/upgrade/check_folders.sh
+  bash /home/sensors/upgrade/check_installed_sensors.sh
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
   cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
