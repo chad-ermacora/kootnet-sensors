@@ -10,6 +10,7 @@ sleep 1
 cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
 sleep 1
 umount /mnt/supernas
+sleep 1
 # Run SMB Update script to make sure Folders & Permissions are correct
 bash /home/sensors/upgrade/update_programs_smb.sh
 killall python3

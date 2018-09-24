@@ -19,6 +19,7 @@ sleep 1
 cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
 sleep 1
 umount /mnt/supernas
+sleep 1
 # Update crontab
 bash /home/sensors/upgrade/update_crontab.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
