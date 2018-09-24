@@ -131,6 +131,6 @@ def led_display_message(message):
         else:
             sense.set_rotation(270)
 
-        sense.show_message(str(message), text_colour=(50, 0, 0))
+        sense.show_message(str(message), text_colour=(75, 0, 0))
     else:
         logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")
