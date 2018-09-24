@@ -79,8 +79,9 @@ EOF
   pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
 fi
 killall python3
-printf '\nTesting Interval Sensors\n'
+printf '\nTesting Interval Sensors\n\n'
 python3 /home/sensors/Sensor_Interval_To_DB.py
+printf '\n\n'
 # Install crontab entries
 bash /home/sensors/upgrade/update_crontab.sh
 # Make sure permissions are correct
