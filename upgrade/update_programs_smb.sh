@@ -9,7 +9,7 @@ if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
   printf '\nSensors Already Installed, Proceeding with SMB Upgrade\n\n'
 else
-  bash /home/sensors/upgrade/install_config_sensors.sh
+  bash /home/sensors/upgrade/install_kootnet_sensors.sh
   printf '\nProceeding with SMB Upgrade\n\n'
 fi
 # Download and Upgrade Sensor Programs off SMB
@@ -23,7 +23,7 @@ umount /mnt/supernas
 bash /home/sensors/upgrade/update_crontab.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_smb.sh /home/pi/update_sensor_smb.sh
-cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
+cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
 cp /home/sensors/upgrade/clean_upgrade.sh /home/pi/KootNetSensors/clean_upgrade.sh
 cp /home/sensors/test* /home/pi 2>/dev/null
 # Make sure permissions are correct

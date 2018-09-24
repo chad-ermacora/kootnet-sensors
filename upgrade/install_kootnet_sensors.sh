@@ -17,7 +17,7 @@ else
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-  cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
+  cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
   cp /home/sensors/test* /home/pi 2>/dev/null
   # Create "installed_sensors.txt" file
   bash /home/sensors/upgrade/check_installed_sensors.sh
