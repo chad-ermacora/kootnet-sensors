@@ -67,19 +67,21 @@ network={
 EOF
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
-  # Install crontab entries
-  bash /home/sensors/upgrade/update_crontab.sh
-  # Make sure permissions are correct
-  bash /home/sensors/upgrade/update_file_permissions.sh
   # Upgrade System
   printf '\nStarting System Update, this will take awhile...\n'
   # Remove wolfram-engine due to size of upgrades
   apt-get -y remove wolfram-engine
   apt-get update
   apt-get -y upgrade
+  printf '\nChecking Dependencies\n'
+  apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
+  pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
 fi
 killall python3
-printf '\nChecking Dependencies\n'
-apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
-pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
+printf '\nTesting Interval Sensors\n'
+python3 /home/sensors/Sensor_Interval_To_DB.py
+# Install crontab entries
+bash /home/sensors/upgrade/update_crontab.sh
+# Make sure permissions are correct
+bash /home/sensors/upgrade/update_file_permissions.sh
 printf '\nPlease wait up to 60 Seconds for Sensor to come online\n\n'
