@@ -1,5 +1,5 @@
 # Make sure folders are created
-printf '\n\nChecking and or Creating Required Folders\n'
+printf '\nChecking and or Creating Required Folders\n'
 mkdir /home/pi/KootNetSensors 2>/dev/null
 mkdir /home/pi/KootNetSensors/logs 2>/dev/null
 mkdir /mnt/supernas 2>/dev/null

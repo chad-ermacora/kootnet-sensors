@@ -1,5 +1,5 @@
 # Make sure permissions are correct
-printf '\n\nSetting Permissions\n' 
+printf '\nSetting Permissions\n'
 chown pi:root /home/pi -R
 chown pi:root /home/sensors -R
 chmod 754 /home/pi/*.sh 2>/dev/null
