@@ -32,6 +32,7 @@ iface wlan0 inet static
   dns-nameservers 192.168.10.1
   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 EOF
+  date > /home/pi/KootNetSensors/zInstalled.txt
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
 # Be sure to update to your wireless network
 #
@@ -72,7 +73,6 @@ EOF
   printf '\nInstalling Dependencies\n\n'
   apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
   pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
-  date > /home/pi/KootNetSensors/zInstalled.txt
   # Install crontab entries
   bash /home/sensors/upgrade/update_crontab.sh
   # Make sure permissions are correct
