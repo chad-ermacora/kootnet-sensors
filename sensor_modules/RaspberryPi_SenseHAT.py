@@ -117,7 +117,7 @@ def gyroscope_xyz():
     return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
 
-def led_display_message(message):
+def display_led_message(message):
     if show_led_message:
         sense = SenseHat()
         acc_data = accelerometer_xyz()
