@@ -3,8 +3,8 @@ printf '\n\nDoing "Clean" Upgrade\nLeaves Database and Config\nDeletes everythin
 rm /home/pi/*.sh 2>/dev/null
 rm /home/pi/*.py 2>/dev/null
 rm -R /home/sensors 2>/dev/null
-# Connect to and Download Files off SMB Server
 mkdir /home/sensors 2>/dev/null
+# Connect to and Download Files off SMB Server
 mount -t cifs //192.168.7.15/Public /mnt/supernas -o username=myself,password='123'
 cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
 umount /mnt/supernas
