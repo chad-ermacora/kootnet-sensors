@@ -2,10 +2,7 @@ clear
 printf '\n\nDoing "Clean" Upgrade\nLeaves Database and Config\nDeletes everything else\nRe-Downloads and Installs\n'
 rm /home/pi/*.sh 2>/dev/null
 rm /home/pi/*.py 2>/dev/null
-rm /home/sensors/* 2>/dev/null
-rm /home/sensors/auto_start/* 2>/dev/null
-rm /home/sensors/sensor_modules/* 2>/dev/null
-rm /home/sensors/upgrade/* 2>/dev/null
+rm -R /home/sensors 2>/dev/null
 # Remove old installer files and download new
 rm -R /root/CleanInstallFiles 2>/dev/null
 mkdir /root/CleanInstallFiles 2>/dev/null
