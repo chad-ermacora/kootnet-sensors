@@ -36,6 +36,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 round_decimal_to = 5
+show_led_message = True
 
 
 def temperature():
@@ -114,3 +115,11 @@ def gyroscope_xyz():
         gyro_x, gyro_y, gyro_z = 0, 0, 0
 
     return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
+
+
+def led_display_message(message):
+    if show_led_message:
+        sense = SenseHat()
+        sense.show_message(str(message), text_colour=(75, 75, 0))
+    else:
+        logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")

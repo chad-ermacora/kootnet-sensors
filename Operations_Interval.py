@@ -63,6 +63,8 @@ def get_rp_sense_hat_readings():
                                                  str(RaspberryPi_SenseHAT.pressure()) + "', '" + \
                                                  str(RaspberryPi_SenseHAT.humidity()) + "'"
 
+    RaspberryPi_SenseHAT.led_display_message("SenseHAT °C,hPA,Hum%: " + rp_sense_hat_database_data.sensor_readings)
+
     return rp_sense_hat_database_data
 
 
