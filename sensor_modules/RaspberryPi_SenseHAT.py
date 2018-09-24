@@ -123,13 +123,13 @@ def led_display_message(message):
         acc_data = accelerometer_xyz()
 
         if acc_data[0] < -0.5:
-            sense.set_rotation(180)
-        elif acc_data[1] > 0.5:
             sense.set_rotation(90)
-        elif acc_data[1] < -0.5:
-            sense.set_rotation(270)
-        else:
+        elif acc_data[1] > 0.5:
             sense.set_rotation(0)
+        elif acc_data[1] < -0.5:
+            sense.set_rotation(180)
+        else:
+            sense.set_rotation(270)
 
         sense.show_message(str(message), text_colour=(75, 0, 0))
     else:
