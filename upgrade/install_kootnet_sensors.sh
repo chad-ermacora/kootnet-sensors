@@ -70,7 +70,7 @@ EOF
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Upgrade System
-  printf '\nStarting System Update, this will take awhile...\n\n'
+  printf '\nStarting System Update, this may take awhile ...\n\n'
   # Remove wolfram-engine due to size of upgrades
   apt-get -y remove wolfram-engine
   apt-get update
