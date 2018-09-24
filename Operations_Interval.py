@@ -59,11 +59,16 @@ def get_rp_sense_hat_readings():
     rp_sense_hat_database_data = SensorData()
     rp_sense_hat_database_data.sensor_types = "EnvironmentTemp, Pressure, Humidity"
 
-    rp_sense_hat_database_data.sensor_readings = "'" + str(RaspberryPi_SenseHAT.temperature()) + "', '" + \
-                                                 str(RaspberryPi_SenseHAT.pressure()) + "', '" + \
-                                                 str(RaspberryPi_SenseHAT.humidity()) + "'"
+    temperature = RaspberryPi_SenseHAT.temperature()
+    pressure = RaspberryPi_SenseHAT.pressure()
+    humidity = RaspberryPi_SenseHAT.humidity()
 
-    RaspberryPi_SenseHAT.led_display_message("SenseHAT °C,hPA,Hum%: " + rp_sense_hat_database_data.sensor_readings)
+    rp_sense_hat_database_data.sensor_readings = "'" + str(temperature) + "', '" + \
+                                                 str(pressure) + "', '" + \
+                                                 str(humidity) + "'"
+
+    led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%Hum"
+    RaspberryPi_SenseHAT.led_display_message(led_message)
 
     return rp_sense_hat_database_data
 

@@ -120,6 +120,6 @@ def gyroscope_xyz():
 def led_display_message(message):
     if show_led_message:
         sense = SenseHat()
-        sense.show_message(str(message), text_colour=(75, 75, 0))
+        sense.show_message(str(message), text_colour=(75, 0, 0))
     else:
         logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")
