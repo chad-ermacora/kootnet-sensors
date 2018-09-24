@@ -8,12 +8,12 @@ then
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
 else
-  # Create folder in root, download files, then install
-  printf '\n\nStarting Install\nDownloading Program from KootNet HTTP\n'
+  # Create folders, download files to root/SensorInstallFiles/, then install
   mkdir /root/SensorInstallFiles 2>/dev/null
   mkdir /home/sensors 2>/dev/null
   cd /root/SensorInstallFiles
   wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
+  clear
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
@@ -68,7 +68,7 @@ EOF
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Upgrade System
-  printf '\nStarting System Update, this will take awhile...\n'
+  printf '\nStarting System Update, this will take awhile...\n\n'
   # Remove wolfram-engine due to size of upgrades
   apt-get -y remove wolfram-engine
   apt-get update
