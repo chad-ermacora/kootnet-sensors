@@ -9,6 +9,7 @@ then
   nano /etc/wpa_supplicant/wpa_supplicant.conf
 else
   # Create folders, download files to root/SensorInstallFiles/, then install
+  rm -R /root/SensorInstallFiles 2>/dev/null
   mkdir /root/SensorInstallFiles 2>/dev/null
   mkdir /home/sensors 2>/dev/null
   cd /root/SensorInstallFiles
