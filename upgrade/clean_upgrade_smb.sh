@@ -10,8 +10,6 @@ rm /home/sensors/upgrade/* 2>/dev/null
 mkdir /home/sensors 2>/dev/null
 mount -t cifs //192.168.7.15/Public /mnt/supernas -o username=myself,password='123'
 cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
-bash /home/sensors/upgrade/check_folders.sh
-bash /home/sensors/upgrade/update_file_permissions.sh
 umount /mnt/supernas
 # Run SMB Update script to make sure Folders & Permissions are correct
 bash /home/sensors/upgrade/update_programs_smb.sh

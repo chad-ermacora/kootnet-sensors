@@ -16,11 +16,7 @@ wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sen
 clear
 printf '\nFiles Downloaded from KootNet HTTP Server\n\nStarting Install\n'
 cp -R /root/CleanInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
-# Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
-cp /home/sensors/test* /home/pi 2>/dev/null
-bash /mnt/supernas/RaspberryPi/Sensors/ClientSensors/upgrade/update_programs_online.sh
+bash /home/sensors/upgrade/update_programs_online.sh
 killall python3
 ls -l /home/sensors
 printf '\n\nDone\n' 
