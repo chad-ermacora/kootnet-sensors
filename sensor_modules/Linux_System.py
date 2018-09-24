@@ -28,8 +28,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-primary_database_location = "/home/sensors/data/SensorIntervalDatabase.sqlite"
-motion_database_location = "/home/sensors/data/SensorTriggerDatabase.sqlite"
+primary_database_location = "/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite"
+motion_database_location = "/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite"
 
 round_decimal_to = 2
 
