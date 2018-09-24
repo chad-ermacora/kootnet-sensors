@@ -35,7 +35,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-interval_db_location = '/home/sensors/data/SensorIntervalDatabase.sqlite'
+interval_db_location = '/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite'
+
 sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"

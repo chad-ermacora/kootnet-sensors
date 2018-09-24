@@ -36,7 +36,7 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-trigger_db_location = '/home/sensors/data/SensorTriggerDatabase.sqlite'
+trigger_db_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
 sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 
 sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "

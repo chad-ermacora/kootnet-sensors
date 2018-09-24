@@ -36,8 +36,6 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-trigger_db_location = '/home/sensors/data/SensorTriggerDatabase.sqlite'
-
 
 def get_rp_system_readings():
     logger.info("Retrieving Raspberry Pi System Readings")
