@@ -14,16 +14,16 @@ else
   cd /root/SensorInstallFiles
   wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
   clear
-  printf '\nFiles Downloaded from KootNet HTTP Server\nStarting Install\n'
+  printf '\nFiles Downloaded from KootNet HTTP Server\n\nStarting Install\n'
   cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
   cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
   cp /home/sensors/test* /home/pi 2>/dev/null
+  printf '\nInstalled Config Files, Opening for edit\n'
   # Create "installed_sensors.txt" file
   bash /home/sensors/upgrade/check_installed_sensors.sh
   # Add and edit TCP/IP v4 Network + Wireless
-  printf '\nConfiguring Network\n'
   cat >> /etc/network/interfaces << "EOF"
 
 # Be sure to Change the IP to match your network
