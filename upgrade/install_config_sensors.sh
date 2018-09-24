@@ -57,6 +57,8 @@ network={
         key_mgmt=WPA-PSK
 }
 EOF
+  nano /etc/network/interfaces
+  nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
   cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
@@ -77,7 +79,5 @@ EOF
   bash /home/sensors/upgrade/update_file_permissions.sh
   printf '\nInstall Done\n\n'
 fi
-nano /etc/network/interfaces
-nano /etc/wpa_supplicant/wpa_supplicant.conf
 killall python3
 printf '\nPlease wait up to 60 Seconds for Sensor to come online\n\n'
