@@ -81,7 +81,7 @@ fi
 killall python3
 printf '\nTesting Interval Sensors\n\n'
 python3 /home/sensors/Sensor_Interval_To_DB.py
-printf '\n\n'
+printf '\n'
 # Install crontab entries
 bash /home/sensors/upgrade/update_crontab.sh
 # Make sure permissions are correct
