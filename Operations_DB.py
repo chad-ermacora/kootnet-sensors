@@ -37,17 +37,6 @@ logger.addHandler(stream_handler)
 sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 
 
-class InstalledSensors:
-    def __init__(self):
-        self.rp_system = True
-        self.rp_sense_hat = False
-        self.pimoroni_bh1745 = False
-        self.pimoroni_bme680 = False
-        self.pimoroni_enviro = False
-        self.pimoroni_lsm303d = False
-        self.pimoroni_vl53l1x = False
-
-
 class SensorData:
     def __init__(self):
         self.sensor_types = ""
@@ -60,6 +49,17 @@ class SQLCommandData:
         self.sql_execute = ""
 
 
+class InstalledSensors:
+    def __init__(self):
+        self.linux_system = True
+        self.raspberry_pi_sense_hat = False
+        self.pimoroni_bh1745 = False
+        self.pimoroni_bme680 = False
+        self.pimoroni_enviro = False
+        self.pimoroni_lsm303d = False
+        self.pimoroni_vl53l1x = False
+
+
 def get_installed_sensors():
     installed_sensors_var = InstalledSensors()
     try:
@@ -67,14 +67,14 @@ def get_installed_sensors():
         sensor_list = sensor_list_file.readlines()
 
         if int(sensor_list[1][:1]):
-            installed_sensors_var.rp_system = True
+            installed_sensors_var.linux_system = True
         else:
-            installed_sensors_var.rp_system = False
+            installed_sensors_var.linux_system = False
 
         if int(sensor_list[2][:1]):
-            installed_sensors_var.rp_sense_hat = True
+            installed_sensors_var.raspberry_pi_sense_hat = True
         else:
-            installed_sensors_var.rp_sense_hat = False
+            installed_sensors_var.raspberry_pi_sense_hat = False
 
         if int(sensor_list[3][:1]):
             installed_sensors_var.pimoroni_bh1745 = True

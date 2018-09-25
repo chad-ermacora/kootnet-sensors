@@ -14,7 +14,6 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-import bme680
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -35,72 +34,57 @@ logger.addHandler(stream_handler)
 round_decimal_to = 5
 
 
-def temperature():
-    try:
-        sensor = bme680.BME680()
-        sensor.set_temperature_oversample(bme680.OS_8X)
-        sensor.set_filter(bme680.FILTER_SIZE_3)
+class CreateBME680:
+    def __init__(self):
+        self.bme680_import = __import__('bme680')
+        try:
+            self.sensor = self.bme680_import.BME680()
+            self.sensor.set_humidity_oversample(self.bme680_import.OS_2X)
+            self.sensor.set_filter(self.bme680_import.FILTER_SIZE_3)
+            logger.debug("Pimoroni BME680 Initialization - OK")
+        except Exception as error:
+            logger.error("Pimoroni BME680 Initialization - Failed: " + str(error))
 
-        sensor.get_sensor_data()
+    def temperature(self):
+        try:
+            self.sensor.get_sensor_data()
+            temp_var = float(self.sensor.data.temperature)
+            logger.debug("Pimoroni BME680 Temperature - OK")
+        except Exception as error:
+            temp_var = 0
+            logger.error("Pimoroni BME680 Temperature - Failed - " + str(error))
+        return round(temp_var, round_decimal_to)
 
-        temp_var = float(sensor.data.temperature)
-        logger.debug("Pimoroni BME680 Temperature - OK")
-    except Exception as error:
-        temp_var = 0
-        logger.error("Pimoroni BME680 Temperature - Failed - " + str(error))
+    def pressure(self):
+        try:
+            self.sensor.get_sensor_data()
+            pressure_hpa = self.sensor.data.pressure
+            logger.debug("Pimoroni BME680 Pressure - OK")
+        except Exception as error:
+            pressure_hpa = 0
+            logger.error("Pimoroni BME680 Pressure - Failed - " + str(error))
 
-    return round(temp_var, round_decimal_to)
+        return int(pressure_hpa)
 
+    def humidity(self):
+        try:
+            var_humidity = self.sensor.data.humidity
+            logger.debug("Pimoroni BME680 Humidity - OK")
+        except Exception as error:
+            var_humidity = 0
+            logger.error("Pimoroni BME680 Humidity - Failed - " + str(error))
+        return round(var_humidity, round_decimal_to)
 
-def pressure():
-    try:
-        sensor = bme680.BME680()
-        sensor.set_pressure_oversample(bme680.OS_4X)
-        sensor.set_filter(bme680.FILTER_SIZE_3)
-
-        sensor.get_sensor_data()
-
-        pressure_hpa = sensor.data.pressure
-        logger.debug("Pimoroni BME680 Pressure - OK")
-    except Exception as error:
-        pressure_hpa = 0
-        logger.error("Pimoroni BME680 Pressure - Failed - " + str(error))
-
-    return int(pressure_hpa)
-
-
-def humidity():
-    try:
-        sensor = bme680.BME680()
-        sensor.set_humidity_oversample(bme680.OS_2X)
-        sensor.set_filter(bme680.FILTER_SIZE_3)
-
-        sensor.get_sensor_data()
-        var_humidity = sensor.data.humidity
-
-        logger.debug("Pimoroni BME680 Humidity - OK")
-    except Exception as error:
-        var_humidity = 0
-        logger.error("Pimoroni BME680 Humidity - Failed - " + str(error))
-
-    return round(var_humidity, round_decimal_to)
-
-
-def gas_resistance():
-    try:
-        sensor = bme680.BME680()
-        sensor.set_filter(bme680.FILTER_SIZE_3)
-        sensor.set_gas_status(bme680.ENABLE_GAS_MEAS)
-        sensor.set_gas_heater_temperature(320)
-        sensor.set_gas_heater_duration(150)
-        sensor.select_gas_heater_profile(0)
-
-        sensor.get_sensor_data()
-        gas_var = sensor.data.gas_resistance
-
-        logger.debug("Pimoroni BME680 GAS Resistance - OK")
-    except Exception as error:
-        gas_var = 0
-        logger.error("Pimoroni BME680 GAS Resistance - Failed - " + str(error))
-
-    return gas_var
+    def gas_resistance(self):
+        try:
+            self.sensor.set_gas_status(self.bme680_import.ENABLE_GAS_MEAS)
+            self.sensor.set_gas_heater_temperature(320)
+            self.sensor.set_gas_heater_duration(150)
+            self.sensor.select_gas_heater_profile(0)
+            self.sensor.get_sensor_data()
+            gas_var = self.sensor.data.gas_resistance
+            logger.debug("Pimoroni BME680 GAS Resistance - OK")
+        except Exception as error:
+            gas_var = 0
+            logger.error("Pimoroni BME680 GAS Resistance - Failed - " + str(error))
+        return gas_var
