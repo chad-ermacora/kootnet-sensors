@@ -42,11 +42,11 @@ round_decimal_to = 5
 
 class CreateBH1745:
     def __init__(self):
-        self.BH1745 = __import__('bh1745')
+        self.bh1745_import = __import__('bh1745')
 
     def lumen(self):
         try:
-            bh1745 = self.BH1745()
+            bh1745 = self.bh1745_import.BH1745()
             bh1745.setup()
             r, g, b, var_lumen = bh1745.get_rgbc_raw()
             logger.debug("Pimoroni BH1745 Lumen - OK")
@@ -58,7 +58,7 @@ class CreateBH1745:
 
     def rgb(self):
         try:
-            bh1745 = self.BH1745()
+            bh1745 = self.bh1745_import.BH1745()
             bh1745.setup()
             rgb_red, rgb_green, rgb_blue, var_lumen = bh1745.get_rgbc_raw()
             logger.debug("Pimoroni BH1745 RGB - OK")
