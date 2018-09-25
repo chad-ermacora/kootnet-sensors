@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_Trigger
 import Operations_DB
 import logging
 from logging.handlers import RotatingFileHandler
@@ -37,26 +36,24 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 trigger_db_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
-sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
-
 sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"
 
-var_motion_variance = 0.045
+acc_variance = 0.045
 
 
-def write_trigger_readings_to_database(installed_sensors_var):
-    Operations_DB.check_trigger_db(trigger_db_location)
-    sql_query_columns_final = ""
-    sql_query_values_final = ""
-
-    count = 0
-    if installed_sensors_var.rp_system:
-        rp_database_data = Operations_Trigger.get_rp_system_readings()
-        sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
-        sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
-        count = count + 1
+# def write_trigger_readings_to_database(installed_sensors_var):
+#     Operations_DB.check_trigger_db(trigger_db_location)
+#     sql_query_columns_final = ""
+#     sql_query_values_final = ""
+#
+#     count = 0
+#     if installed_sensors_var.rp_system:
+#         rp_database_data = Operations_Trigger.get_rp_system_readings()
+#         sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
+#         sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
+#         count = count + 1
 
 
 # def database_write(wvar_motion):

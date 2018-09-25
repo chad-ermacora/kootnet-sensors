@@ -41,7 +41,6 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 interval_db_location = '/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite'
-
 sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"
@@ -80,9 +79,16 @@ def write_interval_readings_to_database(installed_sensors_var):
 
         tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
 
-        tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
-                              str(sensor_access.pressure()) + "', '" + \
-                              str(sensor_access.humidity()) + "'"
+        temperature = sensor_access.temperature()
+        pressure = sensor_access.pressure()
+        humidity = sensor_access.humidity()
+
+        tmp_sensor_readings = "'" + str(temperature) + "', '" + \
+                              str(pressure) + "', '" + \
+                              str(humidity) + "'"
+
+        led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
+        sensor_access.display_led_message(led_message)
 
         interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
         interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
