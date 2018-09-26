@@ -212,40 +212,58 @@ def check_trigger_db(db_location):
             logger.debug("Column 'IP' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_X', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_X', ct='TEXT'))
             logger.debug("Column 'acc_X' - Created")
         except Exception as error:
             logger.debug("Column 'acc_X' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Y', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Y', ct='TEXT'))
             logger.debug("Column 'acc_Y' - Created")
         except Exception as error:
             logger.debug("Column 'acc_Y' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='acc_Z', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Z', ct='TEXT'))
             logger.debug("Column 'acc_Z' - Created")
         except Exception as error:
             logger.debug("Column 'acc_Z' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_X', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_X', ct='TEXT'))
             logger.debug("COLUMN 'mg_X' - Created")
         except Exception as error:
             logger.debug("COLUMN 'mg_X' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_Y', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Y', ct='TEXT'))
             logger.debug("COLUMN 'mg_Y' - Created")
         except Exception as error:
             logger.debug("COLUMN 'mg_Y' - " + str(error))
 
         try:
-            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='mg_Z', ct='TEXT'))
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Z', ct='TEXT'))
             logger.debug("COLUMN 'mg_Z' - Created")
         except Exception as error:
             logger.debug("COLUMN 'mg_Z' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_X', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_X' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_X' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Y', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_Y' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_Y' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Z', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_Z' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_Z' - " + str(error))
 
         c.close()
         conn.close()

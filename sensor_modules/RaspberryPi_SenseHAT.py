@@ -38,7 +38,7 @@ round_decimal_to = 5
 show_led_message = True
 
 
-class CreateRPSystem:
+class CreateRPSenseHAT:
     def __init__(self):
         self.sense_hat_import = __import__('sense_hat')
         self.sense = self.sense_hat_import.SenseHat()

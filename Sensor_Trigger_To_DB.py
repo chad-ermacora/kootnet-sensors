@@ -17,6 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import Operations_DB
+import sensor_modules.Linux_OS
+import sensor_modules.RaspberryPi_SenseHAT
+import sensor_modules.Pimoroni_Enviro
+import sensor_modules.Pimoroni_LSM303D
 import logging
 from logging.handlers import RotatingFileHandler
 from time import sleep
@@ -43,45 +47,116 @@ sql_query_values_end = ")"
 acc_variance = 0.045
 
 
-# def write_trigger_readings_to_database(installed_sensors_var):
-#     Operations_DB.check_trigger_db(trigger_db_location)
-#     sql_query_columns_final = ""
-#     sql_query_values_final = ""
-#
-#     count = 0
-#     if installed_sensors_var.rp_system:
-#         rp_database_data = Operations_Trigger.get_rp_system_readings()
-#         sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
-#         sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
-#         count = count + 1
+def check_mag():
+    pass
 
 
-# def database_write(wvar_motion):
-#     var1 = float(wvar_motion[0])
-#     var2 = float(wvar_motion[1])
-#     var3 = float(wvar_motion[2])
-#     var_host = str(socket.gethostname())
-#     testIP = ""
-#     print(str(var1))
-#     try:
-#         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#         s.connect(("192.168.10.1", 80))
-#         testIP = (s.getsockname()[0])
-#         s.close()
-#     except BaseException:
-#         testIP = "0.0.0.0"
-#
-#     testIP = str(testIP)
-#     conn = sqlite3.connect(sensorDB_Location)
-#     c = conn.cursor()
-#     print("x: " + str(var1))
-#     print("y: " + str(var2))
-#     print("z: " + str(var3))
-#     c.execute("INSERT OR IGNORE INTO TriggerData (DateTime,IP, X, Y, Z, SensorName) " +
-#               "VALUES ((CURRENT_TIMESTAMP),?,?,?,?,?)", (testIP, var1, var2, var3, var_host))
-#     conn.commit()
-#     c.close()
-#     conn.close()
+def check_acc():
+    pass
+
+
+def check_gyro():
+    pass
+
+
+# Have readings passed to checks, that set do_db_write
+def check_trigger_sensors():
+    installed_sensors_var = Operations_DB.get_installed_sensors()
+    trigger_sql_data = Operations_DB.SensorData()
+    trigger_sql_command_data = Operations_DB.SQLCommandData()
+
+    trigger_sql_command_data.database_location = trigger_db_location
+    Operations_DB.check_trigger_db(trigger_db_location)
+    do_db_write = True
+
+    count = 0
+    if installed_sensors_var.linux_system:
+        sensor_access = sensor_modules.Linux_OS.CreateLinuxSystem()
+
+        tmp_sensor_types = "SensorName, IP"
+
+        tmp_sensor_readings = "'" + str(sensor_access.get_hostname()) + "', '" + str(sensor_access.get_ip()) + "'"
+
+        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
+        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        count = count + 1
+
+    if installed_sensors_var.raspberry_pi_sense_hat:
+        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+
+        if count > 0:
+            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
+            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+
+        tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
+
+        tmp_mg_xyz = sensor_access.magnetometer_xyz()
+        tmp_acc_xyz = sensor_access.accelerometer_xyz()
+        tmp_gyro_xyz = sensor_access.gyroscope_xyz()
+
+        tmp_sensor_readings = "'" + str(tmp_mg_xyz[0]) + "', '" + \
+                              str(tmp_mg_xyz[1]) + "', '" + \
+                              str(tmp_mg_xyz[2]) + "', '" + \
+                              str(tmp_acc_xyz[0]) + "', '" + \
+                              str(tmp_acc_xyz[1]) + "', '" + \
+                              str(tmp_acc_xyz[2]) + "', '" + \
+                              str(tmp_gyro_xyz[0]) + "', '" + \
+                              str(tmp_gyro_xyz[1]) + "', '" + \
+                              str(tmp_gyro_xyz[2]) + "'"
+
+        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
+        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        count = count + 1
+
+    if installed_sensors_var.pimoroni_enviro:
+        sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
+
+        if count > 0:
+            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
+            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+
+        tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z"
+
+        tmp_mg_xyz = sensor_access.magnetometer_xyz()
+        tmp_acc_xyz = sensor_access.accelerometer_xyz()
+
+        tmp_sensor_readings = "'" + str(tmp_mg_xyz[0]) + "', '" + \
+                              str(tmp_mg_xyz[1]) + "', '" + \
+                              str(tmp_mg_xyz[2]) + "', '" + \
+                              str(tmp_acc_xyz[0]) + "', '" + \
+                              str(tmp_acc_xyz[1]) + "', '" + \
+                              str(tmp_acc_xyz[2]) + "'"
+
+        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
+        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        count = count + 1
+
+    if installed_sensors_var.pimoroni_lsm303d:
+        sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
+
+        if count > 0:
+            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
+            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+
+        tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z"
+
+        tmp_mg_xyz = sensor_access.magnetometer_xyz()
+        tmp_acc_xyz = sensor_access.accelerometer_xyz()
+
+        tmp_sensor_readings = "'" + str(tmp_mg_xyz[0]) + "', '" + \
+                              str(tmp_mg_xyz[1]) + "', '" + \
+                              str(tmp_mg_xyz[2]) + "', '" + \
+                              str(tmp_acc_xyz[0]) + "', '" + \
+                              str(tmp_acc_xyz[1]) + "', '" + \
+                              str(tmp_acc_xyz[2]) + "'"
+
+        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
+        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+
+    if do_db_write:
+        Operations_DB.write_to_sql_database(trigger_sql_data)
+        print("Types: " + trigger_sql_data.sensor_types)
+        print("Readings: " + trigger_sql_data.sensor_readings)
 
 
 # var_real = motion.accelerometer()
@@ -114,4 +189,6 @@ acc_variance = 0.045
 #     var_acc_last_y = var_acc_now_y
 #     var_acc_last_z = var_acc_now_z
 
-Operations_DB.check_trigger_db(trigger_db_location)
+while True:
+    check_trigger_sensors()
+    sleep(300)

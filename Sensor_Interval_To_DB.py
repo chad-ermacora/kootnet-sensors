@@ -46,7 +46,8 @@ sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"
 
 
-def write_interval_readings_to_database(installed_sensors_var):
+def write_interval_readings_to_database():
+    installed_sensors_var = Operations_DB.get_installed_sensors()
     interval_sql_data = Operations_DB.SensorData()
     interval_sql_command_data = Operations_DB.SQLCommandData()
 
@@ -71,7 +72,7 @@ def write_interval_readings_to_database(installed_sensors_var):
         count = count + 1
 
     if installed_sensors_var.raspberry_pi_sense_hat:
-        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSystem()
+        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
 
         if count > 0:
             interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
@@ -160,5 +161,4 @@ def write_interval_readings_to_database(installed_sensors_var):
 Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
-installed_sensors = Operations_DB.get_installed_sensors()
-write_interval_readings_to_database(installed_sensors)
+write_interval_readings_to_database()
