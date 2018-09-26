@@ -307,3 +307,5 @@ def write_to_sql_database(sql_data):
             logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
         except Exception as error:
             logger.error("SQL Write to DataBase - Failed - " + str(error))
+    else:
+        logger.warning("SQL Write to DataBase - Failed - No Sensors Selected in Config")
