@@ -106,6 +106,28 @@ def get_installed_sensors():
         logger.error("Unable to open: " + sensor_ver_file + " - " + str(error))
 
 
+def check_any_sensors_installed():
+    installed_sensors = get_installed_sensors()
+    sensors_installed = False
+
+    if installed_sensors.pimoroni_lsm303d:
+        sensors_installed = True
+    elif installed_sensors.raspberry_pi_sense_hat:
+        sensors_installed = True
+    elif installed_sensors.pimoroni_enviro:
+        sensors_installed = True
+    elif installed_sensors.linux_system:
+        sensors_installed = True
+    elif installed_sensors.pimoroni_bme680:
+        sensors_installed = True
+    elif installed_sensors.pimoroni_bh1745:
+        sensors_installed = True
+    elif installed_sensors.pimoroni_vl53l1x:
+        sensors_installed = True
+
+    return sensors_installed
+
+
 def check_interval_db(sensor_db_location):
     try:
         db_connection = sqlite3.connect(sensor_db_location)
@@ -272,13 +294,16 @@ def check_trigger_db(db_location):
 
 
 def write_to_sql_database(sql_data):
-    logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
-    try:
-        db_connection = sqlite3.connect(sql_data.database_location)
-        db_cursor = db_connection.cursor()
-        db_cursor.execute(sql_data.sql_execute)
-        db_connection.commit()
-        db_connection.close()
-        logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
-    except Exception as error:
-        logger.error("SQL Write to DataBase - Failed - " + str(error))
+    sensors_installed = check_any_sensors_installed()
+
+    if sensors_installed:
+        logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
+        try:
+            db_connection = sqlite3.connect(sql_data.database_location)
+            db_cursor = db_connection.cursor()
+            db_cursor.execute(sql_data.sql_execute)
+            db_connection.commit()
+            db_connection.close()
+            logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
+        except Exception as error:
+            logger.error("SQL Write to DataBase - Failed - " + str(error))
