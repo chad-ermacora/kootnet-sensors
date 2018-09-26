@@ -58,6 +58,36 @@ def check_acc():
 def check_gyro():
     pass
 
+# var_real = motion.accelerometer()
+# database_write(var_real)
+# var_acc_last_x = round(float(var_real[0]), 3)
+# var_acc_last_y = round(float(var_real[1]), 3)
+# var_acc_last_z = round(float(var_real[2]), 3)
+#
+# while True:
+#     sleep(0.25)
+#     var_real = motion.accelerometer()
+#     var_acc_now_x = round(float(var_real[0]), 3)
+#     var_acc_now_y = round(float(var_real[1]), 3)
+#     var_acc_now_z = round(float(var_real[2]), 3)
+#
+#     if var_acc_last_x > (var_acc_now_x + var_motion_variance):
+#         database_write(var_real)
+#     elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
+#         database_write(var_real)
+#     elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
+#         database_write(var_real)
+#     elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
+#         database_write(var_real)
+#     elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
+#         database_write(var_real)
+#     elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
+#         database_write(var_real)
+#
+#     var_acc_last_x = var_acc_now_x
+#     var_acc_last_y = var_acc_now_y
+#     var_acc_last_z = var_acc_now_z
+
 
 # Have readings passed to checks, that set do_db_write
 def check_trigger_sensors():
@@ -67,6 +97,7 @@ def check_trigger_sensors():
 
     trigger_sql_command_data.database_location = trigger_db_location
     Operations_DB.check_trigger_db(trigger_db_location)
+    # Once finished, adjust this to False and let the check def change it
     do_db_write = True
 
     count = 0
@@ -154,40 +185,16 @@ def check_trigger_sensors():
         trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
 
     if do_db_write:
-        Operations_DB.write_to_sql_database(trigger_sql_data)
+        trigger_sql_command_data.sql_execute = sql_query_start + trigger_sql_data.sensor_types + \
+            sql_query_values_start + trigger_sql_data.sensor_readings + sql_query_values_end
+
+        Operations_DB.write_to_sql_database(trigger_sql_command_data)
         print("Types: " + trigger_sql_data.sensor_types)
         print("Readings: " + trigger_sql_data.sensor_readings)
 
 
-# var_real = motion.accelerometer()
-# database_write(var_real)
-# var_acc_last_x = round(float(var_real[0]), 3)
-# var_acc_last_y = round(float(var_real[1]), 3)
-# var_acc_last_z = round(float(var_real[2]), 3)
-#
-# while True:
-#     sleep(0.25)
-#     var_real = motion.accelerometer()
-#     var_acc_now_x = round(float(var_real[0]), 3)
-#     var_acc_now_y = round(float(var_real[1]), 3)
-#     var_acc_now_z = round(float(var_real[2]), 3)
-#
-#     if var_acc_last_x > (var_acc_now_x + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
-#         database_write(var_real)
-#
-#     var_acc_last_x = var_acc_now_x
-#     var_acc_last_y = var_acc_now_y
-#     var_acc_last_z = var_acc_now_z
+# Check Database & start monitoring / recording
+Operations_DB.check_trigger_db(trigger_db_location)
 
 while True:
     check_trigger_sensors()
