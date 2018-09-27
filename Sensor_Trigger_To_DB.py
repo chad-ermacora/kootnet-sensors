@@ -90,7 +90,7 @@ def check_acc(new_data, old_data):
 
 
 def check_mag(new_data, old_data):
-    logger.info("new_mag - X:" + str(new_data.mag_x) + " Y:" + str(new_data.mag_y) + " Y:" + str(new_data.mag_z))
+    logger.debug("new_mag - X:" + str(new_data.mag_x) + " Y:" + str(new_data.mag_y) + " Y:" + str(new_data.mag_z))
     write_to_db = False
 
     if (old_data.mag_x - new_data.mag_variance) > new_data.mag_x or \
@@ -139,7 +139,7 @@ def get_sensors_data(trigger_data):
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         trigger_data.acc_variance = 0.3
-        trigger_data.mag_variance = 0.015
+        trigger_data.mag_variance = 1.0
         trigger_data.gyro_variance = 0.01
 
         if trigger_data.num_sensors_installed > 0:
@@ -193,7 +193,7 @@ def get_sensors_data(trigger_data):
 
     if installed_sensors.pimoroni_lsm303d:
         sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
-        trigger_data.acc_variance = 0.015
+        trigger_data.acc_variance = 0.02
         trigger_data.mag_variance = 0.02
 
         if trigger_data.num_sensors_installed > 0:
