@@ -40,8 +40,6 @@ sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 class CreateSQLCommandData:
     def __init__(self):
         self.database_location = ""
-        self.sensor_types = ""
-        self.sensor_readings = ""
         self.sql_execute = ""
 
 
