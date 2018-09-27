@@ -245,16 +245,16 @@ while True:
 
     if var_installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
         logger.debug("Accelerometer Triggered - X:" + str(new_trigger_data.acc_x) +
-                    " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
+                     " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)
     elif var_installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
         logger.debug("Magnetometer Triggered - X:" + str(new_trigger_data.mag_x) +
-                    " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
+                     " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)
     elif var_installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
         logger.debug("Gyroscope Triggered - X:" + str(new_trigger_data.gyro_x) +
-                    " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
+                     " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)
