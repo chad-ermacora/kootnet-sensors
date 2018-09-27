@@ -46,65 +46,49 @@ class CreateInstalledSensors:
         self.pimoroni_lsm303d = False
         self.pimoroni_vl53l1x = False
 
-    def check_ok_write_to_database(self):
-        write_to_database = False
 
-        if self.pimoroni_lsm303d:
-            write_to_database = True
-        elif self.raspberry_pi_sense_hat:
-            write_to_database = True
-        elif self.pimoroni_enviro:
-            write_to_database = True
-        elif self.linux_system:
-            write_to_database = True
-        elif self.pimoroni_bme680:
-            write_to_database = True
-        elif self.pimoroni_bh1745:
-            write_to_database = True
-        elif self.pimoroni_vl53l1x:
-            write_to_database = True
+def get_installed_sensors():
+    logger.debug("Loading Installed Sensors and Returning")
+    installed_sensors = CreateInstalledSensors()
 
-        return write_to_database
+    try:
+        sensor_list_file = open(sensor_ver_file, 'r')
+        sensor_list = sensor_list_file.readlines()
 
-    def check_config_file(self):
-        try:
-            sensor_list_file = open(sensor_ver_file, 'r')
-            sensor_list = sensor_list_file.readlines()
+        if int(sensor_list[1][:1]):
+            installed_sensors.linux_system = True
+        else:
+            installed_sensors.linux_system = False
 
-            if int(sensor_list[1][:1]):
-                self.linux_system = True
-            else:
-                self.linux_system = False
+        if int(sensor_list[2][:1]):
+            installed_sensors.raspberry_pi_sense_hat = True
+        else:
+            installed_sensors.raspberry_pi_sense_hat = False
 
-            if int(sensor_list[2][:1]):
-                self.raspberry_pi_sense_hat = True
-            else:
-                self.raspberry_pi_sense_hat = False
+        if int(sensor_list[3][:1]):
+            installed_sensors.pimoroni_bh1745 = True
+        else:
+            installed_sensors.pimoroni_bh1745 = False
 
-            if int(sensor_list[3][:1]):
-                self.pimoroni_bh1745 = True
-            else:
-                self.pimoroni_bh1745 = False
+        if int(sensor_list[4][:1]):
+            installed_sensors.pimoroni_bme680 = True
+        else:
+            installed_sensors.pimoroni_bme680 = False
 
-            if int(sensor_list[4][:1]):
-                self.pimoroni_bme680 = True
-            else:
-                self.pimoroni_bme680 = False
+        if int(sensor_list[5][:1]):
+            installed_sensors.pimoroni_enviro = True
+        else:
+            installed_sensors.pimoroni_enviro = False
 
-            if int(sensor_list[5][:1]):
-                self.pimoroni_enviro = True
-            else:
-                self.pimoroni_enviro = False
+        if int(sensor_list[6][:1]):
+            installed_sensors.pimoroni_lsm303d = True
+        else:
+            installed_sensors.pimoroni_lsm303d = False
 
-            if int(sensor_list[6][:1]):
-                self.pimoroni_lsm303d = True
-            else:
-                self.pimoroni_lsm303d = False
-
-            if int(sensor_list[7][:1]):
-                self.pimoroni_vl53l1x = True
-            else:
-                self.pimoroni_vl53l1x = False
-
-        except Exception as error:
-            logger.error("Unable to open: " + sensor_ver_file + " - " + str(error))
+        if int(sensor_list[7][:1]):
+            installed_sensors.pimoroni_vl53l1x = True
+        else:
+            installed_sensors.pimoroni_vl53l1x = False
+        return installed_sensors
+    except Exception as error:
+        logger.error("Problem with Config: " + sensor_ver_file + " - " + str(error))
