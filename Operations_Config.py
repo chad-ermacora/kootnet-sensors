@@ -45,6 +45,9 @@ class CreateInstalledSensors:
         self.pimoroni_enviro = False
         self.pimoroni_lsm303d = False
         self.pimoroni_vl53l1x = False
+        self.has_acc = False
+        self.has_mag = False
+        self.has_gyro = False
 
 
 def get_installed_sensors():
@@ -62,6 +65,9 @@ def get_installed_sensors():
 
         if int(sensor_list[2][:1]):
             installed_sensors.raspberry_pi_sense_hat = True
+            installed_sensors.has_acc = True
+            installed_sensors.has_mag = True
+            installed_sensors.has_gyro = True
         else:
             installed_sensors.raspberry_pi_sense_hat = False
 
@@ -77,11 +83,15 @@ def get_installed_sensors():
 
         if int(sensor_list[5][:1]):
             installed_sensors.pimoroni_enviro = True
+            installed_sensors.has_acc = True
+            installed_sensors.has_mag = True
         else:
             installed_sensors.pimoroni_enviro = False
 
         if int(sensor_list[6][:1]):
             installed_sensors.pimoroni_lsm303d = True
+            installed_sensors.has_acc = True
+            installed_sensors.has_mag = True
         else:
             installed_sensors.pimoroni_lsm303d = False
 

@@ -28,7 +28,7 @@ from time import sleep
 
 logger = logging.getLogger(__name__)
 
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
 file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Trigger_DB_log.txt', maxBytes=256000, backupCount=5)
@@ -46,18 +46,15 @@ sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"
 
 # Sleep Duration between sensor readings
-sleep_duration = 0.25
-# Acceleration Variance to Ignore
-acc_variance = 0.045
-# Magnetic Variance to Ignore
-mag_variance = 0.045
-# Gyroscopic Variance to Ignore
-gyro_variance = 0.045
+sleep_duration = .15
 
 
 class CreateTriggerDatabaseData:
     def __init__(self):
         self.num_sensors_installed = 0
+        self.acc_variance = 0.03
+        self.mag_variance = 250
+        self.gyro_variance = 0.045
         self.sensor_types = ""
         self.sensor_readings = ""
         self.write_to_db = False
@@ -75,67 +72,52 @@ class CreateTriggerDatabaseData:
         self.gyro_z = 0.0
 
 
-def check_acc(new_acc, old_acc):
-    logger.debug("new_acc - " + str(new_acc))
-    logger.debug("old_acc - " + str(old_acc))
+def check_acc(new_data, old_data):
+    logger.debug("new_acc - X:" + str(new_data.acc_x) + " Y:" + str(new_data.acc_y) + " Z:" + str(new_data.acc_z))
     write_to_db = False
-    now_x = round(float(new_acc), 3)
-    now_y = round(float(new_acc), 3)
-    now_z = round(float(new_acc), 3)
 
-    old_x = round(float(old_acc), 3)
-    old_y = round(float(old_acc), 3)
-    old_z = round(float(old_acc), 3)
-
-    if (now_x - acc_variance) > old_x > (now_x + acc_variance):
+    if (old_data.acc_x - new_data.acc_variance) > new_data.acc_x or \
+            new_data.acc_x > (old_data.acc_x + new_data.acc_variance):
         write_to_db = True
-    elif (now_y - acc_variance) > old_y > (now_y + acc_variance):
+    elif (old_data.acc_y - new_data.acc_variance) > new_data.acc_y or \
+            new_data.acc_y > (old_data.acc_y + new_data.acc_variance):
         write_to_db = True
-    elif (now_z - acc_variance) > old_z > (now_z + acc_variance):
+    elif (old_data.acc_z - new_data.acc_variance) > new_data.acc_z or \
+            new_data.acc_z > (old_data.acc_z + new_data.acc_variance):
         write_to_db = True
 
     return write_to_db
 
 
-def check_mag(new_mag, old_mag):
-    logger.debug("new_mag - " + str(new_mag))
-    logger.debug("old_mag - " + str(old_mag))
+def check_mag(new_data, old_data):
+    logger.info("new_mag - X:" + str(new_data.mag_x) + " Y:" + str(new_data.mag_y) + " Y:" + str(new_data.mag_z))
     write_to_db = False
-    now_x = round(float(new_mag), 3)
-    now_y = round(float(new_mag), 3)
-    now_z = round(float(new_mag), 3)
 
-    old_x = round(float(old_mag), 3)
-    old_y = round(float(old_mag), 3)
-    old_z = round(float(old_mag), 3)
-
-    if (now_x - mag_variance) > old_x > (now_x + mag_variance):
+    if (old_data.mag_x - new_data.mag_variance) > new_data.mag_x or \
+            new_data.mag_x > (old_data.mag_x + new_data.mag_variance):
         write_to_db = True
-    elif (now_y - mag_variance) > old_y > (now_y + mag_variance):
+    elif (old_data.mag_y - new_data.mag_variance) > new_data.mag_y or \
+            new_data.mag_y > (old_data.mag_y + new_data.mag_variance):
         write_to_db = True
-    elif (now_z - mag_variance) > old_z > (now_z + mag_variance):
+    elif (old_data.mag_z - new_data.mag_variance) > new_data.mag_z or \
+            new_data.mag_z > (old_data.mag_z + new_data.mag_variance):
         write_to_db = True
 
     return write_to_db
 
 
-def check_gyro(new_gyro, old_gyro):
-    logger.debug("new_gyro - " + str(new_gyro))
-    logger.debug("old_gyro - " + str(old_gyro))
+def check_gyro(new_data, old_data):
+    logger.debug("new_gyro - X:" + str(new_data.gyro_x) + " Y:" + str(new_data.gyro_y) + " Z:" + str(new_data.gyro_z))
     write_to_db = False
-    now_x = round(float(new_gyro), 3)
-    now_y = round(float(new_gyro), 3)
-    now_z = round(float(new_gyro), 3)
 
-    old_x = round(float(old_gyro), 3)
-    old_y = round(float(old_gyro), 3)
-    old_z = round(float(old_gyro), 3)
-
-    if (now_x - gyro_variance) > old_x > (now_x + gyro_variance):
+    if (old_data.gyro_x - new_data.gyro_variance) > new_data.gyro_x or \
+            new_data.gyro_x > (old_data.gyro_x + new_data.gyro_variance):
         write_to_db = True
-    elif (now_y - gyro_variance) > old_y > (now_y + gyro_variance):
+    elif (old_data.gyro_y - new_data.gyro_variance) > new_data.gyro_y or \
+            new_data.gyro_y > (old_data.gyro_y + new_data.gyro_variance):
         write_to_db = True
-    elif (now_z - gyro_variance) > old_z > (now_z + gyro_variance):
+    elif (old_data.gyro_z - new_data.gyro_variance) > new_data.gyro_z or \
+            new_data.gyro_z > (old_data.gyro_z + new_data.gyro_variance):
         write_to_db = True
 
     return write_to_db
@@ -156,6 +138,9 @@ def get_sensors_data(trigger_data):
 
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+        trigger_data.acc_variance = 0.3
+        trigger_data.mag_variance = 0.015
+        trigger_data.gyro_variance = 0.01
 
         if trigger_data.num_sensors_installed > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
@@ -183,6 +168,8 @@ def get_sensors_data(trigger_data):
 
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
+        trigger_data.acc_variance = 0.03
+        trigger_data.mag_variance = 200.0
 
         if trigger_data.num_sensors_installed > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
@@ -206,6 +193,8 @@ def get_sensors_data(trigger_data):
 
     if installed_sensors.pimoroni_lsm303d:
         sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
+        trigger_data.acc_variance = 0.015
+        trigger_data.mag_variance = 0.02
 
         if trigger_data.num_sensors_installed > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
@@ -227,7 +216,7 @@ def get_sensors_data(trigger_data):
         trigger_data.sensor_readings = trigger_data.sensor_readings + sensor_readings
         trigger_data.num_sensors_installed = trigger_data.num_sensors_installed + 1
 
-        return trigger_data
+    return trigger_data
 
 
 def write_to_database(trigger_data):
@@ -246,21 +235,28 @@ def write_to_database(trigger_data):
 
 
 while True:
-    default_trigger_data = CreateTriggerDatabaseData()
+    var_installed_sensors = Operations_Config.get_installed_sensors()
+    old_trigger_data = CreateTriggerDatabaseData()
+    new_trigger_data = CreateTriggerDatabaseData()
 
-    old_trigger_data = get_sensors_data(default_trigger_data)
+    get_sensors_data(old_trigger_data)
     sleep(sleep_duration)
-    new_trigger_data = get_sensors_data(default_trigger_data)
+    get_sensors_data(new_trigger_data)
 
-    if check_acc(new_trigger_data, old_trigger_data):
-        logger.debug("Accelerometer Triggered")
+    if var_installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
+        logger.info("Accelerometer Triggered - X:" + str(new_trigger_data.acc_x) +
+                    " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)
-    elif check_mag(new_trigger_data, old_trigger_data):
-        logger.debug("Magnetometer Triggered")
+    elif var_installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
+        logger.info("Magnetometer Triggered - X:" + str(new_trigger_data.mag_x) +
+                    " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
+        print("Mag Triggered: " + str(new_trigger_data.mag_x))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)
-    elif check_gyro(new_trigger_data, old_trigger_data):
-        logger.debug("Gyroscope Triggered")
+    elif var_installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
+        logger.info("Gyroscope Triggered - X:" + str(new_trigger_data.gyro_x) +
+                    " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
+        print("Gyro Triggered: " + str(new_trigger_data.gyro_x))
         write_to_database(old_trigger_data)
         write_to_database(new_trigger_data)

@@ -223,6 +223,6 @@ def write_to_sql_database(sql_data):
         db_cursor.execute(sql_data.sql_execute)
         db_connection.commit()
         db_connection.close()
-        logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
+        logger.debug("SQL Write to DataBase - OK - " + str(sql_data.database_location))
     except Exception as error:
         logger.error("SQL Write to DataBase - Failed - " + str(error))
