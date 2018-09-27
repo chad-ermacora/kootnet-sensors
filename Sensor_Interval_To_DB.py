@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import Operations_DB
+import Operations_Config
 import sensor_modules.Pimoroni_BH1745
 import sensor_modules.Pimoroni_BME680
 import sensor_modules.Pimoroni_Enviro
@@ -47,114 +48,116 @@ sql_query_values_end = ")"
 
 
 def write_interval_readings_to_database():
-    installed_sensors_var = Operations_DB.get_installed_sensors()
-    interval_sql_data = Operations_DB.SensorData()
-    interval_sql_command_data = Operations_DB.SQLCommandData()
+    installed_sensors = Operations_Config.CreateInstalledSensors()
+    installed_sensors.check_config_file()
 
-    interval_sql_command_data.database_location = interval_db_location
+    if installed_sensors.check_ok_write_to_database():
+        interval_sql_command_data = Operations_DB.CreateSQLCommandData()
+        interval_sql_command_data.database_location = interval_db_location
+        Operations_DB.check_interval_db(interval_db_location)
 
-    Operations_DB.check_interval_db(interval_db_location)
+        count = 0
+        if installed_sensors.linux_system:
+            sensor_os = sensor_modules.Linux_OS.CreateLinuxSystem()
+            sensor_system = sensor_modules.RaspberryPi_System.CreateRPSystem()
 
-    count = 0
-    if installed_sensors_var.linux_system:
-        sensor_os = sensor_modules.Linux_OS.CreateLinuxSystem()
-        sensor_system = sensor_modules.RaspberryPi_System.CreateRPSystem()
+            tmp_sensor_types = "SensorName, IP, SensorUpTime, SystemTemp"
 
-        tmp_sensor_types = "SensorName, IP, SensorUpTime, SystemTemp"
+            tmp_sensor_readings = "'" + str(sensor_os.get_hostname()) + "', '" + \
+                                  str(sensor_os.get_ip()) + "', '" + \
+                                  str(sensor_os.get_uptime()) + "', '" + \
+                                  str(sensor_system.cpu_temperature()) + "'"
 
-        tmp_sensor_readings = "'" + str(sensor_os.get_hostname()) + "', '" + \
-                              str(sensor_os.get_ip()) + "', '" + \
-                              str(sensor_os.get_uptime()) + "', '" + \
-                              str(sensor_system.cpu_temperature()) + "'"
+            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
+            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
+            count = count + 1
 
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
+        if installed_sensors.raspberry_pi_sense_hat:
+            sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
 
-    if installed_sensors_var.raspberry_pi_sense_hat:
-        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+            if count > 0:
+                interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
+                interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
 
-        if count > 0:
-            interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
-            interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
+            tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
 
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
+            temperature = sensor_access.temperature()
+            pressure = sensor_access.pressure()
+            humidity = sensor_access.humidity()
 
-        temperature = sensor_access.temperature()
-        pressure = sensor_access.pressure()
-        humidity = sensor_access.humidity()
+            tmp_sensor_readings = "'" + str(temperature) + "', '" + \
+                                  str(pressure) + "', '" + \
+                                  str(humidity) + "'"
 
-        tmp_sensor_readings = "'" + str(temperature) + "', '" + \
-                              str(pressure) + "', '" + \
-                              str(humidity) + "'"
+            led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
+            sensor_access.display_led_message(led_message)
 
-        led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
-        sensor_access.display_led_message(led_message)
+            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
+            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
+            count = count + 1
 
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
+        if installed_sensors.pimoroni_bh1745:
+            sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
 
-    if installed_sensors_var.pimoroni_bh1745:
-        sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
+            if count > 0:
+                interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
+                interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
 
-        if count > 0:
-            interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
-            interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
+            tmp_sensor_types = "Lumen, Red, Green, Blue"
 
-        tmp_sensor_types = "Lumen, Red, Green, Blue"
+            rgb_colour = sensor_access.rgb()
+            tmp_sensor_readings = "'" + str(sensor_access.lumen()) + "', '" + \
+                                  str(rgb_colour[0]) + "', '" + \
+                                  str(rgb_colour[1]) + "', '" + \
+                                  str(rgb_colour[2]) + "'"
 
-        rgb_colour = sensor_access.rgb()
-        tmp_sensor_readings = "'" + str(sensor_access.lumen()) + "', '" + \
-                              str(rgb_colour[0]) + "', '" + \
-                              str(rgb_colour[1]) + "', '" + \
-                              str(rgb_colour[2]) + "'"
+            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
+            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
+            count = count + 1
 
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
+        if installed_sensors.pimoroni_bme680:
+            sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
 
-    if installed_sensors_var.pimoroni_bme680:
-        sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
+            if count > 0:
+                interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
+                interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
 
-        if count > 0:
-            interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
-            interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
+            tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
 
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
+            tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
+                                  str(sensor_access.pressure()) + "', '" + \
+                                  str(sensor_access.humidity()) + "'"
 
-        tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
-                              str(sensor_access.pressure()) + "', '" + \
-                              str(sensor_access.humidity()) + "'"
+            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
+            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
+            count = count + 1
 
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
+        if installed_sensors.pimoroni_enviro:
+            sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
 
-    if installed_sensors_var.pimoroni_enviro:
-        sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
+            if count > 0:
+                interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
+                interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
 
-        if count > 0:
-            interval_sql_data.sensor_types = interval_sql_data.sensor_types + ", "
-            interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + ", "
+            tmp_sensor_types = "EnvironmentTemp, Pressure, Lumen, Red, Green, Blue"
 
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Lumen, Red, Green, Blue"
+            rgb_colour = sensor_access.rgb()
+            tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
+                                  str(sensor_access.pressure()) + "', '" + \
+                                  str(sensor_access.lumen()) + "', '" + \
+                                  str(rgb_colour[0]) + "', '" + \
+                                  str(rgb_colour[1]) + "', '" + \
+                                  str(rgb_colour[2]) + "'"
 
-        rgb_colour = sensor_access.rgb()
-        tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
-                              str(sensor_access.pressure()) + "', '" + \
-                              str(sensor_access.lumen()) + "', '" + \
-                              str(rgb_colour[0]) + "', '" + \
-                              str(rgb_colour[1]) + "', '" + \
-                              str(rgb_colour[2]) + "'"
+            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
+            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
 
-        interval_sql_data.sensor_types = interval_sql_data.sensor_types + tmp_sensor_types
-        interval_sql_data.sensor_readings = interval_sql_data.sensor_readings + tmp_sensor_readings
+        interval_sql_command_data.sql_execute = sql_query_start + interval_sql_command_data.sensor_types + \
+            sql_query_values_start + interval_sql_command_data.sensor_readings + sql_query_values_end
 
-    interval_sql_command_data.sql_execute = sql_query_start + interval_sql_data.sensor_types + \
-        sql_query_values_start + interval_sql_data.sensor_readings + sql_query_values_end
-
-    Operations_DB.write_to_sql_database(interval_sql_command_data)
+        Operations_DB.write_to_sql_database(interval_sql_command_data)
+    else:
+        logger.warning("No Sensors Selected in Config - Skipping Interval Database Write")
 
 
 '''

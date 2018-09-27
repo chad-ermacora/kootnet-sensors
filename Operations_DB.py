@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Operations_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Operations_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -37,95 +37,19 @@ logger.addHandler(stream_handler)
 sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 
 
-class SensorData:
+class CreateSQLCommandData:
     def __init__(self):
         self.sensor_types = ""
         self.sensor_readings = ""
-
-
-class SQLCommandData:
-    def __init__(self):
         self.database_location = ""
         self.sql_execute = ""
 
 
-class InstalledSensors:
+class AccelerometerData:
     def __init__(self):
-        self.linux_system = True
-        self.raspberry_pi_sense_hat = False
-        self.pimoroni_bh1745 = False
-        self.pimoroni_bme680 = False
-        self.pimoroni_enviro = False
-        self.pimoroni_lsm303d = False
-        self.pimoroni_vl53l1x = False
-
-
-def get_installed_sensors():
-    installed_sensors_var = InstalledSensors()
-    try:
-        sensor_list_file = open(sensor_ver_file, 'r')
-        sensor_list = sensor_list_file.readlines()
-
-        if int(sensor_list[1][:1]):
-            installed_sensors_var.linux_system = True
-        else:
-            installed_sensors_var.linux_system = False
-
-        if int(sensor_list[2][:1]):
-            installed_sensors_var.raspberry_pi_sense_hat = True
-        else:
-            installed_sensors_var.raspberry_pi_sense_hat = False
-
-        if int(sensor_list[3][:1]):
-            installed_sensors_var.pimoroni_bh1745 = True
-        else:
-            installed_sensors_var.pimoroni_bh1745 = False
-
-        if int(sensor_list[4][:1]):
-            installed_sensors_var.pimoroni_bme680 = True
-        else:
-            installed_sensors_var.pimoroni_bme680 = False
-
-        if int(sensor_list[5][:1]):
-            installed_sensors_var.pimoroni_enviro = True
-        else:
-            installed_sensors_var.pimoroni_enviro = False
-
-        if int(sensor_list[6][:1]):
-            installed_sensors_var.pimoroni_lsm303d = True
-        else:
-            installed_sensors_var.pimoroni_lsm303d = False
-
-        if int(sensor_list[7][:1]):
-            installed_sensors_var.pimoroni_vl53l1x = True
-        else:
-            installed_sensors_var.pimoroni_vl53l1x = False
-
-        return installed_sensors_var
-    except Exception as error:
-        logger.error("Unable to open: " + sensor_ver_file + " - " + str(error))
-
-
-def check_any_sensors_installed():
-    installed_sensors = get_installed_sensors()
-    sensors_installed = False
-
-    if installed_sensors.pimoroni_lsm303d:
-        sensors_installed = True
-    elif installed_sensors.raspberry_pi_sense_hat:
-        sensors_installed = True
-    elif installed_sensors.pimoroni_enviro:
-        sensors_installed = True
-    elif installed_sensors.linux_system:
-        sensors_installed = True
-    elif installed_sensors.pimoroni_bme680:
-        sensors_installed = True
-    elif installed_sensors.pimoroni_bh1745:
-        sensors_installed = True
-    elif installed_sensors.pimoroni_vl53l1x:
-        sensors_installed = True
-
-    return sensors_installed
+        self.acc_x = 0.0
+        self.acc_y = 0.0
+        self.acc_z = 0.0
 
 
 def check_interval_db(sensor_db_location):
@@ -294,18 +218,13 @@ def check_trigger_db(db_location):
 
 
 def write_to_sql_database(sql_data):
-    sensors_installed = check_any_sensors_installed()
-
-    if sensors_installed:
-        logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
-        try:
-            db_connection = sqlite3.connect(sql_data.database_location)
-            db_cursor = db_connection.cursor()
-            db_cursor.execute(sql_data.sql_execute)
-            db_connection.commit()
-            db_connection.close()
-            logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
-        except Exception as error:
-            logger.error("SQL Write to DataBase - Failed - " + str(error))
-    else:
-        logger.warning("SQL Write to DataBase - Failed - No Sensors Selected in Config")
+    logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
+    try:
+        db_connection = sqlite3.connect(sql_data.database_location)
+        db_cursor = db_connection.cursor()
+        db_cursor.execute(sql_data.sql_execute)
+        db_connection.commit()
+        db_connection.close()
+        logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
+    except Exception as error:
+        logger.error("SQL Write to DataBase - Failed - " + str(error))

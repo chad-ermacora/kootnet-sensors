@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import Operations_DB
+import Operations_Config
 import sensor_modules.Linux_OS
 import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.Pimoroni_Enviro
@@ -51,8 +52,27 @@ def check_mag():
     pass
 
 
-def check_acc():
-    pass
+def check_acc(new_acc):
+    var_acc_now_x = round(float(var_acc[0]), 3)
+    var_acc_now_y = round(float(var_acc[1]), 3)
+    var_acc_now_z = round(float(var_acc[2]), 3)
+
+    if var_acc_last_x > (var_acc_now_x + var_motion_variance):
+        database_write(var_real)
+    elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
+        database_write(var_real)
+    elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
+        database_write(var_real)
+    elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
+        database_write(var_real)
+    elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
+        database_write(var_real)
+    elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
+        database_write(var_real)
+
+    var_acc_last_x = var_acc_now_x
+    var_acc_last_y = var_acc_now_y
+    var_acc_last_z = var_acc_now_z
 
 
 def check_gyro():
@@ -66,34 +86,12 @@ def check_gyro():
 #
 # while True:
 #     sleep(0.25)
-#     var_real = motion.accelerometer()
-#     var_acc_now_x = round(float(var_real[0]), 3)
-#     var_acc_now_y = round(float(var_real[1]), 3)
-#     var_acc_now_z = round(float(var_real[2]), 3)
-#
-#     if var_acc_last_x > (var_acc_now_x + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
-#         database_write(var_real)
-#
-#     var_acc_last_x = var_acc_now_x
-#     var_acc_last_y = var_acc_now_y
-#     var_acc_last_z = var_acc_now_z
 
 
 # Have readings passed to checks, that set do_db_write
 def check_trigger_sensors():
     installed_sensors_var = Operations_DB.get_installed_sensors()
-    trigger_sql_data = Operations_DB.SensorData()
-    trigger_sql_command_data = Operations_DB.SQLCommandData()
+    trigger_sql_command_data = Operations_DB.CreateSQLCommandData()
 
     trigger_sql_command_data.database_location = trigger_db_location
     Operations_DB.check_trigger_db(trigger_db_location)
@@ -108,16 +106,16 @@ def check_trigger_sensors():
 
         tmp_sensor_readings = "'" + str(sensor_access.get_hostname()) + "', '" + str(sensor_access.get_ip()) + "'"
 
-        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
-        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + tmp_sensor_types
+        trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + tmp_sensor_readings
         count = count + 1
 
     if installed_sensors_var.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
 
         if count > 0:
-            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
-            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+            trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + ", "
+            trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + ", "
 
         tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
 
@@ -135,16 +133,16 @@ def check_trigger_sensors():
                               str(tmp_gyro_xyz[1]) + "', '" + \
                               str(tmp_gyro_xyz[2]) + "'"
 
-        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
-        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + tmp_sensor_types
+        trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + tmp_sensor_readings
         count = count + 1
 
     if installed_sensors_var.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
 
         if count > 0:
-            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
-            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+            trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + ", "
+            trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + ", "
 
         tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z"
 
@@ -158,16 +156,16 @@ def check_trigger_sensors():
                               str(tmp_acc_xyz[1]) + "', '" + \
                               str(tmp_acc_xyz[2]) + "'"
 
-        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
-        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + tmp_sensor_types
+        trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + tmp_sensor_readings
         count = count + 1
 
     if installed_sensors_var.pimoroni_lsm303d:
         sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
 
         if count > 0:
-            trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + ", "
-            trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + ", "
+            trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + ", "
+            trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + ", "
 
         tmp_sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z"
 
@@ -181,16 +179,16 @@ def check_trigger_sensors():
                               str(tmp_acc_xyz[1]) + "', '" + \
                               str(tmp_acc_xyz[2]) + "'"
 
-        trigger_sql_data.sensor_types = trigger_sql_data.sensor_types + tmp_sensor_types
-        trigger_sql_data.sensor_readings = trigger_sql_data.sensor_readings + tmp_sensor_readings
+        trigger_sql_command_data.sensor_types = trigger_sql_command_data.sensor_types + tmp_sensor_types
+        trigger_sql_command_data.sensor_readings = trigger_sql_command_data.sensor_readings + tmp_sensor_readings
 
     if do_db_write:
-        trigger_sql_command_data.sql_execute = sql_query_start + trigger_sql_data.sensor_types + \
-            sql_query_values_start + trigger_sql_data.sensor_readings + sql_query_values_end
+        trigger_sql_command_data.sql_execute = sql_query_start + trigger_sql_command_data.sensor_types + \
+            sql_query_values_start + trigger_sql_command_data.sensor_readings + sql_query_values_end
 
         Operations_DB.write_to_sql_database(trigger_sql_command_data)
-        print("Types: " + trigger_sql_data.sensor_types)
-        print("Readings: " + trigger_sql_data.sensor_readings)
+        print("Types: " + trigger_sql_command_data.sensor_types)
+        print("Readings: " + trigger_sql_command_data.sensor_readings)
 
 
 # Check Database & start monitoring / recording
