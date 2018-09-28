@@ -1,4 +1,4 @@
-sleep 4
+sleep 6
 echo "$(ps -U root -f | grep "[S]ensor_Commands.py")" > /root/tmp35.txt
 VARS="$(stat -c "%s" /root/tmp35.txt)"
 sleep 1

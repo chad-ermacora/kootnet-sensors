@@ -37,6 +37,31 @@ logger.addHandler(stream_handler)
 sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
 
 
+class CreateTriggerDatabaseData:
+    def __init__(self):
+        self.num_sensors_installed = 0
+        self.sensor_types = ""
+        self.sensor_readings = ""
+
+        self.acc_x = 0.0
+        self.acc_y = 0.0
+        self.acc_z = 0.0
+
+        self.mag_x = 0.0
+        self.mag_y = 0.0
+        self.mag_z = 0.0
+
+        self.gyro_x = 0.0
+        self.gyro_y = 0.0
+        self.gyro_z = 0.0
+
+
+class CreateIntervalDatabaseData:
+    def __init__(self):
+        self.sensor_types = ""
+        self.sensor_readings = ""
+
+
 class CreateSQLCommandData:
     def __init__(self):
         self.database_location = ""
@@ -223,6 +248,6 @@ def write_to_sql_database(sql_data):
         db_cursor.execute(sql_data.sql_execute)
         db_connection.commit()
         db_connection.close()
-        logger.debug("SQL Write to DataBase - OK - " + str(sql_data.database_location))
+        logger.info("SQL Write to DataBase - OK - " + str(sql_data.database_location))
     except Exception as error:
         logger.error("SQL Write to DataBase - Failed - " + str(error))

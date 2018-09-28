@@ -5,6 +5,7 @@ if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
   printf '\nInstall Detected, Opening Configuration Files\n'
   nano /home/pi/KootNetSensors/installed_sensors.txt
+  nano /home/pi/KootNetSensors/config.txt
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
 else
@@ -22,7 +23,7 @@ else
   cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
   cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/clean_upgrade_online.sh
   cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/clean_upgrade_smb.sh
-  cp /home/sensors/test* /home/pi 2>/dev/null
+  ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
   printf '\nInstalled Config Files, Opening for edit\n'
   # Create "installed_sensors.txt" file
   bash /home/sensors/upgrade/check_installed_sensors.sh
@@ -81,12 +82,12 @@ EOF
   apt-get -y install python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock
   pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
 fi
-killall python3
-printf '\nTesting Interval Sensors\n\n'
-python3 /home/sensors/Sensor_Interval_To_DB.py
 printf '\n'
 # Install crontab entries
 bash /home/sensors/upgrade/update_crontab.sh
 # Make sure permissions are correct
 bash /home/sensors/upgrade/update_file_permissions.sh
-printf '\nPlease wait up to 60 Seconds for Sensor to come online\n\n'
+printf '\nPrinting Config and Testing Sensors\n\n'
+killall python3
+python3 /home/sensors/test_sensors.py
+printf '\nPlease wait up to 60 Seconds for Sensor to come online\n'

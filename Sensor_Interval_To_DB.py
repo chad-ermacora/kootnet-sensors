@@ -16,14 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_DB
 import Operations_Config
-import sensor_modules.Pimoroni_BH1745
-import sensor_modules.Pimoroni_BME680
-import sensor_modules.Pimoroni_Enviro
-import sensor_modules.Linux_OS
-import sensor_modules.RaspberryPi_System
-import sensor_modules.RaspberryPi_SenseHAT
+import Operations_DB
+import Operations_Sensors
+from time import sleep
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -32,7 +28,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Interval_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Sensors_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -46,124 +42,30 @@ sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
 sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
 sql_query_values_end = ")"
 
-
-def write_interval_readings_to_database():
-    installed_sensors = Operations_Config.get_installed_sensors()
-    interval_sql_command_data = Operations_DB.CreateSQLCommandData()
-
-    interval_sql_command_data.database_location = interval_db_location
-    Operations_DB.check_interval_db(interval_db_location)
-
-    tmp_sensor_types = ""
-    tmp_sensor_readings = ""
-
-    count = 0
-    if installed_sensors.linux_system:
-        sensor_os = sensor_modules.Linux_OS.CreateLinuxSystem()
-        sensor_system = sensor_modules.RaspberryPi_System.CreateRPSystem()
-
-        tmp_sensor_types = "SensorName, IP, SensorUpTime, SystemTemp"
-
-        tmp_sensor_readings = "'" + str(sensor_os.get_hostname()) + "', '" + \
-                              str(sensor_os.get_ip()) + "', '" + \
-                              str(sensor_os.get_uptime()) + "', '" + \
-                              str(sensor_system.cpu_temperature()) + "'"
-
-        interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
-        interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
-
-    if installed_sensors.raspberry_pi_sense_hat:
-        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
-
-        if count > 0:
-            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
-            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
-
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
-
-        temperature = sensor_access.temperature()
-        pressure = sensor_access.pressure()
-        humidity = sensor_access.humidity()
-
-        tmp_sensor_readings = "'" + str(temperature) + "', '" + \
-                              str(pressure) + "', '" + \
-                              str(humidity) + "'"
-
-        led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
-        sensor_access.display_led_message(led_message)
-
-        interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
-        interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
-
-    if installed_sensors.pimoroni_bh1745:
-        sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
-
-        if count > 0:
-            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
-            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
-
-        tmp_sensor_types = "Lumen, Red, Green, Blue"
-
-        rgb_colour = sensor_access.rgb()
-        tmp_sensor_readings = "'" + str(sensor_access.lumen()) + "', '" + \
-                              str(rgb_colour[0]) + "', '" + \
-                              str(rgb_colour[1]) + "', '" + \
-                              str(rgb_colour[2]) + "'"
-
-        interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
-        interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
-
-    if installed_sensors.pimoroni_bme680:
-        sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
-
-        if count > 0:
-            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
-            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
-
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Humidity"
-
-        tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
-                              str(sensor_access.pressure()) + "', '" + \
-                              str(sensor_access.humidity()) + "'"
-
-        interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
-        interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
-
-    if installed_sensors.pimoroni_enviro:
-        sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
-
-        if count > 0:
-            interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + ", "
-            interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + ", "
-
-        tmp_sensor_types = "EnvironmentTemp, Pressure, Lumen, Red, Green, Blue"
-
-        rgb_colour = sensor_access.rgb()
-        tmp_sensor_readings = "'" + str(sensor_access.temperature()) + "', '" + \
-                              str(sensor_access.pressure()) + "', '" + \
-                              str(sensor_access.lumen()) + "', '" + \
-                              str(rgb_colour[0]) + "', '" + \
-                              str(rgb_colour[1]) + "', '" + \
-                              str(rgb_colour[2]) + "'"
-
-    if count > 0:
-        interval_sql_command_data.sensor_types = interval_sql_command_data.sensor_types + tmp_sensor_types
-        interval_sql_command_data.sensor_readings = interval_sql_command_data.sensor_readings + tmp_sensor_readings
-
-        interval_sql_command_data.sql_execute = sql_query_start + interval_sql_command_data.sensor_types + \
-            sql_query_values_start + interval_sql_command_data.sensor_readings + sql_query_values_end
-
-        Operations_DB.write_to_sql_database(interval_sql_command_data)
-    else:
-        logger.warning("No Interval Sensors Selected in Config - Skipping Interval Database Write")
+Operations_DB.check_interval_db(interval_db_location)
+installed_sensors = Operations_Config.get_installed_sensors()
+installed_config = Operations_Config.get_installed_config()
 
 
 '''
 Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
-write_interval_readings_to_database()
+if installed_config.write_to_db == 1:
+    while True:
+
+        new_data = Operations_Sensors.get_interval_sensor_readings()
+        if len(new_data.sensor_readings) > 0:
+
+            sql_command_data = Operations_DB.CreateSQLCommandData()
+            sql_command_data.database_location = interval_db_location
+
+            sql_command_data.sql_execute = sql_query_start + new_data.sensor_types + \
+                sql_query_values_start + new_data.sensor_readings + sql_query_values_end
+
+            Operations_DB.write_to_sql_database(sql_command_data)
+        else:
+            logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
+        sleep(installed_config.sleep_duration_interval)
+else:
+    logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
