@@ -21,8 +21,8 @@ else
   # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
   cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
   cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
-  cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/clean_upgrade_online.sh
-  cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/clean_upgrade_smb.sh
+  cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/upgrade_online_clean.sh
+  cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/upgrade_smb_clean.sh
   ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
   printf '\nInstalled Config Files, Opening for edit\n'
   # Create "installed_sensors.txt" file
