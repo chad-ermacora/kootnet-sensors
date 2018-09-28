@@ -81,7 +81,7 @@ def set_defaults_per_sensor(config):
         config.mag_variance = 1.0
         config.gyro_variance = 0.01
     if installed_sensors.pimoroni_enviro:
-        config.acc_variance = 0.03
+        config.acc_variance = 0.05
         config.mag_variance = 600.0
     if installed_sensors.pimoroni_lsm303d:
         config.acc_variance = 0.02
