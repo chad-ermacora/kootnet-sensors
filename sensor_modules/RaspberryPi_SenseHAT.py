@@ -41,7 +41,10 @@ show_led_message = True
 class CreateRPSenseHAT:
     def __init__(self):
         self.sense_hat_import = __import__('sense_hat')
-        self.sense = self.sense_hat_import.SenseHat()
+        try:
+            self.sense = self.sense_hat_import.SenseHat()
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
 
     def temperature(self):
         try:
@@ -109,17 +112,20 @@ class CreateRPSenseHAT:
 
     def display_led_message(self, message):
         if show_led_message:
-            acc_data = self.accelerometer_xyz()
+            try:
+                acc_data = self.accelerometer_xyz()
 
-            if acc_data[0] < -0.5:
-                self.sense.set_rotation(90)
-            elif acc_data[1] > 0.5:
-                self.sense.set_rotation(0)
-            elif acc_data[1] < -0.5:
-                self.sense.set_rotation(180)
-            else:
-                self.sense.set_rotation(270)
+                if acc_data[0] < -0.5:
+                    self.sense.set_rotation(90)
+                elif acc_data[1] > 0.5:
+                    self.sense.set_rotation(0)
+                elif acc_data[1] < -0.5:
+                    self.sense.set_rotation(180)
+                else:
+                    self.sense.set_rotation(270)
 
-            self.sense.show_message(str(message), text_colour=(75, 0, 0))
+                self.sense.show_message(str(message), text_colour=(75, 0, 0))
+            except Exception as error:
+                logger.error("Unable to set Message Orientation - " + str(error))
         else:
             logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")
