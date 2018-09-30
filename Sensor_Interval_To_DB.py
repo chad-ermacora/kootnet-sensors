@@ -54,14 +54,14 @@ Then get readings from Said Sensor and write to DB
 if installed_config.write_to_db == 1:
     while True:
 
-        new_data = Operations_Sensors.get_interval_sensor_readings()
-        if len(new_data.sensor_readings) > 0:
+        new_sensor_data = Operations_Sensors.get_interval_sensor_readings()
+        if len(new_sensor_data.sensor_readings) > 0:
 
             sql_command_data = Operations_DB.CreateSQLCommandData()
             sql_command_data.database_location = interval_db_location
 
-            sql_command_data.sql_execute = sql_query_start + new_data.sensor_types + \
-                sql_query_values_start + new_data.sensor_readings + sql_query_values_end
+            sql_command_data.sql_execute = sql_query_start + new_sensor_data.sensor_types + \
+                sql_query_values_start + new_sensor_data.sensor_readings + sql_query_values_end
 
             Operations_DB.write_to_sql_database(sql_command_data)
         else:

@@ -119,16 +119,19 @@ if installed_config.write_to_db:
             logger.debug("New Accelerometer Triggered - X:" + str(new_trigger_data.acc_x) +
                          " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
             write_to_database(old_trigger_data)
+            sleep(1)
             write_to_database(new_trigger_data)
         elif installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
             logger.info("New Magnetometer Triggered - X:" + str(new_trigger_data.mag_x) +
                         " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
             write_to_database(old_trigger_data)
+            sleep(1)
             write_to_database(new_trigger_data)
         elif installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
             logger.debug("New Gyroscope Triggered - X:" + str(new_trigger_data.gyro_x) +
                          " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
             write_to_database(old_trigger_data)
+            sleep(1)
             write_to_database(new_trigger_data)
 else:
     logger.debug("Write to Database Disabled in Config")
