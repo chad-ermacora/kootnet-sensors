@@ -37,14 +37,8 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-trigger_db_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
-sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
-sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
-sql_query_values_end = ")"
-
 installed_sensors = Operations_Config.get_installed_sensors()
 installed_config = Operations_Config.get_installed_config()
-Operations_DB.check_trigger_db(trigger_db_location)
 
 
 def check_acc(new_data, old_data):
@@ -100,15 +94,16 @@ def check_gyro(new_data, old_data):
 
 def write_to_database(trigger_data):
     sql_command = Operations_DB.CreateSQLCommandData()
-    sql_command.database_location = trigger_db_location
+    sql_command.database_location = trigger_data.database_location
 
-    sql_command.sql_execute = sql_query_start + trigger_data.sensor_types + \
-        sql_query_values_start + trigger_data.sensor_readings + sql_query_values_end
+    sql_command.sql_execute = trigger_data.sql_query_start + trigger_data.sensor_types + \
+        trigger_data.sql_query_values_start + trigger_data.sensor_readings + trigger_data.sql_query_values_end
 
     logger.debug("SQL Command - " + str(sql_command.sql_execute))
     Operations_DB.write_to_sql_database(sql_command)
 
 
+Operations_DB.check_database("Trigger")
 if installed_config.write_to_db:
     while True:
         old_trigger_data = Operations_Sensors.get_trigger_sensor_data()
@@ -119,19 +114,16 @@ if installed_config.write_to_db:
             logger.debug("New Accelerometer Triggered - X:" + str(new_trigger_data.acc_x) +
                          " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
             write_to_database(old_trigger_data)
-            sleep(1)
             write_to_database(new_trigger_data)
         elif installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
             logger.info("New Magnetometer Triggered - X:" + str(new_trigger_data.mag_x) +
                         " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
             write_to_database(old_trigger_data)
-            sleep(1)
             write_to_database(new_trigger_data)
         elif installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
             logger.debug("New Gyroscope Triggered - X:" + str(new_trigger_data.gyro_x) +
                          " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
             write_to_database(old_trigger_data)
-            sleep(1)
             write_to_database(new_trigger_data)
 else:
-    logger.debug("Write to Database Disabled in Config")
+    logger.warning("Write to Database Disabled in Config")

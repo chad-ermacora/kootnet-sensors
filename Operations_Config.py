@@ -57,7 +57,7 @@ class CreateConfig:
         self.write_to_db = 1
         self.enable_custom = 0
         self.sleep_duration_interval = 300
-        self.sleep_duration_trigger = 0.15
+        self.sleep_duration_trigger = 0.1
         self.acc_variance = 0.0
         self.mag_variance = 0.0
         self.gyro_variance = 0.0

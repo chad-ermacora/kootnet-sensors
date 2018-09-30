@@ -37,15 +37,9 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-interval_db_location = '/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite'
-sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
-sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
-sql_query_values_end = ")"
-
-Operations_DB.check_interval_db(interval_db_location)
 installed_sensors = Operations_Config.get_installed_sensors()
 installed_config = Operations_Config.get_installed_config()
-
+Operations_DB.check_database("Interval")
 
 '''
 Start of Program.  Check Sensor Type from file
@@ -55,13 +49,15 @@ if installed_config.write_to_db == 1:
     while True:
 
         new_sensor_data = Operations_Sensors.get_interval_sensor_readings()
+
         if len(new_sensor_data.sensor_readings) > 0:
 
             sql_command_data = Operations_DB.CreateSQLCommandData()
-            sql_command_data.database_location = interval_db_location
+            sql_command_data.database_location = new_sensor_data.database_location
 
-            sql_command_data.sql_execute = sql_query_start + new_sensor_data.sensor_types + \
-                sql_query_values_start + new_sensor_data.sensor_readings + sql_query_values_end
+            sql_command_data.sql_execute = new_sensor_data.sql_query_start + \
+                new_sensor_data.sensor_types + new_sensor_data.sql_query_values_start + \
+                new_sensor_data.sensor_readings + new_sensor_data.sql_query_values_end
 
             Operations_DB.write_to_sql_database(sql_command_data)
         else:
