@@ -38,7 +38,7 @@ class CreateRPSystem:
             cpu_temp_c = float(cpu.temperature)
             logger.debug("Raspberry Pi CPU Temperature Sensor - OK")
         except Exception as error:
-            cpu_temp_c = 0.00000
+            cpu_temp_c = 0.0
             logger.error("Raspberry Pi CPU Temperature Sensor - Failed - " + str(error))
 
         return round(cpu_temp_c, round_decimal_to)

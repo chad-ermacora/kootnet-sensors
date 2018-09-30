@@ -156,6 +156,7 @@ def get_interval_sensor_readings():
 
 def get_trigger_sensor_data():
     trigger_data = Operations_DB.CreateTriggerDatabaseData()
+
     if installed_sensors.linux_system:
         sensor_access = sensor_modules.Linux_OS.CreateLinuxSystem()
 
