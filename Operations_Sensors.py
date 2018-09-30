@@ -157,6 +157,7 @@ def get_interval_sensor_readings():
 def get_trigger_sensor_data():
     trigger_data = Operations_DB.CreateTriggerDatabaseData()
 
+    count = 0
     if installed_sensors.linux_system:
         sensor_access = sensor_modules.Linux_OS.CreateLinuxSystem()
 
@@ -165,12 +166,12 @@ def get_trigger_sensor_data():
 
         trigger_data.sensor_types = trigger_data.sensor_types + sensor_types
         trigger_data.sensor_readings = trigger_data.sensor_readings + sensor_readings
-        trigger_data.num_sensors_installed = trigger_data.num_sensors_installed + 1
+        count = count + 1
 
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
 
-        if trigger_data.num_sensors_installed > 0:
+        if count > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
             trigger_data.sensor_readings = trigger_data.sensor_readings + ", "
 
@@ -192,12 +193,12 @@ def get_trigger_sensor_data():
 
         trigger_data.sensor_types = trigger_data.sensor_types + sensor_types
         trigger_data.sensor_readings = trigger_data.sensor_readings + sensor_readings
-        trigger_data.num_sensors_installed = trigger_data.num_sensors_installed + 1
+        count = count + 1
 
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
 
-        if trigger_data.num_sensors_installed > 0:
+        if count > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
             trigger_data.sensor_readings = trigger_data.sensor_readings + ", "
 
@@ -215,12 +216,12 @@ def get_trigger_sensor_data():
 
         trigger_data.sensor_types = trigger_data.sensor_types + sensor_types
         trigger_data.sensor_readings = trigger_data.sensor_readings + sensor_readings
-        trigger_data.num_sensors_installed = trigger_data.num_sensors_installed + 1
+        count = count + 1
 
     if installed_sensors.pimoroni_lsm303d:
         sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
 
-        if trigger_data.num_sensors_installed > 0:
+        if count > 0:
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
             trigger_data.sensor_readings = trigger_data.sensor_readings + ", "
 
@@ -238,6 +239,5 @@ def get_trigger_sensor_data():
 
         trigger_data.sensor_types = trigger_data.sensor_types + sensor_types
         trigger_data.sensor_readings = trigger_data.sensor_readings + sensor_readings
-        trigger_data.num_sensors_installed = trigger_data.num_sensors_installed + 1
 
     return trigger_data

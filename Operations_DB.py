@@ -45,8 +45,7 @@ class CreateTriggerDatabaseData:
         self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
         self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
         self.sql_query_values_end = ")"
-        self.num_sensors_installed = 0
-        self.sensor_retrieval_datetime = ""
+        # self.num_sensors_installed = 0
         self.sensor_types = ""
         self.sensor_readings = ""
 
