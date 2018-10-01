@@ -26,22 +26,6 @@ import sensor_modules.Pimoroni_BME680
 import sensor_modules.Pimoroni_Enviro
 import sensor_modules.Pimoroni_LSM303D
 import sensor_modules.Pimoroni_VL53L1X
-import logging
-from logging.handlers import RotatingFileHandler
-
-logger = logging.getLogger(__name__)
-
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Operations_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
 
 installed_sensors = Operations_Config.get_installed_sensors()
 installed_config = Operations_Config.get_installed_config()

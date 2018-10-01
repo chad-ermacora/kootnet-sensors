@@ -49,6 +49,10 @@ Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
 if installed_config.write_to_db == 1:
+    first_sensor_data = Operations_Sensors.get_interval_sensor_readings()
+    print("Sensor Types: " + first_sensor_data.sensor_types + "\n\n" +
+          "Sensor Readings: " + first_sensor_data.sensor_readings + "\n")
+
     while True:
         new_sensor_data = Operations_Sensors.get_interval_sensor_readings()
 

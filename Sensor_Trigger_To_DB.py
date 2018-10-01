@@ -103,6 +103,10 @@ def write_to_database(trigger_data):
 
 
 if installed_config.write_to_db:
+    start_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+    write_to_database(start_trigger_data)
+    print(start_trigger_data.get_printable_readings())
+
     while True:
         old_trigger_data = Operations_Sensors.get_trigger_sensor_data()
         sleep(installed_config.sleep_duration_trigger)
