@@ -41,20 +41,21 @@ installed_sensors = Operations_Config.get_installed_sensors()
 installed_config = Operations_Config.get_installed_config()
 Operations_DB.check_database("Interval")
 
+logger.info("Sensor Recording by Interval Started")
+
+
 '''
 Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
 if installed_config.write_to_db == 1:
     while True:
-
         new_sensor_data = Operations_Sensors.get_interval_sensor_readings()
 
         if len(new_sensor_data.sensor_readings) > 0:
-
             sql_command_data = Operations_DB.CreateSQLCommandData()
-            sql_command_data.database_location = new_sensor_data.database_location
 
+            sql_command_data.database_location = new_sensor_data.database_location
             sql_command_data.sql_execute = new_sensor_data.sql_query_start + \
                 new_sensor_data.sensor_types + new_sensor_data.sql_query_values_start + \
                 new_sensor_data.sensor_readings + new_sensor_data.sql_query_values_end

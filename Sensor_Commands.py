@@ -54,7 +54,7 @@ def get_sensor_data():
         str_sensor_data = str_sensor_data + "," + str(sensor_os.get_trigger_db_size())
         str_sensor_data = str_sensor_data + "\n"
     except Exception as error_msg:
-        logger.info("Sensor reading failed - " + str(error_msg))
+        logger.error("Sensor reading failed - " + str(error_msg))
 
     return str_sensor_data
 
@@ -92,8 +92,10 @@ while True:
                 os.system("sudo bash /home/sensors/upgrade/update_programs_smb.sh")
                 logger.info('/home/sensors/upgrade/update_programs_smb.sh Finished')
             elif connection_command == "RebootSystem":
+                logger.info('Rebooting System')
                 os.system("sudo reboot")
             elif connection_command == "ShutdownSystem":
+                logger.info('Shutting Down System')
                 os.system("sudo shutdown -h now")
             elif connection_command == "TerminatePrograms":
                 logger.info('Sensor Termination sent by ' + str(client_address[0]))
@@ -106,10 +108,11 @@ while True:
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
             elif connection_command == "UpgradeSystemOS":
+                logger.info('Updating Linux System')
                 os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
             else:
-                logger.info("This didn't work - " + connection_data)
+                logger.info("Invalid command sent:" + connection_data)
             connection.close()
     except Exception as error:
-        logger.info('Socket Failed trying again in 5 Seconds - ' + str(error))
+        logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error))
         sleep(5)

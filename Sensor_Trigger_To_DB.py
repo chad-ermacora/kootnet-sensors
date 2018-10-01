@@ -39,10 +39,12 @@ logger.addHandler(stream_handler)
 
 installed_sensors = Operations_Config.get_installed_sensors()
 installed_config = Operations_Config.get_installed_config()
+Operations_DB.check_database("Trigger")
+
+logger.info("Sensor Recording by Trigger Started")
 
 
 def check_acc(new_data, old_data):
-    logger.debug("new_acc - X:" + str(new_data.acc_x) + " Y:" + str(new_data.acc_y) + " Z:" + str(new_data.acc_z))
     write_to_db = False
 
     if (old_data.acc_x - installed_config.acc_variance) > new_data.acc_x or \
@@ -59,7 +61,6 @@ def check_acc(new_data, old_data):
 
 
 def check_mag(new_data, old_data):
-    logger.debug("new_mag - X:" + str(new_data.mag_x) + " Y:" + str(new_data.mag_y) + " Y:" + str(new_data.mag_z))
     write_to_db = False
 
     if (old_data.mag_x - installed_config.mag_variance) > new_data.mag_x or \
@@ -76,7 +77,6 @@ def check_mag(new_data, old_data):
 
 
 def check_gyro(new_data, old_data):
-    logger.debug("new_gyro - X:" + str(new_data.gyro_x) + " Y:" + str(new_data.gyro_y) + " Z:" + str(new_data.gyro_z))
     write_to_db = False
 
     if (old_data.gyro_x - installed_config.gyro_variance) > new_data.gyro_x or \
@@ -94,16 +94,14 @@ def check_gyro(new_data, old_data):
 
 def write_to_database(trigger_data):
     sql_command = Operations_DB.CreateSQLCommandData()
-    sql_command.database_location = trigger_data.database_location
 
+    sql_command.database_location = trigger_data.database_location
     sql_command.sql_execute = trigger_data.sql_query_start + trigger_data.sensor_types + \
         trigger_data.sql_query_values_start + trigger_data.sensor_readings + trigger_data.sql_query_values_end
 
-    logger.debug("SQL Command - " + str(sql_command.sql_execute))
     Operations_DB.write_to_sql_database(sql_command)
 
 
-Operations_DB.check_database("Trigger")
 if installed_config.write_to_db:
     while True:
         old_trigger_data = Operations_Sensors.get_trigger_sensor_data()
@@ -111,18 +109,29 @@ if installed_config.write_to_db:
         new_trigger_data = Operations_Sensors.get_trigger_sensor_data()
 
         if installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
-            logger.debug("New Accelerometer Triggered - X:" + str(new_trigger_data.acc_x) +
+            logger.debug("Old Accelerometer - X:" + str(old_trigger_data.acc_x) +
+                         " Y:" + str(old_trigger_data.acc_y) + " Z:" + str(old_trigger_data.acc_z))
+            logger.debug("New Accelerometer - X:" + str(new_trigger_data.acc_x) +
                          " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
+
             write_to_database(old_trigger_data)
             write_to_database(new_trigger_data)
+
         elif installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
-            logger.info("New Magnetometer Triggered - X:" + str(new_trigger_data.mag_x) +
-                        " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
+            logger.debug("Old Magnetometer - X:" + str(old_trigger_data.mag_x) +
+                         " Y:" + str(old_trigger_data.mag_y) + " Z:" + str(old_trigger_data.mag_z))
+            logger.debug("New Magnetometer - X:" + str(new_trigger_data.mag_x) +
+                         " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
+
             write_to_database(old_trigger_data)
             write_to_database(new_trigger_data)
+
         elif installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
-            logger.debug("New Gyroscope Triggered - X:" + str(new_trigger_data.gyro_x) +
+            logger.debug("Old Gyroscope - X:" + str(old_trigger_data.gyro_x) +
+                         " Y:" + str(old_trigger_data.gyro_y) + " Z:" + str(old_trigger_data.gyro_z))
+            logger.debug("New Gyroscope - X:" + str(new_trigger_data.gyro_x) +
                          " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
+
             write_to_database(old_trigger_data)
             write_to_database(new_trigger_data)
 else:

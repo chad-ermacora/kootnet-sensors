@@ -35,6 +35,7 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
+
 database_interval_location = '/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite'
 database_trigger_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
 
@@ -166,6 +167,7 @@ def check_database(database_type):
         try:
             conn = sqlite3.connect(database_trigger_location)
             c = conn.cursor()
+
             try:
                 c.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData', nf='DateTime', ft='TEXT'))
                 logger.debug("Table 'TriggerData' - Created")

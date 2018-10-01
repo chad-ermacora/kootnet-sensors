@@ -73,7 +73,7 @@ def print_config_to_screen(config):
     print("Config gyro_variance: " + str(config.gyro_variance))
 
 
-def set_defaults_per_sensor(config):
+def set_default_variances_per_sensor(config):
     installed_sensors = get_installed_sensors()
 
     if installed_sensors.raspberry_pi_sense_hat:
@@ -86,10 +86,12 @@ def set_defaults_per_sensor(config):
     if installed_sensors.pimoroni_lsm303d:
         config.acc_variance = 0.02
         config.mag_variance = 0.02
+
     return config
 
 
 def write_config_to_file(config):
+    logger.debug("Writing Configuration to File")
     try:
         sensor_list_file = open(config_file_location, 'w')
 
@@ -105,6 +107,7 @@ def write_config_to_file(config):
                      str(config.gyro_variance) + " = Custom Gyroscope variance"
 
         sensor_list_file.write(new_config)
+        sensor_list_file.close()
 
     except Exception as error:
         logger.error("Unable to open config file - " + str(error))
@@ -117,6 +120,7 @@ def get_installed_config():
     try:
         config_file = open(config_file_location, 'r')
         config_list = config_file.readlines()
+        config_file.close()
     except Exception as error:
         logger.error("Unable to Load Config File, Creating Default: " + " - " + str(error))
         config_list = []
@@ -158,9 +162,10 @@ def get_installed_config():
             logger.error("Invalid Option in Config - Custom Gyroscope variance" + str(error))
     else:
         logger.debug("Custom Settings Disabled in Config - Loading Sensor Defaults based on Installed Sensors")
-        installed_config = set_defaults_per_sensor(installed_config)
+        installed_config = set_default_variances_per_sensor(installed_config)
 
     write_config_to_file(installed_config)
+
     return installed_config
 
 
@@ -195,6 +200,7 @@ def get_installed_sensors():
             installed_sensors.linux_system = 1
         else:
             installed_sensors.linux_system = 0
+
         if int(sensor_list[2][:1]):
             installed_sensors.raspberry_pi_sense_hat = 1
             installed_sensors.has_acc = 1
@@ -202,20 +208,24 @@ def get_installed_sensors():
             installed_sensors.has_gyro = 1
         else:
             installed_sensors.raspberry_pi_sense_hat = 0
+
         if int(sensor_list[3][:1]):
             installed_sensors.pimoroni_bh1745 = 1
         else:
             installed_sensors.pimoroni_bh1745 = 0
+
         if int(sensor_list[4][:1]):
             installed_sensors.pimoroni_bme680 = 1
         else:
             installed_sensors.pimoroni_bme680 = 0
+
         if int(sensor_list[5][:1]):
             installed_sensors.pimoroni_enviro = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
         else:
             installed_sensors.pimoroni_enviro = 0
+
         if int(sensor_list[6][:1]):
             installed_sensors.pimoroni_lsm303d = 1
             installed_sensors.has_acc = 1
@@ -224,12 +234,15 @@ def get_installed_sensors():
             installed_sensors.mag_variance = 0.02
         else:
             installed_sensors.pimoroni_lsm303d = 0
+
         if int(sensor_list[7][:1]):
             installed_sensors.pimoroni_vl53l1x = 1
         else:
             installed_sensors.pimoroni_vl53l1x = 0
 
         write_installed_sensors_to_file(installed_sensors)
+
         return installed_sensors
+
     except Exception as error:
         logger.error("Problem with Installed Sensor File: " + sensors_installed_file_location + " - " + str(error))
