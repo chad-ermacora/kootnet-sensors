@@ -11,8 +11,8 @@ cp -R /root/eInkUpgrade/* /home/sensors/
 bash /home/sensors/upgrade/update_crontab.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-cp /home/sensors/upgrade/install_config_sensors.sh /home/pi/sensor_edit_configs.sh
-cp /home/sensors/test* /home/pi 2>/dev/null
+cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/config_edit.sh
+ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
 # Make sure permissions are correct
 bash /home/sensors/upgrade/update_file_permissions.sh
 # Save datetime to last updated file

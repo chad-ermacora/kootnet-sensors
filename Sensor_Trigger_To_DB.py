@@ -16,8 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_Trigger
+import Operations_Config
 import Operations_DB
+import Operations_Sensors
 import logging
 from logging.handlers import RotatingFileHandler
 from time import sleep
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
 
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Trigger_DB_log.txt', maxBytes=256000, backupCount=5)
+file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Sensors_log.txt', maxBytes=256000, backupCount=5)
 file_handler.setFormatter(formatter)
 
 stream_handler = logging.StreamHandler()
@@ -36,85 +37,106 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-trigger_db_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
-sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
+installed_sensors = Operations_Config.get_installed_sensors()
+installed_config = Operations_Config.get_installed_config()
+Operations_DB.check_database("Trigger")
 
-sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
-sql_query_values_start = ") VALUES ((CURRENT_TIMESTAMP), "
-sql_query_values_end = ")"
-
-var_motion_variance = 0.045
+logger.info("Sensor Recording by Trigger Started")
 
 
-def write_trigger_readings_to_database(installed_sensors_var):
-    Operations_DB.check_trigger_db(trigger_db_location)
-    sql_query_columns_final = ""
-    sql_query_values_final = ""
+def check_acc(new_data, old_data):
+    write_to_db = False
 
-    count = 0
-    if installed_sensors_var.rp_system:
-        rp_database_data = Operations_Trigger.get_rp_system_readings()
-        sql_query_columns_final = sql_query_columns_final + rp_database_data.sensor_types
-        sql_query_values_final = sql_query_values_final + rp_database_data.sensor_readings
-        count = count + 1
+    if (old_data.acc_x - installed_config.acc_variance) > new_data.acc_x or \
+            new_data.acc_x > (old_data.acc_x + installed_config.acc_variance):
+        write_to_db = True
+    elif (old_data.acc_y - installed_config.acc_variance) > new_data.acc_y or \
+            new_data.acc_y > (old_data.acc_y + installed_config.acc_variance):
+        write_to_db = True
+    elif (old_data.acc_z - installed_config.acc_variance) > new_data.acc_z or \
+            new_data.acc_z > (old_data.acc_z + installed_config.acc_variance):
+        write_to_db = True
 
-
-# def database_write(wvar_motion):
-#     var1 = float(wvar_motion[0])
-#     var2 = float(wvar_motion[1])
-#     var3 = float(wvar_motion[2])
-#     var_host = str(socket.gethostname())
-#     testIP = ""
-#     print(str(var1))
-#     try:
-#         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-#         s.connect(("192.168.10.1", 80))
-#         testIP = (s.getsockname()[0])
-#         s.close()
-#     except BaseException:
-#         testIP = "0.0.0.0"
-#
-#     testIP = str(testIP)
-#     conn = sqlite3.connect(sensorDB_Location)
-#     c = conn.cursor()
-#     print("x: " + str(var1))
-#     print("y: " + str(var2))
-#     print("z: " + str(var3))
-#     c.execute("INSERT OR IGNORE INTO TriggerData (DateTime,IP, X, Y, Z, SensorName) " +
-#               "VALUES ((CURRENT_TIMESTAMP),?,?,?,?,?)", (testIP, var1, var2, var3, var_host))
-#     conn.commit()
-#     c.close()
-#     conn.close()
+    return write_to_db
 
 
-# var_real = motion.accelerometer()
-# database_write(var_real)
-# var_acc_last_x = round(float(var_real[0]), 3)
-# var_acc_last_y = round(float(var_real[1]), 3)
-# var_acc_last_z = round(float(var_real[2]), 3)
-#
-# while True:
-#     sleep(0.25)
-#     var_real = motion.accelerometer()
-#     var_acc_now_x = round(float(var_real[0]), 3)
-#     var_acc_now_y = round(float(var_real[1]), 3)
-#     var_acc_now_z = round(float(var_real[2]), 3)
-#
-#     if var_acc_last_x > (var_acc_now_x + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_x < (var_acc_now_x - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y > (var_acc_now_y + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_y < (var_acc_now_y - var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z > (var_acc_now_z + var_motion_variance):
-#         database_write(var_real)
-#     elif var_acc_last_z < (var_acc_now_z - var_motion_variance):
-#         database_write(var_real)
-#
-#     var_acc_last_x = var_acc_now_x
-#     var_acc_last_y = var_acc_now_y
-#     var_acc_last_z = var_acc_now_z
+def check_mag(new_data, old_data):
+    write_to_db = False
 
-Operations_DB.check_trigger_db(trigger_db_location)
+    if (old_data.mag_x - installed_config.mag_variance) > new_data.mag_x or \
+            new_data.mag_x > (old_data.mag_x + installed_config.mag_variance):
+        write_to_db = True
+    elif (old_data.mag_y - installed_config.mag_variance) > new_data.mag_y or \
+            new_data.mag_y > (old_data.mag_y + installed_config.mag_variance):
+        write_to_db = True
+    elif (old_data.mag_z - installed_config.mag_variance) > new_data.mag_z or \
+            new_data.mag_z > (old_data.mag_z + installed_config.mag_variance):
+        write_to_db = True
+
+    return write_to_db
+
+
+def check_gyro(new_data, old_data):
+    write_to_db = False
+
+    if (old_data.gyro_x - installed_config.gyro_variance) > new_data.gyro_x or \
+            new_data.gyro_x > (old_data.gyro_x + installed_config.gyro_variance):
+        write_to_db = True
+    elif (old_data.gyro_y - installed_config.gyro_variance) > new_data.gyro_y or \
+            new_data.gyro_y > (old_data.gyro_y + installed_config.gyro_variance):
+        write_to_db = True
+    elif (old_data.gyro_z - installed_config.gyro_variance) > new_data.gyro_z or \
+            new_data.gyro_z > (old_data.gyro_z + installed_config.gyro_variance):
+        write_to_db = True
+
+    return write_to_db
+
+
+def write_to_database(trigger_data):
+    sql_command = Operations_DB.CreateSQLCommandData()
+
+    sql_command.database_location = trigger_data.database_location
+    sql_command.sql_execute = trigger_data.sql_query_start + trigger_data.sensor_types + \
+        trigger_data.sql_query_values_start + trigger_data.sensor_readings + trigger_data.sql_query_values_end
+
+    Operations_DB.write_to_sql_database(sql_command)
+
+
+if installed_config.write_to_db:
+    start_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+    write_to_database(start_trigger_data)
+    print(start_trigger_data.get_printable_readings())
+
+    while True:
+        old_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+        sleep(installed_config.sleep_duration_trigger)
+        new_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+
+        if installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
+            logger.debug("Old Accelerometer - X:" + str(old_trigger_data.acc_x) +
+                         " Y:" + str(old_trigger_data.acc_y) + " Z:" + str(old_trigger_data.acc_z))
+            logger.debug("New Accelerometer - X:" + str(new_trigger_data.acc_x) +
+                         " Y:" + str(new_trigger_data.acc_y) + " Z:" + str(new_trigger_data.acc_z))
+
+            write_to_database(old_trigger_data)
+            write_to_database(new_trigger_data)
+
+        elif installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
+            logger.debug("Old Magnetometer - X:" + str(old_trigger_data.mag_x) +
+                         " Y:" + str(old_trigger_data.mag_y) + " Z:" + str(old_trigger_data.mag_z))
+            logger.debug("New Magnetometer - X:" + str(new_trigger_data.mag_x) +
+                         " Y:" + str(new_trigger_data.mag_y) + " Z:" + str(new_trigger_data.mag_z))
+
+            write_to_database(old_trigger_data)
+            write_to_database(new_trigger_data)
+
+        elif installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
+            logger.debug("Old Gyroscope - X:" + str(old_trigger_data.gyro_x) +
+                         " Y:" + str(old_trigger_data.gyro_y) + " Z:" + str(old_trigger_data.gyro_z))
+            logger.debug("New Gyroscope - X:" + str(new_trigger_data.gyro_x) +
+                         " Y:" + str(new_trigger_data.gyro_y) + " Z:" + str(new_trigger_data.gyro_z))
+
+            write_to_database(old_trigger_data)
+            write_to_database(new_trigger_data)
+else:
+    logger.warning("Write to Database Disabled in Config")

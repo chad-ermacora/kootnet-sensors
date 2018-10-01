@@ -22,7 +22,6 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import logging
 from logging.handlers import RotatingFileHandler
-from bh1745 import BH1745
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +40,30 @@ logger.addHandler(stream_handler)
 round_decimal_to = 5
 
 
-def lumen():
-    try:
-        bh1745 = BH1745()
-        bh1745.setup()
-        r, g, b, var_lumen = bh1745.get_rgbc_raw()
-        logger.debug("Pimoroni BH1745 Lumen - OK")
-    except Exception as error:
-        logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
-        var_lumen = 0
+class CreateBH1745:
+    def __init__(self):
+        self.bh1745_import = __import__('bh1745')
 
-    return round(var_lumen, round_decimal_to)
+    def lumen(self):
+        try:
+            bh1745 = self.bh1745_import.BH1745()
+            bh1745.setup()
+            r, g, b, var_lumen = bh1745.get_rgbc_raw()
+            logger.debug("Pimoroni BH1745 Lumen - OK")
+        except Exception as error:
+            logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
+            var_lumen = 0
 
+        return round(var_lumen, round_decimal_to)
 
-def rgb():
-    try:
-        bh1745 = BH1745()
-        bh1745.setup()
-        rgb_red, rgb_green, rgb_blue, var_lumen = bh1745.get_rgbc_raw()
-        logger.debug("Pimoroni BH1745 RGB - OK")
-    except Exception as error:
-        logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
-        rgb_red, rgb_green, rgb_blue = 0, 0, 0
+    def rgb(self):
+        try:
+            bh1745 = self.bh1745_import.BH1745()
+            bh1745.setup()
+            rgb_red, rgb_green, rgb_blue, var_lumen = bh1745.get_rgbc_raw()
+            logger.debug("Pimoroni BH1745 RGB - OK")
+        except Exception as error:
+            logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
+            rgb_red, rgb_green, rgb_blue = 0, 0, 0
 
-    return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)
+        return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)

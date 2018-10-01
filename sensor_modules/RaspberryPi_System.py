@@ -10,7 +10,6 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import logging
 from logging.handlers import RotatingFileHandler
-from gpiozero import CPUTemperature
 
 logger = logging.getLogger(__name__)
 
@@ -29,13 +28,17 @@ logger.addHandler(stream_handler)
 round_decimal_to = 5
 
 
-def cpu_temperature():
-    try:
-        cpu = CPUTemperature()
-        cpu_temp_c = float(cpu.temperature)
-        logger.debug("Raspberry Pi CPU Temperature Sensor - OK")
-    except Exception as error:
-        cpu_temp_c = 0.00000
-        logger.error("Raspberry Pi CPU Temperature Sensor - Failed - " + str(error))
+class CreateRPSystem:
+    def __init__(self):
+        self.gp_import = __import__('gpiozero')
 
-    return round(cpu_temp_c, round_decimal_to)
+    def cpu_temperature(self):
+        try:
+            cpu = self.gp_import.CPUTemperature()
+            cpu_temp_c = float(cpu.temperature)
+            logger.debug("Raspberry Pi CPU Temperature Sensor - OK")
+        except Exception as error:
+            cpu_temp_c = 0.0
+            logger.error("Raspberry Pi CPU Temperature Sensor - Failed - " + str(error))
+
+        return round(cpu_temp_c, round_decimal_to)

@@ -19,7 +19,6 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import logging
 from logging.handlers import RotatingFileHandler
-from lsm303d import LSM303D
 
 logger = logging.getLogger(__name__)
 
@@ -39,25 +38,28 @@ lsm303d_address = 0x1d
 round_decimal_to = 5
 
 
-def magnetometer_xyz():
-    lsm = LSM303D(lsm303d_address)
-    try:
-        mag_x, mag_y, mag_z = lsm.magnetometer()
-        logger.debug("Pimoroni LSM303D Magnetometer XYZ - OK")
-    except Exception as error:
-        mag_x, mag_y, mag_z = 0, 0, 0
-        logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed - " + str(error))
+class CreateLSM303D:
+    def __init__(self):
+        self.lsm303d_import = __import__('lsm303d')
+        self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
 
-    return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+    def magnetometer_xyz(self):
 
+        try:
+            mag_x, mag_y, mag_z = self.lsm.magnetometer()
+            logger.debug("Pimoroni LSM303D Magnetometer XYZ - OK")
+        except Exception as error:
+            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
+            logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed - " + str(error))
 
-def accelerometer_xyz():
-    lsm = LSM303D(lsm303d_address)
-    try:
-        acc_x, acc_y, acc_z = lsm.accelerometer()
-        logger.debug("Pimoroni LSM303D Accelerometer XYZ - OK")
-    except Exception as error:
-        logger.error("Pimoroni LSM303D Accelerometer XYZ - Failed - " + str(error))
-        acc_x, acc_y, acc_z = 0, 0, 0
+        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
-    return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+    def accelerometer_xyz(self):
+        try:
+            acc_x, acc_y, acc_z = self.lsm.accelerometer()
+            logger.debug("Pimoroni LSM303D Accelerometer XYZ - OK")
+        except Exception as error:
+            logger.error("Pimoroni LSM303D Accelerometer XYZ - Failed - " + str(error))
+            acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
+
+        return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)

@@ -19,7 +19,6 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import logging
 from logging.handlers import RotatingFileHandler
-from sense_hat import SenseHat
 
 logger = logging.getLogger(__name__)
 
@@ -36,81 +35,97 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 round_decimal_to = 5
+show_led_message = True
 
 
-def temperature():
-    try:
-        sense = SenseHat()
-        env_temp = float(sense.get_temperature())
-        logger.debug("Raspberry Pi Sense HAT Temperature - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Temperature - Failed - " + str(error))
-        env_temp = 0
+class CreateRPSenseHAT:
+    def __init__(self):
+        self.sense_hat_import = __import__('sense_hat')
+        try:
+            self.sense = self.sense_hat_import.SenseHat()
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
 
-    return round(env_temp, round_decimal_to)
+    def temperature(self):
+        try:
+            env_temp = float(self.sense.get_temperature())
+            logger.debug("Raspberry Pi Sense HAT Temperature - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Temperature - Failed - " + str(error))
+            env_temp = 0
 
+        return round(env_temp, round_decimal_to)
 
-def pressure():
-    try:
-        sense = SenseHat()
-        pressure_hpa = sense.get_pressure()
-        logger.debug("Raspberry Pi Sense HAT Pressure - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Pressure - Failed - " + str(error))
-        pressure_hpa = 0
+    def pressure(self):
+        try:
+            pressure_hpa = self.sense.get_pressure()
+            logger.debug("Raspberry Pi Sense HAT Pressure - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Pressure - Failed - " + str(error))
+            pressure_hpa = 0
 
-    return int(pressure_hpa)
+        return int(pressure_hpa)
 
+    def humidity(self):
+        try:
+            var_humidity = self.sense.get_humidity()
+            logger.debug("Raspberry Pi Sense HAT Humidity - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Humidity - Failed - " + str(error))
+            var_humidity = 0.0
 
-def humidity():
-    try:
-        sense = SenseHat()
-        var_humidity = sense.get_humidity()
-        logger.debug("Raspberry Pi Sense HAT Humidity - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Humidity - Failed - " + str(error))
-        var_humidity = 0
+        return round(var_humidity, round_decimal_to)
 
-    return round(var_humidity, round_decimal_to)
+    def magnetometer_xyz(self):
+        try:
+            tmp_mag = self.sense.get_compass_raw()
+            mag_x, mag_y, mag_z = tmp_mag['x'], tmp_mag['y'], tmp_mag['z']
+            logger.debug("Raspberry Pi Sense HAT Magnetometer XYZ - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Magnetometer XYZ - Failed - " + str(error))
+            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
 
+        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
-def magnetometer_xyz():
-    try:
-        sense = SenseHat()
-        mag_x = sense.get_compass_raw()['x']
-        mag_y = sense.get_compass_raw()['y']
-        mag_z = sense.get_compass_raw()['z']
-        logger.debug("Raspberry Pi Sense HAT Magnetometer XYZ - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Magnetometer XYZ - Failed - " + str(error))
-        mag_x, mag_y, mag_z = 0, 0, 0
+    def accelerometer_xyz(self):
+        try:
+            tmp_acc = self.sense.get_accelerometer_raw()
 
-    return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+            acc_x, acc_y, acc_z = tmp_acc['x'], tmp_acc['y'], tmp_acc['z']
+            logger.debug("Raspberry Pi Sense HAT Accelerometer XYZ - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Accelerometer XYZ - Failed - " + str(error))
+            acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
 
+        return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
 
-def accelerometer_xyz():
-    try:
-        sense = SenseHat()
-        acc_x = sense.get_accelerometer_raw()['x']
-        acc_y = sense.get_accelerometer_raw()['y']
-        acc_z = sense.get_accelerometer_raw()['z']
-        logger.debug("Raspberry Pi Sense HAT Accelerometer XYZ - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Accelerometer XYZ - Failed - " + str(error))
-        acc_x, acc_y, acc_z = 0, 0, 0
+    def gyroscope_xyz(self):
+        try:
+            tmp_gyro = self.sense.get_gyroscope_raw()
+            gyro_x, gyro_y, gyro_z = tmp_gyro['x'], tmp_gyro['y'], tmp_gyro['z']
+            logger.debug("Raspberry Pi Sense HAT Gyroscope XYZ - OK")
+        except Exception as error:
+            logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - Failed - " + str(error))
+            gyro_x, gyro_y, gyro_z = 0.0, 0.0, 0.0
 
-    return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+        return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
+    def display_led_message(self, message):
+        if show_led_message:
+            try:
+                acc_data = self.accelerometer_xyz()
 
-def gyroscope_xyz():
-    try:
-        sense = SenseHat()
-        gyro_x = sense.get_gyroscope_raw()['x']
-        gyro_y = sense.get_gyroscope_raw()['y']
-        gyro_z = sense.get_gyroscope_raw()['z']
-        logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - OK")
-    except Exception as error:
-        logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - Failed - " + str(error))
-        gyro_x, gyro_y, gyro_z = 0, 0, 0
+                if acc_data[0] < -0.5:
+                    self.sense.set_rotation(90)
+                elif acc_data[1] > 0.5:
+                    self.sense.set_rotation(0)
+                elif acc_data[1] < -0.5:
+                    self.sense.set_rotation(180)
+                else:
+                    self.sense.set_rotation(270)
 
-    return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
+                self.sense.show_message(str(message), text_colour=(75, 0, 0))
+            except Exception as error:
+                logger.error("Unable to set Message Orientation - " + str(error))
+        else:
+            logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")
