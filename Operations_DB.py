@@ -63,7 +63,7 @@ class CreateTriggerDatabaseData:
         self.gyro_z = 0.0
 
     def get_printable_readings(self):
-        acc_readings = "Accelerometer X:" + str(self.acc_x) + "  Y:" + str(self.acc_y) + "  Z:" + str(self.acc_z) + "\n"
+        acc_readings = "\nAccelerometer X:" + str(self.acc_x) + "  Y:" + str(self.acc_y) + "  Z:" + str(self.acc_z) + "\n"
         mag_readings = "Magnetometer X:" + str(self.mag_x) + "  Y:" + str(self.mag_y) + "  Z:" + str(self.mag_z) + "\n"
         gyro_readings = "Gyroscope X:" + str(self.gyro_x) + "  Y:" + str(self.gyro_y) + "  Z:" + str(self.gyro_z) + "\n"
 
