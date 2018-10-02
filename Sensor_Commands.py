@@ -72,7 +72,7 @@ while True:
         while True:
             connection, client_address = sock.accept()
             logger.info("Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
-            connection_data = connection.recv(512)
+            connection_data = connection.recv(4096)
             connection_data = str(connection_data)
             connection_command = connection_data[2:-1]
 
@@ -108,7 +108,7 @@ while True:
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
             elif connection_command == "UpgradeSystemOS":
-                logger.info('Updating Linux System')
+                logger.info('Updating Operating System & rebooting')
                 os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
             else:
                 logger.info("Invalid command sent:" + connection_data)
