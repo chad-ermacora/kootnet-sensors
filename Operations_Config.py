@@ -58,9 +58,9 @@ class CreateConfig:
         self.enable_custom = 0
         self.sleep_duration_interval = 300
         self.sleep_duration_trigger = 0.1
-        self.acc_variance = 0.0
-        self.mag_variance = 0.0
-        self.gyro_variance = 0.0
+        self.acc_variance = 99999.0
+        self.mag_variance = 99999.0
+        self.gyro_variance = 99999.0
 
 
 def print_config_to_screen(config):

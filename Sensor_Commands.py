@@ -19,6 +19,7 @@
 import os
 import socket
 import pickle
+import Operations_Config
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
@@ -59,6 +60,49 @@ def get_sensor_data():
     return str_sensor_data
 
 
+def set_sensor_config(config_data):
+    split_config = config_data.split(',')
+    new_config = Operations_Config.CreateConfig()
+
+    try:
+        new_config.write_to_db = int(split_config[1])
+    except Exception as error1:
+        logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
+
+    try:
+        new_config.sleep_duration_interval = int(split_config[2])
+    except Exception as error1:
+        logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
+
+    try:
+        new_config.sleep_duration_trigger = float(split_config[3])
+    except Exception as error1:
+        logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
+
+    try:
+        new_config.enable_custom = int(split_config[4])
+    except Exception as error1:
+        logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
+
+    try:
+        new_config.acc_variance = float(split_config[5])
+    except Exception as error1:
+        logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
+
+    try:
+        new_config.mag_variance = float(split_config[6])
+    except Exception as error1:
+        logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
+
+    try:
+        new_config.gyro_variance = float(split_config[7])
+    except Exception as error1:
+        logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
+
+    Operations_Config.write_config_to_file(new_config)
+    os.system("sudo killall python3")
+
+
 while True:
     try:
         # Create a TCP/IP socket and Bind the socket to the port
@@ -72,8 +116,8 @@ while True:
         while True:
             connection, client_address = sock.accept()
             logger.info("Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
-            connection_data = connection.recv(4096)
-            connection_data = str(connection_data)
+            tmp_connection_data = connection.recv(4096)
+            connection_data = str(tmp_connection_data)
             connection_command = connection_data[2:-1]
 
             if connection_command == "CheckOnlineStatus":
@@ -100,18 +144,22 @@ while True:
             elif connection_command == "TerminatePrograms":
                 logger.info('Sensor Termination sent by ' + str(client_address[0]))
                 os.system("sudo killall python3")
-            elif connection_data[2:16] == "ChangeHostName":
+            elif connection_command == "UpgradeSystemOS":
+                logger.info('Updating Operating System & rebooting')
+                os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
+            elif tmp_connection_data.decode()[:16] == "SetConfiguration":
+                logger.info('Setting Sensor Configuration')
+                set_sensor_config(tmp_connection_data.decode())
+            elif tmp_connection_data.decode()[:14] == "ChangeHostName":
                 try:
-                    new_host = connection_data[16:-1]
+                    new_host = tmp_connection_data.decode()[14:]
                     os.system("sudo hostnamectl set-hostname " + new_host)
                     logger.info("Hostname Changed to " + new_host + " - OK")
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
-            elif connection_command == "UpgradeSystemOS":
-                logger.info('Updating Operating System & rebooting')
-                os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
             else:
                 logger.info("Invalid command sent:" + connection_data)
+
             connection.close()
     except Exception as error:
         logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error))
