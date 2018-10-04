@@ -84,7 +84,7 @@ def set_default_variances_per_sensor(config):
         config.acc_variance = 0.05
         config.mag_variance = 600.0
     if installed_sensors.pimoroni_lsm303d:
-        config.acc_variance = 0.02
+        config.acc_variance = 0.05
         config.mag_variance = 0.02
 
     return config
