@@ -66,6 +66,13 @@ def set_sensor_config(config_data):
 
     try:
         new_config.write_to_db = int(split_config[1])
+        if new_config.write_to_db:
+            os.system("sudo systemctl enable SensorInterval && sudo systemctl enable SensorTrigger")
+            os.system("sudo systemctl start SensorInterval && sudo systemctl start SensorTrigger")
+        else:
+            os.system("sudo systemctl disable SensorInterval && sudo systemctl disable SensorTrigger")
+            os.system("sudo systemctl stop SensorInterval && sudo systemctl stop SensorTrigger")
+
     except Exception as error1:
         logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
 
