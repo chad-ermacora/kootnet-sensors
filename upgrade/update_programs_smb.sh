@@ -20,8 +20,8 @@ cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
 sleep 1
 umount /mnt/supernas
 sleep 1
-# Update crontab
-bash /home/sensors/upgrade/update_crontab.sh
+# Update Auto Start Applications
+bash /home/sensors/upgrade/update_autostart.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_smb.sh /home/pi/update_sensor_smb.sh
 cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/config_edit.sh

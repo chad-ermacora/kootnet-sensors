@@ -84,7 +84,7 @@ EOF
 fi
 printf '\n'
 # Install crontab entries
-bash /home/sensors/upgrade/update_crontab.sh
+bash /home/sensors/upgrade/update_autostart.sh
 # Make sure permissions are correct
 bash /home/sensors/upgrade/update_file_permissions.sh
 printf '\nPrinting Config and Testing Sensors\n\n'
