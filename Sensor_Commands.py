@@ -44,16 +44,19 @@ sensor_os = Linux_System.CreateLinuxSystem
 
 
 def get_sensor_data():
+    sensor_config = Operations_Config.get_installed_config()
     str_sensor_data = ""
+
     try:
-        str_sensor_data = str(sensor_os.get_hostname())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_ip())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_sys_datetime())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_uptime())
-        str_sensor_data = str_sensor_data + "," + str(round(sensor_system.cpu_temperature(), 2))
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_interval_db_size())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_trigger_db_size())
-        str_sensor_data = str_sensor_data + "\n"
+        str_sensor_data = str_sensor_data + str(sensor_os.get_hostname()) + \
+                          "," + str(sensor_os.get_ip()) + \
+                          "," + str(sensor_os.get_sys_datetime()) + \
+                          "," + str(sensor_os.get_uptime()) + \
+                          "," + str(round(sensor_system.cpu_temperature(), 2)) + \
+                          "," + str(sensor_os.get_interval_db_size()) + \
+                          "," + str(sensor_os.get_trigger_db_size()) + \
+                          ",DB: " + str(sensor_config.write_to_db) + \
+                          " / Custom: " + str(sensor_config.enable_custom) + "\n"
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))
 
