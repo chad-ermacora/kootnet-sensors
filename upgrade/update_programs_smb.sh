@@ -20,7 +20,7 @@ cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
 sleep 1
 umount /mnt/supernas
 sleep 1
-# Update Auto Start Applications
+# Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_smb.sh /home/pi/update_sensor_smb.sh
@@ -34,3 +34,4 @@ bash /home/sensors/upgrade/update_file_permissions.sh
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' Updated with SMB ' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
+systemctl restart SensorCommands 2>/dev/null

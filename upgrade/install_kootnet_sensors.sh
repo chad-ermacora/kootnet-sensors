@@ -72,6 +72,9 @@ network={
 EOF
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
+  printf 'Copying KootNet Sensor Service Files to System\n\n'
+  cp /home/sensors/auto_start/Sensor* /etc/systemd/system
+  systemctl daemon-reload 2>/dev/null
   # Upgrade System
   printf '\nStarting System Update, this may take awhile ...\n\n'
   # Remove wolfram-engine due to size of upgrades
@@ -83,7 +86,7 @@ EOF
   pip3 install gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2
 fi
 printf '\n'
-# Install crontab entries
+# Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh
 # Make sure permissions are correct
 bash /home/sensors/upgrade/update_file_permissions.sh

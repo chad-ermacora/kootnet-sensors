@@ -19,3 +19,4 @@ bash /home/sensors/upgrade/update_file_permissions.sh
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' Updated with E-Ink Controller ' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
+systemctl restart SensorCommands 2>/dev/null

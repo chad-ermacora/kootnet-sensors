@@ -56,7 +56,7 @@ def get_sensor_data():
                           "," + str(sensor_os.get_interval_db_size()) + \
                           "," + str(sensor_os.get_trigger_db_size()) + \
                           ",DB: " + str(sensor_config.write_to_db) + \
-                          " / Custom: " + str(sensor_config.enable_custom) + "\n"
+                          " / Custom: " + str(sensor_config.enable_custom)
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))
 
@@ -137,33 +137,33 @@ while True:
                 connection.sendall(pickle.dumps(sensor_data))
                 logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_e-Ink.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_e-Ink.sh")
                 logger.info('/home/sensors/upgrade/update_programs_e-Ink.sh Finished')
             elif connection_command == "UpgradeOnline":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_online.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_online.sh")
                 logger.info('/home/sensors/upgrade/update_programs_online.sh Finished')
             elif connection_command == "UpgradeSMB":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_smb.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_smb.sh")
                 logger.info('/home/sensors/upgrade/update_programs_smb.sh Finished')
             elif connection_command == "RebootSystem":
                 logger.info('Rebooting System')
-                os.system("sudo reboot")
+                os.system("reboot")
             elif connection_command == "ShutdownSystem":
                 logger.info('Shutting Down System')
-                os.system("sudo shutdown -h now")
+                os.system("shutdown -h now")
             elif connection_command == "TerminatePrograms":
                 logger.info('Sensor Termination sent by ' + str(client_address[0]))
-                os.system("sudo killall python3")
+                os.system("killall python3")
             elif connection_command == "UpgradeSystemOS":
                 logger.info('Updating Operating System & rebooting')
-                os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
+                os.system("apt-get update && sudo apt-get upgrade -y && sudo reboot")
             elif tmp_connection_data.decode()[:16] == "SetConfiguration":
                 logger.info('Setting Sensor Configuration')
                 set_sensor_config(tmp_connection_data.decode())
             elif tmp_connection_data.decode()[:14] == "ChangeHostName":
                 try:
                     new_host = tmp_connection_data.decode()[14:]
-                    os.system("sudo hostnamectl set-hostname " + new_host)
+                    os.system("hostnamectl set-hostname " + new_host)
                     logger.info("Hostname Changed to " + new_host + " - OK")
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
@@ -173,4 +173,4 @@ while True:
             connection.close()
     except Exception as error:
         logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error))
-        sleep(5)
+        sleep(2)

@@ -8,13 +8,13 @@ else
   bash /home/sensors/upgrade/install_kootnet_sensors.sh
   printf '\nProceeding with Online Upgrade\n\n'
 fi
-#  Download and Upgrade Sensor Programs
+# Download and Upgrade Sensor Programs
 mkdir /root/SensorHTTPUpgrade
 cd /root/SensorHTTPUpgrade
 wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
 cp -R /root/SensorHTTPUpgrade/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
 printf '\n\nDownloads Complete\n\n'
-# Update Auto Start Applications
+# Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
@@ -28,3 +28,4 @@ bash /home/sensors/upgrade/update_file_permissions.sh
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' Updated with HTTP ' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
+systemctl restart SensorCommands 2>/dev/null
