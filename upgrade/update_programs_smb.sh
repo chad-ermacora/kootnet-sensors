@@ -6,9 +6,8 @@
 SMB_SERVER="//192.168.10.7"
 SMB_FOLDER="/sensor-rp"
 CIFS_OPTIONS="username=myself,password='123'"
-CIFS_MOUNT="/mnt/supernas"
 
-mkdir $CIFS_MOUNT
+mkdir /mnt/supernas 2>/dev/null
 clear
 bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
@@ -20,11 +19,11 @@ else
 fi
 # Download and Upgrade Sensor Programs off SMB
 printf 'Connecting to SMB and Copying Files\n\n'
-mount -t cifs $SMB_SERVER$SMB_FOLDER $CIFS_MOUNT -o $CIFS_OPTIONS
+mount -t cifs $SMB_SERVER$SMB_FOLDER /mnt/supernas -o $CIFS_OPTIONS
 sleep 1
-cp -R $CIFS_MOUNT/* /home/sensors
+cp -R /mnt/supernas/* /home/sensors
 sleep 1
-umount $CIFS_MOUNT
+umount /mnt/supernas
 sleep 1
 # Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh

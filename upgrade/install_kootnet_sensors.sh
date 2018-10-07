@@ -9,24 +9,7 @@ then
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
 else
-  # Create folders, download files to root/SensorInstallFiles/, then install
-  rm -R /root/SensorInstallFiles 2>/dev/null
-  mkdir /root/SensorInstallFiles 2>/dev/null
-  mkdir /home/sensors 2>/dev/null
-  cd /root/SensorInstallFiles
-  wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
-  clear
-  printf '\nFiles Downloaded from KootNet HTTP Server\n\nStarting Install\n'
-  cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
-  # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-  cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-  cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
-  cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/upgrade_online_clean.sh
-  cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/upgrade_smb_clean.sh
-  ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
   printf '\nInstalled Config Files, Opening for edit\n'
-  # Create "installed_sensors.txt" file
-  bash /home/sensors/upgrade/check_installed_sensors.sh
   # Add and edit TCP/IP v4 Network + Wireless
   cat >> /etc/network/interfaces << "EOF"
 
@@ -44,32 +27,26 @@ iface wlan0 inet static
   dns-nameservers 192.168.10.1
   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 EOF
+  bash /home/sensors/upgrade/update_wifi_networks.sh
   date > /home/pi/KootNetSensors/zInstalled.txt
-  cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
-# Be sure to update to your wireless network
-#
-# Which ever wireless network has more signal strength
-# Is the one that will connect, assuming settings are correct
-#
-# To add additional wireless network connections
-# Copy one of the network blocks, including both { } and
-# Paste it at the bottom of the file & Modify as needed
-
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-country=CA
-
-network={
-        ssid="SensorWifi"
-        psk="2505512335"
-        key_mgmt=WPA-PSK
-}
-network={
-        ssid="KI-WiFi"
-        psk="2505510208"
-        key_mgmt=WPA-PSK
-}
-EOF
+  # Create folders, download files to root/SensorInstallFiles/, then install
+  rm -R /root/SensorInstallFiles 2>/dev/null
+  mkdir /root/SensorInstallFiles 2>/dev/null
+  mkdir /home/sensors 2>/dev/null
+  mkdir /home/pi/KootNetSensors 2>/dev/null
+  cd /root/SensorInstallFiles
+  wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
+  clear
+  printf '\nFiles Downloaded from KootNet HTTP Server\n\nStarting Install\n'
+  cp -R /root/SensorInstallFiles/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
+  # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
+  cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
+  cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/sensor_edit_configs.sh
+  cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/upgrade_online_clean.sh
+  cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/upgrade_smb_clean.sh
+  ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
+  # Create "installed_sensors.txt" file
+  bash /home/sensors/upgrade/check_installed_sensors.sh
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   printf 'Copying KootNet Sensor Service Files to System\n\n'

@@ -5,7 +5,7 @@ HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/utils/koot_net_sensors/Installers/raw_files/sensor-rp"
 
 clear
-bash /home/sensors/upgrade/check_installed_sensors.sh
+bash /home/sensors/upgrade/check_installed_sensors.sh 2>/dev/null
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
   printf '\nSensors Already Installed, Proceeding with Online Upgrade\n\n'
