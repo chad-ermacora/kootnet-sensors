@@ -93,4 +93,4 @@ bash /home/sensors/upgrade/update_file_permissions.sh
 printf '\nPrinting Config and Testing Sensors\n\n'
 killall python3
 python3 /home/sensors/test_sensors.py
-printf '\nPlease wait up to 60 Seconds for Sensor to come online\n'
+printf '\nPlease wait up to 20 Seconds for Sensor to come online\n'
