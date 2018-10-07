@@ -1,8 +1,14 @@
 # This will update KootNet Sensor Files over SMB
-# In crontab under root, scripts are auto run to keep 3 programs running as well as
-# The primary interval sensor program recording to a SQL DB. 
-# Later to do -> apparently anything added to cli during run, such as ./script.sh me me2
-# Is accessible in the script through $1 $2 etc.
+# Change SMB to match your windows share & Login
+# Make sure SMB_FOLDER points to the root directory holding the Sensor Upgrade Files
+
+# SMB Options
+SMB_SERVER="//192.168.10.7"
+SMB_FOLDER="/sensor-rp"
+CIFS_OPTIONS="username=myself,password='123'"
+CIFS_MOUNT="/mnt/supernas"
+
+mkdir $CIFS_MOUNT
 clear
 bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
@@ -14,11 +20,11 @@ else
 fi
 # Download and Upgrade Sensor Programs off SMB
 printf 'Connecting to SMB and Copying Files\n\n'
-mount -t cifs //192.168.7.15/Public /mnt/supernas -o username=myself,password='123'
+mount -t cifs $SMB_SERVER$SMB_FOLDER $CIFS_MOUNT -o $CIFS_OPTIONS
 sleep 1
-cp -R /mnt/supernas/RaspberryPi/Sensors/ClientSensors/* /home/sensors
+cp -R $CIFS_MOUNT/* /home/sensors
 sleep 1
-umount /mnt/supernas
+umount $CIFS_MOUNT
 sleep 1
 # Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh

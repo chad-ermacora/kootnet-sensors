@@ -1,4 +1,9 @@
-# Upgrade from Online HTTP server 
+# Upgrade from Online HTTP server
+
+# HTTP Server Options
+HTTP_SERVER="http://kootenay-networks.com"
+HTTP_FOLDER="/utils/koot_net_sensors/Installers/raw_files/sensor-rp"
+
 clear
 bash /home/sensors/upgrade/check_installed_sensors.sh
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
@@ -11,8 +16,8 @@ fi
 # Download and Upgrade Sensor Programs
 mkdir /root/SensorHTTPUpgrade
 cd /root/SensorHTTPUpgrade
-wget -r -np -nH -R "index.html*" http://kootenay-networks.com/utils/koot_net_sensors/Installers/raw_files/sensor-rp/
-cp -R /root/SensorHTTPUpgrade/utils/koot_net_sensors/Installers/raw_files/sensor-rp/* /home/sensors/
+wget -r -np -nH -R "index.html*" $HTTP_SERVER$HTTP_FOLDER/
+cp -R /root/SensorHTTPUpgrade$HTTP_FOLDER/* /home/sensors/
 printf '\n\nDownloads Complete\n\n'
 # Update & Enable Auto Start Applications
 bash /home/sensors/upgrade/update_autostart.sh
