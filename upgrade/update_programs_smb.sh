@@ -12,6 +12,8 @@ if [ -f "/home/sensors/upgrade/chk_install.sh" ]
 then
   bash /home/sensors/upgrade/chk_install.sh
 else
+  mkdir /home/sensors 2>/dev/null
+  mkdir /home/supernas 2>/dev/null
   mount -t cifs $SMB_SERVER$SMB_FOLDER /mnt/supernas -o $CIFS_OPTIONS
   sleep 1
   bash /mnt/supernas/upgrade/chk_install.sh

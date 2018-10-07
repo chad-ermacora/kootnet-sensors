@@ -8,6 +8,7 @@ if [ -f "/home/sensors/upgrade/chk_install.sh" ]
 then
   bash /home/sensors/upgrade/chk_install.sh
 else
+  mkdir /home/sensors 2>/dev/null
   wget $HTTP_SERVER$HTTP_FOLDER/upgrade/chk_install.sh -P /home/sensors/
   chmod +x /home/sensors/chk_install.sh
   bash /home/sensors/chk_install.sh
