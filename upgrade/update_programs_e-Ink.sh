@@ -7,14 +7,14 @@ mkdir /root/eInkUpgrade 2>/dev/null
 cd /root/eInkUpgrade
 wget -r -np -nH -R "index.html*" http://192.168.10.5:8009/
 cp -R /root/eInkUpgrade/* /home/sensors/
-# Update Auto Start Applications
-bash /home/sensors/upgrade/update_autostart.sh
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-cp /home/sensors/upgrade/install_kootnet_sensors.sh /home/pi/config_edit.sh
-ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
-# Make sure permissions are correct
-bash /home/sensors/upgrade/update_file_permissions.sh
+cp /home/sensors/upgrade/edit_config.sh /home/pi/edit_config.sh
+cp /home/sensors/test_sensors.py /home/pi/test_sensors.py
+# Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
+bash /home/sensors/upgrade/set_autostart.sh
+bash /home/sensors/upgrade/set_wifi_networks.sh
+bash /home/sensors/upgrade/set_permissions.sh
 # Save datetime to last updated file
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' Updated with E-Ink Controller ' >> /home/pi/KootNetSensors/LastUpdated.txt
