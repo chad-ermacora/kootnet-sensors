@@ -70,11 +70,11 @@ def set_sensor_config(config_data):
     try:
         new_config.write_to_db = int(split_config[1])
         if new_config.write_to_db:
-            os.system("sudo systemctl enable SensorInterval && sudo systemctl enable SensorTrigger")
-            os.system("sudo systemctl start SensorInterval && sudo systemctl start SensorTrigger")
+            os.system("systemctl enable SensorInterval && systemctl enable SensorTrigger")
+            os.system("systemctl start SensorInterval && systemctl start SensorTrigger")
         else:
-            os.system("sudo systemctl disable SensorInterval && sudo systemctl disable SensorTrigger")
-            os.system("sudo systemctl stop SensorInterval && sudo systemctl stop SensorTrigger")
+            os.system("systemctl disable SensorInterval && systemctl disable SensorTrigger")
+            os.system("systemctl stop SensorInterval && systemctl stop SensorTrigger")
 
     except Exception as error1:
         logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
@@ -110,7 +110,7 @@ def set_sensor_config(config_data):
         logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
     Operations_Config.write_config_to_file(new_config)
-    os.system("sudo killall python3")
+    os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
 
 
 while True:
@@ -151,12 +151,25 @@ while True:
             elif connection_command == "ShutdownSystem":
                 logger.info('Shutting Down System')
                 os.system("shutdown -h now")
-            elif connection_command == "TerminatePrograms":
+            elif connection_command == "RestartServices":
                 logger.info('Sensor Termination sent by ' + str(client_address[0]))
-                os.system("killall python3")
+                os.system("systemctl restart SensorInterval && " +
+                          "systemctl restart SensorTrigger && " +
+                          "systemctl restart SensorCommands")
             elif connection_command == "UpgradeSystemOS":
                 logger.info('Updating Operating System & rebooting')
-                os.system("apt-get update && sudo apt-get upgrade -y && sudo reboot")
+                os.system("apt-get update && apt-get upgrade -y && reboot")
+            elif connection_command == "GetConfiguration":
+                temp_config = Operations_Config.get_installed_config()
+                str_config = str(temp_config.write_to_db) + "," + \
+                    str(temp_config.sleep_duration_interval) + "," + \
+                    str(temp_config.sleep_duration_trigger) + "," + \
+                    str(temp_config.enable_custom) + "," + \
+                    str(temp_config.acc_variance) + "," + \
+                    str(temp_config.mag_variance) + "," + \
+                    str(temp_config.gyro_variance)
+                connection.sendall(pickle.dumps(str_config))
+                logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif tmp_connection_data.decode()[:16] == "SetConfiguration":
                 logger.info('Setting Sensor Configuration')
                 set_sensor_config(tmp_connection_data.decode())
