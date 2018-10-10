@@ -230,8 +230,6 @@ def get_installed_sensors():
             installed_sensors.pimoroni_lsm303d = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
-            installed_sensors.acc_variance = 0.02
-            installed_sensors.mag_variance = 0.02
         else:
             installed_sensors.pimoroni_lsm303d = 0
 
