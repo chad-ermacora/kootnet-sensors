@@ -19,6 +19,7 @@
 import os
 import socket
 import pickle
+import Operations_Config
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
@@ -43,20 +44,73 @@ sensor_os = Linux_System.CreateLinuxSystem
 
 
 def get_sensor_data():
+    sensor_config = Operations_Config.get_installed_config()
     str_sensor_data = ""
+
     try:
-        str_sensor_data = str(sensor_os.get_hostname())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_ip())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_sys_datetime())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_uptime())
-        str_sensor_data = str_sensor_data + "," + str(round(sensor_system.cpu_temperature(), 2))
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_interval_db_size())
-        str_sensor_data = str_sensor_data + "," + str(sensor_os.get_trigger_db_size())
-        str_sensor_data = str_sensor_data + "\n"
+        str_sensor_data = str_sensor_data + str(sensor_os.get_hostname()) + \
+                          "," + str(sensor_os.get_ip()) + \
+                          "," + str(sensor_os.get_sys_datetime()) + \
+                          "," + str(sensor_os.get_uptime()) + \
+                          "," + str(round(sensor_system.cpu_temperature(), 2)) + \
+                          "," + str(sensor_os.get_interval_db_size()) + \
+                          "," + str(sensor_os.get_trigger_db_size()) + \
+                          ",DB: " + str(sensor_config.write_to_db) + \
+                          " / Custom: " + str(sensor_config.enable_custom)
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))
 
     return str_sensor_data
+
+
+def set_sensor_config(config_data):
+    split_config = config_data.split(',')
+    new_config = Operations_Config.CreateConfig()
+
+    try:
+        new_config.write_to_db = int(split_config[1])
+        if new_config.write_to_db:
+            os.system("systemctl enable SensorInterval && systemctl enable SensorTrigger")
+            os.system("systemctl start SensorInterval && systemctl start SensorTrigger")
+        else:
+            os.system("systemctl disable SensorInterval && systemctl disable SensorTrigger")
+            os.system("systemctl stop SensorInterval && systemctl stop SensorTrigger")
+
+    except Exception as error1:
+        logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
+
+    try:
+        new_config.sleep_duration_interval = int(split_config[2])
+    except Exception as error1:
+        logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
+
+    try:
+        new_config.sleep_duration_trigger = float(split_config[3])
+    except Exception as error1:
+        logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
+
+    try:
+        new_config.enable_custom = int(split_config[4])
+    except Exception as error1:
+        logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
+
+    try:
+        new_config.acc_variance = float(split_config[5])
+    except Exception as error1:
+        logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
+
+    try:
+        new_config.mag_variance = float(split_config[6])
+    except Exception as error1:
+        logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
+
+    try:
+        new_config.gyro_variance = float(split_config[7])
+    except Exception as error1:
+        logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
+
+    Operations_Config.write_config_to_file(new_config)
+    os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
 
 
 while True:
@@ -72,8 +126,8 @@ while True:
         while True:
             connection, client_address = sock.accept()
             logger.info("Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
-            connection_data = connection.recv(512)
-            connection_data = str(connection_data)
+            tmp_connection_data = connection.recv(4096)
+            connection_data = str(tmp_connection_data)
             connection_command = connection_data[2:-1]
 
             if connection_command == "CheckOnlineStatus":
@@ -83,36 +137,57 @@ while True:
                 connection.sendall(pickle.dumps(sensor_data))
                 logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_e-Ink.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_e-Ink.sh")
                 logger.info('/home/sensors/upgrade/update_programs_e-Ink.sh Finished')
             elif connection_command == "UpgradeOnline":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_online.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_online.sh")
                 logger.info('/home/sensors/upgrade/update_programs_online.sh Finished')
             elif connection_command == "UpgradeSMB":
-                os.system("sudo bash /home/sensors/upgrade/update_programs_smb.sh")
+                os.system("bash /home/sensors/upgrade/update_programs_smb.sh")
                 logger.info('/home/sensors/upgrade/update_programs_smb.sh Finished')
             elif connection_command == "RebootSystem":
                 logger.info('Rebooting System')
-                os.system("sudo reboot")
+                os.system("reboot")
             elif connection_command == "ShutdownSystem":
                 logger.info('Shutting Down System')
-                os.system("sudo shutdown -h now")
-            elif connection_command == "TerminatePrograms":
+                os.system("shutdown -h now")
+            elif connection_command == "RestartServices":
                 logger.info('Sensor Termination sent by ' + str(client_address[0]))
-                os.system("sudo killall python3")
-            elif connection_data[2:16] == "ChangeHostName":
+                os.system("systemctl restart SensorInterval && " +
+                          "systemctl restart SensorTrigger && " +
+                          "systemctl restart SensorCommands")
+            elif connection_command == "UpgradeSystemOS":
+                logger.info('Updating Operating System & rebooting')
+                os.system("apt-get update && apt-get upgrade -y && reboot")
+            elif connection_command == "GetConfiguration":
+                temp_config = Operations_Config.get_installed_config()
+                str_config = str(temp_config.write_to_db) + "," + \
+                    str(temp_config.sleep_duration_interval) + "," + \
+                    str(temp_config.sleep_duration_trigger) + "," + \
+                    str(temp_config.enable_custom) + "," + \
+                    str(temp_config.acc_variance) + "," + \
+                    str(temp_config.mag_variance) + "," + \
+                    str(temp_config.gyro_variance)
+                connection.sendall(pickle.dumps(str_config))
+                logger.info('Sensor Data Sent to ' + str(client_address[0]))
+            elif tmp_connection_data.decode()[:16] == "SetConfiguration":
+                logger.info('Setting Sensor Configuration')
+                set_sensor_config(tmp_connection_data.decode())
+            elif tmp_connection_data.decode()[:14] == "ChangeHostName":
                 try:
-                    new_host = connection_data[16:-1]
-                    os.system("sudo hostnamectl set-hostname " + new_host)
+                    new_host = tmp_connection_data.decode()[14:]
+                    os.system("hostnamectl set-hostname " + new_host)
                     logger.info("Hostname Changed to " + new_host + " - OK")
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
-            elif connection_command == "UpgradeSystemOS":
-                logger.info('Updating Linux System')
-                os.system("sudo apt-get update && sudo apt-get upgrade -y && sudo reboot")
+            elif tmp_connection_data.decode()[:11] == "SetDateTime":
+                logger.info('Setting System DateTime')
+                new_datetime = tmp_connection_data.decode()[11:]
+                os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
             else:
                 logger.info("Invalid command sent:" + connection_data)
+
             connection.close()
     except Exception as error:
         logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error))
-        sleep(5)
+        sleep(2)

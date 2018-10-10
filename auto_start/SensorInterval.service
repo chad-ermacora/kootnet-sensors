@@ -1,0 +1,15 @@
+[Unit]
+Description=KootNet Sensors - Interval SQL Recording
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+WorkingDirectory=/home/sensors
+RestartSec=5s
+User=root
+Group=pi
+ExecStart=/usr/bin/python3 /home/sensors/Sensor_Interval_To_DB.py
+
+[Install]
+WantedBy=multi-user.target

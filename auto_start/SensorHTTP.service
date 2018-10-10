@@ -1,0 +1,14 @@
+[Unit]
+Description=KootNet Sensors - lighttpd Instance
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+User=pi
+Group=pi
+ExecStart=/usr/sbin/lighttpd -D -f /home/sensors/lighttpd.conf
+
+[Install]
+WantedBy=multi-user.target
