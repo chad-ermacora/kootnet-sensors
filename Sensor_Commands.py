@@ -180,6 +180,10 @@ while True:
                     logger.info("Hostname Changed to " + new_host + " - OK")
                 except Exception as error:
                     logger.info("Hostname Change Failed - " + str(error))
+            elif tmp_connection_data.decode()[:11] == "SetDateTime":
+                logger.info('Setting System DateTime')
+                new_datetime = tmp_connection_data.decode()[11:]
+                os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
             else:
                 logger.info("Invalid command sent:" + connection_data)
 

@@ -57,7 +57,7 @@ class CreateConfig:
         self.write_to_db = 1
         self.enable_custom = 0
         self.sleep_duration_interval = 300
-        self.sleep_duration_trigger = 0.1
+        self.sleep_duration_trigger = 0.15
         self.acc_variance = 99999.0
         self.mag_variance = 99999.0
         self.gyro_variance = 99999.0
@@ -77,14 +77,14 @@ def set_default_variances_per_sensor(config):
     installed_sensors = get_installed_sensors()
 
     if installed_sensors.raspberry_pi_sense_hat:
-        config.acc_variance = 0.3
-        config.mag_variance = 1.0
-        config.gyro_variance = 0.01
+        config.acc_variance = 0.5
+        config.mag_variance = 2.0
+        config.gyro_variance = 0.05
     if installed_sensors.pimoroni_enviro:
         config.acc_variance = 0.05
         config.mag_variance = 600.0
     if installed_sensors.pimoroni_lsm303d:
-        config.acc_variance = 0.05
+        config.acc_variance = 0.1
         config.mag_variance = 0.02
 
     return config
