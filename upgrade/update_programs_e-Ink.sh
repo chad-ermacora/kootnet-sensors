@@ -10,12 +10,7 @@ cd /root/eInkUpgrade
 wget -r -np -nH -R "index.html*" $EINK_HTTP_URL/
 cp -R /root/eInkUpgrade/* /home/sensors/
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-cp /home/sensors/upgrade/update_programs_online.sh /home/pi/update_sensor_online.sh
-cp /home/sensors/upgrade/edit_sensor_config.sh /home/pi
-cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/upgrade_online_clean.sh
-cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/upgrade_smb_clean.sh
-# Use Link due to Sensor Test needing modules in the app dir
-ln -sf /home/sensors/test_sensors.py /home/pi/test_sensors.py
+bash /home/sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /home/sensors/upgrade/set_autostart.sh
 bash /home/sensors/upgrade/set_wifi_networks.sh

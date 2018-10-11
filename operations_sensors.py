@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_DB
-import Operations_Config
+import operations_db
+import operations_config
 import sensor_modules.Linux_OS
 import sensor_modules.RaspberryPi_System
 import sensor_modules.RaspberryPi_SenseHAT
@@ -27,8 +27,8 @@ import sensor_modules.Pimoroni_Enviro
 import sensor_modules.Pimoroni_LSM303D
 import sensor_modules.Pimoroni_VL53L1X
 
-installed_sensors = Operations_Config.get_installed_sensors()
-installed_config = Operations_Config.get_installed_config()
+installed_sensors = operations_config.get_installed_sensors()
+installed_config = operations_config.get_installed_config()
 
 
 def print_sql_command_data_to_screen(readings):
@@ -37,7 +37,7 @@ def print_sql_command_data_to_screen(readings):
 
 
 def get_interval_sensor_readings():
-    interval_data = Operations_DB.CreateIntervalDatabaseData()
+    interval_data = operations_db.CreateIntervalDatabaseData()
 
     count = 0
     if installed_sensors.linux_system:
@@ -139,7 +139,7 @@ def get_interval_sensor_readings():
 
 
 def get_trigger_sensor_data():
-    trigger_data = Operations_DB.CreateTriggerDatabaseData()
+    trigger_data = operations_db.CreateTriggerDatabaseData()
 
     count = 0
     if installed_sensors.linux_system:

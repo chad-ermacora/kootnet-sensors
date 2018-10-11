@@ -19,7 +19,7 @@
 import os
 import socket
 import pickle
-import Operations_Config
+import operations_config
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
@@ -44,7 +44,7 @@ sensor_os = Linux_System.CreateLinuxSystem
 
 
 def get_sensor_data():
-    sensor_config = Operations_Config.get_installed_config()
+    sensor_config = operations_config.get_installed_config()
     str_sensor_data = ""
 
     try:
@@ -65,7 +65,7 @@ def get_sensor_data():
 
 def set_sensor_config(config_data):
     split_config = config_data.split(',')
-    new_config = Operations_Config.CreateConfig()
+    new_config = operations_config.CreateConfig()
 
     try:
         new_config.write_to_db = int(split_config[1])
@@ -109,7 +109,7 @@ def set_sensor_config(config_data):
     except Exception as error1:
         logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
-    Operations_Config.write_config_to_file(new_config)
+    operations_config.write_config_to_file(new_config)
     os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
 
 
@@ -160,7 +160,7 @@ while True:
                 logger.info('Updating Operating System & rebooting')
                 os.system("apt-get update && apt-get upgrade -y && reboot")
             elif connection_command == "GetConfiguration":
-                temp_config = Operations_Config.get_installed_config()
+                temp_config = operations_config.get_installed_config()
                 str_config = str(temp_config.write_to_db) + "," + \
                     str(temp_config.sleep_duration_interval) + "," + \
                     str(temp_config.sleep_duration_trigger) + "," + \

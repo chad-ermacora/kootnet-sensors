@@ -9,7 +9,7 @@ WorkingDirectory=/home/sensors
 RestartSec=5s
 User=root
 Group=pi
-ExecStart=/usr/bin/python3 /home/sensors/Sensor_Trigger_To_DB.py
+ExecStart=/usr/bin/python3 /home/sensors/trigger_to_db.py
 
 [Install]
 WantedBy=multi-user.target

@@ -16,9 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_Config
-import Operations_DB
-import Operations_Sensors
+import operations_config
+import operations_db
+import operations_sensors
 import logging
 from logging.handlers import RotatingFileHandler
 from time import sleep
@@ -37,9 +37,9 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-installed_sensors = Operations_Config.get_installed_sensors()
-installed_config = Operations_Config.get_installed_config()
-Operations_DB.check_database("Trigger")
+installed_sensors = operations_config.get_installed_sensors()
+installed_config = operations_config.get_installed_config()
+operations_db.check_database("Trigger")
 
 logger.info("Sensor Recording by Trigger Started")
 
@@ -93,24 +93,24 @@ def check_gyro(new_data, old_data):
 
 
 def write_to_database(trigger_data):
-    sql_command = Operations_DB.CreateSQLCommandData()
+    sql_command = operations_db.CreateSQLCommandData()
 
     sql_command.database_location = trigger_data.database_location
     sql_command.sql_execute = trigger_data.sql_query_start + trigger_data.sensor_types + \
         trigger_data.sql_query_values_start + trigger_data.sensor_readings + trigger_data.sql_query_values_end
 
-    Operations_DB.write_to_sql_database(sql_command)
+    operations_db.write_to_sql_database(sql_command)
 
 
 if installed_config.write_to_db:
-    start_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+    start_trigger_data = operations_sensors.get_trigger_sensor_data()
     write_to_database(start_trigger_data)
     print(start_trigger_data.get_printable_readings())
 
     while True:
-        old_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+        old_trigger_data = operations_sensors.get_trigger_sensor_data()
         sleep(installed_config.sleep_duration_trigger)
-        new_trigger_data = Operations_Sensors.get_trigger_sensor_data()
+        new_trigger_data = operations_sensors.get_trigger_sensor_data()
 
         if installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
             logger.debug("Old Accelerometer - X:" + str(old_trigger_data.acc_x) +
