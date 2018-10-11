@@ -48,7 +48,7 @@ def get_sensor_data():
     str_sensor_data = ""
 
     try:
-        str_sensor_data = str_sensor_data + str(sensor_os.get_hostname()) + \
+        str_sensor_data = str(sensor_os.get_hostname()) + \
                           "," + str(sensor_os.get_ip()) + \
                           "," + str(sensor_os.get_sys_datetime()) + \
                           "," + str(sensor_os.get_uptime()) + \
