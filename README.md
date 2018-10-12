@@ -10,7 +10,7 @@ PC Control Center Program: https://github.com/chad-ermacora/sensor-control-cente
 Install Instructions & Downloads: http://kootenay-networks.com/?page_id=236
 
 
-Controlling one or more Sensors
+Controlling the Sensor
 ================================
 
 "KootNet Sensors - PC Control Center" was created to interact with up to 16 sensors at a time over a TCP/IP network.
@@ -53,7 +53,7 @@ SensorTrigger
 Records Trigger Sensors to a SQL Database when a "Trigger Variance" is exceeded.
 
 
-Disable and Stop Services
+Stop & Disable Services
 ==========================
 
 Run the following command(s) in the sensors terminal or SSH session to stop the service and prevent it from starting.
