@@ -1,13 +1,13 @@
-# Raspberry Pi Programs for KootNet Sensors
+# KootNet Sensors - Raspberry Pi Sensor Software
 Python3 programs for the Raspberry Pi that record sensors to SQLite3 Databases.  It also contains a TCP/IP network service for remotely interacting with the sensor.
 
 Install instructions can be found below.  If followed, the install script will download all nessisary files, install 3 services and reboot the sensor.  Once the sensor boots back up, it will start recording sensor data as per settings applyed during setup.
 
 Project Website: http://kootenay-networks.com/?page_id=170
 
-PC Control Center Program: https://github.com/chad-ermacora/sensor-control-center
+KootNet Sensors Downloads and Instructions: http://kootenay-networks.com/?page_id=236
 
-Install Instructions & Downloads: http://kootenay-networks.com/?page_id=236
+PC Control Center Program: https://github.com/chad-ermacora/sensor-control-center
 
 
 Controlling the Sensor
