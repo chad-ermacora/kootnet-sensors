@@ -63,18 +63,18 @@ SensorCommands
 ---------------
 
 ```
-sudo systemctl disable SensorCommands && sudo systemctl stop SensorCommands.
+sudo systemctl disable SensorCommands && sudo systemctl stop SensorCommands
 ```
 
 SensorInterval
 ---------------
 
 ```
-sudo systemctl disable SensorInterval && sudo systemctl stop SensorInterval.
+sudo systemctl disable SensorInterval && sudo systemctl stop SensorInterval
 ```
 
 SensorTrigger
 ---------------
 ```
-sudo systemctl disable SensorTrigger && sudo systemctl stop SensorTrigger.
+sudo systemctl disable SensorTrigger && sudo systemctl stop SensorTrigger
 ```
