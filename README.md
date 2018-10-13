@@ -7,13 +7,15 @@ Install instructions can be found below.  If followed, the install script will d
 
 [KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)
 
-[PC Control Center Program](https://github.com/chad-ermacora/sensor-control-center)
+[PC Control Center](https://github.com/chad-ermacora/sensor-control-center)
 
 
 Controlling the Sensor
 -------------------------
 
-**KootNet Sensors - PC Control Center** was created to interact with up to 16 sensors at a time over a TCP/IP network. See the [Link](https://github.com/chad-ermacora/sensor-control-center) above for more information.
+**KootNet Sensors - PC Control Center** was created to interact with up to 16 sensors at a time, over a TCP/IP network.
+
+See [PC Control Center](https://github.com/chad-ermacora/sensor-control-center) for more information.
 
 
 DB Recording Types
