@@ -18,16 +18,6 @@ Controlling the Sensor
 See [PC Control Center](https://github.com/chad-ermacora/sensor-control-center) for more information.
 
 
-DB Recording Types
---------------------
-
-**Interval**
->Sensors that are recorded at a set Interval in Seconds (Default 5 Min).
-
-**Trigger**
->Sensors that are continually monitored and only recorded when a "Trigger Variance" is exceeded.
-
-
 Services
 ----------
 
@@ -40,12 +30,12 @@ The following are Linux systemd services that automatically start with the syste
 >Network "Server" to receive commands from the PC Control Center program.
 
 **SensorInterval**
->Records Interval Sensors to a SQL Database at a set Interval.
+>Records Interval Sensors to a SQLite3 Database at a set Interval in Seconds (Default 5 Min).
 
 **SensorTrigger**
->Records Trigger Sensors to a SQL Database when a "Trigger Variance" is exceeded.
+>Continually monitors Sensors for a exceeded "Trigger Variance", at which point it records all Trigger readings to a SQLite3 database.
 
------------------
+
 ##### Run the following command(s) in a sensors terminal or SSH session to stop the service and prevent it from starting.
 
 **SensorHTTP**
