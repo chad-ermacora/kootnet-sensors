@@ -56,10 +56,10 @@ def get_sensor_data():
                           "," + str(sensor_os.get_uptime()) + \
                           "," + str(round(sensor_system.cpu_temperature(), 2)) + \
                           "," + str(round(free_disk / (2**30), 2)) + \
-                          " GB," + str(sensor_os.get_interval_db_size()) + \
+                          "," + str(sensor_os.get_interval_db_size()) + \
                           "," + str(sensor_os.get_trigger_db_size()) + \
-                          ",DB: " + str(sensor_config.write_to_db) + \
-                          " / Custom: " + str(sensor_config.enable_custom)
+                          "," + str(sensor_config.write_to_db) + \
+                          "," + str(sensor_config.enable_custom)
         print(str_sensor_data)
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))

@@ -34,6 +34,10 @@ sleep 1
 rm /home/pi/KootNetSensors/clean_upgrade_online.sh 2>/dev/null
 rm /home/pi/KootNetSensors/clean_upgrade_smb.sh 2>/dev/null
 rm /home/pi/KootNetSensors/sensor_type.txt 2>/dev/null
+rm /home/pi//KootNetSensors/*.sh* 2>/dev/null
+rm /home/pi/KootNetSensors/*.py* 2>/dev/null
+rm /home/pi/*.sh* 2>/dev/null
+rm /home/pi/*.py* 2>/dev/null
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 bash /home/sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
