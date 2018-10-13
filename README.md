@@ -67,3 +67,7 @@ sudo systemctl disable SensorInterval && sudo systemctl stop SensorInterval
 ```
 sudo systemctl disable SensorTrigger && sudo systemctl stop SensorTrigger
 ```
+
+Sensor Hardware Units
+---------------------
+![KootNet Sensors - Raspberry Pi Sensors](SensorHardware.jpg "Raspberry Pi Sensors")
