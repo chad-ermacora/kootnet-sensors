@@ -37,10 +37,15 @@ Services
 
 The following are Linux systemd services that automatically start with the system and restart if terminated. 
 
+SensorHTTP
+---------------
+
+Lighttpd instance for downloading databases.
+
 SensorCommands
 ---------------
 
-Network "Server" to receieve commands from the PC Control Center program.
+Network "Server" to receive commands from the PC Control Center program.
 
 SensorInterval
 ---------------
@@ -58,6 +63,13 @@ Stop & Disable Services
 
 Run the following command(s) in the sensors terminal or SSH session to stop the service and prevent it from starting.
 
+
+SensorHTTP
+---------------
+
+```
+sudo systemctl disable SensorHTTP && sudo systemctl stop SensorHTTP
+```
 
 SensorCommands
 ---------------
