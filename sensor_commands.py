@@ -23,6 +23,7 @@ import operations_config
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
+from shutil import disk_usage
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -46,6 +47,7 @@ sensor_os = Linux_System.CreateLinuxSystem
 def get_sensor_data():
     sensor_config = operations_config.get_installed_config()
     str_sensor_data = ""
+    free_disk = disk_usage("/")[2]
 
     try:
         str_sensor_data = str(sensor_os.get_hostname()) + \
@@ -53,10 +55,12 @@ def get_sensor_data():
                           "," + str(sensor_os.get_sys_datetime()) + \
                           "," + str(sensor_os.get_uptime()) + \
                           "," + str(round(sensor_system.cpu_temperature(), 2)) + \
-                          "," + str(sensor_os.get_interval_db_size()) + \
+                          "," + str(round(free_disk / (2**30), 2)) + \
+                          " GB," + str(sensor_os.get_interval_db_size()) + \
                           "," + str(sensor_os.get_trigger_db_size()) + \
                           ",DB: " + str(sensor_config.write_to_db) + \
                           " / Custom: " + str(sensor_config.enable_custom)
+        print(str_sensor_data)
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))
 
