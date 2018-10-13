@@ -36,7 +36,7 @@ The following are Linux systemd services that automatically start with the syste
 >Continually monitors Sensors for a exceeded "Trigger Variance", at which point it records all Trigger readings to a SQLite3 database.
 
 
-#### The following Terminal commands disable and stop the service.
+### The following Terminal commands disable and stop the service.
 
 **SensorHTTP**
 ```
