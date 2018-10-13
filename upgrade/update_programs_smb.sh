@@ -13,7 +13,7 @@ then
   bash /home/sensors/upgrade/chk_install.sh
 else
   mkdir /home/sensors 2>/dev/null
-  mkdir /home/supernas 2>/dev/null
+  mkdir /mnt/supernas 2>/dev/null
   mount -t cifs $SMB_SERVER$SMB_FOLDER /mnt/supernas -o $CIFS_OPTIONS
   sleep 1
   bash /mnt/supernas/upgrade/chk_install.sh
@@ -34,12 +34,12 @@ sleep 1
 rm /home/pi/KootNetSensors/clean_upgrade_online.sh 2>/dev/null
 rm /home/pi/KootNetSensors/clean_upgrade_smb.sh 2>/dev/null
 rm /home/pi/KootNetSensors/sensor_type.txt 2>/dev/null
+rm /home/pi//KootNetSensors/*.sh* 2>/dev/null
+rm /home/pi/KootNetSensors/*.py* 2>/dev/null
+rm /home/pi/*.sh* 2>/dev/null
+rm /home/pi/*.py* 2>/dev/null
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-cp /home/sensors/upgrade/update_programs_smb.sh /home/pi/update_sensor_smb.sh
-cp /home/sensors/upgrade/edit_sensor_config.sh /home/pi
-cp /home/sensors/upgrade/clean_upgrade_online.sh /home/pi/KootNetSensors/upgrade_online_clean.sh
-cp /home/sensors/upgrade/clean_upgrade_smb.sh /home/pi/KootNetSensors/upgrade_smb_clean.sh
-cp -f /home/sensors/test_sensors.py /home/pi
+bash /home/sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /home/sensors/upgrade/set_autostart.sh
 bash /home/sensors/upgrade/set_wifi_networks.sh

@@ -16,9 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import Operations_Config
-import Operations_DB
-import Operations_Sensors
+import operations_config
+import operations_db
+import operations_sensors
 from time import sleep
 import logging
 from logging.handlers import RotatingFileHandler
@@ -37,9 +37,9 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
-installed_sensors = Operations_Config.get_installed_sensors()
-installed_config = Operations_Config.get_installed_config()
-Operations_DB.check_database("Interval")
+installed_sensors = operations_config.get_installed_sensors()
+installed_config = operations_config.get_installed_config()
+operations_db.check_database("Interval")
 
 logger.info("Sensor Recording by Interval Started")
 
@@ -49,22 +49,22 @@ Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
 if installed_config.write_to_db == 1:
-    first_sensor_data = Operations_Sensors.get_interval_sensor_readings()
+    first_sensor_data = operations_sensors.get_interval_sensor_readings()
     print("Sensor Types: " + first_sensor_data.sensor_types + "\n\n" +
           "Sensor Readings: " + first_sensor_data.sensor_readings + "\n")
 
     while True:
-        new_sensor_data = Operations_Sensors.get_interval_sensor_readings()
+        new_sensor_data = operations_sensors.get_interval_sensor_readings()
 
         if len(new_sensor_data.sensor_readings) > 0:
-            sql_command_data = Operations_DB.CreateSQLCommandData()
+            sql_command_data = operations_db.CreateSQLCommandData()
 
             sql_command_data.database_location = new_sensor_data.database_location
             sql_command_data.sql_execute = new_sensor_data.sql_query_start + \
                 new_sensor_data.sensor_types + new_sensor_data.sql_query_values_start + \
                 new_sensor_data.sensor_readings + new_sensor_data.sql_query_values_end
 
-            Operations_DB.write_to_sql_database(sql_command_data)
+            operations_db.write_to_sql_database(sql_command_data)
         else:
             logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
         sleep(installed_config.sleep_duration_interval)

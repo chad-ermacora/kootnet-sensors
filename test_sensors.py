@@ -1,9 +1,9 @@
-import Operations_Sensors
-import Operations_Config
+import operations_sensors
+import operations_config
 
 print("*** Configuration Print ***")
-Operations_Config.print_config_to_screen(Operations_Config.get_installed_config())
+operations_config.print_config_to_screen(operations_config.get_installed_config())
 print("\n*** Interval Sensor Data test ***")
-Operations_Sensors.print_sql_command_data_to_screen(Operations_Sensors.get_interval_sensor_readings())
+operations_sensors.print_sql_command_data_to_screen(operations_sensors.get_interval_sensor_readings())
 print("\n\n*** Trigger Sensor Data test ***")
-Operations_Sensors.print_sql_command_data_to_screen(Operations_Sensors.get_trigger_sensor_data())
+operations_sensors.print_sql_command_data_to_screen(operations_sensors.get_trigger_sensor_data())

@@ -19,10 +19,11 @@
 import os
 import socket
 import pickle
-import Operations_Config
+import operations_config
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
+from shutil import disk_usage
 import logging
 from logging.handlers import RotatingFileHandler
 
@@ -43,29 +44,48 @@ sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem
 
 
-def get_sensor_data():
-    sensor_config = Operations_Config.get_installed_config()
-    str_sensor_data = ""
+def get_system_information():
+    sensor_config = operations_config.get_installed_config()
+    free_disk = disk_usage("/")[2]
 
     try:
-        str_sensor_data = str_sensor_data + str(sensor_os.get_hostname()) + \
-                          "," + str(sensor_os.get_ip()) + \
-                          "," + str(sensor_os.get_sys_datetime()) + \
-                          "," + str(sensor_os.get_uptime()) + \
-                          "," + str(round(sensor_system.cpu_temperature(), 2)) + \
-                          "," + str(sensor_os.get_interval_db_size()) + \
-                          "," + str(sensor_os.get_trigger_db_size()) + \
-                          ",DB: " + str(sensor_config.write_to_db) + \
-                          " / Custom: " + str(sensor_config.enable_custom)
+        str_sensor_data = str(sensor_os.get_hostname()) + \
+            "," + str(sensor_os.get_ip()) + \
+            "," + str(sensor_os.get_sys_datetime()) + \
+            "," + str(sensor_os.get_uptime()) + \
+            "," + str(round(sensor_system.cpu_temperature(), 2)) + \
+            "," + str(round(free_disk / (2**30), 2)) + \
+            "," + str(sensor_os.get_interval_db_size()) + \
+            "," + str(sensor_os.get_trigger_db_size()) + \
+            "," + str(sensor_config.write_to_db) + \
+            "," + str(sensor_config.enable_custom)
     except Exception as error_msg:
         logger.error("Sensor reading failed - " + str(error_msg))
+        str_sensor_data = "Sensor Unit, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0"
 
     return str_sensor_data
 
 
+def get_config_information():
+    temp_config = operations_config.get_installed_config()
+    try:
+        tmp_str_config = str(temp_config.sleep_duration_interval) + \
+            "," + str(temp_config.sleep_duration_trigger) + \
+            "," + str(temp_config.write_to_db) + \
+            "," + str(temp_config.enable_custom) + \
+            "," + str(temp_config.acc_variance) + \
+            "," + str(temp_config.mag_variance) + \
+            "," + str(temp_config.gyro_variance)
+    except Exception as error_msg:
+        logger.error("Getting sensor config failed - " + str(error_msg))
+        tmp_str_config = "0, 0, 0, 0, 0, 0, 0"
+
+    return tmp_str_config
+
+
 def set_sensor_config(config_data):
     split_config = config_data.split(',')
-    new_config = Operations_Config.CreateConfig()
+    new_config = operations_config.CreateConfig()
 
     try:
         new_config.write_to_db = int(split_config[1])
@@ -109,7 +129,7 @@ def set_sensor_config(config_data):
     except Exception as error1:
         logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
-    Operations_Config.write_config_to_file(new_config)
+    operations_config.write_config_to_file(new_config)
     os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
 
 
@@ -133,7 +153,7 @@ while True:
             if connection_command == "CheckOnlineStatus":
                 logger.info('Sensor Checked')
             elif connection_command == "GetSystemData":
-                sensor_data = get_sensor_data()
+                sensor_data = get_system_information()
                 connection.sendall(pickle.dumps(sensor_data))
                 logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
@@ -160,14 +180,7 @@ while True:
                 logger.info('Updating Operating System & rebooting')
                 os.system("apt-get update && apt-get upgrade -y && reboot")
             elif connection_command == "GetConfiguration":
-                temp_config = Operations_Config.get_installed_config()
-                str_config = str(temp_config.write_to_db) + "," + \
-                    str(temp_config.sleep_duration_interval) + "," + \
-                    str(temp_config.sleep_duration_trigger) + "," + \
-                    str(temp_config.enable_custom) + "," + \
-                    str(temp_config.acc_variance) + "," + \
-                    str(temp_config.mag_variance) + "," + \
-                    str(temp_config.gyro_variance)
+                str_config = get_config_information()
                 connection.sendall(pickle.dumps(str_config))
                 logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif tmp_connection_data.decode()[:16] == "SetConfiguration":
