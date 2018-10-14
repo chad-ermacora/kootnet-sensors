@@ -40,38 +40,6 @@ database_interval_location = '/home/pi/KootNetSensors/data/SensorIntervalDatabas
 database_trigger_location = '/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite'
 
 
-class CreateTriggerDatabaseData:
-    def __init__(self):
-        self.database_location = database_trigger_location
-        self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
-        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
-        self.sql_query_values_end = ")"
-        # self.num_sensors_installed = 0
-        self.sensor_types = ""
-        self.sensor_readings = ""
-
-        self.acc_x = 0.0
-        self.acc_y = 0.0
-        self.acc_z = 0.0
-
-        self.mag_x = 0.0
-        self.mag_y = 0.0
-        self.mag_z = 0.0
-
-        self.gyro_x = 0.0
-        self.gyro_y = 0.0
-        self.gyro_z = 0.0
-
-    def get_printable_readings(self):
-        acc_readings = "\nAccelerometer X:" + str(self.acc_x) + "  Y:" + str(self.acc_y) + "  Z:" + str(self.acc_z) + "\n"
-        mag_readings = "Magnetometer X:" + str(self.mag_x) + "  Y:" + str(self.mag_y) + "  Z:" + str(self.mag_z) + "\n"
-        gyro_readings = "Gyroscope X:" + str(self.gyro_x) + "  Y:" + str(self.gyro_y) + "  Z:" + str(self.gyro_z) + "\n"
-
-        all_readings_str = acc_readings + mag_readings + gyro_readings
-
-        return all_readings_str
-
-
 class CreateIntervalDatabaseData:
     def __init__(self):
         self.database_location = database_interval_location
@@ -83,176 +51,186 @@ class CreateIntervalDatabaseData:
         self.sensor_readings = ""
 
 
+class CreateTriggerDatabaseData:
+    def __init__(self):
+        self.database_location = database_trigger_location
+        self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
+        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
+        self.sql_query_values_end = ")"
+        self.sensor_types = ""
+        self.sensor_readings = ""
+
+
 class CreateSQLCommandData:
     def __init__(self):
         self.database_location = []
         self.sql_execute = ""
 
 
-def check_database(database_type):
-    if database_type == "Interval":
+def check_database_interval():
+    try:
+        db_connection = sqlite3.connect(database_interval_location)
+        db_cursor = db_connection.cursor()
+
         try:
-            db_connection = sqlite3.connect(database_interval_location)
-            db_cursor = db_connection.cursor()
-
-            try:
-                db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='IntervalData', nf='DateTime', ft='TEXT'))
-                logger.debug("Table 'IntervalData' - Created")
-            except Exception as error:
-                logger.debug("Table 'IntervalData' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorName', ct='TEXT'))
-                logger.debug("COLUMN 'SensorName' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'SensorName' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='IP', ct='TEXT'))
-                logger.debug("COLUMN 'IP' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'IP' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorUpTime', ct='TEXT'))
-                logger.debug("COLUMN 'SensorUpTime' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'SensorUpTime' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SystemTemp', ct='TEXT'))
-                logger.debug("COLUMN 'SystemTemp' -  Created")
-            except Exception as error:
-                logger.debug("COLUMN 'SystemTemp' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='EnvironmentTemp', ct='TEXT'))
-                logger.debug("COLUMN 'EnvironmentTemp' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'EnvironmentTemp' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Pressure', ct='TEXT'))
-                logger.debug("COLUMN 'Pressure' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Pressure' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Humidity', ct='TEXT'))
-                logger.debug("COLUMN 'Humidity' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Humidity' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Lumen', ct='TEXT'))
-                logger.debug("COLUMN 'Lumen' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Lumen' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Red', ct='TEXT'))
-                logger.debug("COLUMN 'Red' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Red' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Green', ct='TEXT'))
-                logger.debug("COLUMN 'Green' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Green' - " + str(error))
-
-            try:
-                db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Blue', ct='TEXT'))
-                logger.debug("COLUMN 'Blue' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Blue' - " + str(error))
-
-            db_connection.commit()
-            db_connection.close()
+            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='IntervalData', nf='DateTime', ft='TEXT'))
+            logger.debug("Table 'IntervalData' - Created")
         except Exception as error:
-            logger.error("DB Connection Failed: " + str(error))
+            logger.debug("Table 'IntervalData' - " + str(error))
 
-    elif database_type == "Trigger":
         try:
-            conn = sqlite3.connect(database_trigger_location)
-            c = conn.cursor()
-
-            try:
-                c.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData', nf='DateTime', ft='TEXT'))
-                logger.debug("Table 'TriggerData' - Created")
-            except Exception as error:
-                logger.debug("Table 'TriggerData' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='SensorName', ct='TEXT'))
-                logger.debug("Column 'SensorName' - Created")
-            except Exception as error:
-                logger.debug("Column 'SensorName' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='IP', ct='TEXT'))
-                logger.debug("Column 'IP' - Created")
-            except Exception as error:
-                logger.debug("Column 'IP' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_X', ct='TEXT'))
-                logger.debug("Column 'acc_X' - Created")
-            except Exception as error:
-                logger.debug("Column 'acc_X' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Y', ct='TEXT'))
-                logger.debug("Column 'acc_Y' - Created")
-            except Exception as error:
-                logger.debug("Column 'acc_Y' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Z', ct='TEXT'))
-                logger.debug("Column 'acc_Z' - Created")
-            except Exception as error:
-                logger.debug("Column 'acc_Z' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_X', ct='TEXT'))
-                logger.debug("COLUMN 'mg_X' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'mg_X' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Y', ct='TEXT'))
-                logger.debug("COLUMN 'mg_Y' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'mg_Y' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Z', ct='TEXT'))
-                logger.debug("COLUMN 'mg_Z' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'mg_Z' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_X', ct='TEXT'))
-                logger.debug("COLUMN 'Gyro_X' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Gyro_X' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Y', ct='TEXT'))
-                logger.debug("COLUMN 'Gyro_Y' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Gyro_Y' - " + str(error))
-
-            try:
-                c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Z', ct='TEXT'))
-                logger.debug("COLUMN 'Gyro_Z' - Created")
-            except Exception as error:
-                logger.debug("COLUMN 'Gyro_Z' - " + str(error))
-
-            c.close()
-            conn.close()
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorName', ct='TEXT'))
+            logger.debug("COLUMN 'SensorName' - Created")
         except Exception as error:
-            logger.error("DB Connection Failed: " + str(error))
+            logger.debug("COLUMN 'SensorName' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='IP', ct='TEXT'))
+            logger.debug("COLUMN 'IP' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'IP' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorUpTime', ct='TEXT'))
+            logger.debug("COLUMN 'SensorUpTime' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'SensorUpTime' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SystemTemp', ct='TEXT'))
+            logger.debug("COLUMN 'SystemTemp' -  Created")
+        except Exception as error:
+            logger.debug("COLUMN 'SystemTemp' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='EnvironmentTemp', ct='TEXT'))
+            logger.debug("COLUMN 'EnvironmentTemp' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'EnvironmentTemp' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Pressure', ct='TEXT'))
+            logger.debug("COLUMN 'Pressure' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Pressure' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Humidity', ct='TEXT'))
+            logger.debug("COLUMN 'Humidity' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Humidity' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Lumen', ct='TEXT'))
+            logger.debug("COLUMN 'Lumen' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Lumen' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Red', ct='TEXT'))
+            logger.debug("COLUMN 'Red' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Red' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Green', ct='TEXT'))
+            logger.debug("COLUMN 'Green' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Green' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Blue', ct='TEXT'))
+            logger.debug("COLUMN 'Blue' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Blue' - " + str(error))
+
+        db_connection.commit()
+        db_connection.close()
+    except Exception as error:
+        logger.error("DB Connection Failed: " + str(error))
+
+
+def check_database_trigger():
+    try:
+        conn = sqlite3.connect(database_trigger_location)
+        c = conn.cursor()
+
+        try:
+            c.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData', nf='DateTime', ft='TEXT'))
+            logger.debug("Table 'TriggerData' - Created")
+        except Exception as error:
+            logger.debug("Table 'TriggerData' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='SensorName', ct='TEXT'))
+            logger.debug("Column 'SensorName' - Created")
+        except Exception as error:
+            logger.debug("Column 'SensorName' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='IP', ct='TEXT'))
+            logger.debug("Column 'IP' - Created")
+        except Exception as error:
+            logger.debug("Column 'IP' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_X', ct='TEXT'))
+            logger.debug("Column 'acc_X' - Created")
+        except Exception as error:
+            logger.debug("Column 'acc_X' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Y', ct='TEXT'))
+            logger.debug("Column 'acc_Y' - Created")
+        except Exception as error:
+            logger.debug("Column 'acc_Y' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Z', ct='TEXT'))
+            logger.debug("Column 'acc_Z' - Created")
+        except Exception as error:
+            logger.debug("Column 'acc_Z' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_X', ct='TEXT'))
+            logger.debug("COLUMN 'mg_X' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_X' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Y', ct='TEXT'))
+            logger.debug("COLUMN 'mg_Y' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_Y' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Z', ct='TEXT'))
+            logger.debug("COLUMN 'mg_Z' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'mg_Z' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_X', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_X' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_X' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Y', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_Y' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_Y' - " + str(error))
+
+        try:
+            c.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Z', ct='TEXT'))
+            logger.debug("COLUMN 'Gyro_Z' - Created")
+        except Exception as error:
+            logger.debug("COLUMN 'Gyro_Z' - " + str(error))
+
+        c.close()
+        conn.close()
+    except Exception as error:
+        logger.error("DB Connection Failed: " + str(error))
 
 
 def write_to_sql_database(sql_data):

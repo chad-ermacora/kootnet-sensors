@@ -20,6 +20,7 @@ import os
 import socket
 import pickle
 import operations_config
+import operations_sensors
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 import sensor_modules.Linux_OS as Linux_System
 from time import sleep
@@ -133,6 +134,14 @@ def set_sensor_config(config_data):
     os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
 
 
+def get_sensor_readings():
+    interval_data = operations_sensors.get_interval_sensor_readings()
+    trigger_data = operations_sensors.get_trigger_sensor_readings()
+    return_data = [interval_data, trigger_data]
+
+    return return_data
+
+
 while True:
     try:
         # Create a TCP/IP socket and Bind the socket to the port
@@ -153,8 +162,8 @@ while True:
             if connection_command == "CheckOnlineStatus":
                 logger.info('Sensor Checked')
             elif connection_command == "GetSystemData":
-                sensor_data = get_system_information()
-                connection.sendall(pickle.dumps(sensor_data))
+                system_info = get_system_information()
+                connection.sendall(pickle.dumps(system_info))
                 logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
                 os.system("bash /home/sensors/upgrade/update_programs_e-Ink.sh")
@@ -197,10 +206,15 @@ while True:
                 logger.info('Setting System DateTime')
                 new_datetime = tmp_connection_data.decode()[11:]
                 os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
+            elif connection_command == "GetSensorData":
+                logger.info('Sending Sensor Data')
+                sensor_data = get_sensor_readings()
+                connection.sendall(pickle.dumps(sensor_data))
             else:
                 logger.info("Invalid command sent:" + connection_data)
 
             connection.close()
+
     except Exception as error:
         logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error))
         sleep(2)

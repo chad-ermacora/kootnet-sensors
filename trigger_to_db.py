@@ -39,7 +39,7 @@ logger.addHandler(stream_handler)
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
-operations_db.check_database("Trigger")
+operations_db.check_database_trigger()
 
 logger.info("Sensor Recording by Trigger Started")
 
@@ -103,14 +103,15 @@ def write_to_database(trigger_data):
 
 
 if installed_config.write_to_db:
-    start_trigger_data = operations_sensors.get_trigger_sensor_data()
+    start_trigger_data = operations_sensors.get_trigger_sensor_readings()
     write_to_database(start_trigger_data)
-    print(start_trigger_data.get_printable_readings())
+    print("Sensor Types: " + str(start_trigger_data.sensor_types))
+    print("Sensor Readings: " + str(start_trigger_data.sensor_readings))
 
     while True:
-        old_trigger_data = operations_sensors.get_trigger_sensor_data()
+        old_trigger_data = operations_sensors.get_trigger_sensor_readings()
         sleep(installed_config.sleep_duration_trigger)
-        new_trigger_data = operations_sensors.get_trigger_sensor_data()
+        new_trigger_data = operations_sensors.get_trigger_sensor_readings()
 
         if installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
             logger.debug("Old Accelerometer - X:" + str(old_trigger_data.acc_x) +

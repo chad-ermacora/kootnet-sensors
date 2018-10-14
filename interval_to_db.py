@@ -39,7 +39,7 @@ logger.addHandler(stream_handler)
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
-operations_db.check_database("Interval")
+operations_db.check_database_interval()
 
 logger.info("Sensor Recording by Interval Started")
 
