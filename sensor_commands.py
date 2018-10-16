@@ -217,6 +217,46 @@ while True:
                 sensor_data = get_sensor_readings()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetHostName":
+                logger.info('Sending Sensor HostName')
+                sensor_data = operations_sensors.get_hostname()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetSystemUptime":
+                logger.info('Sending Sensor System Uptime')
+                sensor_data = operations_sensors.get_system_uptime()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetCPUTemperature":
+                logger.info('Sending Sensor CPU Temperature')
+                sensor_data = operations_sensors.get_cpu_temperature()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetEnvTemperature":
+                logger.info('Sending Sensor Temperature')
+                sensor_data = operations_sensors.get_sensor_temperature()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetPressure":
+                logger.info('Sending Sensor Pressure')
+                sensor_data = operations_sensors.get_pressure()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetHumidity":
+                logger.info('Sending Sensor Humidity')
+                sensor_data = operations_sensors.get_humidity()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetLumen":
+                logger.info('Sending Sensor Lumen')
+                sensor_data = operations_sensors.get_lumen()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetRGB":
+                logger.info('Sending Sensor RGB')
+                sensor_data = operations_sensors.get_rgb()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
             else:
                 logger.info("Invalid command sent:" + connection_data)
 
