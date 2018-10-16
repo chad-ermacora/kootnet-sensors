@@ -79,25 +79,6 @@ def get_interval_sensor_readings():
         interval_data.sensor_readings = interval_data.sensor_readings + tmp_sensor_readings
         count = count + 1
 
-    if installed_sensors.pimoroni_bh1745:
-        sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
-
-        if count > 0:
-            interval_data.sensor_types = interval_data.sensor_types + ", "
-            interval_data.sensor_readings = interval_data.sensor_readings + ", "
-
-        tmp_sensor_types = "Lumen, Red, Green, Blue"
-
-        rgb_colour = sensor_access.rgb()
-        tmp_sensor_readings = "'" + str(sensor_access.lumen()) + "', '" + \
-                              str(rgb_colour[0]) + "', '" + \
-                              str(rgb_colour[1]) + "', '" + \
-                              str(rgb_colour[2]) + "'"
-
-        interval_data.sensor_types = interval_data.sensor_types + tmp_sensor_types
-        interval_data.sensor_readings = interval_data.sensor_readings + tmp_sensor_readings
-        count = count + 1
-
     if installed_sensors.pimoroni_bme680:
         sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
 
@@ -135,6 +116,25 @@ def get_interval_sensor_readings():
         interval_data.sensor_types = interval_data.sensor_types + tmp_sensor_types
         interval_data.sensor_readings = interval_data.sensor_readings + tmp_sensor_readings
 
+    if installed_sensors.pimoroni_bh1745:
+        sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
+
+        if count > 0:
+            interval_data.sensor_types = interval_data.sensor_types + ", "
+            interval_data.sensor_readings = interval_data.sensor_readings + ", "
+
+        tmp_sensor_types = "Lumen, Red, Green, Blue"
+
+        rgb_colour = sensor_access.rgb()
+        tmp_sensor_readings = "'" + str(sensor_access.lumen()) + "', '" + \
+                              str(rgb_colour[0]) + "', '" + \
+                              str(rgb_colour[1]) + "', '" + \
+                              str(rgb_colour[2]) + "'"
+
+        interval_data.sensor_types = interval_data.sensor_types + tmp_sensor_types
+        interval_data.sensor_readings = interval_data.sensor_readings + tmp_sensor_readings
+        count = count + 1
+
     return interval_data
 
 
@@ -159,7 +159,7 @@ def get_trigger_sensor_readings():
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
             trigger_data.sensor_readings = trigger_data.sensor_readings + ", "
 
-        sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
+        sensor_types = "Acc_X, Acc_Y,  Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
 
         acc_x, acc_y, acc_z = sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = sensor_access.magnetometer_xyz()

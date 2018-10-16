@@ -137,7 +137,13 @@ def set_sensor_config(config_data):
 def get_sensor_readings():
     interval_data = operations_sensors.get_interval_sensor_readings()
     trigger_data = operations_sensors.get_trigger_sensor_readings()
-    return_data = [interval_data, trigger_data]
+
+    str_interval_types = interval_data.sensor_types
+    str_interval_data = interval_data.sensor_readings
+    str_trigger_types = trigger_data.sensor_types
+    str_trigger_data = trigger_data.sensor_readings
+
+    return_data = [str_interval_types, str_interval_data, str_trigger_types, str_trigger_data]
 
     return return_data
 
@@ -206,9 +212,10 @@ while True:
                 logger.info('Setting System DateTime')
                 new_datetime = tmp_connection_data.decode()[11:]
                 os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
-            elif connection_command == "GetSensorData":
-                logger.info('Sending Sensor Data')
+            elif connection_command == "GetSensorReadings":
+                logger.info('Sending Sensor Readings')
                 sensor_data = get_sensor_readings()
+                print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             else:
                 logger.info("Invalid command sent:" + connection_data)
