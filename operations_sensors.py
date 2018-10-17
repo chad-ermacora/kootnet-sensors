@@ -240,9 +240,9 @@ def get_system_uptime():
 
 
 def get_cpu_temperature():
-    linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
-    sensor_uptime = linux_os.get_uptime()
-    return str(sensor_uptime)
+    rp_system = sensor_modules.RaspberryPi_System.CreateRPSystem()
+    sensor_cpu_temp = rp_system.cpu_temperature()
+    return str(sensor_cpu_temp)
 
 
 def get_sensor_temperature():
