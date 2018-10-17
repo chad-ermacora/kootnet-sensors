@@ -63,16 +63,6 @@ class CreateConfig:
         self.gyro_variance = 99999.0
 
 
-def print_config_to_screen(config):
-    print("\nConfig write_to_db: " + str(config.write_to_db))
-    print("Config enable_custom: " + str(config.enable_custom))
-    print("Config sleep_duration_interval: " + str(config.sleep_duration_interval))
-    print("Config sleep_duration_trigger: " + str(config.sleep_duration_trigger))
-    print("Config acc_variance: " + str(config.acc_variance))
-    print("Config mag_variance: " + str(config.mag_variance))
-    print("Config gyro_variance: " + str(config.gyro_variance))
-
-
 def set_default_variances_per_sensor(config):
     installed_sensors = get_installed_sensors()
 
@@ -102,9 +92,9 @@ def write_config_to_file(config):
                      str(config.sleep_duration_trigger) + \
                      " = Duration between Trigger readings in Seconds\n" + \
                      str(config.enable_custom) + " = Enable Custom Settings\n" + \
-                     str(config.acc_variance) + " = Custom Accelerometer variance\n" + \
-                     str(config.mag_variance) + " = Custom Magnetometer variance\n" + \
-                     str(config.gyro_variance) + " = Custom Gyroscope variance"
+                     str(config.acc_variance) + " = Current Accelerometer variance\n" + \
+                     str(config.mag_variance) + " = Current Magnetometer variance\n" + \
+                     str(config.gyro_variance) + " = Current Gyroscope variance"
 
         sensor_list_file.write(new_config)
         sensor_list_file.close()

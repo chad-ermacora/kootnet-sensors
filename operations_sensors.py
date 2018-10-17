@@ -29,11 +29,7 @@ import sensor_modules.Pimoroni_VL53L1X
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
-
-
-def print_sensor_readings_to_screen(readings):
-    print("\nTypes: " + str(readings.sensor_types))
-    print("\nReadings: " + str(readings.sensor_readings))
+sense_hat_show_led_message = False
 
 
 def get_interval_sensor_readings():
@@ -72,8 +68,9 @@ def get_interval_sensor_readings():
                               str(pressure) + "', '" + \
                               str(humidity) + "'"
 
-        led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
-        sensor_access.display_led_message(led_message)
+        if sense_hat_show_led_message:
+            led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
+            sensor_access.display_led_message(led_message)
 
         interval_data.sensor_types = interval_data.sensor_types + tmp_sensor_types
         interval_data.sensor_readings = interval_data.sensor_readings + tmp_sensor_readings
@@ -159,7 +156,7 @@ def get_trigger_sensor_readings():
             trigger_data.sensor_types = trigger_data.sensor_types + ", "
             trigger_data.sensor_readings = trigger_data.sensor_readings + ", "
 
-        sensor_types = "Acc_X, Acc_Y,  Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
+        sensor_types = "Acc_X, Acc_Y, Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z"
 
         acc_x, acc_y, acc_z = sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = sensor_access.magnetometer_xyz()
