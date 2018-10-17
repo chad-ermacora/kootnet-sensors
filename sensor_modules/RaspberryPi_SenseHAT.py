@@ -35,7 +35,12 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 round_decimal_to = 5
-show_led_message = True
+
+# Displays a message of the Sensors Interval readings on the SenseHAT's LED grid
+# Triggered when all interval readings are requested from sensor_commands
+# This delays the return of said readings by about 15 seconds.
+# Recommended setting False
+show_led_message = False
 
 
 class CreateRPSenseHAT:
