@@ -35,7 +35,11 @@ logger.addHandler(file_handler)
 logger.addHandler(stream_handler)
 
 round_decimal_to = 5
-show_led_message = True
+
+# Displays a message of the Sensors Interval readings on the SenseHAT's LED grid
+# Triggered when all interval readings are requested from sensor_commands
+# This delays the return of said readings by about 15 seconds.
+# Recommended setting False
 
 
 class CreateRPSenseHAT:
@@ -111,21 +115,18 @@ class CreateRPSenseHAT:
         return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
     def display_led_message(self, message):
-        if show_led_message:
-            try:
-                acc_data = self.accelerometer_xyz()
+        try:
+            acc_data = self.accelerometer_xyz()
 
-                if acc_data[0] < -0.5:
-                    self.sense.set_rotation(90)
-                elif acc_data[1] > 0.5:
-                    self.sense.set_rotation(0)
-                elif acc_data[1] < -0.5:
-                    self.sense.set_rotation(180)
-                else:
-                    self.sense.set_rotation(270)
+            if acc_data[0] < -0.5:
+                self.sense.set_rotation(90)
+            elif acc_data[1] > 0.5:
+                self.sense.set_rotation(0)
+            elif acc_data[1] < -0.5:
+                self.sense.set_rotation(180)
+            else:
+                self.sense.set_rotation(270)
 
-                self.sense.show_message(str(message), text_colour=(75, 0, 0))
-            except Exception as error:
-                logger.error("Unable to set Message Orientation - " + str(error))
-        else:
-            logger.info("Raspberry Pi Sense HAT LED message Disabled - Edit RaspberryPi_SenseHAT.py to Enable")
+            self.sense.show_message(str(message), text_colour=(75, 0, 0))
+        except Exception as error:
+            logger.error("Unable to set Message Orientation - " + str(error))
