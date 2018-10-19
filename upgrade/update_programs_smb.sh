@@ -3,7 +3,7 @@
 # Make sure SMB_FOLDER points to the root directory holding the Sensor Upgrade Files
 
 # SMB Options
-SMB_SERVER="//192.168.10.7"
+SMB_SERVER="//gamercube1"
 SMB_FOLDER="/sensor-rp"
 CIFS_OPTIONS="username=myself,password='123'"
 
