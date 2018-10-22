@@ -154,8 +154,6 @@ def get_installed_config():
         logger.debug("Custom Settings Disabled in Config - Loading Sensor Defaults based on Installed Sensors")
         installed_config = set_default_variances_per_sensor(installed_config)
 
-    write_config_to_file(installed_config)
-
     return installed_config
 
 
@@ -227,8 +225,6 @@ def get_installed_sensors():
             installed_sensors.pimoroni_vl53l1x = 1
         else:
             installed_sensors.pimoroni_vl53l1x = 0
-
-        write_installed_sensors_to_file(installed_sensors)
 
         return installed_sensors
 

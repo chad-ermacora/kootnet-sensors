@@ -13,15 +13,16 @@ trigger_data = operations_sensors.get_trigger_sensor_readings()
 trigger_data.sensor_types = trigger_data.sensor_types.split(",")
 trigger_data.sensor_readings = trigger_data.sensor_readings.split(",")
 
-print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***")
-print("Record to SQL Database: " + str(config.write_to_db) + "  ||  Enable Custom Variances: " + str(config.enable_custom))
+print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n")
+print("Record to SQL Database: " + str(config.write_to_db) + "  ||  Enable Custom Variances: " + str(
+    config.enable_custom))
 print("Seconds between Interval Recordings: " + str(config.sleep_duration_interval))
 print("Seconds between Trigger Checks: " + str(config.sleep_duration_trigger))
-print("Accelerometer variance: " + str(config.acc_variance))
-print("Magnetometer variance: " + str(config.mag_variance))
-print("Gyroscope variance: " + str(config.gyro_variance))
+print("Variances - Acc: " + str(config.acc_variance) +
+      " || Mag: " + str(config.mag_variance) +
+      " || Gyro: " + str(config.gyro_variance))
 
-print("\n*** Interval Sensor Data test ***")
+print("\n*** Interval Sensor Data test ***\n")
 str_message = ""
 count = 0
 while count < len(interval_data.sensor_types):
@@ -29,12 +30,12 @@ while count < len(interval_data.sensor_types):
                   str(interval_data.sensor_types[count]) + ": " + \
                   str(interval_data.sensor_readings[count] + " | ")
 
-    if count is 2 or count is 5 or count is 8 or count == len(interval_data.sensor_types) - 1:
+    if count is 2 or count is 5 or count == len(interval_data.sensor_types) - 1:
         print(str_message)
         str_message = ""
     count = count + 1
 
-print("\n*** Trigger Sensor Data test ***")
+print("\n*** Trigger Sensor Data test ***\n")
 count = 0
 while count < len(trigger_data.sensor_types):
     str_message = str_message + \
