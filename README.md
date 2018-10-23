@@ -13,9 +13,9 @@ Install instructions can be found below.  If followed, the install script will d
 Controlling the Sensor
 -------------------------
 
-**KootNet Sensors - PC Control Center** was created to interact with up to 16 sensors at a time, over a TCP/IP network.
+**KootNet Sensors - Control Center** was created to interact with up to 16 sensors at a time, over a TCP/IP network.
 
-See [PC Control Center](https://github.com/chad-ermacora/sensor-control-center) for more information.
+See [Control Center](https://github.com/chad-ermacora/sensor-control-center) for more information.
 
 
 Services
