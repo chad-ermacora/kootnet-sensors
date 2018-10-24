@@ -5,11 +5,11 @@ StartLimitIntervalSec=0
 [Service]
 Type=simple
 Restart=always
-WorkingDirectory=/home/sensors
+WorkingDirectory=/opt/kootnet-sensors
 RestartSec=6s
 User=root
 Group=pi
-ExecStart=/usr/bin/python3 /home/sensors/trigger_to_db.py
+ExecStart=/usr/bin/python3 /opt/kootnet-sensors/trigger_to_db.py
 
 [Install]
 WantedBy=multi-user.target

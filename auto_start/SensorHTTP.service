@@ -8,7 +8,7 @@ Type=simple
 Restart=always
 User=pi
 Group=pi
-ExecStart=/usr/sbin/lighttpd -D -f /home/sensors/lighttpd.conf
+ExecStart=/usr/sbin/lighttpd -D -f /opt/kootnet-sensors/lighttpd.conf
 
 [Install]
 WantedBy=multi-user.target

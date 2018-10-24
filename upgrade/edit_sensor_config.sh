@@ -8,5 +8,5 @@ then
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   printf '\nPrinting Config and Testing Sensors\n\n'
   killall python3
-  python3 /home/sensors/test_sensors.py
+  python3 /opt/kootnet-sensors/test_sensors.py
 fi
