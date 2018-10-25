@@ -1,7 +1,7 @@
 # Upgrade from Online HTTP server
 # HTTP Server Options
 HTTP_SERVER="http://kootenay-networks.com"
-HTTP_FOLDER="/utils/koot_net_sensors/Installers/raw_files"
+HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 HTTP_ZIP="/KootNetSensors.zip"
 
 if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
@@ -9,7 +9,7 @@ then
   bash /opt/kootnet-sensors/upgrade/chk_install.sh
 else
   rm -f /tmp/chk_install.sh 2>/dev/null
-  wget -nd $HTTP_SERVER$HTTP_FOLDER/sensor-rp/upgrade/chk_install.sh -P /tmp/
+  wget -nd $HTTP_SERVER$HTTP_FOLDER/chk_install.sh -P /tmp/
   bash /tmp/chk_install.sh
 fi
 clear

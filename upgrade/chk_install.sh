@@ -1,6 +1,6 @@
 # HTTP Download Server Options
-PIP3_INSTALL="gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2 plotly matplotlib guizero request numpy"
-APT_GET_INSTALL="python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock"
+PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request matplotlib"
+APT_GET_INSTALL="fonts-freefont-ttf sense-hat lighttpd fake-hwclock"
 APT_GET_REMOVE="wolfram-engine"
 
 # Kill any open nano & make sure folders are created
@@ -81,17 +81,14 @@ EOF
   printf '\nUpdating automatic wireless network connections\n'
   cp /etc/wpa_supplicant/wpa_supplicant.conf /home/pi/KootNetSensors/backups/ 2>/dev/null
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
-# Be sure to update to your wireless network
-#
-# Which ever wireless network has more signal strength
-# Is the one that will connect, assuming settings are correct
-#
-# To add additional wireless network connections
-# Copy one of the network blocks, including both { } and
-# Paste it at the bottom of the file & Modify as needed
+# Update or Add additional wireless network connections as required
+# Add your wireless name to the end of 'ssid=' & password to the end of 'psk=' in double quotes
 
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
+
+# Change 'country' to your country, common codes are included below
+# GB (United Kingdom), FR (France), US (United States), CA (Canada)
 country=CA
 
 network={
@@ -100,8 +97,8 @@ network={
         key_mgmt=WPA-PSK
 }
 network={
-        ssid="KI-WiFi"
-        psk="2505510208"
+        ssid="SomeOtherNetwork"
+        psk="SuperSecurePassword"
         key_mgmt=WPA-PSK
 }
 EOF
@@ -110,11 +107,12 @@ EOF
   printf '\nStarting system update & upgrade. This may take awhile ...\n\n'
   # Remove wolfram-engine due to size of upgrades
   apt-get -y remove $APT_GET_REMOVE
-  pip3 uninstall matplotlib
   apt-get update
   apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install $APT_GET_INSTALL
+  python3 -m pip install -U pip
+  python3 -m pip install -U numpy
   pip3 install $PIP3_INSTALL
   # Create Installed File to prevent re-runs after first run
   date > /home/pi/KootNetSensors/zInstalled.txt
