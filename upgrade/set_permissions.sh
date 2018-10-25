@@ -1,5 +1,5 @@
 # Make sure permissions are correct
-printf '\nSetting Permissions\n'
+printf '\nSetting permissions\n'
 chown pi:root /home/pi -R
 chown pi:root /opt/kootnet-sensors -R
 chown pi:root /opt/kootnet-control-center -R
@@ -18,4 +18,4 @@ chmod 754 /opt/kootnet-sensors/auto_start/*.service 2>/dev/null
 chmod 754 /opt/kootnet-sensors/upgrade/*.sh 2>/dev/null
 chmod 755 /opt/kootnet-control-center -R
 chmod 754 /opt/kootnet-control-center/* 2>/dev/null
-chmod 777 /var/log/lighttpd -R
+chmod 777 /var/log/lighttpd -R 2>/dev/null

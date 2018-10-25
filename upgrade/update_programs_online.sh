@@ -2,26 +2,28 @@
 # HTTP Server Options
 HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/utils/koot_net_sensors/Installers/raw_files"
+HTTP_ZIP="/KootNetSensors.zip"
 
 if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
 then
   bash /opt/kootnet-sensors/upgrade/chk_install.sh
 else
-  mkdir /opt/kootnet-sensors 2>/dev/null
-  wget $HTTP_SERVER$HTTP_FOLDER/upgrade/chk_install.sh -P /opt/kootnet-sensors/
-  chmod +x /opt/kootnet-sensors/chk_install.sh
-  bash /opt/kootnet-sensors/chk_install.sh
+  rm -f /tmp/chk_install.sh 2>/dev/null
+  wget -nd $HTTP_SERVER$HTTP_FOLDER/sensor-rp/upgrade/chk_install.sh -P /tmp/
+  bash /tmp/chk_install.sh
 fi
 clear
 # Download and Upgrade Sensor Programs
-mkdir /tmp/SensorHTTPUpgrade
-cd /tmp/SensorHTTPUpgrade
+rm -R /tmp/SensorHTTPUpgrade 2>/dev/null
+mkdir /tmp/SensorHTTPUpgrade 2>/dev/null
+rm -f /tmp/KootNetSensors.zip 2>/dev/null
 printf '\n\nDownloads started\n'
-wget -r -np -nH -R "index.html*" $HTTP_SERVER$HTTP_FOLDER/
-printf 'Downloads complete\nInstalling files\n'
-cp -R /tmp/SensorHTTPUpgrade$HTTP_FOLDER/sensor-rp/* /opt/kootnet-sensors/
-cp -R /tmp/SensorHTTPUpgrade$HTTP_FOLDER/sensor-control-center/* /opt/kootnet-control-center/
-printf 'File copy complete\n'
+wget $HTTP_SERVER$HTTP_FOLDER$HTTP_ZIP -P /tmp/
+printf 'Downloads complete\nUnzipping & installing files\n'
+unzip /tmp/KootNetSensors.zip -d /tmp/SensorHTTPUpgrade
+cp -f -R /tmp/SensorHTTPUpgrade/sensor-rp/* /opt/kootnet-sensors
+cp -f -R /tmp/SensorHTTPUpgrade/sensor-control-center/* /opt/kootnet-control-center
+printf 'File install complete\n'
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 bash /opt/kootnet-sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions

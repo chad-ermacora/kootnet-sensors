@@ -1,5 +1,5 @@
 clear
-printf '\n\nDoing "Clean" Upgrade\nLeaves Database and Config\nDeletes everything else\nRe-Downloads and Installs\n'
+printf '\n\nDoing "Clean" upgrade\nLeaves database & config\nDeletes everything else\nThen re-downloads and installs\n'
 cp /opt/kootnet-sensors/upgrade/update_programs_smb.sh /root
 rm /home/pi/*.sh* 2>/dev/null
 rm /home/pi/*.py* 2>/dev/null

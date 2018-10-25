@@ -1,11 +1,11 @@
 # HTTP Download Server Options
-PIP3_INSTALL="gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2 plotly matplotlib guizero request"
+PIP3_INSTALL="gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x smbus2 plotly matplotlib guizero request numpy"
 APT_GET_INSTALL="python3-pip fonts-freefont-ttf sense-hat lighttpd python3-smbus rpi.gpio fake-hwclock"
 APT_GET_REMOVE="wolfram-engine"
 
 # Kill any open nano & make sure folders are created
 killall nano 2>/dev/null
-printf '\nChecking and or Creating Required Folders\n'
+printf '\nChecking & creating required folders\n'
 mkdir /home/pi/KootNetSensors 2>/dev/null
 mkdir /home/pi/KootNetSensors/backups 2>/dev/null
 mkdir /home/pi/KootNetSensors/logs 2>/dev/null
@@ -17,13 +17,12 @@ mkdir /opt/kootnet-sensors 2>/dev/null
 mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
 mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
 mkdir /opt/kootnet-sensors/upgrade 2>/dev/null
-
 # Add and edit Sensors
 if [ -f "/home/pi/KootNetSensors/installed_sensors.txt" ]
 then
-  printf '/home/pi/KootNetSensors/installed_sensors.txt OK'
+  printf '/home/pi/KootNetSensors/installed_sensors.txt OK\n'
 else
-  printf '\nSetting up Installed Sensors File\n'
+  printf '/home/pi/KootNetSensors/installed_sensors.txt Setup\n'
   cat > /home/pi/KootNetSensors/installed_sensors.txt << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
 1 = RP_system
@@ -36,13 +35,12 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 EOF
   nano /home/pi/KootNetSensors/installed_sensors.txt
 fi
-
 # Add and Edit Config
 if [ -f "/home/pi/KootNetSensors/config.txt" ]
 then
-  printf '\n/home/pi/KootNetSensors/config.txt OK\n'
+  printf '/home/pi/KootNetSensors/config.txt OK\n'
 else
-  printf '\nSetting up Config File\n'
+  printf '/home/pi/KootNetSensors/config.txt Setup\n'
   cat > /home/pi/KootNetSensors/config.txt << "EOF"
 Enable = 1 & Disable = 0
 1 = Record Sensors to SQL Database
@@ -58,9 +56,9 @@ fi
 # Network + Other Setup
 if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
 then
-  printf '\nInstall Detected, Skipping Setup\n'
+  printf '\nPrevious install detected, skipping setup\n'
 else
-  printf '\nInstalling Config Files & Opening for edit\n'
+  printf '\nInstalling config files\n'
   # Add and edit TCP/IP v4 Network + Wireless
   cp /etc/network/interfaces /home/pi/KootNetSensors/backups/ 2>/dev/null
   cat >> /etc/network/interfaces << "EOF"
@@ -80,7 +78,7 @@ iface wlan0 inet static
   wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
 EOF
   nano /etc/network/interfaces
-  printf '\nUpdating Wireless Networks to Auto Connect to\n'
+  printf '\nUpdating automatic wireless network connections\n'
   cp /etc/wpa_supplicant/wpa_supplicant.conf /home/pi/KootNetSensors/backups/ 2>/dev/null
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
 # Be sure to update to your wireless network
@@ -109,15 +107,15 @@ network={
 EOF
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Install needed programs and dependencies
-  printf '\nStarting System Update & Upgrade, this may take awhile ...\n\n'
+  printf '\nStarting system update & upgrade. This may take awhile ...\n\n'
   # Remove wolfram-engine due to size of upgrades
   apt-get -y remove $APT_GET_REMOVE
+  pip3 uninstall matplotlib
   apt-get update
   apt-get -y upgrade
-  printf '\nChecking Dependencies\n'
+  printf '\nChecking dependencies\n'
   apt-get -y install $APT_GET_INSTALL
   pip3 install $PIP3_INSTALL
-
   # Create Installed File to prevent re-runs after first run
   date > /home/pi/KootNetSensors/zInstalled.txt
 fi

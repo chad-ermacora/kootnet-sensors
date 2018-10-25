@@ -1,5 +1,5 @@
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
-printf '\nDisabling & Stopping all Sensor Services\n'
+printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorHTTP
 systemctl disable SensorCommands
 systemctl disable SensorInterval
@@ -8,7 +8,7 @@ systemctl stop SensorHTTP
 systemctl stop SensorCommands
 systemctl stop SensorInterval
 systemctl stop SensorTrigger
-printf '\nRemoving Sensor Service Files\n'
+printf '\nRemoving sensor service files\n'
 rm -f /etc/systemd/system/SensorCommands.service 2>/dev/null
 rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null
 rm -f /etc/systemd/system/SensorInterval.service 2>/dev/null
@@ -24,7 +24,7 @@ then
   printf 'Restoring original /etc/wpa_supplicant/wpa_supplicant.conf\n'
   cp -f /home/pi/KootNetSensors/backups/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf 2>/dev/null
 fi
-printf '\nRemoving all Sensor & Control Center Program Files\n'
+printf '\nRemoving all Sensor & Control Center program files\n'
 # Remove Sensor & Control Center program directories
 killall python3 2>/dev/null
 rm -f -R /opt/kootnet-sensors
@@ -44,5 +44,5 @@ rm -f /home/pi/KootNetSensors/zInstalled.txt 2>/dev/null
 rm -f /home/pi/KootNetSensors/installed_sensors.txt 2>/dev/null
 # Remove Misc. other
 crontab -r
-printf '\n\nUninstall Complete\n'
+printf '\n\nUninstall complete\n'
 rm -f /home/pi/KootNetSensors/zUninstall.sh
