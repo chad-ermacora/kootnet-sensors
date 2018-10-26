@@ -52,4 +52,4 @@ if installed_sensors.raspberry_pi_sense_hat:
     sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
     sensor_access.display_led_message("Temp: " + str(round(sensor_access.temperature(), 2)) + "C")
 
-print("\nTesting Complete\n")
+print("\nTesting Complete")
