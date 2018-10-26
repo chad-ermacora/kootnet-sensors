@@ -22,7 +22,7 @@ print("Variances - Acc: " + str(config.acc_variance) +
       " || Mag: " + str(config.mag_variance) +
       " || Gyro: " + str(config.gyro_variance))
 
-print("\n*** Interval Sensor Data test ***\n")
+print("\n*** Interval Sensor Data test ***")
 str_message = ""
 count = 0
 while count < len(interval_data.sensor_types):
@@ -35,7 +35,7 @@ while count < len(interval_data.sensor_types):
         str_message = ""
     count = count + 1
 
-print("\n*** Trigger Sensor Data test ***\n")
+print("\n*** Trigger Sensor Data test ***")
 count = 0
 while count < len(trigger_data.sensor_types):
     str_message = str_message + \
