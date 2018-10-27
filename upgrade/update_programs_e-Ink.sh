@@ -16,6 +16,5 @@ bash /opt/kootnet-sensors/upgrade/set_autostart.sh
 bash /opt/kootnet-sensors/upgrade/set_permissions.sh
 # Save datetime to last updated file
 date > /home/pi/KootNetSensors/LastUpdated.txt
-echo ' Updated with E-Ink controller ' >> /home/pi/KootNetSensors/LastUpdated.txt
+echo ' - EInk' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
-systemctl restart SensorCommands 2>/dev/null

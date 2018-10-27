@@ -35,6 +35,7 @@ logger.addHandler(stream_handler)
 
 sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt"
 config_file_location = "/home/pi/KootNetSensors/config.txt"
+last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
 
 
 class CreateInstalledSensors:
