@@ -208,6 +208,14 @@ while True:
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_smb.sh")
                 logger.info('/opt/kootnet-sensors/upgrade/update_programs_smb.sh Finished')
                 restart_services()
+            elif connection_command == "CleanSMB":
+                os.system("bash /home/pi/KootNetSensors/upgrade_smb_clean.sh")
+                logger.info('/home/pi/KootNetSensors/upgrade_smb_clean.sh Finished')
+                restart_services()
+            elif connection_command == "CleanOnline":
+                os.system("bash /home/pi/KootNetSensors/upgrade_online_clean.sh")
+                logger.info('/home/pi/KootNetSensors/upgrade_online_clean.sh Finished')
+                restart_services()
             elif connection_command == "RebootSystem":
                 logger.info('Rebooting System')
                 os.system("reboot")
