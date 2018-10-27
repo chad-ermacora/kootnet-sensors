@@ -48,6 +48,10 @@ logger.info("Sensor Recording by Interval Started")
 Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
+# Write installed sensors back to file, to add new sensor support when program gets them
+operations_config.write_installed_sensors_to_file(installed_sensors)
+operations_config.write_config_to_file(installed_config)
+
 if installed_config.write_to_db == 1:
     first_sensor_data = operations_sensors.get_interval_sensor_readings()
     print("Sensor Types: " + first_sensor_data.sensor_types + "\n\n" +

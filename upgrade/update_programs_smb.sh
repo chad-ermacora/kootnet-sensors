@@ -1,51 +1,45 @@
-# This will update KootNet Sensor Files over SMB
-# Change SMB to match your windows share & Login
-# Make sure SMB_FOLDER points to the root directory holding the Sensor Upgrade Files
-
-# SMB Options
-SMB_SERVER="//192.168.10.7"
-SMB_FOLDER="/sensor-rp"
+# This will update KootNet Sensor Files over SMB, change options to match your windows share
+# Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
+SMB_SERVER="//gamercube1"
+SMB_SHARE="/PyCharmProjects"
+SMB_SENSOR="/sensor-rp"
+SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
 
 clear
-if [ -f "/home/sensors/upgrade/chk_install.sh" ]
+if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
 then
-  bash /home/sensors/upgrade/chk_install.sh
+  bash /opt/kootnet-sensors/upgrade/chk_install.sh
 else
-  mkdir /home/sensors 2>/dev/null
   mkdir /mnt/supernas 2>/dev/null
-  mount -t cifs $SMB_SERVER$SMB_FOLDER /mnt/supernas -o $CIFS_OPTIONS
+  mount -t cifs $SMB_SERVER$SMB_SHARE /mnt/supernas -o $CIFS_OPTIONS
   sleep 1
-  bash /mnt/supernas/upgrade/chk_install.sh
-  sleep 1
+  bash /mnt/supernas/sensor-rp/upgrade/chk_install.sh
   umount /mnt/supernas
-  sleep 1
-  printf '\nProceeding with SMB Upgrade\n\n'
+  printf '\nProceeding with SMB upgrade\n'
 fi
 # Download and Upgrade Sensor Programs off SMB
-printf 'Connecting to SMB and Copying Files\n\n'
-mount -t cifs $SMB_SERVER$SMB_FOLDER /mnt/supernas -o $CIFS_OPTIONS
+printf '\nConnecting to SMB & copying files\n'
+mount -t cifs $SMB_SERVER$SMB_SHARE /mnt/supernas -o $CIFS_OPTIONS
 sleep 1
-cp -R /mnt/supernas/* /home/sensors
+printf 'Copying sensor files\n'
+cp -f -R /mnt/supernas$SMB_SENSOR/* /opt/kootnet-sensors
+printf 'Copying control center files\n\n'
+cp -f -R /mnt/supernas$SMB_CONTROL_CENTER/* /opt/kootnet-control-center
 sleep 1
 umount /mnt/supernas
-sleep 1
 # Remove legacy files
-rm /home/pi/KootNetSensors/clean_upgrade_online.sh 2>/dev/null
-rm /home/pi/KootNetSensors/clean_upgrade_smb.sh 2>/dev/null
 rm /home/pi/KootNetSensors/sensor_type.txt 2>/dev/null
-rm /home/pi//KootNetSensors/*.sh* 2>/dev/null
+rm /home/pi/KootNetSensors/*.sh* 2>/dev/null
 rm /home/pi/KootNetSensors/*.py* 2>/dev/null
 rm /home/pi/*.sh* 2>/dev/null
 rm /home/pi/*.py* 2>/dev/null
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-bash /home/sensors/upgrade/copy_to_home.sh
+bash /opt/kootnet-sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
-bash /home/sensors/upgrade/set_autostart.sh
-bash /home/sensors/upgrade/set_wifi_networks.sh
-bash /home/sensors/upgrade/set_permissions.sh
+bash /opt/kootnet-sensors/upgrade/set_autostart.sh
+bash /opt/kootnet-sensors/upgrade/set_permissions.sh
 # Save datetime to last updated file
 date > /home/pi/KootNetSensors/LastUpdated.txt
-echo ' Updated with SMB ' >> /home/pi/KootNetSensors/LastUpdated.txt
+echo ' - SMB' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
-systemctl restart SensorCommands 2>/dev/null
