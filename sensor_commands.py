@@ -46,7 +46,7 @@ logger.addHandler(stream_handler)
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.20.1"
+version = "Alpha.20.2"
 
 
 def get_system_information():
