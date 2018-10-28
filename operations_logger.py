@@ -28,6 +28,9 @@ import os
 from logging.handlers import RotatingFileHandler
 
 log_directory = "/home/pi/KootNetSensors/logs/"
+operations_log = log_directory + "Operations_log.txt"
+sensors_log = log_directory + "Sensor_readings_log.txt"
+
 if not os.path.exists(os.path.dirname(log_directory)):
     os.makedirs(os.path.dirname(log_directory))
 
@@ -37,7 +40,7 @@ operations_logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_main = RotatingFileHandler(log_directory + "Operations_log.txt",
+file_handler_main = RotatingFileHandler(operations_log,
                                         maxBytes=256000,
                                         backupCount=5)
 file_handler_main.setFormatter(formatter)
@@ -53,7 +56,7 @@ sensors_logger.setLevel(logging.INFO)
 
 formatter_sensor = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_sensor = RotatingFileHandler(log_directory + "Sensor_readings_log.txt",
+file_handler_sensor = RotatingFileHandler(sensors_log,
                                           maxBytes=256000,
                                           backupCount=5)
 file_handler_sensor.setFormatter(formatter_sensor)

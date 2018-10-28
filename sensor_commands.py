@@ -31,7 +31,19 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.20.3"
+version = "Alpha.20.4"
+
+
+def get_operations_log():
+    operations_log_file = open(operations_logger.operations_log, "r")
+    return_log = operations_log_file.read()
+    return return_log
+
+
+def get_sensors_log():
+    sensors_log_file = open(operations_logger.sensors_log, "r")
+    return_log = sensors_log_file.read()
+    return return_log
 
 
 def get_system_information():
@@ -279,6 +291,14 @@ while True:
                 operations_logger.operations_logger.info('Sending Sensor RGB')
                 sensor_data = operations_sensors.get_rgb()
                 print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetOperationsLog":
+                operations_logger.operations_logger.info('Sending Operations Log')
+                sensor_data = get_operations_log()
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetSensorsLog":
+                operations_logger.operations_logger.info('Sending Sensor Log')
+                sensor_data = get_sensors_log()
                 connection.sendall(pickle.dumps(sensor_data))
             else:
                 operations_logger.operations_logger.info("Invalid command sent:" + connection_data)
