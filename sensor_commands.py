@@ -32,18 +32,29 @@ sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
 version = "Alpha.21.0"
+operations_log = "/home/pi/KootNetSensors/logs/Operations_log.txt"
+sensors_log = "/home/pi/KootNetSensors/logs/Sensor_readings_log.txt"
 
 
 def get_operations_log():
-    operations_log_file = open(operations_logger.operations_log, "r")
-    return_log = operations_log_file.read()
-    return return_log
+    print(operations_logger.operations_log)
+    operations_log_file = open(operations_log, "r")
+    log = operations_log_file.read()
+    operations_log_file.close()
+    if len(log) > 1200:
+        log = log[-1200:]
+
+    return log
 
 
 def get_sensors_log():
-    sensors_log_file = open(operations_logger.sensors_log, "r")
-    return_log = sensors_log_file.read()
-    return return_log
+    sensors_log_file = open(sensors_log, "r")
+    log = sensors_log_file.read()
+    sensors_log_file.close()
+    if len(log) > 1200:
+        log = log[-1200:]
+
+    return log
 
 
 def get_system_information():
