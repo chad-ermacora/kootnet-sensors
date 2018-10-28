@@ -20,28 +20,13 @@ import operations_config
 import operations_db
 import operations_sensors
 from time import sleep
-import logging
-from logging.handlers import RotatingFileHandler
-
-logger = logging.getLogger(__name__)
-
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Sensors_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+import operations_logger
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
 operations_db.check_database_interval()
 
-logger.info("Sensor Recording by Interval Started")
+operations_logger.operations_logger.info("Sensor Recording by Interval Started")
 
 
 '''
@@ -70,7 +55,7 @@ if installed_config.write_to_db == 1:
 
             operations_db.write_to_sql_database(sql_command_data)
         else:
-            logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
+            operations_logger.operations_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
         sleep(installed_config.sleep_duration_interval)
 else:
-    logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
+    operations_logger.operations_logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")

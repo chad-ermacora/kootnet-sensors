@@ -16,37 +16,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import logging
 import os
 import pickle
 import socket
-from logging.handlers import RotatingFileHandler
 from shutil import disk_usage
 from time import sleep
 
 import operations_config
+import operations_logger
 import operations_sensors
 import sensor_modules.Linux_OS as Linux_System
 import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-
-formatter = logging.Formatter('%(asctime)s - %(levelname)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Sensor_Commands_log.txt', maxBytes=256000,
-                                   backupCount=5)
-file_handler.setFormatter(formatter)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
-
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.20.2"
+version = "Alpha.20.3"
 
 
 def get_system_information():
@@ -67,8 +52,8 @@ def get_system_information():
                           "," + str(version) + \
                           "," + str(get_last_updated())
     except Exception as error:
-        logger.error("Sensor reading failed - " + str(error))
-        str_sensor_data = "Sensor Unit, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0"
+        operations_logger.operations_logger.error("Sensor reading failed - " + str(error))
+        str_sensor_data = "Sensor Unit, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0"
 
     return str_sensor_data
 
@@ -80,7 +65,7 @@ def get_last_updated():
         last_updated_file.close()
         last_updated = str(tmp_last_updated[0]) + str(tmp_last_updated[1])
     except Exception as error:
-        logger.error("Unable to Load Last Updated File: " + str(error))
+        operations_logger.operations_logger.error("Unable to Load Last Updated File: " + str(error))
         last_updated = "N/A"
 
     return last_updated
@@ -97,7 +82,7 @@ def get_config_information():
                          "," + str(temp_config.mag_variance) + \
                          "," + str(temp_config.gyro_variance)
     except Exception as error:
-        logger.error("Getting sensor config failed - " + str(error))
+        operations_logger.operations_logger.error("Getting sensor config failed - " + str(error))
         tmp_str_config = "0, 0, 0, 0, 0, 0, 0"
 
     return tmp_str_config
@@ -106,48 +91,50 @@ def get_config_information():
 def set_sensor_config(config_data):
     split_config = config_data.split(',')
     new_config = operations_config.CreateConfig()
+    sensor_enable = "systemctl enable SensorInterval && systemctl enable SensorTrigger"
+    sensor_start = "systemctl start SensorInterval && systemctl start SensorTrigger"
+    sensor_disable = "systemctl disable SensorInterval && systemctl disable SensorTrigger"
+    sensor_stop = "systemctl stop SensorInterval && systemctl stop SensorTrigger"
 
     try:
         new_config.write_to_db = int(split_config[1])
         if new_config.write_to_db:
-            os.system("systemctl enable SensorInterval && systemctl enable SensorTrigger")
-            os.system("systemctl start SensorInterval && systemctl start SensorTrigger")
+            os.system(sensor_enable + " && " + sensor_start)
         else:
-            os.system("systemctl disable SensorInterval && systemctl disable SensorTrigger")
-            os.system("systemctl stop SensorInterval && systemctl stop SensorTrigger")
+            os.system(sensor_disable + " && " + sensor_stop)
 
     except Exception as error1:
-        logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
 
     try:
         new_config.sleep_duration_interval = int(split_config[2])
     except Exception as error1:
-        logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
 
     try:
         new_config.sleep_duration_trigger = float(split_config[3])
     except Exception as error1:
-        logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
 
     try:
         new_config.enable_custom = int(split_config[4])
     except Exception as error1:
-        logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
 
     try:
         new_config.acc_variance = float(split_config[5])
     except Exception as error1:
-        logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
 
     try:
         new_config.mag_variance = float(split_config[6])
     except Exception as error1:
-        logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
 
     try:
         new_config.gyro_variance = float(split_config[7])
     except Exception as error1:
-        logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
+        operations_logger.operations_logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
     operations_config.write_config_to_file(new_config)
     os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
@@ -168,134 +155,136 @@ def get_sensor_readings():
 
 
 def restart_services():
-    os.system("systemctl restart SensorInterval")
-    os.system("systemctl restart SensorTrigger")
-    os.system("systemctl restart SensorCommands")
+    os.system("systemctl restart SensorInterval && " +
+              "systemctl restart SensorTrigger && "
+              "systemctl restart SensorCommands")
 
 
 while True:
     try:
-        # Create a TCP/IP socket and Bind the socket to the port
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('', 10065)
-        logger.info('starting up on {} port {}'.format(*server_address))
+        operations_logger.operations_logger.info('starting up on {} port {}'.format(*server_address))
         sock.bind(server_address)
         sock.listen(12)
-        logger.info('Waiting for a Connection ... ')
+        operations_logger.operations_logger.info('Waiting for a Connection ... ')
 
         while True:
             connection, client_address = sock.accept()
-            logger.info("Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
+            operations_logger.operations_logger.info(
+                "Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
             tmp_connection_data = connection.recv(4096)
             connection_data = str(tmp_connection_data)
             connection_command = connection_data[2:-1]
 
             if connection_command == "CheckOnlineStatus":
-                logger.info('Sensor Checked')
+                operations_logger.operations_logger.info('Sensor Checked')
             elif connection_command == "GetSystemData":
                 system_info = get_system_information()
                 connection.sendall(pickle.dumps(system_info))
-                logger.info('Sensor Data Sent to ' + str(client_address[0]))
+                operations_logger.operations_logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh")
-                logger.info('/opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh Finished')
+                operations_logger.operations_logger.info(
+                    '/opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh Finished')
                 restart_services()
             elif connection_command == "UpgradeOnline":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_online.sh")
-                logger.info('/opt/kootnet-sensors/upgrade/update_programs_online.sh Finished')
+                operations_logger.operations_logger.info(
+                    '/opt/kootnet-sensors/upgrade/update_programs_online.sh Finished')
                 restart_services()
             elif connection_command == "UpgradeSMB":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_smb.sh")
-                logger.info('/opt/kootnet-sensors/upgrade/update_programs_smb.sh Finished')
+                operations_logger.operations_logger.info('/opt/kootnet-sensors/upgrade/update_programs_smb.sh Finished')
                 restart_services()
             elif connection_command == "CleanSMB":
                 os.system("bash /home/pi/KootNetSensors/upgrade_smb_clean.sh")
-                logger.info('/home/pi/KootNetSensors/upgrade_smb_clean.sh Finished')
+                operations_logger.operations_logger.info('/home/pi/KootNetSensors/upgrade_smb_clean.sh Finished')
                 restart_services()
             elif connection_command == "CleanOnline":
                 os.system("bash /home/pi/KootNetSensors/upgrade_online_clean.sh")
-                logger.info('/home/pi/KootNetSensors/upgrade_online_clean.sh Finished')
+                operations_logger.operations_logger.info('/home/pi/KootNetSensors/upgrade_online_clean.sh Finished')
                 restart_services()
             elif connection_command == "RebootSystem":
-                logger.info('Rebooting System')
+                operations_logger.operations_logger.info('Rebooting System')
                 os.system("reboot")
             elif connection_command == "ShutdownSystem":
-                logger.info('Shutting Down System')
+                operations_logger.operations_logger.info('Shutting Down System')
                 os.system("shutdown -h now")
             elif connection_command == "RestartServices":
-                logger.info('Sensor Termination sent by ' + str(client_address[0]))
+                operations_logger.operations_logger.info('Sensor Termination sent by ' + str(client_address[0]))
                 restart_services()
             elif connection_command == "UpgradeSystemOS":
-                logger.info('Updating Operating System & rebooting')
+                operations_logger.operations_logger.info('Updating Operating System & rebooting')
                 os.system("apt-get update && apt-get upgrade -y && reboot")
             elif connection_command == "GetConfiguration":
                 str_config = get_config_information()
                 connection.sendall(pickle.dumps(str_config))
-                logger.info('Sensor Data Sent to ' + str(client_address[0]))
+                operations_logger.operations_logger.info('Sensor Data Sent to ' + str(client_address[0]))
             elif tmp_connection_data.decode()[:16] == "SetConfiguration":
-                logger.info('Setting Sensor Configuration')
+                operations_logger.operations_logger.info('Setting Sensor Configuration')
                 set_sensor_config(tmp_connection_data.decode())
             elif tmp_connection_data.decode()[:14] == "ChangeHostName":
                 try:
                     new_host = tmp_connection_data.decode()[14:]
                     os.system("hostnamectl set-hostname " + new_host)
-                    logger.info("Hostname Changed to " + new_host + " - OK")
+                    operations_logger.operations_logger.info("Hostname Changed to " + new_host + " - OK")
                 except Exception as error_msg:
-                    logger.info("Hostname Change Failed - " + str(error_msg))
+                    operations_logger.operations_logger.info("Hostname Change Failed - " + str(error_msg))
             elif tmp_connection_data.decode()[:11] == "SetDateTime":
-                logger.info('Setting System DateTime')
+                operations_logger.operations_logger.info('Setting System DateTime')
                 new_datetime = tmp_connection_data.decode()[11:]
                 os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
             elif connection_command == "GetSensorReadings":
-                logger.info('Sending Sensor Readings')
+                operations_logger.operations_logger.info('Sending Sensor Readings')
                 sensor_data = get_sensor_readings()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetHostName":
-                logger.info('Sending Sensor HostName')
+                operations_logger.operations_logger.info('Sending Sensor HostName')
                 sensor_data = operations_sensors.get_hostname()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetSystemUptime":
-                logger.info('Sending Sensor System Uptime')
+                operations_logger.operations_logger.info('Sending Sensor System Uptime')
                 sensor_data = operations_sensors.get_system_uptime()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetCPUTemperature":
-                logger.info('Sending Sensor CPU Temperature')
+                operations_logger.operations_logger.info('Sending Sensor CPU Temperature')
                 sensor_data = operations_sensors.get_cpu_temperature()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetEnvTemperature":
-                logger.info('Sending Sensor Temperature')
+                operations_logger.operations_logger.info('Sending Sensor Temperature')
                 sensor_data = operations_sensors.get_sensor_temperature()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetPressure":
-                logger.info('Sending Sensor Pressure')
+                operations_logger.operations_logger.info('Sending Sensor Pressure')
                 sensor_data = operations_sensors.get_pressure()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetHumidity":
-                logger.info('Sending Sensor Humidity')
+                operations_logger.operations_logger.info('Sending Sensor Humidity')
                 sensor_data = operations_sensors.get_humidity()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetLumen":
-                logger.info('Sending Sensor Lumen')
+                operations_logger.operations_logger.info('Sending Sensor Lumen')
                 sensor_data = operations_sensors.get_lumen()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetRGB":
-                logger.info('Sending Sensor RGB')
+                operations_logger.operations_logger.info('Sending Sensor RGB')
                 sensor_data = operations_sensors.get_rgb()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             else:
-                logger.info("Invalid command sent:" + connection_data)
+                operations_logger.operations_logger.info("Invalid command sent:" + connection_data)
 
             connection.close()
 
     except Exception as error_msg:
-        logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error_msg))
+        operations_logger.operations_logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error_msg))
         sleep(2)

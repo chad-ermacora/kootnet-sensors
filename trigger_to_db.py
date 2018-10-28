@@ -16,32 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import operations_config
-import operations_db
-import operations_sensors
-import logging
-from logging.handlers import RotatingFileHandler
 from time import sleep
 
-logger = logging.getLogger(__name__)
-
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Sensors_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+import operations_config
+import operations_db
+import operations_logger
+import operations_sensors
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
 operations_db.check_database_trigger()
 
-logger.info("Sensor Recording by Trigger Started")
+operations_logger.operations_logger.info("Sensor Recording by Trigger Started")
 
 
 def check_acc(new_data, old_data):
@@ -96,8 +82,11 @@ def write_to_database(trigger_data):
     sql_command = operations_db.CreateSQLCommandData()
 
     sql_command.database_location = trigger_data.database_location
-    sql_command.sql_execute = trigger_data.sql_query_start + trigger_data.sensor_types + \
-        trigger_data.sql_query_values_start + trigger_data.sensor_readings + trigger_data.sql_query_values_end
+    sql_command.sql_execute = trigger_data.sql_query_start + \
+        trigger_data.sensor_types + \
+        trigger_data.sql_query_values_start + \
+        trigger_data.sensor_readings + \
+        trigger_data.sql_query_values_end
 
     operations_db.write_to_sql_database(sql_command)
 
@@ -129,4 +118,4 @@ if installed_config.write_to_db:
             write_to_database(original_old_trigger_data)
             write_to_database(original_new_trigger_data)
 else:
-    logger.warning("Write to Database Disabled in Config")
+    operations_logger.operations_logger.warning("Write to Database Disabled in Config")

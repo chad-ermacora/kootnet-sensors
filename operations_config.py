@@ -16,22 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import logging
-from logging.handlers import RotatingFileHandler
-
-logger = logging.getLogger(__name__)
-
-logger.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s', '%Y-%m-%d %H:%M:%S')
-
-file_handler = RotatingFileHandler('/home/pi/KootNetSensors/logs/Operations_log.txt', maxBytes=256000, backupCount=5)
-file_handler.setFormatter(formatter)
-
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
+import operations_logger
 
 sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt"
 config_file_location = "/home/pi/KootNetSensors/config.txt"
@@ -82,7 +67,7 @@ def set_default_variances_per_sensor(config):
 
 
 def write_config_to_file(config):
-    logger.debug("Writing Configuration to File")
+    operations_logger.operations_logger.debug("Writing Configuration to File")
     try:
         sensor_list_file = open(config_file_location, 'w')
 
@@ -101,11 +86,11 @@ def write_config_to_file(config):
         sensor_list_file.close()
 
     except Exception as error:
-        logger.error("Unable to open config file - " + str(error))
+        operations_logger.operations_logger.error("Unable to open config file - " + str(error))
 
 
 def get_installed_config():
-    logger.debug("Loading Configuration File")
+    operations_logger.operations_logger.debug("Loading Configuration File")
     installed_config = CreateConfig()
 
     try:
@@ -113,46 +98,53 @@ def get_installed_config():
         config_list = config_file.readlines()
         config_file.close()
     except Exception as error:
-        logger.error("Unable to Load Config File, Creating Default: " + " - " + str(error))
+        operations_logger.operations_logger.error("Unable to Load Config File, Creating Default: " + " - " + str(error))
         config_list = []
 
     try:
         installed_config.write_to_db = int(config_list[1].split('=')[0].strip())
     except Exception as error:
-        logger.error("Invalid Option in Config - Record Sensors to SQL Database - " + str(error))
+        operations_logger.operations_logger.error(
+            "Invalid Option in Config - Record Sensors to SQL Database - " + str(error))
 
     try:
         installed_config.sleep_duration_interval = float(config_list[2].split('=')[0].strip())
     except Exception as error:
-        logger.error("Invalid Option in Config - Duration between Interval readings in Seconds" + str(error))
+        operations_logger.operations_logger.error(
+            "Invalid Option in Config - Duration between Interval readings in Seconds" + str(error))
 
     try:
         installed_config.sleep_duration_trigger = float(config_list[3].split('=')[0].strip())
     except Exception as error:
-        logger.error("Invalid Option in Config - Duration between Trigger readings in Seconds" + str(error))
+        operations_logger.operations_logger.error(
+            "Invalid Option in Config - Duration between Trigger readings in Seconds" + str(error))
 
     try:
         installed_config.enable_custom = int(config_list[4].split('=')[0].strip())
     except Exception as error:
-        logger.error("Invalid Option in Config - Enable Custom Settings" + str(error))
+        operations_logger.operations_logger.error("Invalid Option in Config - Enable Custom Settings" + str(error))
 
     if installed_config.enable_custom:
         try:
             installed_config.acc_variance = float(config_list[5].split('=')[0].strip())
         except Exception as error:
-            logger.error("Invalid Option in Config - Custom Accelerometer variance" + str(error))
+            operations_logger.operations_logger.error(
+                "Invalid Option in Config - Custom Accelerometer variance" + str(error))
 
         try:
             installed_config.mag_variance = float(config_list[6].split('=')[0].strip())
         except Exception as error:
-            logger.error("Invalid Option in Config - Custom Magnetometer variance" + str(error))
+            operations_logger.operations_logger.error(
+                "Invalid Option in Config - Custom Magnetometer variance" + str(error))
 
         try:
             installed_config.gyro_variance = float(config_list[7].split('=')[0].strip())
         except Exception as error:
-            logger.error("Invalid Option in Config - Custom Gyroscope variance" + str(error))
+            operations_logger.operations_logger.error(
+                "Invalid Option in Config - Custom Gyroscope variance" + str(error))
     else:
-        logger.debug("Custom Settings Disabled in Config - Loading Sensor Defaults based on Installed Sensors")
+        operations_logger.operations_logger.debug(
+            "Custom Settings Disabled in Config - Loading Sensor Defaults based on Installed Sensors")
         installed_config = set_default_variances_per_sensor(installed_config)
 
     return installed_config
@@ -174,11 +166,11 @@ def write_installed_sensors_to_file(installed_sensors):
         sensor_list_file.write(new_config)
 
     except Exception as error:
-        logger.error("Unable to open config file - " + str(error))
+        operations_logger.operations_logger.error("Unable to open config file - " + str(error))
 
 
 def get_installed_sensors():
-    logger.debug("Loading Installed Sensors and Returning")
+    operations_logger.operations_logger.debug("Loading Installed Sensors and Returning")
     installed_sensors = CreateInstalledSensors()
 
     try:
@@ -230,4 +222,5 @@ def get_installed_sensors():
         return installed_sensors
 
     except Exception as error:
-        logger.error("Problem with Installed Sensor File: " + sensors_installed_file_location + " - " + str(error))
+        operations_logger.operations_logger.error(
+            "Problem with Installed Sensor File: " + sensors_installed_file_location + " - " + str(error))
