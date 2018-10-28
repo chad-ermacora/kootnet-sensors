@@ -31,7 +31,7 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.20.4"
+version = "Alpha.21.0"
 
 
 def get_operations_log():
