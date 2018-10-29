@@ -27,7 +27,7 @@ installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
 operations_db.check_database_trigger()
 
-operations_logger.operations_logger.info("Sensor Recording by Trigger Started")
+operations_logger.primary_logger.info("Sensor Recording by Trigger Started")
 
 
 def check_acc(new_data, old_data):
@@ -118,4 +118,4 @@ if installed_config.write_to_db:
             write_to_database(original_old_trigger_data)
             write_to_database(original_new_trigger_data)
 else:
-    operations_logger.operations_logger.warning("Write to Database Disabled in Config")
+    operations_logger.primary_logger.warning("Write to Database Disabled in Config")

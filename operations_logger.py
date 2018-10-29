@@ -27,31 +27,32 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-log_directory = "/home/pi/KootNetSensors/logs/"
-operations_log = log_directory + "Operations_log.txt"
-sensors_log = log_directory + "Sensor_readings_log.txt"
+_log_directory = "/home/pi/KootNetSensors/logs/"
+primary_log = _log_directory + "Primary_log.txt"
+sensors_log = _log_directory + "Sensors_log.txt"
+network_log = _log_directory + "Network_log.txt"
 
-if not os.path.exists(os.path.dirname(log_directory)):
-    os.makedirs(os.path.dirname(log_directory))
+if not os.path.exists(os.path.dirname(_log_directory)):
+    os.makedirs(os.path.dirname(_log_directory))
 
-# Sensor Operations Log
-operations_logger = logging.getLogger("OperationsLog")
-operations_logger.setLevel(logging.INFO)
+# Primary Log
+primary_logger = logging.getLogger("PrimaryLog")
+primary_logger.setLevel(logging.INFO)
 
-formatter = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+formatter_operations = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_main = RotatingFileHandler(operations_log,
+file_handler_main = RotatingFileHandler(primary_log,
                                         maxBytes=256000,
                                         backupCount=5)
-file_handler_main.setFormatter(formatter)
+file_handler_main.setFormatter(formatter_operations)
 stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter)
+stream_handler.setFormatter(formatter_operations)
 
-operations_logger.addHandler(file_handler_main)
-operations_logger.addHandler(stream_handler)
+primary_logger.addHandler(file_handler_main)
+primary_logger.addHandler(stream_handler)
 
-# Sensors Readings Log
-sensors_logger = logging.getLogger("SensorLog")
+# Sensors Log
+sensors_logger = logging.getLogger("SensorsLog")
 sensors_logger.setLevel(logging.INFO)
 
 formatter_sensor = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
@@ -65,3 +66,22 @@ stream_handler.setFormatter(formatter_sensor)
 
 sensors_logger.addHandler(file_handler_sensor)
 sensors_logger.addHandler(stream_handler)
+
+# Network Commands Log
+network_logger = logging.getLogger("NetworkLog")
+network_logger.setLevel(logging.INFO)
+
+formatter_network = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+
+file_handler_network = RotatingFileHandler(network_log,
+                                           maxBytes=256000,
+                                           backupCount=5)
+file_handler_network.setFormatter(formatter_network)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter_network)
+
+network_logger.addHandler(file_handler_network)
+network_logger.addHandler(stream_handler)
+
+# Sets proper permissions on the log files it first creates (Needed for user run scripts, like test_sensors.py)
+os.system("bash /opt/kootnet-sensors/upgrade/set_permissions.sh")

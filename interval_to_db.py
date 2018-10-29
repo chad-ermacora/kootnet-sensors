@@ -26,7 +26,7 @@ installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
 operations_db.check_database_interval()
 
-operations_logger.operations_logger.info("Sensor Recording by Interval Started")
+operations_logger.primary_logger.info("Sensor Recording by Interval Started")
 
 
 '''
@@ -55,7 +55,7 @@ if installed_config.write_to_db == 1:
 
             operations_db.write_to_sql_database(sql_command_data)
         else:
-            operations_logger.operations_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
+            operations_logger.primary_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
         sleep(installed_config.sleep_duration_interval)
 else:
-    operations_logger.operations_logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
+    operations_logger.primary_logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
