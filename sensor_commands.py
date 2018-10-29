@@ -31,7 +31,7 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.21.0"
+version = "Alpha.21.2"
 
 
 def get_sensor_log(log_file):
@@ -166,8 +166,8 @@ def get_sensor_readings():
 def restart_services():
     os.system("systemctl restart SensorInterval && " +
               "systemctl restart SensorTrigger && "
-              "systemctl restart SensorCommands && "
-              "systemctl restart SensorHTTP")
+              "systemctl restart SensorHTTP && "
+              "systemctl restart SensorCommands")
 
 
 while True:
@@ -202,19 +202,19 @@ while True:
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_online.sh")
                 operations_logger.network_logger.info(
                     '/opt/kootnet-sensors/upgrade/update_programs_online.sh Finished')
-                restart_services()
+                os.system("systemctl restart SensorCommands")
             elif connection_command == "UpgradeSMB":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_smb.sh")
                 operations_logger.network_logger.info('/opt/kootnet-sensors/upgrade/update_programs_smb.sh Finished')
-                restart_services()
+                os.system("systemctl restart SensorCommands")
             elif connection_command == "CleanSMB":
                 os.system("bash /home/pi/KootNetSensors/upgrade_smb_clean.sh")
                 operations_logger.network_logger.info('/home/pi/KootNetSensors/upgrade_smb_clean.sh Finished')
-                restart_services()
+                os.system("systemctl restart SensorCommands")
             elif connection_command == "CleanOnline":
                 os.system("bash /home/pi/KootNetSensors/upgrade_online_clean.sh")
                 operations_logger.network_logger.info('/home/pi/KootNetSensors/upgrade_online_clean.sh Finished')
-                restart_services()
+                os.system("systemctl restart SensorCommands")
             elif connection_command == "RebootSystem":
                 operations_logger.network_logger.info('Rebooting System')
                 os.system("reboot")
@@ -222,7 +222,7 @@ while True:
                 operations_logger.network_logger.info('Shutting Down System')
                 os.system("shutdown -h now")
             elif connection_command == "RestartServices":
-                operations_logger.network_logger.info('Sensor Termination sent by ' + str(client_address[0]))
+                operations_logger.network_logger.info('Sensor Restart Services sent by ' + str(client_address[0]))
                 restart_services()
             elif connection_command == "UpgradeSystemOS":
                 operations_logger.network_logger.info('Updating Operating System & rebooting')

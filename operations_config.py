@@ -115,6 +115,9 @@ def get_installed_config():
 
     try:
         installed_config.sleep_duration_trigger = float(config_list[3].split('=')[0].strip())
+        # Ensure trigger duration is not too low
+        if installed_config.sleep_duration_trigger < 0.1:
+            installed_config.sleep_duration_trigger = 0.1
     except Exception as error:
         operations_logger.primary_logger.error(
             "Invalid Option in Config - Duration between Trigger readings in Seconds" + str(error))

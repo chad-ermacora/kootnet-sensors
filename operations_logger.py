@@ -82,6 +82,3 @@ stream_handler.setFormatter(formatter_network)
 
 network_logger.addHandler(file_handler_network)
 network_logger.addHandler(stream_handler)
-
-# Sets proper permissions on the log files it first creates (Needed for user run scripts, like test_sensors.py)
-os.system("bash /opt/kootnet-sensors/upgrade/set_permissions.sh")
