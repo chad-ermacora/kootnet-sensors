@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 WorkingDirectory=/opt/kootnet-sensors
 RestartSec=6s
-User=root
+User=pi
 Group=pi
 ExecStart=/usr/bin/python3 /opt/kootnet-sensors/trigger_to_db.py
 
