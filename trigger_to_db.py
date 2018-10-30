@@ -119,3 +119,5 @@ if installed_config.write_to_db:
             write_to_database(original_new_trigger_data)
 else:
     operations_logger.primary_logger.warning("Write to Database Disabled in Config")
+    while True:
+        sleep(600)

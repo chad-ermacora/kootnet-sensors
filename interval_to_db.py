@@ -37,7 +37,7 @@ Then get readings from Said Sensor and write to DB
 operations_config.write_installed_sensors_to_file(installed_sensors)
 operations_config.write_config_to_file(installed_config)
 
-if installed_config.write_to_db == 1:
+if installed_config.write_to_db:
     first_sensor_data = operations_sensors.get_interval_sensor_readings()
     print("Sensor Types: " + first_sensor_data.sensor_types + "\n\n" +
           "Sensor Readings: " + first_sensor_data.sensor_readings + "\n")
@@ -59,3 +59,5 @@ if installed_config.write_to_db == 1:
         sleep(installed_config.sleep_duration_interval)
 else:
     operations_logger.primary_logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
+    while True:
+        sleep(600)
