@@ -31,8 +31,6 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-version = "Alpha.21.2"
-
 
 def get_sensor_log(log_file):
     log_content = open(log_file, "r")
@@ -58,7 +56,7 @@ def get_system_information():
                           "," + str(sensor_os.get_trigger_db_size()) + \
                           "," + str(sensor_config.write_to_db) + \
                           "," + str(sensor_config.enable_custom) + \
-                          "," + str(version) + \
+                          "," + str(operations_config.version) + \
                           "," + str(get_last_updated())
     except Exception as error:
         operations_logger.network_logger.error("Sensor reading failed - " + str(error))
@@ -244,7 +242,7 @@ while True:
             elif tmp_connection_data.decode()[:11] == "SetDateTime":
                 operations_logger.network_logger.info('Setting System DateTime')
                 new_datetime = tmp_connection_data.decode()[11:]
-                os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[10:])
+                os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
             elif connection_command == "GetSensorReadings":
                 operations_logger.network_logger.info('Sending Sensor Readings')
                 sensor_data = get_sensor_readings()
@@ -290,8 +288,8 @@ while True:
                 sensor_data = operations_sensors.get_rgb()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
-            elif connection_command == "GetOperationsLog":
-                operations_logger.network_logger.info('Sending Operations Log')
+            elif connection_command == "GetPrimaryLog":
+                operations_logger.network_logger.info('Sending Primary Log')
                 sensor_data = get_sensor_log(operations_logger.primary_log)
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetSensorsLog":

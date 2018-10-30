@@ -22,6 +22,8 @@ sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt
 config_file_location = "/home/pi/KootNetSensors/config.txt"
 last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
 
+version = "Alpha.21.4"
+
 
 class CreateInstalledSensors:
     def __init__(self):

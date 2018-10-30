@@ -58,6 +58,6 @@ if installed_config.write_to_db:
             operations_logger.primary_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
         sleep(installed_config.sleep_duration_interval)
 else:
-    operations_logger.primary_logger.warning("Database Write Disabled in Config - Skipping Interval Database Write")
+    operations_logger.primary_logger.warning("Write to Database Disabled in Config - Skipping Interval Database Write")
     while True:
         sleep(600)
