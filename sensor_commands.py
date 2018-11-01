@@ -288,6 +288,21 @@ while True:
                 sensor_data = operations_sensors.get_rgb()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetAccelerometerXYZ":
+                operations_logger.network_logger.info('Sending Sensor Accelerometer XYZ')
+                sensor_data = operations_sensors.get_accelerometer_xyz()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetMagnetometerXYZ":
+                operations_logger.network_logger.info('Sending Sensor Magnetometer XYZ')
+                sensor_data = operations_sensors.get_magnetometer_xyz()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetGyroscopeXYZ":
+                operations_logger.network_logger.info('Sending Sensor Gyroscope XYZ')
+                sensor_data = operations_sensors.get_gyroscope_xyz()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetPrimaryLog":
                 operations_logger.network_logger.info('Sending Primary Log')
                 sensor_data = get_sensor_log(operations_logger.primary_log)

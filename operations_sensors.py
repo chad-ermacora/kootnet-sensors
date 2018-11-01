@@ -225,36 +225,45 @@ def get_trigger_sensor_readings():
 
 
 def get_hostname():
-    linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
-    sensor_name = linux_os.get_hostname()
-    return str(sensor_name)
+    if installed_sensors.linux_system:
+        linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
+        sensor_name = linux_os.get_hostname()
+        return sensor_name
+    else:
+        return "NoSensor"
 
 
 def get_system_uptime():
-    linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
-    sensor_uptime = linux_os.get_uptime()
-    return str(sensor_uptime)
+    if installed_sensors.linux_system:
+        linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
+        sensor_uptime = linux_os.get_uptime()
+        return sensor_uptime
+    else:
+        return "NoSensor"
 
 
 def get_cpu_temperature():
-    rp_system = sensor_modules.RaspberryPi_System.CreateRPSystem()
-    sensor_cpu_temp = rp_system.cpu_temperature()
-    return str(sensor_cpu_temp)
+    if installed_sensors.raspberry_pi_sense_hat:
+        sensor_access = sensor_modules.RaspberryPi_System.CreateRPSystem()
+        temperature = sensor_access.cpu_temperature()
+        return temperature
+    else:
+        return "NoSensor"
 
 
 def get_sensor_temperature():
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
-        temp = sensor_access.temperature()
-        return str(temp)
+        temperature = sensor_access.temperature()
+        return temperature
     elif installed_sensors.pimoroni_bme680:
         sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
-        temp = sensor_access.temperature()
-        return str(temp)
+        temperature = sensor_access.temperature()
+        return temperature
     elif installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
-        temp = sensor_access.temperature()
-        return str(temp)
+        temperature = sensor_access.temperature()
+        return temperature
     else:
         return "NoSensor"
 
@@ -263,15 +272,15 @@ def get_pressure():
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         pressure = sensor_access.pressure()
-        return str(pressure)
+        return pressure
     elif installed_sensors.pimoroni_bme680:
         sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
         pressure = sensor_access.pressure()
-        return str(pressure)
+        return pressure
     elif installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         pressure = sensor_access.pressure()
-        return str(pressure)
+        return pressure
     else:
         return "NoSensor"
 
@@ -280,11 +289,11 @@ def get_humidity():
     if installed_sensors.pimoroni_bme680:
         sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
         humidity = sensor_access.humidity()
-        return str(humidity)
+        return humidity
     elif installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         humidity = sensor_access.humidity()
-        return str(humidity)
+        return humidity
     else:
         return "NoSensor"
 
@@ -292,12 +301,12 @@ def get_humidity():
 def get_lumen():
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
-        lumen = float(sensor_access.lumen())
-        return str(lumen)
+        lumen = sensor_access.lumen()
+        return lumen
     elif installed_sensors.pimoroni_bh1745:
         sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
         lumen = sensor_access.lumen()
-        return str(lumen)
+        return lumen
     else:
         return "NoSensor"
 
@@ -306,10 +315,53 @@ def get_rgb():
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         rgb = sensor_access.rgb()
-        return str(rgb)
+        return rgb
     elif installed_sensors.pimoroni_bh1745:
         sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
         rgb = sensor_access.rgb()
-        return str(rgb)
+        return rgb
+    else:
+        return "NoSensor"
+
+
+def get_accelerometer_xyz():
+    if installed_sensors.raspberry_pi_sense_hat:
+        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+        xyz = sensor_access.accelerometer_xyz()
+        return xyz
+    elif installed_sensors.pimoroni_enviro:
+        sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
+        xyz = sensor_access.accelerometer_xyz()
+        return xyz
+    elif installed_sensors.pimoroni_lsm303d:
+        sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
+        xyz = sensor_access.accelerometer_xyz()
+        return xyz
+    else:
+        return "NoSensor"
+
+
+def get_magnetometer_xyz():
+    if installed_sensors.raspberry_pi_sense_hat:
+        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+        xyz = sensor_access.magnetometer_xyz()
+        return xyz
+    elif installed_sensors.pimoroni_enviro:
+        sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
+        xyz = sensor_access.magnetometer_xyz()
+        return xyz
+    elif installed_sensors.pimoroni_lsm303d:
+        sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
+        xyz = sensor_access.magnetometer_xyz()
+        return xyz
+    else:
+        return "NoSensor"
+
+
+def get_gyroscope_xyz():
+    if installed_sensors.raspberry_pi_sense_hat:
+        sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+        xyz = sensor_access.gyroscope_xyz()
+        return xyz
     else:
         return "NoSensor"
