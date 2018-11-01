@@ -33,7 +33,7 @@ operations_logger.primary_logger.info("Sensor Recording by Interval Started")
 Start of Program.  Check Sensor Type from file
 Then get readings from Said Sensor and write to DB
 '''
-# Write installed sensors back to file, to add new sensor support when program gets them
+# Write installed sensors back to file. This is used to add new sensor support
 operations_config.write_installed_sensors_to_file(installed_sensors)
 operations_config.write_config_to_file(installed_config)
 
