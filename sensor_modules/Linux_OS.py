@@ -39,7 +39,7 @@ class CreateLinuxSystem:
             s.close()
             operations_logger.sensors_logger.debug("Linux System Sensor IP - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Linux System Sensor IP - Failed - " + str(error))
+            operations_logger.sensors_logger.warning("Linux System Sensor IP - Failed - " + str(error))
             ip_address = "0.0.0.0"
         return ip_address
 

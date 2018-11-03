@@ -322,4 +322,4 @@ while True:
 
     except Exception as error_msg:
         operations_logger.network_logger.warning('Socket Failed trying again in 5 Seconds - ' + str(error_msg))
-        sleep(2)
+        sleep(5)
