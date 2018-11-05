@@ -186,8 +186,8 @@ def get_sensor_readings():
 
 
 def restart_services():
-    os.system("systemctl restart SensorInterval && " +
-              "systemctl restart SensorTrigger && "
+    os.system("systemctl daemon-reload && "
+              "systemctl restart SensorRecording && "
               "systemctl restart SensorHTTP && "
               "systemctl restart SensorCommands")
 
@@ -217,26 +217,19 @@ while True:
                 operations_logger.network_logger.info('* Sensor Data Sent to ' + str(client_address[0]))
             elif connection_command == "inkupg":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh")
-                operations_logger.network_logger.info(
-                    '* /opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh Finished')
-                restart_services()
+                operations_logger.network_logger.info("update_programs_e-Ink.sh Complete")
             elif connection_command == "UpgradeOnline":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_online.sh")
-                operations_logger.network_logger.info(
-                    '* /opt/kootnet-sensors/upgrade/update_programs_online.sh Finished')
-                os.system("systemctl restart SensorCommands")
+                operations_logger.network_logger.info("update_programs_online.sh Complete")
             elif connection_command == "UpgradeSMB":
                 os.system("bash /opt/kootnet-sensors/upgrade/update_programs_smb.sh")
-                operations_logger.network_logger.info('* /opt/kootnet-sensors/upgrade/update_programs_smb.sh Finished')
-                os.system("systemctl restart SensorCommands")
+                operations_logger.network_logger.info("update_programs_smb.sh Complete")
             elif connection_command == "CleanSMB":
-                os.system("bash /home/pi/KootNetSensors/upgrade_smb_clean.sh")
-                operations_logger.network_logger.info('* /home/pi/KootNetSensors/upgrade_smb_clean.sh Finished')
-                os.system("systemctl restart SensorCommands")
+                os.system("systemctl start SensorCleanUpgradeSMB")
+                operations_logger.network_logger.info("Started Clean Upgrade - SMB")
             elif connection_command == "CleanOnline":
-                os.system("bash /home/pi/KootNetSensors/upgrade_online_clean.sh")
-                operations_logger.network_logger.info('* /home/pi/KootNetSensors/upgrade_online_clean.sh Finished')
-                os.system("systemctl restart SensorCommands")
+                os.system("systemctl start SensorCleanUpgradeOnline")
+                operations_logger.network_logger.info("Started Clean Upgrade - Online")
             elif connection_command == "RebootSystem":
                 operations_logger.network_logger.info('* Rebooting System')
                 os.system("reboot")

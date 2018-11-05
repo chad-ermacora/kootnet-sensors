@@ -1,18 +1,25 @@
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorHTTP
+systemctl disable SensorRecording
 systemctl disable SensorCommands
-systemctl disable SensorInterval
-systemctl disable SensorTrigger
 systemctl stop SensorHTTP
+systemctl stop SensorRecording
 systemctl stop SensorCommands
-systemctl stop SensorInterval
-systemctl stop SensorTrigger
 printf '\nRemoving sensor service files\n'
 rm -f /etc/systemd/system/SensorCommands.service 2>/dev/null
 rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null
+rm -f /etc/systemd/system/SensorRecording.service 2>/dev/null
+rm -f /etc/systemd/system/SensorCleanUpgradeOnline.service 2>/dev/null
+rm -f /etc/systemd/system/SensorCleanUpgradeSMB.service 2>/dev/null
+### Remove after 21.10
+systemctl disable SensorInterval
+systemctl disable SensorTrigger
+systemctl stop SensorInterval
+systemctl stop SensorTrigger
 rm -f /etc/systemd/system/SensorInterval.service 2>/dev/null
 rm -f /etc/systemd/system/SensorTrigger.service 2>/dev/null
+###
 # Restore /etc/network/interfaces & /etc/wpa_supplicant/wpa_supplicant.conf
 if [ -f "/home/pi/KootNetSensors/backups/interfaces" ]
 then

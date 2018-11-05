@@ -29,12 +29,6 @@ printf 'Copying control center files\n\n'
 rsync -q -r -4 -P /mnt/supernas$SMB_CONTROL_CENTER/ /opt/kootnet-control-center/ $RSYNC_EXCLUDE
 sleep 1
 umount /mnt/supernas
-# Remove legacy files
-rm /home/pi/KootNetSensors/sensor_type.txt 2>/dev/null
-rm /home/pi/KootNetSensors/*.sh* 2>/dev/null
-rm /home/pi/KootNetSensors/*.py* 2>/dev/null
-rm /home/pi/*.sh* 2>/dev/null
-rm /home/pi/*.py* 2>/dev/null
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 bash /opt/kootnet-sensors/upgrade/copy_to_home.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
@@ -44,3 +38,4 @@ bash /opt/kootnet-sensors/upgrade/set_permissions.sh
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' - SMB' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
+systemctl restart SensorCommands

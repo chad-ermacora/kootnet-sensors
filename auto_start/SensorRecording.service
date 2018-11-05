@@ -9,7 +9,7 @@ WorkingDirectory=/opt/kootnet-sensors
 RestartSec=3s
 User=pi
 Group=pi
-ExecStart=/usr/bin/python3 /opt/kootnet-sensors/interval_to_db.py
+ExecStart=/usr/bin/python3 /opt/kootnet-sensors/record_to_db.py
 
 [Install]
 WantedBy=multi-user.target

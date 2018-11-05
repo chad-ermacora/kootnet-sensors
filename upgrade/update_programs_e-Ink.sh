@@ -18,3 +18,4 @@ bash /opt/kootnet-sensors/upgrade/set_permissions.sh
 date > /home/pi/KootNetSensors/LastUpdated.txt
 echo ' - EInk' >> /home/pi/KootNetSensors/LastUpdated.txt
 printf '\nDone\n\n'
+systemctl restart SensorCommands
