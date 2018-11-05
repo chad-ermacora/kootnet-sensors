@@ -22,7 +22,7 @@ sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt
 config_file_location = "/home/pi/KootNetSensors/config.txt"
 last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
 
-version = "Alpha.21.11"
+version = "Alpha.21.12"
 
 
 class CreateInstalledSensors:

@@ -52,8 +52,7 @@ def get_system_information():
                           "," + str(sensor_os.get_uptime()) + \
                           "," + str(round(sensor_system.cpu_temperature(), 2)) + \
                           "," + str(round(free_disk / (2 ** 30), 2)) + \
-                          "," + str(sensor_os.get_interval_db_size()) + \
-                          "," + str(sensor_os.get_trigger_db_size()) + \
+                          "," + str(sensor_os.get_sql_db_size()) + \
                           "," + str(sensor_config.write_to_db) + \
                           "," + str(sensor_config.enable_custom) + \
                           "," + str(operations_config.version) + \

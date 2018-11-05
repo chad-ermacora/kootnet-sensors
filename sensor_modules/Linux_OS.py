@@ -13,8 +13,7 @@ import os
 import socket
 from time import strftime
 
-primary_database_location = "/home/pi/KootNetSensors/data/SensorIntervalDatabase.sqlite"
-motion_database_location = "/home/pi/KootNetSensors/data/SensorTriggerDatabase.sqlite"
+primary_database_location = "/home/pi/KootNetSensors/data/SensorRecordingDatabase.sqlite"
 
 round_decimal_to = 2
 
@@ -62,21 +61,11 @@ class CreateLinuxSystem:
         return strftime("%Y-%m-%d %H:%M")
 
     @staticmethod
-    def get_interval_db_size():
+    def get_sql_db_size():
         try:
             db_size_mb = os.path.getsize(primary_database_location) / 1024000
             operations_logger.sensors_logger.debug("Linux System Interval Database Size - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Linux System Interval Database Size - Failed - " + str(error))
-            db_size_mb = 0.0
-        return round(db_size_mb, round_decimal_to)
-
-    @staticmethod
-    def get_trigger_db_size():
-        try:
-            db_size_mb = os.path.getsize(motion_database_location) / 1024000
-            operations_logger.sensors_logger.debug("Linux System Trigger Database Size - OK")
-        except Exception as error:
-            operations_logger.sensors_logger.error("Linux System Trigger Database Size - Failed - " + str(error))
             db_size_mb = 0.0
         return round(db_size_mb, round_decimal_to)
