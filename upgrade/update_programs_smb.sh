@@ -5,6 +5,7 @@ SMB_SHARE="/PyCharmProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
+RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
 
 clear
 if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
@@ -23,9 +24,9 @@ printf '\nConnecting to SMB & copying files\n'
 mount -t cifs $SMB_SERVER$SMB_SHARE /mnt/supernas -o $CIFS_OPTIONS
 sleep 1
 printf 'Copying sensor files\n'
-cp -f -R /mnt/supernas$SMB_SENSOR/* /opt/kootnet-sensors
+rsync -q -r -4 -P /mnt/supernas$SMB_SENSOR/ /opt/kootnet-sensors/ $RSYNC_EXCLUDE
 printf 'Copying control center files\n\n'
-cp -f -R /mnt/supernas$SMB_CONTROL_CENTER/* /opt/kootnet-control-center
+rsync -q -r -4 -P /mnt/supernas$SMB_CONTROL_CENTER/ /opt/kootnet-control-center/ $RSYNC_EXCLUDE
 sleep 1
 umount /mnt/supernas
 # Remove legacy files
