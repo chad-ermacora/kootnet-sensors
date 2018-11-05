@@ -243,7 +243,7 @@ def get_system_uptime():
 
 
 def get_cpu_temperature():
-    if installed_sensors.raspberry_pi_sense_hat:
+    if installed_sensors.raspberry_pi:
         sensor_access = sensor_modules.RaspberryPi_System.CreateRPSystem()
         temperature = sensor_access.cpu_temperature()
         return temperature

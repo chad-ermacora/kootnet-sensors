@@ -25,13 +25,14 @@ else
   printf '/home/pi/KootNetSensors/installed_sensors.txt Setup\n'
   cat > /home/pi/KootNetSensors/installed_sensors.txt << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
-1 = RP_system
-0 = RP_senseHAT
-0 = Pimoroni_bh1745
-0 = Pimoroni_BME680
-0 = Pimoroni_Enviro
-0 = Pimoroni_LSM303D
-0 = Pimoroni_VL53L1X
+1 = Gnu/Linux System (Raspbian, Debian, etc)
+1 = Raspberry Pi System
+0 = Raspberry Pi Sense HAT
+0 = Pimoroni BH1745
+0 = Pimoroni BME680
+0 = Pimoroni EnviroPHAT
+0 = Pimoroni LSM303D
+0 = Pimoroni VL53L1X
 EOF
   nano /home/pi/KootNetSensors/installed_sensors.txt
 fi

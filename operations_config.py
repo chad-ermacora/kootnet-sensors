@@ -22,12 +22,13 @@ sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt
 config_file_location = "/home/pi/KootNetSensors/config.txt"
 last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
 
-version = "Alpha.21.7"
+version = "Alpha.21.9"
 
 
 class CreateInstalledSensors:
     def __init__(self):
-        self.linux_system = 0
+        self.linux_system = 1
+        self.raspberry_pi = 1
         self.raspberry_pi_sense_hat = 0
         self.pimoroni_bh1745 = 0
         self.pimoroni_bme680 = 0
@@ -38,6 +39,15 @@ class CreateInstalledSensors:
         self.has_acc = 0
         self.has_mag = 0
         self.has_gyro = 0
+
+        self.linux_system_name = "Gnu/Linux"
+        self.raspberry_pi_name = "Raspberry Pi"
+        self.raspberry_pi_sense_hat_name = "RP Sense HAT"
+        self.pimoroni_bh1745_name = "Pimoroni BH1745"
+        self.pimoroni_bme680_name = "Pimoroni BME680"
+        self.pimoroni_enviro_name = "Pimoroni EnviroPHAT"
+        self.pimoroni_lsm303d_name = "Pimoroni LSM303D"
+        self.pimoroni_vl53l1x_name = "Pimoroni VL53L1X"
 
 
 class CreateConfig:
@@ -160,13 +170,22 @@ def write_installed_sensors_to_file(installed_sensors):
         sensor_list_file = open(sensors_installed_file_location, 'w')
 
         new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
-                     str(installed_sensors.linux_system) + " = RaspberryPi_System\n" + \
-                     str(installed_sensors.raspberry_pi_sense_hat) + " = RaspberryPi_SenseHAT\n" + \
-                     str(installed_sensors.pimoroni_bh1745) + " = Pimoroni_BH1745\n" + \
-                     str(installed_sensors.pimoroni_bme680) + " = Pimoroni_BME680\n" + \
-                     str(installed_sensors.pimoroni_enviro) + " = Pimoroni_Enviro\n" + \
-                     str(installed_sensors.pimoroni_lsm303d) + " = Pimoroni_LSM303D\n" + \
-                     str(installed_sensors.pimoroni_vl53l1x) + " = Pimoroni_VL53L1X"
+                     str(installed_sensors.linux_system) + " = " + \
+                     installed_sensors.linux_system_name + "\n" + \
+                     str(installed_sensors.raspberry_pi) + " = " + \
+                     installed_sensors.raspberry_pi_name + "\n" + \
+                     str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
+                     installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
+                     str(installed_sensors.pimoroni_bh1745) + " = " + \
+                     installed_sensors.pimoroni_bh1745_name + "\n" + \
+                     str(installed_sensors.pimoroni_bme680) + " = " + \
+                     installed_sensors.pimoroni_bme680_name + "\n" + \
+                     str(installed_sensors.pimoroni_enviro) + " = " + \
+                     installed_sensors.pimoroni_enviro_name + "\n" + \
+                     str(installed_sensors.pimoroni_lsm303d) + " = " + \
+                     installed_sensors.pimoroni_lsm303d_name + "\n" + \
+                     str(installed_sensors.pimoroni_vl53l1x) + " = " + \
+                     installed_sensors.pimoroni_vl53l1x_name + "\n"
 
         sensor_list_file.write(new_config)
 
@@ -178,54 +197,87 @@ def get_installed_sensors():
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
     installed_sensors = CreateInstalledSensors()
 
-    try:
-        sensor_list_file = open(sensors_installed_file_location, 'r')
-        sensor_list = sensor_list_file.readlines()
+    sensor_list_file = open(sensors_installed_file_location, 'r')
+    sensor_list = sensor_list_file.readlines()
+    sensor_list_file.close()
 
+    try:
         if int(sensor_list[1][:1]):
             installed_sensors.linux_system = 1
         else:
             installed_sensors.linux_system = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.linux_system_name)
 
+    try:
         if int(sensor_list[2][:1]):
+            installed_sensors.raspberry_pi = 1
+        else:
+            installed_sensors.raspberry_pi = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.raspberry_pi_name)
+
+    try:
+        if int(sensor_list[3][:1]):
             installed_sensors.raspberry_pi_sense_hat = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
             installed_sensors.has_gyro = 1
         else:
             installed_sensors.raspberry_pi_sense_hat = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.raspberry_pi_sense_hat_name)
 
-        if int(sensor_list[3][:1]):
+    try:
+        if int(sensor_list[4][:1]):
             installed_sensors.pimoroni_bh1745 = 1
         else:
             installed_sensors.pimoroni_bh1745 = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.pimoroni_bh1745_name)
 
-        if int(sensor_list[4][:1]):
+    try:
+        if int(sensor_list[5][:1]):
             installed_sensors.pimoroni_bme680 = 1
         else:
             installed_sensors.pimoroni_bme680 = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.pimoroni_bme680_name)
 
-        if int(sensor_list[5][:1]):
+    try:
+        if int(sensor_list[6][:1]):
             installed_sensors.pimoroni_enviro = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
         else:
             installed_sensors.pimoroni_enviro = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.pimoroni_enviro_name)
 
-        if int(sensor_list[6][:1]):
+    try:
+        if int(sensor_list[7][:1]):
             installed_sensors.pimoroni_lsm303d = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
         else:
             installed_sensors.pimoroni_lsm303d = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.pimoroni_lsm303d_name)
 
-        if int(sensor_list[7][:1]):
+    try:
+        if int(sensor_list[8][:1]):
             installed_sensors.pimoroni_vl53l1x = 1
         else:
             installed_sensors.pimoroni_vl53l1x = 0
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Installed Sensor: " +
+                                               installed_sensors.pimoroni_vl53l1x_name)
 
-        return installed_sensors
-
-    except Exception as error:
-        operations_logger.primary_logger.error(
-            "Problem with Installed Sensor File: " + sensors_installed_file_location + " - " + str(error))
+    return installed_sensors
