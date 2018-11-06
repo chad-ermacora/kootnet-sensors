@@ -28,7 +28,7 @@ class CreateIntervalDatabaseData:
     def __init__(self):
         self.database_location = sensor_database_location
         self.sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
-        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%S', 'now'), "
+        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
         self.sql_query_values_end = ")"
 
         self.sensor_types = ""
