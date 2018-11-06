@@ -28,7 +28,7 @@ class CreateIntervalDatabaseData:
     def __init__(self):
         self.database_location = sensor_database_location
         self.sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
-        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
+        self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
 
         self.sensor_types = ""
@@ -39,16 +39,10 @@ class CreateTriggerDatabaseData:
     def __init__(self):
         self.database_location = sensor_database_location
         self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
-        self.sql_query_values_start = ") VALUES (strftime('%Y-%m-%d %H:%M:%f', 'now'), "
+        self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
         self.sensor_types = ""
         self.sensor_readings = ""
-
-
-class CreateSQLCommandData:
-    def __init__(self):
-        self.database_location = []
-        self.sql_execute = ""
 
 
 def check_database_structure():
@@ -216,15 +210,15 @@ def check_database_structure():
         operations_logger.primary_logger.error("DB Connection Failed: " + str(error))
 
 
-def write_to_sql_database(sql_data):
-    operations_logger.primary_logger.debug("SQL String to execute: " + str(sql_data.sql_execute))
+def write_to_sql_database(sql_execute):
+    operations_logger.primary_logger.debug("SQL String to execute: " + str(sql_execute))
 
     try:
-        db_connection = sqlite3.connect(sql_data.database_location)
+        db_connection = sqlite3.connect(sensor_database_location)
         db_cursor = db_connection.cursor()
-        db_cursor.execute(sql_data.sql_execute)
+        db_cursor.execute(sql_execute)
         db_connection.commit()
         db_connection.close()
-        operations_logger.primary_logger.debug("SQL Write to DataBase - OK - " + str(sql_data.database_location))
+        operations_logger.primary_logger.debug("SQL Write to DataBase - OK - " + sensor_database_location)
     except Exception as error:
         operations_logger.primary_logger.error("SQL Write to DataBase - Failed - " + str(error))

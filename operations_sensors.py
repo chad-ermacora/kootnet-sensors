@@ -16,16 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import operations_db
+from datetime import datetime
+
 import operations_config
+import operations_db
 import sensor_modules.Linux_OS
-import sensor_modules.RaspberryPi_System
-import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.Pimoroni_BH1745
 import sensor_modules.Pimoroni_BME680
 import sensor_modules.Pimoroni_Enviro
 import sensor_modules.Pimoroni_LSM303D
 import sensor_modules.Pimoroni_VL53L1X
+import sensor_modules.RaspberryPi_SenseHAT
+import sensor_modules.RaspberryPi_System
 
 installed_sensors = operations_config.get_installed_sensors()
 installed_config = operations_config.get_installed_config()
@@ -34,6 +36,7 @@ sense_hat_show_led_message = False
 
 def get_interval_sensor_readings():
     interval_data = operations_db.CreateIntervalDatabaseData()
+    interval_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
     count = 0
     if installed_sensors.linux_system:
@@ -69,7 +72,8 @@ def get_interval_sensor_readings():
                               str(humidity) + "'"
 
         if sense_hat_show_led_message:
-            led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(int(humidity)) + "%RH"
+            led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(
+                int(humidity)) + "%RH"
             sensor_access.display_led_message(led_message)
 
         interval_data.sensor_types = interval_data.sensor_types + tmp_sensor_types
@@ -137,6 +141,7 @@ def get_interval_sensor_readings():
 
 def get_trigger_sensor_readings():
     trigger_data = operations_db.CreateTriggerDatabaseData()
+    trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
     count = 0
     if installed_sensors.linux_system:
