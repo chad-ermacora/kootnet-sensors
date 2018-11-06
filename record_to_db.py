@@ -118,20 +118,20 @@ def check_xyz(sensor_readings_set):
             write_to_db = True
 
     if write_to_db:
-        write_to_database(sensor_readings_set)
+        write_trigger_to_database(sensor_readings_set)
 
 
-def write_to_database(sensor_readings_set):
-    sql_command = operations_db.CreateSQLCommandData()
-    sql_command.database_location = sensor_readings_set[0][0].database_location
+def write_trigger_to_database(sensor_readings_set):
+    sql_command_data = operations_db.CreateSQLCommandData()
+    sql_command_data.database_location = sensor_readings_set[0][0].database_location
 
     for reading_pair in sensor_readings_set:
         for trigger_data in reading_pair:
-            sql_command.sql_execute = (trigger_data.sql_query_start + trigger_data.sensor_types +
-                                       trigger_data.sql_query_values_start + trigger_data.sensor_readings +
-                                       trigger_data.sql_query_values_end)
+            sql_command_data.sql_execute = (trigger_data.sql_query_start + trigger_data.sensor_types +
+                                            trigger_data.sql_query_values_start + trigger_data.sensor_readings +
+                                            trigger_data.sql_query_values_end)
 
-            operations_db.write_to_sql_database(sql_command)
+            operations_db.write_to_sql_database(sql_command_data)
 
 
 if current_config.write_to_db:
@@ -142,7 +142,7 @@ if current_config.write_to_db:
 
     # Write first reading to Database, then start monitoring Triggers
     start_readings_set = get_readings_set()
-    write_to_database(start_readings_set)
+    write_trigger_to_database(start_readings_set)
 
     while True:
         new_readings_set = get_readings_set()
