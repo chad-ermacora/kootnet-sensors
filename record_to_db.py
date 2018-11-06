@@ -16,28 +16,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
 from threading import Thread
+from time import sleep
+
 import operations_config
 import operations_db
 import operations_logger
 import operations_sensors
 
 installed_sensors = operations_config.get_installed_sensors()
-installed_config = operations_config.get_installed_config()
+current_config = operations_config.get_installed_config()
 operations_db.check_database_structure()
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
 # Write installed sensors back to file. This is used to add new sensor support
 operations_config.write_installed_sensors_to_file(installed_sensors)
-operations_config.write_config_to_file(installed_config)
+operations_config.write_config_to_file(current_config)
 
 
 def start_interval_recording():
-    first_sensor_data = operations_sensors.get_interval_sensor_readings()
-    print("\n\nInterval Sensor Types: " + first_sensor_data.sensor_types)
-    print("\nInterval Sensor Readings: " + first_sensor_data.sensor_readings + "\n")
-
     while True:
         new_sensor_data = operations_sensors.get_interval_sensor_readings()
 
@@ -45,108 +42,112 @@ def start_interval_recording():
             sql_command_data = operations_db.CreateSQLCommandData()
 
             sql_command_data.database_location = new_sensor_data.database_location
-            sql_command_data.sql_execute = new_sensor_data.sql_query_start + \
-                new_sensor_data.sensor_types + \
-                new_sensor_data.sql_query_values_start + \
-                new_sensor_data.sensor_readings + \
-                new_sensor_data.sql_query_values_end
+            sql_command_data.sql_execute = (new_sensor_data.sql_query_start + new_sensor_data.sensor_types +
+                                            new_sensor_data.sql_query_values_start + new_sensor_data.sensor_readings +
+                                            new_sensor_data.sql_query_values_end)
 
             operations_db.write_to_sql_database(sql_command_data)
         else:
             operations_logger.primary_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
-        sleep(installed_config.sleep_duration_interval)
+
+        sleep(current_config.sleep_duration_interval)
 
 
-def check_acc(new_data, old_data):
+def get_readings_set():
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set = [reading_pair]
+
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set.append(reading_pair)
+
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set.append(reading_pair)
+
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set.append(reading_pair)
+
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set.append(reading_pair)
+
+    return readings_set
+
+
+def check_xyz(sensor_readings_set):
     write_to_db = False
 
-    if (float(old_data[2]) - installed_config.acc_variance) > float(new_data[2]) or \
-            float(new_data[2]) > (float(old_data[2]) + installed_config.acc_variance):
-        write_to_db = True
-    elif (float(old_data[3]) - installed_config.acc_variance) > float(new_data[3]) or \
-            float(new_data[3]) > (float(old_data[3]) + installed_config.acc_variance):
-        write_to_db = True
-    elif (float(old_data[4]) - installed_config.acc_variance) > float(new_data[4]) or \
-            float(new_data[4]) > (float(old_data[4]) + installed_config.acc_variance):
-        write_to_db = True
+    for reading_pair in sensor_readings_set:
+        sensor_readings_new = reading_pair[1].sensor_readings.replace("'", "").split(",")
+        sensor_readings_old = reading_pair[0].sensor_readings.replace("'", "").split(",")
 
-    return write_to_db
+        if float(sensor_readings_new[2]) < (float(sensor_readings_old[2]) - current_config.acc_variance) or \
+                float(sensor_readings_new[2]) > (float(sensor_readings_old[2]) + current_config.acc_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[3]) < (float(sensor_readings_old[3]) - current_config.acc_variance) or \
+                float(sensor_readings_new[3]) > (float(sensor_readings_old[3]) + current_config.acc_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[4]) < (float(sensor_readings_old[4]) - current_config.acc_variance) or \
+                float(sensor_readings_new[4]) > (float(sensor_readings_old[4]) + current_config.acc_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[5]) < (float(sensor_readings_old[5]) - current_config.mag_variance) or \
+                float(sensor_readings_new[5]) > (float(sensor_readings_old[5]) + current_config.mag_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[6]) < (float(sensor_readings_old[6]) - current_config.mag_variance) or \
+                float(sensor_readings_new[6]) > (float(sensor_readings_old[6]) + current_config.mag_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[7]) < (float(sensor_readings_old[7]) - current_config.mag_variance) or \
+                float(sensor_readings_new[7]) > (float(sensor_readings_old[7]) + current_config.mag_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[8]) < (float(sensor_readings_old[8]) - current_config.gyro_variance) or \
+                float(sensor_readings_new[8]) > (float(sensor_readings_old[8]) + current_config.gyro_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[9]) < (float(sensor_readings_old[9]) - current_config.gyro_variance) or \
+                float(sensor_readings_new[9]) > (float(sensor_readings_old[9]) + current_config.gyro_variance):
+            write_to_db = True
+        elif float(sensor_readings_new[10]) < (float(sensor_readings_old[10]) - current_config.gyro_variance) or \
+                float(sensor_readings_new[10]) > (float(sensor_readings_old[10]) + current_config.gyro_variance):
+            write_to_db = True
 
-
-def check_mag(new_data, old_data):
-    write_to_db = False
-
-    if (float(old_data[5]) - installed_config.mag_variance) > float(new_data[5]) or \
-            float(new_data[5]) > (float(old_data[5]) + installed_config.mag_variance):
-        write_to_db = True
-    elif (float(old_data[6]) - installed_config.mag_variance) > float(new_data[6]) or \
-            float(new_data[6]) > (float(old_data[6]) + installed_config.mag_variance):
-        write_to_db = True
-    elif (float(old_data[7]) - installed_config.mag_variance) > float(new_data[7]) or \
-            float(new_data[7]) > (float(old_data[7]) + installed_config.mag_variance):
-        write_to_db = True
-
-    return write_to_db
-
-
-def check_gyro(new_data, old_data):
-    write_to_db = False
-
-    if (float(old_data[8]) - installed_config.gyro_variance) > float(new_data[8]) or \
-            float(new_data[8]) > (float(old_data[8]) + installed_config.gyro_variance):
-        write_to_db = True
-    elif (float(old_data[9]) - installed_config.gyro_variance) > float(new_data[9]) or \
-            float(new_data[9]) > (float(old_data[9]) + installed_config.gyro_variance):
-        write_to_db = True
-    elif (float(old_data[10]) - installed_config.gyro_variance) > float(new_data[10]) or \
-            float(new_data[10]) > (float(old_data[10]) + installed_config.gyro_variance):
-        write_to_db = True
-
-    return write_to_db
+    if write_to_db:
+        write_to_database(sensor_readings_set)
 
 
-def write_to_database(trigger_data):
+def write_to_database(sensor_readings_set):
     sql_command = operations_db.CreateSQLCommandData()
+    sql_command.database_location = sensor_readings_set[0][0].database_location
 
-    sql_command.database_location = trigger_data.database_location
-    sql_command.sql_execute = trigger_data.sql_query_start + \
-        trigger_data.sensor_types + \
-        trigger_data.sql_query_values_start + \
-        trigger_data.sensor_readings + \
-        trigger_data.sql_query_values_end
+    for reading_pair in sensor_readings_set:
+        for trigger_data in reading_pair:
+            sql_command.sql_execute = (trigger_data.sql_query_start + trigger_data.sensor_types +
+                                       trigger_data.sql_query_values_start + trigger_data.sensor_readings +
+                                       trigger_data.sql_query_values_end)
 
-    operations_db.write_to_sql_database(sql_command)
+            operations_db.write_to_sql_database(sql_command)
 
 
-if installed_config.write_to_db:
-    start_trigger_data = operations_sensors.get_trigger_sensor_readings()
-    write_to_database(start_trigger_data)
-    print("\nTrigger Sensor Types: " + str(start_trigger_data.sensor_types))
-    print("\nTrigger Sensor Readings: " + str(start_trigger_data.sensor_readings))
-
+if current_config.write_to_db:
+    # Start Interval Recording
     interval_thread = Thread(target=start_interval_recording)
     interval_thread.daemon = True
     interval_thread.start()
 
+    # Write first reading to Database, then start monitoring Triggers
+    start_readings_set = get_readings_set()
+    write_to_database(start_readings_set)
+
     while True:
-        original_old_trigger_data = operations_sensors.get_trigger_sensor_readings()
-        old_trigger_data = original_old_trigger_data.sensor_readings.replace("'", "").split(",")
-        sleep(installed_config.sleep_duration_trigger)
+        new_readings_set = get_readings_set()
+        check_xyz(new_readings_set)
 
-        original_new_trigger_data = operations_sensors.get_trigger_sensor_readings()
-        new_trigger_data = original_new_trigger_data.sensor_readings.replace("'", "").split(",")
-
-        if installed_sensors.has_acc and check_acc(new_trigger_data, old_trigger_data):
-            write_to_database(original_old_trigger_data)
-            write_to_database(original_new_trigger_data)
-
-        elif installed_sensors.has_mag and check_mag(new_trigger_data, old_trigger_data):
-            write_to_database(original_old_trigger_data)
-            write_to_database(original_new_trigger_data)
-
-        elif installed_sensors.has_gyro and check_gyro(new_trigger_data, old_trigger_data):
-            write_to_database(original_old_trigger_data)
-            write_to_database(original_new_trigger_data)
 else:
     operations_logger.primary_logger.warning("Write to Database Disabled in Config - Skipping Trigger Database Write")
     while True:

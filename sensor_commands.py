@@ -119,15 +119,15 @@ def get_config_information():
 
 
 def set_sensor_config(config_data):
-    split_config = config_data.split(',')
+    split_list_config = config_data.split(',')
     new_config = operations_config.CreateConfig()
-    sensor_enable = "systemctl enable SensorInterval && systemctl enable SensorTrigger"
-    sensor_start = "systemctl start SensorInterval && systemctl start SensorTrigger"
-    sensor_disable = "systemctl disable SensorInterval && systemctl disable SensorTrigger"
-    sensor_stop = "systemctl stop SensorInterval && systemctl stop SensorTrigger"
+    sensor_enable = "systemctl enable SensorRecording"
+    sensor_start = "systemctl start SensorRecording"
+    sensor_disable = "systemctl disable SensorRecording"
+    sensor_stop = "systemctl stop SensorRecording"
 
     try:
-        new_config.write_to_db = int(split_config[1])
+        new_config.write_to_db = int(split_list_config[1])
         if new_config.write_to_db:
             os.system(sensor_enable + " && " + sensor_start)
         else:
@@ -137,37 +137,37 @@ def set_sensor_config(config_data):
         operations_logger.network_logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
 
     try:
-        new_config.sleep_duration_interval = int(split_config[2])
+        new_config.sleep_duration_interval = int(split_list_config[2])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
 
     try:
-        new_config.sleep_duration_trigger = float(split_config[3])
+        new_config.sleep_duration_trigger = float(split_list_config[3])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
 
     try:
-        new_config.enable_custom = int(split_config[4])
+        new_config.enable_custom = int(split_list_config[4])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
 
     try:
-        new_config.acc_variance = float(split_config[5])
+        new_config.acc_variance = float(split_list_config[5])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
 
     try:
-        new_config.mag_variance = float(split_config[6])
+        new_config.mag_variance = float(split_list_config[6])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
 
     try:
-        new_config.gyro_variance = float(split_config[7])
+        new_config.gyro_variance = float(split_list_config[7])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
     operations_config.write_config_to_file(new_config)
-    os.system("systemctl restart SensorInterval && systemctl restart SensorTrigger")
+    os.system("systemctl restart SensorRecording")
 
 
 def get_sensor_readings():
