@@ -35,7 +35,7 @@ network_log = _log_directory + "Network_log.txt"
 if not os.path.exists(os.path.dirname(_log_directory)):
     os.makedirs(os.path.dirname(_log_directory))
 
-# Primary Log
+# Primary Program Log
 primary_logger = logging.getLogger("PrimaryLog")
 primary_logger.setLevel(logging.INFO)
 
@@ -51,7 +51,7 @@ stream_handler.setFormatter(formatter_operations)
 primary_logger.addHandler(file_handler_main)
 primary_logger.addHandler(stream_handler)
 
-# Sensors Log
+# Sensors Hardware Log
 sensors_logger = logging.getLogger("SensorsLog")
 sensors_logger.setLevel(logging.INFO)
 

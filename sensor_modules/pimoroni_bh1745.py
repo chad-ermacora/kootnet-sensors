@@ -26,6 +26,7 @@ round_decimal_to = 5
 
 
 class CreateBH1745:
+    """ Creates Function access to the Pimoroni BH1745. """
     def __init__(self):
         self.bh1745_import = __import__('bh1745')
 

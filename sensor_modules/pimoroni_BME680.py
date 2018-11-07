@@ -20,6 +20,7 @@ round_decimal_to = 5
 
 
 class CreateBME680:
+    """ Creates Function access to the Pimoroni BME680. """
     def __init__(self):
         self.bme680_import = __import__('bme680')
         try:

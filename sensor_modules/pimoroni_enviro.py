@@ -20,6 +20,7 @@ round_decimal_to = 5
 
 
 class CreateEnviro:
+    """ Creates Function access to the Pimoroni Enviro pHAT. """
     def __init__(self):
         self.enviro_import = __import__('envirophat')
 

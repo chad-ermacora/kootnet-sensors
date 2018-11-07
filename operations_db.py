@@ -25,6 +25,7 @@ sensor_database_location = '/home/pi/KootNetSensors/data/SensorRecordingDatabase
 
 
 class CreateIntervalDatabaseData:
+    """ Creates a object, holding required data for making a Interval SQL execute string. """
     def __init__(self):
         self.database_location = sensor_database_location
         self.sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
@@ -36,6 +37,7 @@ class CreateIntervalDatabaseData:
 
 
 class CreateTriggerDatabaseData:
+    """ Creates a object, holding required data for making a Trigger SQL execute string. """
     def __init__(self):
         self.database_location = sensor_database_location
         self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
@@ -46,11 +48,12 @@ class CreateTriggerDatabaseData:
 
 
 def check_database_structure():
+    """ Checks and if necessary creates or updates both SQL tables and columns. """
     try:
         db_connection = sqlite3.connect(sensor_database_location)
         db_cursor = db_connection.cursor()
 
-        # Interval Table
+        # Create or update Interval table & columns
         try:
             db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='IntervalData', nf='DateTime', ft='TEXT'))
             operations_logger.primary_logger.debug("Table 'IntervalData' - Created")
@@ -131,7 +134,7 @@ def check_database_structure():
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Blue' - " + str(error))
 
-        # Trigger Table
+        # Create or update Trigger table & columns
         try:
             db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData', nf='DateTime', ft='TEXT'))
             operations_logger.primary_logger.debug("Table 'TriggerData' - Created")
@@ -211,6 +214,7 @@ def check_database_structure():
 
 
 def write_to_sql_database(sql_execute):
+    """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     operations_logger.primary_logger.debug("SQL String to execute: " + str(sql_execute))
 
     try:

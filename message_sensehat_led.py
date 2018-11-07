@@ -23,6 +23,10 @@ sense = sense_hat.SenseHat()
 
 
 def display_led_message(message):
+    """
+    Scrolls provided text string on the SenseHAT LED grid. Meant to be used directly with a terminal.
+    Example: python3 message_sensehat_led.py "My Fancy Message"
+    """
     try:
         acc_data = sense.get_accelerometer_raw()
 

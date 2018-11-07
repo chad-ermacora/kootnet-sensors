@@ -19,6 +19,7 @@ round_decimal_to = 2
 
 
 class CreateLinuxSystem:
+    """ Creates Function access to Linux System Information. """
     @staticmethod
     def get_hostname():
         try:

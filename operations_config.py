@@ -18,14 +18,18 @@
 """
 import operations_logger
 
+version = "Alpha.21.15"
+
 sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt"
 config_file_location = "/home/pi/KootNetSensors/config.txt"
 last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
 
-version = "Alpha.21.15"
-
 
 class CreateInstalledSensors:
+    """
+    Creates object with default installed sensors (Default = Linux / RP only).
+    Also contains human readable sensor names as text.
+    """
     def __init__(self):
         self.linux_system = 1
         self.raspberry_pi = 1
@@ -51,6 +55,7 @@ class CreateInstalledSensors:
 
 
 class CreateConfig:
+    """ Creates object with default sensor configuration settings. """
     def __init__(self):
         self.write_to_db = 1
         self.enable_custom = 0
@@ -62,6 +67,7 @@ class CreateConfig:
 
 
 def set_default_variances_per_sensor(config):
+    """ Sets default values for all variances in the provided configuration object. """
     installed_sensors = get_installed_sensors()
 
     if installed_sensors.raspberry_pi_sense_hat:
@@ -79,6 +85,7 @@ def set_default_variances_per_sensor(config):
 
 
 def write_config_to_file(config):
+    """ Writes provided configuration file to local disk. """
     operations_logger.primary_logger.debug("Writing Configuration to File")
     try:
         sensor_list_file = open(config_file_location, 'w')
@@ -102,6 +109,7 @@ def write_config_to_file(config):
 
 
 def get_installed_config():
+    """ Loads configuration from file and returns it as a configuration object. """
     operations_logger.primary_logger.debug("Loading Configuration File")
     installed_config = CreateConfig()
 
@@ -128,8 +136,8 @@ def get_installed_config():
     try:
         installed_config.sleep_duration_trigger = float(config_list[3].split('=')[0].strip())
         # Ensure trigger duration is not too low
-        if installed_config.sleep_duration_trigger < 0.1:
-            installed_config.sleep_duration_trigger = 0.1
+        if installed_config.sleep_duration_trigger < 0.05:
+            installed_config.sleep_duration_trigger = 0.05
     except Exception as error:
         operations_logger.primary_logger.error(
             "Invalid Option in Config - Duration between Trigger readings in Seconds" + str(error))
@@ -166,6 +174,7 @@ def get_installed_config():
 
 
 def write_installed_sensors_to_file(installed_sensors):
+    """ Writes provided 'installed sensors' object to local disk. """
     try:
         sensor_list_file = open(sensors_installed_file_location, 'w')
 
@@ -194,6 +203,7 @@ def write_installed_sensors_to_file(installed_sensors):
 
 
 def get_installed_sensors():
+    """ Loads installed sensors from file and returns it as an object. """
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
     installed_sensors = CreateInstalledSensors()
 

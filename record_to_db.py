@@ -35,6 +35,7 @@ operations_config.write_config_to_file(current_config)
 
 
 def start_interval_recording():
+    """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
     while True:
         new_sensor_data = operations_sensors.get_interval_sensor_readings()
 
@@ -51,26 +52,34 @@ def start_interval_recording():
 
 
 def get_readings_set():
+    """ Returns 5 'pairs' of Trigger readings in a list, with a sleep delay between each reading (set in config). """
     reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-
     sleep(current_config.sleep_duration_trigger)
     reading_pair.append(operations_sensors.get_trigger_sensor_readings())
     readings_set = [reading_pair]
 
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
     sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set.append(reading_pair)
 
     reading_pair = [operations_sensors.get_trigger_sensor_readings()]
     sleep(current_config.sleep_duration_trigger)
     reading_pair.append(operations_sensors.get_trigger_sensor_readings())
     readings_set.append(reading_pair)
 
+    sleep(current_config.sleep_duration_trigger)
+
     reading_pair = [operations_sensors.get_trigger_sensor_readings()]
     sleep(current_config.sleep_duration_trigger)
     reading_pair.append(operations_sensors.get_trigger_sensor_readings())
     readings_set.append(reading_pair)
+
+    sleep(current_config.sleep_duration_trigger)
+
+    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+    sleep(current_config.sleep_duration_trigger)
+    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+    readings_set.append(reading_pair)
+
+    sleep(current_config.sleep_duration_trigger)
 
     reading_pair = [operations_sensors.get_trigger_sensor_readings()]
     sleep(current_config.sleep_duration_trigger)
@@ -81,44 +90,45 @@ def get_readings_set():
 
 
 def check_xyz(sensor_readings_set):
+    """ Checks provided trigger XYZ readings against their respective variances (set in config). """
     write_to_db = False
 
     for reading_pair in sensor_readings_set:
         if write_to_db is False:
-            sensor_readings_new = reading_pair[1].sensor_readings.replace("'", "").split(",")
-            sensor_readings_old = reading_pair[0].sensor_readings.replace("'", "").split(",")
+            readings_old = reading_pair[0].sensor_readings.replace("'", "").split(",")
+            readings_new = reading_pair[1].sensor_readings.replace("'", "").split(",")
 
             if installed_sensors.has_acc and write_to_db is False:
-                if float(sensor_readings_new[3]) < (float(sensor_readings_old[3]) - current_config.acc_variance) or \
-                        float(sensor_readings_new[3]) > (float(sensor_readings_old[3]) + current_config.acc_variance):
+                if float(readings_new[3]) < (float(readings_old[3]) - current_config.acc_variance) or \
+                        float(readings_new[3]) > (float(readings_old[3]) + current_config.acc_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[4]) < (float(sensor_readings_old[4]) - current_config.acc_variance) or \
-                        float(sensor_readings_new[4]) > (float(sensor_readings_old[4]) + current_config.acc_variance):
+                elif float(readings_new[4]) < (float(readings_old[4]) - current_config.acc_variance) or \
+                        float(readings_new[4]) > (float(readings_old[4]) + current_config.acc_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[5]) < (float(sensor_readings_old[5]) - current_config.acc_variance) or \
-                        float(sensor_readings_new[5]) > (float(sensor_readings_old[5]) + current_config.acc_variance):
+                elif float(readings_new[5]) < (float(readings_old[5]) - current_config.acc_variance) or \
+                        float(readings_new[5]) > (float(readings_old[5]) + current_config.acc_variance):
                     write_to_db = True
 
             if installed_sensors.has_mag and write_to_db is False:
-                if float(sensor_readings_new[6]) < (float(sensor_readings_old[6]) - current_config.mag_variance) or \
-                        float(sensor_readings_new[6]) > (float(sensor_readings_old[6]) + current_config.mag_variance):
+                if float(readings_new[6]) < (float(readings_old[6]) - current_config.mag_variance) or \
+                        float(readings_new[6]) > (float(readings_old[6]) + current_config.mag_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[7]) < (float(sensor_readings_old[7]) - current_config.mag_variance) or \
-                        float(sensor_readings_new[7]) > (float(sensor_readings_old[7]) + current_config.mag_variance):
+                elif float(readings_new[7]) < (float(readings_old[7]) - current_config.mag_variance) or \
+                        float(readings_new[7]) > (float(readings_old[7]) + current_config.mag_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[8]) < (float(sensor_readings_old[8]) - current_config.mag_variance) or \
-                        float(sensor_readings_new[8]) > (float(sensor_readings_old[8]) + current_config.mag_variance):
+                elif float(readings_new[8]) < (float(readings_old[8]) - current_config.mag_variance) or \
+                        float(readings_new[8]) > (float(readings_old[8]) + current_config.mag_variance):
                     write_to_db = True
 
             if installed_sensors.has_gyro and write_to_db is False:
-                if float(sensor_readings_new[9]) < (float(sensor_readings_old[9]) - current_config.gyro_variance) or \
-                        float(sensor_readings_new[9]) > (float(sensor_readings_old[9]) + current_config.gyro_variance):
+                if float(readings_new[9]) < (float(readings_old[9]) - current_config.gyro_variance) or \
+                        float(readings_new[9]) > (float(readings_old[9]) + current_config.gyro_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[10]) < (float(sensor_readings_old[10]) - current_config.gyro_variance) or \
-                        float(sensor_readings_new[10]) > (float(sensor_readings_old[10]) + current_config.gyro_variance):
+                elif float(readings_new[10]) < (float(readings_old[10]) - current_config.gyro_variance) or \
+                        float(readings_new[10]) > (float(readings_old[10]) + current_config.gyro_variance):
                     write_to_db = True
-                elif float(sensor_readings_new[11]) < (float(sensor_readings_old[11]) - current_config.gyro_variance) or \
-                        float(sensor_readings_new[11]) > (float(sensor_readings_old[11]) + current_config.gyro_variance):
+                elif float(readings_new[11]) < (float(readings_old[11]) - current_config.gyro_variance) or \
+                        float(readings_new[11]) > (float(readings_old[11]) + current_config.gyro_variance):
                     write_to_db = True
 
     if write_to_db:
@@ -126,6 +136,7 @@ def check_xyz(sensor_readings_set):
 
 
 def write_trigger_to_database(sensor_readings_set):
+    """ Writes the provided trigger reading pairs into the SQL Database. """
     for reading_pair in sensor_readings_set:
         for trigger_data in reading_pair:
             sql_execute = (trigger_data.sql_query_start + trigger_data.sensor_types +
@@ -150,6 +161,6 @@ if current_config.write_to_db:
         check_xyz(new_readings_set)
 
 else:
-    operations_logger.primary_logger.warning("Write to Database Disabled in Config - Skipping Trigger Database Write")
+    operations_logger.primary_logger.warning("Write to Database Disabled in Config")
     while True:
         sleep(600)

@@ -12,5 +12,6 @@ round_decimal_to = 5
 
 
 class ReplaceMe:
+    """ Creates Function access to the ReplaceME. """
     def __init__(self):
         self.ReplaceMe = __import__('ReplaceMe')

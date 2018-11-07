@@ -30,11 +30,11 @@ import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.RaspberryPi_System
 
 installed_sensors = operations_config.get_installed_sensors()
-installed_config = operations_config.get_installed_config()
 sense_hat_show_led_message = False
 
 
 def get_interval_sensor_readings():
+    """ Returns Interval sensor readings from installed sensors (set in installed sensors file). """
     interval_data = operations_db.CreateIntervalDatabaseData()
     interval_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
@@ -140,6 +140,7 @@ def get_interval_sensor_readings():
 
 
 def get_trigger_sensor_readings():
+    """ Returns Trigger sensor readings from installed sensors (set in installed sensors file). """
     trigger_data = operations_db.CreateTriggerDatabaseData()
     trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
@@ -230,6 +231,7 @@ def get_trigger_sensor_readings():
 
 
 def get_hostname():
+    """ Returns sensors hostname. """
     if installed_sensors.linux_system:
         linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
         sensor_name = linux_os.get_hostname()
@@ -239,6 +241,7 @@ def get_hostname():
 
 
 def get_system_uptime():
+    """ Returns sensors system UpTime. """
     if installed_sensors.linux_system:
         linux_os = sensor_modules.Linux_OS.CreateLinuxSystem()
         sensor_uptime = linux_os.get_uptime()
@@ -248,6 +251,7 @@ def get_system_uptime():
 
 
 def get_cpu_temperature():
+    """ Returns sensors CPU temperature. """
     if installed_sensors.raspberry_pi:
         sensor_access = sensor_modules.RaspberryPi_System.CreateRPSystem()
         temperature = sensor_access.cpu_temperature()
@@ -257,6 +261,7 @@ def get_cpu_temperature():
 
 
 def get_sensor_temperature():
+    """ Returns sensors Environmental temperature. """
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         temperature = sensor_access.temperature()
@@ -274,6 +279,7 @@ def get_sensor_temperature():
 
 
 def get_pressure():
+    """ Returns sensors pressure. """
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         pressure = sensor_access.pressure()
@@ -291,6 +297,7 @@ def get_pressure():
 
 
 def get_humidity():
+    """ Returns sensors humidity. """
     if installed_sensors.pimoroni_bme680:
         sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
         humidity = sensor_access.humidity()
@@ -304,6 +311,7 @@ def get_humidity():
 
 
 def get_lumen():
+    """ Returns sensors lumen. """
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         lumen = sensor_access.lumen()
@@ -317,6 +325,7 @@ def get_lumen():
 
 
 def get_rgb():
+    """ Returns sensors Red, Green, Blue spectrum. """
     if installed_sensors.pimoroni_enviro:
         sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
         rgb = sensor_access.rgb()
@@ -330,6 +339,7 @@ def get_rgb():
 
 
 def get_accelerometer_xyz():
+    """ Returns sensors Accelerometer XYZ. """
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         xyz = sensor_access.accelerometer_xyz()
@@ -347,6 +357,7 @@ def get_accelerometer_xyz():
 
 
 def get_magnetometer_xyz():
+    """ Returns sensors Magnetometer XYZ. """
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         xyz = sensor_access.magnetometer_xyz()
@@ -364,6 +375,7 @@ def get_magnetometer_xyz():
 
 
 def get_gyroscope_xyz():
+    """ Returns sensors Gyroscope XYZ. """
     if installed_sensors.raspberry_pi_sense_hat:
         sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
         xyz = sensor_access.gyroscope_xyz()

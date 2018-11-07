@@ -24,6 +24,7 @@ round_decimal_to = 5
 
 
 def distance_from_sensor():
+    """ Creates Function access to the Pimoroni VL53L1X. """
     try:
         time_of_flight = VL53L1X.VL53L1X(i2c_bus=1, i2c_address=0x29)
         # Initialise the i2c bus and configure the sensor

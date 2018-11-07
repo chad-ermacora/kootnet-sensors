@@ -23,6 +23,7 @@ round_decimal_to = 5
 
 
 class CreateRPSenseHAT:
+    """ Creates Function access to the Raspberry Pi Sense HAT. """
     def __init__(self):
         self.sense_hat_import = __import__('sense_hat')
         try:
