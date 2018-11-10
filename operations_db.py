@@ -26,9 +26,10 @@ sensor_database_location = '/home/pi/KootNetSensors/data/SensorRecordingDatabase
 
 class CreateIntervalDatabaseData:
     """ Creates a object, holding required data for making a Interval SQL execute string. """
+
     def __init__(self):
         self.database_location = sensor_database_location
-        self.sql_query_start = "INSERT OR IGNORE INTO IntervalData (DateTime, "
+        self.sql_query_start = "INSERT OR IGNORE INTO IntervalData ("
         self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
 
@@ -38,11 +39,13 @@ class CreateIntervalDatabaseData:
 
 class CreateTriggerDatabaseData:
     """ Creates a object, holding required data for making a Trigger SQL execute string. """
+
     def __init__(self):
         self.database_location = sensor_database_location
-        self.sql_query_start = "INSERT OR IGNORE INTO TriggerData (DateTime, "
+        self.sql_query_start = "INSERT OR IGNORE INTO TriggerData ("
         self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
+
         self.sensor_types = ""
         self.sensor_readings = ""
 
@@ -55,154 +58,194 @@ def check_database_structure():
 
         # Create or update Interval table & columns
         try:
-            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='IntervalData', nf='DateTime', ft='TEXT'))
+            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='IntervalData',
+                                                                     nf='DateTime',
+                                                                     ft='TEXT'))
             operations_logger.primary_logger.debug("Table 'IntervalData' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Table 'IntervalData' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorName', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='SensorName',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'SensorName' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'SensorName' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='IP', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='IP',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'IP' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'IP' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SensorUpTime', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='SensorUpTime',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'SensorUpTime' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'SensorUpTime' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='SystemTemp', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='SystemTemp',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'SystemTemp' -  Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'SystemTemp' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='EnvironmentTemp', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='EnvironmentTemp',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'EnvironmentTemp' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'EnvironmentTemp' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Pressure', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Pressure',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Pressure' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Pressure' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Humidity', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Humidity',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Humidity' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Humidity' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Lumen', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Lumen',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Lumen' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Lumen' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Red', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Red',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Red' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Red' - " + str(error))
 
         try:
-            db_cursor.execute(
-                "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Green', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Green',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Green' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Green' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData', cn='Blue', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Blue',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Blue' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Blue' - " + str(error))
 
         # Create or update Trigger table & columns
         try:
-            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData', nf='DateTime', ft='TEXT'))
+            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='TriggerData',
+                                                                     nf='DateTime',
+                                                                     ft='TEXT'))
             operations_logger.primary_logger.debug("Table 'TriggerData' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Table 'TriggerData' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='SensorName', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='SensorName',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("Column 'SensorName' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Column 'SensorName' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='IP', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='IP',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("Column 'IP' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Column 'IP' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_X', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Acc_X',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("Column 'acc_X' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Column 'acc_X' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Y', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Acc_Y',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("Column 'acc_Y' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Column 'acc_Y' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Acc_Z', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Acc_Z',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("Column 'acc_Z' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("Column 'acc_Z' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_X', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Mag_X',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'mg_X' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'mg_X' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Y', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Mag_Y',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'mg_Y' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'mg_Y' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Mag_Z', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Mag_Z',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'mg_Z' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'mg_Z' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_X', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Gyro_X',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Gyro_X' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Gyro_X' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Y', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Gyro_Y',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Y' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Y' - " + str(error))
 
         try:
-            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData', cn='Gyro_Z', ct='TEXT'))
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='TriggerData',
+                                                                               cn='Gyro_Z',
+                                                                               ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Z' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Z' - " + str(error))

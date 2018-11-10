@@ -139,8 +139,10 @@ def write_trigger_to_database(sensor_readings_set):
     """ Writes the provided trigger reading pairs into the SQL Database. """
     for reading_pair in sensor_readings_set:
         for trigger_data in reading_pair:
-            sql_execute = (trigger_data.sql_query_start + trigger_data.sensor_types +
-                           trigger_data.sql_query_values_start + trigger_data.sensor_readings +
+            sql_execute = (trigger_data.sql_query_start +
+                           trigger_data.sensor_types +
+                           trigger_data.sql_query_values_start +
+                           trigger_data.sensor_readings +
                            trigger_data.sql_query_values_end)
 
             operations_db.write_to_sql_database(sql_execute)

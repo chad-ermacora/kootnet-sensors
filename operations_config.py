@@ -18,7 +18,7 @@
 """
 import operations_logger
 
-version = "Alpha.21.15"
+version = "Alpha.21.16"
 
 sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt"
 config_file_location = "/home/pi/KootNetSensors/config.txt"
@@ -30,6 +30,7 @@ class CreateInstalledSensors:
     Creates object with default installed sensors (Default = Linux / RP only).
     Also contains human readable sensor names as text.
     """
+
     def __init__(self):
         self.linux_system = 1
         self.raspberry_pi = 1
@@ -56,6 +57,7 @@ class CreateInstalledSensors:
 
 class CreateConfig:
     """ Creates object with default sensor configuration settings. """
+
     def __init__(self):
         self.write_to_db = 1
         self.enable_custom = 0
@@ -105,7 +107,8 @@ def write_config_to_file(config):
         sensor_list_file.close()
 
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to open config file - " + str(error))
+        operations_logger.primary_logger.error("Unable to open config file - " +
+                                               str(error))
 
 
 def get_installed_config():
@@ -118,20 +121,23 @@ def get_installed_config():
         config_list = config_file.readlines()
         config_file.close()
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to Load Config File, Creating Default: " + " - " + str(error))
+        operations_logger.primary_logger.error("Unable to Load Config File, Creating Default: " +
+                                               str(error))
         config_list = []
 
     try:
         installed_config.write_to_db = int(config_list[1].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.error(
-            "Invalid Option in Config - Record Sensors to SQL Database - " + str(error))
+        operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                               "Record Sensors to SQL Database - " +
+                                               str(error))
 
     try:
         installed_config.sleep_duration_interval = float(config_list[2].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.error(
-            "Invalid Option in Config - Duration between Interval readings in Seconds" + str(error))
+        operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                               "Duration between Interval readings in Seconds" +
+                                               str(error))
 
     try:
         installed_config.sleep_duration_trigger = float(config_list[3].split('=')[0].strip())
@@ -139,35 +145,41 @@ def get_installed_config():
         if installed_config.sleep_duration_trigger < 0.05:
             installed_config.sleep_duration_trigger = 0.05
     except Exception as error:
-        operations_logger.primary_logger.error(
-            "Invalid Option in Config - Duration between Trigger readings in Seconds" + str(error))
+        operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                               "Duration between Trigger readings in Seconds" +
+                                               str(error))
 
     try:
         installed_config.enable_custom = int(config_list[4].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.error("Invalid Option in Config - Enable Custom Settings" + str(error))
+        operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                               "Enable Custom Settings" +
+                                               str(error))
 
     if installed_config.enable_custom:
         try:
             installed_config.acc_variance = float(config_list[5].split('=')[0].strip())
         except Exception as error:
-            operations_logger.primary_logger.error(
-                "Invalid Option in Config - Custom Accelerometer variance" + str(error))
+            operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                                   "Custom Accelerometer variance" +
+                                                   str(error))
 
         try:
             installed_config.mag_variance = float(config_list[6].split('=')[0].strip())
         except Exception as error:
-            operations_logger.primary_logger.error(
-                "Invalid Option in Config - Custom Magnetometer variance" + str(error))
+            operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                                   "Custom Magnetometer variance" +
+                                                   str(error))
 
         try:
             installed_config.gyro_variance = float(config_list[7].split('=')[0].strip())
         except Exception as error:
-            operations_logger.primary_logger.error(
-                "Invalid Option in Config - Custom Gyroscope variance" + str(error))
+            operations_logger.primary_logger.error("Invalid Option in Config - " +
+                                                   "Custom Gyroscope variance" +
+                                                   str(error))
     else:
-        operations_logger.primary_logger.debug(
-            "Custom Settings Disabled in Config - Loading Sensor Defaults based on Installed Sensors")
+        operations_logger.primary_logger.debug("Custom Settings Disabled in Config - " +
+                                               "Loading Sensor Defaults based on Installed Sensors")
         installed_config = set_default_variances_per_sensor(installed_config)
 
     return installed_config
@@ -199,7 +211,8 @@ def write_installed_sensors_to_file(installed_sensors):
         sensor_list_file.write(new_config)
 
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to open config file - " + str(error))
+        operations_logger.primary_logger.error("Unable to open config file - " +
+                                               str(error))
 
 
 def get_installed_sensors():
