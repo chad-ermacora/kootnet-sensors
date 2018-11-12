@@ -194,8 +194,10 @@ def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
     os.system("systemctl daemon-reload && "
               "systemctl restart SensorRecording && "
-              "systemctl restart SensorHTTP && "
-              "systemctl restart SensorCommands")
+              "systemctl restart SensorHTTP")
+    sleep(5)
+    os.system("bash /opt/kootnet-sensors/upgrade/set_permissions.sh")
+    os.system("systemctl restart SensorCommands")
 
 
 # Starts a socket server and waits for commands

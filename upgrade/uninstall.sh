@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorHTTP
@@ -21,12 +22,12 @@ rm -f /etc/systemd/system/SensorInterval.service 2>/dev/null
 rm -f /etc/systemd/system/SensorTrigger.service 2>/dev/null
 ###
 # Restore /etc/network/interfaces & /etc/wpa_supplicant/wpa_supplicant.conf
-if [ -f "/home/pi/KootNetSensors/backups/interfaces" ]
+if [[ -f "/home/pi/KootNetSensors/backups/interfaces" ]]
 then
   printf '\nRestoring original /etc/network/interfaces\n'
   cp -f /home/pi/KootNetSensors/backups/interfaces /etc/network/interfaces 2>/dev/null
 fi
-if [ -f "/home/pi/KootNetSensors/backups/wpa_supplicant.conf" ]
+if [[ -f "/home/pi/KootNetSensors/backups/wpa_supplicant.conf" ]]
 then
   printf 'Restoring original /etc/wpa_supplicant/wpa_supplicant.conf\n'
   cp -f /home/pi/KootNetSensors/backups/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf 2>/dev/null

@@ -1,10 +1,11 @@
+#!/usr/bin/env bash
 # Upgrade from Online HTTP server
 # HTTP Server Options
 HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 HTTP_ZIP="/KootNetSensors.zip"
 
-if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
+if [[ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]]
 then
   bash /opt/kootnet-sensors/upgrade/chk_install.sh
 else

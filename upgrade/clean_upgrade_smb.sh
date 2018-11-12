@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 clear
 printf '\n\nDoing "Clean" upgrade\nLeaves database & config\nDeletes everything else\nThen re-downloads and installs\n'
 cp -f /opt/kootnet-sensors/upgrade/update_programs_smb.sh /root

@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # HTTP Download Server Options
 PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request matplotlib"
 APT_GET_INSTALL="fonts-freefont-ttf sense-hat lighttpd fake-hwclock"
@@ -18,7 +19,7 @@ mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
 mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
 mkdir /opt/kootnet-sensors/upgrade 2>/dev/null
 # Add and edit Sensors
-if [ -f "/home/pi/KootNetSensors/installed_sensors.txt" ]
+if [[ -f "/home/pi/KootNetSensors/installed_sensors.txt" ]]
 then
   printf '/home/pi/KootNetSensors/installed_sensors.txt OK\n'
 else
@@ -37,13 +38,13 @@ EOF
   nano /home/pi/KootNetSensors/installed_sensors.txt
 fi
 # Add and Edit Config
-if [ -f "/home/pi/KootNetSensors/config.txt" ]
+if [[ -f "/home/pi/KootNetSensors/config.txt" ]]
 then
   printf '/home/pi/KootNetSensors/config.txt OK\n'
 else
   printf '/home/pi/KootNetSensors/config.txt Setup\n'
   cat > /home/pi/KootNetSensors/config.txt << "EOF"
-Enable = 1 & Disable = 0
+Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 1 = Record Sensors to SQL Database
 300 = Duration between Interval readings in Seconds
 0.15 = Duration between Trigger readings in Seconds
@@ -55,7 +56,7 @@ EOF
   nano /home/pi/KootNetSensors/config.txt
 fi
 # Network + Other Setup
-if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
+if [[ -f "/home/pi/KootNetSensors/zInstalled.txt" ]]
 then
   printf '\nPrevious install detected, skipping setup\n'
 else

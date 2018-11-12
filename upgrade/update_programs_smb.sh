@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # This will update KootNet Sensor Files over SMB, change options to match your windows share
 # Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
 SMB_SERVER="//gamercube1"
@@ -8,7 +9,7 @@ CIFS_OPTIONS="username=myself,password='123'"
 RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
 
 clear
-if [ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]
+if [[ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]]
 then
   bash /opt/kootnet-sensors/upgrade/chk_install.sh
 else

@@ -1,5 +1,6 @@
+#!/usr/bin/env bash
 # Open Config Files if installed
-if [ -f "/home/pi/KootNetSensors/zInstalled.txt" ]
+if [[ -f "/home/pi/KootNetSensors/zInstalled.txt" ]]
 then
   printf '\nPrevious install detected, opening configuration files\n'
   nano /home/pi/KootNetSensors/installed_sensors.txt

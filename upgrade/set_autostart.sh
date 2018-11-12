@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 printf 'Setting fake-hwclock to run every 1 min in root crontab\n\n'
 echo '*/1 * * * * fake-hwclock' >> /tmp/tmp34441.txt
 crontab -u root /tmp/tmp34441.txt

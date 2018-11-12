@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Make sure permissions are correct
 printf '\nSetting permissions\n'
 chown pi:pi /home/pi/KootNetSensors -R

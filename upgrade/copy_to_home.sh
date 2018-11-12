@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
 cp -f /opt/kootnet-sensors/upgrade/update_programs_smb.sh /home/pi/update_sensors_smb.sh
 cp -f /opt/kootnet-sensors/upgrade/update_programs_online.sh /home/pi/update_sensors_online.sh
