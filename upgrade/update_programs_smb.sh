@@ -8,15 +8,15 @@ SMB_SHARE="/PyCharmProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
-RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
+RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt --exclude logs/KootNet_log.txt --exclude logs/Sensor_Commands_log.txt --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
 # Make sure its running with root
+clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"
   exit $?
 fi
 # Start Script
-clear
 if [[ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]]
 then
   bash /opt/kootnet-sensors/upgrade/chk_install.sh

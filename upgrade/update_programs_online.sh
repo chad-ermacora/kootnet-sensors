@@ -7,6 +7,7 @@ HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 HTTP_ZIP="/KootNetSensors.zip"
 # Make sure its running with root
+clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"
@@ -21,7 +22,6 @@ else
   wget -nd ${HTTP_SERVER}${HTTP_FOLDER}/chk_install.sh -P /tmp/
   bash /tmp/chk_install.sh
 fi
-clear
 # Download and Upgrade Sensor Programs
 rm -R /tmp/SensorHTTPUpgrade 2>/dev/null
 mkdir /tmp/SensorHTTPUpgrade 2>/dev/null

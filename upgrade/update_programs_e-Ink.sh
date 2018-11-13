@@ -3,13 +3,13 @@ CONFIG_DIR="/etc/kootnet"
 # Update script that is run when the E-Ink upgrade command is sent
 EINK_HTTP_URL='http://192.168.10.5:8009'
 # Make sure its running with root
+clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"
   exit $?
 fi
 # Start Script
-clear
 printf 'Starting E-Ink sensor upgrade\n'
 # Create temporary directories in root and copy things over
 rm -R /root/eInkUpgrade 2>/dev/null

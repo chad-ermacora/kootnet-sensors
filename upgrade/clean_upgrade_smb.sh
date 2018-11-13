@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 USER_DIR="/home/pi/"
 # Make sure its running with root
+clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"
   exit $?
 fi
 # Start Script
-clear
 printf '\n\nDoing "Clean" upgrade\nLeaves database & config\nDeletes everything else\nThen re-downloads and installs\n'
 cp -f /opt/kootnet-sensors/upgrade/update_programs_smb.sh /root
 printf '\nDisabling & stopping all sensor services\n'
