@@ -27,7 +27,7 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-_log_directory = "/home/pi/KootNetSensors/logs/"
+_log_directory = "/home/kootnet_data/logs/"
 primary_log = _log_directory + "Primary_log.txt"
 sensors_log = _log_directory + "Sensors_log.txt"
 network_log = _log_directory + "Network_log.txt"

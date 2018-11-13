@@ -8,18 +8,19 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-import operations_logger
 import os
 import socket
 from time import strftime
 
-primary_database_location = "/home/pi/KootNetSensors/data/SensorRecordingDatabase.sqlite"
+import operations_logger
+from operations_db import sensor_database_location
 
 round_decimal_to = 2
 
 
 class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
+
     @staticmethod
     def get_hostname():
         try:
@@ -64,7 +65,7 @@ class CreateLinuxSystem:
     @staticmethod
     def get_sql_db_size():
         try:
-            db_size_mb = os.path.getsize(primary_database_location) / 1024000
+            db_size_mb = os.path.getsize(sensor_database_location) / 1024000
             operations_logger.sensors_logger.debug("Linux System Interval Database Size - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Linux System Interval Database Size - Failed - " + str(error))

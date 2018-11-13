@@ -18,16 +18,16 @@
 """
 import operations_logger
 
-version = "Alpha.21.16"
+version = "Alpha.21.17"
 
-sensors_installed_file_location = "/home/pi/KootNetSensors/installed_sensors.txt"
-config_file_location = "/home/pi/KootNetSensors/config.txt"
-last_updated_file_location = "/home/pi/KootNetSensors/LastUpdated.txt"
+sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
+config_file_location = "/etc/kootnet/sql_recording.conf"
+last_updated_file_location = "/etc/kootnet/last_updated.txt"
 
 
 class CreateInstalledSensors:
     """
-    Creates object with default installed sensors (Default = Linux / RP only).
+    Creates object with default installed sensors (Default = Gnu/Linux / RP only).
     Also contains human readable sensor names as text.
     """
 

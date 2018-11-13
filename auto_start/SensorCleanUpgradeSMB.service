@@ -5,8 +5,8 @@ Description=KootNet Sensors - Clean Upgrade Process SMB
 Type=simple
 Restart=no
 User=root
-Group=root
-ExecStart=/bin/bash /home/pi/KootNetSensors/upgrade_smb_clean.sh
+Group=pi
+ExecStart=/bin/bash /home/kootnet_data/scripts/clean_upgrade_smb.sh
 
 [Install]
 WantedBy=multi-user.target

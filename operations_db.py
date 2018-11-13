@@ -20,8 +20,7 @@ import sqlite3
 
 import operations_logger
 
-sensor_ver_file = "/home/pi/KootNetSensors/installed_sensors.txt"
-sensor_database_location = '/home/pi/KootNetSensors/data/SensorRecordingDatabase.sqlite'
+sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
 
 
 class CreateIntervalDatabaseData:
