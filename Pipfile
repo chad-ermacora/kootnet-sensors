@@ -1,0 +1,14 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+smbus2 = "*"
+gpiozero = "*"
+sense_hat = "*"
+envirophat = "*"
+bme680 = "*"
+bh1745 = "*"
+lsm303d = "*"
+vl53l1x = "*"
