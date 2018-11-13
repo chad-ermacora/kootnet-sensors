@@ -17,6 +17,6 @@ chmod 754 ${DATA_DIR}/scripts/*
 chmod 777 ${CONFIG_DIR} -R
 chmod 775 /opt/kootnet-sensors -R
 chmod 775 /opt/kootnet-control-center -R
-chmod 777 /opt/kootnet-control-center/config.txt
-chmod 777 /opt/kootnet-control-center/logs/*.txt
+chmod 766 /opt/kootnet-control-center/config.txt
+chmod 766 /opt/kootnet-control-center/logs/*.txt
 chmod 777 /var/log/lighttpd -R 2>/dev/null
