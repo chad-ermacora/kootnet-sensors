@@ -7,7 +7,7 @@ Type=simple
 Restart=always
 WorkingDirectory=/opt/kootnet-sensors
 RestartSec=3s
-User=pi
+User=root
 Group=pi
 ExecStart=/usr/bin/python3 /opt/kootnet-sensors/record_to_db.py
 
