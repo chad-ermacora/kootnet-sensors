@@ -68,14 +68,9 @@ else
   cp -f /etc/network/interfaces ${CONFIG_DIR}/backups/ 2>/dev/null
   cat >> /etc/network/interfaces << "EOF"
 
-# Be sure to Change the IP to match your network
-#
-# To let your wireless router assign the IP
-# Change 'iface wlan0 inet static' to 'iface wlan0 inet dhcp'
-# Then remove all lines below EXCEPT for the one with wpa-conf
-
 allow-hotplug wlan0
 iface wlan0 inet static
+  # Be sure to Change the IP settings to match your network
   address 192.168.10.254
   netmask 255.255.255.0
   gateway 192.168.10.1

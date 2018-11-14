@@ -37,7 +37,7 @@ class CreateRPSenseHAT:
             operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Temperature - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Temperature - Failed - " + str(error))
-            env_temp = 0
+            env_temp = 0.0
 
         return round(env_temp, round_decimal_to)
 
