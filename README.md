@@ -1,12 +1,9 @@
 # KootNet Sensors - Raspberry Pi Sensor Software
 Python3 programs to record sensor readings to an SQLite3 Databases and provide remote TCP/IP monitoring & management.
 
-[Project Website](http://kootenay-networks.com/?page_id=170)
-
-[KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)
-
+[Project Website](http://kootenay-networks.com/?page_id=170)  
+[KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)  
 [KootNet Sensors - Control Center](https://github.com/chad-ermacora/sensor-control-center)
-
 
 Controlling the Sensor
 -------------------------
@@ -30,7 +27,7 @@ The following are Linux systemd services that automatically start with the syste
 **SensorRecording**
 >Records sensors to an SQLite3 database at a set Interval & by trigger variances.
 
-### The following Terminal commands disable and stop the service.
+### The following Terminal commands disable and stop the corresponding service.
 
 **SensorHTTP**
 ```
