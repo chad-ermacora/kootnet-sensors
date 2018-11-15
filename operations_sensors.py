@@ -33,7 +33,7 @@ import sensor_modules.RaspberryPi_System
 installed_sensors = operations_config.get_installed_sensors()
 sense_hat_show_led_message = False
 
-# Initialize sensor access once on load, based on installed sensors configuration file.
+# Initialize sensor access, based on installed sensors file
 if installed_sensors.linux_system:
     os_sensor_access = sensor_modules.Linux_OS.CreateLinuxSystem()
 if installed_sensors.raspberry_pi:
@@ -48,6 +48,9 @@ if installed_sensors.pimoroni_bh1745:
     pimoroni_bh1745_sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
 if installed_sensors.pimoroni_lsm303d:
     lsm303d_sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
+if installed_sensors.pimoroni_vl53l1x:
+    # Place holder for the V153L1X
+    pass
 
 
 def get_interval_sensor_readings():

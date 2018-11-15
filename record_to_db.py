@@ -53,38 +53,17 @@ def start_interval_recording():
 
 def get_readings_set():
     """ Returns 5 'pairs' of Trigger readings in a list, with a sleep delay between each reading (set in config). """
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-    sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set = [reading_pair]
+    readings_set = []
 
-    sleep(current_config.sleep_duration_trigger)
+    count = 0
+    while count < 5:
+        reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+        sleep(current_config.sleep_duration_trigger)
+        reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+        sleep(current_config.sleep_duration_trigger)
 
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-    sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set.append(reading_pair)
-
-    sleep(current_config.sleep_duration_trigger)
-
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-    sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set.append(reading_pair)
-
-    sleep(current_config.sleep_duration_trigger)
-
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-    sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set.append(reading_pair)
-
-    sleep(current_config.sleep_duration_trigger)
-
-    reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-    sleep(current_config.sleep_duration_trigger)
-    reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-    readings_set.append(reading_pair)
+        readings_set.append(reading_pair)
+        count = count + 1
 
     return readings_set
 
