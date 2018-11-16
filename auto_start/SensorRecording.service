@@ -1,15 +1,15 @@
 [Unit]
-Description=KootNet Sensors - Trigger SQL Recording
+Description=KootNet Sensors - Interval SQL Recording
 StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 Restart=always
 WorkingDirectory=/opt/kootnet-sensors
-RestartSec=6s
+RestartSec=3s
 User=root
 Group=pi
-ExecStart=/usr/bin/python3 /opt/kootnet-sensors/trigger_to_db.py
+ExecStart=/usr/bin/python3 /opt/kootnet-sensors/record_to_db.py
 
 [Install]
 WantedBy=multi-user.target

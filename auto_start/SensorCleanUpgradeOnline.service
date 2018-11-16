@@ -1,0 +1,12 @@
+[Unit]
+Description=KootNet Sensors - Clean Upgrade Process Online
+
+[Service]
+Type=simple
+Restart=no
+User=root
+Group=pi
+ExecStart=/bin/bash /home/kootnet_data/scripts/clean_upgrade_online.sh
+
+[Install]
+WantedBy=multi-user.target

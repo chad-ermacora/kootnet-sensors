@@ -1,13 +1,11 @@
 # KootNet Sensors - Raspberry Pi Sensor Software
-Python3 programs for the Raspberry Pi that record sensors to SQLite3 Databases.  It also contains a TCP/IP network service for remotely interacting with the sensor.
-
-Install instructions can be found below.  If followed, the install script will download all necessary files, install 4 services and reboot the sensor.  Once the sensor boots back up, it will start recording sensor data as per settings applied during setup.
+Python3 programs to record sensor readings to an SQLite3 Databases and provide remote TCP/IP monitoring & management.
 
 [Project Website](http://kootenay-networks.com/?page_id=170)
 
 [KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)
 
-[PC Control Center](https://github.com/chad-ermacora/sensor-control-center)
+[KootNet Sensors - Control Center](https://github.com/chad-ermacora/sensor-control-center)
 
 
 Controlling the Sensor
@@ -24,17 +22,13 @@ Services
 The following are Linux systemd services that automatically start with the system and restart if terminated. 
 
 **SensorHTTP**
->Lighttpd instance for downloading databases.
+>Lighttpd instance for downloading databases & logs.
 
 **SensorCommands**
->Network "Server" to receive commands from the PC Control Center program.
+>Network "server" to receive commands from the Control Center program.
 
-**SensorInterval**
->Records Interval Sensors to a SQLite3 Database at a set Interval in Seconds (Default 5 Min).
-
-**SensorTrigger**
->Continually monitors Sensors for a exceeded "Trigger Variance", at which point it records all Trigger readings to a SQLite3 database.
-
+**SensorRecording**
+>Records sensors to an SQLite3 database at a set Interval & by trigger variances.
 
 ### The following Terminal commands disable and stop the service.
 
@@ -48,14 +42,9 @@ sudo systemctl disable SensorHTTP && sudo systemctl stop SensorHTTP
 sudo systemctl disable SensorCommands && sudo systemctl stop SensorCommands
 ```
 
-**SensorInterval**
+**SensorRecording**
 ```
-sudo systemctl disable SensorInterval && sudo systemctl stop SensorInterval
-```
-
-**SensorTrigger**
-```
-sudo systemctl disable SensorTrigger && sudo systemctl stop SensorTrigger
+sudo systemctl disable SensorRecording && sudo systemctl stop SensorRecording
 ```
 
 Sensor Hardware Units
