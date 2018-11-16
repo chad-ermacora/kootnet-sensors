@@ -1,5 +1,5 @@
 # KootNet Sensors - Raspberry Pi Sensor Software
-Python3 programs to record sensor readings to an SQLite3 Databases and provide remote TCP/IP monitoring & management.
+Python3 programs to record sensor readings to a SQLite3 database and provides TCP/IP monitoring & management.
 
 [Project Website](http://kootenay-networks.com/?page_id=170)  
 [KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)  
