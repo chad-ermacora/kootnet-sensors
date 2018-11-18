@@ -38,18 +38,14 @@ printf '\nRemoving all Sensor & Control Center program files\n'
 # Remove Sensor & Control Center program directories & files
 killall python3 2>/dev/null
 rm -f -R /opt/kootnet-sensors
-rm -f -R /opt/kootnet-control-center
 rm -f ${DATA_DIR}/scripts/clean_upgrade_online.sh 2>/dev/null
 rm -f ${DATA_DIR}/scripts/clean_upgrade_smb.sh 2>/dev/null
-# Remove Shortcuts and easy access copies
-rm -f ${USER_DIR}/Desktop/KootNet-Control-Center.desktop
-rm -f ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop
-rm -f /usr/share/applications/KootNet-Control-Center.desktop
-rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
 # Remove install check files & configurations
 rm -f ${CONFIG_DIR}/installed_datetime.txt 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_sensors.conf 2>/dev/null
 rm -f ${CONFIG_DIR}/sql_recording.conf 2>/dev/null
+# Uninstall Control Center
+bash /opt/kootnet-control-center/scripts/uninstall.sh
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload

@@ -138,48 +138,50 @@ class CreateRPSenseHAT:
                  s1, s1, s1, b1, b1, s1, s1, s1,
                  s1, s1, b1, s1, s1, b1, s1, s1,
                  s1, s1, b1, b1, b1, b1, s1, s1]
+        try:
+            shutdown_confirm = False
+            while True:
+                event = self.sense.stick.wait_for_event()
 
-        shutdown_confirm = False
-        while True:
-            event = self.sense.stick.wait_for_event()
+                acc = self.accelerometer_xyz()
+                acc_x = round(acc[0], 0)
+                acc_y = round(acc[1], 0)
 
-            acc = self.accelerometer_xyz()
-            acc_x = round(acc[0], 0)
-            acc_y = round(acc[1], 0)
+                if acc_x == -1:
+                    self.sense.set_rotation(90)
+                elif acc_y == 1:
+                    self.sense.set_rotation(0)
+                elif acc_y == -1:
+                    self.sense.set_rotation(180)
+                else:
+                    self.sense.set_rotation(270)
 
-            if acc_x == -1:
-                self.sense.set_rotation(90)
-            elif acc_y == 1:
-                self.sense.set_rotation(0)
-            elif acc_y == -1:
-                self.sense.set_rotation(180)
-            else:
-                self.sense.set_rotation(270)
-
-            if event.direction == "down":
-                self.sense.set_pixels(steve)
-                if shutdown_confirm:
-                    self.sense.show_message("Shutting Down",
+                if event.direction == "up":
+                    shutdown_confirm = False
+                    self.display_led_message(self.linux_os_access.get_ip())
+                elif event.direction == "down":
+                    self.sense.set_pixels(steve)
+                    if shutdown_confirm:
+                        self.sense.show_message("Shutting Down",
+                                                scroll_speed=0.08,
+                                                text_colour=(75, 0, 0))
+                        system("shutdown -h now")
+                elif event.direction == "left":
+                    shutdown_confirm = False
+                    self.display_led_message(str(int(self.humidity())) + "%RH")
+                elif event.direction == "right":
+                    shutdown_confirm = False
+                    self.display_led_message(str(int(self.temperature())) + "c")
+                elif event.action == "held":
+                    shutdown_confirm = True
+                    self.sense.show_message("Shutdown=down",
                                             scroll_speed=0.08,
                                             text_colour=(75, 0, 0))
-                    system("shutdown -h now")
-            elif event.direction == "up":
-                shutdown_confirm = False
-                self.display_led_message(self.linux_os_access.get_ip())
-            elif event.direction == "left":
-                shutdown_confirm = False
-                self.display_led_message(str(int(self.humidity())) + "%RH")
-            elif event.direction == "right":
-                shutdown_confirm = False
-                self.display_led_message(str(int(self.temperature())) + "c")
-            elif event.action == "held":
-                shutdown_confirm = True
-                self.sense.show_message("Shutdown=down",
-                                        scroll_speed=0.08,
-                                        text_colour=(75, 0, 0))
 
-            # Clear events to prevent multiple loops if button(s) hit multiple times
-            self.sense.stick.get_events()
+                # Clear events to prevent multiple loops if button(s) hit multiple times
+                self.sense.stick.get_events()
+        except Exception as error:
+            operations_logger.sensors_logger.error("Unable start SenseHAT JoyStick Operations - " + str(error))
 
     def display_led_message(self, message):
         try:
