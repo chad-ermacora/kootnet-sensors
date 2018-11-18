@@ -31,7 +31,6 @@ import sensor_modules.RaspberryPi_System
 # import sensor_modules.Pimoroni_VL53L1X
 
 installed_sensors = operations_config.get_installed_sensors()
-sense_hat_show_led_message = False
 
 # Initialize sensor access, based on installed sensors file
 if installed_sensors.linux_system:
@@ -49,7 +48,6 @@ if installed_sensors.pimoroni_bh1745:
 if installed_sensors.pimoroni_lsm303d:
     lsm303d_sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
 if installed_sensors.pimoroni_vl53l1x:
-    # Place holder for the V153L1X
     pass
 
 
@@ -87,7 +85,7 @@ def get_interval_sensor_readings():
                               str(pressure) + "', '" + \
                               str(humidity) + "'"
 
-        if sense_hat_show_led_message:
+        if operations_config.sense_hat_show_led_message:
             led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(
                 int(humidity)) + "%RH"
             rp_sense_hat_sensor_access.display_led_message(led_message)

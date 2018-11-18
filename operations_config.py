@@ -18,11 +18,12 @@
 """
 import operations_logger
 
-version = "Alpha.22.0"
+version = "Alpha.22.1"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
+sense_hat_show_led_message = False
 
 
 class CreateInstalledSensors:

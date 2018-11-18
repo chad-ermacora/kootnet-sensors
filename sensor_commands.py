@@ -19,12 +19,22 @@
 import os
 import pickle
 import socket
+from threading import Thread
 from time import sleep
 
 import operations_commands
 import operations_config
 import operations_logger
 import operations_sensors
+from operations_sensors import rp_sense_hat_sensor_access
+
+installed_sensors = operations_config.get_installed_sensors()
+
+# If installed, start up SenseHAT Joystick program
+if installed_sensors.raspberry_pi_sense_hat:
+    sense_joy_stick_thread = Thread(target=rp_sense_hat_sensor_access.start_joy_stick_commands)
+    sense_joy_stick_thread.daemon = True
+    sense_joy_stick_thread.start()
 
 # Starts a socket server and waits for commands
 while True:
