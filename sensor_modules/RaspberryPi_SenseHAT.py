@@ -17,7 +17,10 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
+from os import system
+
 import operations_logger
+import sensor_modules.Linux_OS as LinuxOS
 
 round_decimal_to = 5
 
@@ -31,6 +34,8 @@ class CreateRPSenseHAT:
             self.sense = self.sense_hat_import.SenseHat()
         except Exception as error:
             operations_logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
+
+        self.linux_os_access = LinuxOS.CreateLinuxSystem()
 
         # Use to initialize SenseHAT Joy Stick program in a Thread
         try:
@@ -103,22 +108,23 @@ class CreateRPSenseHAT:
         return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
     def start_joy_stick_commands(self):
-        rainbow = [[255, 0, 0], [255, 0, 0], [255, 87, 0], [255, 196, 0],
-                   [205, 255, 0], [95, 255, 0], [0, 255, 13], [0, 255, 122],
-                   [255, 0, 0], [255, 96, 0], [255, 205, 0], [196, 255, 0],
-                   [87, 255, 0], [0, 255, 22], [0, 255, 131], [0, 255, 240],
-                   [255, 105, 0], [255, 214, 0], [187, 255, 0], [78, 255, 0],
-                   [0, 255, 30], [0, 255, 140], [0, 255, 248], [0, 152, 255],
-                   [255, 223, 0], [178, 255, 0], [70, 255, 0], [0, 255, 40],
-                   [0, 255, 148], [0, 253, 255], [0, 144, 255], [0, 34, 255],
-                   [170, 255, 0], [61, 255, 0], [0, 255, 48], [0, 255, 157],
-                   [0, 243, 255], [0, 134, 255], [0, 26, 255], [83, 0, 255],
-                   [52, 255, 0], [0, 255, 57], [0, 255, 166], [0, 235, 255],
-                   [0, 126, 255], [0, 17, 255], [92, 0, 255], [201, 0, 255],
-                   [0, 255, 66], [0, 255, 174], [0, 226, 255], [0, 117, 255],
-                   [0, 8, 255], [100, 0, 255], [210, 0, 255], [255, 0, 192],
-                   [0, 255, 183], [0, 217, 255], [0, 109, 255], [0, 0, 255],
-                   [110, 0, 255], [218, 0, 255], [255, 0, 183], [255, 0, 74]]
+        # Makes a nice Rainbow on the LED grid.  Not using right now ...
+        # rainbow = [[255, 0, 0], [255, 0, 0], [255, 87, 0], [255, 196, 0],
+        #            [205, 255, 0], [95, 255, 0], [0, 255, 13], [0, 255, 122],
+        #            [255, 0, 0], [255, 96, 0], [255, 205, 0], [196, 255, 0],
+        #            [87, 255, 0], [0, 255, 22], [0, 255, 131], [0, 255, 240],
+        #            [255, 105, 0], [255, 214, 0], [187, 255, 0], [78, 255, 0],
+        #            [0, 255, 30], [0, 255, 140], [0, 255, 248], [0, 152, 255],
+        #            [255, 223, 0], [178, 255, 0], [70, 255, 0], [0, 255, 40],
+        #            [0, 255, 148], [0, 253, 255], [0, 144, 255], [0, 34, 255],
+        #            [170, 255, 0], [61, 255, 0], [0, 255, 48], [0, 255, 157],
+        #            [0, 243, 255], [0, 134, 255], [0, 26, 255], [83, 0, 255],
+        #            [52, 255, 0], [0, 255, 57], [0, 255, 166], [0, 235, 255],
+        #            [0, 126, 255], [0, 17, 255], [92, 0, 255], [201, 0, 255],
+        #            [0, 255, 66], [0, 255, 174], [0, 226, 255], [0, 117, 255],
+        #            [0, 8, 255], [100, 0, 255], [210, 0, 255], [255, 0, 192],
+        #            [0, 255, 183], [0, 217, 255], [0, 109, 255], [0, 0, 255],
+        #            [110, 0, 255], [218, 0, 255], [255, 0, 183], [255, 0, 74]]
 
         b1 = (102, 51, 0)
         b2 = (0, 0, 255)
@@ -133,6 +139,7 @@ class CreateRPSenseHAT:
                  s1, s1, b1, s1, s1, b1, s1, s1,
                  s1, s1, b1, b1, b1, b1, s1, s1]
 
+        shutdown_confirm = False
         while True:
             event = self.sense.stick.wait_for_event()
 
@@ -150,15 +157,26 @@ class CreateRPSenseHAT:
                 self.sense.set_rotation(270)
 
             if event.direction == "down":
-                self.display_led_message(str(int(self.temperature())) + "c")
-            elif event.direction == "up":
-                self.display_led_message(str(int(self.humidity())) + "%RH")
-            elif event.direction == "left":
                 self.sense.set_pixels(steve)
+                if shutdown_confirm:
+                    self.sense.show_message("Shutting Down",
+                                            scroll_speed=0.08,
+                                            text_colour=(75, 0, 0))
+                    system("shutdown -h now")
+            elif event.direction == "up":
+                shutdown_confirm = False
+                self.display_led_message(self.linux_os_access.get_ip())
+            elif event.direction == "left":
+                shutdown_confirm = False
+                self.display_led_message(str(int(self.humidity())) + "%RH")
             elif event.direction == "right":
-                self.sense.set_pixels(rainbow)
+                shutdown_confirm = False
+                self.display_led_message(str(int(self.temperature())) + "c")
             elif event.action == "held":
-                self.sense.clear()
+                shutdown_confirm = True
+                self.sense.show_message("Shutdown=down",
+                                        scroll_speed=0.08,
+                                        text_colour=(75, 0, 0))
 
             # Clear events to prevent multiple loops if button(s) hit multiple times
             self.sense.stick.get_events()
@@ -179,7 +197,7 @@ class CreateRPSenseHAT:
                 self.sense.set_rotation(270)
 
             self.sense.show_message(str(message),
-                                    scroll_speed=0.15,
+                                    scroll_speed=0.12,
                                     text_colour=(75, 0, 0))
         except Exception as error:
             operations_logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
