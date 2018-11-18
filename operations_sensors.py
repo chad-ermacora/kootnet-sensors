@@ -86,7 +86,7 @@ def get_interval_sensor_readings():
                               str(humidity) + "'"
 
         if operations_config.sense_hat_show_led_message:
-            led_message = "SenseHAT " + str(int(temperature)) + "C " + str(pressure) + "hPa " + str(
+            led_message = str(int(temperature)) + "c " + str(pressure) + "hPa " + str(
                 int(humidity)) + "%RH"
             rp_sense_hat_sensor_access.display_led_message(led_message)
 
