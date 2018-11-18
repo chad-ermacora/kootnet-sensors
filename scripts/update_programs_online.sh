@@ -14,9 +14,9 @@ if [[ $EUID != 0 ]]; then
   exit $?
 fi
 # Start Script
-if [[ -f "/opt/kootnet-sensors/upgrade/chk_install.sh" ]]
+if [[ -f "/opt/kootnet-sensors/scripts/chk_install.sh" ]]
 then
-  bash /opt/kootnet-sensors/upgrade/chk_install.sh
+  bash /opt/kootnet-sensors/scripts/chk_install.sh
 else
   rm -f /tmp/chk_install.sh 2>/dev/null
   wget -nd ${HTTP_SERVER}${HTTP_FOLDER}/chk_install.sh -P /tmp/
@@ -34,13 +34,13 @@ cp -f -R /tmp/SensorHTTPUpgrade/sensor-rp/* /opt/kootnet-sensors
 cp -f -R /tmp/SensorHTTPUpgrade/sensor-control-center/* /opt/kootnet-control-center
 printf 'File install complete\n'
 # Updating Clean Upgrade files
-cp -f /opt/kootnet-sensors/upgrade/clean_upgrade_online.sh ${SPECIAL_SCRIPTS_DIR}
-cp -f /opt/kootnet-sensors/upgrade/clean_upgrade_smb.sh ${SPECIAL_SCRIPTS_DIR}
+cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${SPECIAL_SCRIPTS_DIR}
+cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${SPECIAL_SCRIPTS_DIR}
 # Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
-bash /opt/kootnet-sensors/upgrade/copy_shortcuts.sh
+bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
-bash /opt/kootnet-sensors/upgrade/set_autostart.sh
-bash /opt/kootnet-sensors/upgrade/set_permissions.sh
+bash /opt/kootnet-sensors/scripts/set_autostart.sh
+bash /opt/kootnet-sensors/scripts/set_permissions.sh
 # Save datetime to last updated file
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - HTTP ' >> ${CONFIG_DIR}/last_updated.txt

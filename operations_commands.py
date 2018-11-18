@@ -29,14 +29,14 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/upgrade/update_programs_e-Ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/upgrade/update_programs_online.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/upgrade/update_programs_smb.sh",
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
+                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
+                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
                  "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
                  "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
-                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
+                 "UpgradeSystemOS": "apt-get update && apt-get scripts -y && reboot"}
 
 
 def get_sensor_log(log_file):
@@ -205,5 +205,5 @@ def restart_services():
     # Sleep to make sure logs are created before setting permissions
     # Needed for remote log viewing on first run
     sleep(5)
-    os.system("bash /opt/kootnet-sensors/upgrade/set_permissions.sh")
+    os.system("bash /opt/kootnet-sensors/scripts/set_permissions.sh")
     os.system("systemctl restart SensorCommands")

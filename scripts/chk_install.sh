@@ -20,7 +20,7 @@ mkdir /opt/kootnet-control-center/logs 2>/dev/null
 mkdir /opt/kootnet-sensors 2>/dev/null
 mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
 mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
-mkdir /opt/kootnet-sensors/upgrade 2>/dev/null
+mkdir /opt/kootnet-sensors/scripts 2>/dev/null
 # Add and edit Sensors
 if [[ -f ${CONFIG_DIR}/installed_sensors.conf ]]
 then

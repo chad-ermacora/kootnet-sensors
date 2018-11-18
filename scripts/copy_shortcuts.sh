@@ -3,7 +3,7 @@ USER_DIR="/home/pi/"
 DATA_DIR="/home/kootnet_data"
 
 # Copy uninstall to data directory since the script can't delete a folder its running from
-cp -f /opt/kootnet-sensors/upgrade/uninstall.sh ${DATA_DIR}/scripts
+cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${DATA_DIR}/scripts
 # Sensor Control Center shortcut
 cat > ${USER_DIR}/Desktop/KootNet-Control-Center.desktop << "EOF"
 [Desktop Entry]
@@ -23,7 +23,7 @@ cat > ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop << "EOF"
 Name=Kootnet Sensors - Configuration & Test
 Comment=Reconfigure sensor & display sensor readings
 Icon=/usr/share/icons/PiX/128x128/mimetypes/shellscript.png
-Exec=/bin/bash /opt/kootnet-sensors/upgrade/edit_sensor_config.sh
+Exec=/bin/bash /opt/kootnet-sensors/scripts/edit_sensor_config.sh
 Type=Application
 Encoding=UTF-8
 Terminal=true

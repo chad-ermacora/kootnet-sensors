@@ -9,7 +9,7 @@ if [[ $EUID != 0 ]]; then
 fi
 # Start Script
 printf '\n\nDoing "Clean" upgrade\nLeaves database & config\nDeletes everything else\nThen re-downloads and installs\n'
-cp -f /opt/kootnet-sensors/upgrade/update_programs_smb.sh /root
+cp /opt/kootnet-sensors/scripts/update_programs_online.sh /root
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorCommands
 systemctl disable SensorHTTP
@@ -31,4 +31,4 @@ rm -R -f /opt/kootnet-sensors 2>/dev/null
 rm -R -f /opt/kootnet-control-center 2>/dev/null
 printf '\nStarting Upgrade in 4 seconds ...'
 sleep 4
-bash /root/update_programs_smb.sh
+bash /root/update_programs_online.sh
