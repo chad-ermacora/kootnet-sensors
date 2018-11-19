@@ -17,10 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from datetime import datetime
 from shutil import disk_usage
 from time import sleep
 
 import operations_config
+import operations_db
 import operations_logger
 import operations_sensors
 import sensor_modules.Linux_OS as Linux_System
@@ -39,14 +41,33 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-
                  "UpgradeSystemOS": "apt-get update && apt-get scripts -y && reboot"}
 
 
-def get_sensor_log(log_file):
-    """ Opens provided log file location and returns its content. """
-    log_content = open(log_file, "r")
-    log = log_content.read()
-    log_content.close()
-    if len(log) > 2500:
-        log = log[-2500:]
-    return log
+def get_sensor_readings():
+    """ Returns sensor types and readings for interval and trigger sensors in html table format. """
+
+    return_data = ""
+    return_types = ""
+    interval_data = operations_sensors.get_interval_sensor_readings()
+    trigger_data = operations_sensors.get_trigger_sensor_readings()
+
+    str_interval_types = interval_data.sensor_types.split(",")
+    str_interval_data = interval_data.sensor_readings.split(",")
+    str_trigger_types = trigger_data.sensor_types.split(",")[3:]
+    str_trigger_data = trigger_data.sensor_readings.split(",")[3:]
+
+    count = 0
+    for interval_type in str_interval_types:
+        return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
+        return_data += "<th><span style='background-color: #0BB10D;'>" + str_interval_data[count] + "</span></th>"
+        count = count + 1
+
+    count = 0
+    for trigger_type in str_trigger_types:
+        return_types += "<th><span style='background-color: #00ffff;'>" + \
+                        trigger_type + "</span></th>"
+        return_data += "<th><span style='background-color: #0BB10D;'>" + str_trigger_data[count] + "</span></th>"
+        count = count + 1
+
+    return [return_types, return_data]
 
 
 def get_system_information():
@@ -71,20 +92,6 @@ def get_system_information():
         str_sensor_data = "Sensor Unit, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0"
 
     return str_sensor_data
-
-
-def get_last_updated():
-    """ Returns when the sensor programs were last updated and how. """
-    try:
-        last_updated_file = open(operations_config.last_updated_file_location, "r")
-        tmp_last_updated = last_updated_file.readlines()
-        last_updated_file.close()
-        last_updated = str(tmp_last_updated[0]) + str(tmp_last_updated[1])
-    except Exception as error:
-        operations_logger.network_logger.error("Unable to Load Last Updated File: " + str(error))
-        last_updated = "N/A"
-
-    return last_updated
 
 
 def get_config_information():
@@ -127,6 +134,30 @@ def get_config_information():
         tmp_str_config = "0, 0, 0, 0, 0, 0, 0"
 
     return tmp_str_config
+
+
+def get_sensor_log(log_file):
+    """ Opens provided log file location and returns its content. """
+    log_content = open(log_file, "r")
+    log = log_content.read()
+    log_content.close()
+    if len(log) > 2500:
+        log = log[-2500:]
+    return log
+
+
+def get_last_updated():
+    """ Returns when the sensor programs were last updated and how. """
+    try:
+        last_updated_file = open(operations_config.last_updated_file_location, "r")
+        tmp_last_updated = last_updated_file.readlines()
+        last_updated_file.close()
+        last_updated = str(tmp_last_updated[0]) + str(tmp_last_updated[1])
+    except Exception as error:
+        operations_logger.network_logger.error("Unable to Load Last Updated File: " + str(error))
+        last_updated = "N/A"
+
+    return last_updated
 
 
 def set_sensor_config(config_data):
@@ -182,46 +213,6 @@ def set_sensor_config(config_data):
     os.system("systemctl restart SensorRecording")
 
 
-def get_sensor_readings():
-    """ Returns sensor types and readings for interval and trigger sensors in html table format. """
-
-    return_data = ""
-    return_types = ""
-    interval_data = operations_sensors.get_interval_sensor_readings()
-    trigger_data = operations_sensors.get_trigger_sensor_readings()
-
-    str_interval_types = interval_data.sensor_types.split(",")
-    str_interval_data = interval_data.sensor_readings.split(",")
-    str_trigger_types = trigger_data.sensor_types.split(",")[3:]
-    str_trigger_data = trigger_data.sensor_readings.split(",")[3:]
-
-    count = 0
-    for interval_type in str_interval_types:
-        return_types = return_types + \
-            "<th><span style='background-color: #00ffff;'>" + \
-            interval_type + \
-            "</span></th>"
-        return_data = return_data + \
-            "<th><span style='background-color: #0BB10D;'>" + \
-            str_interval_data[count] + \
-            "</span></th>"
-        count = count + 1
-
-    count = 0
-    for trigger_type in str_trigger_types:
-        return_types = return_types + \
-            "<th><span style='background-color: #00ffff;'>" + \
-            trigger_type + \
-            "</span></th>"
-        return_data = return_data + \
-            "<th><span style='background-color: #0BB10D;'>" + \
-            str_trigger_data[count] + \
-            "</span></th>"
-        count = count + 1
-
-    return [return_types, return_data]
-
-
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
     os.system("systemctl daemon-reload && "
@@ -232,3 +223,14 @@ def restart_services():
     sleep(5)
     os.system("bash /opt/kootnet-sensors/scripts/set_permissions.sh")
     os.system("systemctl restart SensorCommands")
+
+
+def add_note_to_database(note):
+    sql_data = operations_db.CreateOtherDataEntry()
+    sql_data.sensor_types = "DateTime, Notes"
+    sql_data.sensor_readings = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + ", " + note
+    sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
+                   sql_data.sql_query_values_start + sql_data.sensor_readings +
+                   sql_data.sql_query_values_end)
+
+    operations_db.write_to_sql_database(sql_execute)

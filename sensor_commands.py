@@ -180,6 +180,9 @@ while True:
                 operations_logger.network_logger.info("* Sending Installed Sensors")
                 sensor_data = operations_config.get_installed_sensors()
                 connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command[:15] == "PutDatabaseNote":
+                operations_logger.network_logger.info("* Inserting Note into Database")
+                operations_commands.add_note_to_database(connection_command[15:])
             else:
                 operations_logger.network_logger.info("Invalid command sent:" + connection_data)
 

@@ -49,6 +49,19 @@ class CreateTriggerDatabaseData:
         self.sensor_readings = ""
 
 
+class CreateOtherDataEntry:
+    """ Creates a object, holding required data for making a OtherData SQL execute string. """
+
+    def __init__(self):
+        self.database_location = sensor_database_location
+        self.sql_query_start = "INSERT OR IGNORE INTO OtherData ("
+        self.sql_query_values_start = ") VALUES ("
+        self.sql_query_values_end = ")"
+
+        self.sensor_types = ""
+        self.sensor_readings = ""
+
+
 def check_database_structure():
     """ Checks and if necessary creates or updates both SQL tables and columns. """
     try:
