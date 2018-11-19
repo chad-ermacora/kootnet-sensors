@@ -44,8 +44,8 @@ def get_sensor_log(log_file):
     log_content = open(log_file, "r")
     log = log_content.read()
     log_content.close()
-    if len(log) > 1200:
-        log = log[-1200:]
+    if len(log) > 2500:
+        log = log[-2500:]
     return log
 
 
@@ -183,18 +183,43 @@ def set_sensor_config(config_data):
 
 
 def get_sensor_readings():
-    """ Returns raw sensor types and readings for interval and trigger sensors in a list. """
+    """ Returns sensor types and readings for interval and trigger sensors in html table format. """
+
+    return_data = ""
+    return_types = ""
     interval_data = operations_sensors.get_interval_sensor_readings()
     trigger_data = operations_sensors.get_trigger_sensor_readings()
 
-    str_interval_types = interval_data.sensor_types
-    str_interval_data = interval_data.sensor_readings
-    str_trigger_types = trigger_data.sensor_types
-    str_trigger_data = trigger_data.sensor_readings
+    str_interval_types = interval_data.sensor_types.split(",")
+    str_interval_data = interval_data.sensor_readings.split(",")
+    str_trigger_types = trigger_data.sensor_types.split(",")[3:]
+    str_trigger_data = trigger_data.sensor_readings.split(",")[3:]
 
-    return_data = [str_interval_types, str_interval_data, str_trigger_types, str_trigger_data]
+    count = 0
+    for interval_type in str_interval_types:
+        return_types = return_types + \
+            "<th><span style='background-color: #00ffff;'>" + \
+            interval_type + \
+            "</span></th>"
+        return_data = return_data + \
+            "<th><span style='background-color: #0BB10D;'>" + \
+            str_interval_data[count] + \
+            "</span></th>"
+        count = count + 1
 
-    return return_data
+    count = 0
+    for trigger_type in str_trigger_types:
+        return_types = return_types + \
+            "<th><span style='background-color: #00ffff;'>" + \
+            trigger_type + \
+            "</span></th>"
+        return_data = return_data + \
+            "<th><span style='background-color: #0BB10D;'>" + \
+            str_trigger_data[count] + \
+            "</span></th>"
+        count = count + 1
+
+    return [return_types, return_data]
 
 
 def restart_services():

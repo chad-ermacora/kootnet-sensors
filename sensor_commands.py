@@ -41,6 +41,7 @@ while True:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('', 10065)
         operations_logger.network_logger.info("starting up on {} port {}".format(*server_address))
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(server_address)
         sock.listen(12)
 
@@ -106,7 +107,6 @@ while True:
             elif connection_command == "GetSensorReadings":
                 operations_logger.network_logger.info("* Sending Sensor Readings")
                 sensor_data = operations_commands.get_sensor_readings()
-                print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetHostName":
                 operations_logger.network_logger.info("* Sending Sensor HostName")
