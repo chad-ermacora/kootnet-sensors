@@ -55,6 +55,8 @@ Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 0.0 = Custom Accelerometer variance
 0.0 = Custom Magnetometer variance
 0.0 = Custom Gyroscope variance
+0 = Enable Custom Temperature Offset
+0.0 = Current Temperature Offset
 EOF
   nano ${CONFIG_DIR}/sql_recording.conf
 fi

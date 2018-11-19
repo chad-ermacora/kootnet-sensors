@@ -125,7 +125,8 @@ while True:
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetEnvTemperature":
                 operations_logger.network_logger.info("* Sending Sensor Temperature")
-                sensor_data = operations_sensors.get_sensor_temperature()
+                sensor_data = [operations_sensors.get_sensor_temperature(),
+                               operations_sensors.get_sensor_temperature_offset()]
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetPressure":

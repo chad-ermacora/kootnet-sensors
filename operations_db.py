@@ -106,6 +106,14 @@ def check_database_structure():
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='EnvTempOffset',
+                                                                               ct='TEXT'))
+            operations_logger.primary_logger.debug("COLUMN 'EnvTempOffset' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("COLUMN 'EnvTempOffset' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
                                                                                cn='Pressure',
                                                                                ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Pressure' - Created")
@@ -248,6 +256,23 @@ def check_database_structure():
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Z' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Gyro_Z' - " + str(error))
+
+        # Create or update OtherData table & columns
+        try:
+            db_cursor.execute('CREATE TABLE {tn} ({nf} {ft})'.format(tn='OtherData',
+                                                                     nf='DateTime',
+                                                                     ft='TEXT'))
+            operations_logger.primary_logger.debug("Table 'OtherData' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("Table 'OtherData' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='OtherData',
+                                                                               cn='Notes',
+                                                                               ct='TEXT'))
+            operations_logger.primary_logger.debug("COLUMN 'Notes' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("COLUMN 'Notes' - " + str(error))
 
         db_connection.commit()
         db_connection.close()

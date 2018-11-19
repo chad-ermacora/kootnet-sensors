@@ -29,7 +29,8 @@ current_config = operations_config.get_installed_config()
 operations_db.check_database_structure()
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
-# Write installed sensors back to file. This is used to add new sensor support
+# Write installed sensors & configuration back to file. This is used to add new sensor & options support
+# New options & sensors that are added, are automatically put in their default configuration
 operations_config.write_installed_sensors_to_file(installed_sensors)
 operations_config.write_config_to_file(current_config)
 
@@ -68,7 +69,7 @@ def get_readings_set():
     return readings_set
 
 
-def check_xyz(sensor_readings_set):
+def check_xyz_set_against_variance(sensor_readings_set):
     """ Checks provided trigger XYZ readings against their respective variances (set in config). """
     write_to_db = False
 
@@ -129,17 +130,17 @@ def write_trigger_to_database(sensor_readings_set):
 
 if current_config.write_to_db:
     # Start Interval Recording
-    interval_thread = Thread(target=start_interval_recording)
-    interval_thread.daemon = True
-    interval_thread.start()
+    interval_recording_thread = Thread(target=start_interval_recording)
+    interval_recording_thread.daemon = True
+    interval_recording_thread.start()
 
     # Write first reading to Database, then start monitoring Triggers
-    start_readings_set = get_readings_set()
-    write_trigger_to_database(start_readings_set)
+    initial_trigger_set = get_readings_set()
+    write_trigger_to_database(initial_trigger_set)
 
     while True:
-        new_readings_set = get_readings_set()
-        check_xyz(new_readings_set)
+        new_trigger_set = get_readings_set()
+        check_xyz_set_against_variance(new_trigger_set)
 
 else:
     operations_logger.primary_logger.warning("Write to Database Disabled in Config")
