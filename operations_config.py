@@ -18,7 +18,7 @@
 """
 import operations_logger
 
-version = "Alpha.22.6"
+version = "Alpha.22.7"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
@@ -92,34 +92,6 @@ def set_default_variances_per_sensor(config):
         config.mag_variance = 0.02
 
     return config
-
-
-def write_config_to_file(config):
-    """ Writes provided configuration file to local disk. """
-    operations_logger.primary_logger.debug("Writing Configuration to File")
-    try:
-        sensor_list_file = open(config_file_location, 'w')
-
-        new_config = "Enable = 1 & Disable = 0\n" + \
-                     str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
-                     str(config.sleep_duration_interval) + \
-                     " = Duration between Interval readings in Seconds\n" + \
-                     str(config.sleep_duration_trigger) + \
-                     " = Duration between Trigger readings in Seconds\n" + \
-                     str(config.enable_custom) + " = Enable Custom Settings\n" + \
-                     str(config.acc_variance) + " = Current Accelerometer variance\n" + \
-                     str(config.mag_variance) + " = Current Magnetometer variance\n" + \
-                     str(config.gyro_variance) + " = Current Gyroscope variance\n" + \
-                     str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n"
-        if config.enable_custom_temp:
-            new_config = new_config + str(config.custom_temperature_offset) + " = Current Temperature Offset"
-        else:
-            new_config = new_config + str(get_default_temp_offset()) + " = Current Temperature Offset"
-
-        sensor_list_file.write(new_config)
-        sensor_list_file.close()
-    except Exception as error:
-        operations_logger.primary_logger.error("Unable to open config file: " + str(error))
 
 
 def get_default_temp_offset():
@@ -201,31 +173,30 @@ def get_installed_config():
     return installed_config
 
 
-def write_installed_sensors_to_file(installed_sensors):
-    """ Writes provided 'installed sensors' object to local disk. """
+def write_config_to_file(config):
+    """ Writes provided configuration file to local disk. """
+    operations_logger.primary_logger.debug("Writing Configuration to File")
     try:
-        sensor_list_file = open(sensors_installed_file_location, 'w')
+        sensor_list_file = open(config_file_location, 'w')
 
-        new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
-                     str(installed_sensors.linux_system) + " = " + \
-                     installed_sensors.linux_system_name + "\n" + \
-                     str(installed_sensors.raspberry_pi) + " = " + \
-                     installed_sensors.raspberry_pi_name + "\n" + \
-                     str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
-                     installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
-                     str(installed_sensors.pimoroni_bh1745) + " = " + \
-                     installed_sensors.pimoroni_bh1745_name + "\n" + \
-                     str(installed_sensors.pimoroni_bme680) + " = " + \
-                     installed_sensors.pimoroni_bme680_name + "\n" + \
-                     str(installed_sensors.pimoroni_enviro) + " = " + \
-                     installed_sensors.pimoroni_enviro_name + "\n" + \
-                     str(installed_sensors.pimoroni_lsm303d) + " = " + \
-                     installed_sensors.pimoroni_lsm303d_name + "\n" + \
-                     str(installed_sensors.pimoroni_vl53l1x) + " = " + \
-                     installed_sensors.pimoroni_vl53l1x_name + "\n"
+        new_config = "Enable = 1 & Disable = 0\n" + \
+                     str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
+                     str(config.sleep_duration_interval) + \
+                     " = Duration between Interval readings in Seconds\n" + \
+                     str(config.sleep_duration_trigger) + \
+                     " = Duration between Trigger readings in Seconds\n" + \
+                     str(config.enable_custom) + " = Enable Custom Settings\n" + \
+                     str(config.acc_variance) + " = Current Accelerometer variance\n" + \
+                     str(config.mag_variance) + " = Current Magnetometer variance\n" + \
+                     str(config.gyro_variance) + " = Current Gyroscope variance\n" + \
+                     str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n"
+        if config.enable_custom_temp:
+            new_config = new_config + str(config.custom_temperature_offset) + " = Current Temperature Offset"
+        else:
+            new_config = new_config + str(get_default_temp_offset()) + " = Current Temperature Offset"
 
         sensor_list_file.write(new_config)
-
+        sensor_list_file.close()
     except Exception as error:
         operations_logger.primary_logger.error("Unable to open config file: " + str(error))
 
@@ -311,3 +282,32 @@ def get_installed_sensors():
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_vl53l1x_name)
 
     return installed_sensors
+
+
+def write_installed_sensors_to_file(installed_sensors):
+    """ Writes provided 'installed sensors' object to local disk. """
+    try:
+        sensor_list_file = open(sensors_installed_file_location, 'w')
+
+        new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
+                     str(installed_sensors.linux_system) + " = " + \
+                     installed_sensors.linux_system_name + "\n" + \
+                     str(installed_sensors.raspberry_pi) + " = " + \
+                     installed_sensors.raspberry_pi_name + "\n" + \
+                     str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
+                     installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
+                     str(installed_sensors.pimoroni_bh1745) + " = " + \
+                     installed_sensors.pimoroni_bh1745_name + "\n" + \
+                     str(installed_sensors.pimoroni_bme680) + " = " + \
+                     installed_sensors.pimoroni_bme680_name + "\n" + \
+                     str(installed_sensors.pimoroni_enviro) + " = " + \
+                     installed_sensors.pimoroni_enviro_name + "\n" + \
+                     str(installed_sensors.pimoroni_lsm303d) + " = " + \
+                     installed_sensors.pimoroni_lsm303d_name + "\n" + \
+                     str(installed_sensors.pimoroni_vl53l1x) + " = " + \
+                     installed_sensors.pimoroni_vl53l1x_name + "\n"
+
+        sensor_list_file.write(new_config)
+
+    except Exception as error:
+        operations_logger.primary_logger.error("Unable to open config file: " + str(error))

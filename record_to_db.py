@@ -46,6 +46,9 @@ def start_interval_recording():
                            new_sensor_data.sql_query_values_end)
 
             operations_db.write_to_sql_database(sql_execute)
+
+            if installed_sensors.raspberry_pi_sense_hat and operations_config.sense_hat_show_led_message:
+                operations_sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
         else:
             operations_logger.primary_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
 

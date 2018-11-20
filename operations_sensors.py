@@ -132,9 +132,6 @@ def get_interval_sensor_readings():
                                          str(rgb_colour[1]) + "', '" + \
                                          str(rgb_colour[2]) + "'"
 
-    if operations_config.sense_hat_show_led_message:
-        rp_sense_hat_sensor_access.display_led_message("Interval Recorded")
-
     return interval_data
 
 
