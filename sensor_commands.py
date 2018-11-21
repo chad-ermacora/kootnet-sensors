@@ -43,7 +43,7 @@ while True:
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(("", server_port))
         sock.listen(6)
-        operations_logger.network_logger.info("starting up on port " + str(server_port))
+        operations_logger.network_logger.info(" ** starting up on port " + str(server_port) + " **")
 
         while True:
             connection, client_address = sock.accept()

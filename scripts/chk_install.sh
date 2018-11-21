@@ -30,7 +30,8 @@ else
   cat > ${CONFIG_DIR}/installed_sensors.conf << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
 1 = Gnu/Linux System (Raspbian, Debian, etc)
-1 = Raspberry Pi System
+0 = Raspberry Pi Zero W
+0 = Raspberry Pi 3BPlus
 0 = Raspberry Pi Sense HAT
 0 = Pimoroni BH1745
 0 = Pimoroni BME680

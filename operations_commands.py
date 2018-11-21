@@ -102,8 +102,10 @@ def get_config_information():
     str_installed_sensors = ""
     if installed_sensors.linux_system:
         str_installed_sensors = str_installed_sensors + installed_sensors.linux_system_name + " || "
-    if installed_sensors.raspberry_pi:
-        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_name + " || "
+    if installed_sensors.raspberry_pi_zero_w:
+        str_installed_sensors = str_installed_sensors + installed_sensors.rp_zero_w_name + " || "
+    if installed_sensors.raspberry_pi_3b_plus:
+        str_installed_sensors = str_installed_sensors + installed_sensors.rp_3b_plus_name + " || "
     if installed_sensors.raspberry_pi_sense_hat:
         str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_sense_hat_name + " || "
     if installed_sensors.pimoroni_bh1745:

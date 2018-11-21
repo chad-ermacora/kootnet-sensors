@@ -38,9 +38,9 @@ operations_config.write_config_to_file(current_config)
 def start_interval_recording():
     """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
     while True:
-        new_sensor_data = operations_sensors.get_interval_sensor_readings()
+        try:
+            new_sensor_data = operations_sensors.get_interval_sensor_readings()
 
-        if len(new_sensor_data.sensor_readings) > 0:
             sql_execute = (new_sensor_data.sql_query_start + new_sensor_data.sensor_types +
                            new_sensor_data.sql_query_values_start + new_sensor_data.sensor_readings +
                            new_sensor_data.sql_query_values_end)
@@ -49,33 +49,35 @@ def start_interval_recording():
 
             if installed_sensors.raspberry_pi_sense_hat and operations_config.sense_hat_show_led_message:
                 operations_sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
-        else:
-            operations_logger.primary_logger.warning("No Sensor Data Provided - Skipping Interval Database Write")
+        except Exception as error:
+            operations_logger.primary_logger.error("Interval Failure: " + str(error))
 
         sleep(current_config.sleep_duration_interval)
 
 
 def get_readings_set():
     """ Returns 5 'pairs' of Trigger readings in a list, with a sleep delay between each reading (set in config). """
-    readings_set = []
+    try:
+        readings_set = []
 
-    count = 0
-    while count < 5:
-        reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-        sleep(current_config.sleep_duration_trigger)
-        reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-        sleep(current_config.sleep_duration_trigger)
+        count = 0
+        while count < 5:
+            reading_pair = [operations_sensors.get_trigger_sensor_readings()]
+            sleep(current_config.sleep_duration_trigger)
+            reading_pair.append(operations_sensors.get_trigger_sensor_readings())
+            sleep(current_config.sleep_duration_trigger)
 
-        readings_set.append(reading_pair)
-        count = count + 1
+            readings_set.append(reading_pair)
+            count = count + 1
 
-    return readings_set
+        return readings_set
+    except Exception as error:
+        operations_logger.primary_logger.error("Trigger get reading set failed: " + str(error))
 
 
 def check_xyz_set_against_variance(sensor_readings_set):
     """ Checks provided trigger XYZ readings against their respective variances (set in config). """
     write_to_db = False
-
     for reading_pair in sensor_readings_set:
         if write_to_db is False:
             readings_old = reading_pair[0].sensor_readings.replace("'", "").split(",")
@@ -131,7 +133,7 @@ def write_trigger_to_database(sensor_readings_set):
             operations_db.write_to_sql_database(sql_execute)
 
 
-if current_config.write_to_db:
+if current_config.write_to_db and installed_sensors.no_sensors is False:
     # Start Interval Recording
     interval_recording_thread = Thread(target=start_interval_recording)
     interval_recording_thread.daemon = True
@@ -146,6 +148,6 @@ if current_config.write_to_db:
         check_xyz_set_against_variance(new_trigger_set)
 
 else:
-    operations_logger.primary_logger.warning("Write to Database Disabled in Config")
+    operations_logger.primary_logger.warning("Write to Database Disabled in Config or no sensors set")
     while True:
         sleep(600)

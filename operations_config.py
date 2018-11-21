@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import operations_logger
-
+import sensor_modules.RaspberryPi_System
 version = "Alpha.22.9"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
@@ -33,8 +33,11 @@ class CreateInstalledSensors:
     """
 
     def __init__(self):
-        self.linux_system = 1
-        self.raspberry_pi = 1
+        self.no_sensors = True
+        self.linux_system = 0
+        self.raspberry_pi_zero_w = 0
+        self.raspberry_pi_3b_plus = 0
+
         self.raspberry_pi_sense_hat = 0
         self.pimoroni_bh1745 = 0
         self.pimoroni_bme680 = 0
@@ -47,7 +50,9 @@ class CreateInstalledSensors:
         self.has_gyro = 0
 
         self.linux_system_name = "Gnu/Linux"
-        self.raspberry_pi_name = "Raspberry Pi"
+        self.rp_zero_w_name = "Raspberry Pi Zero W"
+        self.rp_3b_plus_name = "Raspberry Pi 3BPlus"
+
         self.raspberry_pi_sense_hat_name = "RP Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
         self.pimoroni_bme680_name = "Pimoroni BME680"
@@ -67,10 +72,6 @@ class CreateConfig:
         self.acc_variance = 99999.0
         self.mag_variance = 99999.0
         self.gyro_variance = 99999.0
-
-        self.temp_offset_sense_hat = -5.5
-        self.temp_offset_bme680 = -1.5
-        self.temp_offset_enviro = -4.5
 
         self.enable_custom_temp = 0
         self.custom_temperature_offset = 0.0
@@ -96,14 +97,20 @@ def set_default_variances_per_sensor(config):
 
 def get_default_temp_offset():
     installed_sensors = get_installed_sensors()
-    default_config = CreateConfig()
+    if installed_sensors.raspberry_pi_3b_plus:
+        offset_access = sensor_modules.RaspberryPi_System.CreateRP3BPlusTemperatureOffsets()
+    elif installed_sensors.raspberry_pi_zero_w:
+        offset_access = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
+    else:
+        # Should probably create a default one instead...
+        offset_access = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
 
     if installed_sensors.raspberry_pi_sense_hat:
-        return default_config.temp_offset_sense_hat
+        return offset_access.rp_sense_hat
     elif installed_sensors.pimoroni_enviro:
-        return default_config.temp_offset_enviro
+        return offset_access.pimoroni_enviro
     elif installed_sensors.pimoroni_bme680:
-        return default_config.temp_offset_bme680
+        return offset_access.pimoroni_bme680
     else:
         return 0
 
@@ -205,79 +212,81 @@ def get_installed_sensors():
     """ Loads installed sensors from file and returns it as an object. """
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
     installed_sensors = CreateInstalledSensors()
-
-    sensor_list_file = open(sensors_installed_file_location, 'r')
-    sensor_list = sensor_list_file.readlines()
-    sensor_list_file.close()
+    try:
+        sensor_list_file = open(sensors_installed_file_location, 'r')
+        sensor_list = sensor_list_file.readlines()
+        sensor_list_file.close()
+    except Exception as error:
+        sensor_list = []
+        operations_logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
 
     try:
         if int(sensor_list[1][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.linux_system = 1
-        else:
-            installed_sensors.linux_system = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.linux_system_name)
 
     try:
         if int(sensor_list[2][:1]):
-            installed_sensors.raspberry_pi = 1
-        else:
-            installed_sensors.raspberry_pi = 0
+            installed_sensors.no_sensors = False
+            installed_sensors.raspberry_pi_zero_w = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.raspberry_pi_name)
+        operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.rp_zero_w_name)
 
     try:
         if int(sensor_list[3][:1]):
+            installed_sensors.no_sensors = False
+            installed_sensors.raspberry_pi_3b_plus = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.rp_3b_plus_name)
+
+    try:
+        if int(sensor_list[4][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.raspberry_pi_sense_hat = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
             installed_sensors.has_gyro = 1
-        else:
-            installed_sensors.raspberry_pi_sense_hat = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.raspberry_pi_sense_hat_name)
 
     try:
-        if int(sensor_list[4][:1]):
+        if int(sensor_list[5][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.pimoroni_bh1745 = 1
-        else:
-            installed_sensors.pimoroni_bh1745 = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_bh1745_name)
 
     try:
-        if int(sensor_list[5][:1]):
+        if int(sensor_list[6][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.pimoroni_bme680 = 1
-        else:
-            installed_sensors.pimoroni_bme680 = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_bme680_name)
 
     try:
-        if int(sensor_list[6][:1]):
+        if int(sensor_list[7][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.pimoroni_enviro = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
-        else:
-            installed_sensors.pimoroni_enviro = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_enviro_name)
 
     try:
-        if int(sensor_list[7][:1]):
+        if int(sensor_list[8][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.pimoroni_lsm303d = 1
             installed_sensors.has_acc = 1
             installed_sensors.has_mag = 1
-        else:
-            installed_sensors.pimoroni_lsm303d = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_lsm303d_name)
 
     try:
-        if int(sensor_list[8][:1]):
+        if int(sensor_list[9][:1]):
+            installed_sensors.no_sensors = False
             installed_sensors.pimoroni_vl53l1x = 1
-        else:
-            installed_sensors.pimoroni_vl53l1x = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_vl53l1x_name)
 
@@ -287,13 +296,15 @@ def get_installed_sensors():
 def write_installed_sensors_to_file(installed_sensors):
     """ Writes provided 'installed sensors' object to local disk. """
     try:
-        sensor_list_file = open(sensors_installed_file_location, 'w')
+        installed_sensors_config_file = open(sensors_installed_file_location, 'w')
 
         new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
                      str(installed_sensors.linux_system) + " = " + \
                      installed_sensors.linux_system_name + "\n" + \
-                     str(installed_sensors.raspberry_pi) + " = " + \
-                     installed_sensors.raspberry_pi_name + "\n" + \
+                     str(installed_sensors.raspberry_pi_zero_w) + " = " + \
+                     installed_sensors.rp_zero_w_name + "\n" + \
+                     str(installed_sensors.raspberry_pi_3b_plus) + " = " + \
+                     installed_sensors.rp_3b_plus_name + "\n" + \
                      str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
                      installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
                      str(installed_sensors.pimoroni_bh1745) + " = " + \
@@ -307,7 +318,8 @@ def write_installed_sensors_to_file(installed_sensors):
                      str(installed_sensors.pimoroni_vl53l1x) + " = " + \
                      installed_sensors.pimoroni_vl53l1x_name + "\n"
 
-        sensor_list_file.write(new_config)
+        installed_sensors_config_file.write(new_config)
+        installed_sensors_config_file.close()
 
     except Exception as error:
         operations_logger.primary_logger.error("Unable to open config file: " + str(error))

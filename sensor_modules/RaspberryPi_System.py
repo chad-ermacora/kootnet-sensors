@@ -13,6 +13,22 @@ import operations_logger
 round_decimal_to = 5
 
 
+class CreateRPZeroWTemperatureOffsets:
+    def __init__(self):
+        # These Still need to be tested and verified and updated as of Nov 20th, 2018
+        self.pimoroni_bme680 = -1.5
+        self.pimoroni_enviro = -4.5
+        self.rp_sense_hat = -2.5
+
+
+class CreateRP3BPlusTemperatureOffsets:
+    def __init__(self):
+        # These Still need to be tested and verified and updated as of Nov 20th, 2018
+        self.pimoroni_bme680 = -3.5
+        self.pimoroni_enviro = -6.5
+        self.rp_sense_hat = -8.5
+
+
 class CreateRPSystem:
     """ Creates Function access to Raspberry Pi Hardware Information. """
     def __init__(self):
