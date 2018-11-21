@@ -39,19 +39,18 @@ if installed_sensors.raspberry_pi_sense_hat:
 while True:
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_address = ('', 10065)
-        operations_logger.network_logger.info("starting up on {} port {}".format(*server_address))
+        server_port = 10065
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(server_address)
-        sock.listen(12)
+        sock.bind(("", server_port))
+        sock.listen(6)
+        operations_logger.network_logger.info("starting up on port " + str(server_port))
 
         while True:
             connection, client_address = sock.accept()
-            operations_logger.network_logger.debug(
-                "Connection from " + str(client_address[0]) + " Port: " + str(client_address[1]))
+            operations_logger.network_logger.debug(str(client_address[0]) + " Port: " + str(client_address[1]))
+
             tmp_connection_data = connection.recv(4096)
-            connection_data = str(tmp_connection_data)
-            connection_command = connection_data[2:-1]
+            connection_command = str(tmp_connection_data.decode())
 
             if connection_command == "CheckOnlineStatus":
                 operations_logger.network_logger.info("Sensor Checked")
@@ -90,19 +89,21 @@ while True:
                 str_config = operations_commands.get_config_information()
                 connection.sendall(pickle.dumps(str_config))
                 operations_logger.network_logger.info("* Sensor Data Sent to " + str(client_address[0]))
-            elif tmp_connection_data.decode()[:16] == "SetConfiguration":
+            elif connection_command[:16] == "SetConfiguration":
                 operations_logger.network_logger.info("* Setting Sensor Configuration")
-                operations_commands.set_sensor_config(tmp_connection_data.decode())
-            elif tmp_connection_data.decode()[:14] == "ChangeHostName":
+                new_config = connection_command[16:]
+                operations_commands.set_sensor_config(new_config)
+            elif connection_command[:14] == "ChangeHostName":
+                print(connection_command)
                 try:
-                    new_host = tmp_connection_data.decode()[14:]
+                    new_host = connection_command[14:]
                     os.system("hostnamectl set-hostname " + new_host)
                     operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
                 except Exception as error_msg:
                     operations_logger.network_logger.info("* Hostname Change Failed - " + str(error_msg))
-            elif tmp_connection_data.decode()[:11] == "SetDateTime":
+            elif connection_command[:11] == "SetDateTime":
                 operations_logger.network_logger.info("* Setting System DateTime")
-                new_datetime = tmp_connection_data.decode()[11:]
+                new_datetime = connection_command[11:]
                 os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
             elif connection_command == "GetSensorReadings":
                 operations_logger.network_logger.info("* Sending Sensor Readings")
@@ -124,9 +125,13 @@ while True:
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetEnvTemperature":
-                operations_logger.network_logger.info("* Sending Sensor Temperature")
-                sensor_data = [operations_sensors.get_sensor_temperature(),
-                               operations_sensors.get_sensor_temperature_offset()]
+                operations_logger.network_logger.info("* Sending Sensor Environment Temperature")
+                sensor_data = operations_sensors.get_sensor_temperature()
+                print(str(sensor_data))
+                connection.sendall(pickle.dumps(sensor_data))
+            elif connection_command == "GetTempOffsetEnv":
+                operations_logger.network_logger.info("* Sending Sensor Environment Temperature Offset")
+                sensor_data = operations_sensors.get_sensor_temperature_offset()
                 print(str(sensor_data))
                 connection.sendall(pickle.dumps(sensor_data))
             elif connection_command == "GetPressure":
@@ -184,7 +189,7 @@ while True:
                 operations_logger.network_logger.info("* Inserting Note into Database")
                 operations_commands.add_note_to_database(connection_command[15:])
             else:
-                operations_logger.network_logger.info("Invalid command sent:" + connection_data)
+                operations_logger.network_logger.info("Invalid command sent:" + connection_command)
 
             connection.close()
 

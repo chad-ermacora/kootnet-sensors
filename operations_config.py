@@ -18,7 +18,7 @@
 """
 import operations_logger
 
-version = "Alpha.22.7"
+version = "Alpha.22.9"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"

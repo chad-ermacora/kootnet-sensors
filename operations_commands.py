@@ -141,8 +141,8 @@ def get_sensor_log(log_file):
     log_content = open(log_file, "r")
     log = log_content.read()
     log_content.close()
-    if len(log) > 2500:
-        log = log[-2500:]
+    if len(log) > 2000:
+        log = log[-2000:]
     return log
 
 
@@ -170,7 +170,7 @@ def set_sensor_config(config_data):
     sensor_stop = "systemctl stop SensorRecording"
 
     try:
-        new_config.write_to_db = int(split_list_config[1])
+        new_config.write_to_db = int(split_list_config[0])
         if new_config.write_to_db:
             os.system(sensor_enable + " && " + sensor_start)
         else:
@@ -180,32 +180,32 @@ def set_sensor_config(config_data):
         operations_logger.network_logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
 
     try:
-        new_config.sleep_duration_interval = int(split_list_config[2])
+        new_config.sleep_duration_interval = int(split_list_config[1])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
 
     try:
-        new_config.sleep_duration_trigger = float(split_list_config[3])
+        new_config.sleep_duration_trigger = float(split_list_config[2])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
 
     try:
-        new_config.enable_custom = int(split_list_config[4])
+        new_config.enable_custom = int(split_list_config[3])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
 
     try:
-        new_config.acc_variance = float(split_list_config[5])
+        new_config.acc_variance = float(split_list_config[4])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
 
     try:
-        new_config.mag_variance = float(split_list_config[6])
+        new_config.mag_variance = float(split_list_config[5])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
 
     try:
-        new_config.gyro_variance = float(split_list_config[7])
+        new_config.gyro_variance = float(split_list_config[6])
     except Exception as error1:
         operations_logger.network_logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
 
