@@ -19,20 +19,18 @@
 from threading import Thread
 from time import sleep
 
+import operations_checks
 import operations_config
 import operations_db
 import operations_logger
 import operations_sensors
 
+# Ensure files, database & configurations are OK
+operations_checks.run_checks_and_updates()
+
 installed_sensors = operations_config.get_installed_sensors()
 current_config = operations_config.get_installed_config()
-operations_db.check_database_structure()
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
-
-# Write installed sensors & configuration back to file. This is used to add new sensor & options support
-# New options & sensors that are added, are automatically put in their default configuration
-operations_config.write_installed_sensors_to_file(installed_sensors)
-operations_config.write_config_to_file(current_config)
 
 
 def start_interval_recording():

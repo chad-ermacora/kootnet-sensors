@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from datetime import datetime
 from shutil import disk_usage
 from time import sleep
 
@@ -103,9 +102,9 @@ def get_config_information():
     if installed_sensors.linux_system:
         str_installed_sensors = str_installed_sensors + installed_sensors.linux_system_name + " || "
     if installed_sensors.raspberry_pi_zero_w:
-        str_installed_sensors = str_installed_sensors + installed_sensors.rp_zero_w_name + " || "
+        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_zero_w_name + " || "
     if installed_sensors.raspberry_pi_3b_plus:
-        str_installed_sensors = str_installed_sensors + installed_sensors.rp_3b_plus_name + " || "
+        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_3b_plus_name + " || "
     if installed_sensors.raspberry_pi_sense_hat:
         str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_sense_hat_name + " || "
     if installed_sensors.pimoroni_bh1745:
@@ -227,10 +226,15 @@ def restart_services():
     os.system("systemctl restart SensorCommands")
 
 
-def add_note_to_database(note):
+def add_note_to_database(datetime_note):
     sql_data = operations_db.CreateOtherDataEntry()
+    datetime_note = datetime_note.strip()
+    custom_datetime = "'" + datetime_note[:23] + "'"
+    note = "'" + datetime_note[23:] + "'"
+
     sql_data.sensor_types = "DateTime, Notes"
-    sql_data.sensor_readings = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + ", " + note
+    sql_data.sensor_readings = custom_datetime + ", " + note
+
     sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
                    sql_data.sql_query_values_start + sql_data.sensor_readings +
                    sql_data.sql_query_values_end)
