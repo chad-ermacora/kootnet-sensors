@@ -21,7 +21,7 @@ import os
 import operations_logger
 import sensor_modules.RaspberryPi_System
 
-version = "Alpha.22.10"
+version = "Alpha.22.11"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
@@ -37,7 +37,7 @@ class CreateInstalledSensors:
 
     def __init__(self):
         self.no_sensors = True
-        self.linux_system = 0
+        self.linux_system = 1
         self.raspberry_pi_zero_w = 0
         self.raspberry_pi_3b_plus = 0
 
@@ -72,9 +72,9 @@ class CreateConfig:
         self.enable_custom = 0
         self.sleep_duration_interval = 300
         self.sleep_duration_trigger = 0.15
-        self.acc_variance = 99999.0
-        self.mag_variance = 99999.0
-        self.gyro_variance = 99999.0
+        self.acc_variance = 99999.99
+        self.mag_variance = 99999.99
+        self.gyro_variance = 99999.99
 
         self.enable_custom_temp = 0
         self.custom_temperature_offset = 0.0
