@@ -142,8 +142,6 @@ def get_sensor_log(log_file):
     log_content = open(log_file, "r")
     log = log_content.read()
     log_content.close()
-    if len(log) > 2000:
-        log = log[-2000:]
     return log
 
 
@@ -229,6 +227,7 @@ def restart_services():
 def add_note_to_database(datetime_note):
     sql_data = operations_db.CreateOtherDataEntry()
     datetime_note = datetime_note.strip()
+    datetime_note = datetime_note.replace("'", '"')
     custom_datetime = "'" + datetime_note[:23] + "'"
     note = "'" + datetime_note[23:] + "'"
 

@@ -17,16 +17,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import pickle
-import socket
 from threading import Thread
-from time import sleep
+
+from flask import Flask
+from flask import request
+from gevent import monkey
+from gevent import pywsgi
 
 import operations_commands
 import operations_config
 import operations_logger
 import operations_sensors
+from operations_db import sensor_database_location
 
+monkey.patch_all()
+
+app = Flask(__name__)
+
+# IP and Port for Flask to start up on
+http_ip = ""
+http_port = 10065
 installed_sensors = operations_config.get_installed_sensors()
 
 # If installed, start up SenseHAT Joystick program
@@ -35,151 +45,257 @@ if installed_sensors.raspberry_pi_sense_hat:
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
 
-# Starts a socket server and waits for commands
-while True:
+
+@app.route("/")
+def root_http():
+    return "KootNet Sensors || " + operations_config.version
+
+
+@app.route("/CheckOnlineStatus")
+def check_online():
+    operations_logger.network_logger.debug("Sensor Checked by " + str(request.remote_addr))
+    return "OK"
+
+
+@app.route("/GetSensorReadings")
+def get_sensor_readings():
+    operations_logger.network_logger.info("* Sent Sensor Readings")
+    return str(operations_commands.get_sensor_readings())
+
+
+@app.route("/GetSystemData")
+def get_system_data():
+    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+    return operations_commands.get_system_information()
+
+
+@app.route("/GetInstalledSensors")
+def get_installed_sensors():
+    operations_logger.network_logger.info("* Sent Installed Sensors")
+    return str(operations_config.get_installed_sensors())
+
+
+@app.route("/GetConfiguration")
+def get_configuration():
+    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+    return operations_commands.get_config_information()
+
+
+@app.route("/GetPrimaryLog")
+def get_primary_log():
+    operations_logger.network_logger.info("* Sent Primary Log")
+    log = operations_commands.get_sensor_log(operations_logger.primary_log)
+    if len(log) > 1150:
+        log = log[-1150:]
+    return log
+
+
+@app.route("/GetNetworkLog")
+def get_network_log():
+    operations_logger.network_logger.info("* Sent Network Log")
+    log = operations_commands.get_sensor_log(operations_logger.network_log)
+    if len(log) > 1150:
+        log = log[-1150:]
+    return log
+
+
+@app.route("/GetSensorsLog")
+def get_sensors_log():
+    operations_logger.network_logger.info("* Sent Sensor Log")
+    log = operations_commands.get_sensor_log(operations_logger.sensors_log)
+    if len(log) > 1150:
+        log = log[-1150:]
+    return log
+
+
+@app.route("/DownloadPrimaryLog")
+def download_primary_log():
+    operations_logger.network_logger.info("* Sent Full Primary Log")
+    log = operations_commands.get_sensor_log(operations_logger.primary_log)
+    return log
+
+
+@app.route("/DownloadNetworkLog")
+def download_network_log():
+    operations_logger.network_logger.info("* Sent Full Network Log")
+    log = operations_commands.get_sensor_log(operations_logger.network_log)
+    return log
+
+
+@app.route("/DownloadSensorsLog")
+def download_sensors_log():
+    operations_logger.network_logger.info("* Sent Full Sensor Log")
+    log = operations_commands.get_sensor_log(operations_logger.sensors_log)
+    return log
+
+
+@app.route("/DownloadSQLDatabase")
+def download_sensors_sql_database():
+    operations_logger.network_logger.info("* Sent Sensor SQL Database")
+    local_db = open(sensor_database_location, "rb")
+    sensor_database = local_db.read()
+    local_db.close()
+
+    return sensor_database
+
+
+@app.route("/PutDatabaseNote", methods=["PUT"])
+def put_sql_note():
+    new_note = request.form['command_data']
+    operations_commands.add_note_to_database(new_note)
+    operations_logger.network_logger.info("* Inserted Note into Database")
+
+
+@app.route("/UpgradeOnline", methods=["PUT"])
+def upgrade_http():
+    os.system(operations_commands.bash_commands["UpgradeOnline"])
+    operations_logger.network_logger.info("* update_programs_online.sh Complete")
+
+
+@app.route("/CleanOnline")
+def upgrade_clean_http():
+    os.system(operations_commands.bash_commands["CleanOnline"])
+    operations_logger.network_logger.info("* Started Clean Upgrade - HTTP")
+
+
+@app.route("/UpgradeSMB")
+def upgrade_smb():
+    os.system(operations_commands.bash_commands["UpgradeSMB"])
+    operations_logger.network_logger.info("* update_programs_smb.sh Complete")
+
+
+@app.route("/CleanSMB")
+def upgrade_clean_smb():
+    os.system(operations_commands.bash_commands["CleanSMB"])
+    operations_logger.network_logger.info("* Started Clean Upgrade - SMB")
+
+
+@app.route("/UpgradeSystemOS")
+def upgrade_system_os():
+    operations_logger.network_logger.info("* Updating Operating System & rebooting")
+    os.system(operations_commands.bash_commands["UpgradeSystemOS"])
+
+
+@app.route("/inkupg")
+def upgrade_rp_controller():
+    os.system(operations_commands.bash_commands["inkupg"])
+    operations_logger.network_logger.info("* update_programs_e-Ink.sh Complete")
+
+
+@app.route("/RebootSystem")
+def system_reboot():
+    operations_logger.network_logger.info("* Rebooting System")
+    os.system(operations_commands.bash_commands["RebootSystem"])
+
+
+@app.route("/ShutdownSystem")
+def system_shutdown():
+    operations_logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
+    os.system(operations_commands.bash_commands["ShutdownSystem"])
+
+
+@app.route("/RestartServices")
+def services_restart():
+    operations_logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
+    operations_commands.restart_services()
+
+
+@app.route("/SetHostName", methods=["PUT"])
+def set_hostname():
     try:
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_port = 10065
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind(("", server_port))
-        sock.listen(6)
-        operations_logger.network_logger.info(" ** starting up on port " + str(server_port) + " **")
+        new_host = request.form['command_data']
+        os.system("hostnamectl set-hostname " + new_host)
+        operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
+    except Exception as error:
+        operations_logger.network_logger.info("* Hostname Change Failed: " + str(error))
 
-        while True:
-            connection, client_address = sock.accept()
-            operations_logger.network_logger.debug(str(client_address[0]) + " Port: " + str(client_address[1]))
 
-            tmp_connection_data = connection.recv(4096)
-            connection_command = str(tmp_connection_data.decode())
+@app.route("/SetDateTime", methods=["PUT"])
+def set_date_time():
+    new_datetime = request.form['command_data']
+    os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
+    operations_logger.network_logger.info("* Set System DateTime: " + new_datetime)
 
-            if connection_command == "CheckOnlineStatus":
-                operations_logger.network_logger.debug("Sensor Checked by " + str(client_address[0]))
-            elif connection_command == "GetSystemData":
-                system_info = operations_commands.get_system_information()
-                connection.sendall(pickle.dumps(system_info))
-                operations_logger.network_logger.info("* Sensor Data Sent to " + str(client_address[0]))
-            elif connection_command == "inkupg":
-                os.system(operations_commands.bash_commands["inkupg"])
-                operations_logger.network_logger.info("* update_programs_e-Ink.sh Complete")
-            elif connection_command == "UpgradeOnline":
-                os.system(operations_commands.bash_commands["UpgradeOnline"])
-                operations_logger.network_logger.info("* update_programs_online.sh Complete")
-            elif connection_command == "UpgradeSMB":
-                os.system(operations_commands.bash_commands["UpgradeSMB"])
-                operations_logger.network_logger.info("* update_programs_smb.sh Complete")
-            elif connection_command == "CleanOnline":
-                os.system(operations_commands.bash_commands["CleanOnline"])
-                operations_logger.network_logger.info("* Started Clean Upgrade - HTTP")
-            elif connection_command == "CleanSMB":
-                os.system(operations_commands.bash_commands["CleanSMB"])
-                operations_logger.network_logger.info("* Started Clean Upgrade - SMB")
-            elif connection_command == "RebootSystem":
-                operations_logger.network_logger.info("* Rebooting System")
-                os.system(operations_commands.bash_commands["RebootSystem"])
-            elif connection_command == "ShutdownSystem":
-                operations_logger.network_logger.info("* System Shutdown started by " + str(client_address[0]))
-                os.system(operations_commands.bash_commands["ShutdownSystem"])
-            elif connection_command == "RestartServices":
-                operations_logger.network_logger.info("* Service restart started by " + str(client_address[0]))
-                operations_commands.restart_services()
-            elif connection_command == "UpgradeSystemOS":
-                operations_logger.network_logger.info("* Updating Operating System & rebooting")
-                os.system(operations_commands.bash_commands["UpgradeSystemOS"])
-            elif connection_command == "GetConfiguration":
-                str_config = operations_commands.get_config_information()
-                connection.sendall(pickle.dumps(str_config))
-                operations_logger.network_logger.info("* Sensor Data Sent to " + str(client_address[0]))
-            elif connection_command[:16] == "SetConfiguration":
-                operations_logger.network_logger.info("* Setting Sensor Configuration")
-                new_config = connection_command[16:]
-                operations_commands.set_sensor_config(new_config)
-            elif connection_command[:14] == "ChangeHostName":
-                try:
-                    new_host = connection_command[14:]
-                    os.system("hostnamectl set-hostname " + new_host)
-                    operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
-                except Exception as error_msg:
-                    operations_logger.network_logger.info("* Hostname Change Failed: " + str(error_msg))
-            elif connection_command[:11] == "SetDateTime":
-                new_datetime = connection_command[11:]
-                os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-                operations_logger.network_logger.info("* Set System DateTime: " + str(new_datetime))
-            elif connection_command == "GetSensorReadings":
-                sensor_data = operations_commands.get_sensor_readings()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.info("* Sent Sensor Readings")
-            elif connection_command == "GetHostName":
-                sensor_data = operations_sensors.get_hostname()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor HostName: " + str(sensor_data))
-            elif connection_command == "GetSystemUptime":
-                sensor_data = operations_sensors.get_system_uptime()
-                operations_logger.network_logger.debug("* Sent Sensor System Uptime: " + str(sensor_data))
-                connection.sendall(pickle.dumps(sensor_data))
-            elif connection_command == "GetCPUTemperature":
-                sensor_data = operations_sensors.get_cpu_temperature()
-                operations_logger.network_logger.debug("* Sent Sensor CPU Temperature: " + str(sensor_data))
-                connection.sendall(pickle.dumps(sensor_data))
-            elif connection_command == "GetEnvTemperature":
-                sensor_data = operations_sensors.get_sensor_temperature()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Environment Temperature: " + str(sensor_data))
-            elif connection_command == "GetTempOffsetEnv":
-                sensor_data = operations_sensors.get_sensor_temperature_offset()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Env Temperature Offset: " + str(sensor_data))
-            elif connection_command == "GetPressure":
-                sensor_data = operations_sensors.get_pressure()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Pressure: " + str(sensor_data))
-            elif connection_command == "GetHumidity":
-                sensor_data = operations_sensors.get_humidity()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Humidity: " + str(sensor_data))
-            elif connection_command == "GetLumen":
-                sensor_data = operations_sensors.get_lumen()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Lumen: " + str(sensor_data))
-            elif connection_command == "GetRGB":
-                sensor_data = operations_sensors.get_rgb()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor RGB: " + str(sensor_data))
-            elif connection_command == "GetAccelerometerXYZ":
-                sensor_data = operations_sensors.get_accelerometer_xyz()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Accelerometer XYZ: " + str(sensor_data))
-            elif connection_command == "GetMagnetometerXYZ":
-                sensor_data = operations_sensors.get_magnetometer_xyz()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Magnetometer XYZ: " + str(sensor_data))
-            elif connection_command == "GetGyroscopeXYZ":
-                sensor_data = operations_sensors.get_gyroscope_xyz()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.debug("* Sent Sensor Gyroscope XYZ: " + str(sensor_data))
-            elif connection_command == "GetPrimaryLog":
-                sensor_data = operations_commands.get_sensor_log(operations_logger.primary_log)
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.info("* Sent Primary Log")
-            elif connection_command == "GetSensorsLog":
-                sensor_data = operations_commands.get_sensor_log(operations_logger.sensors_log)
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.info("* Sent Sensor Log")
-            elif connection_command == "GetNetworkLog":
-                sensor_data = operations_commands.get_sensor_log(operations_logger.network_log)
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.info("* Sent Network Log")
-            elif connection_command == "GetInstalledSensors":
-                sensor_data = operations_config.get_installed_sensors()
-                connection.sendall(pickle.dumps(sensor_data))
-                operations_logger.network_logger.info("* Sent Installed Sensors")
-            elif connection_command[:15] == "PutDatabaseNote":
-                operations_commands.add_note_to_database(connection_command[15:])
-                operations_logger.network_logger.info("* Inserted Note into Database")
-            else:
-                operations_logger.network_logger.info("Invalid command sent: " + connection_command)
 
-            connection.close()
+@app.route("/SetConfiguration", methods=["PUT"])
+def set_configuration():
+    operations_logger.network_logger.info("* Setting Sensor Configuration")
+    new_config = request.form['command_data']
+    operations_commands.set_sensor_config(new_config)
 
-    except Exception as error_msg:
-        operations_logger.network_logger.warning("Socket Failed trying again in 5 Seconds - " + str(error_msg))
-        sleep(5)
+
+@app.route("/GetHostName")
+def get_hostname():
+    operations_logger.network_logger.debug("* Sent Sensor HostName")
+    return str(operations_sensors.get_hostname())
+
+
+@app.route("/GetSystemUptime")
+def get_system_uptime():
+    operations_logger.network_logger.debug("* Sent Sensor System Uptime")
+    return str(operations_sensors.get_system_uptime())
+
+
+@app.route("/GetCPUTemperature")
+def get_cpu_temperature():
+    operations_logger.network_logger.debug("* Sent Sensor CPU Temperature")
+    return str(operations_sensors.get_cpu_temperature())
+
+
+@app.route("/GetEnvTemperature")
+def get_env_temperature():
+    operations_logger.network_logger.debug("* Sent Sensor Environment Temperature")
+    return str(operations_sensors.get_sensor_temperature())
+
+
+@app.route("/GetTempOffsetEnv")
+def get_env_temp_offset():
+    operations_logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
+    return str(operations_sensors.get_sensor_temperature_offset())
+
+
+@app.route("/GetPressure")
+def get_pressure():
+    operations_logger.network_logger.debug("* Sent Sensor Pressure")
+    return str(operations_sensors.get_pressure())
+
+
+@app.route("/GetHumidity")
+def get_humidity():
+    operations_logger.network_logger.debug("* Sent Sensor Humidity")
+    return str(operations_sensors.get_humidity())
+
+
+@app.route("/GetLumen")
+def get_lumen():
+    operations_logger.network_logger.debug("* Sent Sensor Lumen")
+    return str(operations_sensors.get_lumen())
+
+
+@app.route("/GetRGB")
+def get_rgb():
+    operations_logger.network_logger.debug("* Sent Sensor RGB")
+    return str(operations_sensors.get_rgb())
+
+
+@app.route("/GetAccelerometerXYZ")
+def get_acc_xyz():
+    operations_logger.network_logger.debug("* Sent Sensor Accelerometer XYZ")
+    return str(operations_sensors.get_accelerometer_xyz())
+
+
+@app.route("/GetMagnetometerXYZ")
+def get_mag_xyz():
+    operations_logger.network_logger.debug("* Sent Sensor Magnetometer XYZ")
+    return str(operations_sensors.get_magnetometer_xyz())
+
+
+@app.route("/GetGyroscopeXYZ")
+def get_gyro_xyz():
+    operations_logger.network_logger.debug("* Sent Sensor Gyroscope XYZ")
+    return str(operations_sensors.get_gyroscope_xyz())
+
+
+operations_logger.network_logger.info("** starting up on port " + str(http_port) + " **")
+http_server = pywsgi.WSGIServer((http_ip, http_port), app)
+http_server.serve_forever()

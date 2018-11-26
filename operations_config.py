@@ -21,7 +21,7 @@ import os
 import operations_logger
 import sensor_modules.RaspberryPi_System
 
-version = "Alpha.22.11"
+version = "Alpha.22.12"
 
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"

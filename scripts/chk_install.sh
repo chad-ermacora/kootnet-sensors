@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
-PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request matplotlib"
-APT_GET_INSTALL="fonts-freefont-ttf sense-hat lighttpd fake-hwclock"
+PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request requests Flask gevent matplotlib"
+APT_GET_INSTALL="fonts-freefont-ttf sense-hat fake-hwclock"
 APT_GET_REMOVE="wolfram-engine"
 DATA_DIR="/home/kootnet_data"
 CONFIG_DIR="/etc/kootnet"
