@@ -19,10 +19,8 @@
 import os
 from threading import Thread
 
-from flask import Flask
-from flask import request
-from gevent import monkey
-from gevent import pywsgi
+from flask import Flask, request
+from gevent import monkey, pywsgi
 
 import operations_commands
 import operations_config
@@ -53,6 +51,11 @@ def show_version():
     config = operations_commands.get_config_information().split(",")[-1]
     message += "<p>" + config + "</p>"
     return message
+
+
+@app.route("/TestSensor")
+def test_sensor():
+    return "<p>KootNet Sensors || WIP</p>"
 
 
 @app.route("/CheckOnlineStatus")
