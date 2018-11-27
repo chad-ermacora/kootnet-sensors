@@ -215,8 +215,7 @@ def set_sensor_config(config_data):
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
     os.system("systemctl daemon-reload && "
-              "systemctl restart SensorRecording && "
-              "systemctl restart SensorHTTP")
+              "systemctl restart SensorRecording")
     # Sleep to make sure logs are created before setting permissions
     # Needed for remote log viewing on first run
     sleep(5)

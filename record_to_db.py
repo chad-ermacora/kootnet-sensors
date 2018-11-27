@@ -18,19 +18,28 @@
 """
 from threading import Thread
 from time import sleep
-
-import operations_checks
+from operations_checks import get_old_version, check_missing_files
+import os
 import operations_config
 import operations_db
 import operations_logger
 import operations_sensors
-
-# Ensure files, database & configurations are OK
-operations_checks.run_checks_and_updates()
+from operations_db import check_database_structure
 
 installed_sensors = operations_config.get_installed_sensors()
 current_config = operations_config.get_installed_config()
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
+
+# Ensure files, database & configurations are OK
+check_missing_files()
+check_database_structure()
+if get_old_version() != operations_config.version:
+    operations_logger.primary_logger.debug("Checking files and configuration after upgrade")
+    os.system("systemctl start SensorUpgradeChecks")
+    # Sleep before loading anything due to needed updates
+    # The update service will automatically restart this app when it's done
+    while True:
+        sleep(10)
 
 
 def start_interval_recording():

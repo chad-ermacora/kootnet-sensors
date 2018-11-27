@@ -31,12 +31,8 @@ import operations_sensors
 from operations_db import sensor_database_location
 
 monkey.patch_all()
-
 app = Flask(__name__)
 
-# IP and Port for Flask to start up on
-http_ip = ""
-http_port = 10065
 installed_sensors = operations_config.get_installed_sensors()
 
 # If installed, start up SenseHAT Joystick program
@@ -48,7 +44,15 @@ if installed_sensors.raspberry_pi_sense_hat:
 
 @app.route("/")
 def root_http():
-    return "KootNet Sensors || " + operations_config.version
+    return "KootNet Sensors || Raspberry Pi Sensor"
+
+
+@app.route("/Ver")
+def show_version():
+    message = "<p>KootNet Sensors || " + operations_config.version + "</p>"
+    config = operations_commands.get_config_information().split(",")[-1]
+    message += "<p>" + config + "</p>"
+    return message
 
 
 @app.route("/CheckOnlineStatus")
@@ -69,10 +73,10 @@ def get_system_data():
     return operations_commands.get_system_information()
 
 
-@app.route("/GetInstalledSensors")
-def get_installed_sensors():
-    operations_logger.network_logger.info("* Sent Installed Sensors")
-    return str(operations_config.get_installed_sensors())
+# @app.route("/GetInstalledSensors")
+# def get_installed_sensors():
+#     operations_logger.network_logger.info("* Sent Installed Sensors")
+#     return str(operations_config.get_installed_sensors())
 
 
 @app.route("/GetConfiguration")
@@ -296,6 +300,6 @@ def get_gyro_xyz():
     return str(operations_sensors.get_gyroscope_xyz())
 
 
-operations_logger.network_logger.info("** starting up on port " + str(http_port) + " **")
-http_server = pywsgi.WSGIServer((http_ip, http_port), app)
+operations_logger.network_logger.info("** starting up on port " + str(operations_config.flask_http_port) + " **")
+http_server = pywsgi.WSGIServer((operations_config.flask_http_ip, operations_config.flask_http_port), app)
 http_server.serve_forever()

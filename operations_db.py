@@ -19,8 +19,7 @@
 import sqlite3
 
 import operations_logger
-
-sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
+from operations_config import sensor_database_location
 
 
 class CreateIntervalDatabaseData:

@@ -21,9 +21,6 @@ import os
 import operations_config
 import operations_logger
 from operations_commands import restart_services
-from operations_db import check_database_structure
-
-_old_version_file_location = "/etc/kootnet/installed_version.txt"
 
 
 class CreateChecksUpgradesData:
@@ -33,54 +30,39 @@ class CreateChecksUpgradesData:
         self.old_installed_sensors = operations_config.get_installed_sensors()
         self.upgraded_installed_sensors = operations_config.CreateInstalledSensors()
 
-        self.old_versions = _get_old_version()
+        self.old_versions = get_old_version()
 
 
-def run_checks_and_updates():
-    """ Checks and if necessary, Updates the Installed Sensors & Configuration files after an upgrade. """
-    _check_missing_files()
-    check_database_structure()
+def run_upgrade_checks():
+    operations_logger.primary_logger.debug("Checking required packages")
     upgrade_data_obj = CreateChecksUpgradesData()
 
-    if upgrade_data_obj.old_versions == operations_config.version:
-        not_current = False
+    if upgrade_data_obj.old_versions == "":
+        operations_logger.primary_logger.warning("Missing version file: " +
+                                                 operations_config.old_version_file_location +
+                                                 " - Configuration files Reset to defaults")
+        upgrade_data_obj.old_versions = operations_config.version
+    elif upgrade_data_obj.old_versions == "Alpha.22.8":
+        _update_ver_a_22_8(upgrade_data_obj)
+        operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_versions)
+        upgrade_data_obj.old_versions = "Alpha.22.9"
     else:
-        not_current = True
+        operations_logger.primary_logger.info("Upgrade detected || No changes required || Old: " +
+                                              upgrade_data_obj.old_versions +
+                                              " New: " +
+                                              operations_config.version)
+        upgrade_data_obj.old_versions = operations_config.version
+        upgrade_data_obj.upgraded_config = upgrade_data_obj.old_config
+        upgrade_data_obj.upgraded_installed_sensors = upgrade_data_obj.old_installed_sensors
 
-    was_updated = False
-    while not_current:
-        was_updated = True
-        if upgrade_data_obj.old_versions == "":
-            operations_logger.primary_logger.warning("Missing version file: " +
-                                                     _old_version_file_location +
-                                                     " - Configuration files Reset to defaults")
-            upgrade_data_obj.old_versions = operations_config.version
-        elif upgrade_data_obj.old_versions == "Alpha.22.8":
-            _update_ver_a_22_8(upgrade_data_obj)
-            operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_versions)
-            upgrade_data_obj.old_versions = "Alpha.22.9"
-        else:
-            operations_logger.primary_logger.debug("No additional changes required || Old: " + upgrade_data_obj.old_versions +
-                                                   " New: " + operations_config.version)
-            upgrade_data_obj.old_versions = operations_config.version
-            upgrade_data_obj.upgraded_config = upgrade_data_obj.old_config
-            upgrade_data_obj.upgraded_installed_sensors = upgrade_data_obj.old_installed_sensors
-
-        if upgrade_data_obj.old_versions == operations_config.version:
-            not_current = False
-
-    if was_updated:
-        operations_config.write_config_to_file(upgrade_data_obj.upgraded_config)
-        operations_config.write_installed_sensors_to_file(upgrade_data_obj.upgraded_installed_sensors)
-        _write_current_version_to_file()
-        restart_services()
+    operations_config.write_config_to_file(upgrade_data_obj.upgraded_config)
+    operations_config.write_installed_sensors_to_file(upgrade_data_obj.upgraded_installed_sensors)
+    _write_current_version_to_file()
+    restart_services()
 
 
-def _check_missing_files():
-    important_files = [operations_config.last_updated_file_location,
-                       _old_version_file_location]
-
-    for file in important_files:
+def check_missing_files():
+    for file in operations_config.important_files:
         if os.path.isfile(file):
             pass
         else:
@@ -88,8 +70,8 @@ def _check_missing_files():
             os.system("touch " + file)
 
 
-def _get_old_version():
-    old_version_file = open(_old_version_file_location, 'r')
+def get_old_version():
+    old_version_file = open(operations_config.old_version_file_location, 'r')
     old_version = old_version_file.read()
     old_version_file.close()
 
@@ -100,7 +82,7 @@ def _get_old_version():
 
 def _write_current_version_to_file():
     operations_logger.primary_logger.debug("Current version file updating")
-    current_version_file = open(_old_version_file_location, 'w')
+    current_version_file = open(operations_config.old_version_file_location, 'w')
     current_version_file.write(operations_config.version)
     current_version_file.close()
 
@@ -116,6 +98,4 @@ def _update_ver_a_22_8(upgrade_data_obj):
     upgrade_data_obj.upgraded_installed_sensors.raspberry_pi_zero_w = upgrade_data_obj.old_installed_sensors.raspberry_pi_zero_w
 
     os.system("rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null")
-    print("\n\nInstalling Additional libraries, please wait ...")
-    os.system("pip3 install Flask gevent")
-    print("Done\n\n")
+    os.system("/usr/bin/pip3 install gevent")

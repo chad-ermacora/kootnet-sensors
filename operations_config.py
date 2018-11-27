@@ -21,12 +21,20 @@ import os
 import operations_logger
 import sensor_modules.RaspberryPi_System
 
-version = "Alpha.22.12"
+# IP and Port for Flask to start up on
+flask_http_ip = ""
+flask_http_port = 10065
 
+version = "Alpha.22.14"
+sense_hat_show_led_message = False
+
+sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
-sense_hat_show_led_message = False
+old_version_file_location = "/etc/kootnet/installed_version.txt"
+
+important_files = [last_updated_file_location, old_version_file_location]
 
 
 class CreateInstalledSensors:
