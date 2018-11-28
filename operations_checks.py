@@ -47,7 +47,7 @@ def run_upgrade_checks():
         operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_versions)
         upgrade_data_obj.old_versions = "Alpha.22.9"
     else:
-        operations_logger.primary_logger.info("Upgrade detected || No changes required || Old: " +
+        operations_logger.primary_logger.info("Upgrade detected || No Configuration changes required || Old: " +
                                               upgrade_data_obj.old_versions +
                                               " New: " +
                                               operations_config.version)
