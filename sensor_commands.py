@@ -24,6 +24,7 @@ from gevent import monkey, pywsgi
 
 import operations_commands
 import operations_config
+import operations_html_templates
 import operations_logger
 import operations_sensors
 from operations_db import sensor_database_location
@@ -55,7 +56,29 @@ def show_version():
 
 @app.route("/TestSensor")
 def test_sensor():
-    return "<p>KootNet Sensors || WIP</p>"
+    sensor_readings = operations_commands.get_sensor_readings()
+    sensor_info_raw = operations_commands.get_system_information().split(",")
+    sensor_config_raw = operations_commands.get_config_information().split(",")
+    sensor_config = ""
+    sensor_info = ""
+
+    for config in sensor_config_raw:
+        sensor_config += "<th><span style='background-color: #0BB10D;'>" + config + "</span></th>"
+
+    for info in sensor_info_raw:
+        sensor_info += "<th><span style='background-color: #0BB10D;'>" + info + "</span></th>"
+
+    message = "<p><span style='color: red'>KootNet Sensors || Sensor Testing Page</span></p>" + \
+              operations_html_templates.sensor_info_start + "<tr>" + sensor_info + "</tr></table>"
+
+    message += operations_html_templates.sensor_config_start + "<tr>" + sensor_config + "</tr></table>"
+
+    message += operations_html_templates.sensor_readings_start + \
+               "<tr>" + sensor_readings[0] + "</tr>" + \
+               "<tr>" + sensor_readings[1] + "</tr></table>"
+
+    message += operations_html_templates.sensor_test_final_end
+    return message
 
 
 @app.route("/CheckOnlineStatus")
