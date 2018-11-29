@@ -8,7 +8,7 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-printf "\nThis will Uninstall all KootNet Sensors Software.  Press enter to continue or CTRL + C to exit ..."
+printf "\nThis will Uninstall all KootNet Sensors Software.\nPress enter to continue or CTRL + C to exit ..."
 read nothing
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorHTTP
@@ -53,6 +53,6 @@ bash /opt/kootnet-control-center/scripts/uninstall.sh
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload
-printf '\n\nUninstall complete.  Press enter to exit\n'
+printf '\n\nUninstall Complete.\nPress enter to exit\n'
 read nothing2
 rm -f ${SPECIAL_SCRIPTS_DIR}/uninstall.sh

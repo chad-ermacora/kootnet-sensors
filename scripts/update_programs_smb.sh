@@ -42,7 +42,7 @@ umount /mnt/supernas
 cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${SPECIAL_SCRIPTS_DIR}
 cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${SPECIAL_SCRIPTS_DIR}
 cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${SPECIAL_SCRIPTS_DIR}
-# Add easy upgrade, config edits & sensor test app(s) to user pi's home directory
+# Add config edits & sensor test app(s) to user pi's home directory
 bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_autostart.sh

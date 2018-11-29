@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
 PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request requests Flask gevent matplotlib"
-APT_GET_INSTALL="fonts-freefont-ttf sense-hat fake-hwclock"
-APT_GET_REMOVE="wolfram-engine"
+APT_GET_INSTALL="libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock"
 DATA_DIR="/home/kootnet_data"
 CONFIG_DIR="/etc/kootnet"
 
@@ -108,15 +107,13 @@ EOF
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Install needed programs and dependencies
   printf '\nStarting system update & upgrade. This may take awhile ...\n\n'
-  # Remove wolfram-engine due to size of upgrades
-  apt-get -y remove ${APT_GET_REMOVE}
   apt-get update
   apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install ${APT_GET_INSTALL}
   python3 -m pip install -U pip
-  python3 -m pip install -U numpy
   pip3 install ${PIP3_INSTALL}
-  # Create Installed File to prevent re-runs after first run
+  # Create Installed File to prevent re-runs.  Create install_version file for program first run.
   date > ${CONFIG_DIR}/installed_datetime.txt
+  date > ${CONFIG_DIR}/installed_version.txt
 fi
