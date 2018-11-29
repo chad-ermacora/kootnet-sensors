@@ -8,6 +8,8 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
+printf "\nThis will Uninstall all KootNet Sensors Software.  Press enter to continue or CTRL + C to exit ..."
+read nothing
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorHTTP
 systemctl disable SensorRecording
@@ -19,8 +21,8 @@ systemctl stop SensorRecording
 systemctl stop SensorCommands
 printf '\nRemoving sensor service files\n'
 rm -f /etc/systemd/system/SensorCommands.service 2>/dev/null
-rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null
 rm -f /etc/systemd/system/SensorRecording.service 2>/dev/null
+rm -f /etc/systemd/system/SensorUpgradeChecks.service 2>/dev/null
 rm -f /etc/systemd/system/SensorCleanUpgradeOnline.service 2>/dev/null
 rm -f /etc/systemd/system/SensorCleanUpgradeSMB.service 2>/dev/null
 # Restore /etc/network/interfaces & /etc/wpa_supplicant/wpa_supplicant.conf
@@ -51,5 +53,6 @@ bash /opt/kootnet-control-center/scripts/uninstall.sh
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload
-printf '\n\nUninstall complete\n'
+printf '\n\nUninstall complete.  Press enter to exit\n'
+read nothing2
 rm -f ${SPECIAL_SCRIPTS_DIR}/uninstall.sh

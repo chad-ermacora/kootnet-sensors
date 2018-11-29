@@ -204,8 +204,6 @@ def write_config_to_file(config):
     """ Writes provided configuration file to local disk. """
     operations_logger.primary_logger.debug("Writing Configuration to File")
     try:
-        sensor_list_file = open(config_file_location, 'w')
-
         new_config = "Enable = 1 & Disable = 0\n" + \
                      str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
                      str(config.sleep_duration_interval) + \
@@ -222,6 +220,7 @@ def write_config_to_file(config):
         else:
             new_config = new_config + str(get_default_temp_offset()) + " = Current Temperature Offset"
 
+        sensor_list_file = open(config_file_location, 'w')
         sensor_list_file.write(new_config)
         sensor_list_file.close()
     except Exception as error:
@@ -323,8 +322,6 @@ def get_installed_sensors():
 def write_installed_sensors_to_file(installed_sensors):
     """ Writes provided 'installed sensors' object to local disk. """
     try:
-        installed_sensors_config_file = open(sensors_installed_file_location, 'w')
-
         new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
                      str(installed_sensors.linux_system) + " = " + \
                      installed_sensors.linux_system_name + "\n" + \
@@ -345,6 +342,7 @@ def write_installed_sensors_to_file(installed_sensors):
                      str(installed_sensors.pimoroni_vl53l1x) + " = " + \
                      installed_sensors.pimoroni_vl53l1x_name + "\n"
 
+        installed_sensors_config_file = open(sensors_installed_file_location, 'w')
         installed_sensors_config_file.write(new_config)
         installed_sensors_config_file.close()
 
