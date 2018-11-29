@@ -40,14 +40,14 @@ def run_upgrade_checks():
     if upgrade_data_obj.old_versions == "":
         operations_logger.primary_logger.warning("Missing version file: " +
                                                  operations_config.old_version_file_location +
-                                                 " - Configuration files Reset to defaults")
+                                                 " - Configuration files reset to defaults")
         upgrade_data_obj.old_versions = operations_config.version
     elif upgrade_data_obj.old_versions == "Alpha.22.8":
         _update_ver_a_22_8(upgrade_data_obj)
         operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_versions)
         upgrade_data_obj.old_versions = "Alpha.22.9"
     else:
-        operations_logger.primary_logger.info("Upgrade detected || No Configuration changes required || Old: " +
+        operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                               upgrade_data_obj.old_versions +
                                               " New: " +
                                               operations_config.version)
@@ -98,4 +98,5 @@ def _update_ver_a_22_8(upgrade_data_obj):
     upgrade_data_obj.upgraded_installed_sensors.raspberry_pi_zero_w = upgrade_data_obj.old_installed_sensors.raspberry_pi_zero_w
 
     os.system("rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null")
+    os.system("rm -f /opt/kootnet-sensors/auto_start/SensorHTTP.service 2>/dev/null")
     os.system("/usr/bin/pip3 install gevent")

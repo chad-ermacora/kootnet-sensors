@@ -25,7 +25,7 @@ import sensor_modules.RaspberryPi_System
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.15"
+version = "Alpha.22.16"
 sense_hat_show_led_message = False
 
 sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
