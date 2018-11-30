@@ -46,6 +46,7 @@ then
   printf ${CONFIG_DIR}"/sql_recording.conf OK\n"
 else
   printf ${CONFIG_DIR}"/sql_recording.conf Setup\n"
+  # Used "Custom" in config here for install, but program will replace with "Current"
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
 Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 1 = Record Sensors to SQL Database
@@ -56,7 +57,7 @@ Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 0.0 = Custom Magnetometer variance
 0.0 = Custom Gyroscope variance
 0 = Enable Custom Temperature Offset
-0.0 = Current Temperature Offset
+0.0 = Custom Temperature Offset
 EOF
   nano ${CONFIG_DIR}/sql_recording.conf
 fi
