@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-USER_DIR="/home/pi/"
+USER_DIR="/home/pi"
 # Make sure its running with root
 clear
 if [[ $EUID != 0 ]]; then

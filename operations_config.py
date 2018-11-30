@@ -25,7 +25,7 @@ import sensor_modules.RaspberryPi_System
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.16"
+version = "Alpha.22.17"
 sense_hat_show_led_message = False
 
 sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
@@ -208,7 +208,7 @@ def config_convert_from_file(config_text_file):
 
 
 def config_convert_to_file(config):
-    config_file_str = "Enable = 1 & Disable = 0\n" + \
+    config_file_str = "Enable = 1 & Disable = 0 (Recommended: Don't change anything)\n" + \
                       str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + \
                       " = Duration between Interval readings in Seconds\n" + \

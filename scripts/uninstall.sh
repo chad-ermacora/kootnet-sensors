@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-USER_DIR="/home/pi/"
+USER_DIR="/home/pi"
 CONFIG_DIR="/etc/kootnet"
 SPECIAL_SCRIPTS_DIR="/home/kootnet_data/scripts"
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
