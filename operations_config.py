@@ -60,7 +60,7 @@ class CreateInstalledSensors:
         self.has_mag = 0
         self.has_gyro = 0
 
-        self.linux_system_name = "Gnu/Linux"
+        self.linux_system_name = "Gnu/Linux - Raspbian"
         self.raspberry_pi_zero_w_name = "Raspberry Pi Zero W"
         self.raspberry_pi_3b_plus_name = "Raspberry Pi 3BPlus"
 
