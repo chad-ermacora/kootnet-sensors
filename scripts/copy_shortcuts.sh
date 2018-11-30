@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 USER_DIR="/home/pi"
+mkdir /home/pi/Desktop 2>/dev/null
 # Sensor reconfiguration and test shortcut
 cat > ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop << "EOF"
 [Desktop Entry]
