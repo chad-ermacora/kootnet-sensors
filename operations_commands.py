@@ -159,59 +159,6 @@ def get_last_updated():
     return last_updated
 
 
-def set_sensor_config(config_data):
-    """ Applies the provided configuration file and restarts the SQL recording service. """
-    split_list_config = config_data.split(",")
-    new_config = operations_config.CreateConfig()
-    sensor_enable = "systemctl enable SensorRecording"
-    sensor_start = "systemctl start SensorRecording"
-    sensor_disable = "systemctl disable SensorRecording"
-    sensor_stop = "systemctl stop SensorRecording"
-
-    try:
-        new_config.write_to_db = int(split_list_config[0])
-        if new_config.write_to_db:
-            os.system(sensor_enable + " && " + sensor_start)
-        else:
-            os.system(sensor_disable + " && " + sensor_stop)
-
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Record Sensors to SQL Database' - " + str(error1))
-
-    try:
-        new_config.sleep_duration_interval = int(split_list_config[1])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Duration between Interval Readings' - " + str(error1))
-
-    try:
-        new_config.sleep_duration_trigger = float(split_list_config[2])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Duration between Trigger Readings' - " + str(error1))
-
-    try:
-        new_config.enable_custom = int(split_list_config[3])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Enable Custom Settings' - " + str(error1))
-
-    try:
-        new_config.acc_variance = float(split_list_config[4])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Accelerometer Variance' - " + str(error1))
-
-    try:
-        new_config.mag_variance = float(split_list_config[5])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Magnetometer Variance' - " + str(error1))
-
-    try:
-        new_config.gyro_variance = float(split_list_config[6])
-    except Exception as error1:
-        operations_logger.network_logger.error("Bad config 'Gyroscope Variance' - " + str(error1))
-
-    operations_config.write_config_to_file(new_config)
-    os.system("systemctl restart SensorRecording")
-
-
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
     os.system("systemctl daemon-reload && "

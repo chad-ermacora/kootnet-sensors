@@ -74,8 +74,7 @@ def test_sensor():
     message += operations_html_templates.sensor_config_start + "<tr>" + sensor_config + "</tr></table>"
 
     message += operations_html_templates.sensor_readings_start + \
-               "<tr>" + sensor_readings[0] + "</tr>" + \
-               "<tr>" + sensor_readings[1] + "</tr></table>"
+               "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
 
     message += operations_html_templates.sensor_test_final_end
     return message
@@ -99,16 +98,26 @@ def get_system_data():
     return operations_commands.get_system_information()
 
 
-# @app.route("/GetInstalledSensors")
-# def get_installed_sensors():
-#     operations_logger.network_logger.info("* Sent Installed Sensors")
-#     return str(operations_config.get_installed_sensors())
+@app.route("/GetConfigurationReport")
+def get_configuration_report():
+    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+    return operations_commands.get_config_information()
+
+
+@app.route("/GetInstalledSensors")
+def get_installed_sensors():
+    operations_logger.network_logger.info("* Sent Installed Sensors")
+    current_installed_sensors = operations_config.get_installed_sensors()
+    installed_sensors_str = operations_config.installed_sensors_convert_to_file(current_installed_sensors)
+    return installed_sensors_str
 
 
 @app.route("/GetConfiguration")
 def get_configuration():
-    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
-    return operations_commands.get_config_information()
+    operations_logger.network_logger.info("* Sent Sensors Configuration")
+    current_installed_config = operations_config.get_installed_config()
+    installed_config_str = operations_config.config_convert_to_file(current_installed_config)
+    return installed_config_str
 
 
 @app.route("/GetPrimaryLog")
@@ -250,8 +259,22 @@ def set_date_time():
 @app.route("/SetConfiguration", methods=["PUT"])
 def set_configuration():
     operations_logger.network_logger.info("* Setting Sensor Configuration")
-    new_config = request.form['command_data']
-    operations_commands.set_sensor_config(new_config)
+
+    raw_config = request.form['command_data']
+    operations_logger.network_logger.info(str(raw_config))
+
+    new_config = operations_config.config_convert_from_file(raw_config)
+    operations_config.write_config_to_file(new_config)
+    operations_commands.restart_services()
+
+
+@app.route("/SetInstalledSensors", methods=["PUT"])
+def set_installed_sensors():
+    operations_logger.network_logger.info("* Setting Sensor Installed Sensors")
+    raw_installed_sensors = request.form['command_data']
+    new_installed_sensors = operations_config.installed_sensors_convert_from_file(raw_installed_sensors)
+    operations_config.write_installed_sensors_to_file(new_installed_sensors)
+    operations_commands.restart_services()
 
 
 @app.route("/GetHostName")

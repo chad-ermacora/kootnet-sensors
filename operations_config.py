@@ -64,7 +64,7 @@ class CreateInstalledSensors:
         self.raspberry_pi_zero_w_name = "Raspberry Pi Zero W"
         self.raspberry_pi_3b_plus_name = "Raspberry Pi 3BPlus"
 
-        self.raspberry_pi_sense_hat_name = "RP Sense HAT"
+        self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
         self.pimoroni_bme680_name = "Pimoroni BME680"
         self.pimoroni_enviro_name = "Pimoroni EnviroPHAT"
@@ -129,97 +129,109 @@ def get_default_temp_offset():
 def get_installed_config():
     """ Loads configuration from file and returns it as a configuration object. """
     operations_logger.primary_logger.debug("Loading Configuration File")
-    installed_config = CreateConfig()
 
     if os.path.isfile(config_file_location):
-        config_list = []
-
         try:
             config_file = open(config_file_location, "r")
-            config_list = config_file.readlines()
+            config_file_content = config_file.readlines()
             config_file.close()
-            if len(config_list) < 5:
+            installed_config = config_convert_from_file(config_file_content)
+            if len(config_file_content) < 5:
                 write_config_to_file(installed_config)
         except Exception as error:
+            installed_config = CreateConfig()
             operations_logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
 
-        try:
-            installed_config.write_to_db = int(config_list[1].split('=')[0].strip())
-        except Exception as error:
-            operations_logger.primary_logger.warning("Invalid Config - Record Sensors to SQL Database: " + str(error))
-
-        try:
-            installed_config.sleep_duration_interval = float(config_list[2].split('=')[0].strip())
-        except Exception as error:
-            operations_logger.primary_logger.warning(
-                "Invalid Config - Interval reading delay in Seconds: " + str(error))
-
-        try:
-            installed_config.sleep_duration_trigger = float(config_list[3].split('=')[0].strip())
-            # Ensure trigger duration is not too low
-            if installed_config.sleep_duration_trigger < 0.05:
-                installed_config.sleep_duration_trigger = 0.05
-        except Exception as error:
-            operations_logger.primary_logger.warning("Invalid Config - Trigger reading delay in Seconds: " + str(error))
-
-        try:
-            installed_config.enable_custom = int(config_list[4].split('=')[0].strip())
-        except Exception as error:
-            operations_logger.primary_logger.warning("Invalid Config - Enable Custom Settings: " + str(error))
-
-        if installed_config.enable_custom:
-            try:
-                installed_config.acc_variance = float(config_list[5].split('=')[0].strip())
-            except Exception as error:
-                operations_logger.primary_logger.warning(
-                    "Invalid Config - Custom Accelerometer variance: " + str(error))
-
-            try:
-                installed_config.mag_variance = float(config_list[6].split('=')[0].strip())
-            except Exception as error:
-                operations_logger.primary_logger.warning("Invalid Config - Custom Magnetometer variance: " + str(error))
-
-            try:
-                installed_config.gyro_variance = float(config_list[7].split('=')[0].strip())
-            except Exception as error:
-                operations_logger.primary_logger.warning("Invalid Config - Custom Gyroscope variance: " + str(error))
-        else:
-            operations_logger.primary_logger.debug("Custom Settings Disabled in Config - Using Defaults")
-            installed_config = set_default_variances_per_sensor(installed_config)
-
-        try:
-            installed_config.custom_temperature_offset = float(config_list[9].split('=')[0].strip())
-            if int(config_list[8].split('=')[0].strip()):
-                installed_config.enable_custom_temp = 1
-        except Exception as error:
-            operations_logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
     else:
         operations_logger.primary_logger.error("Configuration file not found, using and saving default")
+        installed_config = CreateConfig()
         write_config_to_file(installed_config)
 
     return installed_config
+
+
+def config_convert_from_file(config_text_file):
+    new_config = CreateConfig()
+
+    try:
+        new_config.write_to_db = int(config_text_file[1].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Record Sensors to SQL Database: " + str(error))
+
+    try:
+        new_config.sleep_duration_interval = float(config_text_file[2].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning(
+            "Invalid Config - Interval reading delay in Seconds: " + str(error))
+
+    try:
+        new_config.sleep_duration_trigger = float(config_text_file[3].split('=')[0].strip())
+        # Ensure trigger duration is not too low
+        if new_config.sleep_duration_trigger < 0.05:
+            new_config.sleep_duration_trigger = 0.05
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Trigger reading delay in Seconds: " + str(error))
+
+    try:
+        new_config.enable_custom = int(config_text_file[4].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Enable Custom Settings: " + str(error))
+
+    if new_config.enable_custom:
+        try:
+            new_config.acc_variance = float(config_text_file[5].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning(
+                "Invalid Config - Custom Accelerometer variance: " + str(error))
+
+        try:
+            new_config.mag_variance = float(config_text_file[6].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning("Invalid Config - Custom Magnetometer variance: " + str(error))
+
+        try:
+            new_config.gyro_variance = float(config_text_file[7].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning("Invalid Config - Custom Gyroscope variance: " + str(error))
+    else:
+        operations_logger.primary_logger.debug("Custom Settings Disabled in Config - Using Defaults")
+        new_config = set_default_variances_per_sensor(new_config)
+
+    try:
+        new_config.custom_temperature_offset = float(config_text_file[9].split('=')[0].strip())
+        if int(config_text_file[8].split('=')[0].strip()):
+            new_config.enable_custom_temp = 1
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
+
+    return new_config
+
+
+def config_convert_to_file(config):
+    config_file_str = "Enable = 1 & Disable = 0\n" + \
+                      str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
+                      str(config.sleep_duration_interval) + \
+                      " = Duration between Interval readings in Seconds\n" + \
+                      str(config.sleep_duration_trigger) + \
+                      " = Duration between Trigger readings in Seconds\n" + \
+                      str(config.enable_custom) + " = Enable Custom Settings\n" + \
+                      str(config.acc_variance) + " = Current Accelerometer variance\n" + \
+                      str(config.mag_variance) + " = Current Magnetometer variance\n" + \
+                      str(config.gyro_variance) + " = Current Gyroscope variance\n" + \
+                      str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n"
+    if config.enable_custom_temp:
+        config_file_str = config_file_str + str(config.custom_temperature_offset) + " = Current Temperature Offset"
+    else:
+        config_file_str = config_file_str + str(get_default_temp_offset()) + " = Current Temperature Offset"
+
+    return config_file_str
 
 
 def write_config_to_file(config):
     """ Writes provided configuration file to local disk. """
     operations_logger.primary_logger.debug("Writing Configuration to File")
     try:
-        new_config = "Enable = 1 & Disable = 0\n" + \
-                     str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
-                     str(config.sleep_duration_interval) + \
-                     " = Duration between Interval readings in Seconds\n" + \
-                     str(config.sleep_duration_trigger) + \
-                     " = Duration between Trigger readings in Seconds\n" + \
-                     str(config.enable_custom) + " = Enable Custom Settings\n" + \
-                     str(config.acc_variance) + " = Current Accelerometer variance\n" + \
-                     str(config.mag_variance) + " = Current Magnetometer variance\n" + \
-                     str(config.gyro_variance) + " = Current Gyroscope variance\n" + \
-                     str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n"
-        if config.enable_custom_temp:
-            new_config = new_config + str(config.custom_temperature_offset) + " = Current Temperature Offset"
-        else:
-            new_config = new_config + str(get_default_temp_offset()) + " = Current Temperature Offset"
-
+        new_config = config_convert_to_file(config)
         sensor_list_file = open(config_file_location, 'w')
         sensor_list_file.write(new_config)
         sensor_list_file.close()
@@ -230,118 +242,127 @@ def write_config_to_file(config):
 def get_installed_sensors():
     """ Loads installed sensors from file and returns it as an object. """
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
-    installed_sensors = CreateInstalledSensors()
 
     if os.path.isfile(sensors_installed_file_location):
         try:
             sensor_list_file = open(sensors_installed_file_location, 'r')
-            sensor_list = sensor_list_file.readlines()
+            raw_installed_sensor_file = sensor_list_file.readlines()
             sensor_list_file.close()
-            if len(sensor_list) < 5:
-                write_installed_sensors_to_file(installed_sensors)
+            installed_sensors = installed_sensors_convert_from_file(raw_installed_sensor_file)
         except Exception as error:
-            sensor_list = []
             operations_logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
-
-        try:
-            if int(sensor_list[1][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.linux_system = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.linux_system_name)
-
-        try:
-            if int(sensor_list[2][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.raspberry_pi_zero_w = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.raspberry_pi_zero_w_name)
-
-        try:
-            if int(sensor_list[3][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.raspberry_pi_3b_plus = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.raspberry_pi_3b_plus_name)
-
-        try:
-            if int(sensor_list[4][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.raspberry_pi_sense_hat = 1
-                installed_sensors.has_acc = 1
-                installed_sensors.has_mag = 1
-                installed_sensors.has_gyro = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.raspberry_pi_sense_hat_name)
-
-        try:
-            if int(sensor_list[5][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.pimoroni_bh1745 = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_bh1745_name)
-
-        try:
-            if int(sensor_list[6][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.pimoroni_bme680 = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_bme680_name)
-
-        try:
-            if int(sensor_list[7][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.pimoroni_enviro = 1
-                installed_sensors.has_acc = 1
-                installed_sensors.has_mag = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_enviro_name)
-
-        try:
-            if int(sensor_list[8][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.pimoroni_lsm303d = 1
-                installed_sensors.has_acc = 1
-                installed_sensors.has_mag = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_lsm303d_name)
-
-        try:
-            if int(sensor_list[9][:1]):
-                installed_sensors.no_sensors = False
-                installed_sensors.pimoroni_vl53l1x = 1
-        except IndexError:
-            operations_logger.primary_logger.error("Invalid Sensor: " + installed_sensors.pimoroni_vl53l1x_name)
+            installed_sensors = CreateInstalledSensors()
     else:
         operations_logger.primary_logger.error("Installed Sensors file not found, using and saving default")
+        installed_sensors = CreateInstalledSensors()
         write_installed_sensors_to_file(installed_sensors)
 
     return installed_sensors
 
 
+def installed_sensors_convert_from_file(installed_sensors_file):
+    new_installed_sensors = CreateInstalledSensors()
+
+    try:
+        if int(installed_sensors_file[1][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.linux_system = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.linux_system_name)
+
+    try:
+        if int(installed_sensors_file[2][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.raspberry_pi_zero_w = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_zero_w_name)
+
+    try:
+        if int(installed_sensors_file[3][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.raspberry_pi_3b_plus = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_3b_plus_name)
+
+    try:
+        if int(installed_sensors_file[4][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.raspberry_pi_sense_hat = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+            new_installed_sensors.has_gyro = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_sense_hat_name)
+
+    try:
+        if int(installed_sensors_file[5][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_bh1745 = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bh1745_name)
+
+    try:
+        if int(installed_sensors_file[6][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_bme680 = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
+
+    try:
+        if int(installed_sensors_file[7][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_enviro = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviro_name)
+
+    try:
+        if int(installed_sensors_file[8][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_lsm303d = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_lsm303d_name)
+
+    try:
+        if int(installed_sensors_file[9][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_vl53l1x = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
+
+    return new_installed_sensors
+
+
+def installed_sensors_convert_to_file(installed_sensors):
+    new_installed_sensors_str = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
+                                str(installed_sensors.linux_system) + " = " + \
+                                installed_sensors.linux_system_name + "\n" + \
+                                str(installed_sensors.raspberry_pi_zero_w) + " = " + \
+                                installed_sensors.raspberry_pi_zero_w_name + "\n" + \
+                                str(installed_sensors.raspberry_pi_3b_plus) + " = " + \
+                                installed_sensors.raspberry_pi_3b_plus_name + "\n" + \
+                                str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
+                                installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
+                                str(installed_sensors.pimoroni_bh1745) + " = " + \
+                                installed_sensors.pimoroni_bh1745_name + "\n" + \
+                                str(installed_sensors.pimoroni_bme680) + " = " + \
+                                installed_sensors.pimoroni_bme680_name + "\n" + \
+                                str(installed_sensors.pimoroni_enviro) + " = " + \
+                                installed_sensors.pimoroni_enviro_name + "\n" + \
+                                str(installed_sensors.pimoroni_lsm303d) + " = " + \
+                                installed_sensors.pimoroni_lsm303d_name + "\n" + \
+                                str(installed_sensors.pimoroni_vl53l1x) + " = " + \
+                                installed_sensors.pimoroni_vl53l1x_name + "\n"
+    return new_installed_sensors_str
+
+
 def write_installed_sensors_to_file(installed_sensors):
     """ Writes provided 'installed sensors' object to local disk. """
     try:
-        new_config = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
-                     str(installed_sensors.linux_system) + " = " + \
-                     installed_sensors.linux_system_name + "\n" + \
-                     str(installed_sensors.raspberry_pi_zero_w) + " = " + \
-                     installed_sensors.raspberry_pi_zero_w_name + "\n" + \
-                     str(installed_sensors.raspberry_pi_3b_plus) + " = " + \
-                     installed_sensors.raspberry_pi_3b_plus_name + "\n" + \
-                     str(installed_sensors.raspberry_pi_sense_hat) + " = " + \
-                     installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
-                     str(installed_sensors.pimoroni_bh1745) + " = " + \
-                     installed_sensors.pimoroni_bh1745_name + "\n" + \
-                     str(installed_sensors.pimoroni_bme680) + " = " + \
-                     installed_sensors.pimoroni_bme680_name + "\n" + \
-                     str(installed_sensors.pimoroni_enviro) + " = " + \
-                     installed_sensors.pimoroni_enviro_name + "\n" + \
-                     str(installed_sensors.pimoroni_lsm303d) + " = " + \
-                     installed_sensors.pimoroni_lsm303d_name + "\n" + \
-                     str(installed_sensors.pimoroni_vl53l1x) + " = " + \
-                     installed_sensors.pimoroni_vl53l1x_name + "\n"
-
+        new_config = installed_sensors_convert_to_file(installed_sensors)
         installed_sensors_config_file = open(sensors_installed_file_location, 'w')
         installed_sensors_config_file.write(new_config)
         installed_sensors_config_file.close()
