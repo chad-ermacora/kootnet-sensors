@@ -161,13 +161,7 @@ def get_last_updated():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system("systemctl daemon-reload && "
-              "systemctl restart SensorRecording")
-    # Sleep to make sure logs are created before setting permissions
-    # Needed for remote log viewing on first run
-    sleep(5)
-    os.system("bash /opt/kootnet-sensors/scripts/set_permissions.sh")
-    os.system("systemctl restart SensorCommands")
+    os.system("systemctl daemon-reload && systemctl restart SensorRecording && systemctl restart SensorCommands")
 
 
 def add_note_to_database(datetime_note):

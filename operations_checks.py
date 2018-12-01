@@ -69,6 +69,8 @@ def check_missing_files():
             operations_logger.primary_logger.warning("Added missing file: " + file)
             os.system("touch " + file)
 
+    os.system("bash /opt/kootnet-sensors/scripts/set_permissions.sh")
+
 
 def get_old_version():
     old_version_file = open(operations_config.old_version_file_location, 'r')
