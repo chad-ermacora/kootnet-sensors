@@ -74,7 +74,7 @@ def test_sensor():
     message += operations_html_templates.sensor_config_start + "<tr>" + sensor_config + "</tr></table>"
 
     message += operations_html_templates.sensor_readings_start + \
-               "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
+        "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
 
     message += operations_html_templates.sensor_test_final_end
     return message
@@ -174,7 +174,6 @@ def download_sensors_sql_database():
     local_db = open(sensor_database_location, "rb")
     sensor_database = local_db.read()
     local_db.close()
-
     return sensor_database
 
 
@@ -183,42 +182,49 @@ def put_sql_note():
     new_note = request.form['command_data']
     operations_commands.add_note_to_database(new_note)
     operations_logger.network_logger.info("* Inserted Note into Database")
+    return "OK"
 
 
 @app.route("/UpgradeOnline", methods=["PUT"])
 def upgrade_http():
     os.system(operations_commands.bash_commands["UpgradeOnline"])
     operations_logger.network_logger.info("* update_programs_online.sh Complete")
+    return "OK"
 
 
 @app.route("/CleanOnline")
 def upgrade_clean_http():
     os.system(operations_commands.bash_commands["CleanOnline"])
     operations_logger.network_logger.info("* Started Clean Upgrade - HTTP")
+    return "OK"
 
 
 @app.route("/UpgradeSMB")
 def upgrade_smb():
     os.system(operations_commands.bash_commands["UpgradeSMB"])
     operations_logger.network_logger.info("* update_programs_smb.sh Complete")
+    return "OK"
 
 
 @app.route("/CleanSMB")
 def upgrade_clean_smb():
     os.system(operations_commands.bash_commands["CleanSMB"])
     operations_logger.network_logger.info("* Started Clean Upgrade - SMB")
+    return "OK"
 
 
 @app.route("/UpgradeSystemOS")
 def upgrade_system_os():
     operations_logger.network_logger.info("* Updating Operating System & rebooting")
     os.system(operations_commands.bash_commands["UpgradeSystemOS"])
+    return "OK"
 
 
 @app.route("/inkupg")
 def upgrade_rp_controller():
     os.system(operations_commands.bash_commands["inkupg"])
     operations_logger.network_logger.info("* update_programs_e-Ink.sh Complete")
+    return "OK"
 
 
 @app.route("/RebootSystem")
@@ -247,6 +253,7 @@ def set_hostname():
         operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
     except Exception as error:
         operations_logger.network_logger.info("* Hostname Change Failed: " + str(error))
+    return "OK"
 
 
 @app.route("/SetDateTime", methods=["PUT"])
@@ -254,27 +261,28 @@ def set_date_time():
     new_datetime = request.form['command_data']
     os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
     operations_logger.network_logger.info("* Set System DateTime: " + new_datetime)
+    return "OK"
 
 
 @app.route("/SetConfiguration", methods=["PUT"])
 def set_configuration():
     operations_logger.network_logger.info("* Setting Sensor Configuration")
 
-    raw_config = request.form['command_data']
-    operations_logger.network_logger.info(str(raw_config))
-
+    raw_config = request.form['command_data'].splitlines()
     new_config = operations_config.config_convert_from_file(raw_config)
     operations_config.write_config_to_file(new_config)
     operations_commands.restart_services()
+    return "OK"
 
 
 @app.route("/SetInstalledSensors", methods=["PUT"])
 def set_installed_sensors():
     operations_logger.network_logger.info("* Setting Sensor Installed Sensors")
-    raw_installed_sensors = request.form['command_data']
+    raw_installed_sensors = request.form['command_data'].splitlines()
     new_installed_sensors = operations_config.installed_sensors_convert_from_file(raw_installed_sensors)
     operations_config.write_installed_sensors_to_file(new_installed_sensors)
     operations_commands.restart_services()
+    return "OK"
 
 
 @app.route("/GetHostName")
