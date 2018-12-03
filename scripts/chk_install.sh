@@ -48,7 +48,7 @@ else
   printf ${CONFIG_DIR}"/sql_recording.conf Setup\n"
   # Used "Custom" in config here for install, but program will replace with "Current"
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
-Enable = 1 & Disable = 0 (Recommended: Don't change anything)
+Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
 1 = Record Sensors to SQL Database
 300 = Duration between Interval readings in Seconds
 0.15 = Duration between Trigger readings in Seconds

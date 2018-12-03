@@ -18,7 +18,6 @@
 """
 import os
 from shutil import disk_usage
-from time import sleep
 
 import operations_config
 import operations_db

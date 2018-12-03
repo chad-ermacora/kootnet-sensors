@@ -27,6 +27,7 @@ import sensor_modules.Pimoroni_Enviro
 import sensor_modules.Pimoroni_LSM303D
 import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.RaspberryPi_System
+import sensor_modules.Temperature_Offsets
 
 # import sensor_modules.Pimoroni_VL53L1X
 
@@ -245,12 +246,12 @@ def get_sensor_temperature_offset():
      You can set an override in the main sensor configuration file.
     """
     if installed_sensors.raspberry_pi_3b_plus:
-        sensor_temp_offset = sensor_modules.RaspberryPi_System.CreateRP3BPlusTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
     elif installed_sensors.raspberry_pi_zero_w:
-        sensor_temp_offset = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
     else:
         # This should probably be replaced by something more.. generic?
-        sensor_temp_offset = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
 
     if current_config.enable_custom_temp:
         return current_config.custom_temperature_offset

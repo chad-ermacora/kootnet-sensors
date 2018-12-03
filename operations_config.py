@@ -20,12 +20,13 @@ import os
 
 import operations_logger
 import sensor_modules.RaspberryPi_System
+import sensor_modules.Temperature_Offsets
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.17"
+version = "Alpha.22.18"
 sense_hat_show_led_message = False
 
 sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
@@ -109,12 +110,12 @@ def set_default_variances_per_sensor(config):
 def get_default_temp_offset():
     installed_sensors = get_installed_sensors()
     if installed_sensors.raspberry_pi_3b_plus:
-        offset_access = sensor_modules.RaspberryPi_System.CreateRP3BPlusTemperatureOffsets()
+        offset_access = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
     elif installed_sensors.raspberry_pi_zero_w:
-        offset_access = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
+        offset_access = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
     else:
         # Should probably create a default one instead...
-        offset_access = sensor_modules.RaspberryPi_System.CreateRPZeroWTemperatureOffsets()
+        offset_access = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
 
     if installed_sensors.raspberry_pi_sense_hat:
         return offset_access.rp_sense_hat
@@ -208,7 +209,7 @@ def config_convert_from_file(config_text_file):
 
 
 def config_convert_to_file(config):
-    config_file_str = "Enable = 1 & Disable = 0 (Recommended: Don't change anything)\n" + \
+    config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + \
                       " = Duration between Interval readings in Seconds\n" + \
