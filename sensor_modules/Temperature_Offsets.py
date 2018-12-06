@@ -23,7 +23,7 @@ class CreateRP3BPlusTemperatureOffsets:
 
 class CreateUnknownTemperatureOffsets:
     def __init__(self):
-        # No Offset it unknown
+        # No Offset if unknown or unselected
         self.pimoroni_bme680 = 0.0
         self.pimoroni_enviro = 0.0
         self.rp_sense_hat = 0.0

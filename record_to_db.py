@@ -16,24 +16,24 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 from threading import Thread
 from time import sleep
-from operations_checks import get_old_version, check_missing_files
-import os
+
+import operations_checks
 import operations_config
 import operations_db
 import operations_logger
 import operations_sensors
-from operations_db import check_database_structure
 
 installed_sensors = operations_config.get_installed_sensors()
 current_config = operations_config.get_installed_config()
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
 # Ensure files, database & configurations are OK
-check_missing_files()
-check_database_structure()
-if get_old_version() != operations_config.version:
+operations_checks.check_missing_files()
+operations_checks.check_database_structure()
+if operations_checks.get_old_version() != operations_config.version:
     operations_logger.primary_logger.debug("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")
     # Sleep before loading anything due to needed updates
