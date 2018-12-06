@@ -27,7 +27,6 @@ import operations_config
 import operations_html_templates
 import operations_logger
 import operations_sensors
-from operations_db import sensor_database_location
 
 monkey.patch_all()
 app = Flask(__name__)
@@ -74,7 +73,7 @@ def test_sensor():
     message += operations_html_templates.sensor_config_start + "<tr>" + sensor_config + "</tr></table>"
 
     message += operations_html_templates.sensor_readings_start + \
-        "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
+               "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
 
     message += operations_html_templates.sensor_test_final_end
     return message
@@ -171,7 +170,7 @@ def download_sensors_log():
 @app.route("/DownloadSQLDatabase")
 def download_sensors_sql_database():
     operations_logger.network_logger.info("* Sent Sensor SQL Database")
-    local_db = open(sensor_database_location, "rb")
+    local_db = open(operations_config.sensor_database_location, "rb")
     sensor_database = local_db.read()
     local_db.close()
     return sensor_database

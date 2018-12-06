@@ -18,7 +18,6 @@
 """
 from datetime import datetime
 
-import operations_config
 import operations_db
 import sensor_modules.Linux_OS
 import sensor_modules.Pimoroni_BH1745
@@ -28,11 +27,12 @@ import sensor_modules.Pimoroni_LSM303D
 import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.RaspberryPi_System
 import sensor_modules.Temperature_Offsets
+from operations_config import get_installed_sensors, get_installed_config, get_sensor_temperature_offset
 
 # import sensor_modules.Pimoroni_VL53L1X
 
-installed_sensors = operations_config.get_installed_sensors()
-current_config = operations_config.get_installed_config()
+installed_sensors = get_installed_sensors()
+current_config = get_installed_config()
 
 # Initialize sensor access, based on installed sensors file
 if installed_sensors.linux_system:
@@ -66,7 +66,7 @@ def get_interval_sensor_readings():
         if installed_sensors.raspberry_pi_3b_plus or installed_sensors.raspberry_pi_zero_w:
             cpu_temp = str(system_sensor_access.cpu_temperature())
         else:
-            cpu_temp = "NA"
+            cpu_temp = None
 
         interval_data.sensor_readings += "'" + str(os_sensor_access.get_hostname()) + "', '" + \
                                          str(os_sensor_access.get_ip()) + "', '" + \
@@ -238,31 +238,6 @@ def get_sensor_temperature():
         return temperature
     else:
         return "NoSensor"
-
-
-def get_sensor_temperature_offset():
-    """
-     Returns sensors Environmental temperature offset based on system board and sensor.
-     You can set an override in the main sensor configuration file.
-    """
-    if installed_sensors.raspberry_pi_3b_plus:
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
-    elif installed_sensors.raspberry_pi_zero_w:
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
-    else:
-        # All offsets are 0.0 for unselected or unsupported system boards
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateUnknownTemperatureOffsets()
-
-    if current_config.enable_custom_temp:
-        return current_config.custom_temperature_offset
-    elif installed_sensors.pimoroni_enviro:
-        return sensor_temp_offset.pimoroni_enviro
-    elif installed_sensors.pimoroni_bme680:
-        return sensor_temp_offset.pimoroni_bme680
-    elif installed_sensors.raspberry_pi_sense_hat:
-        return sensor_temp_offset.rp_sense_hat
-    else:
-        return 0.0
 
 
 def get_pressure():

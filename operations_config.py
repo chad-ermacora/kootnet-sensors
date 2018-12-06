@@ -19,7 +19,7 @@
 import os
 
 import operations_logger
-from operations_sensors import get_sensor_temperature_offset
+import sensor_modules.Temperature_Offsets
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
@@ -28,7 +28,7 @@ flask_http_port = 10065
 version = "Alpha.22.19"
 sense_hat_show_led_message = False
 
-sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
+sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
@@ -126,6 +126,34 @@ def get_installed_config():
         write_config_to_file(installed_config)
 
     return installed_config
+
+
+def get_sensor_temperature_offset():
+    """
+     Returns sensors Environmental temperature offset based on system board and sensor.
+     You can set an override in the main sensor configuration file.
+    """
+    installed_sensors = get_installed_sensors()
+    current_config = get_installed_config()
+
+    if installed_sensors.raspberry_pi_3b_plus:
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
+    elif installed_sensors.raspberry_pi_zero_w:
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
+    else:
+        # All offsets are 0.0 for unselected or unsupported system boards
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateUnknownTemperatureOffsets()
+
+    if current_config.enable_custom_temp:
+        return current_config.custom_temperature_offset
+    elif installed_sensors.pimoroni_enviro:
+        return sensor_temp_offset.pimoroni_enviro
+    elif installed_sensors.pimoroni_bme680:
+        return sensor_temp_offset.pimoroni_bme680
+    elif installed_sensors.raspberry_pi_sense_hat:
+        return sensor_temp_offset.rp_sense_hat
+    else:
+        return 0.0
 
 
 def config_convert_from_file(config_text_file):
