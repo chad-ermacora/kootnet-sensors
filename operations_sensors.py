@@ -250,8 +250,8 @@ def get_sensor_temperature_offset():
     elif installed_sensors.raspberry_pi_zero_w:
         sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
     else:
-        # This should probably be replaced by something more.. generic?
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
+        # All offsets are 0.0 for unselected or unsupported system boards
+        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateUnknownTemperatureOffsets()
 
     if current_config.enable_custom_temp:
         return current_config.custom_temperature_offset

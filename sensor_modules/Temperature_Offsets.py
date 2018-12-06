@@ -8,11 +8,9 @@ This module holds Environmental Temperature offsets based on hardware
 class CreateRPZeroWTemperatureOffsets:
     def __init__(self):
         # Additional testing may be required for accuracy
-        self.pimoroni_bme680 = -0.0  # Tested
+        self.pimoroni_bme680 = -0.0  # Preliminary Testing
         self.pimoroni_enviro = -4.5  # Tested
         self.rp_sense_hat = -5.5  # Untested, guessing
-
-        self.optional_pure_leaf_square = -2.5  # Tested on Enviro only
 
 
 class CreateRP3BPlusTemperatureOffsets:
@@ -22,4 +20,10 @@ class CreateRP3BPlusTemperatureOffsets:
         self.pimoroni_enviro = -6.5  # Untested, guessing
         self.rp_sense_hat = -7.0  # Preliminary testing done
 
-        self.optional_pure_leaf_square = -6.0  # Tested with SenseHAT only
+
+class CreateUnknownTemperatureOffsets:
+    def __init__(self):
+        # No Offset it unknown
+        self.pimoroni_bme680 = 0.0
+        self.pimoroni_enviro = 0.0
+        self.rp_sense_hat = 0.0

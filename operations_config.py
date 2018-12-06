@@ -19,14 +19,13 @@
 import os
 
 import operations_logger
-import sensor_modules.RaspberryPi_System
-import sensor_modules.Temperature_Offsets
+from operations_sensors import get_sensor_temperature_offset
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.18"
+version = "Alpha.22.19"
 sense_hat_show_led_message = False
 
 sensor_database_location = '/home/kootnet_data/SensorRecordingDatabase.sqlite'
@@ -105,26 +104,6 @@ def set_default_variances_per_sensor(config):
         config.mag_variance = 0.02
 
     return config
-
-
-def get_default_temp_offset():
-    installed_sensors = get_installed_sensors()
-    if installed_sensors.raspberry_pi_3b_plus:
-        offset_access = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
-    elif installed_sensors.raspberry_pi_zero_w:
-        offset_access = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
-    else:
-        # Should probably create a default one instead...
-        offset_access = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
-
-    if installed_sensors.raspberry_pi_sense_hat:
-        return offset_access.rp_sense_hat
-    elif installed_sensors.pimoroni_enviro:
-        return offset_access.pimoroni_enviro
-    elif installed_sensors.pimoroni_bme680:
-        return offset_access.pimoroni_bme680
-    else:
-        return 0
 
 
 def get_installed_config():
@@ -223,7 +202,7 @@ def config_convert_to_file(config):
     if config.enable_custom_temp:
         config_file_str = config_file_str + str(config.custom_temperature_offset) + " = Current Temperature Offset"
     else:
-        config_file_str = config_file_str + str(get_default_temp_offset()) + " = Current Temperature Offset"
+        config_file_str = config_file_str + str(get_sensor_temperature_offset()) + " = Current Temperature Offset"
 
     return config_file_str
 
