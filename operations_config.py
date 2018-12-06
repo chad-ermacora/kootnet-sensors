@@ -34,8 +34,6 @@ config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 
-important_files = [last_updated_file_location, old_version_file_location]
-
 
 class CreateInstalledSensors:
     """
