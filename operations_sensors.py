@@ -20,16 +20,17 @@ from datetime import datetime
 
 import operations_db
 import sensor_modules.Linux_OS
+# import sensor_modules.Temperature_Offsets
+import sensor_modules.Pimoroni_AS7262
 import sensor_modules.Pimoroni_BH1745
 import sensor_modules.Pimoroni_BME680
 import sensor_modules.Pimoroni_Enviro
 import sensor_modules.Pimoroni_LSM303D
+import sensor_modules.Pimoroni_VL53L1X
+import sensor_modules.Pimoroni_ltr_559
 import sensor_modules.RaspberryPi_SenseHAT
 import sensor_modules.RaspberryPi_System
-import sensor_modules.Temperature_Offsets
 from operations_config import get_installed_sensors, get_installed_config, get_sensor_temperature_offset
-
-# import sensor_modules.Pimoroni_VL53L1X
 
 installed_sensors = get_installed_sensors()
 current_config = get_installed_config()
@@ -41,16 +42,20 @@ if installed_sensors.raspberry_pi_zero_w or installed_sensors.raspberry_pi_3b_pl
     system_sensor_access = sensor_modules.RaspberryPi_System.CreateRPSystem()
 if installed_sensors.raspberry_pi_sense_hat:
     rp_sense_hat_sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
-if installed_sensors.pimoroni_enviro:
-    pimoroni_enviro_sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
-if installed_sensors.pimoroni_bme680:
-    bme680_sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
 if installed_sensors.pimoroni_bh1745:
     pimoroni_bh1745_sensor_access = sensor_modules.Pimoroni_BH1745.CreateBH1745()
+if installed_sensors.pimoroni_as7262:
+    pimoroni_as7262_sensor_access = sensor_modules.Pimoroni_AS7262.CreateAS7262()
+if installed_sensors.pimoroni_bme680:
+    bme680_sensor_access = sensor_modules.Pimoroni_BME680.CreateBME680()
+if installed_sensors.pimoroni_enviro:
+    pimoroni_enviro_sensor_access = sensor_modules.Pimoroni_Enviro.CreateEnviro()
 if installed_sensors.pimoroni_lsm303d:
     lsm303d_sensor_access = sensor_modules.Pimoroni_LSM303D.CreateLSM303D()
 if installed_sensors.pimoroni_vl53l1x:
-    pass
+    vl53l1x_sensor_access = sensor_modules.Pimoroni_VL53L1X.CreateVL53L1X()
+if installed_sensors.pimoroni_ltr_559:
+    ltr_559_sensor_access = sensor_modules.Pimoroni_ltr_559.CreateLTR559()
 
 
 def get_interval_sensor_readings():
@@ -84,7 +89,7 @@ def get_interval_sensor_readings():
                                          str(rp_sense_hat_sensor_access.humidity()) + "', "
 
     if installed_sensors.pimoroni_enviro:
-        rgb_colour = pimoroni_enviro_sensor_access.rgb()
+        rgb_colour = pimoroni_enviro_sensor_access.ems()
 
         interval_data.sensor_types += \
             "EnvironmentTemp, " \
@@ -111,7 +116,7 @@ def get_interval_sensor_readings():
                                          str(bme680_sensor_access.humidity()) + "', "
 
     if installed_sensors.pimoroni_bh1745:
-        rgb_colour = pimoroni_bh1745_sensor_access.rgb()
+        rgb_colour = pimoroni_bh1745_sensor_access.ems()
 
         interval_data.sensor_types += "Lumen, Red, Green, Blue, "
         interval_data.sensor_readings += "'" + str(pimoroni_bh1745_sensor_access.lumen()) + "', '" + \
@@ -275,17 +280,24 @@ def get_lumen():
     elif installed_sensors.pimoroni_bh1745:
         lumen = pimoroni_bh1745_sensor_access.lumen()
         return lumen
+    elif installed_sensors.pimoroni_ltr_559:
+        lumen = ltr_559_sensor_access.lumen()
+        return lumen
     else:
         return "NoSensor"
 
 
-def get_rgb():
-    """ Returns sensors Red, Green, Blue spectrum. """
+def get_ems():
+    """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
     if installed_sensors.pimoroni_enviro:
-        rgb = pimoroni_enviro_sensor_access.rgb()
+        rgb = pimoroni_enviro_sensor_access.ems()
         return rgb
     elif installed_sensors.pimoroni_bh1745:
-        rgb = pimoroni_bh1745_sensor_access.rgb()
+        rgb = pimoroni_bh1745_sensor_access.ems()
+        return rgb
+    elif installed_sensors.pimoroni_as7262:
+        six_chan = pimoroni_as7262_sensor_access.spectral_six_channel()
+        rgb = [six_chan[0], six_chan[3], six_chan[4]]
         return rgb
     else:
         return "NoSensor"

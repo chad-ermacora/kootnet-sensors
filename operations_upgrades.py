@@ -46,3 +46,5 @@ def update_ver_a_22_20(upgrade_data_obj):
     upgrade_data_obj.upgraded_installed_sensors.pimoroni_enviro = upgrade_data_obj.old_installed_sensors.pimoroni_bme680
     upgrade_data_obj.upgraded_installed_sensors.pimoroni_bme680 = upgrade_data_obj.old_installed_sensors.pimoroni_as7262
     upgrade_data_obj.upgraded_installed_sensors.pimoroni_as7262 = 0
+
+    os.system("/usr/bin/pip3 install ltr559 as7262")
