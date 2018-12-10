@@ -25,7 +25,7 @@ import sensor_modules.Temperature_Offsets
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.21"
+version = "Alpha.22.22"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -33,6 +33,19 @@ sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 old_version_file_location = "/etc/kootnet/installed_version.txt"
+
+restart_sensor_services_command = "systemctl daemon-reload && " + \
+                                  "systemctl restart SensorRecording && " + \
+                                  "systemctl restart SensorCommands"
+
+sensor_bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
+                        "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
+                        "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
+                        "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
+                        "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
+                        "RebootSystem": "reboot",
+                        "ShutdownSystem": "shutdown -h now",
+                        "UpgradeSystemOS": "apt-get update && apt-get scripts -y && reboot"}
 
 
 class CreateInstalledSensors:
@@ -72,6 +85,33 @@ class CreateInstalledSensors:
         self.pimoroni_lsm303d_name = "Pimoroni LSM303D"
         self.pimoroni_vl53l1x_name = "Pimoroni VL53L1X"
         self.pimoroni_ltr_559_name = "Pimoroni LTR-559"
+
+    def get_installed_names_str(self):
+        str_installed_sensors = ""
+        if self.linux_system:
+            str_installed_sensors += self.linux_system_name + " || "
+        if self.raspberry_pi_zero_w:
+            str_installed_sensors += self.raspberry_pi_zero_w_name + " || "
+        if self.raspberry_pi_3b_plus:
+            str_installed_sensors += self.raspberry_pi_3b_plus_name + " || "
+        if self.raspberry_pi_sense_hat:
+            str_installed_sensors += self.raspberry_pi_sense_hat_name + " || "
+        if self.pimoroni_bh1745:
+            str_installed_sensors += self.pimoroni_bh1745_name + " || "
+        if self.pimoroni_as7262:
+            str_installed_sensors += self.pimoroni_as7262_name + " || "
+        if self.pimoroni_bme680:
+            str_installed_sensors += self.pimoroni_bme680_name + " || "
+        if self.pimoroni_enviro:
+            str_installed_sensors += self.pimoroni_enviro_name + " || "
+        if self.pimoroni_lsm303d:
+            str_installed_sensors += self.pimoroni_lsm303d_name + " || "
+        if self.pimoroni_vl53l1x:
+            str_installed_sensors += self.pimoroni_vl53l1x_name + " || "
+        if self.pimoroni_ltr_559:
+            str_installed_sensors += self.pimoroni_ltr_559_name + " || "
+
+        return str_installed_sensors[:-4]
 
 
 class CreateConfig:

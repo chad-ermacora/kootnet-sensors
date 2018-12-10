@@ -29,14 +29,7 @@ import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
 sensor_system = RaspberryPi_Sensors.CreateRPSystem()
 sensor_os = Linux_System.CreateLinuxSystem()
 
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
-                 "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
-                 "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
-                 "RebootSystem": "reboot",
-                 "ShutdownSystem": "shutdown -h now",
-                 "UpgradeSystemOS": "apt-get update && apt-get scripts -y && reboot"}
+bash_commands = operations_config.sensor_bash_commands
 
 
 def get_sensor_readings():
@@ -87,7 +80,7 @@ def get_system_information():
                           "," + str(get_last_updated())
     except Exception as error:
         operations_logger.network_logger.error("Sensor reading failed - " + str(error))
-        str_sensor_data = "Sensor Unit, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0"
+        str_sensor_data = "Sensor, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0"
 
     return str_sensor_data
 
@@ -96,28 +89,7 @@ def get_config_information():
     """ Opens configuration file and returns it as a comma separated string. """
     temp_config = operations_config.get_installed_config()
     installed_sensors = operations_config.get_installed_sensors()
-
-    str_installed_sensors = ""
-    if installed_sensors.linux_system:
-        str_installed_sensors = str_installed_sensors + installed_sensors.linux_system_name + " || "
-    if installed_sensors.raspberry_pi_zero_w:
-        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_zero_w_name + " || "
-    if installed_sensors.raspberry_pi_3b_plus:
-        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_3b_plus_name + " || "
-    if installed_sensors.raspberry_pi_sense_hat:
-        str_installed_sensors = str_installed_sensors + installed_sensors.raspberry_pi_sense_hat_name + " || "
-    if installed_sensors.pimoroni_bh1745:
-        str_installed_sensors = str_installed_sensors + installed_sensors.pimoroni_bh1745_name + " || "
-    if installed_sensors.pimoroni_bme680:
-        str_installed_sensors = str_installed_sensors + installed_sensors.pimoroni_bme680_name + " || "
-    if installed_sensors.pimoroni_enviro:
-        str_installed_sensors = str_installed_sensors + installed_sensors.pimoroni_enviro_name + " || "
-    if installed_sensors.pimoroni_lsm303d:
-        str_installed_sensors = str_installed_sensors + installed_sensors.pimoroni_lsm303d_name + " || "
-    if installed_sensors.pimoroni_vl53l1x:
-        str_installed_sensors = str_installed_sensors + installed_sensors.pimoroni_vl53l1x_name + " || "
-
-    str_installed_sensors = str_installed_sensors[:-4]
+    str_installed_sensors = installed_sensors.get_installed_names_str()
 
     try:
         tmp_str_config = str(temp_config.sleep_duration_interval) + \
@@ -160,7 +132,7 @@ def get_last_updated():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system("systemctl daemon-reload && systemctl restart SensorRecording && systemctl restart SensorCommands")
+    os.system(operations_config.restart_sensor_services_command)
 
 
 def add_note_to_database(datetime_note):
