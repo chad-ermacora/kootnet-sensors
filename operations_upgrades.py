@@ -32,3 +32,17 @@ def update_ver_a_22_8(upgrade_data_obj):
     os.system("rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null")
     os.system("rm -f /opt/kootnet-sensors/auto_start/SensorHTTP.service 2>/dev/null")
     os.system("/usr/bin/pip3 install gevent")
+
+
+def update_ver_a_22_20(upgrade_data_obj):
+    upgrade_data_obj.upgraded_installed_sensors.linux_system = upgrade_data_obj.old_installed_sensors.linux_system
+    upgrade_data_obj.upgraded_installed_sensors.raspberry_pi_zero_w = upgrade_data_obj.old_installed_sensors.raspberry_pi_zero_w
+    upgrade_data_obj.upgraded_installed_sensors.raspberry_pi_3b_plus = upgrade_data_obj.old_installed_sensors.raspberry_pi_3b_plus
+    upgrade_data_obj.upgraded_installed_sensors.raspberry_pi_sense_hat = upgrade_data_obj.old_installed_sensors.raspberry_pi_sense_hat
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_bh1745 = upgrade_data_obj.old_installed_sensors.pimoroni_bh1745
+
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_vl53l1x = upgrade_data_obj.old_installed_sensors.pimoroni_lsm303d
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_lsm303d = upgrade_data_obj.old_installed_sensors.pimoroni_enviro
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_enviro = upgrade_data_obj.old_installed_sensors.pimoroni_bme680
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_bme680 = upgrade_data_obj.old_installed_sensors.pimoroni_as7262
+    upgrade_data_obj.upgraded_installed_sensors.pimoroni_as7262 = 0

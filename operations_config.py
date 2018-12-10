@@ -25,7 +25,7 @@ import sensor_modules.Temperature_Offsets
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.22.20"
+version = "Alpha.22.21"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -49,10 +49,12 @@ class CreateInstalledSensors:
 
         self.raspberry_pi_sense_hat = 0
         self.pimoroni_bh1745 = 0
+        self.pimoroni_as7262 = 0
         self.pimoroni_bme680 = 0
         self.pimoroni_enviro = 0
         self.pimoroni_lsm303d = 0
         self.pimoroni_vl53l1x = 0
+        self.pimoroni_ltr_559 = 0
 
         self.has_acc = 0
         self.has_mag = 0
@@ -64,10 +66,12 @@ class CreateInstalledSensors:
 
         self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
+        self.pimoroni_as7262_name = "Pimoroni AS7262"
         self.pimoroni_bme680_name = "Pimoroni BME680"
         self.pimoroni_enviro_name = "Pimoroni EnviroPHAT"
         self.pimoroni_lsm303d_name = "Pimoroni LSM303D"
         self.pimoroni_vl53l1x_name = "Pimoroni VL53L1X"
+        self.pimoroni_ltr_559_name = "Pimoroni LTR-559"
 
 
 class CreateConfig:
@@ -310,12 +314,19 @@ def installed_sensors_convert_from_file(installed_sensors_file):
     try:
         if int(installed_sensors_file[6][:1]):
             new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_as7262 = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_as7262_name)
+
+    try:
+        if int(installed_sensors_file[7][:1]):
+            new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_bme680 = 1
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
 
     try:
-        if int(installed_sensors_file[7][:1]):
+        if int(installed_sensors_file[8][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_enviro = 1
             new_installed_sensors.has_acc = 1
@@ -324,7 +335,7 @@ def installed_sensors_convert_from_file(installed_sensors_file):
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviro_name)
 
     try:
-        if int(installed_sensors_file[8][:1]):
+        if int(installed_sensors_file[9][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_lsm303d = 1
             new_installed_sensors.has_acc = 1
@@ -333,11 +344,18 @@ def installed_sensors_convert_from_file(installed_sensors_file):
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_lsm303d_name)
 
     try:
-        if int(installed_sensors_file[9][:1]):
+        if int(installed_sensors_file[10][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_vl53l1x = 1
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
+
+    try:
+        if int(installed_sensors_file[11][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_ltr_559 = 1
+    except IndexError:
+        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
 
     return new_installed_sensors
 
@@ -354,6 +372,8 @@ def installed_sensors_convert_to_file(installed_sensors):
                                 installed_sensors.raspberry_pi_sense_hat_name + "\n" + \
                                 str(installed_sensors.pimoroni_bh1745) + " = " + \
                                 installed_sensors.pimoroni_bh1745_name + "\n" + \
+                                str(installed_sensors.pimoroni_as7262) + " = " + \
+                                installed_sensors.pimoroni_as7262_name + "\n" + \
                                 str(installed_sensors.pimoroni_bme680) + " = " + \
                                 installed_sensors.pimoroni_bme680_name + "\n" + \
                                 str(installed_sensors.pimoroni_enviro) + " = " + \
@@ -361,7 +381,9 @@ def installed_sensors_convert_to_file(installed_sensors):
                                 str(installed_sensors.pimoroni_lsm303d) + " = " + \
                                 installed_sensors.pimoroni_lsm303d_name + "\n" + \
                                 str(installed_sensors.pimoroni_vl53l1x) + " = " + \
-                                installed_sensors.pimoroni_vl53l1x_name + "\n"
+                                installed_sensors.pimoroni_vl53l1x_name + "\n" + \
+                                str(installed_sensors.pimoroni_ltr_559) + " = " + \
+                                installed_sensors.pimoroni_ltr_559_name + "\n"
     return new_installed_sensors_str
 
 

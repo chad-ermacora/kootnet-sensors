@@ -22,22 +22,24 @@ round_decimal_to = 5
 
 class CreateAS7262:
     """ Creates Function access to the Pimoroni AS7262. """
+
     def __init__(self):
         self.as7262_import = __import__('as7262')
         self.as7262_import.soft_reset()
         self.as7262_import.set_gain(64)
         self.as7262_import.set_integration_time(17.857)
         self.as7262_import.set_measurement_mode(2)
-        self.as7262_import.set_illumination_led(1)
+        self.as7262_import.set_illumination_led(0)
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet. """
         try:
-            red, orange, yellow, green, blue, violet = self.as7262_import.get_calibrated_values()
+            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_import.get_calibrated_values()
             operations_logger.sensors_logger.debug("Pimoroni AS7262 6 channel spectrum - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed - " + str(error))
-            red, orange, yellow, green, blue, violet = 0, 0, 0, 0, 0, 0
+            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
 
-        return round(red, round_decimal_to), round(orange, round_decimal_to), round(yellow, round_decimal_to), \
-               round(green, round_decimal_to), round(blue, round_decimal_to), round(violet, round_decimal_to)
+        return round(red_650, round_decimal_to), round(orange_600, round_decimal_to), \
+               round(yellow_570, round_decimal_to), round(green_550, round_decimal_to), \
+               round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)
