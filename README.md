@@ -18,9 +18,6 @@ Services
 
 The following are Linux systemd services that automatically start with the system and restart if terminated. 
 
-**SensorHTTP**
->Lighttpd instance for downloading databases & logs.
-
 **SensorCommands**
 >Network "server" to receive commands from the Control Center program.
 
@@ -28,11 +25,6 @@ The following are Linux systemd services that automatically start with the syste
 >Records sensors to an SQLite3 database at a set Interval & by trigger variances.
 
 ### The following Terminal commands disable and stop the corresponding service.
-
-**SensorHTTP**
-```
-sudo systemctl disable SensorHTTP && sudo systemctl stop SensorHTTP
-```
 
 **SensorCommands**
 ```
