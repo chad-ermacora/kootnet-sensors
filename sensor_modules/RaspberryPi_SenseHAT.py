@@ -37,12 +37,6 @@ class CreateRPSenseHAT:
 
         self.linux_os_access = LinuxOS.CreateLinuxSystem()
 
-        # Use to initialize SenseHAT Joy Stick program in a Thread
-        try:
-            pass
-        except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
-
     def temperature(self):
         try:
             env_temp = float(self.sense.get_temperature())

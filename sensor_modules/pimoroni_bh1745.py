@@ -29,13 +29,13 @@ class CreateBH1745:
     """ Creates Function access to the Pimoroni BH1745. """
 
     def __init__(self):
-        self.bh1745_import = __import__('bh1745')
+        bh1745_import = __import__('bh1745')
+        self.bh1745 = bh1745_import.BH1745()
+        self.bh1745.setup()
 
     def lumen(self):
         try:
-            bh1745 = self.bh1745_import.BH1745()
-            bh1745.setup()
-            r, g, b, var_lumen = bh1745.get_rgbc_raw()
+            var_lumen = self.bh1745.get_rgbc_raw()[3]
             operations_logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
@@ -43,11 +43,9 @@ class CreateBH1745:
 
         return round(var_lumen, round_decimal_to)
 
-    def rgb(self):
+    def ems(self):
         try:
-            bh1745 = self.bh1745_import.BH1745()
-            bh1745.setup()
-            rgb_red, rgb_green, rgb_blue, var_lumen = bh1745.get_rgbc_raw()
+            rgb_red, rgb_green, rgb_blue, var_lumen = self.bh1745.get_rgbc_raw()
             operations_logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")
         except Exception as error:
             operations_logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
