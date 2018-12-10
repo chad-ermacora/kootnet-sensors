@@ -8,7 +8,7 @@ SMB_SHARE="/PyCharmProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
 CIFS_OPTIONS="username=myself,password='123'"
-RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt --exclude logs/KootNet_log.txt --exclude logs/Sensor_Commands_log.txt --exclude test_files/SensorIntervalGraph.html --exclude test_files/SensorTriggerGraph.html"
+RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt --exclude logs --exclude test_files/output"
 # Make sure its running with root
 clear
 if [[ $EUID != 0 ]]; then

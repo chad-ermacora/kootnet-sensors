@@ -332,10 +332,10 @@ def get_lumen():
     return str(operations_sensors.get_lumen())
 
 
-@app.route("/GetRGB")
-def get_rgb():
-    operations_logger.network_logger.debug("* Sent Sensor RGB")
-    return str(operations_sensors.get_rgb())
+@app.route("/GetEMS")
+def get_ems():
+    operations_logger.network_logger.debug("* Sent Sensor Electromagnetic Spectrum")
+    return str(operations_sensors.get_ems())
 
 
 @app.route("/GetAccelerometerXYZ")

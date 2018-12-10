@@ -19,9 +19,9 @@
 import os
 import sqlite3
 
-import operations_upgrades
 import operations_config
 import operations_logger
+import operations_upgrades
 from operations_commands import restart_services
 
 create_important_files = [operations_config.last_updated_file_location,
@@ -35,7 +35,7 @@ class CreateChecksUpgradesData:
         self.old_installed_sensors = operations_config.get_installed_sensors()
         self.upgraded_installed_sensors = operations_config.CreateInstalledSensors()
 
-        self.old_versions = get_old_version()
+        self.old_version = get_old_version()
 
 
 def get_old_version():
@@ -300,24 +300,40 @@ def check_database_structure():
 def run_upgrade_checks():
     operations_logger.primary_logger.debug("Checking required packages")
     upgrade_data_obj = CreateChecksUpgradesData()
-
-    if upgrade_data_obj.old_versions == "":
+    try:
+        old_version_split = upgrade_data_obj.old_version.split(".")
+        major_version = old_version_split[0]
+        feature_version = old_version_split[1]
+        minor_version = old_version_split[2]
+    except Exception as error:
         operations_logger.primary_logger.warning("Missing version file: " +
                                                  operations_config.old_version_file_location +
                                                  " - Configuration files reset to defaults")
-        upgrade_data_obj.old_versions = operations_config.version
-    elif upgrade_data_obj.old_versions == "Alpha.22.8":
-        operations_upgrades.update_ver_a_22_8(upgrade_data_obj)
-        operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_versions)
-        upgrade_data_obj.old_versions = "Alpha.22.9"
-    else:
-        operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                              upgrade_data_obj.old_versions +
-                                              " New: " +
-                                              operations_config.version)
-        upgrade_data_obj.old_versions = operations_config.version
-        upgrade_data_obj.upgraded_config = upgrade_data_obj.old_config
-        upgrade_data_obj.upgraded_installed_sensors = upgrade_data_obj.old_installed_sensors
+        operations_logger.primary_logger.debug(str(error))
+
+        major_version = ""
+        feature_version = ""
+        minor_version = ""
+        upgrade_data_obj.old_version = operations_config.version
+
+    if major_version == "Alpha":
+        if feature_version == "22":
+            if int(minor_version) < 9:
+                operations_upgrades.update_ver_a_22_8(upgrade_data_obj)
+                operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_version)
+                upgrade_data_obj.old_version = "Alpha.22.9"
+            if 21 > int(minor_version) > 8:
+                operations_upgrades.update_ver_a_22_20(upgrade_data_obj)
+                operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_version)
+                upgrade_data_obj.old_version = "Alpha.22.21"
+            else:
+                operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
+                                                      upgrade_data_obj.old_version +
+                                                      " New: " +
+                                                      operations_config.version)
+                upgrade_data_obj.old_version = operations_config.version
+                upgrade_data_obj.upgraded_config = upgrade_data_obj.old_config
+                upgrade_data_obj.upgraded_installed_sensors = upgrade_data_obj.old_installed_sensors
 
     operations_config.write_config_to_file(upgrade_data_obj.upgraded_config)
     operations_config.write_installed_sensors_to_file(upgrade_data_obj.upgraded_installed_sensors)
