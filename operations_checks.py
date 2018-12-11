@@ -163,6 +163,22 @@ def check_database_structure():
 
         try:
             db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Orange',
+                                                                               ct='TEXT'))
+            operations_logger.primary_logger.debug("COLUMN 'Orange' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("COLUMN 'Orange' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Yellow',
+                                                                               ct='TEXT'))
+            operations_logger.primary_logger.debug("COLUMN 'Yellow' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("COLUMN 'Yellow' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
                                                                                cn='Green',
                                                                                ct='TEXT'))
             operations_logger.primary_logger.debug("COLUMN 'Green' - Created")
@@ -176,6 +192,14 @@ def check_database_structure():
             operations_logger.primary_logger.debug("COLUMN 'Blue' - Created")
         except Exception as error:
             operations_logger.primary_logger.debug("COLUMN 'Blue' - " + str(error))
+
+        try:
+            db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn='IntervalData',
+                                                                               cn='Violet',
+                                                                               ct='TEXT'))
+            operations_logger.primary_logger.debug("COLUMN 'Violet' - Created")
+        except Exception as error:
+            operations_logger.primary_logger.debug("COLUMN 'Violet' - " + str(error))
 
         # Create or update Trigger table & columns
         try:
