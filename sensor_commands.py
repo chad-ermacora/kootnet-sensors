@@ -21,12 +21,19 @@ from threading import Thread
 
 from flask import Flask, request
 from gevent import monkey, pywsgi
-
+from time import sleep
 import operations_commands
 import operations_config
 import operations_html_templates
 import operations_logger
 import operations_sensors
+
+if operations_config.get_old_version() != operations_config.version:
+    operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
+    # Sleep before loading anything due to needed updates
+    # The update service started by "record_to_db.py" will automatically restart this app when it's done
+    while True:
+        sleep(10)
 
 monkey.patch_all()
 app = Flask(__name__)

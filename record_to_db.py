@@ -26,20 +26,20 @@ import operations_db
 import operations_logger
 import operations_sensors
 
-installed_sensors = operations_config.get_installed_sensors()
-current_config = operations_config.get_installed_config()
-operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
-
 # Ensure files, database & configurations are OK
 operations_checks.check_missing_files()
 operations_checks.check_database_structure()
-if operations_checks.get_old_version() != operations_config.version:
-    operations_logger.primary_logger.debug("Checking files and configuration after upgrade")
+if operations_config.get_old_version() != operations_config.version:
+    operations_logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done
     while True:
         sleep(10)
+
+installed_sensors = operations_config.get_installed_sensors()
+current_config = operations_config.get_installed_config()
+operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
 
 def start_interval_recording():

@@ -18,5 +18,5 @@
 """
 import operations_checks
 
-# Used as a Linux service to install needed changes outside of program
+# Used as a Linux service to make needed changes outside the main program.  Usually used after upgrades.
 operations_checks.run_upgrade_checks()

@@ -22,33 +22,64 @@ import sqlite3
 import operations_config
 import operations_logger
 import operations_upgrades
-from operations_commands import restart_services
 
 create_important_files = [operations_config.last_updated_file_location,
                           operations_config.old_version_file_location]
 
 
-class CreateChecksUpgradesData:
+class CreateRefinedVersion:
     def __init__(self):
-        self.old_config = operations_config.get_installed_config()
-        self.upgraded_config = operations_config.CreateConfig()
-        self.old_installed_sensors = operations_config.get_installed_sensors()
-        self.upgraded_installed_sensors = operations_config.CreateInstalledSensors()
+        self.major_version = 0
+        self.feature_version = 0
+        self.minor_version = 0
 
-        self.old_version = get_old_version()
+    def get_version(self, version):
+        try:
+            old_version_split = version.split(".")
+            self.major_version = old_version_split[0]
+            self.feature_version = int(old_version_split[1])
+            self.minor_version = int(old_version_split[2])
+        except Exception as error:
+            operations_logger.primary_logger.warning("Missing version file or Invalid format: " +
+                                                     operations_config.old_version_file_location +
+                                                     " - Configuration files reset to defaults")
+            operations_logger.primary_logger.debug(str(error))
+
+    def get_version_str(self):
+        version_str = str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
+        return version_str
 
 
-def get_old_version():
-    old_version_file = open(operations_config.old_version_file_location, 'r')
-    old_version = old_version_file.read()
-    old_version_file.close()
+def run_upgrade_checks():
+    operations_logger.primary_logger.debug("Checking required packages")
+    old_version = CreateRefinedVersion()
+    old_version.get_version(operations_config.get_old_version())
 
-    old_version.strip()
+    if old_version.major_version == "Alpha":
+        if old_version.feature_version == 22:
+            if old_version.minor_version < 9:
+                operations_upgrades.update_ver_a_22_8()
+                operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
+                                                      " || New: " + operations_config.version)
+            elif 21 > old_version.minor_version > 8:
+                operations_upgrades.update_ver_a_22_20()
+                operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
+                                                      " || New: " + operations_config.version)
+            else:
+                operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
+                                                      old_version.get_version_str() +
+                                                      " New: " + operations_config.version)
 
-    return old_version
+    _write_program_version_to_file()
+    restart_services()
 
 
-def _write_current_version_to_file():
+def restart_services():
+    """ Reloads systemd service files & restarts all sensor program services. """
+    os.system(operations_config.restart_sensor_services_command)
+
+
+def _write_program_version_to_file():
     operations_logger.primary_logger.debug("Current version file updating")
     current_version_file = open(operations_config.old_version_file_location, 'w')
     current_version_file.write(operations_config.version)
@@ -319,47 +350,3 @@ def check_database_structure():
         db_connection.close()
     except Exception as error:
         operations_logger.primary_logger.error("DB Connection Failed: " + str(error))
-
-
-def run_upgrade_checks():
-    operations_logger.primary_logger.debug("Checking required packages")
-    upgrade_data_obj = CreateChecksUpgradesData()
-    try:
-        old_version_split = upgrade_data_obj.old_version.split(".")
-        major_version = old_version_split[0]
-        feature_version = old_version_split[1]
-        minor_version = old_version_split[2]
-    except Exception as error:
-        operations_logger.primary_logger.warning("Missing version file: " +
-                                                 operations_config.old_version_file_location +
-                                                 " - Configuration files reset to defaults")
-        operations_logger.primary_logger.debug(str(error))
-
-        major_version = ""
-        feature_version = ""
-        minor_version = ""
-        upgrade_data_obj.old_version = operations_config.version
-
-    if major_version == "Alpha":
-        if feature_version == "22":
-            if int(minor_version) < 9:
-                operations_upgrades.update_ver_a_22_8(upgrade_data_obj)
-                operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_version)
-                upgrade_data_obj.old_version = "Alpha.22.9"
-            if 21 > int(minor_version) > 8:
-                operations_upgrades.update_ver_a_22_20(upgrade_data_obj)
-                operations_logger.primary_logger.info("Upgraded: " + upgrade_data_obj.old_version)
-                upgrade_data_obj.old_version = "Alpha.22.21"
-            else:
-                operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                                      upgrade_data_obj.old_version +
-                                                      " New: " +
-                                                      operations_config.version)
-                upgrade_data_obj.old_version = operations_config.version
-                upgrade_data_obj.upgraded_config = upgrade_data_obj.old_config
-                upgrade_data_obj.upgraded_installed_sensors = upgrade_data_obj.old_installed_sensors
-
-    operations_config.write_config_to_file(upgrade_data_obj.upgraded_config)
-    operations_config.write_installed_sensors_to_file(upgrade_data_obj.upgraded_installed_sensors)
-    _write_current_version_to_file()
-    restart_services()
