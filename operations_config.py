@@ -148,6 +148,16 @@ def set_default_variances_per_sensor(config):
     return config
 
 
+def get_old_version():
+    old_version_file = open(old_version_file_location, 'r')
+    old_version = old_version_file.read()
+    old_version_file.close()
+
+    old_version.strip()
+
+    return old_version
+
+
 def get_installed_config():
     """ Loads configuration from file and returns it as a configuration object. """
     operations_logger.primary_logger.debug("Loading Configuration File")
