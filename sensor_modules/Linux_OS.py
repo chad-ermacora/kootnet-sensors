@@ -13,7 +13,7 @@ import socket
 from time import strftime
 
 import operations_logger
-from operations_db import sensor_database_location
+from operations_config import sensor_database_location
 
 round_decimal_to = 2
 

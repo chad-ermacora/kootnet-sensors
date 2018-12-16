@@ -1,0 +1,12 @@
+[Unit]
+Description=KootNet Sensors - Upgrade Checks
+
+[Service]
+Type=simple
+Restart=no
+User=root
+Group=pi
+ExecStart=/usr/bin/python3 /opt/kootnet-sensors/run_upgrade_checks.py
+
+[Install]
+WantedBy=multi-user.target

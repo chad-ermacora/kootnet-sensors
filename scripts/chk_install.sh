@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
-PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x guizero plotly request matplotlib"
-APT_GET_INSTALL="fonts-freefont-ttf sense-hat lighttpd fake-hwclock"
-APT_GET_REMOVE="wolfram-engine"
+PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x ltr559 as7262 guizero plotly request requests flask gevent matplotlib"
+APT_GET_INSTALL="python3-pip libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock"
 DATA_DIR="/home/kootnet_data"
 CONFIG_DIR="/etc/kootnet"
 
@@ -20,7 +19,7 @@ mkdir /opt/kootnet-control-center/logs 2>/dev/null
 mkdir /opt/kootnet-sensors 2>/dev/null
 mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
 mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
-mkdir /opt/kootnet-sensors/upgrade 2>/dev/null
+mkdir /opt/kootnet-sensors/scripts 2>/dev/null
 # Add and edit Sensors
 if [[ -f ${CONFIG_DIR}/installed_sensors.conf ]]
 then
@@ -29,14 +28,17 @@ else
   printf ${CONFIG_DIR}'/installed_sensors.conf Setup\n'
   cat > ${CONFIG_DIR}/installed_sensors.conf << "EOF"
 Change the number in front of each line. Enable = 1 & Disable = 0
-1 = Gnu/Linux System (Raspbian, Debian, etc)
-1 = Raspberry Pi System
+1 = Gnu/Linux - Raspbian
+0 = Raspberry Pi Zero W
+0 = Raspberry Pi 3BPlus
 0 = Raspberry Pi Sense HAT
 0 = Pimoroni BH1745
+0 = Pimoroni AS7262
 0 = Pimoroni BME680
 0 = Pimoroni EnviroPHAT
 0 = Pimoroni LSM303D
 0 = Pimoroni VL53L1X
+0 = Pimoroni LTR-559
 EOF
   nano ${CONFIG_DIR}/installed_sensors.conf
 fi
@@ -46,8 +48,9 @@ then
   printf ${CONFIG_DIR}"/sql_recording.conf OK\n"
 else
   printf ${CONFIG_DIR}"/sql_recording.conf Setup\n"
+  # Used "Custom" in config here for install, but program will replace with "Current"
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
-Enable = 1 & Disable = 0 (Recommended: Don't change anything)
+Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
 1 = Record Sensors to SQL Database
 300 = Duration between Interval readings in Seconds
 0.15 = Duration between Trigger readings in Seconds
@@ -55,6 +58,8 @@ Enable = 1 & Disable = 0 (Recommended: Don't change anything)
 0.0 = Custom Accelerometer variance
 0.0 = Custom Magnetometer variance
 0.0 = Custom Gyroscope variance
+0 = Enable Custom Temperature Offset
+0.0 = Custom Temperature Offset
 EOF
   nano ${CONFIG_DIR}/sql_recording.conf
 fi
@@ -105,15 +110,13 @@ EOF
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Install needed programs and dependencies
   printf '\nStarting system update & upgrade. This may take awhile ...\n\n'
-  # Remove wolfram-engine due to size of upgrades
-  apt-get -y remove ${APT_GET_REMOVE}
   apt-get update
   apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install ${APT_GET_INSTALL}
   python3 -m pip install -U pip
-  python3 -m pip install -U numpy
   pip3 install ${PIP3_INSTALL}
-  # Create Installed File to prevent re-runs after first run
+  # Create Installed File to prevent re-runs.  Create install_version file for program first run.
   date > ${CONFIG_DIR}/installed_datetime.txt
+  date > ${CONFIG_DIR}/installed_version.txt
 fi

@@ -15,6 +15,7 @@ round_decimal_to = 5
 
 class CreateRPSystem:
     """ Creates Function access to Raspberry Pi Hardware Information. """
+
     def __init__(self):
         self.gp_import = __import__('gpiozero')
 

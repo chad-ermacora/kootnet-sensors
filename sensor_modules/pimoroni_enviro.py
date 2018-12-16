@@ -21,6 +21,7 @@ round_decimal_to = 5
 
 class CreateEnviro:
     """ Creates Function access to the Pimoroni Enviro pHAT. """
+
     def __init__(self):
         self.enviro_import = __import__('envirophat')
 
@@ -51,7 +52,7 @@ class CreateEnviro:
             var_lumen = 0
         return int(var_lumen)
 
-    def rgb(self):
+    def ems(self):
         try:
             rgb_red, rgb_green, rgb_blue = self.enviro_import.light.rgb()
             operations_logger.sensors_logger.debug("Pimoroni Enviro RGB - OK")

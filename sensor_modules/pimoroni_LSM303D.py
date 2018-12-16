@@ -25,12 +25,12 @@ round_decimal_to = 5
 
 class CreateLSM303D:
     """ Creates Function access to the Pimoroni LSM303D. """
+
     def __init__(self):
         self.lsm303d_import = __import__('lsm303d')
         self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
 
     def magnetometer_xyz(self):
-
         try:
             mag_x, mag_y, mag_z = self.lsm.magnetometer()
             operations_logger.sensors_logger.debug("Pimoroni LSM303D Magnetometer XYZ - OK")

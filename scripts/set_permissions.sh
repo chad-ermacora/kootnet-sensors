@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-USER_DIR="/home/pi/"
+USER_DIR="/home/pi"
 DATA_DIR="/home/kootnet_data"
 CONFIG_DIR="/etc/kootnet"
 # Make sure log files exist to set permissions
