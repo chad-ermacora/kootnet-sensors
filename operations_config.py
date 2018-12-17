@@ -25,7 +25,7 @@ import sensor_modules.Temperature_Offsets
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.0"
+version = "Alpha.23.2"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -271,10 +271,10 @@ def config_convert_to_file(config):
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.write_to_db) + " = Record Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + \
-                      " = Duration between Interval readings in Seconds\n" + \
+                      " = Duration between Interval recordings in Seconds\n" + \
                       str(config.sleep_duration_trigger) + \
-                      " = Duration between Trigger readings in Seconds\n" + \
-                      str(config.enable_custom) + " = Enable Custom Settings\n" + \
+                      " = Duration between Trigger reading checks in Seconds\n" + \
+                      str(config.enable_custom) + " = Enable Custom Variances\n" + \
                       str(config.acc_variance) + " = Current Accelerometer variance\n" + \
                       str(config.mag_variance) + " = Current Magnetometer variance\n" + \
                       str(config.gyro_variance) + " = Current Gyroscope variance\n" + \

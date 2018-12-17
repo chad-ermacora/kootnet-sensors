@@ -54,22 +54,24 @@ def run_upgrade_checks():
     operations_logger.primary_logger.debug("Checking required packages")
     old_version = CreateRefinedVersion()
     old_version.get_version(operations_config.get_old_version())
+    no_changes = True
 
     if old_version.major_version == "Alpha":
         if old_version.feature_version == 22:
             if old_version.minor_version < 9:
+                no_changes = False
                 operations_upgrades.update_ver_a_22_8()
                 operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
             elif 21 > old_version.minor_version > 8:
+                no_changes = False
                 operations_upgrades.update_ver_a_22_20()
                 operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
-            else:
-                operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                                      old_version.get_version_str() +
-                                                      " New: " + operations_config.version)
 
+    if no_changes:
+        operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
+                                              old_version.get_version_str() + " New: " + operations_config.version)
     _write_program_version_to_file()
     restart_services()
 

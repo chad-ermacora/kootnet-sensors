@@ -44,8 +44,8 @@ def get_installed_sensors():
 
 
 def update_ver_a_22_8():
-    operations_logger.primary_logger.warning(
-        "Upgrade: Unable to convert installed sensors file, loading default installed sensors")
+    operations_logger.primary_logger.warning("Upgrade: Unable to convert installed sensors file, " +
+                                             "loading default installed sensors")
     new_installed_sensors = CreateInstalledSensors()
     write_installed_sensors_to_file(new_installed_sensors)
     os.system("rm -f /etc/systemd/system/SensorHTTP.service 2>/dev/null")
