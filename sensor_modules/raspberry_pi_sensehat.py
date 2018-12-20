@@ -19,8 +19,8 @@ Created on Sat Aug 25 08:53:56 2018
 """
 from os import system
 
-import operations_logger
-import sensor_modules.Linux_OS as LinuxOS
+from operations_modules import operations_logger
+import sensor_modules.linux_os as linux_os
 
 round_decimal_to = 5
 
@@ -35,7 +35,7 @@ class CreateRPSenseHAT:
         except Exception as error:
             operations_logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
 
-        self.linux_os_access = LinuxOS.CreateLinuxSystem()
+        self.linux_os_access = linux_os.CreateLinuxSystem()
 
     def temperature(self):
         try:

@@ -20,15 +20,15 @@ import os
 from threading import Thread
 from time import sleep
 
-import operations_checks
-import operations_config
-import operations_db
-import operations_logger
-import operations_sensors
+from operations_modules import operations_pre_checks
+from operations_modules import operations_config
+from operations_modules import operations_db
+from operations_modules import operations_logger
+from operations_modules import operations_sensors
 
 # Ensure files, database & configurations are OK
-operations_checks.check_missing_files()
-operations_checks.check_database_structure()
+operations_pre_checks.check_missing_files()
+operations_pre_checks.check_database_structure()
 if operations_config.get_old_version() != operations_config.version:
     operations_logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")

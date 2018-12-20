@@ -19,9 +19,9 @@
 import os
 import sqlite3
 
-import operations_config
-import operations_logger
-import operations_upgrades
+from operations_modules import operations_config
+from operations_modules import operations_logger
+from operations_modules import operations_upgrades
 
 create_important_files = [operations_config.last_updated_file_location,
                           operations_config.old_version_file_location]

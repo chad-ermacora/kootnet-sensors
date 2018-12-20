@@ -18,8 +18,8 @@
 """
 import sqlite3
 
-import operations_logger
-from operations_config import sensor_database_location
+from operations_modules import operations_logger
+from operations_modules.operations_config import sensor_database_location
 
 
 class CreateIntervalDatabaseData:

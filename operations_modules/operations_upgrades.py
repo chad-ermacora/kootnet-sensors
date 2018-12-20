@@ -18,8 +18,8 @@
 """
 import os
 
-import operations_logger
-from operations_config import CreateInstalledSensors, write_installed_sensors_to_file, sensors_installed_file_location
+from operations_modules import operations_logger
+from operations_modules.operations_config import CreateInstalledSensors, write_installed_sensors_to_file, sensors_installed_file_location
 
 
 def get_installed_sensors():

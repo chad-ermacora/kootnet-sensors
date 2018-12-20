@@ -18,15 +18,16 @@
 """
 import os
 from threading import Thread
+from time import sleep
 
 from flask import Flask, request
 from gevent import monkey, pywsgi
-from time import sleep
-import operations_commands
-import operations_config
-import operations_html_templates
-import operations_logger
-import operations_sensors
+
+from operations_modules import operations_commands
+from operations_modules import operations_config
+from operations_modules import operations_html_templates
+from operations_modules import operations_logger
+from operations_modules import operations_sensors
 
 if operations_config.get_old_version() != operations_config.version:
     operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
@@ -68,6 +69,10 @@ def test_sensor():
     sensor_config = ""
     sensor_info = ""
 
+    info_start = operations_html_templates.sensor_info_start
+    config_start = operations_html_templates.sensor_config_start
+    readings_start = operations_html_templates.sensor_readings_start
+
     for config in sensor_config_raw:
         sensor_config += "<th><span style='background-color: #0BB10D;'>" + config + "</span></th>"
 
@@ -75,12 +80,11 @@ def test_sensor():
         sensor_info += "<th><span style='background-color: #0BB10D;'>" + info + "</span></th>"
 
     message = "<p><span style='color: red'>KootNet Sensors || Sensor Testing Page</span></p>" + \
-              operations_html_templates.sensor_info_start + "<tr>" + sensor_info + "</tr></table>"
+              info_start + "<tr>" + sensor_info + "</tr></table>"
 
-    message += operations_html_templates.sensor_config_start + "<tr>" + sensor_config + "</tr></table>"
+    message += config_start + "<tr>" + sensor_config + "</tr></table>"
 
-    message += operations_html_templates.sensor_readings_start + \
-               "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
+    message += readings_start + "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
 
     message += operations_html_templates.sensor_test_final_end
     return message

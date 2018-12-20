@@ -18,8 +18,8 @@
 """
 import os
 
-import operations_logger
-import sensor_modules.Temperature_Offsets
+from operations_modules import operations_logger
+import sensor_modules.temperature_offsets
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
@@ -191,12 +191,12 @@ def get_sensor_temperature_offset():
     current_config = get_installed_config()
 
     if installed_sensors.raspberry_pi_3b_plus:
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRP3BPlusTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.temperature_offsets.CreateRP3BPlusTemperatureOffsets()
     elif installed_sensors.raspberry_pi_zero_w:
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateRPZeroWTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.temperature_offsets.CreateRPZeroWTemperatureOffsets()
     else:
         # All offsets are 0.0 for unselected or unsupported system boards
-        sensor_temp_offset = sensor_modules.Temperature_Offsets.CreateUnknownTemperatureOffsets()
+        sensor_temp_offset = sensor_modules.temperature_offsets.CreateUnknownTemperatureOffsets()
 
     if current_config.enable_custom_temp:
         return current_config.custom_temperature_offset

@@ -19,15 +19,15 @@
 import os
 from shutil import disk_usage
 
-import operations_config
-import operations_db
-import operations_logger
-import operations_sensors
-import sensor_modules.Linux_OS as Linux_System
-import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
+from operations_modules import operations_config
+from operations_modules import operations_db
+from operations_modules import operations_logger
+from operations_modules import operations_sensors
+import sensor_modules.linux_os as linux_os
+import sensor_modules.raspberry_pi_system as raspberry_pi_system
 
-sensor_system = RaspberryPi_Sensors.CreateRPSystem()
-sensor_os = Linux_System.CreateLinuxSystem()
+sensor_system = raspberry_pi_system.CreateRPSystem()
+sensor_os = linux_os.CreateLinuxSystem()
 
 bash_commands = operations_config.sensor_bash_commands
 

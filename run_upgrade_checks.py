@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import operations_checks
+from operations_modules import operations_pre_checks
 
 # Used as a Linux service to make needed changes outside the main program.  Usually used after upgrades.
-operations_checks.run_upgrade_checks()
+operations_pre_checks.run_upgrade_checks()

@@ -4,7 +4,7 @@ It Retrieves & Returns Sensor data to be written to the DB
 
 @author: ReplaceMe
 """
-import operations_logger
+from operations_modules import operations_logger
 
 round_decimal_to = 5
 

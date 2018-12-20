@@ -1,6 +1,6 @@
-import operations_config
-import operations_sensors
-import sensor_modules.RaspberryPi_SenseHAT
+from operations_modules import operations_config
+from operations_modules import operations_sensors
+import sensor_modules.raspberry_pi_sensehat
 
 installed_sensors = operations_config.get_installed_sensors()
 current_config = operations_config.get_installed_config()
@@ -58,7 +58,7 @@ while count < len(trigger_data.sensor_types):
 
 if installed_sensors.raspberry_pi_sense_hat:
     print("\nShowing SenseHAT Temperature on LED's, Please Wait ...")
-    sensor_access = sensor_modules.RaspberryPi_SenseHAT.CreateRPSenseHAT()
+    sensor_access = sensor_modules.raspberry_pi_sensehat.CreateRPSenseHAT()
     sensor_access.display_led_message(str(round(sensor_access.temperature(), 2)) + "c")
 
 print("\nTesting Complete")
