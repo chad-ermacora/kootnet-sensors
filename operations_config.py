@@ -45,7 +45,7 @@ sensor_bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_prog
                         "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                         "RebootSystem": "reboot",
                         "ShutdownSystem": "shutdown -h now",
-                        "UpgradeSystemOS": "apt-get update && apt-get scripts -y && reboot"}
+                        "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
 
 
 class CreateInstalledSensors:

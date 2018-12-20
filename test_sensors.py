@@ -15,9 +15,7 @@ trigger_data.sensor_readings = trigger_data.sensor_readings.split(",")
 trigger_data.sensor_types = trigger_data.sensor_types[3:]
 trigger_data.sensor_readings = trigger_data.sensor_readings[3:]
 
-if not current_config.enable_custom_temp:
-    if current_config.custom_temperature_offset is not operations_config.get_default_temp_offset():
-        current_config.custom_temperature_offset = operations_config.get_default_temp_offset()
+current_config.custom_temperature_offset = operations_config.get_sensor_temperature_offset()
 
 print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n" +
       "Record to SQL: " + str(current_config.write_to_db) +
