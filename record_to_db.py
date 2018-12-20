@@ -29,6 +29,7 @@ from operations_modules import operations_sensors
 # Ensure files, database & configurations are OK
 operations_pre_checks.check_missing_files()
 operations_pre_checks.check_database_structure()
+
 if operations_config.get_old_version() != operations_config.version:
     operations_logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")

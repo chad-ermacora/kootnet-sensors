@@ -25,7 +25,7 @@ import sensor_modules.temperature_offsets
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.2"
+version = "Alpha.23.5"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -46,6 +46,37 @@ sensor_bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_prog
                         "RebootSystem": "reboot",
                         "ShutdownSystem": "shutdown -h now",
                         "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
+
+sql_tables = ["IntervalData",
+              "TriggerData"]
+sensor_sql_columns = ["SensorName",
+                      "IP",
+                      "SensorUpTime",
+                      "SystemTemp",
+                      "EnvironmentTemp",
+                      "EnvTempOffset",
+                      "Pressure",
+                      "Humidity",
+                      "Lumen",
+                      "Red",
+                      "Orange",
+                      "Yellow",
+                      "Green",
+                      "Blue",
+                      "Violet",
+                      "Acc_X",
+                      "Acc_Y",
+                      "Acc_Z",
+                      "Mag_X",
+                      "Mag_Y",
+                      "Mag_Z",
+                      "Gyro_X",
+                      "Gyro_Y",
+                      "Gyro_Z"]
+
+other_sql_table = "OtherData"
+other_sql_columns = ["UserDateTime",
+                     "Notes"]
 
 
 class CreateInstalledSensors:
