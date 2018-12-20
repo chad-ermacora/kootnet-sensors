@@ -12,8 +12,8 @@ import os
 import socket
 from time import strftime
 
-import operations_logger
-from operations_config import sensor_database_location
+from operations_modules import operations_logger
+from operations_modules.operations_config import sensor_database_location
 
 round_decimal_to = 2
 

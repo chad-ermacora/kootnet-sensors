@@ -17,7 +17,7 @@ pip3 install ltr559
 
 @author: OO-Dragon
 """
-import operations_logger
+from operations_modules import operations_logger
 
 round_decimal_to = 5
 
