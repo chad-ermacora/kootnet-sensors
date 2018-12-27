@@ -51,36 +51,24 @@ class CreateRefinedVersion:
 
 
 def check_database_structure():
-    operations_logger.primary_logger.info("Running DB Checks")
+    operations_logger.primary_logger.debug("Running DB Checks")
+    database_variables = operations_config.CreateDatabaseVariables()
+
     try:
         db_connection = sqlite3.connect(operations_config.sensor_database_location)
         db_cursor = db_connection.cursor()
 
-        for table in operations_config.sql_tables:
-            try:
-                # Create or update table
-                db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-                operations_logger.primary_logger.debug("Table '" + table + "' - Created")
+        _create_table_and_datetime(database_variables.table_interval, db_cursor)
+        for column in database_variables.get_sensor_columns_list():
+            _check_sql_table_and_column(database_variables.table_interval, column, db_cursor)
 
-            except Exception as error:
-                operations_logger.primary_logger.debug("Error on Table '" + table + "' - " + str(error))
+        _create_table_and_datetime(database_variables.table_trigger, db_cursor)
+        for column in database_variables.get_sensor_columns_list():
+            _check_sql_table_and_column(database_variables.table_trigger, column, db_cursor)
 
-            for column in operations_config.sensor_sql_columns:
-                # Create or update table columns
-                _check_sql_table_and_column(table, column, db_cursor)
-
-        table = operations_config.other_sql_table
-        try:
-            # Create or update 'Other' table
-            db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-            operations_logger.primary_logger.debug("Table '" + table + "' - Created")
-
-        except Exception as error:
-            operations_logger.primary_logger.debug("Error on Table '" + table + "' - " + str(error))
-
-        for column in operations_config.other_sql_columns:
-            # Create or update table columns
-            _check_sql_table_and_column(table, column, db_cursor)
+        _create_table_and_datetime(database_variables.table_other, db_cursor)
+        for column in database_variables.get_other_columns_list():
+            _check_sql_table_and_column(database_variables.table_other, column, db_cursor)
 
         db_connection.commit()
         db_connection.close()
@@ -88,14 +76,22 @@ def check_database_structure():
         operations_logger.primary_logger.error("DB Connection Failed: " + str(error))
 
 
+def _create_table_and_datetime(table, db_cursor):
+    try:
+        # Create or update table
+        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
+        operations_logger.primary_logger.debug("Table '" + table + "' - Created")
+
+    except Exception as error:
+        operations_logger.primary_logger.debug(table + " - " + str(error))
+
+
 def _check_sql_table_and_column(table_name, column_name, db_cursor):
     try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name,
-                                                                           cn=column_name,
-                                                                           ct="TEXT"))
-        operations_logger.primary_logger.debug("COLUMN " + column_name + " - Created")
+        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
+        operations_logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
     except Exception as error:
-        operations_logger.primary_logger.debug("COLUMN " + column_name + " - " + str(error))
+        operations_logger.primary_logger.debug("COLUMN '" + column_name + "' - " + str(error))
 
 
 def run_upgrade_checks():
