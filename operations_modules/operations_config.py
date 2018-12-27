@@ -18,14 +18,14 @@
 """
 import os
 
-from operations_modules import operations_logger
 import sensor_modules.temperature_offsets
+from operations_modules import operations_logger
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.5"
+version = "Alpha.23.8"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -33,6 +33,8 @@ sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 old_version_file_location = "/etc/kootnet/installed_version.txt"
+
+trigger_pairs = 5
 
 restart_sensor_services_command = "systemctl daemon-reload && " + \
                                   "systemctl restart SensorRecording && " + \
@@ -47,36 +49,72 @@ sensor_bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_prog
                         "ShutdownSystem": "shutdown -h now",
                         "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
 
-sql_tables = ["IntervalData",
-              "TriggerData"]
-sensor_sql_columns = ["SensorName",
-                      "IP",
-                      "SensorUpTime",
-                      "SystemTemp",
-                      "EnvironmentTemp",
-                      "EnvTempOffset",
-                      "Pressure",
-                      "Humidity",
-                      "Lumen",
-                      "Red",
-                      "Orange",
-                      "Yellow",
-                      "Green",
-                      "Blue",
-                      "Violet",
-                      "Acc_X",
-                      "Acc_Y",
-                      "Acc_Z",
-                      "Mag_X",
-                      "Mag_Y",
-                      "Mag_Z",
-                      "Gyro_X",
-                      "Gyro_Y",
-                      "Gyro_Z"]
 
-other_sql_table = "OtherData"
-other_sql_columns = ["UserDateTime",
-                     "Notes"]
+class CreateDatabaseVariables:
+    def __init__(self):
+        self.table_interval = "IntervalData"
+        self.table_trigger = "TriggerData"
+        self.table_other = "OtherData"
+
+        self.other_table_column_user_date_time = "UserDateTime"
+        self.other_table_column_notes = "Notes"
+
+        self.sensor_name = "SensorName"
+        self.ip = "IP"
+        self.sensor_uptime = "SensorUpTime"
+        self.system_temperature = "SystemTemp"
+        self.env_temperature = "EnvironmentTemp"
+        self.env_temperature_offset = "EnvTempOffset"
+        self.pressure = "Pressure"
+        self.humidity = "Humidity"
+        self.lumen = "Lumen"
+        self.red = "Red"
+        self.orange = "Orange"
+        self.yellow = "Yellow"
+        self.green = "Green"
+        self.blue = "Blue"
+        self.violet = "Violet"
+        self.acc_x = "Acc_X"
+        self.acc_y = "Acc_Y"
+        self.acc_z = "Acc_Z"
+        self.mag_x = "Mag_X"
+        self.mag_y = "Mag_Y"
+        self.mag_z = "Mag_Z"
+        self.gyro_x = "Gyro_X"
+        self.gyro_y = "Gyro_Y"
+        self.gyro_z = "Gyro_Z"
+
+    def get_sensor_columns_list(self):
+        sensor_sql_columns = [self.sensor_name,
+                              self.ip,
+                              self.sensor_uptime,
+                              self.system_temperature,
+                              self.env_temperature,
+                              self.env_temperature_offset,
+                              self.pressure,
+                              self.humidity,
+                              self.lumen,
+                              self.red,
+                              self.orange,
+                              self.yellow,
+                              self.green,
+                              self.blue,
+                              self.violet,
+                              self.acc_x,
+                              self.acc_y,
+                              self.acc_z,
+                              self.mag_x,
+                              self.mag_y,
+                              self.mag_z,
+                              self.gyro_x,
+                              self.gyro_y,
+                              self.gyro_z]
+        return sensor_sql_columns
+
+    def get_other_columns_list(self):
+        other_sql_columns = [self.other_table_column_user_date_time,
+                             self.other_table_column_notes]
+        return other_sql_columns
 
 
 class CreateInstalledSensors:
@@ -166,7 +204,7 @@ def set_default_variances_per_sensor(config):
     installed_sensors = get_installed_sensors()
 
     if installed_sensors.raspberry_pi_sense_hat:
-        config.acc_variance = 0.5
+        config.acc_variance = 0.01
         config.mag_variance = 2.0
         config.gyro_variance = 0.05
     if installed_sensors.pimoroni_enviro:
