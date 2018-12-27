@@ -25,7 +25,7 @@ from operations_modules import operations_logger
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.8"
+version = "Alpha.23.9"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -83,6 +83,27 @@ class CreateDatabaseVariables:
         self.gyro_x = "Gyro_X"
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
+
+    def get_acc_columns_str(self):
+        acc_str = self.acc_x + "," + self.acc_y + "," + self.acc_z
+        return acc_str
+
+    def get_mag_columns_str(self):
+        acc_str = self.mag_x + "," + self.mag_y + "," + self.mag_z
+        return acc_str
+
+    def get_gyro_columns_str(self):
+        acc_str = self.gyro_x + "," + self.gyro_y + "," + self.gyro_z
+        return acc_str
+
+    def get_six_colours_columns_str(self):
+        six_colours = self.red + "," + self.orange + "," + self.yellow + "," + \
+                      self.green + "," + self.blue + "," + self.violet + ","
+        return six_colours
+
+    def get_rgb_columns_str(self):
+        rgb = self.red + "," + self.green + "," + self.blue + ","
+        return rgb
 
     def get_sensor_columns_list(self):
         sensor_sql_columns = [self.sensor_name,
