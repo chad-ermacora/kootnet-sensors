@@ -17,13 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from datetime import datetime
 from threading import Thread
 from time import sleep
 
-from operations_modules import operations_pre_checks
 from operations_modules import operations_config
 from operations_modules import operations_db
 from operations_modules import operations_logger
+from operations_modules import operations_pre_checks
 from operations_modules import operations_sensors
 
 # Ensure files, database & configurations are OK
@@ -40,6 +41,8 @@ if operations_config.get_old_version() != operations_config.version:
 
 installed_sensors = operations_config.get_installed_sensors()
 current_config = operations_config.get_installed_config()
+database_variables = operations_config.CreateDatabaseVariables()
+
 operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
 
@@ -49,11 +52,11 @@ def start_interval_recording():
         try:
             new_sensor_data = operations_sensors.get_interval_sensor_readings()
 
-            sql_execute = (new_sensor_data.sql_query_start + new_sensor_data.sensor_types +
-                           new_sensor_data.sql_query_values_start + new_sensor_data.sensor_readings +
-                           new_sensor_data.sql_query_values_end)
+            interval_sql_execute = (new_sensor_data.sql_query_start + new_sensor_data.sensor_types +
+                                    new_sensor_data.sql_query_values_start + new_sensor_data.sensor_readings +
+                                    new_sensor_data.sql_query_values_end)
 
-            operations_db.write_to_sql_database(sql_execute)
+            operations_db.write_to_sql_database(interval_sql_execute)
 
             if installed_sensors.raspberry_pi_sense_hat and operations_config.sense_hat_show_led_message:
                 operations_sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
@@ -63,82 +66,113 @@ def start_interval_recording():
         sleep(current_config.sleep_duration_interval)
 
 
-def get_readings_set():
-    """ Returns 5 'pairs' of Trigger readings in a list, with a sleep delay between each reading (set in config). """
-    try:
-        readings_set = []
-
-        count = 0
-        while count < 5:
-            reading_pair = [operations_sensors.get_trigger_sensor_readings()]
-            sleep(current_config.sleep_duration_trigger)
-            reading_pair.append(operations_sensors.get_trigger_sensor_readings())
-            sleep(current_config.sleep_duration_trigger)
-
-            readings_set.append(reading_pair)
-            count = count + 1
-
-        return readings_set
-    except Exception as error:
-        operations_logger.primary_logger.error("Trigger get reading set failed: " + str(error))
-
-
-def check_xyz_set_against_variance(sensor_readings_set):
-    """ Checks provided trigger XYZ readings against their respective variances (set in config). """
+def _check_xyz_variances(trigger_data):
     write_to_db = False
-    for reading_pair in sensor_readings_set:
-        if write_to_db is False:
-            readings_old = reading_pair[0].sensor_readings.replace("'", "").split(",")
-            readings_new = reading_pair[1].sensor_readings.replace("'", "").split(",")
+    pair_differences = []
 
-            if installed_sensors.has_acc and write_to_db is False:
-                if float(readings_new[3]) < (float(readings_old[3]) - current_config.acc_variance) or \
-                        float(readings_new[3]) > (float(readings_old[3]) + current_config.acc_variance):
-                    write_to_db = True
-                elif float(readings_new[4]) < (float(readings_old[4]) - current_config.acc_variance) or \
-                        float(readings_new[4]) > (float(readings_old[4]) + current_config.acc_variance):
-                    write_to_db = True
-                elif float(readings_new[5]) < (float(readings_old[5]) - current_config.acc_variance) or \
-                        float(readings_new[5]) > (float(readings_old[5]) + current_config.acc_variance):
-                    write_to_db = True
+    count = 0
+    for reading in trigger_data.sql_readings1:
+        readings_old = reading
+        readings_new = trigger_data.sql_readings2[count]
 
-            if installed_sensors.has_mag and write_to_db is False:
-                if float(readings_new[6]) < (float(readings_old[6]) - current_config.mag_variance) or \
-                        float(readings_new[6]) > (float(readings_old[6]) + current_config.mag_variance):
-                    write_to_db = True
-                elif float(readings_new[7]) < (float(readings_old[7]) - current_config.mag_variance) or \
-                        float(readings_new[7]) > (float(readings_old[7]) + current_config.mag_variance):
-                    write_to_db = True
-                elif float(readings_new[8]) < (float(readings_old[8]) - current_config.mag_variance) or \
-                        float(readings_new[8]) > (float(readings_old[8]) + current_config.mag_variance):
-                    write_to_db = True
+        count2 = 0
+        if count2 < 3:
+            try:
+                difference = abs(abs(float(readings_new[count2])) - abs(float(readings_old[count2])))
+                pair_differences.append(difference)
+            except Exception as error:
+                operations_logger.primary_logger.error("Bad readings in XYZ variance checks: " + str(error))
+                write_to_db = False
 
-            if installed_sensors.has_gyro and write_to_db is False:
-                if float(readings_new[9]) < (float(readings_old[9]) - current_config.gyro_variance) or \
-                        float(readings_new[9]) > (float(readings_old[9]) + current_config.gyro_variance):
-                    write_to_db = True
-                elif float(readings_new[10]) < (float(readings_old[10]) - current_config.gyro_variance) or \
-                        float(readings_new[10]) > (float(readings_old[10]) + current_config.gyro_variance):
-                    write_to_db = True
-                elif float(readings_new[11]) < (float(readings_old[11]) - current_config.gyro_variance) or \
-                        float(readings_new[11]) > (float(readings_old[11]) + current_config.gyro_variance):
-                    write_to_db = True
+            count += 1
+
+    for difference in pair_differences:
+        if difference >= trigger_data.variance:
+            operations_logger.primary_logger.debug("DIFFs Triggered")
+            write_to_db = True
 
     if write_to_db:
-        write_trigger_to_database(sensor_readings_set)
+        operations_logger.primary_logger.debug("Pair Differences: " + str(pair_differences))
+        sql_db_executes = trigger_data.get_xyz_sql_write_str()
+
+        for execute in sql_db_executes:
+            operations_db.write_to_sql_database(execute)
 
 
-def write_trigger_to_database(sensor_readings_set):
-    """ Writes the provided trigger reading pairs into the SQL Database. """
-    for reading_pair in sensor_readings_set:
-        for trigger_data in reading_pair:
-            sql_execute = (trigger_data.sql_query_start +
-                           trigger_data.sensor_types +
-                           trigger_data.sql_query_values_start +
-                           trigger_data.sensor_readings +
-                           trigger_data.sql_query_values_end)
+def check_write_trigger_data():
+    operations_logger.primary_logger.debug("Check Triggers")
+    sleep(current_config.sleep_duration_trigger)
 
-            operations_db.write_to_sql_database(sql_execute)
+    threads = []
+    if installed_sensors.has_acc:
+        threads.append(Thread(target=_acc_check_thread))
+
+    if installed_sensors.has_mag:
+        threads.append(Thread(target=_mag_check_thread))
+
+    if installed_sensors.has_gyro:
+        threads.append(Thread(target=_gyro_check_thread))
+
+    for thread in threads:
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+
+def _acc_check_thread():
+    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data.variance = current_config.acc_variance
+    new_trigger_data.sql_columns_str += database_variables.get_acc_columns_str()
+
+    pair_count = 0
+    while pair_count < operations_config.trigger_pairs:
+        new_trigger_data.sql_readings1.append(operations_sensors.get_accelerometer_xyz())
+        new_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
+        sleep(current_config.sleep_duration_trigger)
+        new_trigger_data.sql_readings2.append(operations_sensors.get_accelerometer_xyz())
+        new_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
+        pair_count += 1
+
+    _check_xyz_variances(new_trigger_data)
+
+
+def _mag_check_thread():
+    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data.variance = current_config.mag_variance
+    new_trigger_data.sql_columns_str += database_variables.get_mag_columns_str()
+
+    pair_count = 0
+    while pair_count < operations_config.trigger_pairs:
+        new_trigger_data.sql_readings1.append(operations_sensors.get_magnetometer_xyz())
+        new_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
+        sleep(current_config.sleep_duration_trigger)
+        new_trigger_data.sql_readings2.append(operations_sensors.get_magnetometer_xyz())
+        new_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
+        pair_count += 1
+
+    _check_xyz_variances(new_trigger_data)
+
+
+def _gyro_check_thread():
+    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data.variance = current_config.gyro_variance
+    new_trigger_data.sql_columns_str += database_variables.get_gyro_columns_str()
+
+    pair_count = 0
+    while pair_count < operations_config.trigger_pairs:
+        new_trigger_data.sql_readings1.append(operations_sensors.get_gyroscope_xyz())
+        new_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
+        sleep(current_config.sleep_duration_trigger)
+        new_trigger_data.sql_readings2.append(operations_sensors.get_gyroscope_xyz())
+        new_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
+        pair_count += 1
+
+    _check_xyz_variances(new_trigger_data)
+
+
+def get_datetime_stamp():
+    return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
 
 if current_config.write_to_db and installed_sensors.no_sensors is False:
@@ -147,13 +181,8 @@ if current_config.write_to_db and installed_sensors.no_sensors is False:
     interval_recording_thread.daemon = True
     interval_recording_thread.start()
 
-    # Write first reading to Database, then start monitoring Triggers
-    initial_trigger_set = get_readings_set()
-    write_trigger_to_database(initial_trigger_set)
-
     while True:
-        new_trigger_set = get_readings_set()
-        check_xyz_set_against_variance(new_trigger_set)
+        check_write_trigger_data()
 
 else:
     operations_logger.primary_logger.warning("Write to Database Disabled in Config or no sensors set")
