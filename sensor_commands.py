@@ -99,7 +99,9 @@ def check_online():
 @app.route("/GetSensorReadings")
 def get_sensor_readings():
     operations_logger.network_logger.info("* Sent Sensor Readings")
-    return str(operations_commands.get_sensor_readings())
+    sensor_readings = operations_commands.get_sensor_readings()
+    return_str = str(sensor_readings[0]) + "," + str(sensor_readings[1])
+    return return_str
 
 
 @app.route("/GetSystemData")

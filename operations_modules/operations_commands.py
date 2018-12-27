@@ -38,24 +38,14 @@ def get_sensor_readings():
     return_data = ""
     return_types = ""
     interval_data = operations_sensors.get_interval_sensor_readings()
-    trigger_data = operations_sensors.get_trigger_sensor_readings()
 
     str_interval_types = interval_data.sensor_types.split(",")
     str_interval_data = interval_data.sensor_readings.split(",")
-    str_trigger_types = trigger_data.sensor_types.split(",")[3:]
-    str_trigger_data = trigger_data.sensor_readings.split(",")[3:]
 
     count = 0
     for interval_type in str_interval_types:
         return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
         return_data += "<th><span style='background-color: #0BB10D;'>" + str_interval_data[count] + "</span></th>"
-        count = count + 1
-
-    count = 0
-    for trigger_type in str_trigger_types:
-        return_types += "<th><span style='background-color: #00ffff;'>" + \
-                        trigger_type + "</span></th>"
-        return_data += "<th><span style='background-color: #0BB10D;'>" + str_trigger_data[count] + "</span></th>"
         count = count + 1
 
     return [return_types, return_data]
