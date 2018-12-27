@@ -19,6 +19,10 @@
 from datetime import datetime
 
 from operations_modules import operations_db
+from operations_modules.operations_config import get_installed_sensors, \
+    get_installed_config, \
+    get_sensor_temperature_offset, \
+    get_old_version, version
 from sensor_modules import linux_os
 from sensor_modules import pimoroni_as7262
 from sensor_modules import pimoroni_bh1745
@@ -29,10 +33,6 @@ from sensor_modules import pimoroni_ltr_559
 from sensor_modules import pimoroni_vl53l1x
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
-from operations_modules.operations_config import get_installed_sensors, \
-    get_installed_config, \
-    get_sensor_temperature_offset, \
-    get_old_version, version
 
 if get_old_version() == version:
     # Initialize sensor access, based on installed sensors file
@@ -88,11 +88,27 @@ def get_interval_sensor_readings():
         interval_data.sensor_types += "EnvironmentTemp, " \
                                       "EnvTempOffset, " \
                                       "Pressure, " \
-                                      "Humidity, "
+                                      "Humidity, " \
+                                      "Acc_X, Acc_Y, Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z, "
+
         interval_data.sensor_readings += "'" + str(rp_sense_hat_sensor_access.temperature()) + "', '" + \
                                          str(get_sensor_temperature_offset()) + "', '" + \
                                          str(rp_sense_hat_sensor_access.pressure()) + "', '" + \
                                          str(rp_sense_hat_sensor_access.humidity()) + "', "
+
+        acc_x, acc_y, acc_z = rp_sense_hat_sensor_access.accelerometer_xyz()
+        mag_x, mag_y, mag_z = rp_sense_hat_sensor_access.magnetometer_xyz()
+        gyro_x, gyro_y, gyro_z = rp_sense_hat_sensor_access.gyroscope_xyz()
+
+        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
+                                         str(acc_y) + "', '" + \
+                                         str(acc_z) + "', '" + \
+                                         str(mag_x) + "', '" + \
+                                         str(mag_y) + "', '" + \
+                                         str(mag_z) + "', '" + \
+                                         str(gyro_x) + "', '" + \
+                                         str(gyro_y) + "', '" + \
+                                         str(gyro_z) + "', "
 
     if installed_sensors.pimoroni_bh1745:
         rgb_colour = pimoroni_bh1745_sensor_access.ems()
@@ -131,7 +147,9 @@ def get_interval_sensor_readings():
             "Lumen, " \
             "Red, " \
             "Green, " \
-            "Blue, "
+            "Blue, " \
+            "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+
         interval_data.sensor_readings += "'" + str(pimoroni_enviro_sensor_access.temperature()) + "', '" + \
                                          str(get_sensor_temperature_offset()) + "', '" + \
                                          str(pimoroni_enviro_sensor_access.pressure()) + "', '" + \
@@ -140,9 +158,31 @@ def get_interval_sensor_readings():
                                          str(rgb_colour[1]) + "', '" + \
                                          str(rgb_colour[2]) + "', "
 
+        acc_x, acc_y, acc_z = pimoroni_enviro_sensor_access.accelerometer_xyz()
+        mag_x, mag_y, mag_z = pimoroni_enviro_sensor_access.magnetometer_xyz()
+
+        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
+                                         str(acc_y) + "', '" + \
+                                         str(acc_z) + "', '" + \
+                                         str(mag_x) + "', '" + \
+                                         str(mag_y) + "', '" + \
+                                         str(mag_z) + "', "
     if installed_sensors.pimoroni_ltr_559:
         interval_data.sensor_types += "Lumen, "
         interval_data.sensor_readings += "'" + str(pimoroni_ltr_559_sensor_access.lumen()) + "', "
+
+    if installed_sensors.pimoroni_lsm303d:
+        interval_data.sensor_types += "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+
+        acc_x, acc_y, acc_z = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
+        mag_x, mag_y, mag_z = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
+
+        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
+                                         str(acc_y) + "', '" + \
+                                         str(acc_z) + "', '" + \
+                                         str(mag_x) + "', '" + \
+                                         str(mag_y) + "', '" + \
+                                         str(mag_z) + "', "
 
     interval_data.sensor_types = interval_data.sensor_types[:-2]
     interval_data.sensor_readings = interval_data.sensor_readings[:-2]
