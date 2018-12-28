@@ -34,10 +34,11 @@ from sensor_modules import pimoroni_vl53l1x
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
 
+installed_sensors = get_installed_sensors()
+current_config = get_installed_config()
+
 if get_old_version() == version:
     # Initialize sensor access, based on installed sensors file
-    installed_sensors = get_installed_sensors()
-    current_config = get_installed_config()
     if installed_sensors.linux_system:
         os_sensor_access = linux_os.CreateLinuxSystem()
     if installed_sensors.raspberry_pi_zero_w or installed_sensors.raspberry_pi_3b_plus:
@@ -193,7 +194,7 @@ def get_interval_sensor_readings():
 
 def get_trigger_sensor_readings():
     """ Returns Trigger sensor readings from installed sensors (set in installed sensors file). """
-    trigger_data = operations_db.CreateTriggerDatabaseData()
+    trigger_data = operations_db.CreateTriggerDatabaseData(installed_sensors)
     trigger_data.sensor_types = "DateTime, "
     trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 

@@ -39,7 +39,8 @@ class CreateIntervalDatabaseData:
 class CreateTriggerDatabaseData:
     """ Creates a object, holding required data for making a Trigger SQL execute string. """
 
-    def __init__(self):
+    def __init__(self, installed_sensors):
+        self.installed_sensors = installed_sensors
         self.variance = 99999.99
         self.sql_columns_str = "DateTime,SensorName,IP,"
         self.sql_sensor_name = ""
@@ -88,8 +89,12 @@ class CreateTriggerDatabaseData:
         return sql_execute_commands_list
 
     def _update_sql_name_and_ip(self):
-        self.sql_sensor_name = operations_sensors.os_sensor_access.get_hostname()
-        self.sql_ip = operations_sensors.os_sensor_access.get_ip()
+        if self.installed_sensors.linux_system:
+            self.sql_sensor_name = operations_sensors.os_sensor_access.get_hostname()
+            self.sql_ip = operations_sensors.os_sensor_access.get_ip()
+        else:
+            self.sql_sensor_name = "Sensor Disabled"
+            self.sql_ip = "Sensor Disabled"
 
 
 class CreateOtherDataEntry:

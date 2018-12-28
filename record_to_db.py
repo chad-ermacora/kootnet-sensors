@@ -121,7 +121,7 @@ def check_write_trigger_data():
 
 
 def _acc_check_thread():
-    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data = operations_db.CreateTriggerDatabaseData(installed_sensors)
     new_trigger_data.variance = current_config.acc_variance
     new_trigger_data.sql_columns_str += database_variables.get_acc_columns_str()
 
@@ -138,7 +138,7 @@ def _acc_check_thread():
 
 
 def _mag_check_thread():
-    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data = operations_db.CreateTriggerDatabaseData(installed_sensors)
     new_trigger_data.variance = current_config.mag_variance
     new_trigger_data.sql_columns_str += database_variables.get_mag_columns_str()
 
@@ -155,7 +155,7 @@ def _mag_check_thread():
 
 
 def _gyro_check_thread():
-    new_trigger_data = operations_db.CreateTriggerDatabaseData()
+    new_trigger_data = operations_db.CreateTriggerDatabaseData(installed_sensors)
     new_trigger_data.variance = current_config.gyro_variance
     new_trigger_data.sql_columns_str += database_variables.get_gyro_columns_str()
 
