@@ -25,7 +25,7 @@ from operations_modules import operations_logger
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.9"
+version = "Alpha.23.10"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -34,7 +34,7 @@ config_file_location = "/etc/kootnet/sql_recording.conf"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 
-trigger_pairs = 5
+trigger_pairs = 3
 
 restart_sensor_services_command = "systemctl daemon-reload && " + \
                                   "systemctl restart SensorRecording && " + \
@@ -415,8 +415,9 @@ def installed_sensors_convert_from_file(installed_sensors_file):
 
     try:
         if int(installed_sensors_file[1][:1]):
-            new_installed_sensors.no_sensors = False
             new_installed_sensors.linux_system = 1
+        else:
+            new_installed_sensors.linux_system = 0
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.linux_system_name)
 
