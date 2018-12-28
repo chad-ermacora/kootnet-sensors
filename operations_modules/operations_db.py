@@ -18,7 +18,7 @@
 """
 import sqlite3
 
-import operations_modules.operations_sensors as operations_sensors
+from operations_modules import operations_sensors
 from operations_modules import operations_logger
 from operations_modules.operations_config import sensor_database_location
 

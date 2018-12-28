@@ -25,7 +25,7 @@ from operations_modules import operations_logger
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.10"
+version = "Alpha.23.11"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
