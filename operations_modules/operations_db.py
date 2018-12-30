@@ -61,7 +61,7 @@ class CreateTriggerDatabaseData:
         self.sql_readings2 = []
         self.sql_readings2_datetime = []
 
-    def get_single_sql_write_str(self):
+    def get_sql_write_str(self):
         self._update_sql_name_and_ip()
 
         sql_execute_commands_list = []
@@ -77,52 +77,9 @@ class CreateTriggerDatabaseData:
                 sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "',"
                 sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "',"
 
-            count2 = 0
-            while count2 < 3:
-                sql_execute_readings1 += "'" + str(reading[count2]) + "',"
-                sql_execute_readings2 += "'" + str(self.sql_readings2[count][count2]) + "',"
-                count2 += 1
+            sql_execute_readings1 += "'" + str(reading) + "'"
+            sql_execute_readings2 += "'" + str(self.sql_readings2[count]) + "'"
             count += 1
-
-            sql_execute_readings1 = sql_execute_readings1[:-1]
-            sql_execute_readings2 = sql_execute_readings2[:-1]
-
-            sql_execute1 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
-                            sql_execute_readings1 + self.sql_query_values_end)
-
-            sql_execute2 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
-                            sql_execute_readings2 + self.sql_query_values_end)
-
-            sql_execute_commands_list.append(sql_execute1)
-            sql_execute_commands_list.append(sql_execute2)
-
-        return sql_execute_commands_list
-
-    def get_xyz_sql_write_str(self):
-        self._update_sql_name_and_ip()
-
-        sql_execute_commands_list = []
-
-        count = 0
-        for reading in self.sql_readings1:
-            if self.installed_sensors.linux_system:
-                sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "','" + \
-                                        self.sql_sensor_name + "','" + self.sql_ip + "',"
-                sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "','" + \
-                                        self.sql_sensor_name + "','" + self.sql_ip + "',"
-            else:
-                sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "',"
-                sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "',"
-
-            count2 = 0
-            while count2 < 3:
-                sql_execute_readings1 += "'" + str(reading[count2]) + "',"
-                sql_execute_readings2 += "'" + str(self.sql_readings2[count][count2]) + "',"
-                count2 += 1
-            count += 1
-
-            sql_execute_readings1 = sql_execute_readings1[:-1]
-            sql_execute_readings2 = sql_execute_readings2[:-1]
 
             sql_execute1 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
                             sql_execute_readings1 + self.sql_query_values_end)

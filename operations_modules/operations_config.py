@@ -25,7 +25,7 @@ from operations_modules import operations_logger
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.11"
+version = "Alpha.23.12"
 sense_hat_show_led_message = False
 
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
@@ -83,27 +83,6 @@ class CreateDatabaseVariables:
         self.gyro_x = "Gyro_X"
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
-
-    def get_acc_columns_str(self):
-        acc_str = self.acc_x + "," + self.acc_y + "," + self.acc_z
-        return acc_str
-
-    def get_mag_columns_str(self):
-        acc_str = self.mag_x + "," + self.mag_y + "," + self.mag_z
-        return acc_str
-
-    def get_gyro_columns_str(self):
-        acc_str = self.gyro_x + "," + self.gyro_y + "," + self.gyro_z
-        return acc_str
-
-    def get_six_colours_columns_str(self):
-        six_colours = self.red + "," + self.orange + "," + self.yellow + "," + \
-                      self.green + "," + self.blue + "," + self.violet + ","
-        return six_colours
-
-    def get_rgb_columns_str(self):
-        rgb = self.red + "," + self.green + "," + self.blue + ","
-        return rgb
 
     def get_sensor_columns_list(self):
         sensor_sql_columns = [self.sensor_name,
@@ -204,14 +183,56 @@ class CreateInstalledSensors:
         return str_installed_sensors[:-4]
 
 
+class CreateTriggerVariances:
+    def __init__(self):
+        self.installed_sensors = get_installed_sensors()
+        self.acc = 99999.99
+        self.mag = 99999.99
+        self.gyro = 99999.99
+
+        self.sensor_name = 99999.99
+        self.ip = 99999.99
+        self.sensor_uptime = 99999.99
+        self.cpu_temperature = 99999.99
+        self.env_temperature = 99999.99
+        self.pressure = 99999.99
+        self.humidity = 99999.99
+        self.lumen = 99999.99
+        self.red = 99999.99
+        self.orange = 99999.99
+        self.yellow = 99999.99
+        self.green = 99999.99
+        self.blue = 99999.99
+        self.violet = 99999.99
+        self.set_default_variances_per_sensor()
+
+    def set_default_variances_per_sensor(self):
+        """ Sets default values for all variances in the provided configuration object. """
+
+        if self.installed_sensors.raspberry_pi_sense_hat:
+            self.acc = 0.01
+            self.mag = 2.0
+            self.gyro = 0.05
+        if self.installed_sensors.pimoroni_enviro:
+            self.acc = 0.05
+            self.mag = 600.0
+        if self.installed_sensors.pimoroni_lsm303d:
+            self.acc = 0.1
+            self.mag = 0.02
+
+
 class CreateConfig:
     """ Creates object with default sensor configuration settings. """
 
     def __init__(self):
         self.write_to_db = 1
+        self.enable_interval_recording = 1
+        self.enable_trigger_recording = 1
         self.enable_custom = 0
         self.sleep_duration_interval = 300
         self.sleep_duration_trigger = 0.15
+
+        # Remove variances when all using TriggerVariance class
         self.acc_variance = 99999.99
         self.mag_variance = 99999.99
         self.gyro_variance = 99999.99
