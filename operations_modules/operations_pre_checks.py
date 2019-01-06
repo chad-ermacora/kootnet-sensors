@@ -20,11 +20,13 @@ import os
 import sqlite3
 
 from operations_modules import operations_config
+import operations_modules.operations_file_locations as file_locations
+from operations_modules.operations_db import CreateDatabaseVariables
 from operations_modules import operations_logger
 from operations_modules import operations_upgrades
 
-create_important_files = [operations_config.last_updated_file_location,
-                          operations_config.old_version_file_location]
+create_important_files = [file_locations.last_updated_file_location,
+                          file_locations.old_version_file_location]
 
 
 class CreateRefinedVersion:
@@ -41,7 +43,7 @@ class CreateRefinedVersion:
             self.minor_version = int(old_version_split[2])
         except Exception as error:
             operations_logger.primary_logger.warning("Missing version file or Invalid format: " +
-                                                     operations_config.old_version_file_location +
+                                                     file_locations.old_version_file_location +
                                                      " - Configuration files reset to defaults")
             operations_logger.primary_logger.debug(str(error))
 
@@ -52,10 +54,10 @@ class CreateRefinedVersion:
 
 def check_database_structure():
     operations_logger.primary_logger.debug("Running DB Checks")
-    database_variables = operations_config.CreateDatabaseVariables()
+    database_variables = CreateDatabaseVariables()
 
     try:
-        db_connection = sqlite3.connect(operations_config.sensor_database_location)
+        db_connection = sqlite3.connect(file_locations.sensor_database_location)
         db_cursor = db_connection.cursor()
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)
@@ -112,7 +114,12 @@ def run_upgrade_checks():
                 operations_upgrades.update_ver_a_22_20()
                 operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
-
+        elif old_version.feature_version == 23:
+            if old_version.minor_version < 0:
+                no_changes = False
+                operations_upgrades.update_ver_a_23_15()
+                operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
+                                                      " || New: " + operations_config.version)
     if no_changes:
         operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                               old_version.get_version_str() + " New: " + operations_config.version)
@@ -127,7 +134,7 @@ def restart_services():
 
 def _write_program_version_to_file():
     operations_logger.primary_logger.debug("Current version file updating")
-    current_version_file = open(operations_config.old_version_file_location, 'w')
+    current_version_file = open(file_locations.old_version_file_location, 'w')
     current_version_file.write(operations_config.version)
     current_version_file.close()
 

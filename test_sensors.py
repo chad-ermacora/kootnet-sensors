@@ -1,15 +1,14 @@
-from operations_modules import operations_config
-from operations_modules import operations_sensors
 import sensor_modules.raspberry_pi_sensehat
+from operations_modules.operations_config import current_config, installed_sensors
+from operations_modules import operations_sensors
+from sensor_modules.temperature_offsets import get_sensor_temperature_offset
 
-installed_sensors = operations_config.get_installed_sensors()
-current_config = operations_config.get_installed_config()
 
 interval_data = operations_sensors.get_interval_sensor_readings()
 interval_data.sensor_types = interval_data.sensor_types.split(",")
 interval_data.sensor_readings = interval_data.sensor_readings.split(",")
 
-current_config.custom_temperature_offset = operations_config.get_sensor_temperature_offset()
+current_config.custom_temperature_offset = get_sensor_temperature_offset()
 
 print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n" +
       "Record to SQL: " + str(current_config.write_to_db) +
@@ -29,7 +28,8 @@ while count < len(interval_data.sensor_types):
                   str(interval_data.sensor_types[count]) + ": " + \
                   str(interval_data.sensor_readings[count] + " | ")
 
-    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(interval_data.sensor_types) - 1:
+    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(
+            interval_data.sensor_types) - 1:
         print(str_message)
         str_message = ""
     count = count + 1

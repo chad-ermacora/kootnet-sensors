@@ -19,10 +19,7 @@
 from datetime import datetime
 
 from operations_modules import operations_db
-from operations_modules.operations_config import get_installed_sensors, \
-    get_installed_config, \
-    get_sensor_temperature_offset, \
-    get_old_version, version
+from operations_modules.operations_config import installed_sensors, get_old_version, version
 from sensor_modules import linux_os
 from sensor_modules import pimoroni_as7262
 from sensor_modules import pimoroni_bh1745
@@ -33,9 +30,7 @@ from sensor_modules import pimoroni_ltr_559
 from sensor_modules import pimoroni_vl53l1x
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
-
-installed_sensors = get_installed_sensors()
-current_config = get_installed_config()
+from sensor_modules.temperature_offsets import get_sensor_temperature_offset
 
 if get_old_version() == version:
     # Initialize sensor access, based on installed sensors file
@@ -267,8 +262,22 @@ def get_trigger_sensor_readings():
 def get_hostname():
     """ Returns sensors hostname. """
     if installed_sensors.linux_system:
-        sensor_name = os_sensor_access.get_hostname()
-        return sensor_name
+        return os_sensor_access.get_hostname()
+    else:
+        return "NoSensor"
+
+
+def get_ip():
+    """ Returns sensor IP Address. """
+    if installed_sensors.linux_system:
+        return os_sensor_access.get_ip()
+    else:
+        return "NoSensor"
+
+
+def get_system_datetime():
+    if installed_sensors.linux_system:
+        return os_sensor_access.get_sys_datetime()
     else:
         return "NoSensor"
 
@@ -278,6 +287,13 @@ def get_system_uptime():
     if installed_sensors.linux_system:
         sensor_uptime = os_sensor_access.get_uptime()
         return sensor_uptime
+    else:
+        return "NoSensor"
+
+
+def get_db_size():
+    if installed_sensors.linux_system:
+        return os_sensor_access.get_sql_db_size()
     else:
         return "NoSensor"
 

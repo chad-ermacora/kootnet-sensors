@@ -19,10 +19,12 @@
 import os
 
 from operations_modules import operations_logger
-from operations_modules.operations_config import CreateInstalledSensors, write_installed_sensors_to_file, sensors_installed_file_location
+from operations_modules.operations_file_locations import sensors_installed_file_location, config_file_location
+from operations_modules.operations_installed_sensors import CreateInstalledSensors, write_installed_sensors_to_file
+from operations_modules.operations_config_file import CreateConfig, write_config_to_file
 
 
-def get_installed_sensors():
+def get_installed_sensors_raw():
     """ Loads RAW sensors from file and returns it. """
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
 
@@ -37,10 +39,28 @@ def get_installed_sensors():
     else:
         operations_logger.primary_logger.error("Installed Sensors file not found, using and saving default")
         raw_installed_sensor_file = []
-        installed_sensors = CreateInstalledSensors()
-        write_installed_sensors_to_file(installed_sensors)
 
     return raw_installed_sensor_file
+
+
+def get_installed_config_raw():
+    """ Loads configuration from file and returns it as a configuration object. """
+    operations_logger.primary_logger.debug("Loading Configuration File")
+
+    if os.path.isfile(config_file_location):
+        try:
+            config_file = open(config_file_location, "r")
+            config_file_content = config_file.readlines()
+            config_file.close()
+        except Exception as error:
+            operations_logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+            config_file_content = []
+
+    else:
+        operations_logger.primary_logger.error("Configuration file not found, using and saving default")
+        config_file_content = []
+
+    return config_file_content
 
 
 def update_ver_a_22_8():
@@ -54,7 +74,7 @@ def update_ver_a_22_8():
 
 def update_ver_a_22_20():
     new_installed_sensors = CreateInstalledSensors()
-    installed_sensors_file = get_installed_sensors()
+    installed_sensors_file = get_installed_sensors_raw()
 
     try:
         if int(installed_sensors_file[1][:1]):
@@ -128,3 +148,58 @@ def update_ver_a_22_20():
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
 
     write_installed_sensors_to_file(new_installed_sensors)
+
+
+def update_ver_a_23_15():
+    new_config = CreateConfig()
+    config_text_file = get_installed_config_raw()
+
+    try:
+        new_config.write_to_db = int(config_text_file[1].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Record Sensors to SQL Database: " + str(error))
+
+    try:
+        new_config.sleep_duration_interval = float(config_text_file[2].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning(
+            "Invalid Config - Interval reading delay in Seconds: " + str(error))
+
+    try:
+        new_config.sleep_duration_trigger = float(config_text_file[3].split('=')[0].strip())
+        # Ensure trigger duration is not too low
+        if new_config.sleep_duration_trigger < 0.05:
+            new_config.sleep_duration_trigger = 0.05
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Trigger reading delay in Seconds: " + str(error))
+
+    try:
+        new_config.enable_custom = int(config_text_file[4].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Enable Custom Settings: " + str(error))
+
+    if new_config.enable_custom:
+        try:
+            new_config.acc_variance = float(config_text_file[5].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning(
+                "Invalid Config - Custom Accelerometer variance: " + str(error))
+
+        try:
+            new_config.mag_variance = float(config_text_file[6].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning("Invalid Config - Custom Magnetometer variance: " + str(error))
+
+        try:
+            new_config.gyro_variance = float(config_text_file[7].split('=')[0].strip())
+        except Exception as error:
+            operations_logger.primary_logger.warning("Invalid Config - Custom Gyroscope variance: " + str(error))
+
+    try:
+        new_config.custom_temperature_offset = float(config_text_file[9].split('=')[0].strip())
+        if int(config_text_file[8].split('=')[0].strip()):
+            new_config.enable_custom_temp = 1
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
+
+    write_config_to_file(new_config)

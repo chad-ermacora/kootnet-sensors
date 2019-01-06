@@ -23,13 +23,20 @@ from time import sleep
 from flask import Flask, request
 from gevent import monkey, pywsgi
 
+import operations_modules.operations_file_locations as file_locations
 from operations_modules import operations_commands
-from operations_modules import operations_config
 from operations_modules import operations_html_templates
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
+from operations_modules.operations_config import current_config, installed_sensors, version, get_old_version, \
+    flask_http_ip, flask_http_port, bash_commands
+from operations_modules.operations_config_file import convert_config_to_str, convert_config_lines_to_obj, \
+    write_config_to_file
+from operations_modules.operations_installed_sensors import convert_installed_sensors_to_str, \
+    convert_installed_sensors_lines_to_obj, write_installed_sensors_to_file
+from sensor_modules.temperature_offsets import get_sensor_temperature_offset
 
-if operations_config.get_old_version() != operations_config.version:
+if get_old_version() != version:
     operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
     # Sleep before loading anything due to needed updates
     # The update service started by "record_to_db.py" will automatically restart this app when it's done
@@ -38,8 +45,6 @@ if operations_config.get_old_version() != operations_config.version:
 
 monkey.patch_all()
 app = Flask(__name__)
-
-installed_sensors = operations_config.get_installed_sensors()
 
 # If installed, start up SenseHAT Joystick program
 if installed_sensors.raspberry_pi_sense_hat:
@@ -55,7 +60,7 @@ def root_http():
 
 @app.route("/Ver")
 def show_version():
-    message = "<p>KootNet Sensors || " + operations_config.version + "</p>"
+    message = "<p>KootNet Sensors || " + version + "</p>"
     config = operations_commands.get_config_information().split(",")[-1]
     message += "<p>" + config + "</p>"
     return message
@@ -119,16 +124,14 @@ def get_configuration_report():
 @app.route("/GetInstalledSensors")
 def get_installed_sensors():
     operations_logger.network_logger.info("* Sent Installed Sensors")
-    current_installed_sensors = operations_config.get_installed_sensors()
-    installed_sensors_str = operations_config.installed_sensors_convert_to_file(current_installed_sensors)
+    installed_sensors_str = convert_installed_sensors_to_str(installed_sensors)
     return installed_sensors_str
 
 
 @app.route("/GetConfiguration")
 def get_configuration():
     operations_logger.network_logger.info("* Sent Sensors Configuration")
-    current_installed_config = operations_config.get_installed_config()
-    installed_config_str = operations_config.config_convert_to_file(current_installed_config)
+    installed_config_str = convert_config_to_str(current_config)
     return installed_config_str
 
 
@@ -183,7 +186,7 @@ def download_sensors_log():
 @app.route("/DownloadSQLDatabase")
 def download_sensors_sql_database():
     operations_logger.network_logger.info("* Sent Sensor SQL Database")
-    local_db = open(operations_config.sensor_database_location, "rb")
+    local_db = open(file_locations.sensor_database_location, "rb")
     sensor_database = local_db.read()
     local_db.close()
     return sensor_database
@@ -199,28 +202,28 @@ def put_sql_note():
 
 @app.route("/UpgradeOnline", methods=["PUT"])
 def upgrade_http():
-    os.system(operations_commands.bash_commands["UpgradeOnline"])
+    os.system(bash_commands["UpgradeOnline"])
     operations_logger.network_logger.info("* update_programs_online.sh Complete")
     return "OK"
 
 
 @app.route("/CleanOnline")
 def upgrade_clean_http():
-    os.system(operations_commands.bash_commands["CleanOnline"])
+    os.system(bash_commands["CleanOnline"])
     operations_logger.network_logger.info("* Started Clean Upgrade - HTTP")
     return "OK"
 
 
 @app.route("/UpgradeSMB")
 def upgrade_smb():
-    os.system(operations_commands.bash_commands["UpgradeSMB"])
+    os.system(bash_commands["UpgradeSMB"])
     operations_logger.network_logger.info("* update_programs_smb.sh Complete")
     return "OK"
 
 
 @app.route("/CleanSMB")
 def upgrade_clean_smb():
-    os.system(operations_commands.bash_commands["CleanSMB"])
+    os.system(bash_commands["CleanSMB"])
     operations_logger.network_logger.info("* Started Clean Upgrade - SMB")
     return "OK"
 
@@ -228,13 +231,13 @@ def upgrade_clean_smb():
 @app.route("/UpgradeSystemOS")
 def upgrade_system_os():
     operations_logger.network_logger.info("* Updating Operating System & rebooting")
-    os.system(operations_commands.bash_commands["UpgradeSystemOS"])
+    os.system(bash_commands["UpgradeSystemOS"])
     return "OK"
 
 
 @app.route("/inkupg")
 def upgrade_rp_controller():
-    os.system(operations_commands.bash_commands["inkupg"])
+    os.system(bash_commands["inkupg"])
     operations_logger.network_logger.info("* update_programs_e-Ink.sh Complete")
     return "OK"
 
@@ -242,13 +245,13 @@ def upgrade_rp_controller():
 @app.route("/RebootSystem")
 def system_reboot():
     operations_logger.network_logger.info("* Rebooting System")
-    os.system(operations_commands.bash_commands["RebootSystem"])
+    os.system(bash_commands["RebootSystem"])
 
 
 @app.route("/ShutdownSystem")
 def system_shutdown():
     operations_logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
-    os.system(operations_commands.bash_commands["ShutdownSystem"])
+    os.system(bash_commands["ShutdownSystem"])
 
 
 @app.route("/RestartServices")
@@ -281,8 +284,8 @@ def set_configuration():
     operations_logger.network_logger.info("* Setting Sensor Configuration")
 
     raw_config = request.form['command_data'].splitlines()
-    new_config = operations_config.config_convert_from_file(raw_config)
-    operations_config.write_config_to_file(new_config)
+    new_config = convert_config_lines_to_obj(raw_config)
+    write_config_to_file(new_config)
     operations_commands.restart_services()
     return "OK"
 
@@ -291,8 +294,8 @@ def set_configuration():
 def set_installed_sensors():
     operations_logger.network_logger.info("* Setting Sensor Installed Sensors")
     raw_installed_sensors = request.form['command_data'].splitlines()
-    new_installed_sensors = operations_config.installed_sensors_convert_from_file(raw_installed_sensors)
-    operations_config.write_installed_sensors_to_file(new_installed_sensors)
+    new_installed_sensors = convert_installed_sensors_lines_to_obj(raw_installed_sensors)
+    write_installed_sensors_to_file(new_installed_sensors)
     operations_commands.restart_services()
     return "OK"
 
@@ -324,7 +327,7 @@ def get_env_temperature():
 @app.route("/GetTempOffsetEnv")
 def get_env_temp_offset():
     operations_logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
-    return str(operations_sensors.get_sensor_temperature_offset())
+    return str(get_sensor_temperature_offset())
 
 
 @app.route("/GetPressure")
@@ -369,6 +372,6 @@ def get_gyro_xyz():
     return str(operations_sensors.get_gyroscope_xyz())
 
 
-operations_logger.network_logger.info("** starting up on port " + str(operations_config.flask_http_port) + " **")
-http_server = pywsgi.WSGIServer((operations_config.flask_http_ip, operations_config.flask_http_port), app)
+operations_logger.network_logger.info("** starting up on port " + str(flask_http_port) + " **")
+http_server = pywsgi.WSGIServer((flask_http_ip, flask_http_port), app)
 http_server.serve_forever()
