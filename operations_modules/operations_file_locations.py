@@ -19,6 +19,7 @@
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
 config_file_location = "/etc/kootnet/sql_recording.conf"
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
+trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
