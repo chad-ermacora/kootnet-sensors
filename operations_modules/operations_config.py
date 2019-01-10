@@ -20,7 +20,8 @@
 import operations_modules.operations_config_file as operations_config_file
 import operations_modules.operations_file_locations as file_locations
 import operations_modules.operations_installed_sensors as operations_installed_sensors
-from sensor_modules.trigger_variances import CreateTriggerVariances
+from operations_modules.operations_config_db import CreateDatabaseVariables
+from sensor_modules.trigger_variances import get_triggers_from_file
 
 # IP and Port for Flask to start up on
 flask_http_ip = ""
@@ -47,7 +48,9 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-
 current_config = operations_config_file.get_config_from_file()
 installed_sensors = operations_installed_sensors.get_installed_sensors_from_file()
 
-trigger_variances = CreateTriggerVariances(installed_sensors)
+database_variables = CreateDatabaseVariables()
+trigger_variances = get_triggers_from_file()
+trigger_variances.init_trigger_variances(installed_sensors)
 current_config.old_config_variance_set(installed_sensors)
 
 
