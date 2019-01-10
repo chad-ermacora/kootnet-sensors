@@ -189,7 +189,7 @@ def get_interval_sensor_readings():
 
 def get_trigger_sensor_readings():
     """ Returns Trigger sensor readings from installed sensors (set in installed sensors file). """
-    trigger_data = operations_db.CreateTriggerDatabaseData(installed_sensors)
+    trigger_data = operations_db.CreateTriggerDatabaseData()
     trigger_data.sensor_types = "DateTime, "
     trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
