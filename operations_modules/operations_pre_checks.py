@@ -21,7 +21,6 @@ import sqlite3
 
 from operations_modules import operations_config
 import operations_modules.operations_file_locations as file_locations
-from operations_modules.operations_db import CreateDatabaseVariables
 from operations_modules import operations_logger
 from operations_modules import operations_upgrades
 
@@ -54,7 +53,7 @@ class CreateRefinedVersion:
 
 def check_database_structure():
     operations_logger.primary_logger.debug("Running DB Checks")
-    database_variables = CreateDatabaseVariables()
+    database_variables = operations_config.database_variables
 
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database_location)
