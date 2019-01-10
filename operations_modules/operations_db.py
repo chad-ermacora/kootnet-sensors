@@ -18,9 +18,10 @@
 """
 import sqlite3
 
-from operations_modules import operations_sensors
-from operations_modules import operations_logger
 import operations_modules.operations_file_locations as file_locations
+from operations_modules import operations_logger
+from operations_modules import operations_sensors
+from operations_modules.operations_config import installed_sensors
 
 
 class CreateIntervalDatabaseData:
@@ -39,8 +40,7 @@ class CreateIntervalDatabaseData:
 class CreateTriggerDatabaseData:
     """ Creates a object, holding required data for making a Trigger SQL execute string. """
 
-    def __init__(self, installed_sensors):
-        self.installed_sensors = installed_sensors
+    def __init__(self):
         self.variance = 99999.99
 
         if installed_sensors.linux_system:
@@ -68,7 +68,7 @@ class CreateTriggerDatabaseData:
 
         count = 0
         for reading in self.sql_readings1:
-            if self.installed_sensors.linux_system:
+            if installed_sensors.linux_system:
                 sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "','" + \
                                         self.sql_sensor_name + "','" + self.sql_ip + "',"
                 sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "','" + \
@@ -93,7 +93,7 @@ class CreateTriggerDatabaseData:
         return sql_execute_commands_list
 
     def _update_sql_name_and_ip(self):
-        if self.installed_sensors.linux_system:
+        if installed_sensors.linux_system:
             self.sql_sensor_name = operations_sensors.os_sensor_access.get_hostname()
             self.sql_ip = operations_sensors.os_sensor_access.get_ip()
 
@@ -109,73 +109,6 @@ class CreateOtherDataEntry:
 
         self.sensor_types = ""
         self.sensor_readings = ""
-
-
-class CreateDatabaseVariables:
-    def __init__(self):
-        self.table_interval = "IntervalData"
-        self.table_trigger = "TriggerData"
-        self.table_other = "OtherData"
-
-        self.other_table_column_user_date_time = "UserDateTime"
-        self.other_table_column_notes = "Notes"
-
-        self.sensor_name = "SensorName"
-        self.ip = "IP"
-        self.sensor_uptime = "SensorUpTime"
-        self.system_temperature = "SystemTemp"
-        self.env_temperature = "EnvironmentTemp"
-        self.env_temperature_offset = "EnvTempOffset"
-        self.pressure = "Pressure"
-        self.humidity = "Humidity"
-        self.lumen = "Lumen"
-        self.red = "Red"
-        self.orange = "Orange"
-        self.yellow = "Yellow"
-        self.green = "Green"
-        self.blue = "Blue"
-        self.violet = "Violet"
-        self.acc_x = "Acc_X"
-        self.acc_y = "Acc_Y"
-        self.acc_z = "Acc_Z"
-        self.mag_x = "Mag_X"
-        self.mag_y = "Mag_Y"
-        self.mag_z = "Mag_Z"
-        self.gyro_x = "Gyro_X"
-        self.gyro_y = "Gyro_Y"
-        self.gyro_z = "Gyro_Z"
-
-    def get_sensor_columns_list(self):
-        sensor_sql_columns = [self.sensor_name,
-                              self.ip,
-                              self.sensor_uptime,
-                              self.system_temperature,
-                              self.env_temperature,
-                              self.env_temperature_offset,
-                              self.pressure,
-                              self.humidity,
-                              self.lumen,
-                              self.red,
-                              self.orange,
-                              self.yellow,
-                              self.green,
-                              self.blue,
-                              self.violet,
-                              self.acc_x,
-                              self.acc_y,
-                              self.acc_z,
-                              self.mag_x,
-                              self.mag_y,
-                              self.mag_z,
-                              self.gyro_x,
-                              self.gyro_y,
-                              self.gyro_z]
-        return sensor_sql_columns
-
-    def get_other_columns_list(self):
-        other_sql_columns = [self.other_table_column_user_date_time,
-                             self.other_table_column_notes]
-        return other_sql_columns
 
 
 def write_to_sql_database(sql_execute):
