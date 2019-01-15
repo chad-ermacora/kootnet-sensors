@@ -20,7 +20,7 @@ import os
 from threading import Thread
 from time import sleep
 
-from flask import Flask, request
+from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
 
 import operations_modules.operations_file_locations as file_locations
@@ -165,31 +165,29 @@ def get_sensors_log():
 @app.route("/DownloadPrimaryLog")
 def download_primary_log():
     operations_logger.network_logger.info("* Sent Full Primary Log")
-    log = operations_commands.get_sensor_log(operations_logger.primary_log)
-    return log
+    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
+    return send_file(operations_logger.primary_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadNetworkLog")
 def download_network_log():
     operations_logger.network_logger.info("* Sent Full Network Log")
-    log = operations_commands.get_sensor_log(operations_logger.network_log)
-    return log
+    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "NetworkLog.txt"
+    return send_file(operations_logger.network_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadSensorsLog")
 def download_sensors_log():
     operations_logger.network_logger.info("* Sent Full Sensor Log")
-    log = operations_commands.get_sensor_log(operations_logger.sensors_log)
-    return log
+    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "SensorLog.txt"
+    return send_file(operations_logger.sensors_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadSQLDatabase")
 def download_sensors_sql_database():
     operations_logger.network_logger.info("* Sent Sensor SQL Database")
-    local_db = open(file_locations.sensor_database_location, "rb")
-    sensor_database = local_db.read()
-    local_db.close()
-    return sensor_database
+    sql_filename = operations_sensors.get_ip()[-3:].replace(".", "_") + "SensorRecordingDatabase.sqlite"
+    return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
 
 
 @app.route("/PutDatabaseNote", methods=["PUT"])
