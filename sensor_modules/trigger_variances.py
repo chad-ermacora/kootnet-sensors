@@ -28,7 +28,7 @@ class CreateTriggerVariances:
         self.sensor_name_wait_seconds = 600.00
         self.ip = 0
         self.ip_wait_seconds = 300.00
-        self.sensor_uptime = 99999
+        self.sensor_uptime = 0
         self.sensor_uptime_wait_seconds = 86400.00
         self.cpu_temperature = 99999.99
         self.cpu_temperature_wait_seconds = 99999.99

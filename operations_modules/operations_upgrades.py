@@ -150,7 +150,7 @@ def update_ver_a_22_20():
     write_installed_sensors_to_file(new_installed_sensors)
 
 
-def update_ver_a_23_15():
+def update_ver_a_23_17():
     new_config = CreateConfig()
     config_text_file = get_installed_config_raw()
 

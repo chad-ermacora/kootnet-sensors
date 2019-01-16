@@ -34,7 +34,6 @@ from operations_modules.operations_config_file import convert_config_to_str, con
     write_config_to_file
 from operations_modules.operations_installed_sensors import convert_installed_sensors_to_str, \
     convert_installed_sensors_lines_to_obj, write_installed_sensors_to_file
-from sensor_modules.temperature_offsets import get_sensor_temperature_offset
 
 if get_old_version() != version:
     operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
@@ -325,7 +324,7 @@ def get_env_temperature():
 @app.route("/GetTempOffsetEnv")
 def get_env_temp_offset():
     operations_logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
-    return str(get_sensor_temperature_offset())
+    return str(current_config.temperature_offset)
 
 
 @app.route("/GetPressure")

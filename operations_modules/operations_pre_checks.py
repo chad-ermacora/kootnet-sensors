@@ -114,9 +114,9 @@ def run_upgrade_checks():
                 operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
         elif old_version.feature_version == 23:
-            if old_version.minor_version < 0:
+            if old_version.minor_version < 17:
                 no_changes = False
-                operations_upgrades.update_ver_a_23_15()
+                operations_upgrades.update_ver_a_23_17()
                 operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
     if no_changes:

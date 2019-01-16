@@ -19,7 +19,7 @@
 from datetime import datetime
 
 from operations_modules import operations_db
-from operations_modules.operations_config import installed_sensors, get_old_version, version
+from operations_modules.operations_config import installed_sensors, current_config, get_old_version, version
 from sensor_modules import linux_os
 from sensor_modules import pimoroni_as7262
 from sensor_modules import pimoroni_bh1745
@@ -30,7 +30,7 @@ from sensor_modules import pimoroni_ltr_559
 from sensor_modules import pimoroni_vl53l1x
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
-from sensor_modules.temperature_offsets import get_sensor_temperature_offset
+
 
 if get_old_version() == version:
     # Initialize sensor access, based on installed sensors file
@@ -88,7 +88,7 @@ def get_interval_sensor_readings():
                                       "Acc_X, Acc_Y, Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z, "
 
         interval_data.sensor_readings += "'" + str(rp_sense_hat_sensor_access.temperature()) + "', '" + \
-                                         str(get_sensor_temperature_offset()) + "', '" + \
+                                         str(current_config.temperature_offset) + "', '" + \
                                          str(rp_sense_hat_sensor_access.pressure()) + "', '" + \
                                          str(rp_sense_hat_sensor_access.humidity()) + "', "
 
@@ -129,7 +129,7 @@ def get_interval_sensor_readings():
         interval_data.sensor_types += "EnvironmentTemp, EnvTempOffset, Pressure, Humidity, "
 
         interval_data.sensor_readings += "'" + str(pimoroni_bme680_sensor_access.temperature()) + "', '" + \
-                                         str(get_sensor_temperature_offset()) + "', '" + \
+                                         str(current_config.temperature_offset) + "', '" + \
                                          str(pimoroni_bme680_sensor_access.pressure()) + "', '" + \
                                          str(pimoroni_bme680_sensor_access.humidity()) + "', "
 
@@ -147,7 +147,7 @@ def get_interval_sensor_readings():
             "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
 
         interval_data.sensor_readings += "'" + str(pimoroni_enviro_sensor_access.temperature()) + "', '" + \
-                                         str(get_sensor_temperature_offset()) + "', '" + \
+                                         str(current_config.temperature_offset) + "', '" + \
                                          str(pimoroni_enviro_sensor_access.pressure()) + "', '" + \
                                          str(pimoroni_enviro_sensor_access.lumen()) + "', '" + \
                                          str(rgb_colour[0]) + "', '" + \

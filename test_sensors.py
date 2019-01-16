@@ -1,14 +1,13 @@
 import sensor_modules.raspberry_pi_sensehat
 from operations_modules.operations_config import current_config, installed_sensors
 from operations_modules import operations_sensors
-from sensor_modules.temperature_offsets import get_sensor_temperature_offset
 
 
 interval_data = operations_sensors.get_interval_sensor_readings()
 interval_data.sensor_types = interval_data.sensor_types.split(",")
 interval_data.sensor_readings = interval_data.sensor_readings.split(",")
 
-current_config.custom_temperature_offset = get_sensor_temperature_offset()
+current_config.custom_temperature_offset = current_config.temperature_offset
 
 print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n" +
       "Record to SQL: " + str(current_config.write_to_db) +

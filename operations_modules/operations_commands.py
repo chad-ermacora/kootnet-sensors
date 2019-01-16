@@ -59,8 +59,8 @@ def get_system_information():
                           "," + str(round(float(operations_sensors.get_cpu_temperature()), 2)) + \
                           "," + str(round(free_disk / (2 ** 30), 2)) + \
                           "," + str(operations_sensors.get_db_size()) + \
-                          "," + str(current_config.write_to_db) + \
-                          "," + str(current_config.enable_custom) + \
+                          "," + str(current_config.enable_interval_recording) + \
+                          "," + str(current_config.enable_trigger_recording) + \
                           "," + str(get_last_updated())
     except Exception as error:
         operations_logger.network_logger.error("Sensor reading failed - " + str(error))
@@ -74,13 +74,11 @@ def get_config_information():
     str_installed_sensors = installed_sensors.get_installed_names_str()
 
     try:
-        tmp_str_config = str(current_config.sleep_duration_interval) + \
-                         "," + str(current_config.sleep_duration_trigger) + \
-                         "," + str(current_config.write_to_db) + \
-                         "," + str(current_config.enable_custom) + \
-                         "," + str(current_config.acc_variance) + \
-                         "," + str(current_config.mag_variance) + \
-                         "," + str(current_config.gyro_variance) + \
+        tmp_str_config = str(current_config.enable_interval_recording) + \
+                         "," + str(current_config.enable_trigger_recording) + \
+                         "," + str(current_config.sleep_duration_interval) + \
+                         "," + str(current_config.enable_custom_temp) + \
+                         "," + str(current_config.temperature_offset) + \
                          "," + str(str_installed_sensors)
 
     except Exception as error:
