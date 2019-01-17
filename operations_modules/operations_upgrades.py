@@ -19,7 +19,7 @@
 import os
 
 from operations_modules import operations_logger
-from operations_modules.operations_file_locations import sensors_installed_file_location, config_file_location
+import operations_modules.operations_file_locations as file_locations
 from operations_modules.operations_installed_sensors import CreateInstalledSensors, write_installed_sensors_to_file
 from operations_modules.operations_config_file import CreateConfig, write_config_to_file
 
@@ -28,9 +28,9 @@ def get_installed_sensors_raw():
     """ Loads RAW sensors from file and returns it. """
     operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
 
-    if os.path.isfile(sensors_installed_file_location):
+    if os.path.isfile(file_locations.sensors_installed_file_location):
         try:
-            sensor_list_file = open(sensors_installed_file_location, 'r')
+            sensor_list_file = open(file_locations.sensors_installed_file_location, 'r')
             raw_installed_sensor_file = sensor_list_file.readlines()
             sensor_list_file.close()
         except Exception as error:
@@ -47,9 +47,9 @@ def get_installed_config_raw():
     """ Loads configuration from file and returns it as a configuration object. """
     operations_logger.primary_logger.debug("Loading Configuration File")
 
-    if os.path.isfile(config_file_location):
+    if os.path.isfile(file_locations.config_file_location):
         try:
-            config_file = open(config_file_location, "r")
+            config_file = open(file_locations.config_file_location, "r")
             config_file_content = config_file.readlines()
             config_file.close()
         except Exception as error:
