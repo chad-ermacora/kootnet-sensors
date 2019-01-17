@@ -3,7 +3,7 @@
 SPECIAL_SCRIPTS_DIR="/home/kootnet_data/scripts"
 CONFIG_DIR="/etc/kootnet"
 # Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
-SMB_SERVER="//192.168.10.155"
+SMB_SERVER="//gamercube1"
 SMB_SHARE="/PyCharmProjects"
 SMB_SENSOR="/sensor-rp"
 SMB_CONTROL_CENTER="/sensor-control-center"
