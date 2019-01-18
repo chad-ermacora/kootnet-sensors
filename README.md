@@ -38,4 +38,4 @@ sudo systemctl disable SensorRecording && sudo systemctl stop SensorRecording
 
 Sensor Hardware Units
 ---------------------
-![KootNet Sensors - Raspberry Pi Sensors](SensorHardware.jpg "Raspberry Pi Sensors")
+![KootNet Sensors - Raspberry Pi Sensors](extras/SensorHardware.jpg "Raspberry Pi Sensors")
