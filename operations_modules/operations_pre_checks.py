@@ -19,8 +19,8 @@
 import os
 import sqlite3
 
-from operations_modules import operations_config
 import operations_modules.operations_file_locations as file_locations
+from operations_modules import operations_config
 from operations_modules import operations_logger
 from operations_modules import operations_upgrades
 
@@ -29,22 +29,18 @@ create_important_files = [file_locations.last_updated_file_location,
 
 
 class CreateRefinedVersion:
-    def __init__(self):
-        self.major_version = 0
-        self.feature_version = 0
-        self.minor_version = 0
-
-    def get_version(self, version):
+    def __init__(self, version):
         try:
-            old_version_split = version.split(".")
-            self.major_version = old_version_split[0]
-            self.feature_version = int(old_version_split[1])
-            self.minor_version = int(old_version_split[2])
+            version_split = version.split(".")
+            self.major_version = version_split[0]
+            self.feature_version = int(version_split[1])
+            self.minor_version = int(version_split[2])
         except Exception as error:
-            operations_logger.primary_logger.warning("Missing version file or Invalid format: " +
-                                                     file_locations.old_version_file_location +
-                                                     " - Configuration files reset to defaults")
+            operations_logger.primary_logger.warning("Bad Version - " + str(version))
             operations_logger.primary_logger.debug(str(error))
+            self.major_version = 0
+            self.feature_version = 0
+            self.minor_version = 0
 
     def get_version_str(self):
         version_str = str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
@@ -97,12 +93,25 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 def run_upgrade_checks():
     operations_logger.primary_logger.debug("Checking required packages")
-    old_version = CreateRefinedVersion()
-    old_version.get_version(operations_config.get_old_version())
+    old_version = CreateRefinedVersion(operations_config.get_old_version())
+    new_version = CreateRefinedVersion(operations_config.version)
     no_changes = True
 
-    if old_version.major_version == "Alpha":
-        if old_version.feature_version == 22:
+    if old_version.major_version is False:
+        no_changes = False
+        operations_logger.primary_logger.info("Incompatible Upgrade Path")
+        operations_upgrades.reset_installed_sensors()
+        operations_upgrades.reset_config()
+        operations_logger.primary_logger.debug("Old Version: " + old_version.get_version_str() +
+                                               " || New Version: " + operations_config.version)
+
+    if old_version.major_version is "Alpha" and new_version.major_version is "Alpha":
+        if old_version.feature_version is 22 and new_version.feature_version is 23:
+            operations_upgrades.reset_installed_sensors()
+            operations_upgrades.reset_config()
+            operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
+                                                  " || New: " + operations_config.version)
+        if old_version.feature_version is 22 and new_version.feature_version is 22:
             if old_version.minor_version < 9:
                 no_changes = False
                 operations_upgrades.update_ver_a_22_8()
@@ -113,12 +122,13 @@ def run_upgrade_checks():
                 operations_upgrades.update_ver_a_22_20()
                 operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
-        elif old_version.feature_version == 23:
+        elif old_version.feature_version is 23 and new_version.feature_version is 23:
             if old_version.minor_version < 17:
                 no_changes = False
                 operations_upgrades.update_ver_a_23_17()
                 operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
                                                       " || New: " + operations_config.version)
+
     if no_changes:
         operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                               old_version.get_version_str() + " New: " + operations_config.version)

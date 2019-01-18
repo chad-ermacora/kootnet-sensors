@@ -63,6 +63,16 @@ def get_installed_config_raw():
     return config_file_content
 
 
+def reset_installed_sensors():
+    operations_logger.primary_logger.info("Installed Sensors Reset")
+    write_installed_sensors_to_file(CreateInstalledSensors())
+
+
+def reset_config():
+    operations_logger.primary_logger.info("Configuration Reset")
+    write_config_to_file(CreateConfig())
+
+
 def update_ver_a_22_8():
     operations_logger.primary_logger.warning("Upgrade: Unable to convert installed sensors file, " +
                                              "loading default installed sensors")

@@ -29,7 +29,7 @@ from sensor_modules.temperature_offsets import CreateRPZeroWTemperatureOffsets, 
 flask_http_ip = ""
 flask_http_port = 10065
 
-version = "Alpha.23.17"
+version = "Alpha.23.19"
 sense_hat_show_led_message = False
 
 trigger_pairs = 3
@@ -91,7 +91,7 @@ if get_old_version() != version:
 else:
     installed_sensors = operations_installed_sensors.get_installed_sensors_from_file()
     current_config = operations_config_file.get_config_from_file()
-    trigger_variances = get_triggers_from_file()
+    trigger_variances = CreateTriggerVariances()  # Use get_triggers_from_file() when trigger functions are done
 
     current_config.temperature_offset = get_sensor_temperature_offset()
     trigger_variances.init_trigger_variances(installed_sensors)
