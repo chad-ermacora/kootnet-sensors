@@ -11,12 +11,11 @@ fi
 printf "\nThis will Uninstall all KootNet Sensors Software.\nPress enter to continue or CTRL + C to exit ..."
 read nothing
 printf '\nDisabling & stopping all sensor services\n'
-systemctl disable SensorHTTP
+systemctl disable SensorUpgradeChecks
 systemctl disable SensorRecording
 systemctl disable SensorCommands
 systemctl disable SensorCleanUpgradeOnline
 systemctl disable SensorCleanUpgradeSMB
-systemctl stop SensorHTTP
 systemctl stop SensorRecording
 systemctl stop SensorCommands
 printf '\nRemoving sensor service files\n'
