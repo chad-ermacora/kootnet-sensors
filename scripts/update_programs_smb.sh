@@ -24,6 +24,8 @@ else
   mkdir /mnt/supernas 2>/dev/null
   mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
   sleep 1
+  mkdir /opt/kootnet-sensors
+  cp /mnt/supernas/sensor-rp/requirements.txt /opt/kootnet-sensors/
   bash /mnt/supernas/sensor-rp/scripts/chk_install.sh
   umount /mnt/supernas
   printf '\nProceeding with SMB scripts\n'
