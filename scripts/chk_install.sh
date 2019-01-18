@@ -115,6 +115,7 @@ EOF
   source ${DATA_DIR}/python-env/bin/activate
   python3 -m pip install -U pip
   pip3 install -r /opt/kootnet-sensors/requirements.txt
+  pip3 install -U numpy
   # pip3 install ${PIP3_INSTALL}
   # Create Installed File to prevent re-runs.  Create install_version file for program first run.
   date > ${CONFIG_DIR}/installed_datetime.txt
