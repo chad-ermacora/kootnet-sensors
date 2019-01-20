@@ -42,6 +42,17 @@ class CreateInstalledSensors:
         self.pimoroni_vl53l1x = 0
         self.pimoroni_ltr_559 = 0
 
+        self.has_cpu_temperature = 0
+        self.has_env_temperature = 0
+        self.has_pressure = 0
+        self.has_humidity = 0
+        self.has_lumen = 0
+        self.has_red = 0
+        self.has_orange = 0
+        self.has_yellow = 0
+        self.has_green = 0
+        self.has_blue = 0
+        self.has_violet = 0
         self.has_acc = 0
         self.has_mag = 0
         self.has_gyro = 0
@@ -164,6 +175,9 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[4][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_sense_hat = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_humidity = 1
             new_installed_sensors.has_acc = 1
             new_installed_sensors.has_mag = 1
             new_installed_sensors.has_gyro = 1
@@ -174,6 +188,10 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[5][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_bh1745 = 1
+            new_installed_sensors.has_lumen = 1
+            new_installed_sensors.has_red = 1
+            new_installed_sensors.has_green = 1
+            new_installed_sensors.has_blue = 1
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bh1745_name)
 
@@ -181,6 +199,12 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[6][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_as7262 = 1
+            new_installed_sensors.has_red = 1
+            new_installed_sensors.has_orange = 1
+            new_installed_sensors.has_yellow = 1
+            new_installed_sensors.has_green = 1
+            new_installed_sensors.has_blue = 1
+            new_installed_sensors.has_violet = 1
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_as7262_name)
 
@@ -188,6 +212,10 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[7][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_bme680 = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_humidity = 1
+
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
 
@@ -195,6 +223,10 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[8][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_enviro = 1
+            new_installed_sensors.has_lumen = 1
+            new_installed_sensors.has_red = 1
+            new_installed_sensors.has_green = 1
+            new_installed_sensors.has_blue = 1
             new_installed_sensors.has_acc = 1
             new_installed_sensors.has_mag = 1
     except IndexError:
@@ -220,6 +252,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[11][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_ltr_559 = 1
+            new_installed_sensors.has_lumen = 1
     except IndexError:
         operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
 

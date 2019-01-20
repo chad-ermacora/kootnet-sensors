@@ -24,21 +24,24 @@ import operations_modules.operations_logger as operations_logger
 
 class CreateTriggerVariances:
     def __init__(self):
-        self.cpu_temperature_enabled = 0
-        self.cpu_temperature_variance = 60
-        self.cpu_temperature_wait_seconds = 300
+        self.sensor_uptime_enabled = 1
+        self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
 
-        self.env_temperature_enabled = 0
-        self.env_temperature_variance = 99999.99
-        self.env_temperature_wait_seconds = 99999.99
+        self.cpu_temperature_enabled = 1
+        self.cpu_temperature_variance = 10.0
+        self.cpu_temperature_wait_seconds = 600.0
 
-        self.pressure_enabled = 0
-        self.pressure_variance = 99999.99
-        self.pressure_wait_seconds = 99999.99
+        self.env_temperature_enabled = 1
+        self.env_temperature_variance = 10.0
+        self.env_temperature_wait_seconds = 600.0
 
-        self.humidity_enabled = 0
-        self.humidity_variance = 99999.99
-        self.humidity_wait_seconds = 99999.99
+        self.pressure_enabled = 1
+        self.pressure_variance = 50
+        self.pressure_wait_seconds = 300.0
+
+        self.humidity_enabled = 1
+        self.humidity_variance = 25.0
+        self.humidity_wait_seconds = 600.0
 
         self.lumen_enabled = 0
         self.lumen_variance = 99999.99
@@ -68,15 +71,15 @@ class CreateTriggerVariances:
         self.violet_variance = 99999.99
         self.violet_wait_seconds = 99999.99
 
-        self.accelerometer_enabled = 0
+        self.accelerometer_enabled = 1
         self.accelerometer_variance = 99999.99
         self.accelerometer_wait_seconds = 0.15
 
-        self.magnetometer_enabled = 0
+        self.magnetometer_enabled = 1
         self.magnetometer_variance = 99999.99
         self.magnetometer_wait_seconds = 0.15
 
-        self.gyroscope_enabled = 0
+        self.gyroscope_enabled = 1
         self.gyroscope_variance = 99999.99
         self.gyroscope_wait_seconds = 0.15
 

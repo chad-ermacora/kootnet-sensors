@@ -73,7 +73,12 @@ if installed_sensors.no_sensors is False:
         operations_logger.primary_logger.warning("Interval Recording Disabled in Config")
 
     if current_config.enable_trigger_recording:
-        threads = [Thread(target=operations_trigger_checks.check_accelerometer_xyz),
+        threads = [Thread(target=operations_trigger_checks.check_sensor_uptime),
+                   Thread(target=operations_trigger_checks.check_cpu_temperature),
+                   Thread(target=operations_trigger_checks.check_env_temperature),
+                   Thread(target=operations_trigger_checks.check_pressure),
+                   Thread(target=operations_trigger_checks.check_humidity),
+                   Thread(target=operations_trigger_checks.check_accelerometer_xyz),
                    Thread(target=operations_trigger_checks.check_magnetometer_xyz),
                    Thread(target=operations_trigger_checks.check_gyroscope_xyz)]
 

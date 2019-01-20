@@ -19,7 +19,7 @@
 import operations_modules.operations_file_locations as file_locations
 from os import path
 
-version = "Alpha.23.25"
+version = "Alpha.23.26"
 
 
 def get_old_version():

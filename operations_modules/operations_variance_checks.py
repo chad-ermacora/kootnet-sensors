@@ -27,100 +27,166 @@ from operations_modules.operations_variables import trigger_pairs
 from operations_modules.operations_db import CreateTriggerDatabaseData, write_to_sql_database
 
 
+def check_sensor_uptime():
+    if trigger_variances.sensor_uptime_enabled and current_config.enable_trigger_recording:
+        while True:
+            trigger_data = CreateTriggerDatabaseData()
+            trigger_data.sql_columns_str += database_variables.sensor_uptime
+
+            trigger_data.sql_readings1.append(operations_sensors.get_system_uptime())
+            trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
+
+            sleep(trigger_variances.sensor_uptime_wait_seconds)
+
+            trigger_data.sql_readings2.append(operations_sensors.get_system_uptime())
+            trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
+
+            operations_logger.primary_logger.debug("Sensor Uptime exceeded set trigger")
+            write_to_sql_database(trigger_data.get_sql_write_str())
+
+
 def check_cpu_temperature():
-    if trigger_variances.cpu_temperature_enabled:
+    if installed_sensors.has_cpu_temperature and trigger_variances.cpu_temperature_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
             trigger_data.variance = trigger_variances.cpu_temperature_variance
             trigger_data.sql_columns_str += database_variables.system_temperature
 
-            trigger_data.sql_readings1.append(operations_sensors.get_cpu_temperature())
+            try:
+                trigger_data.sql_readings1.append(operations_sensors.get_cpu_temperature())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get CPU Temperature Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
 
             sleep(trigger_variances.cpu_temperature_wait_seconds)
 
-            trigger_data.sql_readings2.append(operations_sensors.get_cpu_temperature())
+            try:
+                trigger_data.sql_readings2.append(operations_sensors.get_cpu_temperature())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get CPU Temperature Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
 
-            if trigger_data.sql_readings1[0] > trigger_data.variance or \
-                    trigger_data.sql_readings2[0] > trigger_data.variance:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor CPU Temperature exceeded set trigger")
-                    write_to_sql_database(trigger_data.get_sql_write_str())
+            try:
+                difference = abs(float(trigger_data.sql_readings1[0]) - float(trigger_data.sql_readings2[0]))
+            except Exception as error:
+                operations_logger.primary_logger.warning("CPU Temperature Trigger: " + str(error))
+                difference = 0.0
+
+            if difference > trigger_data.variance:
+                operations_logger.primary_logger.debug("CPU Temperature exceeded set trigger")
+                write_to_sql_database(trigger_data.get_sql_write_str())
 
 
 def check_env_temperature():
-    if trigger_variances.env_temperature_enabled:
+    if installed_sensors.has_env_temperature and trigger_variances.env_temperature_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
             trigger_data.variance = trigger_variances.env_temperature_variance
             trigger_data.sql_columns_str += database_variables.env_temperature
 
-            trigger_data.sql_readings1.append(operations_sensors.get_sensor_temperature())
+            try:
+                trigger_data.sql_readings1.append(operations_sensors.get_sensor_temperature())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Env Temperature Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
 
             sleep(trigger_variances.env_temperature_wait_seconds)
 
-            trigger_data.sql_readings2.append(operations_sensors.get_sensor_temperature())
+            try:
+                trigger_data.sql_readings2.append(operations_sensors.get_sensor_temperature())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Env Temperature Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
 
-            if trigger_data.sql_readings1[0] > trigger_data.variance or \
-                    trigger_data.sql_readings2[0] > trigger_data.variance:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor Environment Temperature exceeded set trigger")
-                    write_to_sql_database(trigger_data.get_sql_write_str())
+            try:
+                difference = abs(float(trigger_data.sql_readings1[0]) - float(trigger_data.sql_readings2[0]))
+            except Exception as error:
+                operations_logger.primary_logger.warning("Env Temperature Trigger: " + str(error))
+                difference = 0.0
+
+            if difference > trigger_data.variance:
+                operations_logger.primary_logger.debug("Environment Temperature exceeded set trigger")
+                write_to_sql_database(trigger_data.get_sql_write_str())
 
 
 def check_pressure():
-    if trigger_variances.pressure_enabled:
+    if installed_sensors.has_pressure and trigger_variances.pressure_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
             trigger_data.variance = trigger_variances.pressure_variance
             trigger_data.sql_columns_str += database_variables.pressure
 
-            trigger_data.sql_readings1.append(operations_sensors.get_pressure())
+            try:
+                trigger_data.sql_readings1.append(operations_sensors.get_pressure())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Pressure Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
 
             sleep(trigger_variances.pressure_wait_seconds)
 
-            trigger_data.sql_readings2.append(operations_sensors.get_pressure())
+            try:
+                trigger_data.sql_readings2.append(operations_sensors.get_pressure())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Pressure Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
 
-            if trigger_data.sql_readings1[0] > trigger_data.variance or \
-                    trigger_data.sql_readings2[0] > trigger_data.variance:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor Pressure exceeded set trigger")
-                    write_to_sql_database(trigger_data.get_sql_write_str())
+            try:
+                difference = abs(float(trigger_data.sql_readings1[0]) - float(trigger_data.sql_readings2[0]))
+            except Exception as error:
+                operations_logger.primary_logger.warning("Pressure Trigger: " + str(error))
+                difference = 0.0
+
+            if difference > trigger_data.variance:
+                operations_logger.primary_logger.debug("Pressure exceeded set trigger")
+                write_to_sql_database(trigger_data.get_sql_write_str())
 
 
 def check_humidity():
-    if trigger_variances.humidity_enabled:
+    if installed_sensors.has_humidity and trigger_variances.humidity_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
             trigger_data.variance = trigger_variances.humidity_variance
             trigger_data.sql_columns_str += database_variables.humidity
 
-            trigger_data.sql_readings1.append(operations_sensors.get_humidity())
+            try:
+                trigger_data.sql_readings1.append(operations_sensors.get_humidity())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Humidity Error: " + str(error))
+                trigger_data.sql_readings1.append("0")
             trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
 
             sleep(trigger_variances.humidity_wait_seconds)
 
-            trigger_data.sql_readings2.append(operations_sensors.get_humidity())
+            try:
+                trigger_data.sql_readings2.append(operations_sensors.get_humidity())
+            except Exception as error:
+                operations_logger.primary_logger.warning("Get Humidity Error: " + str(error))
+                trigger_data.sql_readings2.append("0")
             trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
 
-            if trigger_data.sql_readings1[0] > trigger_data.variance or \
-                    trigger_data.sql_readings2[0] > trigger_data.variance:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor Humidity exceeded set trigger")
-                    write_to_sql_database(trigger_data.get_sql_write_str())
+            try:
+                difference = abs(float(trigger_data.sql_readings1[0]) - float(trigger_data.sql_readings2[0]))
+            except Exception as error:
+                operations_logger.primary_logger.warning("Humidity Trigger: " + str(error))
+                difference = 0.0
+
+            if difference > trigger_data.variance:
+                operations_logger.primary_logger.debug("Humidity exceeded set trigger")
+                write_to_sql_database(trigger_data.get_sql_write_str())
 
 
 def check_accelerometer_xyz():
-    if installed_sensors.has_acc and trigger_variances.accelerometer_enabled:
+    if installed_sensors.has_acc and trigger_variances.accelerometer_enabled and current_config.enable_trigger_recording:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
@@ -165,7 +231,7 @@ def check_accelerometer_xyz():
 
 
 def check_magnetometer_xyz():
-    if installed_sensors.has_mag and trigger_variances.magnetometer_enabled:
+    if installed_sensors.has_mag and trigger_variances.magnetometer_enabled and current_config.enable_trigger_recording:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
@@ -210,7 +276,7 @@ def check_magnetometer_xyz():
 
 
 def check_gyroscope_xyz():
-    if installed_sensors.has_gyro and trigger_variances.gyroscope_enabled:
+    if installed_sensors.has_gyro and trigger_variances.gyroscope_enabled and current_config.enable_trigger_recording:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
