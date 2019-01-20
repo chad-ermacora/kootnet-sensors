@@ -21,7 +21,7 @@ from threading import Thread
 from time import sleep
 
 import operations_modules.operations_db as operations_db
-import operations_modules.operations_trigger_checks as operations_trigger_checks
+import operations_modules.operations_variance_checks as operations_trigger_checks
 from operations_modules import operations_logger
 from operations_modules import operations_pre_checks
 from operations_modules import operations_sensors

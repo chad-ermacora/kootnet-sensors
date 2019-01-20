@@ -27,82 +27,12 @@ from operations_modules.operations_variables import trigger_pairs
 from operations_modules.operations_db import CreateTriggerDatabaseData, write_to_sql_database
 
 
-def check_sensor_name():
-    if trigger_variances.sensor_name:
-        while True:
-            trigger_data = CreateTriggerDatabaseData()
-
-            trigger_data.variance = trigger_variances.sensor_name
-            trigger_data.sql_columns_str += database_variables.sensor_name
-
-            trigger_data.sql_readings1.append(operations_sensors.get_hostname())
-            trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
-
-            sleep(trigger_variances.sensor_name_wait_seconds)
-
-            trigger_data.sql_readings2.append(operations_sensors.get_hostname())
-            trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
-
-            if trigger_data.sql_readings1[0] is not trigger_data.sql_readings2[0]:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor Name Change Detected")
-                    # Need to re-think, since every SQL write has name and IP automatically
-                    # write_to_sql_database(trigger_data.get_sql_write_str())
-
-
-def check_ip():
-    if trigger_variances.ip:
-        while True:
-            trigger_data = CreateTriggerDatabaseData()
-
-            trigger_data.variance = trigger_variances.ip
-            trigger_data.sql_columns_str += database_variables.ip
-
-            trigger_data.sql_readings1.append(operations_sensors.get_ip())
-            trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
-
-            sleep(trigger_variances.ip_wait_seconds)
-
-            trigger_data.sql_readings2.append(operations_sensors.get_ip())
-            trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
-
-            if trigger_data.sql_readings1[0] is not trigger_data.sql_readings2[0]:
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor IP Change Detected")
-                    # Need to re-think, since every SQL write has name and IP automatically
-                    # write_to_sql_database(trigger_data.get_sql_write_str())
-
-
-def check_sensor_uptime():
-    if trigger_variances.sensor_uptime:
-        loop_uptime = float(trigger_variances.sensor_uptime)
-        while True:
-            trigger_data = CreateTriggerDatabaseData()
-
-            trigger_data.variance = loop_uptime
-            trigger_data.sql_columns_str += database_variables.sensor_uptime
-
-            trigger_data.sql_readings1.append(operations_sensors.get_system_uptime())
-            trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
-
-            sleep(trigger_variances.sensor_uptime_wait_seconds)
-
-            trigger_data.sql_readings2.append(operations_sensors.get_system_uptime())
-            trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
-
-            if trigger_data.sql_readings2[0] > trigger_data.variance:
-                loop_uptime = float(trigger_data.sql_readings2[0]) + float(trigger_variances.sensor_uptime)
-                if current_config.write_to_db:
-                    operations_logger.primary_logger.debug("Sensor Uptime Change Detected")
-                    write_to_sql_database(trigger_data.get_sql_write_str())
-
-
 def check_cpu_temperature():
-    if trigger_variances.cpu_temperature:
+    if trigger_variances.cpu_temperature_enabled:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
-            trigger_data.variance = trigger_variances.cpu_temperature
+            trigger_data.variance = trigger_variances.cpu_temperature_variance
             trigger_data.sql_columns_str += database_variables.system_temperature
 
             trigger_data.sql_readings1.append(operations_sensors.get_cpu_temperature())
@@ -121,11 +51,11 @@ def check_cpu_temperature():
 
 
 def check_env_temperature():
-    if trigger_variances.env_temperature:
+    if trigger_variances.env_temperature_enabled:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
-            trigger_data.variance = trigger_variances.env_temperature
+            trigger_data.variance = trigger_variances.env_temperature_variance
             trigger_data.sql_columns_str += database_variables.env_temperature
 
             trigger_data.sql_readings1.append(operations_sensors.get_sensor_temperature())
@@ -144,11 +74,11 @@ def check_env_temperature():
 
 
 def check_pressure():
-    if trigger_variances.pressure:
+    if trigger_variances.pressure_enabled:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
-            trigger_data.variance = trigger_variances.pressure
+            trigger_data.variance = trigger_variances.pressure_variance
             trigger_data.sql_columns_str += database_variables.pressure
 
             trigger_data.sql_readings1.append(operations_sensors.get_pressure())
@@ -167,11 +97,11 @@ def check_pressure():
 
 
 def check_humidity():
-    if trigger_variances.humidity:
+    if trigger_variances.humidity_enabled:
         while True:
             trigger_data = CreateTriggerDatabaseData()
 
-            trigger_data.variance = trigger_variances.humidity
+            trigger_data.variance = trigger_variances.humidity_variance
             trigger_data.sql_columns_str += database_variables.humidity
 
             trigger_data.sql_readings1.append(operations_sensors.get_humidity())
@@ -190,17 +120,17 @@ def check_humidity():
 
 
 def check_accelerometer_xyz():
-    if installed_sensors.has_acc and trigger_variances.accelerometer:
+    if installed_sensors.has_acc and trigger_variances.accelerometer_enabled:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
             z_trigger_data = CreateTriggerDatabaseData()
 
-            x_trigger_data.variance = trigger_variances.accelerometer
+            x_trigger_data.variance = trigger_variances.accelerometer_variance
             x_trigger_data.sql_columns_str += database_variables.acc_x
-            y_trigger_data.variance = trigger_variances.accelerometer
+            y_trigger_data.variance = trigger_variances.accelerometer_variance
             y_trigger_data.sql_columns_str += database_variables.acc_y
-            z_trigger_data.variance = trigger_variances.accelerometer
+            z_trigger_data.variance = trigger_variances.accelerometer_variance
             z_trigger_data.sql_columns_str += database_variables.acc_z
 
             pair_count = 0
@@ -235,17 +165,17 @@ def check_accelerometer_xyz():
 
 
 def check_magnetometer_xyz():
-    if installed_sensors.has_mag and trigger_variances.magnetometer:
+    if installed_sensors.has_mag and trigger_variances.magnetometer_enabled:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
             z_trigger_data = CreateTriggerDatabaseData()
 
-            x_trigger_data.variance = trigger_variances.magnetometer
+            x_trigger_data.variance = trigger_variances.magnetometer_variance
             x_trigger_data.sql_columns_str += database_variables.mag_x
-            y_trigger_data.variance = trigger_variances.magnetometer
+            y_trigger_data.variance = trigger_variances.magnetometer_variance
             y_trigger_data.sql_columns_str += database_variables.mag_y
-            z_trigger_data.variance = trigger_variances.magnetometer
+            z_trigger_data.variance = trigger_variances.magnetometer_variance
             z_trigger_data.sql_columns_str += database_variables.mag_z
 
             pair_count = 0
@@ -280,17 +210,17 @@ def check_magnetometer_xyz():
 
 
 def check_gyroscope_xyz():
-    if installed_sensors.has_gyro and trigger_variances.gyroscope:
+    if installed_sensors.has_gyro and trigger_variances.gyroscope_enabled:
         while True:
             x_trigger_data = CreateTriggerDatabaseData()
             y_trigger_data = CreateTriggerDatabaseData()
             z_trigger_data = CreateTriggerDatabaseData()
 
-            x_trigger_data.variance = trigger_variances.gyroscope
+            x_trigger_data.variance = trigger_variances.gyroscope_variance
             x_trigger_data.sql_columns_str += database_variables.gyro_x
-            y_trigger_data.variance = trigger_variances.gyroscope
+            y_trigger_data.variance = trigger_variances.gyroscope_variance
             y_trigger_data.sql_columns_str += database_variables.gyro_y
-            z_trigger_data.variance = trigger_variances.gyroscope
+            z_trigger_data.variance = trigger_variances.gyroscope_variance
             z_trigger_data.sql_columns_str += database_variables.gyro_z
 
             pair_count = 0
