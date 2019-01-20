@@ -19,7 +19,8 @@
 from datetime import datetime
 
 from operations_modules import operations_db
-from operations_modules.operations_config import installed_sensors, current_config, get_old_version, version
+from operations_modules.operations_config import installed_sensors, current_config
+from operations_modules.operations_version import version, old_version
 from sensor_modules import linux_os
 from sensor_modules import pimoroni_as7262
 from sensor_modules import pimoroni_bh1745
@@ -32,7 +33,7 @@ from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
 
 
-if get_old_version() == version:
+if old_version == version:
     # Initialize sensor access, based on installed sensors file
     if installed_sensors.linux_system:
         os_sensor_access = linux_os.CreateLinuxSystem()

@@ -56,8 +56,6 @@ def get_config_from_file():
             config_file_content = config_file.readlines()
             config_file.close()
             installed_config = convert_config_lines_to_obj(config_file_content)
-            if len(config_file_content) < 5:
-                write_config_to_file(installed_config)
         except Exception as error:
             installed_config = CreateConfig()
             operations_logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))

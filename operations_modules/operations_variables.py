@@ -36,5 +36,5 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-
                  "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
-                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
-
+                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot",
+                 "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}

@@ -25,14 +25,15 @@ import operations_modules.operations_variance_checks as operations_trigger_check
 from operations_modules import operations_logger
 from operations_modules import operations_pre_checks
 from operations_modules import operations_sensors
-from operations_modules.operations_config import installed_sensors, current_config, version, get_old_version
+from operations_modules.operations_config import installed_sensors, current_config
+from operations_modules.operations_version import version, old_version
 from operations_modules.operations_variables import sense_hat_show_led_message
 
 # Ensure files, database & configurations are OK
-operations_pre_checks.check_missing_files()
+operations_pre_checks.set_file_permissions()
 operations_pre_checks.check_database_structure()
 
-if get_old_version() != version:
+if old_version != version:
     operations_logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")
     # Sleep before loading anything due to needed updates

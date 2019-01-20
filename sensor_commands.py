@@ -28,14 +28,15 @@ from operations_modules import operations_commands
 from operations_modules import operations_html_templates
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
-from operations_modules.operations_config import current_config, installed_sensors, version, get_old_version
+from operations_modules.operations_config import current_config, installed_sensors
+from operations_modules.operations_version import version, old_version
 from operations_modules.operations_variables import flask_http_port, flask_http_ip, bash_commands
 from operations_modules.operations_config_file import convert_config_to_str, convert_config_lines_to_obj, \
     write_config_to_file
 from operations_modules.operations_installed_sensors import convert_installed_sensors_to_str, \
     convert_installed_sensors_lines_to_obj, write_installed_sensors_to_file
 
-if get_old_version() != version:
+if old_version != version:
     operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
     # Sleep before loading anything due to needed updates
     # The update service started by "record_to_db.py" will automatically restart this app when it's done

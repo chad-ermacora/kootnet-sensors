@@ -26,9 +26,6 @@ from operations_modules import operations_logger
 from operations_modules import operations_upgrades
 from operations_modules import operations_variables
 
-create_important_files = [file_locations.last_updated_file_location,
-                          file_locations.old_version_file_location]
-
 
 class CreateRefinedVersion:
     def __init__(self, version):
@@ -94,34 +91,34 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 
 def run_upgrade_checks():
-    operations_logger.primary_logger.debug("Checking required packages")
-    old_version = CreateRefinedVersion(operations_version.get_old_version())
+    previous_version = CreateRefinedVersion(operations_version.old_version)
+    operations_logger.primary_logger.debug("Old Version: " + previous_version.get_version_str() +
+                                           " || New Version: " + operations_version.version)
     no_changes = True
 
-    if old_version.major_version is False:
+    if previous_version.major_version == 0:
         no_changes = False
         operations_logger.primary_logger.info("New Install or broken/missing Old Version File")
         operations_upgrades.reset_installed_sensors()
         operations_upgrades.reset_config()
-        operations_logger.primary_logger.debug("Old Version: " + old_version.get_version_str() +
-                                               " || New Version: " + operations_version.version)
 
-    if old_version.major_version is "Alpha":
-        if old_version.feature_version is 22:
+    if previous_version.major_version == "Alpha":
+        if previous_version.feature_version == 22:
+            no_changes = False
             operations_upgrades.reset_installed_sensors()
             operations_upgrades.reset_config()
-            operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
+            operations_logger.primary_logger.info("Upgraded: " + previous_version.get_version_str() +
                                                   " || New: " + operations_version.version)
-        elif old_version.feature_version is 23:
-            if old_version.minor_version < 24:
+        elif previous_version.feature_version == 23:
+            if previous_version.minor_version < 24:
                 no_changes = False
                 operations_upgrades.reset_config()
-                operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
+                operations_logger.primary_logger.info("Upgraded: " + previous_version.get_version_str() +
                                                       " || New: " + operations_version.version)
 
     if no_changes:
         operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                              old_version.get_version_str() + " New: " + operations_version.version)
+                                              previous_version.get_version_str() + " New: " + operations_version.version)
     operations_version.write_program_version_to_file()
     restart_services()
 
@@ -131,12 +128,5 @@ def restart_services():
     os.system(operations_variables.restart_sensor_services_command)
 
 
-def check_missing_files():
-    for file in create_important_files:
-        if os.path.isfile(file):
-            pass
-        else:
-            operations_logger.primary_logger.warning("Added missing file: " + file)
-            os.system("touch " + file)
-
-    os.system("bash /opt/kootnet-sensors/scripts/set_permissions.sh")
+def set_file_permissions():
+    os.system(operations_variables.bash_commands["SetPermissions"])

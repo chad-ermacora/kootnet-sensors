@@ -18,10 +18,10 @@
 """
 # from operations_modules import operations_logger
 import operations_modules.operations_config_file as operations_config_file
-from operations_modules.operations_version import version, get_old_version
+from operations_modules.operations_version import version, old_version
 import operations_modules.operations_installed_sensors as operations_installed_sensors
 from operations_modules.operations_config_db import CreateDatabaseVariables
-from sensor_modules.trigger_variances import get_triggers_from_file, CreateTriggerVariances
+from operations_modules.trigger_variances import CreateTriggerVariances
 from sensor_modules.temperature_offsets import CreateRPZeroWTemperatureOffsets, CreateRP3BPlusTemperatureOffsets, \
     CreateUnknownTemperatureOffsets
 
@@ -52,7 +52,7 @@ def get_sensor_temperature_offset():
         return 0.0
 
 
-if get_old_version() != version:
+if old_version != version:
     installed_sensors = operations_installed_sensors.CreateInstalledSensors()
     current_config = operations_config_file.CreateConfig()
     trigger_variances = CreateTriggerVariances()
