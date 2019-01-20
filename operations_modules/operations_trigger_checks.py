@@ -21,8 +21,9 @@ from time import sleep
 
 import operations_modules.operations_sensors as operations_sensors
 from operations_modules import operations_logger
-from operations_modules.operations_config import trigger_variances, trigger_pairs, current_config, installed_sensors, \
+from operations_modules.operations_config import trigger_variances, current_config, installed_sensors, \
     database_variables
+from operations_modules.operations_variables import trigger_pairs
 from operations_modules.operations_db import CreateTriggerDatabaseData, write_to_sql_database
 
 

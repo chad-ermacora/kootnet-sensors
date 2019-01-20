@@ -25,8 +25,8 @@ import operations_modules.operations_trigger_checks as operations_trigger_checks
 from operations_modules import operations_logger
 from operations_modules import operations_pre_checks
 from operations_modules import operations_sensors
-from operations_modules.operations_config import installed_sensors, current_config, version, get_old_version, \
-    sense_hat_show_led_message
+from operations_modules.operations_config import installed_sensors, current_config, version, get_old_version
+from operations_modules.operations_variables import sense_hat_show_led_message
 
 # Ensure files, database & configurations are OK
 operations_pre_checks.check_missing_files()

@@ -28,8 +28,8 @@ from operations_modules import operations_commands
 from operations_modules import operations_html_templates
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
-from operations_modules.operations_config import current_config, installed_sensors, version, get_old_version, \
-    flask_http_ip, flask_http_port, bash_commands
+from operations_modules.operations_config import current_config, installed_sensors, version, get_old_version
+from operations_modules.operations_variables import flask_http_port, flask_http_ip, bash_commands
 from operations_modules.operations_config_file import convert_config_to_str, convert_config_lines_to_obj, \
     write_config_to_file
 from operations_modules.operations_installed_sensors import convert_installed_sensors_to_str, \

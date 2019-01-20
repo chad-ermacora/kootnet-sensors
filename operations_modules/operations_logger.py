@@ -26,18 +26,47 @@ CRITICAL - A serious error, indicating that the program itself may be unable to 
 import logging
 import os
 from logging.handlers import RotatingFileHandler
+from operations_modules.operations_file_locations import primary_log, sensors_log, network_log, log_directory, \
+    debug_file_location
 
-_log_directory = "/home/kootnet_data/logs/"
-primary_log = _log_directory + "Primary_log.txt"
-sensors_log = _log_directory + "Sensors_log.txt"
-network_log = _log_directory + "Network_log.txt"
+if not os.path.exists(os.path.dirname(log_directory)):
+    os.makedirs(os.path.dirname(log_directory))
 
-if not os.path.exists(os.path.dirname(_log_directory)):
-    os.makedirs(os.path.dirname(_log_directory))
+
+def check_debug_logging():
+    if os.path.isfile(debug_file_location):
+        debug_file = open(debug_file_location, "r")
+        debug = debug_file.read().strip()
+        debug_file.close()
+
+        if int(debug) is 1:
+            return 1
+        else:
+            return 0
+    else:
+        save_log_level(0)
+        return 0
+
+
+def save_log_level(debug_level):
+    """
+        Enables or disables debug logging and writes to local disk.
+
+        set debug_level as 0 to disable or 1 to enable
+    """
+    enable_debug = open(debug_file_location, 'w')
+    enable_debug.write(str(debug_level))
+    enable_debug.close()
+
 
 # Primary Program Log
 primary_logger = logging.getLogger("PrimaryLog")
-primary_logger.setLevel(logging.INFO)
+debug_logging = check_debug_logging()
+
+if debug_logging:
+    primary_logger.setLevel(logging.DEBUG)
+else:
+    primary_logger.setLevel(logging.INFO)
 
 formatter_operations = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
@@ -53,7 +82,11 @@ primary_logger.addHandler(stream_handler)
 
 # Sensors Hardware Log
 sensors_logger = logging.getLogger("SensorsLog")
-sensors_logger.setLevel(logging.INFO)
+
+if debug_logging:
+    sensors_logger.setLevel(logging.DEBUG)
+else:
+    sensors_logger.setLevel(logging.INFO)
 
 formatter_sensor = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
@@ -69,7 +102,11 @@ sensors_logger.addHandler(stream_handler)
 
 # Network Commands Log
 network_logger = logging.getLogger("NetworkLog")
-network_logger.setLevel(logging.INFO)
+
+if debug_logging:
+    network_logger.setLevel(logging.DEBUG)
+else:
+    network_logger.setLevel(logging.INFO)
 
 formatter_network = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 

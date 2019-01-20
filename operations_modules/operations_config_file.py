@@ -17,23 +17,26 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import operations_modules.operations_logger as operations_logger
+
 import operations_modules.operations_file_locations as file_locations
+import operations_modules.operations_logger as operations_logger
 
 
 class CreateConfig:
     """ Creates object with default sensor configuration settings. """
 
     def __init__(self):
+        self.enable_debug_logging = 0
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 1
-        self.sleep_duration_interval = 300
+        self.sleep_duration_interval = 300.0
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
 
 
 def convert_config_to_str(config):
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
+                      str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
                       str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
                       str(config.enable_trigger_recording) + " = Record Trigger Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + " = Seconds between Interval recordings\n" + \
@@ -71,27 +74,32 @@ def convert_config_lines_to_obj(config_text_file):
     new_config = CreateConfig()
 
     try:
-        new_config.enable_interval_recording = int(config_text_file[1].split('=')[0].strip())
+        new_config.enable_debug_logging = int(config_text_file[1].split('=')[0].strip())
+    except Exception as error:
+        operations_logger.primary_logger.warning("Invalid Config - Enable Debug Logging: " + str(error))
+
+    try:
+        new_config.enable_interval_recording = int(config_text_file[2].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Config - Record Interval Sensors: " + str(error))
 
     try:
-        new_config.enable_trigger_recording = int(config_text_file[2].split('=')[0].strip())
+        new_config.enable_trigger_recording = int(config_text_file[3].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Config - Record Trigger Sensors: " + str(error))
 
     try:
-        new_config.sleep_duration_interval = float(config_text_file[3].split('=')[0].strip())
+        new_config.sleep_duration_interval = float(config_text_file[4].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Config - Seconds between Interval recordings: " + str(error))
 
     try:
-        new_config.enable_custom_temp = int(config_text_file[4].split('=')[0].strip())
+        new_config.enable_custom_temp = int(config_text_file[5].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Config - Enable Custom Temperature Offset: " + str(error))
 
     try:
-        new_config.temperature_offset = float(config_text_file[5].split('=')[0].strip())
+        new_config.temperature_offset = float(config_text_file[6].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
 
@@ -106,5 +114,9 @@ def write_config_to_file(config):
         sensor_list_file = open(file_locations.config_file_location, 'w')
         sensor_list_file.write(new_config)
         sensor_list_file.close()
+
+        # Save Log level with each config file save
+        operations_logger.save_log_level(str(config.enable_debug_logging))
+
     except Exception as error:
         operations_logger.primary_logger.error("Unable to open config file: " + str(error))

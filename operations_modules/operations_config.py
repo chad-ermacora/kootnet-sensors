@@ -18,44 +18,12 @@
 """
 # from operations_modules import operations_logger
 import operations_modules.operations_config_file as operations_config_file
-import operations_modules.operations_file_locations as file_locations
+from operations_modules.operations_version import version, get_old_version
 import operations_modules.operations_installed_sensors as operations_installed_sensors
 from operations_modules.operations_config_db import CreateDatabaseVariables
 from sensor_modules.trigger_variances import get_triggers_from_file, CreateTriggerVariances
 from sensor_modules.temperature_offsets import CreateRPZeroWTemperatureOffsets, CreateRP3BPlusTemperatureOffsets, \
     CreateUnknownTemperatureOffsets
-
-# IP and Port for Flask to start up on
-flask_http_ip = ""
-flask_http_port = 10065
-
-version = "Alpha.23.19"
-sense_hat_show_led_message = False
-
-trigger_pairs = 3
-
-restart_sensor_services_command = "systemctl daemon-reload && " + \
-                                  "systemctl restart SensorRecording && " + \
-                                  "systemctl restart SensorCommands"
-
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
-                 "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
-                 "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
-                 "RebootSystem": "reboot",
-                 "ShutdownSystem": "shutdown -h now",
-                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot"}
-
-
-def get_old_version():
-    old_version_file = open(file_locations.old_version_file_location, 'r')
-    old_version = old_version_file.read()
-    old_version_file.close()
-
-    old_version.strip()
-
-    return old_version
 
 
 def get_sensor_temperature_offset():

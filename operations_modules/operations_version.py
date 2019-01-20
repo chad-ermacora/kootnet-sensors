@@ -16,16 +16,24 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
-sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
-config_file_location = "/etc/kootnet/sql_recording.conf"
-sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
-trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
+import operations_modules.operations_file_locations as file_locations
+from os import path
 
-old_version_file_location = "/etc/kootnet/installed_version.txt"
-last_updated_file_location = "/etc/kootnet/last_updated.txt"
+version = "Alpha.23.24"
 
-log_directory = "/home/kootnet_data/logs/"
-primary_log = log_directory + "Primary_log.txt"
-sensors_log = log_directory + "Sensors_log.txt"
-network_log = log_directory + "Network_log.txt"
+
+def get_old_version():
+    if path.isfile(file_locations.old_version_file_location):
+        old_version_file = open(file_locations.old_version_file_location, 'r')
+        old_version = old_version_file.read()
+        old_version_file.close()
+        return old_version.strip()
+    else:
+        write_program_version_to_file()
+        return 0
+
+
+def write_program_version_to_file():
+    current_version_file = open(file_locations.old_version_file_location, 'w')
+    current_version_file.write(version)
+    current_version_file.close()
