@@ -27,7 +27,7 @@ class CreateAS7262:
         self.as7262_import = __import__('as7262')
         self.as7262_import.soft_reset()
         self.as7262_import.set_gain(64)
-        self.as7262_import.set_integration_time(17.857)
+        self.as7262_import.set_integration_time(21)
         self.as7262_import.set_measurement_mode(2)
         self.as7262_import.set_illumination_led(0)
 
