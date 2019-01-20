@@ -96,41 +96,24 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 def run_upgrade_checks():
     operations_logger.primary_logger.debug("Checking required packages")
     old_version = CreateRefinedVersion(operations_version.get_old_version())
-    new_version = CreateRefinedVersion(operations_version.version)
     no_changes = True
 
     if old_version.major_version is False:
         no_changes = False
-        operations_logger.primary_logger.info("Incompatible Upgrade Path")
+        operations_logger.primary_logger.info("New Install or broken/missing Old Version File")
         operations_upgrades.reset_installed_sensors()
         operations_upgrades.reset_config()
         operations_logger.primary_logger.debug("Old Version: " + old_version.get_version_str() +
                                                " || New Version: " + operations_version.version)
 
-    if old_version.major_version is "Alpha" and new_version.major_version is "Alpha":
-        if old_version.feature_version is 22 and new_version.feature_version is 23:
+    if old_version.major_version is "Alpha":
+        if old_version.feature_version is 22:
             operations_upgrades.reset_installed_sensors()
             operations_upgrades.reset_config()
             operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
                                                   " || New: " + operations_version.version)
-        if old_version.feature_version is 22 and new_version.feature_version is 22:
-            if old_version.minor_version < 9:
-                no_changes = False
-                operations_upgrades.update_ver_a_22_8()
-                operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
-                                                      " || New: " + operations_version.version)
-            elif 21 > old_version.minor_version > 8:
-                no_changes = False
-                operations_upgrades.update_ver_a_22_20()
-                operations_logger.primary_logger.info("Upgraded Old: " + old_version.get_version_str() +
-                                                      " || New: " + operations_version.version)
-        elif old_version.feature_version is 23 and new_version.feature_version is 23:
-            if old_version.minor_version < 17:
-                no_changes = False
-                operations_upgrades.update_ver_a_23_17()
-                operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
-                                                      " || New: " + operations_version.version)
-            elif old_version.minor_version < 24:
+        elif old_version.feature_version is 23:
+            if old_version.minor_version < 24:
                 no_changes = False
                 operations_upgrades.reset_config()
                 operations_logger.primary_logger.info("Upgraded: " + old_version.get_version_str() +
