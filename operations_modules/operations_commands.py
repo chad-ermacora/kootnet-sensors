@@ -59,8 +59,6 @@ def get_system_information():
                           "," + str(round(float(operations_sensors.get_cpu_temperature()), 2)) + \
                           "," + str(round(free_disk / (2 ** 30), 2)) + \
                           "," + str(operations_sensors.get_db_size()) + \
-                          "," + str(current_config.enable_interval_recording) + \
-                          "," + str(current_config.enable_trigger_recording) + \
                           "," + str(get_last_updated())
     except Exception as error:
         operations_logger.network_logger.error("Sensor reading failed - " + str(error))
