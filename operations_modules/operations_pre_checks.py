@@ -41,10 +41,6 @@ class CreateRefinedVersion:
             self.feature_version = 0
             self.minor_version = 0
 
-    def get_version_str(self):
-        version_str = str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
-        return version_str
-
 
 def check_database_structure():
     operations_logger.primary_logger.debug("Running DB Checks")
@@ -91,9 +87,9 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 
 def run_upgrade_checks():
-    previous_version = CreateRefinedVersion(operations_version.old_version)
-    operations_logger.primary_logger.debug("Old Version: " + previous_version.get_version_str() +
+    operations_logger.primary_logger.debug("Old Version: " + operations_version.old_version +
                                            " || New Version: " + operations_version.version)
+    previous_version = CreateRefinedVersion(operations_version.old_version)
     no_changes = True
 
     if previous_version.major_version == 0:
@@ -105,20 +101,20 @@ def run_upgrade_checks():
     if previous_version.major_version == "Alpha":
         if previous_version.feature_version == 22:
             no_changes = False
+            operations_logger.primary_logger.info("Upgraded: " + operations_version.old_version +
+                                                  " || New: " + operations_version.version)
             operations_upgrades.reset_installed_sensors()
             operations_upgrades.reset_config()
-            operations_logger.primary_logger.info("Upgraded: " + previous_version.get_version_str() +
-                                                  " || New: " + operations_version.version)
         elif previous_version.feature_version == 23:
             if previous_version.minor_version < 24:
                 no_changes = False
                 operations_upgrades.reset_config()
-                operations_logger.primary_logger.info("Upgraded: " + previous_version.get_version_str() +
+                operations_logger.primary_logger.info("Upgraded: " + operations_version.old_version +
                                                       " || New: " + operations_version.version)
 
     if no_changes:
         operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                              previous_version.get_version_str() + " New: " + operations_version.version)
+                                              operations_version.old_version + " New: " + operations_version.version)
     operations_version.write_program_version_to_file()
     restart_services()
 
