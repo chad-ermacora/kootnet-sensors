@@ -43,33 +43,29 @@ class CreateTriggerVariances:
         self.humidity_variance = 25.0
         self.humidity_wait_seconds = 600.0
 
-        self.lumen_enabled = 0
-        self.lumen_variance = 99999.99
-        self.lumen_wait_seconds = 99999.99
+        self.lumen_enabled = 1
+        self.lumen_variance = 600.0
+        self.lumen_wait_seconds = 600.0
 
-        self.red_enabled = 0
-        self.red_variance = 99999.99
-        self.red_wait_seconds = 99999.99
+        self.colour_wait = 300.0
 
-        self.orange_enabled = 0
-        self.orange_variance = 99999.99
-        self.orange_wait_seconds = 99999.99
+        self.red_enabled = 1
+        self.red_variance = 10.0
 
-        self.yellow_enabled = 0
-        self.yellow_variance = 99999.99
-        self.yellow_wait_seconds = 99999.99
+        self.orange_enabled = 1
+        self.orange_variance = 10.0
 
-        self.green_enabled = 0
-        self.green_variance = 99999.99
-        self.green_wait_seconds = 99999.99
+        self.yellow_enabled = 1
+        self.yellow_variance = 10.0
 
-        self.blue_enabled = 0
-        self.blue_variance = 99999.99
-        self.blue_wait_seconds = 99999.99
+        self.green_enabled = 1
+        self.green_variance = 10.0
 
-        self.violet_enabled = 0
-        self.violet_variance = 99999.99
-        self.violet_wait_seconds = 99999.99
+        self.blue_enabled = 1
+        self.blue_variance = 10.0
+
+        self.violet_enabled = 1
+        self.violet_variance = 10.0
 
         self.accelerometer_enabled = 1
         self.accelerometer_variance = 99999.99
@@ -198,7 +194,8 @@ def get_triggers_from_file():
             trigger_file.close()
             installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
             if len(trigger_file_content) < 5:
-                write_triggers_to_file(installed_trigger_variances)
+                # write_triggers_to_file(installed_trigger_variances)
+                pass
         except Exception as error:
             installed_trigger_variances = CreateTriggerVariances()
             operations_logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
@@ -206,7 +203,8 @@ def get_triggers_from_file():
     else:
         operations_logger.primary_logger.error("Configuration file not found, using and saving default")
         installed_trigger_variances = CreateTriggerVariances()
-        write_triggers_to_file(installed_trigger_variances)
+        # write_triggers_to_file(installed_trigger_variances)
+        pass
 
     return installed_trigger_variances
 

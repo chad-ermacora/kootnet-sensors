@@ -79,6 +79,8 @@ if installed_sensors.no_sensors is False:
                    Thread(target=operations_trigger_checks.check_env_temperature),
                    Thread(target=operations_trigger_checks.check_pressure),
                    Thread(target=operations_trigger_checks.check_humidity),
+                   Thread(target=operations_trigger_checks.check_lumen),
+                   Thread(target=operations_trigger_checks.check_ems),
                    Thread(target=operations_trigger_checks.check_accelerometer_xyz),
                    Thread(target=operations_trigger_checks.check_magnetometer_xyz),
                    Thread(target=operations_trigger_checks.check_gyroscope_xyz)]
