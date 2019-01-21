@@ -64,10 +64,10 @@ def get_installed_config_raw():
 
 
 def reset_installed_sensors():
-    operations_logger.primary_logger.info("Installed Sensors Reset")
+    operations_logger.primary_logger.warning("Installed Sensors Reset")
     write_installed_sensors_to_file(CreateInstalledSensors())
 
 
 def reset_config():
-    operations_logger.primary_logger.info("Configuration Reset")
+    operations_logger.primary_logger.warning("Configuration Reset")
     write_config_to_file(CreateConfig())

@@ -93,7 +93,7 @@ if installed_sensors.no_sensors is False:
         operations_logger.primary_logger.warning("Trigger Recording Disabled in Config")
 
 else:
-    operations_logger.primary_logger.warning("Write to Database Disabled in Config or no sensors set")
+    operations_logger.primary_logger.warning("No sensors set in Installed Sensors")
 
 while True:
     sleep(600)
