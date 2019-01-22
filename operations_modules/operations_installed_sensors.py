@@ -97,6 +97,15 @@ class CreateInstalledSensors:
 
         return str_installed_sensors[:-4]
 
+    def auto_detect_and_set_sensors(self):
+        pi_version = os.system("cat /proc/device-tree/model")
+        if str(pi_version)[25] == "Raspberry Pi 3 Model B Plus":
+            self.linux_system = 1
+            self.raspberry_pi_3b_plus = 1
+        elif str(pi_version)[16] == "Raspberry Pi Zero":
+            self.linux_system = 1
+            self.raspberry_pi_zero_w = 1
+
 
 def convert_installed_sensors_to_str(installed_sensors):
     new_installed_sensors_str = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
