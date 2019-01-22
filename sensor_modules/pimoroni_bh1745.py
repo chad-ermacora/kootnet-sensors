@@ -51,4 +51,4 @@ class CreateBH1745:
             operations_logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
             rgb_red, rgb_green, rgb_blue = 0, 0, 0
 
-        return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)
+        return [round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)]
