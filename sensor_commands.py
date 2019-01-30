@@ -23,6 +23,7 @@ from time import sleep
 from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
 
+from operations_modules.operations_wifi_file import get_wifi_config_from_file, write_wifi_config_to_file
 import operations_modules.operations_file_locations as file_locations
 from operations_modules import operations_commands
 from operations_modules import operations_html_templates
@@ -133,6 +134,23 @@ def get_configuration():
     operations_logger.network_logger.info("* Sent Sensors Configuration")
     installed_config_str = convert_config_to_str(current_config)
     return installed_config_str
+
+
+@app.route("/GetWifiConfiguration")
+def get_wifi_config():
+    operations_logger.network_logger.info("* Sent wpa_supplicant")
+    return get_wifi_config_from_file()
+
+
+@app.route("/SetWifiConfiguration", methods=["PUT"])
+def set_wifi_config():
+    try:
+        new_wifi_config = request.form['command_data']
+        write_wifi_config_to_file(new_wifi_config)
+        operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
+    except Exception as error:
+        operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+    return "OK"
 
 
 @app.route("/GetPrimaryLog")
@@ -265,7 +283,7 @@ def set_hostname():
         os.system("hostnamectl set-hostname " + new_host)
         operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
     except Exception as error:
-        operations_logger.network_logger.info("* Hostname Change Failed: " + str(error))
+        operations_logger.network_logger.warning("* Hostname Change Failed: " + str(error))
     return "OK"
 
 

@@ -83,7 +83,8 @@ EOF
   cp -f /etc/wpa_supplicant/wpa_supplicant.conf ${CONFIG_DIR}/backups/ 2>/dev/null
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
 # Update or Add additional wireless network connections as required
-# Add your wireless name to the end of 'ssid=' & password to the end of 'psk=' in double quotes
+# Add your wireless name to the end of 'ssid='
+# Add the password to the end of 'psk=' in double quotes
 
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1

@@ -21,7 +21,7 @@ from shutil import disk_usage
 
 from operations_modules.operations_config import current_config, version, installed_sensors
 from operations_modules.operations_variables import restart_sensor_services_command
-from operations_modules.operations_file_locations import last_updated_file_location
+from operations_modules.operations_file_locations import last_updated_file_location, wifi_config_file
 from operations_modules.operations_db import write_to_sql_database, CreateOtherDataEntry
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
