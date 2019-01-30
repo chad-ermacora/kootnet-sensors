@@ -168,6 +168,8 @@ def set_variance_config():
         operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
     except Exception as error:
         operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+
+    operations_commands.restart_services()
     return "OK"
 
 
