@@ -100,79 +100,79 @@ def convert_triggers_to_str(triggers):
                         str(triggers.cpu_temperature_variance) + \
                         " = CPU Temperature variance\n" + \
                         str(triggers.cpu_temperature_wait_seconds) + \
-                        " = Seconds between 'CPU Temperature' readings\n" + \
+                        " = Seconds between 'CPU Temperature' readings\n\n" + \
                         str(triggers.env_temperature_enabled) + \
                         " = Enable Environmental Temperature\n" + \
                         str(triggers.env_temperature_variance) + \
                         " = Environmental Temperature variance\n" + \
                         str(triggers.env_temperature_wait_seconds) + \
-                        " = Seconds between 'Environmental Temperature' readings\n" + \
+                        " = Seconds between 'Environmental Temperature' readings\n\n" + \
                         str(triggers.pressure_enabled) + \
                         " = Enable Pressure\n" + \
                         str(triggers.pressure_variance) + \
                         " = Pressure variance\n" + \
                         str(triggers.pressure_wait_seconds) + \
-                        " = Seconds between 'Pressure' readings\n" + \
+                        " = Seconds between 'Pressure' readings\n\n" + \
                         str(triggers.humidity_enabled) + \
                         " = Enable Humidity\n" + \
                         str(triggers.humidity_variance) + \
                         " = Humidity variance\n" + \
                         str(triggers.humidity_wait_seconds) + \
-                        " = Seconds between 'Humidity' readings\n" + \
+                        " = Seconds between 'Humidity' readings\n\n" + \
                         str(triggers.lumen_enabled) + \
                         " = Enable Lumen\n" + \
                         str(triggers.lumen_variance) + \
                         " = Lumen variance\n" + \
                         str(triggers.lumen_wait_seconds) + \
-                        " = Seconds between 'Lumen' readings\n" + \
+                        " = Seconds between 'Lumen' readings\n\n" + \
                         str(triggers.red_enabled) + \
                         " = Enable Red\n" + \
                         str(triggers.red_variance) + \
                         " = Red variance\n" + \
                         str(triggers.red_wait_seconds) + \
-                        " = Seconds between 'Red' readings\n" + \
+                        " = Seconds between 'Red' readings\n\n" + \
                         str(triggers.orange_enabled) + \
                         " = Enable Orange\n" + \
                         str(triggers.orange_variance) + \
                         " = Orange variance\n" + \
                         str(triggers.orange_wait_seconds) + \
-                        " = Seconds between 'Orange' readings\n" + \
+                        " = Seconds between 'Orange' readings\n\n" + \
                         str(triggers.yellow_enabled) + \
                         " = Enable Yellow\n" + \
                         str(triggers.yellow_variance) + \
                         " = Yellow variance\n" + \
                         str(triggers.yellow_wait_seconds) + \
-                        " = Seconds between 'Yellow' readings\n" + \
+                        " = Seconds between 'Yellow' readings\n\n" + \
                         str(triggers.green_enabled) + \
                         " = Enable Green\n" + \
                         str(triggers.green_variance) + \
                         " = Green variance\n" + \
                         str(triggers.green_wait_seconds) + \
-                        " = Seconds between 'Green' readings\n" + \
+                        " = Seconds between 'Green' readings\n\n" + \
                         str(triggers.blue_enabled) + \
                         " = Enable Blue\n" + \
                         str(triggers.blue_variance) + \
                         " = Blue variance\n" + \
                         str(triggers.blue_wait_seconds) + \
-                        " = Seconds between 'Blue' readings\n" + \
+                        " = Seconds between 'Blue' readings\n\n" + \
                         str(triggers.violet_enabled) + \
                         " = Enable Violet\n" + \
                         str(triggers.violet_variance) + \
                         " = Violet variance\n" + \
                         str(triggers.violet_wait_seconds) + \
-                        " = Seconds between 'Violet' readings\n" + \
+                        " = Seconds between 'Violet' readings\n\n" + \
                         str(triggers.accelerometer_enabled) + \
                         " = Enable Accelerometer\n" + \
                         str(triggers.accelerometer_variance) + \
                         " = Accelerometer variance\n" + \
                         str(triggers.accelerometer_wait_seconds) + \
-                        " = Seconds between 'Accelerometer' readings\n" + \
+                        " = Seconds between 'Accelerometer' readings\n\n" + \
                         str(triggers.magnetometer_enabled) + \
                         " = Enable Magnetometer\n" + \
                         str(triggers.magnetometer_variance) + \
                         " = Magnetometer variance\n" + \
                         str(triggers.magnetometer_wait_seconds) + \
-                        " = Seconds between 'Magnetometer' readings\n" + \
+                        " = Seconds between 'Magnetometer' readings\n\n" + \
                         str(triggers.gyroscope_enabled) + \
                         " = Enable Gyroscope\n" + \
                         str(triggers.gyroscope_variance) + \
@@ -322,7 +322,11 @@ def write_triggers_to_file(triggers):
     """ Writes provided trigger variances object instance to local disk. """
     operations_logger.primary_logger.debug("Writing Trigger Variances to File")
     try:
-        new_triggers = convert_triggers_to_str(triggers)
+        if type(triggers) is str:
+            new_triggers = triggers
+        else:
+            new_triggers = convert_triggers_to_str(triggers)
+
         sensor_list_file = open(file_locations.trigger_variances_file_location, 'w')
         sensor_list_file.write(new_triggers)
         sensor_list_file.close()

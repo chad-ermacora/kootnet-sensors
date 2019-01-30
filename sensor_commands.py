@@ -23,7 +23,8 @@ from time import sleep
 from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
 
-from operations_modules.operations_wifi_file import get_wifi_config_from_file, write_wifi_config_to_file
+from operations_modules.operations_wifi_file import write_wifi_config_to_file
+from operations_modules.trigger_variances import write_triggers_to_file as write_variances_to_file
 import operations_modules.operations_file_locations as file_locations
 from operations_modules import operations_commands
 from operations_modules import operations_html_templates
@@ -139,7 +140,7 @@ def get_configuration():
 @app.route("/GetWifiConfiguration")
 def get_wifi_config():
     operations_logger.network_logger.info("* Sent wpa_supplicant")
-    return get_wifi_config_from_file()
+    return send_file(file_locations.wifi_config_file)
 
 
 @app.route("/SetWifiConfiguration", methods=["PUT"])
@@ -147,6 +148,23 @@ def set_wifi_config():
     try:
         new_wifi_config = request.form['command_data']
         write_wifi_config_to_file(new_wifi_config)
+        operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
+    except Exception as error:
+        operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+    return "OK"
+
+
+@app.route("/GetVarianceConfiguration")
+def get_variance_config():
+    operations_logger.network_logger.info("* Sent Variance Configuration")
+    return send_file(file_locations.trigger_variances_file_location)
+
+
+@app.route("/SetVarianceConfiguration", methods=["PUT"])
+def set_variance_config():
+    try:
+        new_variance_config = request.form['command_data']
+        write_variances_to_file(new_variance_config)
         operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
     except Exception as error:
         operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
