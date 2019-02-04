@@ -19,6 +19,7 @@
 
 
 class CreateDatabaseVariables:
+    """ Creates SQLite3 database variables object. """
     def __init__(self):
         self.table_interval = "IntervalData"
         self.table_trigger = "TriggerData"
@@ -53,6 +54,7 @@ class CreateDatabaseVariables:
         self.gyro_z = "Gyro_Z"
 
     def get_sensor_columns_list(self):
+        """ Returns SQL Table columns used for Interval & Trigger recording as a list. """
         sensor_sql_columns = [self.sensor_name,
                               self.ip,
                               self.sensor_uptime,
@@ -80,6 +82,7 @@ class CreateDatabaseVariables:
         return sensor_sql_columns
 
     def get_other_columns_list(self):
+        """ Returns "Other" SQL Table columns as a list. """
         other_sql_columns = [self.other_table_column_user_date_time,
                              self.other_table_column_notes]
         return other_sql_columns

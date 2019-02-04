@@ -35,6 +35,7 @@ class CreateConfig:
 
 
 def convert_config_to_str(config):
+    """ Takes configuration Object and returns it as a string. """
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
                       str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
@@ -69,6 +70,7 @@ def get_config_from_file():
 
 
 def convert_config_lines_to_obj(config_text_file):
+    """ Takes text configuration content and returns it as a configuration object. """
     new_config = CreateConfig()
     bad_load = False
 
