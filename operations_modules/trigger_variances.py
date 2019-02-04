@@ -48,25 +48,29 @@ class CreateTriggerVariances:
         self.lumen_variance = 600.0
         self.lumen_wait_seconds = 600.0
 
-        self.colour_wait = 300.0
-
         self.red_enabled = 1
         self.red_variance = 10.0
+        self.red_wait_seconds = 300.0
 
         self.orange_enabled = 1
         self.orange_variance = 10.0
+        self.orange_wait_seconds = 300.0
 
         self.yellow_enabled = 1
         self.yellow_variance = 10.0
+        self.yellow_wait_seconds = 300.0
 
         self.green_enabled = 1
         self.green_variance = 10.0
+        self.green_wait_seconds = 300.0
 
         self.blue_enabled = 1
         self.blue_variance = 10.0
+        self.blue_wait_seconds = 300.0
 
         self.violet_enabled = 1
         self.violet_variance = 10.0
+        self.violet_wait_seconds = 300.0
 
         self.accelerometer_enabled = 1
         self.accelerometer_variance = 99999.99
@@ -97,6 +101,10 @@ class CreateTriggerVariances:
 def convert_triggers_to_str(triggers):
     """ Returns trigger variances as text to write to the local disk trigger variances file. """
     triggers_file_str = "Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.\n" + \
+                        str(triggers.sensor_uptime_enabled) + \
+                        " = Enable Sensor Uptime\n" + \
+                        str(triggers.sensor_uptime_wait_seconds) + \
+                        " = Seconds between SQL Writes of Sensor Uptime\n\n" + \
                         str(triggers.cpu_temperature_enabled) + \
                         " = Enable CPU Temperature\n" + \
                         str(triggers.cpu_temperature_variance) + \
@@ -214,121 +222,120 @@ def convert_triggers_lines_to_obj(trigger_text_file):
     bad_load = False
 
     try:
-        new_trigger_variances.sensor_name = int(trigger_text_file[1].split('=')[0].strip())
-    except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Trigger - Sensor Name Change: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.ip = int(trigger_text_file[2].split('=')[0].strip())
-    except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Trigger - IP Change " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.sensor_uptime = int(trigger_text_file[3].split('=')[0].strip())
+        new_trigger_variances.sensor_uptime_enabled = int(trigger_text_file[1].split('=')[0].strip())
+        new_trigger_variances.sensor_uptime_wait_seconds = float(trigger_text_file[2].split('=')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Sensor Uptime after 'X': " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.cpu_temperature = float(trigger_text_file[4].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.cpu_temperature_wait_seconds = float(
-            trigger_text_file[4].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.cpu_temperature_enabled = int(trigger_text_file[4].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.cpu_temperature_variance = float(trigger_text_file[5].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.cpu_temperature_wait_seconds = float(trigger_text_file[6].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - CPU Temperature/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.env_temperature = float(trigger_text_file[5].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.env_temperature_wait_seconds = float(
-            trigger_text_file[5].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.env_temperature_enabled = int(trigger_text_file[8].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.env_temperature_variance = float(trigger_text_file[9].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.env_temperature_wait_seconds = float(trigger_text_file[10].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Environmental Temperature/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.pressure = float(trigger_text_file[6].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.pressure_wait_seconds = float(trigger_text_file[6].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.pressure_enabled = int(trigger_text_file[12].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.pressure_variance = float(trigger_text_file[13].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.pressure_wait_seconds = float(trigger_text_file[14].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Pressure/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.humidity = float(trigger_text_file[7].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.humidity_wait_seconds = float(trigger_text_file[7].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.humidity_enabled = int(trigger_text_file[16].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.humidity_variance = float(trigger_text_file[17].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.humidity_wait_seconds = float(trigger_text_file[18].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Humidity/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.lumen = float(trigger_text_file[8].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.lumen_wait_seconds = float(trigger_text_file[8].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.lumen_enabled = int(trigger_text_file[20].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.lumen_variance = float(trigger_text_file[21].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.lumen_wait_seconds = float(trigger_text_file[22].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Lumen/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.red = float(trigger_text_file[9].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.red_wait_seconds = float(trigger_text_file[9].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.red_enabled = int(trigger_text_file[24].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.red_variance = float(trigger_text_file[25].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.red_wait_seconds = float(trigger_text_file[26].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Red/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.orange = float(trigger_text_file[10].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.orange_wait_seconds = float(trigger_text_file[10].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.orange_enabled = int(trigger_text_file[28].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.orange_variance = float(trigger_text_file[29].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.orange_wait_seconds = float(trigger_text_file[30].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Orange/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.yellow = float(trigger_text_file[11].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.yellow_wait_seconds = float(trigger_text_file[11].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.yellow_enabled = int(trigger_text_file[32].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.yellow_variance = float(trigger_text_file[33].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.yellow_wait_seconds = float(trigger_text_file[34].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Yellow/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.green = float(trigger_text_file[12].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.green_wait_seconds = float(trigger_text_file[12].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.green_enabled = int(trigger_text_file[35].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.green_variance = float(trigger_text_file[36].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.green_wait_seconds = float(trigger_text_file[37].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Green/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.blue = float(trigger_text_file[13].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.blue_wait_seconds = float(trigger_text_file[13].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.blue_enabled = int(trigger_text_file[39].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.blue_variance = float(trigger_text_file[40].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.blue_wait_seconds = float(trigger_text_file[41].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Blue/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.violet = float(trigger_text_file[14].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.violet_wait_seconds = float(trigger_text_file[14].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.violet_enabled = int(trigger_text_file[43].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.violet_variance = float(trigger_text_file[44].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.violet_wait_seconds = float(trigger_text_file[45].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Violet/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.accelerometer = float(trigger_text_file[15].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.accelerometer_wait_seconds = float(
-            trigger_text_file[15].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.accelerometer_enabled = int(trigger_text_file[47].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.accelerometer_variance = float(trigger_text_file[48].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.accelerometer_wait_seconds = float(trigger_text_file[49].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Accelerometer/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.magnetometer = float(trigger_text_file[16].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.magnetometer_wait_seconds = float(
-            trigger_text_file[16].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.magnetometer_enabled = int(trigger_text_file[51].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.magnetometer_variance = float(trigger_text_file[52].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.magnetometer_wait_seconds = float(trigger_text_file[53].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Magnetometer/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.gyroscope = float(trigger_text_file[17].split('=')[0].split(',')[0].strip())
-        new_trigger_variances.gyroscope_wait_seconds = float(trigger_text_file[17].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.gyroscope_enabled = int(trigger_text_file[55].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.gyroscope_variance = float(trigger_text_file[56].split('=')[0].split(',')[0].strip())
+        new_trigger_variances.gyroscope_wait_seconds = float(trigger_text_file[57].split('=')[0].split(',')[0].strip())
     except Exception as error:
         operations_logger.primary_logger.warning("Invalid Trigger - Gyroscope/Time: " + str(error))
         bad_load = True
