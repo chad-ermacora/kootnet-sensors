@@ -16,12 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-# from operations_modules import operations_logger
+from operations_modules import operations_logger
 import operations_modules.operations_config_file as operations_config_file
 from operations_modules.operations_version import version, old_version
 import operations_modules.operations_installed_sensors as operations_installed_sensors
 from operations_modules.operations_config_db import CreateDatabaseVariables
-from operations_modules.trigger_variances import CreateTriggerVariances
+from operations_modules.trigger_variances import CreateTriggerVariances, get_triggers_variances_from_file
 from sensor_modules.temperature_offsets import CreateRPZeroWTemperatureOffsets, CreateRP3BPlusTemperatureOffsets, \
     CreateUnknownTemperatureOffsets
 
@@ -53,13 +53,15 @@ def get_sensor_temperature_offset():
 
 
 if old_version != version:
+    operations_logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = operations_installed_sensors.CreateInstalledSensors()
     current_config = operations_config_file.CreateConfig()
     trigger_variances = CreateTriggerVariances()
 else:
+    operations_logger.primary_logger.debug("Initializing configurations")
     installed_sensors = operations_installed_sensors.get_installed_sensors_from_file()
     current_config = operations_config_file.get_config_from_file()
-    trigger_variances = CreateTriggerVariances()  # Use get_triggers_from_file() when trigger functions are done
+    trigger_variances = get_triggers_variances_from_file()
 
     current_config.temperature_offset = get_sensor_temperature_offset()
     trigger_variances.init_trigger_variances(installed_sensors)
