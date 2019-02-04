@@ -28,6 +28,7 @@ from operations_modules.operations_variables import trigger_pairs
 
 
 def check_sensor_uptime():
+    """ If enabled, writes sensor uptime to SQL trigger database per the variance setting. """
     if trigger_variances.sensor_uptime_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -47,6 +48,7 @@ def check_sensor_uptime():
 
 
 def check_cpu_temperature():
+    """ If enabled, writes CPU temperature to SQL trigger database per the variance setting. """
     if installed_sensors.has_cpu_temperature and trigger_variances.cpu_temperature_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -83,6 +85,7 @@ def check_cpu_temperature():
 
 
 def check_env_temperature():
+    """ If enabled, writes sensor temperature to SQL trigger database per the variance setting. """
     if installed_sensors.has_env_temperature and trigger_variances.env_temperature_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -119,6 +122,7 @@ def check_env_temperature():
 
 
 def check_pressure():
+    """ If enabled, writes pressure to SQL trigger database per the variance setting. """
     if installed_sensors.has_pressure and trigger_variances.pressure_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -155,6 +159,7 @@ def check_pressure():
 
 
 def check_humidity():
+    """ If enabled, writes humidity to SQL trigger database per the variance setting. """
     if installed_sensors.has_humidity and trigger_variances.humidity_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -191,6 +196,7 @@ def check_humidity():
 
 
 def check_lumen():
+    """ If enabled, writes lumen to SQL trigger database per the variance setting. """
     if installed_sensors.has_lumen and trigger_variances.lumen_enabled and current_config.enable_trigger_recording:
         while True:
             trigger_data = CreateTriggerDatabaseData()
@@ -227,6 +233,7 @@ def check_lumen():
 
 
 def check_ems():
+    """ If enabled, writes available colours (Electromagnetic Spectrum) to SQL trigger database per the variance setting. """
     if current_config.enable_trigger_recording:
         if installed_sensors.has_violet:
             while True:
@@ -239,6 +246,7 @@ def check_ems():
 
 
 def _check_3_ems():
+    """ Checks Red, Green, Blue EMS. """
     red_trigger_data = CreateTriggerDatabaseData()
     green_trigger_data = CreateTriggerDatabaseData()
     blue_trigger_data = CreateTriggerDatabaseData()
@@ -279,6 +287,7 @@ def _check_3_ems():
 
 
 def _check_6_ems():
+    """ Checks Red, Orange, Yellow, Green, Blue, Violet EMS. """
     red_trigger_data = CreateTriggerDatabaseData()
     orange_trigger_data = CreateTriggerDatabaseData()
     yellow_trigger_data = CreateTriggerDatabaseData()
@@ -579,6 +588,7 @@ def check_gyroscope_xyz():
 
 
 def _check_against_variance(trigger_data):
+    """ Checks provided sensor differences to variance and writes it to the SQL database if it exceeds the variance. """
     write_to_db = False
     pair_differences = []
 
@@ -607,4 +617,5 @@ def _check_against_variance(trigger_data):
 
 
 def get_datetime_stamp():
+    """ Returns current UTC 0 time as a string "%Y-%m-%d %H:%M:%S.%f". """
     return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]

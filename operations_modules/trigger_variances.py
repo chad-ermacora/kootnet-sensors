@@ -23,6 +23,7 @@ import operations_modules.operations_logger as operations_logger
 
 
 class CreateTriggerVariances:
+    """ Create a Trigger Variance configuration object. """
     def __init__(self):
         self.sensor_uptime_enabled = 1
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
@@ -94,6 +95,7 @@ class CreateTriggerVariances:
 
 
 def convert_triggers_to_str(triggers):
+    """ Returns trigger variances as text to write to the local disk trigger variances file. """
     triggers_file_str = "Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.\n" + \
                         str(triggers.cpu_temperature_enabled) + \
                         " = Enable CPU Temperature\n" + \
@@ -210,6 +212,7 @@ def get_triggers_from_file():
 
 
 def convert_triggers_lines_to_obj(trigger_text_file):
+    """ Creates a Trigger Variance object with provided text from the variance configuration file. """
     new_trigger_variances = CreateTriggerVariances()
 
     try:
@@ -319,7 +322,7 @@ def convert_triggers_lines_to_obj(trigger_text_file):
 
 
 def write_triggers_to_file(triggers):
-    """ Writes provided trigger variances object instance to local disk. """
+    """ Writes provided trigger variances object instance or string to local disk. """
     operations_logger.primary_logger.debug("Writing Trigger Variances to File")
     try:
         if type(triggers) is str:
