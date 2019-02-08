@@ -16,7 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules import operations_pre_checks
+import operations_modules.operations_file_locations as file_locations
+from os import path
 
-# Used as a Linux service to make needed changes outside the main program.  Usually used after upgrades.
-operations_pre_checks.run_upgrade_checks()
+
+def _get_old_version():
+    if path.isfile(file_locations.old_version_file_location):
+        old_version_file = open(file_locations.old_version_file_location, 'r')
+        old_version_content = old_version_file.read()
+        old_version_file.close()
+        return old_version_content.strip()
+    else:
+        write_program_version_to_file()
+        return 0
+
+
+def write_program_version_to_file():
+    current_version_file = open(file_locations.old_version_file_location, 'w')
+    current_version_file.write(version)
+    current_version_file.close()
+
+
+version = "Alpha.23.39"
+old_version = _get_old_version()

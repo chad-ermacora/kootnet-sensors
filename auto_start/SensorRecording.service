@@ -6,10 +6,10 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 WorkingDirectory=/opt/kootnet-sensors
-RestartSec=3s
+RestartSec=2s
 User=root
 Group=pi
-ExecStart=/usr/bin/python3 /opt/kootnet-sensors/record_to_db.py
+ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/record_to_db.py
 
 [Install]
 WantedBy=multi-user.target

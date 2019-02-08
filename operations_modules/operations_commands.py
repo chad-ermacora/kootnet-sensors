@@ -19,17 +19,12 @@
 import os
 from shutil import disk_usage
 
-import operations_config
-import operations_db
-import operations_logger
-import operations_sensors
-import sensor_modules.Linux_OS as Linux_System
-import sensor_modules.RaspberryPi_System as RaspberryPi_Sensors
-
-sensor_system = RaspberryPi_Sensors.CreateRPSystem()
-sensor_os = Linux_System.CreateLinuxSystem()
-
-bash_commands = operations_config.sensor_bash_commands
+from operations_modules.operations_config import current_config, version, installed_sensors
+from operations_modules.operations_variables import restart_sensor_services_command
+from operations_modules.operations_file_locations import last_updated_file_location, wifi_config_file
+from operations_modules.operations_db import write_to_sql_database, CreateOtherDataEntry
+from operations_modules import operations_logger
+from operations_modules import operations_sensors
 
 
 def get_sensor_readings():
@@ -38,12 +33,9 @@ def get_sensor_readings():
     return_data = ""
     return_types = ""
     interval_data = operations_sensors.get_interval_sensor_readings()
-    trigger_data = operations_sensors.get_trigger_sensor_readings()
 
     str_interval_types = interval_data.sensor_types.split(",")
     str_interval_data = interval_data.sensor_readings.split(",")
-    str_trigger_types = trigger_data.sensor_types.split(",")[3:]
-    str_trigger_data = trigger_data.sensor_readings.split(",")[3:]
 
     count = 0
     for interval_type in str_interval_types:
@@ -51,32 +43,22 @@ def get_sensor_readings():
         return_data += "<th><span style='background-color: #0BB10D;'>" + str_interval_data[count] + "</span></th>"
         count = count + 1
 
-    count = 0
-    for trigger_type in str_trigger_types:
-        return_types += "<th><span style='background-color: #00ffff;'>" + \
-                        trigger_type + "</span></th>"
-        return_data += "<th><span style='background-color: #0BB10D;'>" + str_trigger_data[count] + "</span></th>"
-        count = count + 1
-
     return [return_types, return_data]
 
 
 def get_system_information():
     """ Returns System Information needed for a Control Center 'System Report'. """
-    sensor_config = operations_config.get_installed_config()
     free_disk = disk_usage("/")[2]
 
     try:
-        str_sensor_data = str(sensor_os.get_hostname()) + \
-                          "," + str(sensor_os.get_ip()) + \
-                          "," + str(sensor_os.get_sys_datetime()) + \
-                          "," + str(sensor_os.get_uptime()) + \
-                          "," + str(operations_config.version) + \
-                          "," + str(round(sensor_system.cpu_temperature(), 2)) + \
+        str_sensor_data = operations_sensors.get_hostname() + \
+                          "," + operations_sensors.get_ip() + \
+                          "," + str(operations_sensors.get_system_datetime()) + \
+                          "," + str(operations_sensors.get_system_uptime()) + \
+                          "," + str(version) + \
+                          "," + str(round(float(operations_sensors.get_cpu_temperature()), 2)) + \
                           "," + str(round(free_disk / (2 ** 30), 2)) + \
-                          "," + str(sensor_os.get_sql_db_size()) + \
-                          "," + str(sensor_config.write_to_db) + \
-                          "," + str(sensor_config.enable_custom) + \
+                          "," + str(operations_sensors.get_db_size()) + \
                           "," + str(get_last_updated())
     except Exception as error:
         operations_logger.network_logger.error("Sensor reading failed - " + str(error))
@@ -87,18 +69,14 @@ def get_system_information():
 
 def get_config_information():
     """ Opens configuration file and returns it as a comma separated string. """
-    temp_config = operations_config.get_installed_config()
-    installed_sensors = operations_config.get_installed_sensors()
     str_installed_sensors = installed_sensors.get_installed_names_str()
 
     try:
-        tmp_str_config = str(temp_config.sleep_duration_interval) + \
-                         "," + str(temp_config.sleep_duration_trigger) + \
-                         "," + str(temp_config.write_to_db) + \
-                         "," + str(temp_config.enable_custom) + \
-                         "," + str(temp_config.acc_variance) + \
-                         "," + str(temp_config.mag_variance) + \
-                         "," + str(temp_config.gyro_variance) + \
+        tmp_str_config = str(current_config.enable_interval_recording) + \
+                         "," + str(current_config.enable_trigger_recording) + \
+                         "," + str(current_config.sleep_duration_interval) + \
+                         "," + str(current_config.enable_custom_temp) + \
+                         "," + str(current_config.temperature_offset) + \
                          "," + str(str_installed_sensors)
 
     except Exception as error:
@@ -119,7 +97,7 @@ def get_sensor_log(log_file):
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how. """
     try:
-        last_updated_file = open(operations_config.last_updated_file_location, "r")
+        last_updated_file = open(last_updated_file_location, "r")
         tmp_last_updated = last_updated_file.readlines()
         last_updated_file.close()
         last_updated = str(tmp_last_updated[0]) + str(tmp_last_updated[1])
@@ -132,11 +110,11 @@ def get_last_updated():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(operations_config.restart_sensor_services_command)
+    os.system(restart_sensor_services_command)
 
 
 def add_note_to_database(datetime_note):
-    sql_data = operations_db.CreateOtherDataEntry()
+    sql_data = CreateOtherDataEntry()
     datetime_note = datetime_note.strip()
     datetime_note = datetime_note.replace("'", '"')
     custom_datetime = "'" + datetime_note[:23] + "'"
@@ -149,4 +127,4 @@ def add_note_to_database(datetime_note):
                    sql_data.sql_query_values_start + sql_data.sensor_readings +
                    sql_data.sql_query_values_end)
 
-    operations_db.write_to_sql_database(sql_execute)
+    write_to_sql_database(sql_execute)

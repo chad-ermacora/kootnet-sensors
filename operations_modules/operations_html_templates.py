@@ -69,8 +69,8 @@ sensor_info_start = """
         <th><span style="background-color: #00ffff;">CPU Temp</span></th>
         <th><span style="background-color: #00ffff;">Free Disk Space</span></th>
         <th><span style="background-color: #00ffff;">SQL DB Size</span></th>
-        <th><span style="background-color: #00ffff;">DB Write</span></th>
-        <th><span style="background-color: #00ffff;">Custom</span></th>
+        <th><span style="background-color: #00ffff;">Interval to DB</span></th>
+        <th><span style="background-color: #00ffff;">Trigger to DB</span></th>
         <th><span style="background-color: #00ffff;">Last Updated</span></th>
     </tr>
 """
@@ -106,13 +106,11 @@ sensor_config_start = """
 <body><p>
 <table>
     <tr>
-        <th><span style="background-color: #00ffff;">Interval Time</span></th>
-        <th><span style="background-color: #00ffff;">Trigger Time</span></th>
-        <th><span style="background-color: #00ffff;">DB Write</span></th>
-        <th><span style="background-color: #00ffff;">Custom</span></th>
-        <th><span style="background-color: #00ffff;">Acc</span></th>
-        <th><span style="background-color: #00ffff;">Mag</span></th>
-        <th><span style="background-color: #00ffff;">Gyro</span></th>
+        <th><span style="background-color: #00ffff;">Interval to DB</span></th>
+        <th><span style="background-color: #00ffff;">Trigger to DB</span></th>
+        <th><span style="background-color: #00ffff;">Interval Duration</span></th>
+        <th><span style="background-color: #00ffff;">Custom Temp Offset</span></th>
+        <th><span style="background-color: #00ffff;">Temperature Offset</span></th>
         <th><span style="background-color: #00ffff;">Installed Sensors</span></th>
     </tr>
 """

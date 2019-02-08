@@ -17,7 +17,7 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-import operations_logger
+from operations_modules import operations_logger
 
 lsm303d_address = 0x1d
 round_decimal_to = 5

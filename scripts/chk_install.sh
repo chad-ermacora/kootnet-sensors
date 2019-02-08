@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
 PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x ltr559 as7262 guizero plotly request requests flask gevent matplotlib"
-APT_GET_INSTALL="python3-pip libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock"
-DATA_DIR="/home/kootnet_data"
+APT_GET_INSTALL="python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock"
+DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 
 # Kill any open nano & make sure folders are created
@@ -50,14 +50,10 @@ else
   printf ${CONFIG_DIR}"/sql_recording.conf Setup\n"
   # Used "Custom" in config here for install, but program will replace with "Current"
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
-Enable = 1 & Disable = 0 (Recommended: Don't change if you are unsure)
-1 = Record Sensors to SQL Database
-300 = Duration between Interval readings in Seconds
-0.15 = Duration between Trigger readings in Seconds
-0 = Enable Custom Settings
-0.0 = Custom Accelerometer variance
-0.0 = Custom Magnetometer variance
-0.0 = Custom Gyroscope variance
+Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
+1 = Record Interval Sensors to SQL Database
+0 = Record Trigger Sensors to SQL Database
+300.0 = Seconds between Interval recordings
 0 = Enable Custom Temperature Offset
 0.0 = Custom Temperature Offset
 EOF
@@ -87,7 +83,8 @@ EOF
   cp -f /etc/wpa_supplicant/wpa_supplicant.conf ${CONFIG_DIR}/backups/ 2>/dev/null
   cat > /etc/wpa_supplicant/wpa_supplicant.conf << "EOF"
 # Update or Add additional wireless network connections as required
-# Add your wireless name to the end of 'ssid=' & password to the end of 'psk=' in double quotes
+# Add your wireless name to the end of 'ssid='
+# Add the password to the end of 'psk=' in double quotes
 
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
@@ -114,9 +111,15 @@ EOF
   apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install ${APT_GET_INSTALL}
+  cd ${DATA_DIR}
+  python3 -m venv --system-site-packages python-env
+  source ${DATA_DIR}/python-env/bin/activate
   python3 -m pip install -U pip
-  pip3 install ${PIP3_INSTALL}
+  pip3 install -r /opt/kootnet-sensors/requirements.txt
+  pip3 install -U numpy
+  # pip3 install ${PIP3_INSTALL}
   # Create Installed File to prevent re-runs.  Create install_version file for program first run.
   date > ${CONFIG_DIR}/installed_datetime.txt
   date > ${CONFIG_DIR}/installed_version.txt
+  deactivate
 fi

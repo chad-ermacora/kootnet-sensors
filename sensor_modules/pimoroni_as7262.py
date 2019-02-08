@@ -15,7 +15,7 @@ pip3 install as7262
 
 @author: OO-Dragon
 """
-import operations_logger
+from operations_modules import operations_logger
 
 round_decimal_to = 5
 
@@ -27,7 +27,7 @@ class CreateAS7262:
         self.as7262_import = __import__('as7262')
         self.as7262_import.soft_reset()
         self.as7262_import.set_gain(64)
-        self.as7262_import.set_integration_time(17.857)
+        self.as7262_import.set_integration_time(21)
         self.as7262_import.set_measurement_mode(2)
         self.as7262_import.set_illumination_led(0)
 
@@ -40,6 +40,6 @@ class CreateAS7262:
             operations_logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed - " + str(error))
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
 
-        return round(red_650, round_decimal_to), round(orange_600, round_decimal_to), \
-               round(yellow_570, round_decimal_to), round(green_550, round_decimal_to), \
-               round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)
+        return [round(red_650, round_decimal_to), round(orange_600, round_decimal_to),
+                round(yellow_570, round_decimal_to), round(green_550, round_decimal_to),
+                round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)]
