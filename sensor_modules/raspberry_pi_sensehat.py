@@ -168,7 +168,7 @@ class CreateRPSenseHAT:
                     self.display_led_message(str(int(self.temperature())) + "c")
                 elif event.action == "held":
                     shutdown_confirm = True
-                    self.sense.show_message("Shutdown=down",
+                    self.sense.show_message("Off1",
                                             scroll_speed=0.08,
                                             text_colour=(75, 0, 0))
 
