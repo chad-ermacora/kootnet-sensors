@@ -64,13 +64,11 @@ sensor_info_start = """
         <th><span style="background-color: #00ffff;">Sensor Name</span></th>
         <th><span style="background-color: #00ffff;">IP Address</span></th>
         <th><span style="background-color: #00ffff;">Sensor Time</span></th>
-        <th><span style="background-color: #00ffff;">System UpTime</span></th>
+        <th><span style="background-color: #00ffff;">System UpTime (Minutes)</span></th>
         <th><span style="background-color: #00ffff;">Version</span></th>
         <th><span style="background-color: #00ffff;">CPU Temp</span></th>
         <th><span style="background-color: #00ffff;">Free Disk Space</span></th>
         <th><span style="background-color: #00ffff;">SQL DB Size</span></th>
-        <th><span style="background-color: #00ffff;">Interval to DB</span></th>
-        <th><span style="background-color: #00ffff;">Trigger to DB</span></th>
         <th><span style="background-color: #00ffff;">Last Updated</span></th>
     </tr>
 """
