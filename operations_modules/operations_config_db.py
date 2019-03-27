@@ -28,6 +28,7 @@ class CreateDatabaseVariables:
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
+        self.all_tables_datetime = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
         self.sensor_uptime = "SensorUpTime"
