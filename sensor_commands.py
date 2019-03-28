@@ -259,6 +259,19 @@ def get_db_note_dates():
         return "No Data,No Data"
 
 
+@app.route("/DeleteDatabaseNote", methods=["PUT"])
+def del_db_note():
+    datetime_var = request.form['command_data']
+    operations_logger.network_logger.info("* Deleted Note from: " + str(datetime_var))
+
+    sql_query = "DELETE FROM " + \
+                str(database_columns_and_tables.table_other) + \
+                " WHERE " + \
+                str(database_columns_and_tables.all_tables_datetime) + \
+                " = '" + datetime_var + "'"
+    sql_execute(sql_query)
+
+
 @app.route("/DownloadPrimaryLog")
 def download_primary_log():
     operations_logger.network_logger.info("* Sent Full Primary Log")
