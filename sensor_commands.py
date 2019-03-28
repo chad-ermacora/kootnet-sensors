@@ -30,6 +30,8 @@ from operations_modules import operations_commands
 from operations_modules import operations_html_templates
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
+from operations_modules.operations_config_db import CreateDatabaseVariables
+from operations_modules.operations_db import sql_execute_get_data, sql_execute
 from operations_modules.operations_config import current_config, installed_sensors
 from operations_modules.operations_version import version, old_version
 from operations_modules.operations_variables import flask_http_port, flask_http_ip, bash_commands
@@ -54,6 +56,8 @@ if installed_sensors.raspberry_pi_sense_hat:
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
 
+database_columns_and_tables = CreateDatabaseVariables()
+
 
 @app.route("/")
 def root_http():
@@ -61,6 +65,7 @@ def root_http():
 
 
 @app.route("/Ver")
+@app.route("/About")
 def show_version():
     message = "<p>KootNet Sensors || " + version + "</p>"
     config = operations_commands.get_config_information().split(",")[-1]
@@ -198,6 +203,60 @@ def get_sensors_log():
     if len(log) > 1150:
         log = log[-1150:]
     return log
+
+
+@app.route("/GetDatabaseNotes")
+def get_db_notes():
+    operations_logger.network_logger.info("* Sent Sensor Notes")
+    sql_query = "SELECT " + \
+                database_columns_and_tables.other_table_column_notes + \
+                " FROM " + \
+                database_columns_and_tables.table_other
+
+    sql_data = sql_execute_get_data(sql_query)
+
+    if len(sql_data) > 0:
+        return_data_string = ""
+
+        count = 0
+        for entry in sql_data:
+            new_entry = str(entry)[2:-3]
+            new_entry = new_entry.replace(",", "[replaced_comma]")
+            return_data_string += new_entry + ","
+            count += 1
+
+        return_data_string = return_data_string[:-1]
+
+        return return_data_string
+    else:
+        return "No Data,No Data"
+
+
+@app.route("/GetDatabaseNoteDates")
+def get_db_note_dates():
+    operations_logger.network_logger.info("* Sent Sensor Note Dates")
+    sql_query = "SELECT " + \
+                database_columns_and_tables.all_tables_datetime + \
+                " FROM " + \
+                database_columns_and_tables.table_other
+
+    sql_data = sql_execute_get_data(sql_query)
+
+    if len(sql_data) > 0:
+        return_data_string = ""
+
+        count = 0
+        for entry in sql_data:
+            new_entry = str(entry)[2:-7]
+            new_entry = new_entry.replace(",", "[replaced_comma]")
+            return_data_string += new_entry + ","
+            count += 1
+
+        return_data_string = return_data_string[:-1]
+
+        return return_data_string
+    else:
+        return "No Data,No Data"
 
 
 @app.route("/DownloadPrimaryLog")
