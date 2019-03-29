@@ -229,7 +229,7 @@ def get_db_notes():
 
         return return_data_string
     else:
-        return "No Data,No Data"
+        return "No Notes"
 
 
 @app.route("/GetDatabaseNoteDates")
@@ -256,7 +256,7 @@ def get_db_note_dates():
 
         return return_data_string
     else:
-        return "No Data,No Data"
+        return "No Data"
 
 
 @app.route("/DeleteDatabaseNote", methods=["PUT"])
