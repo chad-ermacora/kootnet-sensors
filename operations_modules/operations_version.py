@@ -37,5 +37,5 @@ def write_program_version_to_file():
     current_version_file.close()
 
 
-version = "Alpha.24.21"
+version = "Alpha.24.32"
 old_version = _get_old_version()

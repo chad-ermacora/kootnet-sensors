@@ -115,8 +115,6 @@ def restart_services():
 
 def add_note_to_database(datetime_note):
     sql_data = CreateOtherDataEntry()
-    datetime_note = datetime_note.strip()
-    datetime_note = datetime_note.replace("'", '"')
     custom_datetime = "'" + datetime_note[:23] + "'"
     note = "'" + datetime_note[23:] + "'"
 
@@ -126,5 +124,14 @@ def add_note_to_database(datetime_note):
     sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
                    sql_data.sql_query_values_start + sql_data.sensor_readings +
                    sql_data.sql_query_values_end)
+
+    write_to_sql_database(sql_execute)
+
+
+def update_note_to_database(datetime_note):
+    custom_datetime = "'" + datetime_note[:23] + "'"
+    note = "'" + datetime_note[23:] + "'"
+
+    sql_execute = "UPDATE OtherData SET Notes = " + note + " WHERE DateTime = " + custom_datetime
 
     write_to_sql_database(sql_execute)
