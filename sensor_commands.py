@@ -308,6 +308,14 @@ def put_sql_note():
     return "OK"
 
 
+@app.route("/UpdateDatabaseNote", methods=["PUT"])
+def update_sql_note():
+    new_note = request.form['command_data']
+    operations_commands.update_note_to_database(new_note)
+    operations_logger.network_logger.info("* Updated Note in Database")
+    return "OK"
+
+
 @app.route("/UpgradeOnline", methods=["PUT"])
 def upgrade_http():
     os.system(bash_commands["UpgradeOnline"])
