@@ -18,6 +18,7 @@
 """
 import os
 from shutil import disk_usage
+from datetime import datetime
 
 from operations_modules.operations_config import current_config, version, installed_sensors
 from operations_modules.operations_variables import restart_sensor_services_command
@@ -25,6 +26,8 @@ from operations_modules.operations_file_locations import last_updated_file_locat
 from operations_modules.operations_db import write_to_sql_database, CreateOtherDataEntry
 from operations_modules import operations_logger
 from operations_modules import operations_sensors
+
+command_data_separator = "[new_data_section]"
 
 
 def get_sensor_readings():
@@ -115,11 +118,18 @@ def restart_services():
 
 def add_note_to_database(datetime_note):
     sql_data = CreateOtherDataEntry()
-    custom_datetime = "'" + datetime_note[:23] + "'"
-    note = "'" + datetime_note[23:] + "'"
+    user_date_and_note = datetime_note.split(command_data_separator)
 
-    sql_data.sensor_types = "DateTime, Notes"
-    sql_data.sensor_readings = custom_datetime + ", " + note
+    current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-6] + "000"
+    if len(user_date_and_note) > 1:
+        custom_datetime = user_date_and_note[0]
+        note = user_date_and_note[1]
+    else:
+        custom_datetime = "NA"
+        note = user_date_and_note[0]
+
+    sql_data.sensor_types = "DateTime, UserDateTime, Notes"
+    sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
     sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
                    sql_data.sql_query_values_start + sql_data.sensor_readings +
@@ -128,10 +138,18 @@ def add_note_to_database(datetime_note):
     write_to_sql_database(sql_execute)
 
 
-def update_note_to_database(datetime_note):
-    custom_datetime = "'" + datetime_note[:23] + "'"
-    note = "'" + datetime_note[23:] + "'"
+def update_note_in_database(datetime_note):
+    data_list = datetime_note.split(command_data_separator)
 
-    sql_execute = "UPDATE OtherData SET Notes = " + note + " WHERE DateTime = " + custom_datetime
+    try:
+        current_datetime = "'" + data_list[0] + "'"
+        user_datetime = "'" + data_list[1] + "'"
+        note = "'" + data_list[2] + "'"
 
-    write_to_sql_database(sql_execute)
+        sql_execute = "UPDATE OtherData SET Notes = " + note + \
+                      ",UserDateTime = " + user_datetime + \
+                      " WHERE DateTime = " + current_datetime
+
+        write_to_sql_database(sql_execute)
+    except Exception as error:
+        operations_logger.primary_logger.error("DB note update error: " + str(error))
