@@ -235,20 +235,46 @@ def get_db_notes():
 @app.route("/GetDatabaseNoteDates")
 def get_db_note_dates():
     operations_logger.network_logger.info("* Sent Sensor Note Dates")
-    sql_query = "SELECT " + \
-                database_columns_and_tables.all_tables_datetime + \
-                " FROM " + \
-                database_columns_and_tables.table_other
+    sql_query_notes = "SELECT " + \
+                      database_columns_and_tables.all_tables_datetime + \
+                      " FROM " + \
+                      database_columns_and_tables.table_other
 
-    sql_data = sql_execute_get_data(sql_query)
+    sql_data_notes = sql_execute_get_data(sql_query_notes)
 
-    if len(sql_data) > 0:
+    if len(sql_data_notes) > 0:
         return_data_string = ""
 
         count = 0
-        for entry in sql_data:
+        for entry in sql_data_notes:
             new_entry = str(entry)[2:-7]
             new_entry = new_entry.replace(",", "[replaced_comma]")
+            return_data_string += new_entry + ","
+            count += 1
+
+        return_data_string = return_data_string[:-1]
+
+        return return_data_string
+    else:
+        return "No Data"
+
+
+@app.route("/GetDatabaseNoteUserDates")
+def get_db_note_user_dates():
+    operations_logger.network_logger.info("* Sent Sensor Note User Set Dates")
+    sql_query_user_datetime = "SELECT " + \
+                              database_columns_and_tables.other_table_column_user_date_time + \
+                              " FROM " + \
+                              database_columns_and_tables.table_other
+
+    sql_data_user_datetime = sql_execute_get_data(sql_query_user_datetime)
+
+    if len(sql_data_user_datetime) > 0:
+        return_data_string = ""
+
+        count = 0
+        for entry in sql_data_user_datetime:
+            new_entry = str(entry)[2:-7]
             return_data_string += new_entry + ","
             count += 1
 
@@ -311,7 +337,7 @@ def put_sql_note():
 @app.route("/UpdateDatabaseNote", methods=["PUT"])
 def update_sql_note():
     new_note = request.form['command_data']
-    operations_commands.update_note_to_database(new_note)
+    operations_commands.update_note_in_database(new_note)
     operations_logger.network_logger.info("* Updated Note in Database")
     return "OK"
 
