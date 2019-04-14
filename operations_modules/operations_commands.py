@@ -97,6 +97,18 @@ def get_sensor_log(log_file):
     return log
 
 
+def get_sensor_log_html(log_file):
+    """ Opens provided log file location and returns its content. """
+    log_content = open(log_file, "r")
+    log_lines = log_content.readlines()
+    log_content.close()
+
+    html_return = ""
+    for log in log_lines:
+        html_return += "<br/>" + log
+    return html_return
+
+
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how. """
     try:
