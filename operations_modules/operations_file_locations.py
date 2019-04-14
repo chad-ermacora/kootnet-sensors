@@ -22,6 +22,7 @@ config_file_location = "/etc/kootnet/sql_recording.conf"
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
+quick_links_file_location = "/opt/kootnet-sensors/extras/quick.html"
 
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"

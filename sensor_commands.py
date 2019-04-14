@@ -64,6 +64,14 @@ def root_http():
     return "KootNet Sensors || Raspberry Pi Sensor"
 
 
+@app.route("/Quick")
+def quick_links():
+    quick_links_html = open(file_locations.quick_links_file_location, "r")
+    return_page = quick_links_html.read()
+    quick_links_html.close()
+    return return_page
+
+
 @app.route("/Ver")
 @app.route("/About")
 def show_version():
@@ -187,6 +195,13 @@ def get_primary_log():
     return log
 
 
+@app.route("/GetPrimaryLogHTML")
+def get_primary_log_html():
+    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
+    log = operations_commands.get_sensor_log_html(operations_logger.primary_log)
+    return log
+
+
 @app.route("/GetNetworkLog")
 def get_network_log():
     operations_logger.network_logger.info("* Sent Network Log")
@@ -196,12 +211,26 @@ def get_network_log():
     return log
 
 
+@app.route("/GetNetworkLogHTML")
+def get_network_log_html():
+    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
+    log = operations_commands.get_sensor_log_html(operations_logger.network_log)
+    return log
+
+
 @app.route("/GetSensorsLog")
 def get_sensors_log():
     operations_logger.network_logger.info("* Sent Sensor Log")
     log = operations_commands.get_sensor_log(operations_logger.sensors_log)
     if len(log) > 1150:
         log = log[-1150:]
+    return log
+
+
+@app.route("/GetSensorsLogHTML")
+def get_sensors_log_html():
+    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
+    log = operations_commands.get_sensor_log_html(operations_logger.sensors_log)
     return log
 
 
