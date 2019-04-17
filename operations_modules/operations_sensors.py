@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
-
+from operations_modules import operations_logger
 from operations_modules import operations_db
 from operations_modules.operations_config import installed_sensors, current_config
 from operations_modules.operations_version import version, old_version
@@ -279,6 +279,38 @@ def get_ip():
 def get_system_datetime():
     if installed_sensors.linux_system:
         return os_sensor_access.get_sys_datetime()
+    else:
+        return "NoSensor"
+
+
+def get_uptime_str():
+    """ Converts provided minutes into a human readable string. """
+    if installed_sensors.linux_system:
+        var_minutes = os_sensor_access.get_uptime()
+        str_day_hour_min = ""
+
+        try:
+            uptime_days = int(float(var_minutes) // 1440)
+            uptime_hours = int((float(var_minutes) % 1440) // 60)
+            uptime_min = int(float(var_minutes) % 60)
+            if uptime_days:
+                if uptime_days > 1:
+                    str_day_hour_min = str(uptime_days) + " Days, "
+                else:
+                    str_day_hour_min = str(uptime_days) + " Day, "
+            if uptime_hours:
+                if uptime_hours > 1:
+                    str_day_hour_min += str(uptime_hours) + " Hours & "
+                else:
+                    str_day_hour_min += str(uptime_hours) + " Hour & "
+
+            str_day_hour_min += str(uptime_min) + " Min"
+
+        except Exception as error:
+            operations_logger.sensors_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
+            str_day_hour_min = var_minutes
+
+        return str_day_hour_min
     else:
         return "NoSensor"
 
