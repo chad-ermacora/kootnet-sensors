@@ -60,25 +60,54 @@ database_columns_and_tables = CreateDatabaseVariables()
 
 
 @app.route("/")
-def root_http():
-    return "KootNet Sensors || Raspberry Pi Sensor"
-
-
-@app.route("/Quick")
-def quick_links():
-    quick_links_html = open(file_locations.quick_links_file_location, "r")
-    return_page = quick_links_html.read()
-    quick_links_html.close()
-    return return_page
-
-
 @app.route("/Ver")
 @app.route("/About")
-def show_version():
+def root_http():
+    operations_logger.network_logger.info("Root web page accessed from " + str(request.remote_addr))
     message = "<p>KootNet Sensors || " + version + "</p>"
     config = operations_commands.get_config_information().split(",")[-1]
     message += "<p>" + config + "</p>"
     return message
+
+
+@app.route("/Quick")
+def quick_links():
+    operations_logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
+    quick_links_span_description_start = operations_html_templates.quick_links_span_description_start
+    quick_links_span_data_start = operations_html_templates.quick_links_span_data_start
+    quick_style_end = operations_html_templates.quick_links_span_end
+
+    return_page = operations_html_templates.quick_links_html_start
+    sensor_hostname = operations_sensors.get_hostname()
+    sensor_ip = operations_sensors.get_ip()
+    sensor_last_updated = operations_commands.get_last_updated()
+    sensor_datetime = operations_sensors.get_system_datetime()
+    sensor_uptime_str = operations_sensors.get_uptime_str()
+    sensor_db_size = operations_sensors.get_db_size()
+
+    return_page += "<p>|| " + quick_links_span_description_start + \
+                   "HostName" + quick_style_end + ": " + quick_links_span_data_start + \
+                   sensor_hostname + quick_style_end + " || " + quick_links_span_description_start + \
+                   "IP" + quick_style_end + ": " + quick_links_span_data_start + \
+                   sensor_ip + quick_style_end + " || " + quick_links_span_description_start + \
+                   "SQL Database Size" + quick_style_end + ": " + quick_links_span_data_start + \
+                   str(sensor_db_size) + " MB" + quick_style_end + " ||</p>" + \
+                   "<p>|| " + quick_links_span_description_start + \
+                   "Sensor Date & Time" + quick_style_end + ": " + quick_links_span_data_start + \
+                   sensor_datetime + quick_style_end + " || " + quick_links_span_description_start + \
+                   "Sensor Uptime" + quick_style_end + ": " + quick_links_span_data_start + \
+                   sensor_uptime_str + quick_style_end + " ||</p>" + \
+                   "<p>|| " + quick_links_span_description_start + \
+                   "Installed Sensors" + quick_style_end + ": " + quick_links_span_data_start + \
+                   installed_sensors.get_installed_names_str() + quick_style_end + " ||</p>" + \
+                   "<p>|| " + quick_links_span_description_start + \
+                   "Version" + quick_style_end + ": " + quick_links_span_data_start + \
+                   version + quick_style_end + " || " + quick_links_span_description_start + \
+                   "Last Updated" + quick_style_end + ": " + quick_links_span_data_start + \
+                   sensor_last_updated + quick_style_end + " ||</p>" + \
+                   operations_html_templates.quick_links_html_middle + \
+                   operations_html_templates.quick_links_html_end
+    return return_page
 
 
 @app.route("/TestSensor")
@@ -99,7 +128,7 @@ def test_sensor():
     for info in sensor_info_raw:
         sensor_info += "<th><span style='background-color: #0BB10D;'>" + info + "</span></th>"
 
-    message = "<p><span style='color: red'>KootNet Sensors || Sensor Testing Page</span></p>" + \
+    message = "<p><span style='color: red'>KootNet Sensors || Sensor Report</span></p>" + \
               info_start + "<tr>" + sensor_info + "</tr></table>"
 
     message += config_start + "<tr>" + sensor_config + "</tr></table>"
@@ -213,7 +242,7 @@ def get_network_log():
 
 @app.route("/GetNetworkLogHTML")
 def get_network_log_html():
-    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
+    operations_logger.network_logger.info("* Sent Network Log in HTML format")
     log = operations_commands.get_sensor_log_html(operations_logger.network_log)
     return log
 
@@ -229,7 +258,7 @@ def get_sensors_log():
 
 @app.route("/GetSensorsLogHTML")
 def get_sensors_log_html():
-    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
+    operations_logger.network_logger.info("* Sent Sensor Log in HTML format")
     log = operations_commands.get_sensor_log_html(operations_logger.sensors_log)
     return log
 
