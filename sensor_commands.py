@@ -32,7 +32,6 @@ from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import variables
 from operations_modules import configuration_files
-from operations_modules import installed_sensors
 
 if software_version.old_version != software_version.version:
     logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
@@ -110,7 +109,7 @@ def get_configuration_report():
 @app.route("/GetInstalledSensors")
 def get_installed_sensors():
     logger.network_logger.info("* Sent Installed Sensors")
-    installed_sensors_str = installed_sensors.convert_installed_sensors_to_str(configuration_main.installed_sensors)
+    installed_sensors_str = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
     return installed_sensors_str
 
 
@@ -436,8 +435,8 @@ def set_configuration():
 def set_installed_sensors():
     logger.network_logger.info("* Setting Sensor Installed Sensors")
     raw_installed_sensors = request.form['command_data'].splitlines()
-    new_installed_sensors = installed_sensors.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
-    installed_sensors.write_installed_sensors_to_file(new_installed_sensors)
+    new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
+    configuration_main.installed_sensors.write_installed_sensors_to_file(new_installed_sensors)
     sensors.restart_services()
     return "OK"
 

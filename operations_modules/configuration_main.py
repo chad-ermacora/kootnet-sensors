@@ -19,7 +19,6 @@
 from operations_modules import logger
 from operations_modules import configuration_files
 from operations_modules import software_version
-from operations_modules import installed_sensors
 from operations_modules import variables
 from operations_modules import trigger_variances
 
@@ -39,7 +38,7 @@ def get_sensor_temperature_offset():
         sensor_temp_offset = variables.CreateUnknownTemperatureOffsets()
 
     if current_config.enable_custom_temp:
-        return current_config.custom_temperature_offset
+        return current_config.temperature_offset
     elif installed_sensors.pimoroni_enviro:
         return sensor_temp_offset.pimoroni_enviro
     elif installed_sensors.pimoroni_bme680:
@@ -52,12 +51,12 @@ def get_sensor_temperature_offset():
 
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
-    installed_sensors = installed_sensors.CreateInstalledSensors()
-    current_config = configuration_files.CreateConfig()
+    installed_sensors = variables.CreateInstalledSensors()
+    current_config = variables.CreateConfig()
     trigger_variances = trigger_variances.CreateTriggerVariances()
 else:
     logger.primary_logger.debug("Initializing configurations")
-    installed_sensors = installed_sensors.get_installed_sensors_from_file()
+    installed_sensors = configuration_files.get_installed_sensors_from_file()
     current_config = configuration_files.get_config_from_file()
     trigger_variances = trigger_variances.get_triggers_variances_from_file()
 

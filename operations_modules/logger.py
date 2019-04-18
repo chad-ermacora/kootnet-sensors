@@ -38,24 +38,15 @@ def check_debug_logging():
         debug = debug_file.read().strip()
         debug_file.close()
 
-        if int(debug) is 1:
+        if int(debug):
             return 1
         else:
             return 0
     else:
-        save_log_level(0)
+        enable_debug = open(file_locations.debug_file_location, 'w')
+        enable_debug.write("0")
+        enable_debug.close()
         return 0
-
-
-def save_log_level(debug_level):
-    """
-        Enables or disables debug logging and writes to local disk.
-
-        set debug_level as 0 to disable or 1 to enable
-    """
-    enable_debug = open(file_locations.debug_file_location, 'w')
-    enable_debug.write(str(debug_level))
-    enable_debug.close()
 
 
 def get_sensor_log(log_file):
