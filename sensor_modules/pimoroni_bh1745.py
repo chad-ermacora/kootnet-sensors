@@ -20,7 +20,7 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-from operations_modules import operations_logger
+from operations_modules import logger
 
 round_decimal_to = 5
 
@@ -36,9 +36,9 @@ class CreateBH1745:
     def lumen(self):
         try:
             var_lumen = self.bh1745.get_rgbc_raw()[3]
-            operations_logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
+            logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
             var_lumen = 0
 
         return round(var_lumen, round_decimal_to)
@@ -46,9 +46,9 @@ class CreateBH1745:
     def ems(self):
         try:
             rgb_red, rgb_green, rgb_blue, var_lumen = self.bh1745.get_rgbc_raw()
-            operations_logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")
+            logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
             rgb_red, rgb_green, rgb_blue = 0, 0, 0
 
         return [round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)]

@@ -17,8 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import operations_modules.operations_logger as operations_logger
-import operations_modules.operations_file_locations as file_locations
+from operations_modules import logger
+from operations_modules import file_locations
 
 
 class CreateInstalledSensors:
@@ -136,7 +136,7 @@ def convert_installed_sensors_to_str(installed_sensors):
 
 def get_installed_sensors_from_file():
     """ Loads installed sensors from file and returns it as an object. """
-    operations_logger.primary_logger.debug("Loading Installed Sensors and Returning")
+    logger.primary_logger.debug("Loading Installed Sensors and Returning")
 
     if os.path.isfile(file_locations.sensors_installed_file_location):
         try:
@@ -145,10 +145,10 @@ def get_installed_sensors_from_file():
             sensor_list_file.close()
             installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
         except Exception as error:
-            operations_logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
+            logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
             installed_sensors = CreateInstalledSensors()
     else:
-        operations_logger.primary_logger.error("Installed Sensors file not found, using and saving default")
+        logger.primary_logger.error("Installed Sensors file not found, using and saving default")
         installed_sensors = CreateInstalledSensors()
         write_installed_sensors_to_file(installed_sensors)
 
@@ -165,7 +165,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         else:
             new_installed_sensors.linux_system = 0
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.linux_system_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.linux_system_name)
         bad_load = True
 
     try:
@@ -173,7 +173,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_zero_w = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_zero_w_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_zero_w_name)
         bad_load = True
 
     try:
@@ -181,7 +181,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_3b_plus = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_3b_plus_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_3b_plus_name)
         bad_load = True
 
     try:
@@ -195,7 +195,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_mag = 1
             new_installed_sensors.has_gyro = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_sense_hat_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_sense_hat_name)
         bad_load = True
 
     try:
@@ -207,7 +207,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_green = 1
             new_installed_sensors.has_blue = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bh1745_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bh1745_name)
         bad_load = True
 
     try:
@@ -221,7 +221,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_blue = 1
             new_installed_sensors.has_violet = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_as7262_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_as7262_name)
         bad_load = True
 
     try:
@@ -233,7 +233,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_humidity = 1
 
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
         bad_load = True
 
     try:
@@ -247,7 +247,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_acc = 1
             new_installed_sensors.has_mag = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviro_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviro_name)
         bad_load = True
 
     try:
@@ -257,7 +257,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_acc = 1
             new_installed_sensors.has_mag = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_lsm303d_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_lsm303d_name)
         bad_load = True
 
     try:
@@ -265,7 +265,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_vl53l1x = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
         bad_load = True
 
     try:
@@ -274,12 +274,12 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.pimoroni_ltr_559 = 1
             new_installed_sensors.has_lumen = 1
     except IndexError:
-        operations_logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
         bad_load = True
 
     if bad_load:
-        operations_logger.primary_logger.warning("One or more bad options in Installed Sensors configuration file.  " +
-                                                 "Using defaults for bad entries and saving.")
+        logger.primary_logger.warning("One or more bad options in Installed Sensors configuration file.  " +
+                                      "Using defaults for bad entries and saving.")
         write_installed_sensors_to_file(new_installed_sensors)
 
     return new_installed_sensors
@@ -298,4 +298,4 @@ def write_installed_sensors_to_file(installed_sensors):
         installed_sensors_config_file.close()
 
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to open config file: " + str(error))
+        logger.primary_logger.error("Unable to open config file: " + str(error))

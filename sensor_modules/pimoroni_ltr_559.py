@@ -17,7 +17,7 @@ pip3 install ltr559
 
 @author: OO-Dragon
 """
-from operations_modules import operations_logger
+from operations_modules import logger
 
 round_decimal_to = 5
 
@@ -32,9 +32,9 @@ class CreateLTR559:
         """ Returns Lumen. """
         try:
             lumen = float(self.ltr_559.get_lux())
-            operations_logger.sensors_logger.debug("Pimoroni LTR-559 Lumen - OK")
+            logger.sensors_logger.debug("Pimoroni LTR-559 Lumen - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Pimoroni LTR-559 Lumen - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni LTR-559 Lumen - Failed - " + str(error))
             lumen = 0.0
 
         return round(lumen, round_decimal_to)
@@ -43,9 +43,9 @@ class CreateLTR559:
         """ Returns distance in cm?. """
         try:
             distance = float(self.ltr_559.get_proximity())
-            operations_logger.sensors_logger.debug("Pimoroni LTR-559 Proximity - OK")
+            logger.sensors_logger.debug("Pimoroni LTR-559 Proximity - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Pimoroni LTR-559 Proximity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni LTR-559 Proximity - Failed - " + str(error))
             distance = 0.0
 
         return round(distance, round_decimal_to)

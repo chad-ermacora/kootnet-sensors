@@ -18,13 +18,11 @@
 """
 import os
 import sqlite3
-
-import operations_modules.operations_file_locations as file_locations
-from operations_modules.operations_config_db import CreateDatabaseVariables
-from operations_modules import operations_version
-from operations_modules import operations_logger
-from operations_modules import operations_upgrades
-from operations_modules import operations_variables
+from operations_modules import file_locations
+from operations_modules import software_version
+from operations_modules import logger
+from operations_modules import upgrade_functions
+from operations_modules import variables
 
 
 class CreateRefinedVersion:
@@ -35,16 +33,16 @@ class CreateRefinedVersion:
             self.feature_version = int(version_split[1])
             self.minor_version = int(version_split[2])
         except Exception as error:
-            operations_logger.primary_logger.warning("Bad Version - " + str(version))
-            operations_logger.primary_logger.debug(str(error))
+            logger.primary_logger.warning("Bad Version - " + str(version))
+            logger.primary_logger.debug(str(error))
             self.major_version = 0
             self.feature_version = 0
             self.minor_version = 0
 
 
 def check_database_structure():
-    operations_logger.primary_logger.debug("Running DB Checks")
-    database_variables = CreateDatabaseVariables()
+    logger.primary_logger.debug("Running DB Checks")
+    database_variables = variables.CreateDatabaseVariables()
 
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database_location)
@@ -65,64 +63,64 @@ def check_database_structure():
         db_connection.commit()
         db_connection.close()
     except Exception as error:
-        operations_logger.primary_logger.error("DB Connection Failed: " + str(error))
+        logger.primary_logger.error("DB Connection Failed: " + str(error))
 
 
 def _create_table_and_datetime(table, db_cursor):
     try:
         # Create or update table
         db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-        operations_logger.primary_logger.debug("Table '" + table + "' - Created")
+        logger.primary_logger.debug("Table '" + table + "' - Created")
 
     except Exception as error:
-        operations_logger.primary_logger.debug(table + " - " + str(error))
+        logger.primary_logger.debug(table + " - " + str(error))
 
 
 def _check_sql_table_and_column(table_name, column_name, db_cursor):
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
-        operations_logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
+        logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
     except Exception as error:
-        operations_logger.primary_logger.debug("COLUMN '" + column_name + "' - " + str(error))
+        logger.primary_logger.debug("COLUMN '" + column_name + "' - " + str(error))
 
 
 def run_upgrade_checks():
-    operations_logger.primary_logger.debug("Old Version: " + operations_version.old_version +
-                                           " || New Version: " + operations_version.version)
-    previous_version = CreateRefinedVersion(operations_version.old_version)
+    logger.primary_logger.debug("Old Version: " + software_version.old_version +
+                                " || New Version: " + software_version.version)
+    previous_version = CreateRefinedVersion(software_version.old_version)
     no_changes = True
 
     if previous_version.major_version == 0:
         no_changes = False
-        operations_logger.primary_logger.info("New Install or broken/missing Old Version File")
-        operations_upgrades.reset_installed_sensors()
-        operations_upgrades.reset_config()
+        logger.primary_logger.info("New Install or broken/missing Old Version File")
+        upgrade_functions.reset_installed_sensors()
+        upgrade_functions.reset_config()
 
     if previous_version.major_version == "Alpha":
         if previous_version.feature_version == 22:
             no_changes = False
-            operations_logger.primary_logger.info("Upgraded: " + operations_version.old_version +
-                                                  " || New: " + operations_version.version)
-            operations_upgrades.reset_installed_sensors()
-            operations_upgrades.reset_config()
+            logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                       " || New: " + software_version.version)
+            upgrade_functions.reset_installed_sensors()
+            upgrade_functions.reset_config()
         elif previous_version.feature_version == 23:
             if previous_version.minor_version < 24:
                 no_changes = False
-                operations_upgrades.reset_config()
-                operations_logger.primary_logger.info("Upgraded: " + operations_version.old_version +
-                                                      " || New: " + operations_version.version)
+                upgrade_functions.reset_config()
+                logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                           " || New: " + software_version.version)
 
     if no_changes:
-        operations_logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                              operations_version.old_version + " New: " + operations_version.version)
-    operations_version.write_program_version_to_file()
+        logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
+                                   software_version.old_version + " New: " + software_version.version)
+    software_version.write_program_version_to_file()
     restart_services()
 
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(operations_variables.restart_sensor_services_command)
+    os.system(variables.restart_sensor_services_command)
 
 
 def set_file_permissions():
-    os.system(operations_variables.bash_commands["SetPermissions"])
+    os.system(variables.bash_commands["SetPermissions"])

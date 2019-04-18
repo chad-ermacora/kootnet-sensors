@@ -87,3 +87,50 @@ class CreateDatabaseVariables:
         other_sql_columns = [self.other_table_column_user_date_time,
                              self.other_table_column_notes]
         return other_sql_columns
+
+
+class CreateRPZeroWTemperatureOffsets:
+    def __init__(self):
+        # Additional testing may be required for accuracy
+        self.pimoroni_bme680 = -0.0  # Preliminary Testing
+        self.pimoroni_enviro = -4.5  # Tested
+        self.rp_sense_hat = -5.5  # Untested, guessing
+
+
+class CreateRP3BPlusTemperatureOffsets:
+    def __init__(self):
+        # Additional testing may be required for accuracy
+        self.pimoroni_bme680 = -2.5  # Tested when Raspberry Pi is on its side
+        self.pimoroni_enviro = -6.5  # Untested, guessing
+        self.rp_sense_hat = -7.0  # Preliminary testing done
+
+
+class CreateUnknownTemperatureOffsets:
+    def __init__(self):
+        # No Offset if unknown or unselected
+        self.pimoroni_bme680 = 0.0
+        self.pimoroni_enviro = 0.0
+        self.rp_sense_hat = 0.0
+
+
+# IP and Port for Flask to start up on
+flask_http_ip = ""
+flask_http_port = 10065
+
+sense_hat_show_led_message = False
+
+trigger_pairs = 3
+
+restart_sensor_services_command = "systemctl daemon-reload && " + \
+                                  "systemctl restart SensorRecording && " + \
+                                  "systemctl restart SensorCommands"
+
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
+                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
+                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
+                 "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
+                 "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
+                 "RebootSystem": "reboot",
+                 "ShutdownSystem": "shutdown -h now",
+                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot",
+                 "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}

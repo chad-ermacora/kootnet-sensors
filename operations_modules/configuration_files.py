@@ -17,9 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-
-import operations_modules.operations_file_locations as file_locations
-import operations_modules.operations_logger as operations_logger
+from operations_modules import file_locations
+from operations_modules import logger
 
 
 class CreateConfig:
@@ -49,7 +48,7 @@ def convert_config_to_str(config):
 
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
-    operations_logger.primary_logger.debug("Loading Configuration File")
+    logger.primary_logger.debug("Loading Configuration File")
 
     if os.path.isfile(file_locations.config_file_location):
         try:
@@ -59,10 +58,10 @@ def get_config_from_file():
             installed_config = convert_config_lines_to_obj(config_file_content)
         except Exception as error:
             installed_config = CreateConfig()
-            operations_logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
 
     else:
-        operations_logger.primary_logger.error("Configuration file not found, using and saving default")
+        logger.primary_logger.error("Configuration file not found, using and saving default")
         installed_config = CreateConfig()
         write_config_to_file(installed_config)
 
@@ -77,42 +76,42 @@ def convert_config_lines_to_obj(config_text_file):
     try:
         new_config.enable_debug_logging = int(config_text_file[1].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Enable Debug Logging: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Enable Debug Logging: " + str(error))
         bad_load = True
 
     try:
         new_config.enable_interval_recording = int(config_text_file[2].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Record Interval Sensors: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Record Interval Sensors: " + str(error))
         bad_load = True
 
     try:
         new_config.enable_trigger_recording = int(config_text_file[3].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Record Trigger Sensors: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Record Trigger Sensors: " + str(error))
         bad_load = True
 
     try:
         new_config.sleep_duration_interval = float(config_text_file[4].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Seconds between Interval recordings: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Seconds between Interval recordings: " + str(error))
         bad_load = True
 
     try:
         new_config.enable_custom_temp = int(config_text_file[5].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Enable Custom Temperature Offset: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Enable Custom Temperature Offset: " + str(error))
         bad_load = True
 
     try:
         new_config.temperature_offset = float(config_text_file[6].split('=')[0].strip())
     except Exception as error:
-        operations_logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
+        logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
         bad_load = True
 
     if bad_load:
-        operations_logger.primary_logger.warning("One or more bad options in main configuration file.  " +
-                                                 "Using defaults for bad entries and saving.")
+        logger.primary_logger.warning("One or more bad options in main configuration file.  " +
+                                      "Using defaults for bad entries and saving.")
         write_config_to_file(new_config)
 
     return new_config
@@ -120,7 +119,7 @@ def convert_config_lines_to_obj(config_text_file):
 
 def write_config_to_file(config):
     """ Writes provided configuration file to local disk. """
-    operations_logger.primary_logger.debug("Writing Configuration to File")
+    logger.primary_logger.debug("Writing Configuration to File")
     try:
         if type(config) is str:
             new_config = config
@@ -132,7 +131,7 @@ def write_config_to_file(config):
         sensor_list_file.close()
 
         # Save Log level with each config file save
-        operations_logger.save_log_level(str(config.enable_debug_logging))
+        logger.save_log_level(str(config.enable_debug_logging))
 
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to open config file: " + str(error))
+        logger.primary_logger.error("Unable to open config file: " + str(error))

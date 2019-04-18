@@ -19,29 +19,24 @@
 import os
 from threading import Thread
 from time import sleep
-
 from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
 
-from operations_modules.operations_wifi_file import write_wifi_config_to_file
-from operations_modules.trigger_variances import write_triggers_to_file as write_variances_to_file
-import operations_modules.operations_file_locations as file_locations
-from operations_modules import operations_commands
-from operations_modules import operations_html_templates
-from operations_modules import operations_logger
-from operations_modules import operations_sensors
-from operations_modules.operations_config_db import CreateDatabaseVariables
-from operations_modules.operations_db import sql_execute_get_data, sql_execute
-from operations_modules.operations_config import current_config, installed_sensors
-from operations_modules.operations_version import version, old_version
-from operations_modules.operations_variables import flask_http_port, flask_http_ip, bash_commands
-from operations_modules.operations_config_file import convert_config_to_str, convert_config_lines_to_obj, \
-    write_config_to_file
-from operations_modules.operations_installed_sensors import convert_installed_sensors_to_str, \
-    convert_installed_sensors_lines_to_obj, write_installed_sensors_to_file
+from html_files import page_quick
+from operations_modules import wifi_file
+from operations_modules import trigger_variances
+from operations_modules import file_locations
+from operations_modules import logger
+from operations_modules import sensors
+from operations_modules import sqlite_database
+from operations_modules import configuration_main
+from operations_modules import software_version
+from operations_modules import variables
+from operations_modules import configuration_files
+from operations_modules import installed_sensors
 
-if old_version != version:
-    operations_logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
+if software_version.old_version != software_version.version:
+    logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
     # Sleep before loading anything due to needed updates
     # The update service started by "record_to_db.py" will automatically restart this app when it's done
     while True:
@@ -51,137 +46,85 @@ monkey.patch_all()
 app = Flask(__name__)
 
 # If installed, start up SenseHAT Joystick program
-if installed_sensors.raspberry_pi_sense_hat:
-    sense_joy_stick_thread = Thread(target=operations_sensors.rp_sense_hat_sensor_access.start_joy_stick_commands)
+if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+    sense_joy_stick_thread = Thread(target=sensors.rp_sense_hat_sensor_access.start_joy_stick_commands)
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
 
-database_columns_and_tables = CreateDatabaseVariables()
+database_columns_and_tables = variables.CreateDatabaseVariables()
 
 
 @app.route("/")
 @app.route("/Ver")
 @app.route("/About")
 def root_http():
-    operations_logger.network_logger.info("Root web page accessed from " + str(request.remote_addr))
-    message = "<p>KootNet Sensors || " + version + "</p>"
-    config = operations_commands.get_config_information().split(",")[-1]
+    logger.network_logger.info("Root web page accessed from " + str(request.remote_addr))
+    message = "<p>KootNet Sensors || " + software_version.version + "</p>"
+    config = sensors.get_config_information().split(",")[-1]
     message += "<p>" + config + "</p>"
     return message
 
 
 @app.route("/Quick")
 def quick_links():
-    operations_logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
-    quick_links_span_description_start = operations_html_templates.quick_links_span_description_start
-    quick_links_span_data_start = operations_html_templates.quick_links_span_data_start
-    quick_style_end = operations_html_templates.quick_links_span_end
+    logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
 
-    return_page = operations_html_templates.quick_links_html_start
-    sensor_hostname = operations_sensors.get_hostname()
-    sensor_ip = operations_sensors.get_ip()
-    sensor_last_updated = operations_commands.get_last_updated()
-    sensor_datetime = operations_sensors.get_system_datetime()
-    sensor_uptime_str = operations_sensors.get_uptime_str()
-    sensor_db_size = operations_sensors.get_db_size()
-
-    return_page += "<p>|| " + quick_links_span_description_start + \
-                   "HostName" + quick_style_end + ": " + quick_links_span_data_start + \
-                   sensor_hostname + quick_style_end + " || " + quick_links_span_description_start + \
-                   "IP" + quick_style_end + ": " + quick_links_span_data_start + \
-                   sensor_ip + quick_style_end + " || " + quick_links_span_description_start + \
-                   "SQL Database Size" + quick_style_end + ": " + quick_links_span_data_start + \
-                   str(sensor_db_size) + " MB" + quick_style_end + " ||</p>" + \
-                   "<p>|| " + quick_links_span_description_start + \
-                   "Sensor Date & Time" + quick_style_end + ": " + quick_links_span_data_start + \
-                   sensor_datetime + quick_style_end + " || " + quick_links_span_description_start + \
-                   "Sensor Uptime" + quick_style_end + ": " + quick_links_span_data_start + \
-                   sensor_uptime_str + quick_style_end + " ||</p>" + \
-                   "<p>|| " + quick_links_span_description_start + \
-                   "Installed Sensors" + quick_style_end + ": " + quick_links_span_data_start + \
-                   installed_sensors.get_installed_names_str() + quick_style_end + " ||</p>" + \
-                   "<p>|| " + quick_links_span_description_start + \
-                   "Version" + quick_style_end + ": " + quick_links_span_data_start + \
-                   version + quick_style_end + " || " + quick_links_span_description_start + \
-                   "Last Updated" + quick_style_end + ": " + quick_links_span_data_start + \
-                   sensor_last_updated + quick_style_end + " ||</p>" + \
-                   operations_html_templates.quick_links_html_middle + \
-                   operations_html_templates.quick_links_html_end
+    return_page = page_quick.get_page_start()
+    return_page += page_quick.get_system()
+    return_page += page_quick.get_configuration()
+    return_page += page_quick.get_page_links()
+    return_page += page_quick.get_html_page_end()
     return return_page
 
 
 @app.route("/TestSensor")
 def test_sensor():
-    sensor_readings = operations_commands.get_sensor_readings()
-    sensor_info_raw = operations_commands.get_system_information().split(",")
-    sensor_config_raw = operations_commands.get_config_information().split(",")
-    sensor_config = ""
-    sensor_info = ""
-
-    info_start = operations_html_templates.sensor_info_start
-    config_start = operations_html_templates.sensor_config_start
-    readings_start = operations_html_templates.sensor_readings_start
-
-    for config in sensor_config_raw:
-        sensor_config += "<th><span style='background-color: #0BB10D;'>" + config + "</span></th>"
-
-    for info in sensor_info_raw:
-        sensor_info += "<th><span style='background-color: #0BB10D;'>" + info + "</span></th>"
-
-    message = "<p><span style='color: red'>KootNet Sensors || Sensor Report</span></p>" + \
-              info_start + "<tr>" + sensor_info + "</tr></table>"
-
-    message += config_start + "<tr>" + sensor_config + "</tr></table>"
-
-    message += readings_start + "<tr>" + sensor_readings[0] + "</tr>" + "<tr>" + sensor_readings[1] + "</tr></table>"
-
-    message += operations_html_templates.sensor_test_final_end
-    return message
+    return sensors.get_sensor_readings()
 
 
 @app.route("/CheckOnlineStatus")
 def check_online():
-    operations_logger.network_logger.debug("Sensor Checked by " + str(request.remote_addr))
+    logger.network_logger.debug("Sensor Checked by " + str(request.remote_addr))
     return "OK"
 
 
 @app.route("/GetSensorReadings")
 def get_sensor_readings():
-    operations_logger.network_logger.info("* Sent Sensor Readings")
-    sensor_readings = operations_commands.get_sensor_readings()
+    logger.network_logger.info("* Sent Sensor Readings")
+    sensor_readings = sensors.get_sensor_readings()
     return_str = str(sensor_readings[0]) + "," + str(sensor_readings[1])
     return return_str
 
 
 @app.route("/GetSystemData")
 def get_system_data():
-    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
-    return operations_commands.get_system_information()
+    logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+    return sensors.get_system_information()
 
 
 @app.route("/GetConfigurationReport")
 def get_configuration_report():
-    operations_logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
-    return operations_commands.get_config_information()
+    logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+    return sensors.get_config_information()
 
 
 @app.route("/GetInstalledSensors")
 def get_installed_sensors():
-    operations_logger.network_logger.info("* Sent Installed Sensors")
-    installed_sensors_str = convert_installed_sensors_to_str(installed_sensors)
+    logger.network_logger.info("* Sent Installed Sensors")
+    installed_sensors_str = installed_sensors.convert_installed_sensors_to_str(configuration_main.installed_sensors)
     return installed_sensors_str
 
 
 @app.route("/GetConfiguration")
 def get_configuration():
-    operations_logger.network_logger.info("* Sent Sensors Configuration")
-    installed_config_str = convert_config_to_str(current_config)
+    logger.network_logger.info("* Sent Sensors Configuration")
+    installed_config_str = configuration_files.convert_config_to_str(configuration_main.current_config)
     return installed_config_str
 
 
 @app.route("/GetWifiConfiguration")
 def get_wifi_config():
-    operations_logger.network_logger.info("* Sent wpa_supplicant")
+    logger.network_logger.info("* Sent wpa_supplicant")
     return send_file(file_locations.wifi_config_file)
 
 
@@ -189,16 +132,16 @@ def get_wifi_config():
 def set_wifi_config():
     try:
         new_wifi_config = request.form['command_data']
-        write_wifi_config_to_file(new_wifi_config)
-        operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
+        wifi_file.write_wifi_config_to_file(new_wifi_config)
+        logger.network_logger.info("* wpa_supplicant Changed - OK")
     except Exception as error:
-        operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+        logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
     return "OK"
 
 
 @app.route("/GetVarianceConfiguration")
 def get_variance_config():
-    operations_logger.network_logger.info("* Sent Variance Configuration")
+    logger.network_logger.info("* Sent Variance Configuration")
     return send_file(file_locations.trigger_variances_file_location)
 
 
@@ -206,19 +149,19 @@ def get_variance_config():
 def set_variance_config():
     try:
         new_variance_config = request.form['command_data']
-        write_variances_to_file(new_variance_config)
-        operations_logger.network_logger.info("* wpa_supplicant Changed - OK")
+        trigger_variances.write_triggers_to_file(new_variance_config)
+        logger.network_logger.info("* wpa_supplicant Changed - OK")
     except Exception as error:
-        operations_logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+        logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
 
-    operations_commands.restart_services()
+    sensors.restart_services()
     return "OK"
 
 
 @app.route("/GetPrimaryLog")
 def get_primary_log():
-    operations_logger.network_logger.info("* Sent Primary Log")
-    log = operations_commands.get_sensor_log(operations_logger.primary_log)
+    logger.network_logger.info("* Sent Primary Log")
+    log = logger.get_sensor_log(file_locations.primary_log)
     if len(log) > 1150:
         log = log[-1150:]
     return log
@@ -226,15 +169,15 @@ def get_primary_log():
 
 @app.route("/GetPrimaryLogHTML")
 def get_primary_log_html():
-    operations_logger.network_logger.info("* Sent Primary Log in HTML format")
-    log = operations_commands.get_sensor_log_html(operations_logger.primary_log)
+    logger.network_logger.info("* Sent Primary Log in HTML format")
+    log = logger.get_sensor_log_html(file_locations.primary_log)
     return log
 
 
 @app.route("/GetNetworkLog")
 def get_network_log():
-    operations_logger.network_logger.info("* Sent Network Log")
-    log = operations_commands.get_sensor_log(operations_logger.network_log)
+    logger.network_logger.info("* Sent Network Log")
+    log = logger.get_sensor_log(file_locations.network_log)
     if len(log) > 1150:
         log = log[-1150:]
     return log
@@ -242,15 +185,15 @@ def get_network_log():
 
 @app.route("/GetNetworkLogHTML")
 def get_network_log_html():
-    operations_logger.network_logger.info("* Sent Network Log in HTML format")
-    log = operations_commands.get_sensor_log_html(operations_logger.network_log)
+    logger.network_logger.info("* Sent Network Log in HTML format")
+    log = logger.get_sensor_log_html(file_locations.network_log)
     return log
 
 
 @app.route("/GetSensorsLog")
 def get_sensors_log():
-    operations_logger.network_logger.info("* Sent Sensor Log")
-    log = operations_commands.get_sensor_log(operations_logger.sensors_log)
+    logger.network_logger.info("* Sent Sensor Log")
+    log = logger.get_sensor_log(file_locations.sensors_log)
     if len(log) > 1150:
         log = log[-1150:]
     return log
@@ -258,20 +201,20 @@ def get_sensors_log():
 
 @app.route("/GetSensorsLogHTML")
 def get_sensors_log_html():
-    operations_logger.network_logger.info("* Sent Sensor Log in HTML format")
-    log = operations_commands.get_sensor_log_html(operations_logger.sensors_log)
+    logger.network_logger.info("* Sent Sensor Log in HTML format")
+    log = logger.get_sensor_log_html(file_locations.sensors_log)
     return log
 
 
 @app.route("/GetDatabaseNotes")
 def get_db_notes():
-    operations_logger.network_logger.info("* Sent Sensor Notes")
+    logger.network_logger.info("* Sent Sensor Notes")
     sql_query = "SELECT " + \
                 database_columns_and_tables.other_table_column_notes + \
                 " FROM " + \
                 database_columns_and_tables.table_other
 
-    sql_data = sql_execute_get_data(sql_query)
+    sql_data = sqlite_database.sql_execute_get_data(sql_query)
 
     if len(sql_data) > 0:
         return_data_string = ""
@@ -292,13 +235,13 @@ def get_db_notes():
 
 @app.route("/GetDatabaseNoteDates")
 def get_db_note_dates():
-    operations_logger.network_logger.info("* Sent Sensor Note Dates")
+    logger.network_logger.info("* Sent Sensor Note Dates")
     sql_query_notes = "SELECT " + \
                       database_columns_and_tables.all_tables_datetime + \
                       " FROM " + \
                       database_columns_and_tables.table_other
 
-    sql_data_notes = sql_execute_get_data(sql_query_notes)
+    sql_data_notes = sqlite_database.sql_execute_get_data(sql_query_notes)
 
     if len(sql_data_notes) > 0:
         return_data_string = ""
@@ -319,13 +262,13 @@ def get_db_note_dates():
 
 @app.route("/GetDatabaseNoteUserDates")
 def get_db_note_user_dates():
-    operations_logger.network_logger.info("* Sent Sensor Note User Set Dates")
+    logger.network_logger.info("* Sent Sensor Note User Set Dates")
     sql_query_user_datetime = "SELECT " + \
                               database_columns_and_tables.other_table_column_user_date_time + \
                               " FROM " + \
                               database_columns_and_tables.table_other
 
-    sql_data_user_datetime = sql_execute_get_data(sql_query_user_datetime)
+    sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
 
     if len(sql_data_user_datetime) > 0:
         return_data_string = ""
@@ -346,118 +289,118 @@ def get_db_note_user_dates():
 @app.route("/DeleteDatabaseNote", methods=["PUT"])
 def del_db_note():
     datetime_var = request.form['command_data']
-    operations_logger.network_logger.info("* Deleted Note from: " + str(datetime_var))
+    logger.network_logger.info("* Deleted Note from: " + str(datetime_var))
 
     sql_query = "DELETE FROM " + \
                 str(database_columns_and_tables.table_other) + \
                 " WHERE " + \
                 str(database_columns_and_tables.all_tables_datetime) + \
                 " = '" + datetime_var + "'"
-    sql_execute(sql_query)
+    sqlite_database.sql_execute(sql_query)
 
 
 @app.route("/DownloadPrimaryLog")
 def download_primary_log():
-    operations_logger.network_logger.info("* Sent Full Primary Log")
-    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
-    return send_file(operations_logger.primary_log, as_attachment=True, attachment_filename=log_name)
+    logger.network_logger.info("* Sent Full Primary Log")
+    log_name = sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
+    return send_file(file_locations.primary_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadNetworkLog")
 def download_network_log():
-    operations_logger.network_logger.info("* Sent Full Network Log")
-    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "NetworkLog.txt"
-    return send_file(operations_logger.network_log, as_attachment=True, attachment_filename=log_name)
+    logger.network_logger.info("* Sent Full Network Log")
+    log_name = sensors.get_ip()[-3:].replace(".", "_") + "NetworkLog.txt"
+    return send_file(file_locations.network_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadSensorsLog")
 def download_sensors_log():
-    operations_logger.network_logger.info("* Sent Full Sensor Log")
-    log_name = operations_sensors.get_ip()[-3:].replace(".", "_") + "SensorLog.txt"
-    return send_file(operations_logger.sensors_log, as_attachment=True, attachment_filename=log_name)
+    logger.network_logger.info("* Sent Full Sensor Log")
+    log_name = sensors.get_ip()[-3:].replace(".", "_") + "SensorLog.txt"
+    return send_file(file_locations.sensors_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadSQLDatabase")
 def download_sensors_sql_database():
-    operations_logger.network_logger.info("* Sent Sensor SQL Database")
-    sql_filename = operations_sensors.get_ip()[-3:].replace(".", "_") + "SensorRecordingDatabase.sqlite"
+    logger.network_logger.info("* Sent Sensor SQL Database")
+    sql_filename = sensors.get_ip()[-3:].replace(".", "_") + "SensorRecordingDatabase.sqlite"
     return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
 
 
 @app.route("/PutDatabaseNote", methods=["PUT"])
 def put_sql_note():
     new_note = request.form['command_data']
-    operations_commands.add_note_to_database(new_note)
-    operations_logger.network_logger.info("* Inserted Note into Database")
+    sensors.add_note_to_database(new_note)
+    logger.network_logger.info("* Inserted Note into Database")
     return "OK"
 
 
 @app.route("/UpdateDatabaseNote", methods=["PUT"])
 def update_sql_note():
     new_note = request.form['command_data']
-    operations_commands.update_note_in_database(new_note)
-    operations_logger.network_logger.info("* Updated Note in Database")
+    sensors.update_note_in_database(new_note)
+    logger.network_logger.info("* Updated Note in Database")
     return "OK"
 
 
 @app.route("/UpgradeOnline", methods=["PUT"])
 def upgrade_http():
-    os.system(bash_commands["UpgradeOnline"])
-    operations_logger.network_logger.info("* update_programs_online.sh Complete")
+    os.system(variables.bash_commands["UpgradeOnline"])
+    logger.network_logger.info("* update_programs_online.sh Complete")
     return "OK"
 
 
 @app.route("/CleanOnline")
 def upgrade_clean_http():
-    os.system(bash_commands["CleanOnline"])
-    operations_logger.network_logger.info("* Started Clean Upgrade - HTTP")
+    os.system(variables.bash_commands["CleanOnline"])
+    logger.network_logger.info("* Started Clean Upgrade - HTTP")
     return "OK"
 
 
 @app.route("/UpgradeSMB")
 def upgrade_smb():
-    os.system(bash_commands["UpgradeSMB"])
-    operations_logger.network_logger.info("* update_programs_smb.sh Complete")
+    os.system(variables.bash_commands["UpgradeSMB"])
+    logger.network_logger.info("* update_programs_smb.sh Complete")
     return "OK"
 
 
 @app.route("/CleanSMB")
 def upgrade_clean_smb():
-    os.system(bash_commands["CleanSMB"])
-    operations_logger.network_logger.info("* Started Clean Upgrade - SMB")
+    os.system(variables.bash_commands["CleanSMB"])
+    logger.network_logger.info("* Started Clean Upgrade - SMB")
     return "OK"
 
 
 @app.route("/UpgradeSystemOS")
 def upgrade_system_os():
-    operations_logger.network_logger.info("* Updating Operating System & rebooting")
-    os.system(bash_commands["UpgradeSystemOS"])
+    logger.network_logger.info("* Updating Operating System & rebooting")
+    os.system(variables.bash_commands["UpgradeSystemOS"])
     return "OK"
 
 
 @app.route("/inkupg")
 def upgrade_rp_controller():
-    os.system(bash_commands["inkupg"])
-    operations_logger.network_logger.info("* update_programs_e-Ink.sh Complete")
+    os.system(variables.bash_commands["inkupg"])
+    logger.network_logger.info("* update_programs_e-Ink.sh Complete")
     return "OK"
 
 
 @app.route("/RebootSystem")
 def system_reboot():
-    operations_logger.network_logger.info("* Rebooting System")
-    os.system(bash_commands["RebootSystem"])
+    logger.network_logger.info("* Rebooting System")
+    os.system(variables.bash_commands["RebootSystem"])
 
 
 @app.route("/ShutdownSystem")
 def system_shutdown():
-    operations_logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
-    os.system(bash_commands["ShutdownSystem"])
+    logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
+    os.system(variables.bash_commands["ShutdownSystem"])
 
 
 @app.route("/RestartServices")
 def services_restart():
-    operations_logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
-    operations_commands.restart_services()
+    logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
+    sensors.restart_services()
 
 
 @app.route("/SetHostName", methods=["PUT"])
@@ -465,9 +408,9 @@ def set_hostname():
     try:
         new_host = request.form['command_data']
         os.system("hostnamectl set-hostname " + new_host)
-        operations_logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
+        logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
     except Exception as error:
-        operations_logger.network_logger.warning("* Hostname Change Failed: " + str(error))
+        logger.network_logger.warning("* Hostname Change Failed: " + str(error))
     return "OK"
 
 
@@ -475,103 +418,103 @@ def set_hostname():
 def set_date_time():
     new_datetime = request.form['command_data']
     os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-    operations_logger.network_logger.info("* Set System DateTime: " + new_datetime)
+    logger.network_logger.info("* Set System DateTime: " + new_datetime)
     return "OK"
 
 
 @app.route("/SetConfiguration", methods=["PUT"])
 def set_configuration():
-    operations_logger.network_logger.info("* Setting Sensor Configuration")
+    logger.network_logger.info("* Setting Sensor Configuration")
 
     raw_config = request.form['command_data'].splitlines()
-    new_config = convert_config_lines_to_obj(raw_config)
-    write_config_to_file(new_config)
-    operations_commands.restart_services()
+    new_config = configuration_files.convert_config_lines_to_obj(raw_config)
+    configuration_files.write_config_to_file(new_config)
+    sensors.restart_services()
     return "OK"
 
 
 @app.route("/SetInstalledSensors", methods=["PUT"])
 def set_installed_sensors():
-    operations_logger.network_logger.info("* Setting Sensor Installed Sensors")
+    logger.network_logger.info("* Setting Sensor Installed Sensors")
     raw_installed_sensors = request.form['command_data'].splitlines()
-    new_installed_sensors = convert_installed_sensors_lines_to_obj(raw_installed_sensors)
-    write_installed_sensors_to_file(new_installed_sensors)
-    operations_commands.restart_services()
+    new_installed_sensors = installed_sensors.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
+    installed_sensors.write_installed_sensors_to_file(new_installed_sensors)
+    sensors.restart_services()
     return "OK"
 
 
 @app.route("/GetHostName")
 def get_hostname():
-    operations_logger.network_logger.debug("* Sent Sensor HostName")
-    return str(operations_sensors.get_hostname())
+    logger.network_logger.debug("* Sent Sensor HostName")
+    return str(sensors.get_hostname())
 
 
 @app.route("/GetSystemUptime")
 def get_system_uptime():
-    operations_logger.network_logger.debug("* Sent Sensor System Uptime")
-    return str(operations_sensors.get_system_uptime())
+    logger.network_logger.debug("* Sent Sensor System Uptime")
+    return str(sensors.get_system_uptime())
 
 
 @app.route("/GetCPUTemperature")
 def get_cpu_temperature():
-    operations_logger.network_logger.debug("* Sent Sensor CPU Temperature")
-    return str(operations_sensors.get_cpu_temperature())
+    logger.network_logger.debug("* Sent Sensor CPU Temperature")
+    return str(sensors.get_cpu_temperature())
 
 
 @app.route("/GetEnvTemperature")
 def get_env_temperature():
-    operations_logger.network_logger.debug("* Sent Sensor Environment Temperature")
-    return str(operations_sensors.get_sensor_temperature())
+    logger.network_logger.debug("* Sent Sensor Environment Temperature")
+    return str(sensors.get_sensor_temperature())
 
 
 @app.route("/GetTempOffsetEnv")
 def get_env_temp_offset():
-    operations_logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
-    return str(current_config.temperature_offset)
+    logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
+    return str(configuration_main.current_config.temperature_offset)
 
 
 @app.route("/GetPressure")
 def get_pressure():
-    operations_logger.network_logger.debug("* Sent Sensor Pressure")
-    return str(operations_sensors.get_pressure())
+    logger.network_logger.debug("* Sent Sensor Pressure")
+    return str(sensors.get_pressure())
 
 
 @app.route("/GetHumidity")
 def get_humidity():
-    operations_logger.network_logger.debug("* Sent Sensor Humidity")
-    return str(operations_sensors.get_humidity())
+    logger.network_logger.debug("* Sent Sensor Humidity")
+    return str(sensors.get_humidity())
 
 
 @app.route("/GetLumen")
 def get_lumen():
-    operations_logger.network_logger.debug("* Sent Sensor Lumen")
-    return str(operations_sensors.get_lumen())
+    logger.network_logger.debug("* Sent Sensor Lumen")
+    return str(sensors.get_lumen())
 
 
 @app.route("/GetEMS")
 def get_ems():
-    operations_logger.network_logger.debug("* Sent Sensor Electromagnetic Spectrum")
-    return str(operations_sensors.get_ems())
+    logger.network_logger.debug("* Sent Sensor Electromagnetic Spectrum")
+    return str(sensors.get_ems())
 
 
 @app.route("/GetAccelerometerXYZ")
 def get_acc_xyz():
-    operations_logger.network_logger.debug("* Sent Sensor Accelerometer XYZ")
-    return str(operations_sensors.get_accelerometer_xyz())
+    logger.network_logger.debug("* Sent Sensor Accelerometer XYZ")
+    return str(sensors.get_accelerometer_xyz())
 
 
 @app.route("/GetMagnetometerXYZ")
 def get_mag_xyz():
-    operations_logger.network_logger.debug("* Sent Sensor Magnetometer XYZ")
-    return str(operations_sensors.get_magnetometer_xyz())
+    logger.network_logger.debug("* Sent Sensor Magnetometer XYZ")
+    return str(sensors.get_magnetometer_xyz())
 
 
 @app.route("/GetGyroscopeXYZ")
 def get_gyro_xyz():
-    operations_logger.network_logger.debug("* Sent Sensor Gyroscope XYZ")
-    return str(operations_sensors.get_gyroscope_xyz())
+    logger.network_logger.debug("* Sent Sensor Gyroscope XYZ")
+    return str(sensors.get_gyroscope_xyz())
 
 
-operations_logger.network_logger.info("** starting up on port " + str(flask_http_port) + " **")
-http_server = pywsgi.WSGIServer((flask_http_ip, flask_http_port), app)
+logger.network_logger.info("** starting up on port " + str(variables.flask_http_port) + " **")
+http_server = pywsgi.WSGIServer((variables.flask_http_ip, variables.flask_http_port), app)
 http_server.serve_forever()

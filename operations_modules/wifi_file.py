@@ -18,13 +18,13 @@
 """
 import os
 
-import operations_modules.operations_file_locations as file_locations
-import operations_modules.operations_logger as operations_logger
+from operations_modules import file_locations
+from operations_modules import logger
 
 
 def get_wifi_config_from_file():
     """ Loads wpa_supplicant.conf from file and returns it. """
-    operations_logger.primary_logger.debug("Loading Wifi wpa_supplicant File")
+    logger.primary_logger.debug("Loading Wifi wpa_supplicant File")
 
     if os.path.isfile(file_locations.wifi_config_file):
         try:
@@ -33,19 +33,18 @@ def get_wifi_config_from_file():
             config_file.close()
         except Exception as error:
             config_file_content = ""
-            operations_logger.primary_logger.error("Unable to load " + file_locations.wifi_config_file +
-                                                   " - " + str(error))
+            logger.primary_logger.error("Unable to load " + file_locations.wifi_config_file + " - " + str(error))
         return config_file_content
     else:
-        operations_logger.primary_logger.error(file_locations.wifi_config_file + " not found")
+        logger.primary_logger.error(file_locations.wifi_config_file + " not found")
 
 
 def write_wifi_config_to_file(config):
     """ Writes provided wpa_supplicant file to local disk. """
-    operations_logger.primary_logger.debug("Writing Wifi wpa_supplicant to File")
+    logger.primary_logger.debug("Writing Wifi wpa_supplicant to File")
     try:
         wifi_config = open(file_locations.wifi_config_file, 'w')
         wifi_config.write(config)
         wifi_config.close()
     except Exception as error:
-        operations_logger.primary_logger.error("Unable to open wpa_supplicant file: " + str(error))
+        logger.primary_logger.error("Unable to open wpa_supplicant file: " + str(error))

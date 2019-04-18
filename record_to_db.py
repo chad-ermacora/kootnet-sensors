@@ -17,85 +17,84 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from threading import Thread
 from time import sleep
-
-import operations_modules.operations_db as operations_db
-import operations_modules.operations_variance_checks as operations_trigger_checks
-from operations_modules import operations_logger
-from operations_modules import operations_pre_checks
-from operations_modules import operations_sensors
-from operations_modules.operations_config import installed_sensors, current_config
-from operations_modules.operations_version import version, old_version
-from operations_modules.operations_variables import sense_hat_show_led_message
+from threading import Thread
+from operations_modules import sqlite_database
+from operations_modules import variance_checks
+from operations_modules import logger
+from operations_modules import program_start_checks
+from operations_modules import sensors
+from operations_modules import configuration_main
+from operations_modules import software_version
+from operations_modules import variables
 
 # Ensure files, database & configurations are OK
-operations_pre_checks.set_file_permissions()
-operations_pre_checks.check_database_structure()
+program_start_checks.set_file_permissions()
+program_start_checks.check_database_structure()
 
-if old_version != version:
-    operations_logger.primary_logger.info("Checking files and configuration after upgrade")
+if software_version.old_version != software_version.version:
+    logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done
     while True:
         sleep(10)
 
-operations_logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
+logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
 
 
 def start_interval_recording():
     """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
     while True:
         try:
-            new_sensor_data = operations_sensors.get_interval_sensor_readings()
+            new_sensor_data = sensors.get_interval_sensor_readings()
 
             interval_sql_execute = (new_sensor_data.sql_query_start + new_sensor_data.sensor_types +
                                     new_sensor_data.sql_query_values_start + new_sensor_data.sensor_readings +
                                     new_sensor_data.sql_query_values_end)
 
-            operations_db.write_to_sql_database(interval_sql_execute)
+            sqlite_database.write_to_sql_database(interval_sql_execute)
 
-            if installed_sensors.raspberry_pi_sense_hat and sense_hat_show_led_message:
-                operations_sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
+            if configuration_main.installed_sensors.raspberry_pi_sense_hat and variables.sense_hat_show_led_message:
+                sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
         except Exception as error:
-            operations_logger.primary_logger.error("Interval Failure: " + str(error))
+            logger.primary_logger.error("Interval Failure: " + str(error))
 
-        sleep(current_config.sleep_duration_interval)
+        sleep(configuration_main.current_config.sleep_duration_interval)
 
 
 # Load everything in its own thread and sleep.
-if installed_sensors.no_sensors is False:
-    if current_config.enable_interval_recording:
+if configuration_main.installed_sensors.no_sensors is False:
+    if configuration_main.current_config.enable_interval_recording:
         interval_recording_thread = Thread(target=start_interval_recording)
         interval_recording_thread.daemon = True
         interval_recording_thread.start()
     else:
-        operations_logger.primary_logger.warning("Interval Recording Disabled in Config")
+        logger.primary_logger.warning("Interval Recording Disabled in Config")
 
-    if current_config.enable_trigger_recording:
-        threads = [Thread(target=operations_trigger_checks.check_sensor_uptime),
-                   Thread(target=operations_trigger_checks.check_cpu_temperature),
-                   Thread(target=operations_trigger_checks.check_env_temperature),
-                   Thread(target=operations_trigger_checks.check_pressure),
-                   Thread(target=operations_trigger_checks.check_humidity),
-                   Thread(target=operations_trigger_checks.check_lumen),
-                   Thread(target=operations_trigger_checks.check_ems),
-                   Thread(target=operations_trigger_checks.check_accelerometer_xyz),
-                   Thread(target=operations_trigger_checks.check_magnetometer_xyz),
-                   Thread(target=operations_trigger_checks.check_gyroscope_xyz)]
+    if configuration_main.current_config.enable_trigger_recording:
+        threads = [Thread(target=variance_checks.check_sensor_uptime),
+                   Thread(target=variance_checks.check_cpu_temperature),
+                   Thread(target=variance_checks.check_env_temperature),
+                   Thread(target=variance_checks.check_pressure),
+                   Thread(target=variance_checks.check_humidity),
+                   Thread(target=variance_checks.check_lumen),
+                   Thread(target=variance_checks.check_ems),
+                   Thread(target=variance_checks.check_accelerometer_xyz),
+                   Thread(target=variance_checks.check_magnetometer_xyz),
+                   Thread(target=variance_checks.check_gyroscope_xyz)]
 
         for thread in threads:
             try:
                 thread.daemon = True
                 thread.start()
             except Exception as trigger_error:
-                operations_logger.primary_logger.error("Trigger check failed to start: " + str(trigger_error))
+                logger.primary_logger.error("Trigger check failed to start: " + str(trigger_error))
     else:
-        operations_logger.primary_logger.warning("Trigger Recording Disabled in Config")
+        logger.primary_logger.warning("Trigger Recording Disabled in Config")
 
 else:
-    operations_logger.primary_logger.warning("No sensors set in Installed Sensors")
+    logger.primary_logger.warning("No sensors set in Installed Sensors")
 
 while True:
     sleep(600)

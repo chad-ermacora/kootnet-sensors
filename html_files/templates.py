@@ -1,3 +1,23 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+
+
 sensor_readings_start = """
 <!DOCTYPE html>
 <html lang="en">
@@ -118,50 +138,3 @@ sensor_test_final_end = """
 ** Use 'KootNet Sensors - Control Center' for added descriptions **
 </span></p></body></html>
 """
-
-quick_links_html_start = """
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quick Links</title>
-</head>
-<body>
-<H1><u><span style="color: blueviolet">Local Kootnet Sensor Information & Links</span></u></H1>
-"""
-
-# Maybe add later to quick links head with proper colouring elsewhere.
-"""
-    <style>
-        body {
-            background-color: #000000;
-            white-space: nowrap;
-        }
-    </style>
-"""
-"""
-<H2><u>Initiate Sensor Upgrade</u></H2>
-<p><span><a href="/UpgradeSMB" target="_blank">Upgrade Sensor over SMB</a></span></p>
-<p><span><a href="/UpgradeOnline" target="_blank">Upgrade Sensor over HTTP</a></span></p>
-"""
-
-quick_links_html_middle = """
-<H2><u>Reports & Logs</u></H2>
-<p><span><a href="/TestSensor" target="_blank">Sensor Report</a></span></p>
-<p><span><a href="/GetPrimaryLogHTML" target="_blank">Primary Log</a></span></p>
-<p><span><a href="/GetNetworkLogHTML" target="_blank">Network Log</a></span></p>
-<p><span><a href="/GetSensorsLogHTML" target="_blank">Sensors Log</a></span></p>
-
-<H2><u>Downloads</u></H2>
-<p><span><a href="/GetVarianceConfiguration" target="_blank">Download Trigger Variance Configuration</a></span></p>
-<p><span><a href="/DownloadSQLDatabase" target="_blank">Download Sensor SQL Database</a></span></p>
-"""
-
-quick_links_html_end = """
-</body>
-</html>
-"""
-
-quick_links_span_description_start = "<span style='background-color: #00ffff;'>"
-quick_links_span_data_start = "<span style='background-color: #ccffcc;'>"
-quick_links_span_end = "</span>"

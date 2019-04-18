@@ -16,7 +16,7 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-from operations_modules import operations_logger
+from operations_modules import logger
 
 round_decimal_to = 5
 
@@ -37,9 +37,9 @@ class CreateVL53L1X:
             time_of_flight.start_ranging(2)
             distance_in_mm = time_of_flight.get_distance()
             time_of_flight.stop_ranging()
-            operations_logger.sensors_logger.debug("Pimoroni VL53L1X Distance Sensor - OK")
+            logger.sensors_logger.debug("Pimoroni VL53L1X Distance Sensor - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Pimoroni VL53L1X Distance Sensor - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni VL53L1X Distance Sensor - Failed - " + str(error))
             distance_in_mm = 0.0
 
         return distance_in_mm
