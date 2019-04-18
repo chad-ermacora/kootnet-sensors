@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
+
 debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
 config_file_location = "/etc/kootnet/sql_recording.conf"

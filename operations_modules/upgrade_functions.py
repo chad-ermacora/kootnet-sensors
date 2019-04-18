@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import installed_sensors

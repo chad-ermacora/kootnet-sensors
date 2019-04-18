@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from datetime import datetime
 from time import sleep
+from datetime import datetime
 from operations_modules import sensors
 from operations_modules import logger
 from operations_modules import configuration_main

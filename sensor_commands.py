@@ -17,11 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from threading import Thread
 from time import sleep
+from threading import Thread
 from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
-
 from html_files import page_quick
 from operations_modules import wifi_file
 from operations_modules import trigger_variances
