@@ -151,6 +151,9 @@ def get_configuration():
 def get_page_links():
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Links")
     quick_links_html_links = """
+    <H2 style="color: #00ffff;"><u>Live Sensor Readings</u></H2>
+    <p><span style='background-color: #ccffcc;'><a href="/TestSensor" target="_blank">Sensor Readings</a></span></p>
+    
     <H2 style="color: #00ffff;"><u>Logs</u></H2>
     <p><span style='background-color: #ccffcc;'><a href="/GetPrimaryLogHTML" target="_blank">Primary Log</a></span></p>
     <p><span style='background-color: #ccffcc;'><a href="/GetNetworkLogHTML" target="_blank">Network Log</a></span></p>
