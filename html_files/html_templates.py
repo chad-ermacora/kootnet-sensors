@@ -132,9 +132,3 @@ sensor_config_start = """
         <th><span style="background-color: #00ffff;">Installed Sensors</span></th>
     </tr>
 """
-
-sensor_test_final_end = """
-<span style="color: red"><br/>
-** Use 'KootNet Sensors - Control Center' for added descriptions **
-</span></p></body></html>
-"""
