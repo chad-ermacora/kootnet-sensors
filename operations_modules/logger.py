@@ -52,9 +52,15 @@ def check_debug_logging():
 def get_sensor_log(log_file):
     """ Opens provided log file location and returns its content. """
     log_content = open(log_file, "r")
-    log = log_content.read()
+    log_lines = log_content.readlines()
     log_content.close()
-    return log
+
+    log_lines.reverse()
+
+    return_log = ""
+    for log in log_lines:
+        return_log += log
+    return return_log
 
 
 def get_sensor_log_html(log_file):
@@ -62,6 +68,8 @@ def get_sensor_log_html(log_file):
     log_content = open(log_file, "r")
     log_lines = log_content.readlines()
     log_content.close()
+
+    log_lines.reverse()
 
     html_return = ""
     for log in log_lines:

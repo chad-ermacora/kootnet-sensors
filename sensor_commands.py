@@ -22,6 +22,7 @@ from threading import Thread
 from flask import Flask, request, send_file
 from gevent import monkey, pywsgi
 from html_files import page_quick
+from html_files import page_sensor_readings
 from operations_modules import wifi_file
 from operations_modules import trigger_variances
 from operations_modules import file_locations
@@ -77,7 +78,7 @@ def quick_links():
 
 @app.route("/TestSensor")
 def test_sensor():
-    return sensors.get_sensor_readings()
+    return page_sensor_readings.get_sensor_readings()
 
 
 @app.route("/CheckOnlineStatus")
@@ -161,7 +162,7 @@ def get_primary_log():
     logger.network_logger.info("* Sent Primary Log")
     log = logger.get_sensor_log(file_locations.primary_log)
     if len(log) > 1150:
-        log = log[-1150:]
+        log = log[:1150]
     return log
 
 
@@ -177,7 +178,7 @@ def get_network_log():
     logger.network_logger.info("* Sent Network Log")
     log = logger.get_sensor_log(file_locations.network_log)
     if len(log) > 1150:
-        log = log[-1150:]
+        log = log[:1150]
     return log
 
 
@@ -193,7 +194,7 @@ def get_sensors_log():
     logger.network_logger.info("* Sent Sensor Log")
     log = logger.get_sensor_log(file_locations.sensors_log)
     if len(log) > 1150:
-        log = log[-1150:]
+        log = log[:1150]
     return log
 
 
@@ -301,7 +302,8 @@ def del_db_note():
 def download_primary_log():
     logger.network_logger.info("* Sent Full Primary Log")
     log_name = sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
-    return send_file(file_locations.primary_log, as_attachment=True, attachment_filename=log_name)
+    log = logger.get_sensor_log(file_locations.primary_log)
+    return send_file(log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadNetworkLog")
