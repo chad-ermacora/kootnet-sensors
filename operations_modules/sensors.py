@@ -21,7 +21,7 @@ from shutil import disk_usage
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import variables
+from operations_modules import app_variables
 from operations_modules import sqlite_database
 from operations_modules import configuration_main
 from operations_modules import software_version
@@ -70,18 +70,16 @@ command_data_separator = "[new_data_section]"
 def get_sensor_readings():
     """ Returns sensor types and readings for interval and trigger sensors in html table format. """
 
+    interval_readings = get_interval_sensor_readings()
+
+    str_interval_types = interval_readings.sensor_types.split(",")
+    str_interval_types_data = interval_readings.sensor_readings.split(",")
+
     return_data = ""
     return_types = ""
-    interval_data = get_interval_sensor_readings()
-
-    str_interval_types = interval_data.sensor_types.split(",")
-    str_interval_data = interval_data.sensor_readings.split(",")
-
-    count = 0
-    for interval_type in str_interval_types:
+    for interval_type, interval_data in zip(str_interval_types, str_interval_types_data):
         return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
-        return_data += "<th><span style='background-color: #0BB10D;'>" + str_interval_data[count] + "</span></th>"
-        count = count + 1
+        return_data += "<th><span style='background-color: #0BB10D;'>" + interval_data + "</span></th>"
 
     return [return_types, return_data]
 
@@ -112,12 +110,12 @@ def get_config_information():
     str_installed_sensors = configuration_main.installed_sensors.get_installed_names_str()
 
     try:
-        tmp_str_config = str(configuration_main.current_config.enable_interval_recording) + \
-                         "," + str(configuration_main.current_config.enable_trigger_recording) + \
-                         "," + str(configuration_main.current_config.sleep_duration_interval) + \
-                         "," + str(configuration_main.current_config.enable_custom_temp) + \
-                         "," + str(configuration_main.current_config.temperature_offset) + \
-                         "," + str(str_installed_sensors)
+        tmp_str_config = str(configuration_main.current_config.enable_interval_recording) + "," + \
+                         str(configuration_main.current_config.enable_trigger_recording) + "," + \
+                         str(configuration_main.current_config.sleep_duration_interval) + "," + \
+                         str(configuration_main.current_config.enable_custom_temp) + "," + \
+                         str(configuration_main.current_config.temperature_offset) + "," + \
+                         str(str_installed_sensors)
 
     except Exception as error:
         logger.network_logger.error("Getting sensor config failed - " + str(error))
@@ -130,11 +128,14 @@ def get_interval_sensor_readings():
     """ Returns Interval sensor readings from installed sensors (set in installed sensors file). """
     interval_data = sqlite_database.CreateIntervalDatabaseData()
 
-    interval_data.sensor_types = "DateTime, "
+    interval_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", "
     interval_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
     if configuration_main.installed_sensors.linux_system:
-        interval_data.sensor_types += "SensorName, IP, SensorUpTime, SystemTemp, "
+        interval_data.sensor_types += configuration_main.database_variables.sensor_name + ", " + \
+                                      configuration_main.database_variables.ip + ", " + \
+                                      configuration_main.database_variables.sensor_uptime + ", " + \
+                                      configuration_main.database_variables.system_temperature + ", "
 
         if configuration_main.installed_sensors.raspberry_pi_3b_plus or \
                 configuration_main.installed_sensors.raspberry_pi_zero_w:
@@ -142,17 +143,25 @@ def get_interval_sensor_readings():
         else:
             cpu_temp = None
 
-        interval_data.sensor_readings += "'" + str(os_sensor_access.get_hostname()) + "', '" + \
-                                         str(os_sensor_access.get_ip()) + "', '" + \
+        interval_data.sensor_readings += "'" + os_sensor_access.get_hostname() + "', '" + \
+                                         os_sensor_access.get_ip() + "', '" + \
                                          str(os_sensor_access.get_uptime()) + "', '" + \
                                          cpu_temp + "', "
 
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        interval_data.sensor_types += "EnvironmentTemp, " \
-                                      "EnvTempOffset, " \
-                                      "Pressure, " \
-                                      "Humidity, " \
-                                      "Acc_X, Acc_Y, Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z, "
+        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
+                                      configuration_main.database_variables.env_temperature_offset + ", " + \
+                                      configuration_main.database_variables.pressure + ", " + \
+                                      configuration_main.database_variables.humidity + ", " + \
+                                      configuration_main.database_variables.acc_x + ", " + \
+                                      configuration_main.database_variables.acc_y + ", " + \
+                                      configuration_main.database_variables.acc_z + ", " + \
+                                      configuration_main.database_variables.mag_x + ", " + \
+                                      configuration_main.database_variables.mag_y + ", " + \
+                                      configuration_main.database_variables.mag_z + ", " + \
+                                      configuration_main.database_variables.gyro_x + ", " + \
+                                      configuration_main.database_variables.gyro_y + ", " + \
+                                      configuration_main.database_variables.gyro_z + ", "
 
         interval_data.sensor_readings += "'" + str(rp_sense_hat_sensor_access.temperature()) + "', '" + \
                                          str(configuration_main.current_config.temperature_offset) + "', '" + \
@@ -176,7 +185,11 @@ def get_interval_sensor_readings():
     if configuration_main.installed_sensors.pimoroni_bh1745:
         rgb_colour = pimoroni_bh1745_sensor_access.ems()
 
-        interval_data.sensor_types += "Lumen, Red, Green, Blue, "
+        interval_data.sensor_types += configuration_main.database_variables.lumen + ", " + \
+                                      configuration_main.database_variables.red + ", " + \
+                                      configuration_main.database_variables.green + ", " + \
+                                      configuration_main.database_variables.blue + ", "
+
         interval_data.sensor_readings += "'" + str(pimoroni_bh1745_sensor_access.lumen()) + "', '" + \
                                          str(rgb_colour[0]) + "', '" + \
                                          str(rgb_colour[1]) + "', '" + \
@@ -184,7 +197,13 @@ def get_interval_sensor_readings():
     if configuration_main.installed_sensors.pimoroni_as7262:
         ems_colors = pimoroni_as7262_sensor_access.spectral_six_channel()
 
-        interval_data.sensor_types += "Red, Orange, Yellow, Green, Blue, Violet, "
+        interval_data.sensor_types += configuration_main.database_variables.red + ", " + \
+                                      configuration_main.database_variables.orange + ", " + \
+                                      configuration_main.database_variables.yellow + ", " + \
+                                      configuration_main.database_variables.green + ", " + \
+                                      configuration_main.database_variables.blue + ", " + \
+                                      configuration_main.database_variables.violet + ", "
+
         interval_data.sensor_readings += "'" + str(ems_colors[0]) + "', '" + \
                                          str(ems_colors[1]) + "', '" + \
                                          str(ems_colors[2]) + "', '" + \
@@ -193,7 +212,10 @@ def get_interval_sensor_readings():
                                          str(ems_colors[5]) + "', "
 
     if configuration_main.installed_sensors.pimoroni_bme680:
-        interval_data.sensor_types += "EnvironmentTemp, EnvTempOffset, Pressure, Humidity, "
+        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
+                                      configuration_main.database_variables.env_temperature_offset + ", " + \
+                                      configuration_main.database_variables.pressure + ", " + \
+                                      configuration_main.database_variables.humidity + ", "
 
         interval_data.sensor_readings += "'" + str(pimoroni_bme680_sensor_access.temperature()) + "', '" + \
                                          str(configuration_main.current_config.temperature_offset) + "', '" + \
@@ -203,15 +225,19 @@ def get_interval_sensor_readings():
     if configuration_main.installed_sensors.pimoroni_enviro:
         rgb_colour = pimoroni_enviro_sensor_access.ems()
 
-        interval_data.sensor_types += \
-            "EnvironmentTemp, " \
-            "EnvTempOffset, " \
-            "Pressure, " \
-            "Lumen, " \
-            "Red, " \
-            "Green, " \
-            "Blue, " \
-            "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
+                                      configuration_main.database_variables.env_temperature_offset + ", " + \
+                                      configuration_main.database_variables.pressure + ", " + \
+                                      configuration_main.database_variables.lumen + ", " + \
+                                      configuration_main.database_variables.red + ", " + \
+                                      configuration_main.database_variables.green + ", " + \
+                                      configuration_main.database_variables.blue + ", " + \
+                                      configuration_main.database_variables.acc_x + ", " + \
+                                      configuration_main.database_variables.acc_y + ", " + \
+                                      configuration_main.database_variables.acc_z + ", " + \
+                                      configuration_main.database_variables.mag_x + ", " + \
+                                      configuration_main.database_variables.mag_y + ", " + \
+                                      configuration_main.database_variables.mag_z + ", "
 
         interval_data.sensor_readings += "'" + str(pimoroni_enviro_sensor_access.temperature()) + "', '" + \
                                          str(configuration_main.current_config.temperature_offset) + "', '" + \
@@ -231,11 +257,16 @@ def get_interval_sensor_readings():
                                          str(mag_y) + "', '" + \
                                          str(mag_z) + "', "
     if configuration_main.installed_sensors.pimoroni_ltr_559:
-        interval_data.sensor_types += "Lumen, "
+        interval_data.sensor_types += configuration_main.database_variables.lumen + ", "
         interval_data.sensor_readings += "'" + str(pimoroni_ltr_559_sensor_access.lumen()) + "', "
 
     if configuration_main.installed_sensors.pimoroni_lsm303d:
-        interval_data.sensor_types += "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+        interval_data.sensor_types += configuration_main.database_variables.acc_x + ", " + \
+                                      configuration_main.database_variables.acc_y + ", " + \
+                                      configuration_main.database_variables.acc_z + ", " + \
+                                      configuration_main.database_variables.mag_x + ", " + \
+                                      configuration_main.database_variables.mag_y + ", " + \
+                                      configuration_main.database_variables.mag_z + ", "
 
         acc_x, acc_y, acc_z = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
@@ -250,25 +281,34 @@ def get_interval_sensor_readings():
     interval_data.sensor_types = interval_data.sensor_types[:-2]
     interval_data.sensor_readings = interval_data.sensor_readings[:-2]
 
-    if interval_data.sensor_types != "DateTime":
+    if interval_data.sensor_types != configuration_main.database_variables.all_tables_datetime:
         return interval_data
 
 
 def get_trigger_sensor_readings():
     """ Returns Trigger sensor readings from installed sensors (set in installed sensors file). """
     trigger_data = sqlite_database.CreateTriggerDatabaseData()
-    trigger_data.sensor_types = "DateTime, "
+    trigger_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", "
     trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
 
     if configuration_main.installed_sensors.linux_system:
-        sensor_types = "SensorName, IP, "
+        sensor_types = configuration_main.database_variables.sensor_name + ", " + \
+                       configuration_main.database_variables.ip + ", "
         sensor_readings = "'" + str(os_sensor_access.get_hostname()) + "', '" + str(os_sensor_access.get_ip()) + "', "
 
         trigger_data.sensor_types += sensor_types
         trigger_data.sensor_readings += sensor_readings
 
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        sensor_types = "Acc_X, Acc_Y, Acc_Z, Mag_X, Mag_Y, Mag_Z, Gyro_X, Gyro_Y, Gyro_Z, "
+        sensor_types = configuration_main.database_variables.acc_x + ", " + \
+                       configuration_main.database_variables.acc_y + ", " + \
+                       configuration_main.database_variables.acc_z + ", " + \
+                       configuration_main.database_variables.mag_x + ", " + \
+                       configuration_main.database_variables.mag_y + ", " + \
+                       configuration_main.database_variables.mag_z + ", " + \
+                       configuration_main.database_variables.gyro_x + ", " + \
+                       configuration_main.database_variables.gyro_y + ", " + \
+                       configuration_main.database_variables.gyro_z + ", "
 
         acc_x, acc_y, acc_z = rp_sense_hat_sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = rp_sense_hat_sensor_access.magnetometer_xyz()
@@ -288,7 +328,12 @@ def get_trigger_sensor_readings():
         trigger_data.sensor_readings += sensor_readings
 
     if configuration_main.installed_sensors.pimoroni_enviro:
-        sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+        sensor_types = configuration_main.database_variables.acc_x + ", " + \
+                       configuration_main.database_variables.acc_y + ", " + \
+                       configuration_main.database_variables.acc_z + ", " + \
+                       configuration_main.database_variables.mag_x + ", " + \
+                       configuration_main.database_variables.mag_y + ", " + \
+                       configuration_main.database_variables.mag_z + ", "
 
         acc_x, acc_y, acc_z = pimoroni_enviro_sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = pimoroni_enviro_sensor_access.magnetometer_xyz()
@@ -304,7 +349,12 @@ def get_trigger_sensor_readings():
         trigger_data.sensor_readings += sensor_readings
 
     if configuration_main.installed_sensors.pimoroni_lsm303d:
-        sensor_types = "Acc_X ,Acc_Y ,Acc_Z ,Mag_X ,Mag_Y ,Mag_Z, "
+        sensor_types = configuration_main.database_variables.acc_x + ", " + \
+                       configuration_main.database_variables.acc_y + ", " + \
+                       configuration_main.database_variables.acc_z + ", " + \
+                       configuration_main.database_variables.mag_x + ", " + \
+                       configuration_main.database_variables.mag_y + ", " + \
+                       configuration_main.database_variables.mag_z + ", "
 
         acc_x, acc_y, acc_z = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
         mag_x, mag_y, mag_z = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
@@ -322,7 +372,7 @@ def get_trigger_sensor_readings():
     trigger_data.sensor_types = trigger_data.sensor_types[:-2]
     trigger_data.sensor_readings = trigger_data.sensor_readings[:-2]
 
-    if trigger_data.sensor_types != "DateTime":
+    if trigger_data.sensor_types != configuration_main.database_variables.all_tables_datetime:
         return trigger_data
 
 
@@ -534,7 +584,7 @@ def get_gyroscope_xyz():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(variables.restart_sensor_services_command)
+    os.system(app_variables.restart_sensor_services_command)
 
 
 def add_note_to_database(datetime_note):
@@ -549,7 +599,9 @@ def add_note_to_database(datetime_note):
         custom_datetime = "NA"
         note = user_date_and_note[0]
 
-    sql_data.sensor_types = "DateTime, UserDateTime, Notes"
+    sql_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", " + \
+                            configuration_main.database_variables.other_table_column_user_date_time + ", " + \
+                            configuration_main.database_variables.other_table_column_notes + ", "
     sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
     sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +

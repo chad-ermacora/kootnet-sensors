@@ -62,23 +62,21 @@ class CreateTriggerDatabaseData:
 
     def get_sql_write_str(self):
         self._update_sql_name_and_ip()
-
         sql_execute_commands_list = []
 
-        count = 0
-        for reading in self.sql_readings1:
+        for reading1, reading2, datetime1, datetime2 in zip(self.sql_readings1,
+                                                            self.sql_readings2,
+                                                            self.sql_readings1_datetime,
+                                                            self.sql_readings2_datetime):
             if configuration_main.installed_sensors.linux_system:
-                sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "','" + \
-                                        self.sql_sensor_name + "','" + self.sql_ip + "',"
-                sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "','" + \
-                                        self.sql_sensor_name + "','" + self.sql_ip + "',"
+                sql_execute_readings1 = "'" + datetime1 + "','" + self.sql_sensor_name + "','" + self.sql_ip + "',"
+                sql_execute_readings2 = "'" + datetime2 + "','" + self.sql_sensor_name + "','" + self.sql_ip + "',"
             else:
-                sql_execute_readings1 = "'" + self.sql_readings1_datetime[count] + "',"
-                sql_execute_readings2 = "'" + self.sql_readings2_datetime[count] + "',"
+                sql_execute_readings1 = "'" + datetime1 + "',"
+                sql_execute_readings2 = "'" + datetime2 + "',"
 
-            sql_execute_readings1 += "'" + str(reading) + "'"
-            sql_execute_readings2 += "'" + str(self.sql_readings2[count]) + "'"
-            count += 1
+            sql_execute_readings1 += "'" + str(reading1) + "'"
+            sql_execute_readings2 += "'" + str(reading2) + "'"
 
             sql_execute1 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
                             sql_execute_readings1 + self.sql_query_values_end)

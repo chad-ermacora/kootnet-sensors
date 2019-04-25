@@ -22,7 +22,7 @@ from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import logger
 from operations_modules import upgrade_functions
-from operations_modules import variables
+from operations_modules import app_variables
 
 
 class CreateRefinedVersion:
@@ -42,23 +42,22 @@ class CreateRefinedVersion:
 
 def check_database_structure():
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = variables.CreateDatabaseVariables()
+    database_variables = app_variables.CreateDatabaseVariables()
 
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database_location)
         db_cursor = db_connection.cursor()
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)
-        for column in database_variables.get_sensor_columns_list():
-            _check_sql_table_and_column(database_variables.table_interval, column, db_cursor)
-
         _create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        for column in database_variables.get_sensor_columns_list():
-            _check_sql_table_and_column(database_variables.table_trigger, column, db_cursor)
-
         _create_table_and_datetime(database_variables.table_other, db_cursor)
-        for column in database_variables.get_other_columns_list():
-            _check_sql_table_and_column(database_variables.table_other, column, db_cursor)
+        for column_intervals, column_trigger, column_other in zip(database_variables.get_sensor_columns_list(),
+                                                                  database_variables.get_sensor_columns_list(),
+                                                                  database_variables.get_other_columns_list()):
+
+            _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
+            _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
 
         db_connection.commit()
         db_connection.close()
@@ -71,7 +70,6 @@ def _create_table_and_datetime(table, db_cursor):
         # Create or update table
         db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
         logger.primary_logger.debug("Table '" + table + "' - Created")
-
     except Exception as error:
         logger.primary_logger.debug(table + " - " + str(error))
 
@@ -119,8 +117,8 @@ def run_upgrade_checks():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(variables.restart_sensor_services_command)
+    os.system(app_variables.restart_sensor_services_command)
 
 
 def set_file_permissions():
-    os.system(variables.bash_commands["SetPermissions"])
+    os.system(app_variables.bash_commands["SetPermissions"])

@@ -31,7 +31,7 @@ from operations_modules import sensors
 from operations_modules import sqlite_database
 from operations_modules import configuration_main
 from operations_modules import software_version
-from operations_modules import variables
+from operations_modules import app_variables
 from operations_modules import configuration_files
 
 if software_version.old_version != software_version.version:
@@ -50,7 +50,7 @@ if configuration_main.installed_sensors.raspberry_pi_sense_hat:
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
 
-database_columns_and_tables = variables.CreateDatabaseVariables()
+database_columns_and_tables = app_variables.CreateDatabaseVariables()
 
 
 @app.route("/")
@@ -345,28 +345,28 @@ def update_sql_note():
 
 @app.route("/UpgradeOnline", methods=["PUT"])
 def upgrade_http():
-    os.system(variables.bash_commands["UpgradeOnline"])
+    os.system(app_variables.bash_commands["UpgradeOnline"])
     logger.network_logger.info("* update_programs_online.sh Complete")
     return "OK"
 
 
 @app.route("/CleanOnline")
 def upgrade_clean_http():
-    os.system(variables.bash_commands["CleanOnline"])
+    os.system(app_variables.bash_commands["CleanOnline"])
     logger.network_logger.info("* Started Clean Upgrade - HTTP")
     return "OK"
 
 
 @app.route("/UpgradeSMB")
 def upgrade_smb():
-    os.system(variables.bash_commands["UpgradeSMB"])
+    os.system(app_variables.bash_commands["UpgradeSMB"])
     logger.network_logger.info("* update_programs_smb.sh Complete")
     return "OK"
 
 
 @app.route("/CleanSMB")
 def upgrade_clean_smb():
-    os.system(variables.bash_commands["CleanSMB"])
+    os.system(app_variables.bash_commands["CleanSMB"])
     logger.network_logger.info("* Started Clean Upgrade - SMB")
     return "OK"
 
@@ -374,13 +374,13 @@ def upgrade_clean_smb():
 @app.route("/UpgradeSystemOS")
 def upgrade_system_os():
     logger.network_logger.info("* Updating Operating System & rebooting")
-    os.system(variables.bash_commands["UpgradeSystemOS"])
+    os.system(app_variables.bash_commands["UpgradeSystemOS"])
     return "OK"
 
 
 @app.route("/inkupg")
 def upgrade_rp_controller():
-    os.system(variables.bash_commands["inkupg"])
+    os.system(app_variables.bash_commands["inkupg"])
     logger.network_logger.info("* update_programs_e-Ink.sh Complete")
     return "OK"
 
@@ -388,13 +388,13 @@ def upgrade_rp_controller():
 @app.route("/RebootSystem")
 def system_reboot():
     logger.network_logger.info("* Rebooting System")
-    os.system(variables.bash_commands["RebootSystem"])
+    os.system(app_variables.bash_commands["RebootSystem"])
 
 
 @app.route("/ShutdownSystem")
 def system_shutdown():
     logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
-    os.system(variables.bash_commands["ShutdownSystem"])
+    os.system(app_variables.bash_commands["ShutdownSystem"])
 
 
 @app.route("/RestartServices")
@@ -515,6 +515,6 @@ def get_gyro_xyz():
     return str(sensors.get_gyroscope_xyz())
 
 
-logger.network_logger.info("** starting up on port " + str(variables.flask_http_port) + " **")
-http_server = pywsgi.WSGIServer((variables.flask_http_ip, variables.flask_http_port), app)
+logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
+http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), app)
 http_server.serve_forever()

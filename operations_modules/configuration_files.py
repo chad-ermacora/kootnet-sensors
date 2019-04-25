@@ -19,7 +19,8 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import variables
+from operations_modules import app_variables
+from sensor_modules import sensor_variables
 
 
 def convert_config_to_str(config):
@@ -46,12 +47,12 @@ def get_config_from_file():
             config_file.close()
             installed_config = convert_config_lines_to_obj(config_file_content)
         except Exception as error:
-            installed_config = variables.CreateConfig()
+            installed_config = app_variables.CreateConfig()
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
 
     else:
         logger.primary_logger.error("Configuration file not found, using and saving default")
-        installed_config = variables.CreateConfig()
+        installed_config = app_variables.CreateConfig()
         write_config_to_file(installed_config)
 
     return installed_config
@@ -59,7 +60,7 @@ def get_config_from_file():
 
 def convert_config_lines_to_obj(config_text_file):
     """ Takes text configuration content and returns it as a configuration object. """
-    new_config = variables.CreateConfig()
+    new_config = app_variables.CreateConfig()
     bad_load = False
 
     try:
@@ -141,17 +142,17 @@ def get_installed_sensors_from_file():
             installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
         except Exception as error:
             logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
-            installed_sensors = variables.CreateInstalledSensors()
+            installed_sensors = sensor_variables.CreateInstalledSensors()
     else:
         logger.primary_logger.error("Installed Sensors file not found, using and saving default")
-        installed_sensors = variables.CreateInstalledSensors()
+        installed_sensors = sensor_variables.CreateInstalledSensors()
         write_installed_sensors_to_file(installed_sensors)
 
     return installed_sensors
 
 
 def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
-    new_installed_sensors = variables.CreateInstalledSensors()
+    new_installed_sensors = sensor_variables.CreateInstalledSensors()
     bad_load = False
 
     try:

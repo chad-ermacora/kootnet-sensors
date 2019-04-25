@@ -19,8 +19,9 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import variables
+from operations_modules import app_variables
 from operations_modules import configuration_files
+from sensor_modules import sensor_variables
 
 
 def get_installed_sensors_raw():
@@ -64,9 +65,9 @@ def get_installed_config_raw():
 
 def reset_installed_sensors():
     logger.primary_logger.warning("Installed Sensors Reset")
-    configuration_files.write_installed_sensors_to_file(variables.CreateInstalledSensors())
+    configuration_files.write_installed_sensors_to_file(sensor_variables.CreateInstalledSensors())
 
 
 def reset_config():
     logger.primary_logger.warning("Configuration Reset")
-    configuration_files.write_config_to_file(variables.CreateConfig())
+    configuration_files.write_config_to_file(app_variables.CreateConfig())

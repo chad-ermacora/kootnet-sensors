@@ -19,8 +19,9 @@
 from operations_modules import logger
 from operations_modules import configuration_files
 from operations_modules import software_version
-from operations_modules import variables
+from operations_modules import app_variables
 from operations_modules import trigger_variances
+from sensor_modules import sensor_variables
 
 
 def get_sensor_temperature_offset():
@@ -30,12 +31,12 @@ def get_sensor_temperature_offset():
     """
 
     if installed_sensors.raspberry_pi_3b_plus:
-        sensor_temp_offset = variables.CreateRP3BPlusTemperatureOffsets()
+        sensor_temp_offset = sensor_variables.CreateRP3BPlusTemperatureOffsets()
     elif installed_sensors.raspberry_pi_zero_w:
-        sensor_temp_offset = variables.CreateRPZeroWTemperatureOffsets()
+        sensor_temp_offset = sensor_variables.CreateRPZeroWTemperatureOffsets()
     else:
         # All offsets are 0.0 for unselected or unsupported system boards
-        sensor_temp_offset = variables.CreateUnknownTemperatureOffsets()
+        sensor_temp_offset = sensor_variables.CreateUnknownTemperatureOffsets()
 
     if current_config.enable_custom_temp:
         return current_config.temperature_offset
@@ -51,8 +52,8 @@ def get_sensor_temperature_offset():
 
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
-    installed_sensors = variables.CreateInstalledSensors()
-    current_config = variables.CreateConfig()
+    installed_sensors = sensor_variables.CreateInstalledSensors()
+    current_config = app_variables.CreateConfig()
     trigger_variances = trigger_variances.CreateTriggerVariances()
 else:
     logger.primary_logger.debug("Initializing configurations")
@@ -63,4 +64,4 @@ else:
     current_config.temperature_offset = get_sensor_temperature_offset()
     trigger_variances.init_trigger_variances(installed_sensors)
 
-database_variables = variables.CreateDatabaseVariables()
+database_variables = app_variables.CreateDatabaseVariables()

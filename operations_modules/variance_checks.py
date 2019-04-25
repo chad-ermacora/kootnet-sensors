@@ -22,12 +22,13 @@ from operations_modules import sensors
 from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import sqlite_database
-from operations_modules import variables
+from operations_modules import app_variables
 
 
 def check_sensor_uptime():
     """ If enabled, writes sensor uptime to SQL trigger database per the variance setting. """
-    if configuration_main.trigger_variances.sensor_uptime_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.trigger_variances.sensor_uptime_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
             trigger_data.sql_columns_str += configuration_main.database_variables.sensor_uptime
@@ -47,7 +48,9 @@ def check_sensor_uptime():
 
 def check_cpu_temperature():
     """ If enabled, writes CPU temperature to SQL trigger database per the variance setting. """
-    if configuration_main.installed_sensors.has_cpu_temperature and configuration_main.trigger_variances.cpu_temperature_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.installed_sensors.has_cpu_temperature and \
+            configuration_main.trigger_variances.cpu_temperature_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
@@ -84,7 +87,9 @@ def check_cpu_temperature():
 
 def check_env_temperature():
     """ If enabled, writes sensor temperature to SQL trigger database per the variance setting. """
-    if configuration_main.installed_sensors.has_env_temperature and configuration_main.trigger_variances.env_temperature_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.installed_sensors.has_env_temperature and \
+            configuration_main.trigger_variances.env_temperature_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
@@ -121,7 +126,9 @@ def check_env_temperature():
 
 def check_pressure():
     """ If enabled, writes pressure to SQL trigger database per the variance setting. """
-    if configuration_main.installed_sensors.has_pressure and configuration_main.trigger_variances.pressure_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.installed_sensors.has_pressure and \
+            configuration_main.trigger_variances.pressure_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
@@ -158,7 +165,9 @@ def check_pressure():
 
 def check_humidity():
     """ If enabled, writes humidity to SQL trigger database per the variance setting. """
-    if configuration_main.installed_sensors.has_humidity and configuration_main.trigger_variances.humidity_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.installed_sensors.has_humidity and \
+            configuration_main.trigger_variances.humidity_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
@@ -453,7 +462,9 @@ def _check_violet(trigger_data):
 
 
 def check_accelerometer_xyz():
-    if configuration_main.installed_sensors.has_acc and configuration_main.trigger_variances.accelerometer_enabled and configuration_main.current_config.enable_trigger_recording:
+    if configuration_main.installed_sensors.has_acc and \
+            configuration_main.trigger_variances.accelerometer_enabled and \
+            configuration_main.current_config.enable_trigger_recording:
         while True:
             x_trigger_data = sqlite_database.CreateTriggerDatabaseData()
             y_trigger_data = sqlite_database.CreateTriggerDatabaseData()
@@ -467,7 +478,7 @@ def check_accelerometer_xyz():
             z_trigger_data.sql_columns_str += configuration_main.database_variables.acc_z
 
             pair_count = 0
-            while pair_count < variables.trigger_pairs:
+            while pair_count < app_variables.trigger_pairs:
                 xyz = sensors.get_accelerometer_xyz()
 
                 x_trigger_data.sql_readings1.append(xyz[0])
@@ -514,7 +525,7 @@ def check_magnetometer_xyz():
             z_trigger_data.sql_columns_str += configuration_main.database_variables.mag_z
 
             pair_count = 0
-            while pair_count < variables.trigger_pairs:
+            while pair_count < app_variables.trigger_pairs:
                 xyz = sensors.get_magnetometer_xyz()
 
                 x_trigger_data.sql_readings1.append(xyz[0])
@@ -561,7 +572,7 @@ def check_gyroscope_xyz():
             z_trigger_data.sql_columns_str += configuration_main.database_variables.gyro_z
 
             pair_count = 0
-            while pair_count < variables.trigger_pairs:
+            while pair_count < app_variables.trigger_pairs:
                 xyz = sensors.get_gyroscope_xyz()
 
                 x_trigger_data.sql_readings1.append(xyz[0])

@@ -26,7 +26,7 @@ from operations_modules import program_start_checks
 from operations_modules import sensors
 from operations_modules import configuration_main
 from operations_modules import software_version
-from operations_modules import variables
+from operations_modules import app_variables
 
 # Ensure files, database & configurations are OK
 program_start_checks.set_file_permissions()
@@ -55,7 +55,7 @@ def start_interval_recording():
 
             sqlite_database.write_to_sql_database(interval_sql_execute)
 
-            if configuration_main.installed_sensors.raspberry_pi_sense_hat and variables.sense_hat_show_led_message:
+            if configuration_main.installed_sensors.raspberry_pi_sense_hat and app_variables.sense_hat_show_led_message:
                 sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
         except Exception as error:
             logger.primary_logger.error("Interval Failure: " + str(error))
