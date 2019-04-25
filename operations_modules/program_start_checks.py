@@ -54,7 +54,6 @@ def check_database_structure():
         for column_intervals, column_trigger, column_other in zip(database_variables.get_sensor_columns_list(),
                                                                   database_variables.get_sensor_columns_list(),
                                                                   database_variables.get_other_columns_list()):
-
             _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
             _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
             _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
