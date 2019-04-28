@@ -27,8 +27,8 @@ rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
 printf '\nRemoving Program Files\n'
 rm -R -f /opt/kootnet-sensors 2>/dev/null
 rm -R -f /opt/kootnet-control-center 2>/dev/null
-printf '\nRemoving old Logs\n'
-rm -R -f ${DATA_DIR}/logs 2>/dev/null
+# printf '\nRemoving old Logs\n'
+# rm -R -f ${DATA_DIR}/logs 2>/dev/null
 printf '\nStarting Upgrade in 4 seconds ...'
 sleep 4
 bash /root/update_programs_online.sh

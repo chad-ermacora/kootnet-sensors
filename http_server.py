@@ -37,7 +37,7 @@ from operations_modules import configuration_files
 if software_version.old_version != software_version.version:
     logger.primary_logger.info("Upgrade taking place, waiting for service restart ...")
     # Sleep before loading anything due to needed updates
-    # The update service started by "record_to_db.py" will automatically restart this app when it's done
+    # The update service started by "database_recording_service.py" will automatically restart this app when it's done
     while True:
         sleep(10)
 
@@ -438,7 +438,7 @@ def set_installed_sensors():
     logger.network_logger.info("* Setting Sensor Installed Sensors")
     raw_installed_sensors = request.form['command_data'].splitlines()
     new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
-    configuration_main.installed_sensors.write_installed_sensors_to_file(new_installed_sensors)
+    configuration_files.write_installed_sensors_to_file(new_installed_sensors)
     sensors.restart_services()
     return "OK"
 

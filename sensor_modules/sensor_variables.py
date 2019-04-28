@@ -21,7 +21,7 @@ import os
 
 class CreateInstalledSensors:
     """
-    Creates object with default installed sensors (Default = Gnu/Linux / RP only).
+    Creates object with default installed sensors (Default = Gnu/Linux Only).
     Also contains human readable sensor names as text.
     """
 
