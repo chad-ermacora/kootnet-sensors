@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from shutil import disk_usage
+import psutil
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
@@ -86,7 +86,7 @@ def get_sensor_readings():
 
 def get_system_information():
     """ Returns System Information needed for a Control Center 'System Report'. """
-    free_disk = disk_usage("/")[2]
+    free_disk = psutil.disk_usage("/")[2]
 
     ip_address = get_ip()
     try:
@@ -391,6 +391,26 @@ def get_ip():
         return os_sensor_access.get_ip()
     else:
         return "NoSensor"
+
+
+def get_disk_usage_percent():
+    try:
+        drive_information = psutil.disk_usage("/")
+        return_disk_usage = drive_information[3]
+    except Exception as error:
+        logger.sensors_logger.error("Get Memory Usage Error: " + str(error))
+        return_disk_usage = "Error"
+    return return_disk_usage
+
+
+def get_memory_usage_percent():
+    try:
+        mem = psutil.virtual_memory()
+        return_mem = mem[2]
+    except Exception as error:
+        logger.sensors_logger.error("Get Memory Usage Error: " + str(error))
+        return_mem = "Error"
+    return return_mem
 
 
 def get_system_datetime():

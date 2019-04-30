@@ -57,6 +57,8 @@ def get_system():
 
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
+    sensor_free_disk = str(sensors.get_disk_usage_percent())
+    sensor_free_memory = str(sensors.get_memory_usage_percent())
     sensor_temperature = str(round(sensors.get_cpu_temperature(), 2))
     sensor_last_updated = sensors.get_last_updated()
     sensor_datetime = sensors.get_system_datetime()
@@ -73,27 +75,39 @@ def get_system():
                         style_name_start + "IP" + style_end + html_colon + \
                         style_data_start + sensor_ip + style_end + html_divider + \
                         style_name_start + "System Temperature" + style_end + html_colon + \
-                        style_data_start + sensor_temperature + " °C" + style_end + html_divider + \
-                        style_name_start + "SQL Database Size" + style_end + html_colon + \
-                        style_data_start + sensor_db_size + " MB" + style_end + html_divider + "</p>"
+                        style_data_start + sensor_temperature + " °C" + style_end + \
+                        html_divider + "</p>"
 
     return_page_part2 = "<p>" + html_divider + \
+                        style_name_start + "SQL Database Size" + style_end + html_colon + \
+                        style_data_start + sensor_db_size + " MB" + style_end + html_divider + \
+                        style_name_start + "Drive Usage" + style_end + html_colon + \
+                        style_data_start + sensor_free_disk + " %" + style_end + html_divider + \
+                        style_name_start + "RAM Usage" + style_end + html_colon + \
+                        style_data_start + sensor_free_memory + " %" + style_end + \
+                        html_divider + "</p>"
+
+    return_page_part3 = "<p>" + html_divider + \
                         style_name_start + "Sensor Date & Time" + style_end + html_colon + \
                         style_data_start + sensor_datetime + style_end + html_divider + \
                         style_name_start + "Sensor Uptime" + style_end + html_colon + \
-                        style_data_start + sensor_uptime_str + style_end + html_divider + "</p>"
-
-    return_page_part3 = "<p>" + html_divider + \
-                        style_name_start + "Installed Sensors" + style_end + html_colon + \
-                        style_data_start + sensor_installed_sensors + style_end + html_divider + "</p>"
+                        style_data_start + sensor_uptime_str + style_end + \
+                        html_divider + "</p>"
 
     return_page_part4 = "<p>" + html_divider + \
+                        style_name_start + "Installed Sensors" + style_end + html_colon + \
+                        style_data_start + sensor_installed_sensors + style_end + \
+                        html_divider + "</p>"
+
+    return_page_part5 = "<p>" + html_divider + \
                         style_name_start + "Version" + style_end + html_colon + \
                         style_data_start + software_version.version + style_end + html_divider + \
                         style_name_start + "Last Updated" + style_end + html_colon + \
-                        style_data_start + sensor_last_updated + style_end + html_divider + "</p>"
+                        style_data_start + sensor_last_updated + style_end + \
+                        html_divider + "</p>"
 
-    return_page = page_start + return_page_part1 + return_page_part2 + return_page_part3 + return_page_part4
+    return_page = page_start + return_page_part1 + return_page_part2 + return_page_part3 + return_page_part4 + \
+                  return_page_part5
     return return_page
 
 
