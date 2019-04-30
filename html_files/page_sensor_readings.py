@@ -18,37 +18,66 @@
 """
 from operations_modules import logger
 from operations_modules import sensors
+from html_files import html_templates
 
 
 def get_sensor_readings():
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Sensor Readings")
 
-    style_name_start = "<span style='color: #00ffff;'>"
-    style_data_start = "<span style='background-color: #ccffcc;'>"
+    style_red = "<span style='color: red;'>"
+    style_name_start = "<td span style='text-align: center;'><span style='background-color: #00ffff;'>"
+    style_data_start = "<td span style='text-align: center;'><span style='background-color: #f2f2f2;'>"
     style_end = "</span>"
-    html_divider = "<span style='color: #ffffff;'> || </span>"
-    html_colon = "<span style='color: #ffffff;'>: </span>"
+    td_end = "</td>"
 
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
-    sensor_uptime = sensors.get_uptime_str()
-    sensor_system_temperature = sensors.get_cpu_temperature()
-    sensor_env_temperature = sensors.get_sensor_temperature()
-    sensor_pressure = sensors.get_pressure()
-    sensor_humidity = sensors.get_humidity()
-    sensor_lumen = sensors.get_lumen()
-    sensor_ems = sensors.get_ems()
-    sensor_acc = sensors.get_accelerometer_xyz()
-    sensor_mag = sensors.get_magnetometer_xyz()
-    sensor_gyro = sensors.get_gyroscope_xyz()
-    sensor_ = ""
+    sensor_env_temperature = str(round(sensors.get_sensor_temperature(), 2))
+    sensors_env_temperature_offset = sensors.configuration_main.current_config.temperature_offset
+    sensor_env_temperature_adjusted = str(round(float(sensor_env_temperature) + sensors_env_temperature_offset, 2))
+    sensor_pressure = str(sensors.get_pressure())
+    sensor_humidity = str(sensors.get_humidity())
+    sensor_lumen = str(sensors.get_lumen())
+    sensor_ems = str(sensors.get_ems())
+    sensor_acc = str(sensors.get_accelerometer_xyz())
+    sensor_mag = str(sensors.get_magnetometer_xyz())
+    sensor_gyro = str(sensors.get_gyroscope_xyz())
 
-    return_page_part1 = "<p>" + html_divider + \
-                        style_name_start + "HostName" + style_end + html_colon + \
-                        style_data_start + sensor_hostname + style_end + html_divider + \
-                        style_name_start + "IP" + style_end + html_colon + \
-                        style_data_start + sensor_ip + style_end + html_divider + \
-                        style_name_start + "Sensor Uptime" + style_end + html_colon + \
-                        style_data_start + sensor_uptime + style_end + html_divider + "</p>"
+    return_html1 = "<table><tr>" + \
+                   style_name_start + "Env Temperature" + style_end + td_end + \
+                   style_name_start + "Pressure" + style_end + td_end + \
+                   style_name_start + "Humidity" + style_end + td_end + \
+                   "</tr><tr>" + \
+                   style_data_start + \
+                   "Raw: " + sensor_env_temperature + " °C" + \
+                   " / Adjusted: " + sensor_env_temperature_adjusted + " °C" + \
+                   style_end + td_end + \
+                   style_data_start + sensor_pressure + style_end + td_end + \
+                   style_data_start + sensor_humidity + style_end + td_end + \
+                   "</tr></table>"
 
-    return return_page_part1
+    return_html2 = "<table><tr>" + \
+                   style_name_start + "Lumen" + style_end + td_end + \
+                   style_name_start + "Visible EMS - RGB or ROYGBV" + style_end + td_end + \
+                   "</tr><tr>" + \
+                   style_data_start + sensor_lumen + style_end + td_end + \
+                   style_data_start + sensor_ems + style_end + td_end + \
+                   "</tr></table><table><tr>"
+
+    return_html3 = "<table><tr>" + \
+                   style_name_start + "Accelerometer XYZ" + style_end + td_end + \
+                   style_name_start + "Magnetometer XYZ" + style_end + td_end + \
+                   style_name_start + "Gyroscope XYZ" + style_end + td_end + \
+                   "</tr><tr>" + \
+                   style_data_start + sensor_acc + style_end + td_end + \
+                   style_data_start + sensor_mag + style_end + td_end + \
+                   style_data_start + sensor_gyro + style_end + td_end + \
+                   "</tr></table>"
+
+    final_return = html_templates.sensor_readings_start + "<H2>" + style_red + \
+                   "<u><a href='/Quick' style='color: red'>" + \
+                   sensor_hostname + " // " + sensor_ip + \
+                   style_end + "</a></u></H2>" + \
+                   return_html1 + return_html2 + return_html3
+
+    return final_return

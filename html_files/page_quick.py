@@ -56,6 +56,7 @@ def get_system():
 
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
+    sensor_temperature = str(round(sensors.get_cpu_temperature(), 2))
     sensor_last_updated = sensors.get_last_updated()
     sensor_datetime = sensors.get_system_datetime()
     sensor_uptime_str = sensors.get_uptime_str()
@@ -70,6 +71,8 @@ def get_system():
                         style_data_start + sensor_hostname + style_end + html_divider + \
                         style_name_start + "IP" + style_end + html_colon + \
                         style_data_start + sensor_ip + style_end + html_divider + \
+                        style_name_start + "System Temperature" + style_end + html_colon + \
+                        style_data_start + sensor_temperature + " °C" + style_end + html_divider + \
                         style_name_start + "SQL Database Size" + style_end + html_colon + \
                         style_data_start + sensor_db_size + " MB" + style_end + html_divider + "</p>"
 

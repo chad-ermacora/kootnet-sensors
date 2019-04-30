@@ -359,16 +359,16 @@ def upgrade_clean_http():
 
 @app.route("/UpgradeSMB")
 def upgrade_smb():
+    logger.network_logger.info("* Started Upgrade - SMB")
     os.system(app_variables.bash_commands["UpgradeSMB"])
-    logger.network_logger.info("* update_programs_smb.sh Complete")
-    return "OK"
+    return "SMB Upgrade Started.  This may take a few minutes ..."
 
 
 @app.route("/CleanSMB")
 def upgrade_clean_smb():
-    os.system(app_variables.bash_commands["CleanSMB"])
     logger.network_logger.info("* Started Clean Upgrade - SMB")
-    return "OK"
+    os.system(app_variables.bash_commands["CleanSMB"])
+    return "SMB Clean Upgrade Started.  This may take a few minutes ..."
 
 
 @app.route("/UpgradeSystemOS")
