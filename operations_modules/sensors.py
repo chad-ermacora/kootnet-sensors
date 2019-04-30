@@ -88,9 +88,10 @@ def get_system_information():
     """ Returns System Information needed for a Control Center 'System Report'. """
     free_disk = disk_usage("/")[2]
 
+    ip_address = get_ip()
     try:
         str_sensor_data = get_hostname() + \
-                          "," + get_ip() + \
+                          ",<a href='http://" + ip_address + ":10065/Quick' target='_blank'>" + ip_address + "</a>" + \
                           "," + str(get_system_datetime()) + \
                           "," + str(get_system_uptime()) + \
                           "," + str(software_version.version) + \
