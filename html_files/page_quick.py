@@ -41,8 +41,9 @@ def get_page_start():
         </style>
     </head>
     <body>
-    <h1 style="color: red;"><strong><span style="text-decoration: underline;">
-    """ + "Kootnet Sensor: " + sensor_hostname + " / " + sensor_ip + "</span></strong></h1>"
+    <h1><strong><span style="text-decoration: underline;">
+    <a href='/Quick' style='color: red'>
+    """ + "Kootnet Sensor: " + sensor_hostname + " / " + sensor_ip + "</a></span></strong></h1>"
     return page_start
 
 

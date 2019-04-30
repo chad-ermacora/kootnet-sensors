@@ -24,10 +24,10 @@ from html_files import html_templates
 def get_sensor_readings():
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Sensor Readings")
 
-    style_red = "<span style='color: red;'>"
-    style_name_start = "<td span style='text-align: center;'><span style='background-color: #00ffff;'>"
-    style_data_start = "<td span style='text-align: center;'><span style='background-color: #f2f2f2;'>"
-    style_end = "</span>"
+    style_red = "<span style='color: red;'><strong>"
+    style_name_start = "<td span style='text-align: center;'><span style='background-color: #00ffff;'><strong>"
+    style_data_start = "<td span style='text-align: center;'><span style='background-color: #0BB10D;'><strong>"
+    style_end = "</strong></span>"
     td_end = "</td>"
 
     sensor_hostname = sensors.get_hostname()
@@ -75,7 +75,7 @@ def get_sensor_readings():
                    "</tr></table>"
 
     final_return = html_templates.sensor_readings_start + "<H2>" + style_red + \
-                   "<u><a href='/Quick' style='color: red'>" + \
+                   "<u><a href='/TestSensor' style='color: red'>" + \
                    sensor_hostname + " // " + sensor_ip + \
                    style_end + "</a></u></H2>" + \
                    return_html1 + return_html2 + return_html3
