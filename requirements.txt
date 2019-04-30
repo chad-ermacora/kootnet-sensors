@@ -1,3 +1,4 @@
+psutil
 smbus2
 gpiozero
 envirophat
