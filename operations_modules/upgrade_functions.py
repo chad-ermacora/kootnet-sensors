@@ -64,10 +64,12 @@ def get_installed_config_raw():
 
 
 def reset_installed_sensors():
+    """ Writes a default installed sensor configuration file. """
     logger.primary_logger.warning("Installed Sensors Reset")
     configuration_files.write_installed_sensors_to_file(sensor_variables.CreateInstalledSensors())
 
 
 def reset_config():
+    """ Writes a default configuration file. """
     logger.primary_logger.warning("Configuration Reset")
     configuration_files.write_config_to_file(app_variables.CreateConfig())

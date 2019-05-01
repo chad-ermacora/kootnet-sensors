@@ -462,6 +462,7 @@ def _check_violet(trigger_data):
 
 
 def check_accelerometer_xyz():
+    """ If enabled, writes Acceleration to SQL trigger database per the variance setting. """
     if configuration_main.installed_sensors.has_acc and \
             configuration_main.trigger_variances.accelerometer_enabled and \
             configuration_main.current_config.enable_trigger_recording:
@@ -509,6 +510,7 @@ def check_accelerometer_xyz():
 
 
 def check_magnetometer_xyz():
+    """ If enabled, writes Magnetometer to SQL trigger database per the variance setting. """
     if configuration_main.installed_sensors.has_mag and \
             configuration_main.trigger_variances.magnetometer_enabled and \
             configuration_main.current_config.enable_trigger_recording:
@@ -556,6 +558,7 @@ def check_magnetometer_xyz():
 
 
 def check_gyroscope_xyz():
+    """ If enabled, writes Gyroscope to SQL trigger database per the variance setting. """
     if configuration_main.installed_sensors.has_gyro and \
             configuration_main.trigger_variances.gyroscope_enabled and \
             configuration_main.current_config.enable_trigger_recording:

@@ -394,6 +394,7 @@ def get_ip():
 
 
 def get_disk_usage_percent():
+    """ Returns sensor root disk usage. """
     try:
         drive_information = psutil.disk_usage("/")
         return_disk_usage = drive_information[3]
@@ -404,6 +405,7 @@ def get_disk_usage_percent():
 
 
 def get_memory_usage_percent():
+    """ Returns sensor RAM usage. """
     try:
         mem = psutil.virtual_memory()
         return_mem = mem[2]
@@ -414,6 +416,7 @@ def get_memory_usage_percent():
 
 
 def get_system_datetime():
+    """ Returns sensor current DateTime. """
     if configuration_main.installed_sensors.linux_system:
         return os_sensor_access.get_sys_datetime()
     else:
@@ -462,6 +465,7 @@ def get_system_uptime():
 
 
 def get_db_size():
+    """ Returns sensor SQLite Database size in MB. """
     if configuration_main.installed_sensors.linux_system:
         return os_sensor_access.get_sql_db_size()
     else:
@@ -609,6 +613,7 @@ def restart_services():
 
 
 def add_note_to_database(datetime_note):
+    """ Takes the provided DateTime and Note as a list and writes it to the SQLite Database. """
     sql_data = sqlite_database.CreateOtherDataEntry()
     user_date_and_note = datetime_note.split(command_data_separator)
 
@@ -633,6 +638,7 @@ def add_note_to_database(datetime_note):
 
 
 def update_note_in_database(datetime_note):
+    """ Takes the provided DateTime and Note as a list and updates the note in the SQLite Database. """
     data_list = datetime_note.split(command_data_separator)
 
     try:

@@ -26,6 +26,7 @@ from operations_modules import app_variables
 
 
 class CreateRefinedVersion:
+    """ Takes the provided program version and creates a data class object. """
     def __init__(self, version):
         try:
             version_split = version.split(".")
@@ -41,6 +42,7 @@ class CreateRefinedVersion:
 
 
 def check_database_structure():
+    """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")
     database_variables = app_variables.CreateDatabaseVariables()
 
@@ -65,6 +67,7 @@ def check_database_structure():
 
 
 def _create_table_and_datetime(table, db_cursor):
+    """ Add's or verifies provided table and DateTime column in the SQLite Database. """
     try:
         # Create or update table
         db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
@@ -74,6 +77,7 @@ def _create_table_and_datetime(table, db_cursor):
 
 
 def _check_sql_table_and_column(table_name, column_name, db_cursor):
+    """ Add's or verifies provided table and column in the SQLite Database. """
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
@@ -82,6 +86,10 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 
 def run_upgrade_checks():
+    """
+     Checks previous written version of the program to the current version.
+     If the current version is different, start upgrade functions.
+    """
     logger.primary_logger.debug("Old Version: " + software_version.old_version +
                                 " || New Version: " + software_version.version)
     previous_version = CreateRefinedVersion(software_version.old_version)
@@ -120,4 +128,5 @@ def restart_services():
 
 
 def set_file_permissions():
+    """ Re-sets program file permissions. """
     os.system(app_variables.bash_commands["SetPermissions"])

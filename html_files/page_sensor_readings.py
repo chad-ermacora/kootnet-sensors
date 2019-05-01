@@ -22,7 +22,8 @@ from operations_modules import sensors
 from html_files import html_templates
 
 
-def get_sensor_readings():
+def get_sensor_readings_page():
+    """ Returns a HTML formatted string of the Local Sensor's 'sensor' readings. """
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Sensor Readings")
 
     style_text_small = "<span style='font-size: 14px;'>"

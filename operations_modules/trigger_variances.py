@@ -23,7 +23,6 @@ from operations_modules import file_locations
 
 class CreateTriggerVariances:
     """ Create a Trigger Variance configuration object. """
-
     def __init__(self):
         self.sensor_uptime_enabled = 1
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
@@ -100,6 +99,7 @@ class CreateTriggerVariances:
 
 # Not used yet, considering high low variances
 class CreateTriggerLowHighVariances:
+    """ Create a High/Low Trigger Variance configuration object. """
     def __init__(self):
         self.delay_between_readings = 300.0
         self.delay_before_new_write = 0.0

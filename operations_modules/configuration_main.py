@@ -27,7 +27,7 @@ from sensor_modules import sensor_variables
 def get_sensor_temperature_offset():
     """
      Returns sensors Environmental temperature offset based on system board and sensor.
-     You can set an override in the main sensor configuration file.
+     This can be override in the main sensor configuration file.
     """
 
     if installed_sensors.raspberry_pi_3b_plus:
@@ -50,6 +50,7 @@ def get_sensor_temperature_offset():
         return 0.0
 
 
+# Creates and loads primary configurations and variables used throughout the program.
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = sensor_variables.CreateInstalledSensors()

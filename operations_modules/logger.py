@@ -17,6 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --------------------------------------------------------------------------
+Logger used throughout the program. Configuration options listed below.
+
 DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 INFO - Confirmation that things are working as expected.
 WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
@@ -33,6 +35,7 @@ if not os.path.exists(os.path.dirname(file_locations.log_directory)):
 
 
 def check_debug_logging():
+    """ Check to see if debug logging is enabled and apply if necessary. """
     if os.path.isfile(file_locations.debug_file_location):
         debug_file = open(file_locations.debug_file_location, "r")
         debug = debug_file.read().strip()

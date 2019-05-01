@@ -59,7 +59,7 @@ def get_config_from_file():
 
 
 def convert_config_lines_to_obj(config_text_file):
-    """ Takes text configuration content and returns it as a configuration object. """
+    """ Converts provided configuration text as a list of lines into a object and returns it. """
     new_config = app_variables.CreateConfig()
     bad_load = False
 
@@ -108,7 +108,7 @@ def convert_config_lines_to_obj(config_text_file):
 
 
 def write_config_to_file(config):
-    """ Writes provided configuration file to local disk. """
+    """ Writes provided configuration file to local disk. The provided configuration can be string or object. """
     logger.primary_logger.debug("Writing Configuration to File")
     try:
         if type(config) is str:
@@ -152,6 +152,7 @@ def get_installed_sensors_from_file():
 
 
 def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
+    """ Converts provided installed sensors text as a list of lines into a object and returns it. """
     new_installed_sensors = sensor_variables.CreateInstalledSensors()
     bad_load = False
 
@@ -282,7 +283,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
 
 
 def write_installed_sensors_to_file(installed_sensors):
-    """ Writes provided 'installed sensors' object to local disk. """
+    """ Writes provided 'installed sensors' to local disk. The provided sensors can be string or object. """
     try:
         if type(installed_sensors) is str:
             new_installed_sensors = installed_sensors
