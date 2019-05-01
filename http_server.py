@@ -68,17 +68,12 @@ def root_http():
 def quick_links():
     logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
 
-    return_page = page_quick.get_page_start()
-    return_page += page_quick.get_system()
-    return_page += page_quick.get_configuration()
-    return_page += page_quick.get_page_links()
-    return_page += page_quick.get_html_page_end()
-    return return_page
+    return page_quick.get_quick_html_page()
 
 
 @app.route("/TestSensor")
 def test_sensor():
-    return page_sensor_readings.get_sensor_readings()
+    return page_sensor_readings.get_sensor_readings_page()
 
 
 @app.route("/CheckOnlineStatus")
