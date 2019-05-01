@@ -20,34 +20,26 @@ from operations_modules import logger
 from operations_modules import sensors
 from operations_modules import software_version
 from operations_modules import configuration_main
+from html_files import html_templates
 
 
-def get_page_start():
+def _get_page_title():
+    """
+     Returns the beginning of the Sensor's Quick HTML page.
+     It contains up to and including the page title made up of the Local Name and IP.
+    """
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Start")
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
 
-    page_start = """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Local Sensor Management</title>
-        <style>
-            body {
-                background-color: #000000;
-                white-space: nowrap;
-            }
-        </style>
-    </head>
-    <body>
-    <h1><strong><span style="text-decoration: underline;">
-    <a href='/Quick' style='color: red'>
-    """ + "Kootnet Sensor: " + sensor_hostname + " / " + sensor_ip + "</a></span></strong></h1>"
+    page_start = html_templates.quick_page_title_start + \
+                 sensor_hostname + " / " + sensor_ip + \
+                 html_templates.quick_page_title_end
     return page_start
 
 
-def get_system():
+def _get_page_system():
+    """ Returns a HTML formatted string of the Local Sensor's System Information. """
     logger.primary_logger.debug("Retrieved Quick Links HTML Page System")
     style_name_start = "<span style='color: #00ffff;'>"
     style_data_start = "<span style='background-color: #ccffcc;'>"
@@ -111,7 +103,8 @@ def get_system():
     return return_page
 
 
-def get_configuration():
+def _get_page_configuration():
+    """ Returns a HTML formatted string of the Local Sensor's Configuration. """
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Config")
     style_name_start = "<span style='color: #00ffff;'>"
     style_data_start = "<span style='background-color: #ccffcc;'>"
@@ -166,29 +159,12 @@ def get_configuration():
     return return_page
 
 
-def get_page_links():
-    logger.primary_logger.debug("Retrieved Quick Links HTML Page Links")
-    quick_links_html_links = """
-    <H2 style="color: #00ffff;"><u>Live Sensor Readings</u></H2>
-    <p><span style='background-color: #ccffcc;'><a href="/TestSensor" target="_blank">Sensor Readings</a></span></p>
-    
-    <H2 style="color: #00ffff;"><u>Logs</u></H2>
-    <p><span style='background-color: #ccffcc;'><a href="/GetPrimaryLogHTML" target="_blank">Primary Log</a></span></p>
-    <p><span style='background-color: #ccffcc;'><a href="/GetNetworkLogHTML" target="_blank">Network Log</a></span></p>
-    <p><span style='background-color: #ccffcc;'><a href="/GetSensorsLogHTML" target="_blank">Sensors Log</a></span></p>
+def get_quick_html_page():
+    """ Combines all parts of the Sensor's Quick HTML Page and returns it. """
+    return_page = _get_page_title() + \
+                  _get_page_system() + \
+                  _get_page_configuration() + \
+                  html_templates.quick_page_links + \
+                  html_templates.quick_page_final_end
 
-    <H2 style="color: #00ffff;"><u>Downloads</u></H2>
-    <p><span style='background-color: #ccffcc;'><a href="/GetVarianceConfiguration" target="_blank">Download Trigger Variance Configuration</a></span></p>
-    <p><span style='background-color: #ccffcc;'><a href="/DownloadSQLDatabase" target="_blank">Download Sensor SQL Database</a></span></p>
-    
-    <H2 style="color: #00ffff;"><u>Initiate Sensor Upgrade</u></H2>
-    <p><span style='background-color: #ccffcc;'><a href="/UpgradeSMB" target="_blank">Upgrade Sensor over SMB</a></span></p>
-    <p><span style='background-color: #ccffcc;'><a href="/UpgradeOnline-not" target="_blank">Upgrade Sensor over HTTP</a></span></p>
-    """
-    return quick_links_html_links
-
-
-def get_html_page_end():
-    logger.primary_logger.debug("Retrieved Quick Links HTML Page End")
-    quick_links_html_end = "</body></html>"
-    return quick_links_html_end
+    return return_page

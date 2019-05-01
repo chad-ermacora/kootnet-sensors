@@ -16,12 +16,78 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-    This file contains HTML code stored in variables.
-    These variables are to be used in locally provided HTML pages.
+    This file contains HTML code used in locally provided HTML pages.
 """
 
 
-# S Center Sensor Report Variables
+# page_quick.py HTML page components
+quick_page_title_start = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Local Sensor Management</title>
+    <style>
+        body {
+            background-color: #000000;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<h1><strong><span style="text-decoration: underline;">
+<a href='/Quick' style='color: red'>Kootnet Sensor: 
+"""
+
+quick_page_title_end = "</a></span></strong></h1>"
+
+quick_page_links = """
+<H2 style="color: #00ffff;"><u>Live Sensor Readings</u></H2>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/TestSensor" target="_blank">Sensor Readings</a>
+</span></p>
+
+
+<H2 style="color: #00ffff;"><u>Logs</u></H2>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/GetPrimaryLogHTML" target="_blank">Primary Log</a>
+</span></p>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/GetNetworkLogHTML" target="_blank">Network Log</a>
+</span></p>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/GetSensorsLogHTML" target="_blank">Sensors Log</a>
+</span></p>
+
+
+<H2 style="color: #00ffff;"><u>Downloads</u></H2>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/GetVarianceConfiguration" target="_blank">Download Trigger Variance Configuration</a>
+</span></p>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/DownloadSQLDatabase" target="_blank">Download Sensor SQL Database</a>
+</span></p>
+
+<H2 style="color: #00ffff;"><u>Initiate Sensor Upgrade</u></H2>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/UpgradeSMB" target="_blank">Upgrade Sensor over SMB</a>
+</span></p>
+
+<p><span style='background-color: #ccffcc;'>
+<a href="/UpgradeOnline-not" target="_blank">Upgrade Sensor over HTTP</a>
+</span></p>
+"""
+
+quick_page_final_end = "</body></html>"
+
+# page_sensor_readings.py HTML page components
 sensor_readings_start = """
 <!DOCTYPE html>
 <html lang="en">
