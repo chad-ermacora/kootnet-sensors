@@ -64,6 +64,7 @@ else:
     # The update service will automatically restart this app when it's done
     pass
 
+database_columns_and_tables = app_variables.CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"
 
 
@@ -612,29 +613,80 @@ def restart_services():
     os.system(app_variables.restart_sensor_services_command)
 
 
+def get_db_notes():
+    sql_query = "SELECT " + \
+                database_columns_and_tables.other_table_column_notes + \
+                " FROM " + \
+                database_columns_and_tables.table_other
+
+    sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
+
+    return _create_str_from_list(sql_db_notes)
+
+
+def get_db_note_dates():
+    sql_query_notes = "SELECT " + \
+                      database_columns_and_tables.all_tables_datetime + \
+                      " FROM " + \
+                      database_columns_and_tables.table_other
+
+    sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
+
+    return _create_str_from_list(sql_note_dates)
+
+
+def get_db_note_user_dates():
+    sql_query_user_datetime = "SELECT " + \
+                              database_columns_and_tables.other_table_column_user_date_time + \
+                              " FROM " + \
+                              database_columns_and_tables.table_other
+
+    sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
+
+    return _create_str_from_list(sql_data_user_datetime)
+
+
+def _create_str_from_list(sql_data_notes):
+    if len(sql_data_notes) > 0:
+        return_data_string = ""
+
+        count = 0
+        for entry in sql_data_notes:
+            new_entry = str(entry)[2:-3]
+            new_entry = new_entry.replace(",", "[replaced_comma]")
+            return_data_string += new_entry + ","
+            count += 1
+
+        return_data_string = return_data_string[:-1]
+    else:
+        return_data_string = "No Data"
+
+    return return_data_string
+
+
 def add_note_to_database(datetime_note):
     """ Takes the provided DateTime and Note as a list and writes it to the SQLite Database. """
     sql_data = sqlite_database.CreateOtherDataEntry()
     user_date_and_note = datetime_note.split(command_data_separator)
 
-    current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-6] + "000"
+    current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     if len(user_date_and_note) > 1:
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
+
+        sql_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", " + \
+                                configuration_main.database_variables.other_table_column_user_date_time + ", " + \
+                                configuration_main.database_variables.other_table_column_notes
+        sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
+
+        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
+                       sql_data.sql_query_values_start + sql_data.sensor_readings +
+                       sql_data.sql_query_values_end)
+
+        sqlite_database.sql_execute(sql_execute)
+        logger.sensors_logger.warn(str(sql_execute))
     else:
-        custom_datetime = "NA"
-        note = user_date_and_note[0]
-
-    sql_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", " + \
-                            configuration_main.database_variables.other_table_column_user_date_time + ", " + \
-                            configuration_main.database_variables.other_table_column_notes + ", "
-    sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
-
-    sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
-                   sql_data.sql_query_values_start + sql_data.sensor_readings +
-                   sql_data.sql_query_values_end)
-
-    sqlite_database.write_to_sql_database(sql_execute)
+        logger.sensors_logger.error("Unable to add bad Note.")
 
 
 def update_note_in_database(datetime_note):
@@ -646,10 +698,21 @@ def update_note_in_database(datetime_note):
         user_datetime = "'" + data_list[1] + "'"
         note = "'" + data_list[2] + "'"
 
-        sql_execute = "UPDATE OtherData SET Notes = " + note + \
+        sql_execute = "UPDATE OtherData SET " + \
+                      "Notes = " + note + \
                       ",UserDateTime = " + user_datetime + \
                       " WHERE DateTime = " + current_datetime
 
-        sqlite_database.write_to_sql_database(sql_execute)
+        sqlite_database.sql_execute(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
+
+
+def delete_db_note(note_datetime):
+    sql_query = "DELETE FROM " + \
+                str(database_columns_and_tables.table_other) + \
+                " WHERE " + \
+                str(database_columns_and_tables.all_tables_datetime) + \
+                " = '" + note_datetime + "'"
+
+    sqlite_database.sql_execute(sql_query)

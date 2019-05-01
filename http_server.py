@@ -28,7 +28,6 @@ from operations_modules import trigger_variances
 from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules import sensors
-from operations_modules import sqlite_database
 from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
@@ -49,8 +48,6 @@ if configuration_main.installed_sensors.raspberry_pi_sense_hat:
     sense_joy_stick_thread = Thread(target=sensors.rp_sense_hat_sensor_access.start_joy_stick_commands)
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
-
-database_columns_and_tables = app_variables.CreateDatabaseVariables()
 
 
 @app.route("/")
@@ -203,94 +200,26 @@ def get_sensors_log_html():
 @app.route("/GetDatabaseNotes")
 def get_db_notes():
     logger.network_logger.info("* Sent Sensor Notes")
-    sql_query = "SELECT " + \
-                database_columns_and_tables.other_table_column_notes + \
-                " FROM " + \
-                database_columns_and_tables.table_other
-
-    sql_data = sqlite_database.sql_execute_get_data(sql_query)
-
-    if len(sql_data) > 0:
-        return_data_string = ""
-
-        count = 0
-        for entry in sql_data:
-            new_entry = str(entry)[2:-3]
-            new_entry = new_entry.replace(",", "[replaced_comma]")
-            return_data_string += new_entry + ","
-            count += 1
-
-        return_data_string = return_data_string[:-1]
-
-        return return_data_string
-    else:
-        return "No Notes"
+    return sensors.get_db_notes()
 
 
 @app.route("/GetDatabaseNoteDates")
 def get_db_note_dates():
     logger.network_logger.info("* Sent Sensor Note Dates")
-    sql_query_notes = "SELECT " + \
-                      database_columns_and_tables.all_tables_datetime + \
-                      " FROM " + \
-                      database_columns_and_tables.table_other
-
-    sql_data_notes = sqlite_database.sql_execute_get_data(sql_query_notes)
-
-    if len(sql_data_notes) > 0:
-        return_data_string = ""
-
-        count = 0
-        for entry in sql_data_notes:
-            new_entry = str(entry)[2:-7]
-            new_entry = new_entry.replace(",", "[replaced_comma]")
-            return_data_string += new_entry + ","
-            count += 1
-
-        return_data_string = return_data_string[:-1]
-
-        return return_data_string
-    else:
-        return "No Data"
+    return sensors.get_db_note_dates()
 
 
 @app.route("/GetDatabaseNoteUserDates")
 def get_db_note_user_dates():
     logger.network_logger.info("* Sent Sensor Note User Set Dates")
-    sql_query_user_datetime = "SELECT " + \
-                              database_columns_and_tables.other_table_column_user_date_time + \
-                              " FROM " + \
-                              database_columns_and_tables.table_other
-
-    sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
-
-    if len(sql_data_user_datetime) > 0:
-        return_data_string = ""
-
-        count = 0
-        for entry in sql_data_user_datetime:
-            new_entry = str(entry)[2:-7]
-            return_data_string += new_entry + ","
-            count += 1
-
-        return_data_string = return_data_string[:-1]
-
-        return return_data_string
-    else:
-        return "No Data"
+    return sensors.get_db_note_user_dates()
 
 
 @app.route("/DeleteDatabaseNote", methods=["PUT"])
 def del_db_note():
-    datetime_var = request.form['command_data']
-    logger.network_logger.info("* Deleted Note from: " + str(datetime_var))
-
-    sql_query = "DELETE FROM " + \
-                str(database_columns_and_tables.table_other) + \
-                " WHERE " + \
-                str(database_columns_and_tables.all_tables_datetime) + \
-                " = '" + datetime_var + "'"
-    sqlite_database.sql_execute(sql_query)
+    note_datetime = request.form['command_data']
+    logger.network_logger.info("* Deleted Note from: " + str(note_datetime))
+    sensors.delete_db_note(note_datetime)
 
 
 @app.route("/DownloadPrimaryLog")
@@ -332,8 +261,8 @@ def put_sql_note():
 
 @app.route("/UpdateDatabaseNote", methods=["PUT"])
 def update_sql_note():
-    new_note = request.form['command_data']
-    sensors.update_note_in_database(new_note)
+    datetime_entry_note_csv = request.form['command_data']
+    sensors.update_note_in_database(datetime_entry_note_csv)
     logger.network_logger.info("* Updated Note in Database")
     return "OK"
 

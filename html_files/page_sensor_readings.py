@@ -51,7 +51,7 @@ def get_sensor_readings_page():
     text_date_taken = "<h3>" + style_pre_text_orange + \
                       "Date taken " + current_datetime + \
                       style_text_small + \
-                      "<br>Date Format: YYYY-MM-DD hh:mm - Time Zone" + \
+                      "<br>Date format: YYYY-MM-DD hh:mm - Time Zone" + \
                       style_end + style_end + "</h3>"
 
     return_html1 = "<table><tr>" + \
