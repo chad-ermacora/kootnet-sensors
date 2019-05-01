@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from time import strftime
 from operations_modules import logger
 from operations_modules import sensors
 from html_files import html_templates
@@ -24,12 +25,15 @@ from html_files import html_templates
 def get_sensor_readings():
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Sensor Readings")
 
+    style_text_small = "<span style='font-size: 14px;'>"
     style_red = "<span style='color: red;'><strong>"
+    style_pre_text_orange = "<span style='color: #F4A460;'><strong>"
     style_name_start = "<td span style='text-align: center;'><span style='background-color: #00ffff;'><strong>"
     style_data_start = "<td span style='text-align: center;'><span style='background-color: #0BB10D;'><strong>"
     style_end = "</strong></span>"
     td_end = "</td>"
 
+    current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
     sensor_env_temperature = str(round(sensors.get_sensor_temperature(), 2))
@@ -42,6 +46,12 @@ def get_sensor_readings():
     sensor_acc = str(sensors.get_accelerometer_xyz())
     sensor_mag = str(sensors.get_magnetometer_xyz())
     sensor_gyro = str(sensors.get_gyroscope_xyz())
+
+    text_date_taken = "<h3>" + style_pre_text_orange + \
+                      "Date taken " + current_datetime + \
+                      style_text_small + \
+                      "<br>Date Format: YYYY-MM-DD hh:mm - Time Zone" + \
+                      style_end + style_end + "</h3>"
 
     return_html1 = "<table><tr>" + \
                    style_name_start + "Env Temperature" + style_end + td_end + \
@@ -74,10 +84,10 @@ def get_sensor_readings():
                    style_data_start + sensor_gyro + style_end + td_end + \
                    "</tr></table>"
 
-    final_return = html_templates.sensor_readings_start + "<H2>" + style_red + \
+    final_return = html_templates.sensor_readings_start + "<H1>" + style_red + \
                    "<u><a href='/TestSensor' style='color: red'>" + \
                    sensor_hostname + " // " + sensor_ip + \
-                   style_end + "</a></u></H2>" + \
+                   style_end + "</a></u></H1>" + text_date_taken + \
                    return_html1 + return_html2 + return_html3
 
     return final_return
