@@ -268,15 +268,15 @@ def update_sql_note():
 
 @app.route("/UpgradeOnline")
 def upgrade_http():
+    logger.network_logger.info("* Started Upgrade - HTTP")
     os.system(app_variables.bash_commands["UpgradeOnline"])
-    logger.network_logger.info("* update_programs_online.sh Complete")
     return "OK"
 
 
 @app.route("/CleanOnline")
 def upgrade_clean_http():
-    os.system(app_variables.bash_commands["CleanOnline"])
     logger.network_logger.info("* Started Clean Upgrade - HTTP")
+    os.system(app_variables.bash_commands["CleanOnline"])
     return "OK"
 
 
@@ -303,8 +303,8 @@ def upgrade_system_os():
 
 @app.route("/inkupg")
 def upgrade_rp_controller():
+    logger.network_logger.info("* Started Upgrade - E-Ink Mobile")
     os.system(app_variables.bash_commands["inkupg"])
-    logger.network_logger.info("* update_programs_e-Ink.sh Complete")
     return "OK"
 
 
