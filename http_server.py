@@ -226,8 +226,7 @@ def del_db_note():
 def download_primary_log():
     logger.network_logger.info("* Sent Full Primary Log")
     log_name = sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
-    log = logger.get_sensor_log(file_locations.primary_log)
-    return send_file(log, as_attachment=True, attachment_filename=log_name)
+    return send_file(file_locations.primary_log, as_attachment=True, attachment_filename=log_name)
 
 
 @app.route("/DownloadNetworkLog")
@@ -267,7 +266,7 @@ def update_sql_note():
     return "OK"
 
 
-@app.route("/UpgradeOnline", methods=["PUT"])
+@app.route("/UpgradeOnline")
 def upgrade_http():
     os.system(app_variables.bash_commands["UpgradeOnline"])
     logger.network_logger.info("* update_programs_online.sh Complete")
