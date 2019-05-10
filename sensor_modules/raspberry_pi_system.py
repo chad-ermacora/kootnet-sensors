@@ -8,7 +8,7 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-from operations_modules import operations_logger
+from operations_modules import logger
 
 round_decimal_to = 5
 
@@ -23,9 +23,9 @@ class CreateRPSystem:
         try:
             cpu = self.gp_import.CPUTemperature()
             cpu_temp_c = float(cpu.temperature)
-            operations_logger.sensors_logger.debug("Raspberry Pi CPU Temperature Sensor - OK")
+            logger.sensors_logger.debug("Raspberry Pi CPU Temperature Sensor - OK")
         except Exception as error:
             cpu_temp_c = 0.0
-            operations_logger.sensors_logger.error("Raspberry Pi CPU Temperature Sensor - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi CPU Temperature Sensor - Failed - " + str(error))
 
         return round(cpu_temp_c, round_decimal_to)

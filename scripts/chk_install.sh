@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
-PIP3_INSTALL="smbus2 gpiozero envirophat sense_hat bme680 bh1745 lsm303d vl53l1x ltr559 as7262 guizero plotly request requests flask gevent matplotlib"
-APT_GET_INSTALL="python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock"
+APT_GET_INSTALL="python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock cifs-utils"
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 

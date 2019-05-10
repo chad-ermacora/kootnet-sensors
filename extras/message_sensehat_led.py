@@ -28,8 +28,18 @@ def display_led_message(message):
     Example: python3 message_sensehat_led.py "My Fancy Message"
     """
     try:
-        acc_data = sense.get_accelerometer_raw()
+        set_screen_rotation()
+        sense.show_message(str(message), text_colour=(75, 0, 0))
+        print("Message Printed to LED Grid: " + message)
+    except Exception as error:
+        print("Error while showing message on SenseHAT's LED grid || " + str(error))
 
+
+def set_screen_rotation():
+    """ Checks the SenseHAT's accelerometer and sets the screen rotation based on the readings. """
+    acc_data = sense.get_accelerometer_raw()
+
+    try:
         if acc_data['x'] < -0.5:
             sense.set_rotation(90)
         elif acc_data['y'] > 0.5:
@@ -38,11 +48,8 @@ def display_led_message(message):
             sense.set_rotation(180)
         else:
             sense.set_rotation(270)
-
-        sense.show_message(str(message), text_colour=(75, 0, 0))
-        print("Message Printed to LED Grid: " + message)
     except Exception as error:
-        print("error: " + str(error))
+        print("Set Screen Rotation Failed || " + str(error))
 
 
 display_led_message(str(sys.argv[1]))

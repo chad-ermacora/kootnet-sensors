@@ -15,8 +15,8 @@ then
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   printf "\nPrinting config & testing sensors\n\n"
-  killall python3
-  python3 /opt/kootnet-sensors/extras/test_sensors.py
+  killall python3 2>/dev/null
+  python3 /opt/kootnet-sensors/test_sensors.py
 fi
 printf "\nPress enter to exit ..."
 read nothing

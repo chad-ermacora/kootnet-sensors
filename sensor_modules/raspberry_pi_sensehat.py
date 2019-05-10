@@ -19,8 +19,8 @@ Created on Sat Aug 25 08:53:56 2018
 """
 from os import system
 
-from operations_modules import operations_logger
-import sensor_modules.linux_os as linux_os
+from operations_modules import logger
+from sensor_modules import linux_os
 
 round_decimal_to = 5
 
@@ -33,16 +33,16 @@ class CreateRPSenseHAT:
         try:
             self.sense = self.sense_hat_import.SenseHat()
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
 
         self.linux_os_access = linux_os.CreateLinuxSystem()
 
     def temperature(self):
         try:
             env_temp = float(self.sense.get_temperature())
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Temperature - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Temperature - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Temperature - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Temperature - Failed - " + str(error))
             env_temp = 0.0
 
         return round(env_temp, round_decimal_to)
@@ -50,9 +50,9 @@ class CreateRPSenseHAT:
     def pressure(self):
         try:
             pressure_hpa = self.sense.get_pressure()
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Pressure - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Pressure - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Pressure - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Pressure - Failed - " + str(error))
             pressure_hpa = 0
 
         return int(pressure_hpa)
@@ -60,9 +60,9 @@ class CreateRPSenseHAT:
     def humidity(self):
         try:
             var_humidity = self.sense.get_humidity()
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Humidity - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Humidity - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Humidity - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Humidity - Failed - " + str(error))
             var_humidity = 0.0
 
         return round(var_humidity, round_decimal_to)
@@ -71,9 +71,9 @@ class CreateRPSenseHAT:
         try:
             tmp_mag = self.sense.get_compass_raw()
             mag_x, mag_y, mag_z = tmp_mag["x"], tmp_mag["y"], tmp_mag["z"]
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Magnetometer XYZ - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Magnetometer XYZ - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Magnetometer XYZ - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Magnetometer XYZ - Failed - " + str(error))
             mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
 
         return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
@@ -83,9 +83,9 @@ class CreateRPSenseHAT:
             tmp_acc = self.sense.get_accelerometer_raw()
 
             acc_x, acc_y, acc_z = tmp_acc["x"], tmp_acc["y"], tmp_acc["z"]
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Accelerometer XYZ - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Accelerometer XYZ - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Accelerometer XYZ - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Accelerometer XYZ - Failed - " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
 
         return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
@@ -94,9 +94,9 @@ class CreateRPSenseHAT:
         try:
             tmp_gyro = self.sense.get_gyroscope_raw()
             gyro_x, gyro_y, gyro_z = tmp_gyro["x"], tmp_gyro["y"], tmp_gyro["z"]
-            operations_logger.sensors_logger.debug("Raspberry Pi Sense HAT Gyroscope XYZ - OK")
+            logger.sensors_logger.debug("Raspberry Pi Sense HAT Gyroscope XYZ - OK")
         except Exception as error:
-            operations_logger.sensors_logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - Failed - " + str(error))
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - Failed - " + str(error))
             gyro_x, gyro_y, gyro_z = 0.0, 0.0, 0.0
 
         return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
@@ -168,14 +168,14 @@ class CreateRPSenseHAT:
                     self.display_led_message(str(int(self.temperature())) + "c")
                 elif event.action == "held":
                     shutdown_confirm = True
-                    self.sense.show_message("Shutdown=down",
+                    self.sense.show_message("Off1",
                                             scroll_speed=0.08,
                                             text_colour=(75, 0, 0))
 
                 # Clear events to prevent multiple loops if button(s) hit multiple times
                 self.sense.stick.get_events()
         except Exception as error:
-            operations_logger.sensors_logger.error("Unable start SenseHAT JoyStick Operations - " + str(error))
+            logger.sensors_logger.error("Unable start SenseHAT JoyStick Operations - " + str(error))
 
     def display_led_message(self, message):
         try:
@@ -196,4 +196,4 @@ class CreateRPSenseHAT:
                                     scroll_speed=0.12,
                                     text_colour=(75, 0, 0))
         except Exception as error:
-            operations_logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
+            logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))

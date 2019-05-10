@@ -28,6 +28,7 @@ class CreateDatabaseVariables:
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
+        self.all_tables_datetime = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
         self.sensor_uptime = "SensorUpTime"
@@ -86,3 +87,38 @@ class CreateDatabaseVariables:
         other_sql_columns = [self.other_table_column_user_date_time,
                              self.other_table_column_notes]
         return other_sql_columns
+
+
+class CreateConfig:
+    """ Creates object with default sensor configuration settings. """
+
+    def __init__(self):
+        self.enable_debug_logging = 0
+        self.enable_interval_recording = 1
+        self.enable_trigger_recording = 1
+        self.sleep_duration_interval = 300.0
+        self.enable_custom_temp = 0
+        self.temperature_offset = 0.0
+
+
+# IP and Port for Flask to start up on
+flask_http_ip = ""
+flask_http_port = 10065
+
+sense_hat_show_led_message = False
+
+trigger_pairs = 3
+
+restart_sensor_services_command = "systemctl daemon-reload && " + \
+                                  "systemctl restart SensorRecording && " + \
+                                  "systemctl restart SensorCommands"
+
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
+                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
+                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
+                 "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
+                 "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
+                 "RebootSystem": "reboot",
+                 "ShutdownSystem": "shutdown -h now",
+                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot",
+                 "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}

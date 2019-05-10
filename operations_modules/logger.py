@@ -17,46 +17,67 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --------------------------------------------------------------------------
+Logger used throughout the program. Configuration options listed below.
+
 DEBUG - Detailed information, typically of interest only when diagnosing problems. test
 INFO - Confirmation that things are working as expected.
 WARNING - An indication that something unexpected happened, or indicative of some problem in the near future
 ERROR - Due to a more serious problem, the software has not been able to perform some function.
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
-import logging
 import os
+import logging
 from logging.handlers import RotatingFileHandler
-from operations_modules.operations_file_locations import primary_log, sensors_log, network_log, log_directory, \
-    debug_file_location
+from operations_modules import file_locations
 
-if not os.path.exists(os.path.dirname(log_directory)):
-    os.makedirs(os.path.dirname(log_directory))
+if not os.path.exists(os.path.dirname(file_locations.log_directory)):
+    os.makedirs(os.path.dirname(file_locations.log_directory))
 
 
 def check_debug_logging():
-    if os.path.isfile(debug_file_location):
-        debug_file = open(debug_file_location, "r")
+    """ Check to see if debug logging is enabled and apply if necessary. """
+    if os.path.isfile(file_locations.debug_file_location):
+        debug_file = open(file_locations.debug_file_location, "r")
         debug = debug_file.read().strip()
         debug_file.close()
 
-        if int(debug) is 1:
+        if int(debug):
             return 1
         else:
             return 0
     else:
-        save_log_level(0)
+        enable_debug = open(file_locations.debug_file_location, 'w')
+        enable_debug.write("0")
+        enable_debug.close()
         return 0
 
 
-def save_log_level(debug_level):
-    """
-        Enables or disables debug logging and writes to local disk.
+def get_sensor_log(log_file):
+    """ Opens provided log file location and returns its content. """
+    log_content = open(log_file, "r")
+    log_lines = log_content.readlines()
+    log_content.close()
 
-        set debug_level as 0 to disable or 1 to enable
-    """
-    enable_debug = open(debug_file_location, 'w')
-    enable_debug.write(str(debug_level))
-    enable_debug.close()
+    log_lines.reverse()
+
+    return_log = ""
+    for log in log_lines:
+        return_log += log
+    return return_log
+
+
+def get_sensor_log_html(log_file):
+    """ Opens provided log file location and returns its content. """
+    log_content = open(log_file, "r")
+    log_lines = log_content.readlines()
+    log_content.close()
+
+    log_lines.reverse()
+
+    html_return = ""
+    for log in log_lines:
+        html_return += "<br/>" + log
+    return html_return
 
 
 # Primary Program Log
@@ -70,7 +91,7 @@ else:
 
 formatter_operations = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_main = RotatingFileHandler(primary_log,
+file_handler_main = RotatingFileHandler(file_locations.primary_log,
                                         maxBytes=256000,
                                         backupCount=5)
 file_handler_main.setFormatter(formatter_operations)
@@ -90,7 +111,7 @@ else:
 
 formatter_sensor = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_sensor = RotatingFileHandler(sensors_log,
+file_handler_sensor = RotatingFileHandler(file_locations.sensors_log,
                                           maxBytes=256000,
                                           backupCount=5)
 file_handler_sensor.setFormatter(formatter_sensor)
@@ -110,7 +131,7 @@ else:
 
 formatter_network = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
-file_handler_network = RotatingFileHandler(network_log,
+file_handler_network = RotatingFileHandler(file_locations.network_log,
                                            maxBytes=256000,
                                            backupCount=5)
 file_handler_network.setFormatter(formatter_network)
