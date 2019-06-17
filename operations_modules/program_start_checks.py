@@ -27,6 +27,7 @@ from operations_modules import app_variables
 
 class CreateRefinedVersion:
     """ Takes the provided program version and creates a data class object. """
+
     def __init__(self, version):
         try:
             version_split = version.split(".")
@@ -52,12 +53,13 @@ def check_database_structure():
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)
         _create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        _create_table_and_datetime(database_variables.table_other, db_cursor)
-        for column_intervals, column_trigger, column_other in zip(database_variables.get_sensor_columns_list(),
-                                                                  database_variables.get_sensor_columns_list(),
-                                                                  database_variables.get_other_columns_list()):
+        for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
+                                                    database_variables.get_sensor_columns_list()):
             _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
             _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+
+        _create_table_and_datetime(database_variables.table_other, db_cursor)
+        for column_other in database_variables.get_other_columns_list():
             _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
 
         db_connection.commit()
