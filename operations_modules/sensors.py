@@ -148,7 +148,7 @@ def get_interval_sensor_readings():
         interval_data.sensor_readings += "'" + os_sensor_access.get_hostname() + "', '" + \
                                          os_sensor_access.get_ip() + "', '" + \
                                          str(os_sensor_access.get_uptime()) + "', '" + \
-                                         cpu_temp + "', "
+                                         str(cpu_temp) + "', "
 
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
         interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
