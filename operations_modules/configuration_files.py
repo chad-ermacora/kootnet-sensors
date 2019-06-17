@@ -295,4 +295,4 @@ def write_installed_sensors_to_file(installed_sensors):
         installed_sensors_config_file.close()
 
     except Exception as error:
-        logger.primary_logger.error("Unable to open config file: " + str(error))
+        logger.primary_logger.error("Unable to open installed sensors config file: " + str(error))
