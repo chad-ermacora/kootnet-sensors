@@ -37,9 +37,6 @@ def get_sensor_readings_page():
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     sensor_hostname = sensors.get_hostname()
     sensor_ip = sensors.get_ip()
-    sensor_env_temperature = str(round(sensors.get_sensor_temperature(), 2))
-    sensors_env_temperature_offset = sensors.configuration_main.current_config.temperature_offset
-    sensor_env_temperature_adjusted = str(round(float(sensor_env_temperature) + sensors_env_temperature_offset, 2))
     sensor_pressure = str(sensors.get_pressure())
     sensor_humidity = str(sensors.get_humidity())
     sensor_lumen = str(sensors.get_lumen())
@@ -47,6 +44,15 @@ def get_sensor_readings_page():
     sensor_acc = str(sensors.get_accelerometer_xyz())
     sensor_mag = str(sensors.get_magnetometer_xyz())
     sensor_gyro = str(sensors.get_gyroscope_xyz())
+
+    try:
+        sensors_env_temperature_offset = sensors.configuration_main.current_config.temperature_offset
+        sensor_env_temperature = str(round(sensors.get_sensor_temperature(), 2))
+        sensor_env_temperature_adjusted = str(round(float(sensor_env_temperature) + sensors_env_temperature_offset, 2))
+    except Exception as error:
+        logger.primary_logger.error("Env Temperature Error: " + str(error))
+        sensor_env_temperature = "Error"
+        sensor_env_temperature_adjusted = "Error"
 
     text_date_taken = "<h3>" + style_pre_text_orange + \
                       "Date taken " + current_datetime + \

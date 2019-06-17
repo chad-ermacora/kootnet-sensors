@@ -51,12 +51,17 @@ def _get_page_system():
     sensor_ip = sensors.get_ip()
     sensor_free_disk = str(sensors.get_disk_usage_percent())
     sensor_free_memory = str(sensors.get_memory_usage_percent())
-    sensor_temperature = str(round(sensors.get_cpu_temperature(), 2))
     sensor_last_updated = sensors.get_last_updated()
     sensor_datetime = sensors.get_system_datetime()
     sensor_uptime_str = sensors.get_uptime_str()
     sensor_db_size = str(sensors.get_db_size())
     sensor_installed_sensors = configuration_main.installed_sensors.get_installed_names_str()
+
+    try:
+        sensor_temperature = str(round(sensors.get_cpu_temperature(), 2))
+    except Exception as error:
+        logger.primary_logger.error("CPU Temperature Error: " + str(error))
+        sensor_temperature = "Error"
 
     page_start = """<p><strong><span style="text-decoration: underline; background-color: #00ffff;">""" + \
                  "System" + "</span></strong></p>"
