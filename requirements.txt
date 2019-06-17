@@ -1,19 +1,16 @@
+# Required Sensor Program Modules
 psutil
-smbus2
 gpiozero
+flask
+gevent
+# Sensor Hardware Modules
 envirophat
 sense_hat
 bme680
 bh1745
 lsm303d
+# smbus2 is needed by vl53l1x only
+smbus2
 vl53l1x
 ltr559
 as7262
-guizero
-plotly
-request
-requests
-flask
-gevent
-matplotlib
-rtimulib
