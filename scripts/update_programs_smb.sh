@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
 # Upgrade from SMB server (Windows Share)
-SPECIAL_SCRIPTS_DIR="/home/kootnet_data/scripts"
+DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 # Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
 SMB_SERVER="//xps-development01"
-SMB_SHARE="/PyProjects"
-SMB_SENSOR="/sensor-rp"
-SMB_CONTROL_CENTER="/sensor-control-center"
+SMB_SHARE="/KootNetSMB"
+SMB_FILE="/KootNetSensors.zip"
 CIFS_OPTIONS="username=myself,password='123'"
-RSYNC_EXCLUDE="--exclude .git --exclude .idea --exclude __pycache__ --exclude config.txt --exclude logs --exclude test_files/output"
 # Make sure its running with root
 clear
 if [[ $EUID != 0 ]]; then
@@ -16,36 +14,72 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
+# Make sure folders are created
+printf '\nChecking & Creating Required Folders\n'
+mkdir ${DATA_DIR} 2>/dev/null
+mkdir ${DATA_DIR}/logs 2>/dev/null
+mkdir ${DATA_DIR}/scripts 2>/dev/null
+mkdir ${CONFIG_DIR} 2>/dev/null
+mkdir ${CONFIG_DIR}/backups 2>/dev/null
+mkdir /mnt/supernas 2>/dev/null
+mkdir /opt/kootnet-sensors 2>/dev/null
+mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
+mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
+mkdir /opt/kootnet-sensors/scripts 2>/dev/null
+mkdir /opt/kootnet-control-center 2>/dev/null
+mkdir /opt/kootnet-control-center/logs 2>/dev/null
+# Clean up previous downloads if any
+rm -f /tmp/KootNetSensors.zip 2>/dev/null
+rm -R /tmp/SensorSMBUpgrade 2>/dev/null
+mkdir /tmp/SensorSMBUpgrade 2>/dev/null
 # Start Script
-if [[ -f "/opt/kootnet-sensors/scripts/chk_install.sh" ]]
+if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
 then
-  bash /opt/kootnet-sensors/scripts/chk_install.sh
+  echo
 else
-  mkdir /mnt/supernas 2>/dev/null
-  mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
-  sleep 1
-  mkdir /opt/kootnet-sensors
-  cp /mnt/supernas/sensor-rp/requirements.txt /opt/kootnet-sensors/
-  bash /mnt/supernas/sensor-rp/scripts/chk_install.sh
-  umount /mnt/supernas
-  printf '\nProceeding with SMB scripts\n'
+  read -p "Do you want to Install Control Center as well? (Y/N) " -n 1 -r CONTROL_INSTALL
+  echo
+  if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
+    then
+      read -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
+  fi
 fi
-# Download and Upgrade Sensor Programs off SMB
-printf '\nConnecting to SMB & copying files\n'
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
-printf 'Copying sensor files\n'
-rsync -q -r -4 -P /mnt/supernas${SMB_SENSOR}/ /opt/kootnet-sensors/ ${RSYNC_EXCLUDE}
-printf 'Copying control center files\n\n'
-rsync -q -r -4 -P /mnt/supernas${SMB_CONTROL_CENTER}/ /opt/kootnet-control-center/ ${RSYNC_EXCLUDE}
-sleep 1
-umount /mnt/supernas
+printf '\n\nDownload Started\n'
+cp /mnt/supernas${SMB_FILE} /tmp
+unzip -q /tmp/KootNetSensors.zip -d /tmp/SensorSMBUpgrade
+printf 'Download Complete\n\nUnzipping & Installing Files\n'
+cp -f -R /tmp/SensorSMBUpgrade/sensor-rp/* /opt/kootnet-sensors
+printf 'Files Installed\n\n'
+bash /opt/kootnet-sensors/scripts/chk_install.sh
+# Install Control Center requirements
+if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
+then
+  printf '\nInstalling Control Center Requirements & Desktop Shortcut\n'
+  cp -f -R /tmp/SensorSMBUpgrade/sensor-control-center/* /opt/kootnet-control-center
+  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh ${USER_NAME}
+  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh ${USER_NAME}
+  source ${DATA_DIR}/python-env/bin/activate
+  pip3 install -r /opt/kootnet-control-center/requirements.txt
+  deactivate
+  printf '\nControl Center Requirements Installed\n\n'
+elif [[ -f /opt/kootnet-control-center/requirements.txt ]]
+then
+  printf '\nUpgrading Control Center Install\n\n'
+  cp -f -R /tmp/SensorSMBUpgrade/sensor-control-center/* /opt/kootnet-control-center
+fi
 # Updating Clean Upgrade files
-cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${SPECIAL_SCRIPTS_DIR}
-cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${SPECIAL_SCRIPTS_DIR}
-cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${SPECIAL_SCRIPTS_DIR}
-# Add config edits & sensor test app(s) to user pi's home directory
-bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh
+cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${DATA_DIR}/scripts
+cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${DATA_DIR}/scripts
+cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${DATA_DIR}/scripts
+# Add easy Configuration editing to users home directory
+if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+then
+  echo
+else
+  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh ${USER_NAME}
+fi
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_autostart.sh
 bash /opt/kootnet-sensors/scripts/set_permissions.sh
@@ -53,4 +87,5 @@ bash /opt/kootnet-sensors/scripts/set_permissions.sh
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - SMB' >> ${CONFIG_DIR}/last_updated.txt
 printf '\nDone\n\n'
+umount /mnt/supernas
 systemctl restart SensorCommands

@@ -10,6 +10,10 @@ if [[ $EUID != 0 ]]; then
 fi
 printf "\nThis will Uninstall all KootNet Sensors Software.\nPress enter to continue or CTRL + C to exit ..."
 read nothing
+if [[ -f /opt/kootnet-control-center/requirements.txt ]]
+then
+  read -p "Would you like to Uninstall Control Center as well? (Y/N): " -n 1 -r CONTROL_UNINSTALL
+fi
 printf '\nDisabling & stopping all sensor services\n'
 systemctl disable SensorUpgradeChecks
 systemctl disable SensorRecording
@@ -42,13 +46,15 @@ rm -f -R /opt/kootnet-sensors
 rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_online.sh 2>/dev/null
 rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_smb.sh 2>/dev/null
 rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
-rm -f ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop
 # Remove install check files & configurations
 rm -f ${CONFIG_DIR}/installed_datetime.txt 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_sensors.conf 2>/dev/null
 rm -f ${CONFIG_DIR}/sql_recording.conf 2>/dev/null
 # Uninstall Control Center
-bash /opt/kootnet-control-center/scripts/uninstall.sh
+if [[ ${CONTROL_UNINSTALL} =~ ^[Yy]$ ]]
+then
+  bash ${SPECIAL_SCRIPTS_DIR}/control_center_uninstall.sh
+fi
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload

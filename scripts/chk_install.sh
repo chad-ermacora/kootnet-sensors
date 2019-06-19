@@ -3,22 +3,6 @@
 APT_GET_INSTALL="python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock cifs-utils"
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
-
-# Kill any open nano & make sure folders are created
-killall nano 2>/dev/null
-printf '\nChecking & creating required folders\n'
-mkdir ${DATA_DIR} 2>/dev/null
-mkdir ${DATA_DIR}/logs 2>/dev/null
-mkdir ${DATA_DIR}/scripts 2>/dev/null
-mkdir ${CONFIG_DIR} 2>/dev/null
-mkdir ${CONFIG_DIR}/backups 2>/dev/null
-mkdir /mnt/supernas 2>/dev/null
-mkdir /opt/kootnet-control-center 2>/dev/null
-mkdir /opt/kootnet-control-center/logs 2>/dev/null
-mkdir /opt/kootnet-sensors 2>/dev/null
-mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
-mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
-mkdir /opt/kootnet-sensors/scripts 2>/dev/null
 # Add and edit Sensors
 if [[ -f ${CONFIG_DIR}/installed_sensors.conf ]]
 then
@@ -50,6 +34,7 @@ else
   # Used "Custom" in config here for install, but program will replace with "Current"
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
+0 = Enable Debug Logging
 1 = Record Interval Sensors to SQL Database
 0 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings
@@ -94,20 +79,22 @@ country=CA
 
 network={
         ssid="SensorWifi"
+        scan_ssid=1
         psk="2505512335"
         key_mgmt=WPA-PSK
 }
 network={
         ssid="SomeOtherNetwork"
+        scan_ssid=1
         psk="SuperSecurePassword"
         key_mgmt=WPA-PSK
 }
 EOF
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   # Install needed programs and dependencies
-  printf '\nStarting system update & upgrade. This may take awhile ...\n\n'
+  printf '\nStarting system update. This may take awhile ...\n\n'
   apt-get update
-  apt-get -y upgrade
+#  apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install ${APT_GET_INSTALL}
   cd ${DATA_DIR}
@@ -115,10 +102,10 @@ EOF
   source ${DATA_DIR}/python-env/bin/activate
   python3 -m pip install -U pip
   pip3 install -r /opt/kootnet-sensors/requirements.txt
-  pip3 install -U numpy
-  # pip3 install ${PIP3_INSTALL}
+  cat > ${CONFIG_DIR}/installed_version.txt << "EOF"
+New_Install.99.999
+EOF
+  deactivate
   # Create Installed File to prevent re-runs.  Create install_version file for program first run.
   date > ${CONFIG_DIR}/installed_datetime.txt
-  date > ${CONFIG_DIR}/installed_version.txt
-  deactivate
 fi
