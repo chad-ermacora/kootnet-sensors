@@ -2,7 +2,7 @@
 # Upgrade from SMB server (Windows Share)
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
-# Make sure SMB_SHARE points to the root share holding both Sensor & Control Center folders
+# Make sure SMB_SHARE points to the root share holding the upgrade zip file
 SMB_SERVER="//xps-development01"
 SMB_SHARE="/KootNetSMB"
 SMB_FILE="/KootNetSensors.zip"
@@ -26,8 +26,6 @@ mkdir /opt/kootnet-sensors 2>/dev/null
 mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
 mkdir /opt/kootnet-sensors/sensor_modules 2>/dev/null
 mkdir /opt/kootnet-sensors/scripts 2>/dev/null
-mkdir /opt/kootnet-control-center 2>/dev/null
-mkdir /opt/kootnet-control-center/logs 2>/dev/null
 # Clean up previous downloads if any
 rm -f /tmp/KootNetSensors.zip 2>/dev/null
 rm -R /tmp/SensorSMBUpgrade 2>/dev/null
@@ -44,6 +42,9 @@ else
       read -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
   fi
 fi
+# Make sure cifs is installed for SMB mount
+apt-get install cifs-utils
+printf '\nConnecting to SMB\n'
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
 printf '\n\nDownload Started\n'
@@ -52,17 +53,25 @@ unzip -q /tmp/KootNetSensors.zip -d /tmp/SensorSMBUpgrade
 printf 'Download Complete\n\nUnzipping & Installing Files\n'
 cp -f -R /tmp/SensorSMBUpgrade/sensor-rp/* /opt/kootnet-sensors
 printf 'Files Installed\n\n'
+# Add easy Configuration editing to users home directory
+if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+then
+  echo
+else
+  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh ${USER_NAME}
+fi
 bash /opt/kootnet-sensors/scripts/chk_install.sh
 # Install Control Center requirements
 if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
 then
   printf '\nInstalling Control Center Requirements & Desktop Shortcut\n'
+  mkdir /opt/kootnet-control-center 2>/dev/null
+  mkdir /opt/kootnet-control-center/logs 2>/dev/null
   cp -f -R /tmp/SensorSMBUpgrade/sensor-control-center/* /opt/kootnet-control-center
+  bash /opt/kootnet-control-center/scripts/install_dependencies.sh
   bash /opt/kootnet-control-center/scripts/create_shortcuts.sh ${USER_NAME}
   bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh ${USER_NAME}
-  source ${DATA_DIR}/python-env/bin/activate
-  pip3 install -r /opt/kootnet-control-center/requirements.txt
-  deactivate
+  bash /opt/kootnet-control-center/scripts/set_permissions.sh
   printf '\nControl Center Requirements Installed\n\n'
 elif [[ -f /opt/kootnet-control-center/requirements.txt ]]
 then
@@ -73,13 +82,6 @@ fi
 cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${DATA_DIR}/scripts
 cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${DATA_DIR}/scripts
 cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${DATA_DIR}/scripts
-# Add easy Configuration editing to users home directory
-if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
-then
-  echo
-else
-  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh ${USER_NAME}
-fi
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_autostart.sh
 bash /opt/kootnet-sensors/scripts/set_permissions.sh

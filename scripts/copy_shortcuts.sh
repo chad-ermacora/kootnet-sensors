@@ -18,3 +18,4 @@ Encoding=UTF-8
 Terminal=true
 Categories=Utility;Science;
 EOF
+chmod 777 /home/${USER_NAME}/Desktop/KootNet*.desktop

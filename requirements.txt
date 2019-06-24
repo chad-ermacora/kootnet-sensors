@@ -11,6 +11,7 @@ bh1745
 lsm303d
 # smbus2 is needed by vl53l1x only
 smbus2
+smbus
 vl53l1x
 ltr559
 as7262
