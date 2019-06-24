@@ -88,6 +88,8 @@ bash /opt/kootnet-sensors/scripts/set_permissions.sh
 # Save datetime to last updated file
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - SMB' >> ${CONFIG_DIR}/last_updated.txt
+# Make sure SensorRecording service is up before restarting SensorCommands
+sleep 5
 printf '\nDone\n\n'
 umount /mnt/supernas
 systemctl restart SensorCommands

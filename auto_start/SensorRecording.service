@@ -9,8 +9,6 @@ WorkingDirectory=/opt/kootnet-sensors
 RestartSec=10
 User=root
 Group=pi
-# Ensure sensors are not initialized at the same time for http_server.py and database_recording_service.py, creating an error
-ExecStartPre=/bin/sleep 5
 ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/database_recording_service.py
 
 [Install]

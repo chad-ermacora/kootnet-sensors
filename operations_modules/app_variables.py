@@ -109,7 +109,7 @@ sense_hat_show_led_message = False
 
 trigger_pairs = 3
 
-restart_sensor_services_command = "systemctl daemon-reload && " + \
+restart_sensor_services_command = "systemctl daemon-reload ; " + \
                                   "systemctl restart SensorRecording & " + \
                                   "systemctl restart SensorCommands"
 
