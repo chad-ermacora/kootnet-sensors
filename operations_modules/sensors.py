@@ -39,26 +39,56 @@ from sensor_modules import raspberry_pi_system
 if software_version.old_version == software_version.version:
     # Initialize sensor access, based on installed sensors file
     if configuration_main.installed_sensors.linux_system:
-        os_sensor_access = linux_os.CreateLinuxSystem()
+        try:
+            os_sensor_access = linux_os.CreateLinuxSystem()
+        except Exception as error:
+            logger.primary_logger.error("Linux OS Sensor Failed - " + str(error))
     if configuration_main.installed_sensors.raspberry_pi_zero_w or \
             configuration_main.installed_sensors.raspberry_pi_3b_plus:
-        system_sensor_access = raspberry_pi_system.CreateRPSystem()
+        try:
+            system_sensor_access = raspberry_pi_system.CreateRPSystem()
+        except Exception as error:
+            logger.primary_logger.error("Raspberry Pi Sensor Failed - " + str(error))
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
+        try:
+            rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
+        except Exception as error:
+            logger.primary_logger.error("RP SenseHAT Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_bh1745:
-        pimoroni_bh1745_sensor_access = pimoroni_bh1745.CreateBH1745()
+        try:
+            pimoroni_bh1745_sensor_access = pimoroni_bh1745.CreateBH1745()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni BH1745 Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_as7262:
-        pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
+        try:
+            pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni AS7262 Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_bme680:
-        pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
+        try:
+            pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni BME680 Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_enviro:
-        pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
+        try:
+            pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni EnviroPHAT Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_lsm303d:
-        pimoroni_lsm303d_sensor_access = pimoroni_lsm303d.CreateLSM303D()
+        try:
+            pimoroni_lsm303d_sensor_access = pimoroni_lsm303d.CreateLSM303D()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni LSM303D Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_ltr_559:
-        pimoroni_ltr_559_sensor_access = pimoroni_ltr_559.CreateLTR559()
+        try:
+            pimoroni_ltr_559_sensor_access = pimoroni_ltr_559.CreateLTR559()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni LTR559 Sensor Failed - SPI or I2C Disabled? - " + str(error))
     if configuration_main.installed_sensors.pimoroni_vl53l1x:
-        pimoroni_vl53l1x_sensor_access = pimoroni_vl53l1x.CreateVL53L1X()
+        try:
+            pimoroni_vl53l1x_sensor_access = pimoroni_vl53l1x.CreateVL53L1X()
+        except Exception as error:
+            logger.primary_logger.error("Pimoroni VL53L1X Sensor Failed - SPI or I2C Disabled? - " + str(error))
 else:
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done
