@@ -14,10 +14,12 @@ then
   nano ${CONFIG_DIR}/sql_recording.conf
   nano /etc/network/interfaces
   nano /etc/wpa_supplicant/wpa_supplicant.conf
-  printf "\nPrinting config & testing sensors\n\n"
+  printf "\nRestarting Services, please wait ...\n\n"
   systemctl daemon-reload
   systemctl restart SensorRecording
   systemctl restart SensorCommands
+  sleep 3
+  printf "Printing config & testing sensors\n\n"
   /home/kootnet_data/python-env/bin/python3 /opt/kootnet-sensors/test_sensors.py
 fi
 printf "\nPress enter to exit ..."
