@@ -586,15 +586,15 @@ def get_lumen():
 
 def get_ems():
     """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
-    if configuration_main.installed_sensors.pimoroni_enviro:
+    if configuration_main.installed_sensors.pimoroni_as7262:
+        six_chan = pimoroni_as7262_sensor_access.spectral_six_channel()
+        return six_chan
+    elif configuration_main.installed_sensors.pimoroni_enviro:
         rgb = pimoroni_enviro_sensor_access.ems()
         return rgb
     elif configuration_main.installed_sensors.pimoroni_bh1745:
         rgb = pimoroni_bh1745_sensor_access.ems()
         return rgb
-    elif configuration_main.installed_sensors.pimoroni_as7262:
-        six_chan = pimoroni_as7262_sensor_access.spectral_six_channel()
-        return six_chan
     else:
         return "NoSensor"
 
