@@ -69,9 +69,9 @@ if software_version.old_version == software_version.version:
                 rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
                 logger.primary_logger.info("RP SenseHAT Sensor Attempt 2 OK")
             except Exception as sensor_error:
-                logger.primary_logger.error(
-                    "RP SenseHAT Sensor Attempt 2 Failed Skipping Sensor - SPI or I2C Disabled? - " +
-                    str(sensor_error))
+                logger.primary_logger.error("RP SenseHAT Sensor Attempt 2 Failed Skipping Sensor - " +
+                                            "SPI or I2C Disabled? - " +
+                                            str(sensor_error))
 
     if configuration_main.installed_sensors.pimoroni_bh1745:
         try:
