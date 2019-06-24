@@ -16,8 +16,8 @@ then
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   printf "\nRestarting Services, please wait ...\n\n"
   systemctl daemon-reload
-  systemctl restart SensorRecording
   systemctl restart SensorCommands
+  systemctl restart SensorRecording
   sleep 10
   printf "Printing config & testing sensors\n\n"
   /home/kootnet_data/python-env/bin/python3 /opt/kootnet-sensors/test_sensors.py
