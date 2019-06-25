@@ -5,13 +5,18 @@ flask
 gevent
 # Sensor Hardware Modules
 envirophat
+enviroplus
 sense_hat
 bme680
+bme280
+bmp280
+as7262
 bh1745
 lsm303d
-# smbus2 is needed by vl53l1x only
 smbus2
 smbus
 vl53l1x
 ltr559
-as7262
+ST7735
+pms5003
+veml6075
