@@ -30,10 +30,13 @@ from sensor_modules import linux_os
 from sensor_modules import pimoroni_as7262
 from sensor_modules import pimoroni_bh1745
 from sensor_modules import pimoroni_bme680
+from sensor_modules import pimoroni_bmp280
 from sensor_modules import pimoroni_enviro
+from sensor_modules import pimoroni_enviroplus
 from sensor_modules import pimoroni_lsm303d
 from sensor_modules import pimoroni_ltr_559
 from sensor_modules import pimoroni_vl53l1x
+from sensor_modules import pimoroni_veml6075
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
 
@@ -115,6 +118,20 @@ if software_version.old_version == software_version.version:
                                             "SPI or I2C Disabled? - " +
                                             str(sensor_error))
 
+    if configuration_main.installed_sensors.pimoroni_bmp280:
+        try:
+            pimoroni_bmp280_sensor_access = pimoroni_bmp280.CreateBMP280()
+        except Exception as sensor_error:
+            logger.primary_logger.warning("Pimoroni BMP280 Sensor Failed - " + str(sensor_error))
+            sleep(5)
+            try:
+                pimoroni_bmp280_sensor_access = pimoroni_bmp280.CreateBMP280()
+                logger.primary_logger.info("Pimoroni BMP280 Sensor Attempt 2 OK")
+            except Exception as sensor_error:
+                logger.primary_logger.error("Pimoroni BMP280 Sensor Attempt 2 Failed Skipping Sensor -" +
+                                            "SPI or I2C Disabled? - " +
+                                            str(sensor_error))
+
     if configuration_main.installed_sensors.pimoroni_enviro:
         try:
             pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
@@ -126,6 +143,20 @@ if software_version.old_version == software_version.version:
                 logger.primary_logger.info("Pimoroni EnviroPHAT Sensor Attempt 2 OK")
             except Exception as sensor_error:
                 logger.primary_logger.error("Pimoroni EnviroPHAT Sensor Attempt 2 Failed Skipping Sensor -" +
+                                            "SPI or I2C Disabled? - " +
+                                            str(sensor_error))
+
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        try:
+            pimoroni_enviroplus_sensor_access = pimoroni_enviroplus.CreateEnviroPlus()
+        except Exception as sensor_error:
+            logger.primary_logger.warning("Pimoroni Enviro+ Sensor Failed - " + str(sensor_error))
+            sleep(5)
+            try:
+                pimoroni_enviroplus_sensor_access = pimoroni_enviroplus.CreateEnviroPlus()
+                logger.primary_logger.info("Pimoroni Enviro+ Sensor Attempt 2 OK")
+            except Exception as sensor_error:
+                logger.primary_logger.error("Pimoroni Enviro+ Sensor Attempt 2 Failed Skipping Sensor -" +
                                             "SPI or I2C Disabled? - " +
                                             str(sensor_error))
 
@@ -168,6 +199,20 @@ if software_version.old_version == software_version.version:
                 logger.primary_logger.info("Pimoroni VL53L1X Sensor Attempt 2 OK")
             except Exception as sensor_error:
                 logger.primary_logger.error("Pimoroni VL53L1X Sensor Attempt 2 Failed Skipping Sensor -" +
+                                            "SPI or I2C Disabled? - " +
+                                            str(sensor_error))
+
+    if configuration_main.installed_sensors.pimoroni_veml6075:
+        try:
+            pimoroni_veml6075_sensor_access = pimoroni_veml6075.CreateVEML6075()
+        except Exception as sensor_error:
+            logger.primary_logger.warning("Pimoroni VEML6075 Sensor Failed - " + str(sensor_error))
+            sleep(5)
+            try:
+                pimoroni_veml6075_sensor_access = pimoroni_veml6075.CreateVEML6075()
+                logger.primary_logger.info("Pimoroni VEML6075 Sensor Attempt 2 OK")
+            except Exception as sensor_error:
+                logger.primary_logger.error("Pimoroni VEML6075 Sensor Attempt 2 Failed Skipping Sensor -" +
                                             "SPI or I2C Disabled? - " +
                                             str(sensor_error))
 else:
@@ -613,6 +658,12 @@ def get_sensor_temperature():
     if configuration_main.installed_sensors.pimoroni_enviro:
         temperature = pimoroni_enviro_sensor_access.temperature()
         return temperature
+    elif configuration_main.installed_sensors.pimoroni_enviroplus:
+        temperature = pimoroni_enviroplus_sensor_access.temperature()
+        return temperature
+    elif configuration_main.installed_sensors.pimoroni_bmp280:
+        temperature = pimoroni_bmp280_sensor_access.temperature()
+        return temperature
     elif configuration_main.installed_sensors.pimoroni_bme680:
         temperature = pimoroni_bme680_sensor_access.temperature()
         return temperature
@@ -628,6 +679,12 @@ def get_pressure():
     if configuration_main.installed_sensors.pimoroni_enviro:
         pressure = pimoroni_enviro_sensor_access.pressure()
         return pressure
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        pressure = pimoroni_enviroplus_sensor_access.pressure()
+        return pressure
+    elif configuration_main.installed_sensors.pimoroni_bmp280:
+        pressure = pimoroni_bmp280_sensor_access.pressure()
+        return pressure
     elif configuration_main.installed_sensors.pimoroni_bme680:
         pressure = pimoroni_bme680_sensor_access.pressure()
         return pressure
@@ -640,7 +697,10 @@ def get_pressure():
 
 def get_humidity():
     """ Returns sensors humidity. """
-    if configuration_main.installed_sensors.pimoroni_bme680:
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        humidity = pimoroni_enviroplus_sensor_access.humidity()
+        return humidity
+    elif configuration_main.installed_sensors.pimoroni_bme680:
         humidity = pimoroni_bme680_sensor_access.humidity()
         return humidity
     elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
@@ -654,6 +714,9 @@ def get_lumen():
     """ Returns sensors lumen. """
     if configuration_main.installed_sensors.pimoroni_enviro:
         lumen = pimoroni_enviro_sensor_access.lumen()
+        return lumen
+    elif configuration_main.installed_sensors.pimoroni_enviroplus:
+        lumen = pimoroni_enviroplus_sensor_access.lumen()
         return lumen
     elif configuration_main.installed_sensors.pimoroni_bh1745:
         lumen = pimoroni_bh1745_sensor_access.lumen()

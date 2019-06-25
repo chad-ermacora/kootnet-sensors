@@ -97,26 +97,37 @@ def run_upgrade_checks():
     previous_version = CreateRefinedVersion(software_version.old_version)
     no_changes = True
 
-    if previous_version.major_version == 0:
+    if previous_version.major_version == "New_Install":
         no_changes = False
-        logger.primary_logger.info("New Install or broken/missing Old Version File")
-        upgrade_functions.reset_installed_sensors()
-        upgrade_functions.reset_config()
+        logger.primary_logger.info("New Install Detected")
 
-    if previous_version.major_version == "Alpha":
-        if previous_version.feature_version == 22:
+    elif previous_version.major_version == "Alpha":
+        if previous_version.feature_version < 24:
             no_changes = False
             logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                        " || New: " + software_version.version)
             upgrade_functions.reset_installed_sensors()
             upgrade_functions.reset_config()
-        elif previous_version.feature_version == 23:
+        elif previous_version.feature_version == 24:
+            no_changes = False
+            upgrade_functions.reset_installed_sensors()
             if previous_version.minor_version < 24:
-                no_changes = False
                 upgrade_functions.reset_config()
+            logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                       " || New: " + software_version.version)
+        elif previous_version.feature_version == 25:
+            if previous_version.minor_version < 7:
+                no_changes = False
+                upgrade_functions.reset_installed_sensors()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                            " || New: " + software_version.version)
+    else:
+        no_changes = False
+        logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
+        upgrade_functions.reset_installed_sensors()
+        upgrade_functions.reset_config()
 
+    # Since run_upgrade_checks is only run if there is a different version, show upgrade but no configuration changes
     if no_changes:
         logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                    software_version.old_version + " New: " + software_version.version)

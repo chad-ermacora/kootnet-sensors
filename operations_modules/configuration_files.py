@@ -224,6 +224,18 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
     try:
         if int(installed_sensor_lines[7][:1]):
             new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_bmp280 = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_altitude = 1
+
+    except IndexError:
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bmp280_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[8][:1]):
+            new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_bme680 = 1
             new_installed_sensors.has_env_temperature = 1
             new_installed_sensors.has_pressure = 1
@@ -234,7 +246,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[8][:1]):
+        if int(installed_sensor_lines[9][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_enviro = 1
             new_installed_sensors.has_lumen = 1
@@ -248,7 +260,23 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[9][:1]):
+        if int(installed_sensor_lines[10][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_enviroplus = 1
+            new_installed_sensors.has_lumen = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_humidity = 1
+            new_installed_sensors.has_distance = 1
+            new_installed_sensors.has_gas = 1
+            # Since PM sensor is optional, add a check to verify it's there
+            # new_installed_sensors.has_particulate_matter = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviroplus_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[11][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_lsm303d = 1
             new_installed_sensors.has_acc = 1
@@ -258,7 +286,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[10][:1]):
+        if int(installed_sensor_lines[12][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_vl53l1x = 1
     except IndexError:
@@ -266,12 +294,22 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[11][:1]):
+        if int(installed_sensor_lines[13][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_ltr_559 = 1
             new_installed_sensors.has_lumen = 1
     except IndexError:
         logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[14][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_veml6075 = 1
+            new_installed_sensors.has_ultra_violet = 1
+            new_installed_sensors.has_ultra_violet_comparator = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_veml6075_name)
         bad_load = True
 
     if bad_load:

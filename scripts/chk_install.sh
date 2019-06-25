@@ -17,11 +17,14 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Raspberry Pi Sense HAT
 0 = Pimoroni BH1745
 0 = Pimoroni AS7262
+0 = Pimoroni BMP280
 0 = Pimoroni BME680
 0 = Pimoroni EnviroPHAT
+0 = Pimoroni Enviro+ (Plus)
 0 = Pimoroni LSM303D
 0 = Pimoroni VL53L1X
 0 = Pimoroni LTR-559
+0 = Pimoroni VEML6075
 EOF
   nano ${CONFIG_DIR}/installed_sensors.conf
 fi
