@@ -33,6 +33,7 @@ class CreateBME680:
             logger.sensors_logger.error("Pimoroni BME680 Initialization - Failed: " + str(error))
 
     def temperature(self):
+        """ Returns Temperature as a Float. """
         try:
             self.sensor.get_sensor_data()
             temp_var = float(self.sensor.data.temperature)
@@ -43,6 +44,7 @@ class CreateBME680:
         return round(temp_var, round_decimal_to)
 
     def pressure(self):
+        """ Returns Pressure as a Integer. """
         try:
             self.sensor.get_sensor_data()
             pressure_hpa = self.sensor.data.pressure
@@ -54,6 +56,7 @@ class CreateBME680:
         return int(pressure_hpa)
 
     def humidity(self):
+        """ Returns Humidity as a Float. """
         try:
             var_humidity = self.sensor.data.humidity
             logger.sensors_logger.debug("Pimoroni BME680 Humidity - OK")
@@ -63,6 +66,7 @@ class CreateBME680:
         return round(var_humidity, round_decimal_to)
 
     def gas_resistance(self):
+        """ Returns Gas Resistance as a Integer. """
         try:
             self.sensor.set_gas_status(self.bme680_import.ENABLE_GAS_MEAS)
             self.sensor.set_gas_heater_temperature(320)

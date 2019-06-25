@@ -22,6 +22,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_hostname():
+        """ Returns System HostName as a String. """
         try:
             hostname = str(socket.gethostname())
             logger.sensors_logger.debug("Linux System Sensor Name - OK")
@@ -32,6 +33,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_ip():
+        """ Returns IPv4 Address as a String. """
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
@@ -45,6 +47,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_uptime():
+        """ Returns System Uptime in minutes as a Integer. """
         try:
             with open('/proc/uptime', 'r') as f:
                 uptime_seconds = float(f.readline().split()[0])
@@ -58,11 +61,13 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_sys_datetime():
+        """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
         logger.sensors_logger.debug("Linux System Sensor Date Time - OK")
         return strftime("%Y-%m-%d %H:%M")
 
     @staticmethod
     def get_sql_db_size():
+        """ Returns Sensor SQLite DB Size in MB as a Float. """
         try:
             db_size_mb = os.path.getsize(file_locations.sensor_database_location) / 1024000
             logger.sensors_logger.debug("Linux System Interval Database Size - OK")

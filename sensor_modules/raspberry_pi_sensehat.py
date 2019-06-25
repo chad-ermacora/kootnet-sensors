@@ -38,6 +38,7 @@ class CreateRPSenseHAT:
         self.linux_os_access = linux_os.CreateLinuxSystem()
 
     def temperature(self):
+        """ Returns Temperature as a Float. """
         try:
             env_temp = float(self.sense.get_temperature())
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Temperature - OK")
@@ -48,6 +49,7 @@ class CreateRPSenseHAT:
         return round(env_temp, round_decimal_to)
 
     def pressure(self):
+        """ Returns Pressure as a Integer. """
         try:
             pressure_hpa = self.sense.get_pressure()
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Pressure - OK")
@@ -58,6 +60,7 @@ class CreateRPSenseHAT:
         return int(pressure_hpa)
 
     def humidity(self):
+        """ Returns Humidity as a Float. """
         try:
             var_humidity = self.sense.get_humidity()
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Humidity - OK")
@@ -68,6 +71,7 @@ class CreateRPSenseHAT:
         return round(var_humidity, round_decimal_to)
 
     def magnetometer_xyz(self):
+        """ Returns Magnetometer X, Y, Z as Floats. """
         try:
             tmp_mag = self.sense.get_compass_raw()
             mag_x, mag_y, mag_z = tmp_mag["x"], tmp_mag["y"], tmp_mag["z"]
@@ -79,6 +83,7 @@ class CreateRPSenseHAT:
         return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
     def accelerometer_xyz(self):
+        """ Returns Accelerometer X, Y, Z as Floats. """
         try:
             tmp_acc = self.sense.get_accelerometer_raw()
 
@@ -91,6 +96,7 @@ class CreateRPSenseHAT:
         return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
 
     def gyroscope_xyz(self):
+        """ Returns Gyroscope X, Y, Z as Floats. """
         try:
             tmp_gyro = self.sense.get_gyroscope_raw()
             gyro_x, gyro_y, gyro_z = tmp_gyro["x"], tmp_gyro["y"], tmp_gyro["z"]
@@ -102,6 +108,7 @@ class CreateRPSenseHAT:
         return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
     def start_joy_stick_commands(self):
+        """ Scrolls Different readings on LED display based on Joystick Movements. """
         # Makes a nice Rainbow on the LED grid.  Not using right now ...
         # rainbow = [[255, 0, 0], [255, 0, 0], [255, 87, 0], [255, 196, 0],
         #            [205, 255, 0], [95, 255, 0], [0, 255, 13], [0, 255, 122],
@@ -175,9 +182,10 @@ class CreateRPSenseHAT:
                 # Clear events to prevent multiple loops if button(s) hit multiple times
                 self.sense.stick.get_events()
         except Exception as error:
-            logger.sensors_logger.error("Unable start SenseHAT JoyStick Operations - " + str(error))
+            logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations - " + str(error))
 
     def display_led_message(self, message):
+        """ Scrolls Provided Text on LED Display. """
         try:
             acc = self.accelerometer_xyz()
             acc_x = round(acc[0], 0)

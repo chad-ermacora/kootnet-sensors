@@ -31,6 +31,7 @@ class CreateLSM303D:
         self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
 
     def magnetometer_xyz(self):
+        """ Returns Magnetometer X, Y, Z as Floats. """
         try:
             mag_x, mag_y, mag_z = self.lsm.magnetometer()
             logger.sensors_logger.debug("Pimoroni LSM303D Magnetometer XYZ - OK")
@@ -41,6 +42,7 @@ class CreateLSM303D:
         return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
     def accelerometer_xyz(self):
+        """ Returns Accelerometer X, Y, Z as Floats. """
         try:
             acc_x, acc_y, acc_z = self.lsm.accelerometer()
             logger.sensors_logger.debug("Pimoroni LSM303D Accelerometer XYZ - OK")

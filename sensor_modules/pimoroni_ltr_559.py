@@ -29,7 +29,7 @@ class CreateLTR559:
         self.ltr_559 = __import__('ltr559')
 
     def lumen(self):
-        """ Returns Lumen. """
+        """ Returns Lumen as a Float. """
         try:
             lumen = float(self.ltr_559.get_lux())
             logger.sensors_logger.debug("Pimoroni LTR-559 Lumen - OK")

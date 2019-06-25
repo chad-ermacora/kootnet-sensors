@@ -20,6 +20,7 @@ class CreateRPSystem:
         self.gp_import = __import__('gpiozero')
 
     def cpu_temperature(self):
+        """ Returns System CPU Temperature as a Float. """
         try:
             cpu = self.gp_import.CPUTemperature()
             cpu_temp_c = float(cpu.temperature)

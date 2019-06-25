@@ -34,6 +34,7 @@ class CreateBH1745:
         self.bh1745.setup()
 
     def lumen(self):
+        """ Returns Lumen as a Float. """
         try:
             var_lumen = self.bh1745.get_rgbc_raw()[3]
             logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
@@ -44,6 +45,7 @@ class CreateBH1745:
         return round(var_lumen, round_decimal_to)
 
     def ems(self):
+        """ Returns Electromagnetic Spectrum of Red, Green, Blue as a list of Floats. """
         try:
             rgb_red, rgb_green, rgb_blue, var_lumen = self.bh1745.get_rgbc_raw()
             logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")

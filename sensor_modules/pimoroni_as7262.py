@@ -32,7 +32,7 @@ class CreateAS7262:
         self.as7262_import.set_illumination_led(0)
 
     def spectral_six_channel(self):
-        """ Returns Red, Orange, Yellow, Green, Blue and Violet. """
+        """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
         try:
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_import.get_calibrated_values()
             logger.sensors_logger.debug("Pimoroni AS7262 6 channel spectrum - OK")
