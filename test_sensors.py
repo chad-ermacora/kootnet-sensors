@@ -17,13 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import configuration_main
-from operations_modules import sensors
-from sensor_modules import raspberry_pi_sensehat
+from operations_modules import get_http_sensor_data
 
+sensor_commands = get_http_sensor_data.CreateSensorCommands()
 
-interval_data = sensors.get_interval_sensor_readings()
-interval_data.sensor_types = interval_data.sensor_types.split(",")
-interval_data.sensor_readings = interval_data.sensor_readings.split(",")
+interval_data = get_http_sensor_data.get_interval_sensor_data()
+sensor_types = interval_data[0].split(",")
+sensor_readings = interval_data[1].split(",")
 
 configuration_main.current_config.custom_temperature_offset = configuration_main.current_config.temperature_offset
 
@@ -37,13 +37,12 @@ print("\n  Enable Custom Temperature Offset: " + str(configuration_main.current_
 print("\n*** Sensor Data test ***")
 str_message = ""
 count = 0
-while count < len(interval_data.sensor_types):
+while count < len(sensor_types):
     str_message = str_message + \
-                  str(interval_data.sensor_types[count]) + ": " + \
-                  str(interval_data.sensor_readings[count] + " | ")
+                  str(sensor_types[count]) + ": " + \
+                  str(sensor_readings[count] + " | ")
 
-    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(
-            interval_data.sensor_types) - 1:
+    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(sensor_types) - 1:
         print(str_message)
         str_message = ""
     count = count + 1
@@ -52,7 +51,7 @@ count = 0
 
 if configuration_main.installed_sensors.raspberry_pi_sense_hat:
     print("\nShowing SenseHAT Temperature on LED's, Please Wait ...")
-    sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
-    sensor_access.display_led_message(str(round(sensor_access.temperature(), 2)) + "c")
+    cpu_temp = float(get_http_sensor_data.get_sensor_reading(sensor_commands.environmental_temp))
+    get_http_sensor_data.display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
 
 print("\nTesting Complete")

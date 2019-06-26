@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import requests
 from time import sleep
 from threading import Thread
 from operations_modules import sqlite_database
@@ -27,6 +26,8 @@ from operations_modules import program_start_checks
 from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
+from operations_modules import get_http_sensor_data
+
 
 # Ensure files, database & configurations are OK
 program_start_checks.set_file_permissions()
@@ -42,43 +43,15 @@ if software_version.old_version != software_version.version:
 
 # Ensure http_server.py is up before starting
 sleep(10)
+
 logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
-
-
-def get_interval_sensor_data():
-    """ Returns requested sensor data (based on the provided command data). """
-    url = "http://127.0.0.1:10065/GetIntervalSensorReadings"
-    command_data_separator = "[new_data_section]"
-
-    try:
-        tmp_return_data = requests.get(url=url)
-        logger.primary_logger.debug("* Sensor Interval Data Retrieval OK")
-        return_data = tmp_return_data.text.split(command_data_separator)
-        sensor_types = str(return_data[0])
-        sensor_readings = str(return_data[1])
-    except Exception as error:
-        sensor_types = "Sensor Offline"
-        sensor_readings = "Sensor Offline"
-        logger.primary_logger.error("* Sensor Interval Data Retrieval Failed - " + str(error))
-    return [sensor_types, sensor_readings]
-
-
-def display_text_on_sensor(text_message):
-    """ Returns requested sensor data (based on the provided command data). """
-    url = "http://127.0.0.1:10065/DisplayText"
-
-    try:
-        requests.put(url=url, data={'command_data': text_message})
-        logger.primary_logger.debug("* Sent Command: " + url + " to Sensor OK")
-    except Exception as error:
-        logger.primary_logger.error("* Sensor Command Failed: " + url + " - " + str(error))
 
 
 def start_interval_recording():
     """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
     while True:
         try:
-            new_sensor_data = get_interval_sensor_data()
+            new_sensor_data = get_http_sensor_data.get_interval_sensor_data()
             # new_sensor_data = sensors.get_interval_sensor_readings()
 
             logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
@@ -88,7 +61,7 @@ def start_interval_recording():
             sqlite_database.write_to_sql_database(interval_sql_execute)
 
             if configuration_main.installed_sensors.raspberry_pi_sense_hat and app_variables.sense_hat_show_led_message:
-                display_text_on_sensor("SQL-Int-Rec")
+                get_http_sensor_data.display_text_on_sensor("SQL-Int-Rec")
         except Exception as error:
             logger.primary_logger.error("Interval Failure: " + str(error))
 
