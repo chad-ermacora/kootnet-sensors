@@ -40,6 +40,6 @@ class CreateAS7262:
             logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed - " + str(error))
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
 
-        return [round(red_650, round_decimal_to), round(orange_600, round_decimal_to),
-                round(yellow_570, round_decimal_to), round(green_550, round_decimal_to),
-                round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)]
+        return round(red_650, round_decimal_to), round(orange_600, round_decimal_to), \
+               round(yellow_570, round_decimal_to), round(green_550, round_decimal_to), \
+               round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)

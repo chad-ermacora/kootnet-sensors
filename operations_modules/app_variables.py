@@ -18,6 +18,24 @@
 """
 
 
+class CreateSensorCommands:
+    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
+    def __init__(self):
+        self.sensor_name = "GetHostName"
+        self.system_uptime = "GetSystemUptime"
+        self.cpu_temp = "GetCPUTemperature"
+        self.environmental_temp = "GetEnvTemperature"
+        self.env_temp_offset = "GetTempOffsetEnv"
+        self.pressure = "GetPressure"
+        self.humidity = "GetHumidity"
+        self.lumen = "GetLumen"
+        self.electromagnetic_spectrum = "GetEMS"
+        self.accelerometer_xyz = "GetAccelerometerXYZ"
+        self.magnetometer_xyz = "GetMagnetometerXYZ"
+        self.gyroscope_xyz = "GetGyroscopeXYZ"
+        self.display_text = "DisplayText"
+
+
 class CreateDatabaseVariables:
     """ Creates SQLite3 database variables object. """
     def __init__(self):
@@ -105,7 +123,7 @@ class CreateConfig:
 flask_http_ip = ""
 flask_http_port = 10065
 
-sense_hat_show_led_message = False
+sense_hat_show_led_message = True
 
 trigger_pairs = 3
 

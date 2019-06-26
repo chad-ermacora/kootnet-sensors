@@ -21,6 +21,18 @@ class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
 
     @staticmethod
+    def os_version():
+        """ Returns System OS Version as a String. """
+        try:
+            system_os_information = open("/etc/os-release", "r")
+            os_version = system_os_information.readline()
+            system_os_information.close()
+            return str(os_version)[13:-2]
+        except Exception as error:
+            logger.sensors_logger.error("Unable to get Raspberry model: " + str(error))
+            return "Error retrieving OS information"
+
+    @staticmethod
     def get_hostname():
         """ Returns System HostName as a String. """
         try:

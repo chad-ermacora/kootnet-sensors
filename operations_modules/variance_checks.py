@@ -16,13 +16,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import requests
 from time import sleep
 from datetime import datetime
-from operations_modules import sensors
 from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import sqlite_database
 from operations_modules import app_variables
+
+
+sensor_commands = app_variables.CreateSensorCommands()
+
+
+def get_sensor_reading(command):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "http://127.0.0.1:10065/" + command
+
+    try:
+        tmp_return_data = requests.get(url=url)
+        return_data = tmp_return_data.text
+        logger.primary_logger.debug("* Sensor Interval Data Retrieval OK")
+    except Exception as error:
+        return_data = "Sensor Offline"
+        logger.primary_logger.error("* Sensor Interval Data Retrieval Failed - " + str(error))
+    return return_data
 
 
 def check_sensor_uptime():
@@ -33,12 +50,12 @@ def check_sensor_uptime():
             trigger_data = sqlite_database.CreateTriggerDatabaseData()
             trigger_data.sql_columns_str += configuration_main.database_variables.sensor_uptime
 
-            trigger_data.sql_readings1.append(sensors.get_system_uptime())
+            trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.system_uptime))
             trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
 
             sleep(configuration_main.trigger_variances.sensor_uptime_wait_seconds)
 
-            trigger_data.sql_readings2.append(sensors.get_system_uptime())
+            trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.system_uptime))
             trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
 
             logger.primary_logger.debug("Sensor Uptime exceeded set trigger")
@@ -58,7 +75,7 @@ def check_cpu_temperature():
             trigger_data.sql_columns_str += configuration_main.database_variables.system_temperature
 
             try:
-                trigger_data.sql_readings1.append(sensors.get_cpu_temperature())
+                trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.cpu_temp))
             except Exception as error:
                 logger.primary_logger.warning("Get CPU Temperature Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -67,7 +84,7 @@ def check_cpu_temperature():
             sleep(configuration_main.trigger_variances.cpu_temperature_wait_seconds)
 
             try:
-                trigger_data.sql_readings2.append(sensors.get_cpu_temperature())
+                trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.cpu_temp))
             except Exception as error:
                 logger.primary_logger.warning("Get CPU Temperature Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -97,7 +114,7 @@ def check_env_temperature():
             trigger_data.sql_columns_str += configuration_main.database_variables.env_temperature
 
             try:
-                trigger_data.sql_readings1.append(sensors.get_sensor_temperature())
+                trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.environmental_temp))
             except Exception as error:
                 logger.primary_logger.warning("Get Env Temperature Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -106,7 +123,7 @@ def check_env_temperature():
             sleep(configuration_main.trigger_variances.env_temperature_wait_seconds)
 
             try:
-                trigger_data.sql_readings2.append(sensors.get_sensor_temperature())
+                trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.environmental_temp))
             except Exception as error:
                 logger.primary_logger.warning("Get Env Temperature Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -136,7 +153,7 @@ def check_pressure():
             trigger_data.sql_columns_str += configuration_main.database_variables.pressure
 
             try:
-                trigger_data.sql_readings1.append(sensors.get_pressure())
+                trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.pressure))
             except Exception as error:
                 logger.primary_logger.warning("Get Pressure Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -145,7 +162,7 @@ def check_pressure():
             sleep(configuration_main.trigger_variances.pressure_wait_seconds)
 
             try:
-                trigger_data.sql_readings2.append(sensors.get_pressure())
+                trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.pressure))
             except Exception as error:
                 logger.primary_logger.warning("Get Pressure Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -175,7 +192,7 @@ def check_humidity():
             trigger_data.sql_columns_str += configuration_main.database_variables.humidity
 
             try:
-                trigger_data.sql_readings1.append(sensors.get_humidity())
+                trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.humidity))
             except Exception as error:
                 logger.primary_logger.warning("Get Humidity Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -184,7 +201,7 @@ def check_humidity():
             sleep(configuration_main.trigger_variances.humidity_wait_seconds)
 
             try:
-                trigger_data.sql_readings2.append(sensors.get_humidity())
+                trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.humidity))
             except Exception as error:
                 logger.primary_logger.warning("Get Humidity Error: " + str(error))
                 trigger_data.sql_readings2.append("0")
@@ -214,7 +231,7 @@ def check_lumen():
             trigger_data.sql_columns_str += configuration_main.database_variables.lumen
 
             try:
-                trigger_data.sql_readings1.append(sensors.get_lumen())
+                trigger_data.sql_readings1.append(get_sensor_reading(sensor_commands.lumen))
             except Exception as error:
                 logger.primary_logger.warning("Get Lumen Error: " + str(error))
                 trigger_data.sql_readings1.append("0")
@@ -223,7 +240,7 @@ def check_lumen():
             sleep(configuration_main.trigger_variances.lumen_wait_seconds)
 
             try:
-                trigger_data.sql_readings2.append(sensors.get_lumen())
+                trigger_data.sql_readings2.append(get_sensor_reading(sensor_commands.lumen))
             except Exception as error:
                 logger.primary_logger.warning("Get Lumen Error: " + str(error))
                 trigger_data.sql_readings2.append("0")
@@ -261,7 +278,7 @@ def _check_3_ems():
     blue_trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
     try:
-        sensor_colours = sensors.get_ems()
+        sensor_colours = get_sensor_reading(sensor_commands.electromagnetic_spectrum)[1:-1].split(",")
     except Exception as error:
         logger.primary_logger.warning("Get Colours Error: " + str(error))
         sensor_colours = [0, 0, 0]
@@ -270,7 +287,7 @@ def _check_3_ems():
     sleep(configuration_main.trigger_variances.colour_wait)
 
     try:
-        sensor_colours2 = sensors.get_ems()
+        sensor_colours2 = get_sensor_reading(sensor_commands.electromagnetic_spectrum)[1:-1].split(",")
     except Exception as error:
         logger.primary_logger.warning("Get Colours Error: " + str(error))
         sensor_colours2 = [0, 0, 0]
@@ -305,7 +322,7 @@ def _check_6_ems():
     violet_trigger_data = sqlite_database.CreateTriggerDatabaseData()
 
     try:
-        sensor_colours = sensors.get_ems()
+        sensor_colours = get_sensor_reading(sensor_commands.electromagnetic_spectrum)[1:-1].split(",")
     except Exception as error:
         logger.primary_logger.warning("Get Colours Error: " + str(error))
         sensor_colours = [0, 0, 0, 0, 0, 0]
@@ -315,7 +332,7 @@ def _check_6_ems():
     sleep(configuration_main.trigger_variances.colour_wait)
 
     try:
-        sensor_colours2 = sensors.get_ems()
+        sensor_colours2 = get_sensor_reading(sensor_commands.electromagnetic_spectrum)[1:-1].split(",")
     except Exception as error:
         logger.primary_logger.warning("Get Colours Error: " + str(error))
         sensor_colours2 = [0, 0, 0, 0, 0, 0]
@@ -480,7 +497,7 @@ def check_accelerometer_xyz():
 
             pair_count = 0
             while pair_count < app_variables.trigger_pairs:
-                xyz = sensors.get_accelerometer_xyz()
+                xyz = get_sensor_reading(sensor_commands.accelerometer_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings1.append(xyz[0])
                 x_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
@@ -491,7 +508,7 @@ def check_accelerometer_xyz():
 
                 sleep(configuration_main.trigger_variances.accelerometer_wait_seconds)
 
-                xyz = sensors.get_accelerometer_xyz()
+                xyz = get_sensor_reading(sensor_commands.accelerometer_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings2.append(xyz[0])
                 x_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
@@ -528,7 +545,7 @@ def check_magnetometer_xyz():
 
             pair_count = 0
             while pair_count < app_variables.trigger_pairs:
-                xyz = sensors.get_magnetometer_xyz()
+                xyz = get_sensor_reading(sensor_commands.magnetometer_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings1.append(xyz[0])
                 x_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
@@ -539,7 +556,7 @@ def check_magnetometer_xyz():
 
                 sleep(configuration_main.trigger_variances.magnetometer_wait_seconds)
 
-                xyz = sensors.get_magnetometer_xyz()
+                xyz = get_sensor_reading(sensor_commands.magnetometer_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings2.append(xyz[0])
                 x_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())
@@ -576,7 +593,7 @@ def check_gyroscope_xyz():
 
             pair_count = 0
             while pair_count < app_variables.trigger_pairs:
-                xyz = sensors.get_gyroscope_xyz()
+                xyz = get_sensor_reading(sensor_commands.gyroscope_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings1.append(xyz[0])
                 x_trigger_data.sql_readings1_datetime.append(get_datetime_stamp())
@@ -587,7 +604,7 @@ def check_gyroscope_xyz():
 
                 sleep(configuration_main.trigger_variances.gyroscope_wait_seconds)
 
-                xyz = sensors.get_gyroscope_xyz()
+                xyz = get_sensor_reading(sensor_commands.gyroscope_xyz)[1:-1].split(",")
 
                 x_trigger_data.sql_readings2.append(xyz[0])
                 x_trigger_data.sql_readings2_datetime.append(get_datetime_stamp())

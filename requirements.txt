@@ -1,5 +1,6 @@
 # Required Sensor Program Modules
 psutil
+requests
 gpiozero
 flask
 gevent
@@ -15,7 +16,7 @@ bh1745
 lsm303d
 smbus2
 smbus
-vl53l1x
+# vl53l1x  Currently not supported in Raspbian Buster
 ltr559
 ST7735
 pms5003

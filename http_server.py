@@ -438,6 +438,22 @@ def get_gyro_xyz():
     return str(sensors.get_gyroscope_xyz())
 
 
+@app.route("/GetIntervalSensorReadings")
+def get_interval_readings():
+    logger.network_logger.debug("* Sent Interval Sensor Readings")
+    return str(sensors.get_interval_sensor_readings())
+
+
+@app.route("/DisplayText", methods=["PUT"])
+def display_text():
+    logger.network_logger.info("* Displaying Text on LED Screen")
+
+    text_message = request.form['command_data']
+    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+        sensors.rp_sense_hat_sensor_access.display_led_message(text_message)
+    return "OK"
+
+
 logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
 http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), app)
 http_server.serve_forever()

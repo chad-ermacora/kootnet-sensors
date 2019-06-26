@@ -436,11 +436,9 @@ def get_interval_sensor_readings():
                                          str(mag_y) + "', '" + \
                                          str(mag_z) + "', "
 
-    interval_data.sensor_types = interval_data.sensor_types[:-2]
-    interval_data.sensor_readings = interval_data.sensor_readings[:-2]
+    return_interval_data = interval_data.sensor_types[:-2] + command_data_separator + interval_data.sensor_readings[:-2]
 
-    if interval_data.sensor_types != configuration_main.database_variables.all_tables_datetime:
-        return interval_data
+    return return_interval_data
 
 
 def get_trigger_sensor_readings():
