@@ -17,9 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
+import socket
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import sensors
 from operations_modules import configuration_main
 
 
@@ -91,8 +91,17 @@ class CreateTriggerDatabaseData:
 
     def _update_sql_name_and_ip(self):
         if configuration_main.installed_sensors.linux_system:
-            self.sql_sensor_name = sensors.os_sensor_access.get_hostname()
-            self.sql_ip = sensors.os_sensor_access.get_ip()
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                ip_address = (s.getsockname()[0])
+                hostname = str(socket.gethostname())
+
+                self.sql_sensor_name = hostname
+                self.sql_ip = ip_address
+                logger.sensors_logger.debug("Update SQL Sensor name or IP - OK")
+            except Exception as error:
+                logger.sensors_logger.error("Update SQL Sensor name or IP - Failed - " + str(error))
 
 
 class CreateOtherDataEntry:
