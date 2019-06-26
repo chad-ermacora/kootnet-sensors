@@ -123,7 +123,7 @@ class CreateConfig:
 flask_http_ip = ""
 flask_http_port = 10065
 
-sense_hat_show_led_message = True
+sense_hat_show_led_message = False
 
 trigger_pairs = 3
 

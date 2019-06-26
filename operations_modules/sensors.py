@@ -227,10 +227,10 @@ command_data_separator = "[new_data_section]"
 def get_sensor_readings():
     """ Returns sensor types and readings for interval and trigger sensors in html table format. """
 
-    interval_readings = get_interval_sensor_readings()
+    interval_readings = get_interval_sensor_readings().split(command_data_separator)
 
-    str_interval_types = interval_readings.sensor_types.split(",")
-    str_interval_types_data = interval_readings.sensor_readings.split(",")
+    str_interval_types = interval_readings[0].split(",")
+    str_interval_types_data = interval_readings[1].split(",")
 
     return_data = ""
     return_types = ""
