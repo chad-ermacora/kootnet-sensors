@@ -288,13 +288,24 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
     try:
         if int(installed_sensor_lines[12][:1]):
             new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_icm20948 = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+            new_installed_sensors.has_gyro = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_icm20948_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[13][:1]):
+            new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_vl53l1x = 1
     except IndexError:
         logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[13][:1]):
+        if int(installed_sensor_lines[14][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_ltr_559 = 1
             new_installed_sensors.has_lumen = 1
@@ -303,7 +314,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         bad_load = True
 
     try:
-        if int(installed_sensor_lines[14][:1]):
+        if int(installed_sensor_lines[15][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_veml6075 = 1
             new_installed_sensors.has_ultra_violet = 1

@@ -34,6 +34,7 @@ from sensor_modules import pimoroni_bmp280
 from sensor_modules import pimoroni_enviro
 from sensor_modules import pimoroni_enviroplus
 from sensor_modules import pimoroni_lsm303d
+from sensor_modules import pimoroni_icm20948
 from sensor_modules import pimoroni_ltr_559
 from sensor_modules import pimoroni_vl53l1x
 from sensor_modules import pimoroni_veml6075
@@ -171,6 +172,20 @@ if software_version.old_version == software_version.version:
                 logger.primary_logger.info("Pimoroni LSM303D Sensor Attempt 2 OK")
             except Exception as sensor_error:
                 logger.primary_logger.error("Pimoroni LSM303D Sensor Attempt 2 Failed Skipping Sensor -" +
+                                            "SPI or I2C Disabled? - " +
+                                            str(sensor_error))
+
+    if configuration_main.installed_sensors.pimoroni_icm20948:
+        try:
+            pimoroni_icm20948_sensor_access = pimoroni_icm20948.CreateICM20948()
+        except Exception as sensor_error:
+            logger.primary_logger.warning("Pimoroni ICM20948 Sensor Failed - " + str(sensor_error))
+            sleep(5)
+            try:
+                pimoroni_icm20948_sensor_access = pimoroni_icm20948.CreateICM20948()
+                logger.primary_logger.info("Pimoroni ICM20948 Sensor Attempt 2 OK")
+            except Exception as sensor_error:
+                logger.primary_logger.error("Pimoroni ICM20948 Sensor Attempt 2 Failed Skipping Sensor -" +
                                             "SPI or I2C Disabled? - " +
                                             str(sensor_error))
 
@@ -752,6 +767,9 @@ def get_accelerometer_xyz():
     elif configuration_main.installed_sensors.pimoroni_lsm303d:
         xyz = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
         return xyz
+    elif configuration_main.installed_sensors.pimoroni_icm20948:
+        xyz = pimoroni_icm20948_sensor_access.accelerometer_xyz()
+        return xyz
     else:
         return "NoSensor"
 
@@ -767,6 +785,9 @@ def get_magnetometer_xyz():
     elif configuration_main.installed_sensors.pimoroni_lsm303d:
         xyz = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
         return xyz
+    elif configuration_main.installed_sensors.pimoroni_icm20948:
+        xyz = pimoroni_icm20948_sensor_access.magnetometer_xyz()
+        return xyz
     else:
         return "NoSensor"
 
@@ -775,6 +796,9 @@ def get_gyroscope_xyz():
     """ Returns sensors Gyroscope XYZ. """
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
         xyz = rp_sense_hat_sensor_access.gyroscope_xyz()
+        return xyz
+    if configuration_main.installed_sensors.pimoroni_icm20948:
+        xyz = pimoroni_icm20948_sensor_access.gyroscope_xyz()
         return xyz
     else:
         return "NoSensor"

@@ -9,11 +9,12 @@ envirophat
 enviroplus
 sense_hat
 bme680
-bme280
+#bme280
 bmp280
 as7262
 bh1745
 lsm303d
+icm20948
 smbus2
 smbus
 # vl53l1x  Currently not supported in Raspbian Buster
