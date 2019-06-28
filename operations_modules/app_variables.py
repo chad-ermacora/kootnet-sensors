@@ -80,6 +80,7 @@ class CreateDatabaseVariables:
                               self.altitude,
                               self.humidity,
                               self.distance,
+                              self.gas_resistance_index,
                               self.gas_oxidising,
                               self.gas_reducing,
                               self.gas_nh3,
