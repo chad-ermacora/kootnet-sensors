@@ -318,12 +318,15 @@ def get_interval_sensor_readings():
 
         interval_data.sensor_readings += "'" + get_hostname() + "', " + \
                                          "'" + get_ip() + "', " + \
-                                         "'" + str(get_uptime_str()) + "', " + \
+                                         "'" + str(get_uptime_minutes()) + "', " + \
                                          "'" + str(cpu_temp) + "', "
 
     if configuration_main.installed_sensors.has_env_temperature:
         interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", "
         interval_data.sensor_readings += "'" + str(get_sensor_temperature()) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.env_temperature_offset + ", "
+        interval_data.sensor_readings += "'" + str(configuration_main.current_config.temperature_offset) + "', "
 
     if configuration_main.installed_sensors.has_pressure:
         interval_data.sensor_types += configuration_main.database_variables.pressure + ", "
@@ -596,6 +599,14 @@ def get_system_datetime():
     """ Returns sensor current DateTime. """
     if configuration_main.installed_sensors.linux_system:
         return os_sensor_access.get_sys_datetime()
+    else:
+        return "NoSensor"
+
+
+def get_uptime_minutes():
+    """ Converts provided minutes into a human readable string. """
+    if configuration_main.installed_sensors.linux_system:
+        return os_sensor_access.get_uptime()
     else:
         return "NoSensor"
 
