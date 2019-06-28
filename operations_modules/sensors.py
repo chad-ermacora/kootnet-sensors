@@ -316,140 +316,94 @@ def get_interval_sensor_readings():
         else:
             cpu_temp = None
 
-        interval_data.sensor_readings += "'" + os_sensor_access.get_hostname() + "', '" + \
-                                         os_sensor_access.get_ip() + "', '" + \
-                                         str(os_sensor_access.get_uptime()) + "', '" + \
-                                         str(cpu_temp) + "', "
+        interval_data.sensor_readings += "'" + os_sensor_access.get_hostname() + "', " + \
+                                         "'" + os_sensor_access.get_ip() + "', " + \
+                                         "'" + str(os_sensor_access.get_uptime()) + "', " + \
+                                         "'" + str(cpu_temp) + "', "
 
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
-                                      configuration_main.database_variables.env_temperature_offset + ", " + \
-                                      configuration_main.database_variables.pressure + ", " + \
-                                      configuration_main.database_variables.humidity + ", " + \
-                                      configuration_main.database_variables.acc_x + ", " + \
-                                      configuration_main.database_variables.acc_y + ", " + \
-                                      configuration_main.database_variables.acc_z + ", " + \
-                                      configuration_main.database_variables.mag_x + ", " + \
-                                      configuration_main.database_variables.mag_y + ", " + \
-                                      configuration_main.database_variables.mag_z + ", " + \
-                                      configuration_main.database_variables.gyro_x + ", " + \
-                                      configuration_main.database_variables.gyro_y + ", " + \
-                                      configuration_main.database_variables.gyro_z + ", "
+    if configuration_main.installed_sensors.has_env_temperature:
+        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", "
+        interval_data.sensor_readings += "'" + str(get_sensor_temperature()) + "', "
 
-        interval_data.sensor_readings += "'" + str(rp_sense_hat_sensor_access.temperature()) + "', '" + \
-                                         str(configuration_main.current_config.temperature_offset) + "', '" + \
-                                         str(rp_sense_hat_sensor_access.pressure()) + "', '" + \
-                                         str(rp_sense_hat_sensor_access.humidity()) + "', "
+    if configuration_main.installed_sensors.has_pressure:
+        interval_data.sensor_types += configuration_main.database_variables.pressure + ", "
+        interval_data.sensor_readings += "'" + str(get_pressure()) + "', "
 
-        acc_x, acc_y, acc_z = rp_sense_hat_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = rp_sense_hat_sensor_access.magnetometer_xyz()
-        gyro_x, gyro_y, gyro_z = rp_sense_hat_sensor_access.gyroscope_xyz()
+    if configuration_main.installed_sensors.has_humidity:
+        interval_data.sensor_types += configuration_main.database_variables.humidity + ", "
+        interval_data.sensor_readings += "'" + str(get_humidity()) + "', "
 
-        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
-                                         str(acc_y) + "', '" + \
-                                         str(acc_z) + "', '" + \
-                                         str(mag_x) + "', '" + \
-                                         str(mag_y) + "', '" + \
-                                         str(mag_z) + "', '" + \
-                                         str(gyro_x) + "', '" + \
-                                         str(gyro_y) + "', '" + \
-                                         str(gyro_z) + "', "
-
-    if configuration_main.installed_sensors.pimoroni_bh1745:
-        rgb_colour = pimoroni_bh1745_sensor_access.ems()
-
-        interval_data.sensor_types += configuration_main.database_variables.lumen + ", " + \
-                                      configuration_main.database_variables.red + ", " + \
-                                      configuration_main.database_variables.green + ", " + \
-                                      configuration_main.database_variables.blue + ", "
-
-        interval_data.sensor_readings += "'" + str(pimoroni_bh1745_sensor_access.lumen()) + "', '" + \
-                                         str(rgb_colour[0]) + "', '" + \
-                                         str(rgb_colour[1]) + "', '" + \
-                                         str(rgb_colour[2]) + "', "
-    if configuration_main.installed_sensors.pimoroni_as7262:
-        ems_colors = pimoroni_as7262_sensor_access.spectral_six_channel()
-
-        interval_data.sensor_types += configuration_main.database_variables.red + ", " + \
-                                      configuration_main.database_variables.orange + ", " + \
-                                      configuration_main.database_variables.yellow + ", " + \
-                                      configuration_main.database_variables.green + ", " + \
-                                      configuration_main.database_variables.blue + ", " + \
-                                      configuration_main.database_variables.violet + ", "
-
-        interval_data.sensor_readings += "'" + str(ems_colors[0]) + "', '" + \
-                                         str(ems_colors[1]) + "', '" + \
-                                         str(ems_colors[2]) + "', '" + \
-                                         str(ems_colors[3]) + "', '" + \
-                                         str(ems_colors[4]) + "', '" + \
-                                         str(ems_colors[5]) + "', "
-
-    if configuration_main.installed_sensors.pimoroni_bme680:
-        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
-                                      configuration_main.database_variables.env_temperature_offset + ", " + \
-                                      configuration_main.database_variables.pressure + ", " + \
-                                      configuration_main.database_variables.humidity + ", "
-
-        interval_data.sensor_readings += "'" + str(pimoroni_bme680_sensor_access.temperature()) + "', '" + \
-                                         str(configuration_main.current_config.temperature_offset) + "', '" + \
-                                         str(pimoroni_bme680_sensor_access.pressure()) + "', '" + \
-                                         str(pimoroni_bme680_sensor_access.humidity()) + "', "
-
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        rgb_colour = pimoroni_enviro_sensor_access.ems()
-
-        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", " + \
-                                      configuration_main.database_variables.env_temperature_offset + ", " + \
-                                      configuration_main.database_variables.pressure + ", " + \
-                                      configuration_main.database_variables.lumen + ", " + \
-                                      configuration_main.database_variables.red + ", " + \
-                                      configuration_main.database_variables.green + ", " + \
-                                      configuration_main.database_variables.blue + ", " + \
-                                      configuration_main.database_variables.acc_x + ", " + \
-                                      configuration_main.database_variables.acc_y + ", " + \
-                                      configuration_main.database_variables.acc_z + ", " + \
-                                      configuration_main.database_variables.mag_x + ", " + \
-                                      configuration_main.database_variables.mag_y + ", " + \
-                                      configuration_main.database_variables.mag_z + ", "
-
-        interval_data.sensor_readings += "'" + str(pimoroni_enviro_sensor_access.temperature()) + "', '" + \
-                                         str(configuration_main.current_config.temperature_offset) + "', '" + \
-                                         str(pimoroni_enviro_sensor_access.pressure()) + "', '" + \
-                                         str(pimoroni_enviro_sensor_access.lumen()) + "', '" + \
-                                         str(rgb_colour[0]) + "', '" + \
-                                         str(rgb_colour[1]) + "', '" + \
-                                         str(rgb_colour[2]) + "', "
-
-        acc_x, acc_y, acc_z = pimoroni_enviro_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = pimoroni_enviro_sensor_access.magnetometer_xyz()
-
-        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
-                                         str(acc_y) + "', '" + \
-                                         str(acc_z) + "', '" + \
-                                         str(mag_x) + "', '" + \
-                                         str(mag_y) + "', '" + \
-                                         str(mag_z) + "', "
-    if configuration_main.installed_sensors.pimoroni_ltr_559:
+    if configuration_main.installed_sensors.has_lumen:
         interval_data.sensor_types += configuration_main.database_variables.lumen + ", "
-        interval_data.sensor_readings += "'" + str(pimoroni_ltr_559_sensor_access.lumen()) + "', "
+        interval_data.sensor_readings += "'" + str(get_lumen()) + "', "
 
-    if configuration_main.installed_sensors.pimoroni_lsm303d:
-        interval_data.sensor_types += configuration_main.database_variables.acc_x + ", " + \
-                                      configuration_main.database_variables.acc_y + ", " + \
-                                      configuration_main.database_variables.acc_z + ", " + \
-                                      configuration_main.database_variables.mag_x + ", " + \
-                                      configuration_main.database_variables.mag_y + ", " + \
-                                      configuration_main.database_variables.mag_z + ", "
+    if configuration_main.installed_sensors.has_red:
+        ems_colours = get_ems()
 
-        acc_x, acc_y, acc_z = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
+        if len(ems_colours) == 3:
+            interval_data.sensor_types += configuration_main.database_variables.red + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[0]) + "', "
 
-        interval_data.sensor_readings += "'" + str(acc_x) + "', '" + \
-                                         str(acc_y) + "', '" + \
-                                         str(acc_z) + "', '" + \
-                                         str(mag_x) + "', '" + \
-                                         str(mag_y) + "', '" + \
-                                         str(mag_z) + "', "
+            interval_data.sensor_types += configuration_main.database_variables.green + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[1]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.blue + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[2]) + "', "
+
+        elif len(ems_colours) == 6:
+            interval_data.sensor_types += configuration_main.database_variables.red + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[0]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.orange + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[1]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.yellow + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[2]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.green + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[3]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.blue + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[4]) + "', "
+
+            interval_data.sensor_types += configuration_main.database_variables.violet + ", "
+            interval_data.sensor_readings += "'" + str(ems_colours[5]) + "', "
+
+    if configuration_main.installed_sensors.has_acc:
+        accelerometer_readings = get_accelerometer_xyz()
+
+        interval_data.sensor_types += configuration_main.database_variables.acc_x + ", "
+        interval_data.sensor_readings += "'" + str(accelerometer_readings[0]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.acc_y + ", "
+        interval_data.sensor_readings += "'" + str(accelerometer_readings[1]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.acc_z + ", "
+        interval_data.sensor_readings += "'" + str(accelerometer_readings[2]) + "', "
+
+    if configuration_main.installed_sensors.has_mag:
+        magnetometer_readings = get_magnetometer_xyz()
+
+        interval_data.sensor_types += configuration_main.database_variables.mag_x + ", "
+        interval_data.sensor_readings += "'" + str(magnetometer_readings[0]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.mag_y + ", "
+        interval_data.sensor_readings += "'" + str(magnetometer_readings[1]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.mag_z + ", "
+        interval_data.sensor_readings += "'" + str(magnetometer_readings[2]) + "', "
+
+    if configuration_main.installed_sensors.has_gyro:
+        gyroscope_readings = get_gyroscope_xyz()
+
+        interval_data.sensor_types += configuration_main.database_variables.gyro_x + ", "
+        interval_data.sensor_readings += "'" + str(gyroscope_readings[0]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.gyro_y + ", "
+        interval_data.sensor_readings += "'" + str(gyroscope_readings[1]) + "', "
+
+        interval_data.sensor_types += configuration_main.database_variables.gyro_z + ", "
+        interval_data.sensor_readings += "'" + str(gyroscope_readings[2]) + "', "
 
     return_interval_data = interval_data.sensor_types[:-2] + command_data_separator + interval_data.sensor_readings[:-2]
 
@@ -692,7 +646,7 @@ def get_pressure():
     if configuration_main.installed_sensors.pimoroni_enviro:
         pressure = pimoroni_enviro_sensor_access.pressure()
         return pressure
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
+    elif configuration_main.installed_sensors.pimoroni_enviroplus:
         pressure = pimoroni_enviroplus_sensor_access.pressure()
         return pressure
     elif configuration_main.installed_sensors.pimoroni_bmp280:
