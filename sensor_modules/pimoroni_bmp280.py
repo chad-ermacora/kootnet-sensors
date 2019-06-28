@@ -64,8 +64,7 @@ class CreateBMP280:
         # Having it's own thread should allow the program to continue while waiting for this
         # Replace "pressure" with a baseline of the sum of 100 divided by the length 100
         try:
-            pressure = self.bmp280.get_pressure()
-            var_altitude = self.bmp280.get_altitude(qnh=pressure)
+            var_altitude = self.bmp280.get_altitude()
             logger.sensors_logger.debug("Pimoroni BMP280 Altitude - OK")
         except Exception as error:
             var_altitude = 0

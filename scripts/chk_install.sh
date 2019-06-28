@@ -20,7 +20,8 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Pimoroni BMP280
 0 = Pimoroni BME680
 0 = Pimoroni EnviroPHAT
-0 = Pimoroni Enviro+ (Plus)
+0 = Pimoroni Enviro+
+0 = Pimoroni PMS5003
 0 = Pimoroni LSM303D
 0 = Pimoroni ICM20948
 0 = Pimoroni VL53L1X

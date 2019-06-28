@@ -24,7 +24,7 @@ round_decimal_to = 5
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
     def __init__(self):
-        self.enviroplus_import = __import__('enviroplus')
+        self.enviroplus_import = __import__('enviroplus', fromlist=['gas'])
         self.bme280_import = __import__('bme280')
         self.ST7735_import = __import__('ST7735')
         self.ltr559_import = __import__('ltr559')
@@ -42,7 +42,6 @@ class CreateEnviroPlus:
 
         try:
             self.bme280 = self.bme280_import.BME280()
-            self.gas = self.enviroplus_import.gas()
             try:
                 self.pms5003 = self.pms5003_import.PMS5003()
                 logger.sensors_logger.debug("Pimoroni Enviro+ Particulate Matter Sensor - OK")
@@ -165,21 +164,21 @@ class CreateEnviroPlus:
     def gas_data(self):
         """ Returns 3 gas readings Oxidised, Reduced and nh3 as a list. """
         try:
-            enviro_plus_gas_data = self.gas.read_all()
+            enviro_plus_gas_data = self.enviroplus_import.gas.read_all()
             oxidised = enviro_plus_gas_data.oxidising / 1000
             reduced = enviro_plus_gas_data.reducing / 1000
             nh3 = enviro_plus_gas_data.nh3 / 1000
 
             gas_list_oxidised_reduced_nh3 = [round(oxidised, round_decimal_to), round(reduced, round_decimal_to), round(nh3, round_decimal_to)]
 
-            logger.sensors_logger.debug("Pimoroni Enviro+ Proximity - OK")
+            logger.sensors_logger.debug("Pimoroni Enviro+ GAS - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Proximity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ GAS - Failed - " + str(error))
             gas_list_oxidised_reduced_nh3 = [0.0, 0.0, 0.0]
 
         return gas_list_oxidised_reduced_nh3
 
-    def gas_pm_data(self):
+    def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
         try:
             enviro_plus_pm_data = self.pms5003.read()

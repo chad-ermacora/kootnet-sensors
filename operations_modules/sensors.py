@@ -312,13 +312,13 @@ def get_interval_sensor_readings():
 
         if configuration_main.installed_sensors.raspberry_pi_3b_plus or \
                 configuration_main.installed_sensors.raspberry_pi_zero_w:
-            cpu_temp = str(system_sensor_access.cpu_temperature())
+            cpu_temp = str(get_cpu_temperature())
         else:
             cpu_temp = None
 
-        interval_data.sensor_readings += "'" + os_sensor_access.get_hostname() + "', " + \
-                                         "'" + os_sensor_access.get_ip() + "', " + \
-                                         "'" + str(os_sensor_access.get_uptime()) + "', " + \
+        interval_data.sensor_readings += "'" + get_hostname() + "', " + \
+                                         "'" + get_ip() + "', " + \
+                                         "'" + str(get_uptime_str()) + "', " + \
                                          "'" + str(cpu_temp) + "', "
 
     if configuration_main.installed_sensors.has_env_temperature:
@@ -329,9 +329,51 @@ def get_interval_sensor_readings():
         interval_data.sensor_types += configuration_main.database_variables.pressure + ", "
         interval_data.sensor_readings += "'" + str(get_pressure()) + "', "
 
+    if configuration_main.installed_sensors.has_altitude:
+        interval_data.sensor_types += configuration_main.database_variables.altitude + ", "
+        interval_data.sensor_readings += "'" + str(get_altitude()) + "', "
+
     if configuration_main.installed_sensors.has_humidity:
         interval_data.sensor_types += configuration_main.database_variables.humidity + ", "
         interval_data.sensor_readings += "'" + str(get_humidity()) + "', "
+
+    if configuration_main.installed_sensors.has_distance:
+        interval_data.sensor_types += configuration_main.database_variables.distance + ", "
+        interval_data.sensor_readings += "'" + str(get_distance()) + "', "
+
+    if configuration_main.installed_sensors.has_gas:
+        gas_index = get_gas_resistance_index()
+        gas_oxidised = get_gas_oxidised()
+        gas_reduced = get_gas_reduced()
+        gas_nh3 = get_gas_nh3()
+
+        if gas_index != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.gas_resistance_index + ", "
+            interval_data.sensor_readings += "'" + str(get_gas_resistance_index()) + "', "
+        if gas_oxidised != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.gas_oxidising + ", "
+            interval_data.sensor_readings += "'" + str(get_gas_oxidised()) + "', "
+        if gas_reduced != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.gas_reducing + ", "
+            interval_data.sensor_readings += "'" + str(get_gas_reduced()) + "', "
+        if gas_nh3 != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.gas_nh3 + ", "
+            interval_data.sensor_readings += "'" + str(get_gas_nh3()) + "', "
+
+    if configuration_main.installed_sensors.has_particulate_matter:
+        pm1_reading = get_particulate_matter_1()
+        pm2_5_reading = get_particulate_matter_2_5()
+        pm10_reading = get_particulate_matter_10()
+
+        if pm1_reading != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_1 + ", "
+            interval_data.sensor_readings += "'" + str(get_particulate_matter_1()) + "', "
+        if pm2_5_reading != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_2_5 + ", "
+            interval_data.sensor_readings += "'" + str(get_particulate_matter_2_5()) + "', "
+        if pm10_reading != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_10 + ", "
+            interval_data.sensor_readings += "'" + str(get_particulate_matter_10()) + "', "
 
     if configuration_main.installed_sensors.has_lumen:
         interval_data.sensor_types += configuration_main.database_variables.lumen + ", "
@@ -368,6 +410,17 @@ def get_interval_sensor_readings():
 
             interval_data.sensor_types += configuration_main.database_variables.violet + ", "
             interval_data.sensor_readings += "'" + str(ems_colours[5]) + "', "
+
+    if configuration_main.installed_sensors.has_ultra_violet:
+        uva_reading = get_ultra_violet_a()
+        uvb_reading = get_ultra_violet_b()
+
+        if uva_reading != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.ultra_violet_a + ", "
+            interval_data.sensor_readings += "'" + str(get_ultra_violet_a()) + "', "
+        if uvb_reading != "NoSensor":
+            interval_data.sensor_types += configuration_main.database_variables.ultra_violet_b + ", "
+            interval_data.sensor_readings += "'" + str(get_ultra_violet_b()) + "', "
 
     if configuration_main.installed_sensors.has_acc:
         accelerometer_readings = get_accelerometer_xyz()
@@ -419,7 +472,7 @@ def get_trigger_sensor_readings():
     if configuration_main.installed_sensors.linux_system:
         sensor_types = configuration_main.database_variables.sensor_name + ", " + \
                        configuration_main.database_variables.ip + ", "
-        sensor_readings = "'" + str(os_sensor_access.get_hostname()) + "', '" + str(os_sensor_access.get_ip()) + "', "
+        sensor_readings = "'" + str(get_hostname()) + "', '" + str(get_ip()) + "', "
 
         trigger_data.sensor_types += sensor_types
         trigger_data.sensor_readings += sensor_readings
@@ -435,9 +488,9 @@ def get_trigger_sensor_readings():
                        configuration_main.database_variables.gyro_y + ", " + \
                        configuration_main.database_variables.gyro_z + ", "
 
-        acc_x, acc_y, acc_z = rp_sense_hat_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = rp_sense_hat_sensor_access.magnetometer_xyz()
-        gyro_x, gyro_y, gyro_z = rp_sense_hat_sensor_access.gyroscope_xyz()
+        acc_x, acc_y, acc_z = get_accelerometer_xyz()
+        mag_x, mag_y, mag_z = get_magnetometer_xyz()
+        gyro_x, gyro_y, gyro_z = get_gyroscope_xyz()
 
         sensor_readings = "'" + str(acc_x) + "', '" + \
                           str(acc_y) + "', '" + \
@@ -460,8 +513,8 @@ def get_trigger_sensor_readings():
                        configuration_main.database_variables.mag_y + ", " + \
                        configuration_main.database_variables.mag_z + ", "
 
-        acc_x, acc_y, acc_z = pimoroni_enviro_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = pimoroni_enviro_sensor_access.magnetometer_xyz()
+        acc_x, acc_y, acc_z = get_accelerometer_xyz()
+        mag_x, mag_y, mag_z = get_magnetometer_xyz()
 
         sensor_readings = "'" + str(acc_x) + "', '" + \
                           str(acc_y) + "', '" + \
@@ -481,8 +534,8 @@ def get_trigger_sensor_readings():
                        configuration_main.database_variables.mag_y + ", " + \
                        configuration_main.database_variables.mag_z + ", "
 
-        acc_x, acc_y, acc_z = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
-        mag_x, mag_y, mag_z = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
+        acc_x, acc_y, acc_z = get_accelerometer_xyz()
+        mag_x, mag_y, mag_z = get_magnetometer_xyz()
 
         sensor_readings = "'" + str(acc_x) + "', '" + \
                           str(acc_y) + "', '" + \
@@ -662,6 +715,15 @@ def get_pressure():
         return "NoSensor"
 
 
+def get_altitude():
+    """ Returns sensors altitude. """
+    if configuration_main.installed_sensors.pimoroni_bmp280:
+        altitude = pimoroni_bmp280_sensor_access.altitude()
+        return altitude
+    else:
+        return "NoSensor"
+
+
 def get_humidity():
     """ Returns sensors humidity. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
@@ -673,6 +735,87 @@ def get_humidity():
     elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
         humidity = rp_sense_hat_sensor_access.humidity()
         return humidity
+    else:
+        return "NoSensor"
+
+
+def get_distance():
+    """ Returns sensors distance. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        distance = pimoroni_enviroplus_sensor_access.distance()
+        return distance
+    elif configuration_main.installed_sensors.pimoroni_vl53l1x:
+        distance = pimoroni_vl53l1x_sensor_access.distance()
+        return distance
+    elif configuration_main.installed_sensors.pimoroni_ltr_559:
+        distance = pimoroni_ltr_559_sensor_access.distance()
+        return distance
+    else:
+        return "NoSensor"
+
+
+def get_gas_resistance_index():
+    """ Returns sensors gas resistance index. """
+    if configuration_main.installed_sensors.pimoroni_bme680:
+        index = pimoroni_bme680_sensor_access.gas_resistance_index()
+        return index
+    else:
+        return "NoSensor"
+
+
+def get_gas_oxidised():
+    """ Returns sensors gas reading for oxidising. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        oxidising = pimoroni_enviroplus_sensor_access.gas_data()[0]
+        return oxidising
+    else:
+        return "NoSensor"
+
+
+def get_gas_reduced():
+    """ Returns sensors gas reading for reducing. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        reducing = pimoroni_enviroplus_sensor_access.gas_data()[1]
+        return reducing
+    else:
+        return "NoSensor"
+
+
+def get_gas_nh3():
+    """ Returns sensors gas reading for NH3. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus:
+        nh3_reading = pimoroni_enviroplus_sensor_access.gas_data()[2]
+        return nh3_reading
+    else:
+        return "NoSensor"
+
+
+def get_particulate_matter_1():
+    """ Returns sensor reading for PM1. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus and \
+            configuration_main.installed_sensors.pimoroni_pms5003:
+        pm1_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[0]
+        return pm1_reading
+    else:
+        return "NoSensor"
+
+
+def get_particulate_matter_2_5():
+    """ Returns sensor reading for PM2.5. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus and \
+            configuration_main.installed_sensors.pimoroni_pms5003:
+        pm2_5_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[1]
+        return pm2_5_reading
+    else:
+        return "NoSensor"
+
+
+def get_particulate_matter_10():
+    """ Returns sensor reading for PM10. """
+    if configuration_main.installed_sensors.pimoroni_enviroplus and \
+            configuration_main.installed_sensors.pimoroni_pms5003:
+        pm10_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[2]
+        return pm10_reading
     else:
         return "NoSensor"
 
@@ -708,6 +851,20 @@ def get_ems():
         return rgb
     else:
         return "NoSensor"
+
+
+def get_ultra_violet_a():
+    """ Returns Ultra Violet A (UVA). """
+    if configuration_main.installed_sensors.pimoroni_veml6075:
+        uva_reading = pimoroni_veml6075_sensor_access.ultra_violet()[0]
+        return uva_reading
+
+
+def get_ultra_violet_b():
+    """ Returns Ultra Violet B (UVB). """
+    if configuration_main.installed_sensors.pimoroni_veml6075:
+        uvb_reading = pimoroni_veml6075_sensor_access.ultra_violet()[1]
+        return uvb_reading
 
 
 def get_accelerometer_xyz():

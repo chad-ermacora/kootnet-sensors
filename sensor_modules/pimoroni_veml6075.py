@@ -29,7 +29,8 @@ class CreateVEML6075:
         self.smbus_import = __import__('smbus')
         try:
             # Create VEML6075 instance and set up
-            self.uv_sensor = self.veml6075_import.VEML6075(i2c_dev=self.smbus_import)
+            self.bus = self.smbus_import.SMBus(1)
+            self.uv_sensor = self.veml6075_import.VEML6075(i2c_dev=self.bus)
             self.uv_sensor.set_shutdown(False)
             self.uv_sensor.set_high_dynamic_range(False)
             self.uv_sensor.set_integration_time('100ms')
@@ -40,25 +41,25 @@ class CreateVEML6075:
     def ultra_violet(self):
         """ Returns Ultra Violet (A,B) as a list. """
         try:
-            uva, uvb = float(self.uv_sensor.get_measurements())
+            uva, uvb = self.uv_sensor.get_measurements()
             logger.sensors_logger.debug("Pimoroni VEML6075 UVA & UVB Readings - OK")
         except Exception as error:
             uva, uvb = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed - " + str(error))
 
-        return_list_uva_uvb = [round(uva, round_decimal_to), round(uvb, round_decimal_to)]
+        return_list_uva_uvb = [round(float(uva), round_decimal_to), round(float(uvb), round_decimal_to)]
 
         return return_list_uva_uvb
 
     def ultra_violet_comparator(self):
         """ Returns 2 Ultra Violet comparator as a list. """
         try:
-            uv_comp1, uv_comp2 = float(self.uv_sensor.get_comparitor_readings())
+            uv_comp1, uv_comp2 = self.uv_sensor.get_comparitor_readings()
             logger.sensors_logger.debug("Pimoroni VEML6075 UVA & UVB Readings - OK")
         except Exception as error:
             uv_comp1, uv_comp2 = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed - " + str(error))
 
-        return_list_uv_comparator = [round(uv_comp1, round_decimal_to), round(uv_comp2, round_decimal_to)]
+        return_list_uv_comparator = [round(float(uv_comp1), round_decimal_to), round(float(uv_comp2), round_decimal_to)]
 
         return return_list_uv_comparator

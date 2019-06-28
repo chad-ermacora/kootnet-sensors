@@ -402,10 +402,64 @@ def get_pressure():
     return str(sensors.get_pressure())
 
 
+@app.route("/GetAltitude")
+def get_altitude():
+    logger.network_logger.debug("* Sent Sensor Altitude")
+    return str(sensors.get_altitude())
+
+
 @app.route("/GetHumidity")
 def get_humidity():
     logger.network_logger.debug("* Sent Sensor Humidity")
     return str(sensors.get_humidity())
+
+
+@app.route("/GetDistance")
+def get_distance():
+    logger.network_logger.debug("* Sent Sensor Distance")
+    return str(sensors.get_distance())
+
+
+@app.route("/GetGasResistanceIndex")
+def get_gas_resistance_index():
+    logger.network_logger.debug("* Sent Sensor GAS Resistance Index")
+    return str(sensors.get_gas_resistance_index())
+
+
+@app.route("/GetGasOxidised")
+def get_gas_oxidised():
+    logger.network_logger.debug("* Sent Sensor GAS Oxidised")
+    return str(sensors.get_gas_oxidised())
+
+
+@app.route("/GetGasReduced")
+def get_gas_reduced():
+    logger.network_logger.debug("* Sent Sensor GAS Reduced")
+    return str(sensors.get_gas_reduced())
+
+
+@app.route("/GetGasNH3")
+def get_gas_nh3():
+    logger.network_logger.debug("* Sent Sensor GAS NH3")
+    return str(sensors.get_gas_nh3())
+
+
+@app.route("/GetParticulateMatter1")
+def get_particulate_matter_1():
+    logger.network_logger.debug("* Sent Sensor Particulate Matter 1")
+    return str(sensors.get_particulate_matter_1())
+
+
+@app.route("/GetParticulateMatter2_5")
+def get_particulate_matter_2_5():
+    logger.network_logger.debug("* Sent Sensor Particulate Matter 2.5")
+    return str(sensors.get_particulate_matter_2_5())
+
+
+@app.route("/GetParticulateMatter10")
+def get_particulate_matter_10():
+    logger.network_logger.debug("* Sent Sensor Particulate Matter 10")
+    return str(sensors.get_particulate_matter_10())
 
 
 @app.route("/GetLumen")
@@ -418,6 +472,18 @@ def get_lumen():
 def get_ems():
     logger.network_logger.debug("* Sent Sensor Electromagnetic Spectrum")
     return str(sensors.get_ems())
+
+
+@app.route("/GetUltraVioletA")
+def get_ultra_violet_a():
+    logger.network_logger.debug("* Sent Sensor Ultra Violet A")
+    return str(sensors.get_ultra_violet_a())
+
+
+@app.route("/GetUltraVioletB")
+def get_ultra_violet_b():
+    logger.network_logger.debug("* Sent Sensor Ultra Violet B")
+    return str(sensors.get_ultra_violet_b())
 
 
 @app.route("/GetAccelerometerXYZ")

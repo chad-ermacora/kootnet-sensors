@@ -36,7 +36,17 @@ class CreateDatabaseVariables:
         self.env_temperature = "EnvironmentTemp"
         self.env_temperature_offset = "EnvTempOffset"
         self.pressure = "Pressure"
+        self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas_resistance_index = "Gas_Resistance_Index"
+        self.gas_oxidising = "Gas_Oxidising"
+        self.gas_reducing = "Gas_Reducing"
+        self.gas_nh3 = "Gas_NH3"
+        self.particulate_matter_1 = "Particulate_Matter_1"
+        self.particulate_matter_2_5 = "Particulate_Matter_2_5"
+        self.particulate_matter_10 = "Particulate_Matter_10"
+
         self.lumen = "Lumen"
         self.red = "Red"
         self.orange = "Orange"
@@ -44,6 +54,10 @@ class CreateDatabaseVariables:
         self.green = "Green"
         self.blue = "Blue"
         self.violet = "Violet"
+        self.ultra_violet_index = "Ultra_Violet_Index"
+        self.ultra_violet_a = "Ultra_Violet_A"
+        self.ultra_violet_b = "Ultra_Violet_B"
+
         self.acc_x = "Acc_X"
         self.acc_y = "Acc_Y"
         self.acc_z = "Acc_Z"
@@ -63,7 +77,15 @@ class CreateDatabaseVariables:
                               self.env_temperature,
                               self.env_temperature_offset,
                               self.pressure,
+                              self.altitude,
                               self.humidity,
+                              self.distance,
+                              self.gas_oxidising,
+                              self.gas_reducing,
+                              self.gas_nh3,
+                              self.particulate_matter_1,
+                              self.particulate_matter_2_5,
+                              self.particulate_matter_10,
                               self.lumen,
                               self.red,
                               self.orange,
@@ -71,6 +93,9 @@ class CreateDatabaseVariables:
                               self.green,
                               self.blue,
                               self.violet,
+                              self.ultra_violet_index,
+                              self.ultra_violet_a,
+                              self.ultra_violet_b,
                               self.acc_x,
                               self.acc_y,
                               self.acc_z,

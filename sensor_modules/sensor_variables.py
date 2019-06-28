@@ -38,11 +38,15 @@ class CreateInstalledSensors:
         self.pimoroni_bme680 = 0
         self.pimoroni_enviro = 0
         self.pimoroni_enviroplus = 0
+        self.pimoroni_pms5003 = 0
         self.pimoroni_lsm303d = 0
         self.pimoroni_icm20948 = 0
         self.pimoroni_vl53l1x = 0
         self.pimoroni_ltr_559 = 0
         self.pimoroni_veml6075 = 0
+
+        self.has_display = 0
+        self.has_real_time_clock = 0
 
         self.has_cpu_temperature = 0
         self.has_env_temperature = 0
@@ -76,6 +80,7 @@ class CreateInstalledSensors:
         self.pimoroni_bme680_name = "Pimoroni BME680"
         self.pimoroni_enviro_name = "Pimoroni EnviroPHAT"
         self.pimoroni_enviroplus_name = "Pimoroni Enviro+"
+        self.pimoroni_pms5003_name = "Pimoroni PMS5003"
         self.pimoroni_lsm303d_name = "Pimoroni LSM303D"
         self.pimoroni_icm20948_name = "Pimoroni ICM20948"
         self.pimoroni_vl53l1x_name = "Pimoroni VL53L1X"
@@ -104,6 +109,8 @@ class CreateInstalledSensors:
             str_installed_sensors += self.pimoroni_enviro_name + " || "
         if self.pimoroni_enviroplus:
             str_installed_sensors += self.pimoroni_enviroplus_name + " || "
+        if self.pimoroni_pms5003:
+            str_installed_sensors += self.pimoroni_pms5003_name + " || "
         if self.pimoroni_lsm303d:
             str_installed_sensors += self.pimoroni_lsm303d_name + " || "
         if self.pimoroni_icm20948:
@@ -139,6 +146,8 @@ class CreateInstalledSensors:
                                     self.pimoroni_enviro_name + "\n" + \
                                     str(self.pimoroni_enviroplus) + " = " + \
                                     self.pimoroni_enviroplus_name + "\n" + \
+                                    str(self.pimoroni_pms5003) + " = " + \
+                                    self.pimoroni_pms5003_name + "\n" + \
                                     str(self.pimoroni_lsm303d) + " = " + \
                                     self.pimoroni_lsm303d_name + "\n" + \
                                     str(self.pimoroni_icm20948) + " = " + \

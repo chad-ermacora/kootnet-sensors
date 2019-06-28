@@ -65,8 +65,8 @@ class CreateBME680:
             logger.sensors_logger.error("Pimoroni BME680 Humidity - Failed - " + str(error))
         return round(var_humidity, round_decimal_to)
 
-    def gas_resistance(self):
-        """ Returns Gas Resistance as a Integer. """
+    def gas_resistance_index(self):
+        """ Returns Gas Resistance Index as a Integer. """
         try:
             self.sensor.set_gas_status(self.bme680_import.ENABLE_GAS_MEAS)
             self.sensor.set_gas_heater_temperature(320)
