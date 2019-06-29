@@ -51,8 +51,8 @@ class CreateInstalledSensors:
         self.has_cpu_temperature = 0
         self.has_env_temperature = 0
         self.has_pressure = 0
-        self.has_humidity = 0
         self.has_altitude = 0
+        self.has_humidity = 0
         self.has_distance = 0
         self.has_gas = 0
         self.has_particulate_matter = 0

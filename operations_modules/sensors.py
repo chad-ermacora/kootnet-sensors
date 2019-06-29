@@ -869,6 +869,8 @@ def get_ultra_violet_a():
     if configuration_main.installed_sensors.pimoroni_veml6075:
         uva_reading = pimoroni_veml6075_sensor_access.ultra_violet()[0]
         return uva_reading
+    else:
+        return "NoSensor"
 
 
 def get_ultra_violet_b():
@@ -876,6 +878,8 @@ def get_ultra_violet_b():
     if configuration_main.installed_sensors.pimoroni_veml6075:
         uvb_reading = pimoroni_veml6075_sensor_access.ultra_violet()[1]
         return uvb_reading
+    else:
+        return "NoSensor"
 
 
 def get_accelerometer_xyz():
