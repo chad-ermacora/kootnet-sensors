@@ -39,9 +39,45 @@ class CreateTriggerVariances:
         self.pressure_variance = 50
         self.pressure_wait_seconds = 300.0
 
+        self.altitude_enabled = 1
+        self.altitude_variance = 50
+        self.altitude_wait_seconds = 300.0
+
         self.humidity_enabled = 1
         self.humidity_variance = 10.0
         self.humidity_wait_seconds = 600.0
+
+        self.distance_enabled = 1
+        self.distance_variance = 10.0
+        self.distance_wait_seconds = 600.0
+
+        self.gas_resistance_index_enabled = 1
+        self.gas_resistance_index_variance = 10.0
+        self.gas_resistance_index_wait_seconds = 600.0
+
+        self.gas_oxidising_enabled = 1
+        self.gas_oxidising_variance = 10.0
+        self.gas_oxidising_wait_seconds = 600.0
+
+        self.gas_reducing_enabled = 1
+        self.gas_reducing_variance = 10.0
+        self.gas_reducing_wait_seconds = 600.0
+
+        self.gas_nh3_enabled = 1
+        self.gas_nh3_variance = 10.0
+        self.gas_nh3_wait_seconds = 600.0
+
+        self.particulate_matter_1_enabled = 1
+        self.particulate_matter_1_variance = 10.0
+        self.particulate_matter_1_wait_seconds = 600.0
+
+        self.particulate_matter_2_5_enabled = 1
+        self.particulate_matter_2_5_variance = 10.0
+        self.particulate_matter_2_5_wait_seconds = 600.0
+
+        self.particulate_matter_10_enabled = 1
+        self.particulate_matter_10_variance = 10.0
+        self.particulate_matter_10_wait_seconds = 600.0
 
         self.lumen_enabled = 1
         self.lumen_variance = 200.0
@@ -70,6 +106,18 @@ class CreateTriggerVariances:
         self.violet_enabled = 1
         self.violet_variance = 25.0
         self.violet_wait_seconds = 300.0
+
+        self.ultra_violet_index_enabled = 1
+        self.ultra_violet_index_variance = 25.0
+        self.ultra_violet_index_wait_seconds = 300.0
+
+        self.ultra_violet_a_enabled = 1
+        self.ultra_violet_a_variance = 25.0
+        self.ultra_violet_a_wait_seconds = 300.0
+
+        self.ultra_violet_b_enabled = 1
+        self.ultra_violet_b_variance = 25.0
+        self.ultra_violet_b_wait_seconds = 300.0
 
         self.accelerometer_enabled = 1
         self.accelerometer_variance = 99999.99
@@ -186,12 +234,66 @@ def convert_triggers_to_str(triggers):
                         " = Pressure variance\n" + \
                         str(triggers.pressure_wait_seconds) + \
                         " = Seconds between 'Pressure' readings\n\n" + \
+                        str(triggers.altitude_enabled) + \
+                        " = Enable Altitude\n" + \
+                        str(triggers.altitude_variance) + \
+                        " = Altitude variance\n" + \
+                        str(triggers.altitude_wait_seconds) + \
+                        " = Seconds between 'Altitude' readings\n\n" + \
                         str(triggers.humidity_enabled) + \
                         " = Enable Humidity\n" + \
                         str(triggers.humidity_variance) + \
                         " = Humidity variance\n" + \
                         str(triggers.humidity_wait_seconds) + \
                         " = Seconds between 'Humidity' readings\n\n" + \
+                        str(triggers.distance_enabled) + \
+                        " = Enable Distance\n" + \
+                        str(triggers.distance_variance) + \
+                        " = Distance variance\n" + \
+                        str(triggers.distance_wait_seconds) + \
+                        " = Seconds between 'Distance' readings\n\n" + \
+                        str(triggers.gas_resistance_index_enabled) + \
+                        " = Enable Gas Resistance Index\n" + \
+                        str(triggers.gas_resistance_index_variance) + \
+                        " = Gas Resistance Index variance\n" + \
+                        str(triggers.gas_resistance_index_wait_seconds) + \
+                        " = Seconds between 'Gas Resistance Index' readings\n\n" + \
+                        str(triggers.gas_oxidising_enabled) + \
+                        " = Enable Gas Oxidising\n" + \
+                        str(triggers.gas_oxidising_variance) + \
+                        " = Gas Oxidising variance\n" + \
+                        str(triggers.gas_oxidising_wait_seconds) + \
+                        " = Seconds between 'Gas Oxidising' readings\n\n" + \
+                        str(triggers.gas_reducing_enabled) + \
+                        " = Enable Gas Reducing\n" + \
+                        str(triggers.gas_reducing_variance) + \
+                        " = Gas Reducing variance\n" + \
+                        str(triggers.gas_reducing_wait_seconds) + \
+                        " = Seconds between 'Gas Reducing' readings\n\n" + \
+                        str(triggers.gas_nh3_enabled) + \
+                        " = Enable Gas NH3\n" + \
+                        str(triggers.gas_nh3_variance) + \
+                        " = Gas NH3 variance\n" + \
+                        str(triggers.gas_nh3_wait_seconds) + \
+                        " = Seconds between 'Gas NH3' readings\n\n" + \
+                        str(triggers.particulate_matter_1_enabled) + \
+                        " = Enable Particulate Matter 1 (PM1)\n" + \
+                        str(triggers.particulate_matter_1_variance) + \
+                        " = Particulate Matter 1 (PM1) variance\n" + \
+                        str(triggers.particulate_matter_1_wait_seconds) + \
+                        " = Seconds between 'Particulate Matter 1 (PM1)' readings\n\n" + \
+                        str(triggers.particulate_matter_2_5_enabled) + \
+                        " = Enable Particulate Matter 2.5 (PM2.5)\n" + \
+                        str(triggers.particulate_matter_2_5_variance) + \
+                        " = Particulate Matter 2.5 (PM2.5) variance\n" + \
+                        str(triggers.particulate_matter_2_5_wait_seconds) + \
+                        " = Seconds between 'Particulate Matter 2.5 (PM2.5)' readings\n\n" + \
+                        str(triggers.particulate_matter_10_enabled) + \
+                        " = Enable Particulate Matter 10 (PM10)\n" + \
+                        str(triggers.particulate_matter_10_variance) + \
+                        " = Particulate Matter 10 (PM10) variance\n" + \
+                        str(triggers.particulate_matter_10_wait_seconds) + \
+                        " = Seconds between 'Particulate Matter 10 (PM10)' readings\n\n" + \
                         str(triggers.lumen_enabled) + \
                         " = Enable Lumen\n" + \
                         str(triggers.lumen_variance) + \
@@ -234,6 +336,24 @@ def convert_triggers_to_str(triggers):
                         " = Violet variance\n" + \
                         str(triggers.violet_wait_seconds) + \
                         " = Seconds between 'Violet' readings\n\n" + \
+                        str(triggers.ultra_violet_index_enabled) + \
+                        " = Enable Ultra Violet Index\n" + \
+                        str(triggers.ultra_violet_index_variance) + \
+                        " = Ultra Violet Index variance\n" + \
+                        str(triggers.ultra_violet_index_wait_seconds) + \
+                        " = Seconds between 'Ultra Violet Index' readings\n\n" + \
+                        str(triggers.ultra_violet_a_enabled) + \
+                        " = Enable Ultra Violet A\n" + \
+                        str(triggers.ultra_violet_a_variance) + \
+                        " = Ultra Violet A variance\n" + \
+                        str(triggers.ultra_violet_a_wait_seconds) + \
+                        " = Seconds between 'Ultra Violet A' readings\n\n" + \
+                        str(triggers.ultra_violet_b_enabled) + \
+                        " = Enable Ultra Violet B\n" + \
+                        str(triggers.ultra_violet_b_variance) + \
+                        " = Ultra Violet B variance\n" + \
+                        str(triggers.ultra_violet_b_wait_seconds) + \
+                        " = Seconds between 'Ultra Violet B' readings\n\n" + \
                         str(triggers.accelerometer_enabled) + \
                         " = Enable Accelerometer\n" + \
                         str(triggers.accelerometer_variance) + \
@@ -268,13 +388,12 @@ def get_triggers_variances_from_file():
             installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
         except Exception as error:
             installed_trigger_variances = CreateTriggerVariances()
-            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+            logger.primary_logger.error("Unable to load Trigger Variance Configuration file, using defaults: " + str(error))
 
     else:
-        logger.primary_logger.error("Configuration file not found, using and saving default")
+        logger.primary_logger.error("Trigger Variance Configuration file not found, using and saving default")
         installed_trigger_variances = CreateTriggerVariances()
-        # write_triggers_to_file(installed_trigger_variances)
-        pass
+        write_triggers_to_file(installed_trigger_variances)
 
     return installed_trigger_variances
 
@@ -316,6 +435,14 @@ def convert_triggers_lines_to_obj(trigger_text_file):
         bad_load = True
 
     try:
+        new_trigger_variances.altitude_enabled = int(trigger_text_file[16].split('=')[0].strip())
+        new_trigger_variances.altitude_variance = float(trigger_text_file[17].split('=')[0].strip())
+        new_trigger_variances.altitude_wait_seconds = float(trigger_text_file[18].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Altitude/Time: " + str(error))
+        bad_load = True
+
+    try:
         new_trigger_variances.humidity_enabled = int(trigger_text_file[16].split('=')[0].strip())
         new_trigger_variances.humidity_variance = float(trigger_text_file[17].split('=')[0].strip())
         new_trigger_variances.humidity_wait_seconds = float(trigger_text_file[18].split('=')[0].strip())
@@ -324,81 +451,145 @@ def convert_triggers_lines_to_obj(trigger_text_file):
         bad_load = True
 
     try:
-        new_trigger_variances.lumen_enabled = int(trigger_text_file[20].split('=')[0].strip())
-        new_trigger_variances.lumen_variance = float(trigger_text_file[21].split('=')[0].strip())
-        new_trigger_variances.lumen_wait_seconds = float(trigger_text_file[22].split('=')[0].strip())
+        new_trigger_variances.distance_enabled = int(trigger_text_file[20].split('=')[0].strip())
+        new_trigger_variances.distance_variance = float(trigger_text_file[21].split('=')[0].strip())
+        new_trigger_variances.distance_wait_seconds = float(trigger_text_file[22].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Distance/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.gas_resistance_index_enabled = int(trigger_text_file[24].split('=')[0].strip())
+        new_trigger_variances.gas_resistance_index_variance = float(trigger_text_file[25].split('=')[0].strip())
+        new_trigger_variances.gas_resistance_index_wait_seconds = float(trigger_text_file[26].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Gas Resistance Index/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.gas_oxidising_enabled = int(trigger_text_file[28].split('=')[0].strip())
+        new_trigger_variances.gas_oxidising_variance = float(trigger_text_file[29].split('=')[0].strip())
+        new_trigger_variances.gas_oxidising_wait_seconds = float(trigger_text_file[30].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Gas Oxidising/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.gas_reducing_enabled = int(trigger_text_file[32].split('=')[0].strip())
+        new_trigger_variances.gas_reducing_variance = float(trigger_text_file[33].split('=')[0].strip())
+        new_trigger_variances.gas_reducing_wait_seconds = float(trigger_text_file[34].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Gas Reducing/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.gas_nh3_enabled = int(trigger_text_file[36].split('=')[0].strip())
+        new_trigger_variances.gas_nh3_variance = float(trigger_text_file[37].split('=')[0].strip())
+        new_trigger_variances.gas_nh3_wait_seconds = float(trigger_text_file[38].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Gas NH3/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.particulate_matter_1_enabled = int(trigger_text_file[40].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_1_variance = float(trigger_text_file[41].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_1_wait_seconds = float(trigger_text_file[42].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Particulate Matter 1/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.particulate_matter_2_5_enabled = int(trigger_text_file[44].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_2_5_variance = float(trigger_text_file[45].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_2_5_wait_seconds = float(trigger_text_file[46].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Particulate Matter 2.5/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.particulate_matter_10_enabled = int(trigger_text_file[48].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_10_variance = float(trigger_text_file[49].split('=')[0].strip())
+        new_trigger_variances.particulate_matter_10_wait_seconds = float(trigger_text_file[50].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Trigger - Particulate Matter 10/Time: " + str(error))
+        bad_load = True
+
+    try:
+        new_trigger_variances.lumen_enabled = int(trigger_text_file[52].split('=')[0].strip())
+        new_trigger_variances.lumen_variance = float(trigger_text_file[53].split('=')[0].strip())
+        new_trigger_variances.lumen_wait_seconds = float(trigger_text_file[54].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Lumen/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.red_enabled = int(trigger_text_file[24].split('=')[0].strip())
-        new_trigger_variances.red_variance = float(trigger_text_file[25].split('=')[0].strip())
-        new_trigger_variances.red_wait_seconds = float(trigger_text_file[26].split('=')[0].strip())
+        new_trigger_variances.red_enabled = int(trigger_text_file[56].split('=')[0].strip())
+        new_trigger_variances.red_variance = float(trigger_text_file[57].split('=')[0].strip())
+        new_trigger_variances.red_wait_seconds = float(trigger_text_file[58].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Red/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.orange_enabled = int(trigger_text_file[28].split('=')[0].strip())
-        new_trigger_variances.orange_variance = float(trigger_text_file[29].split('=')[0].strip())
-        new_trigger_variances.orange_wait_seconds = float(trigger_text_file[30].split('=')[0].strip())
+        new_trigger_variances.orange_enabled = int(trigger_text_file[60].split('=')[0].strip())
+        new_trigger_variances.orange_variance = float(trigger_text_file[61].split('=')[0].strip())
+        new_trigger_variances.orange_wait_seconds = float(trigger_text_file[62].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Orange/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.yellow_enabled = int(trigger_text_file[32].split('=')[0].strip())
-        new_trigger_variances.yellow_variance = float(trigger_text_file[33].split('=')[0].strip())
-        new_trigger_variances.yellow_wait_seconds = float(trigger_text_file[34].split('=')[0].strip())
+        new_trigger_variances.yellow_enabled = int(trigger_text_file[64].split('=')[0].strip())
+        new_trigger_variances.yellow_variance = float(trigger_text_file[65].split('=')[0].strip())
+        new_trigger_variances.yellow_wait_seconds = float(trigger_text_file[66].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Yellow/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.green_enabled = int(trigger_text_file[36].split('=')[0].strip())
-        new_trigger_variances.green_variance = float(trigger_text_file[37].split('=')[0].strip())
-        new_trigger_variances.green_wait_seconds = float(trigger_text_file[38].split('=')[0].strip())
+        new_trigger_variances.green_enabled = int(trigger_text_file[68].split('=')[0].strip())
+        new_trigger_variances.green_variance = float(trigger_text_file[69].split('=')[0].strip())
+        new_trigger_variances.green_wait_seconds = float(trigger_text_file[70].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Green/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.blue_enabled = int(trigger_text_file[40].split('=')[0].strip())
-        new_trigger_variances.blue_variance = float(trigger_text_file[41].split('=')[0].strip())
-        new_trigger_variances.blue_wait_seconds = float(trigger_text_file[42].split('=')[0].strip())
+        new_trigger_variances.blue_enabled = int(trigger_text_file[72].split('=')[0].strip())
+        new_trigger_variances.blue_variance = float(trigger_text_file[73].split('=')[0].strip())
+        new_trigger_variances.blue_wait_seconds = float(trigger_text_file[74].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Blue/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.violet_enabled = int(trigger_text_file[44].split('=')[0].strip())
-        new_trigger_variances.violet_variance = float(trigger_text_file[45].split('=')[0].strip())
-        new_trigger_variances.violet_wait_seconds = float(trigger_text_file[46].split('=')[0].strip())
+        new_trigger_variances.violet_enabled = int(trigger_text_file[76].split('=')[0].strip())
+        new_trigger_variances.violet_variance = float(trigger_text_file[77].split('=')[0].strip())
+        new_trigger_variances.violet_wait_seconds = float(trigger_text_file[78].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Violet/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.accelerometer_enabled = int(trigger_text_file[48].split('=')[0].strip())
-        new_trigger_variances.accelerometer_variance = float(trigger_text_file[49].split('=')[0].strip())
-        new_trigger_variances.accelerometer_wait_seconds = float(trigger_text_file[50].split('=')[0].strip())
+        new_trigger_variances.accelerometer_enabled = int(trigger_text_file[80].split('=')[0].strip())
+        new_trigger_variances.accelerometer_variance = float(trigger_text_file[81].split('=')[0].strip())
+        new_trigger_variances.accelerometer_wait_seconds = float(trigger_text_file[82].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Accelerometer/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.magnetometer_enabled = int(trigger_text_file[52].split('=')[0].strip())
-        new_trigger_variances.magnetometer_variance = float(trigger_text_file[53].split('=')[0].strip())
-        new_trigger_variances.magnetometer_wait_seconds = float(trigger_text_file[54].split('=')[0].strip())
+        new_trigger_variances.magnetometer_enabled = int(trigger_text_file[84].split('=')[0].strip())
+        new_trigger_variances.magnetometer_variance = float(trigger_text_file[85].split('=')[0].strip())
+        new_trigger_variances.magnetometer_wait_seconds = float(trigger_text_file[86].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Magnetometer/Time: " + str(error))
         bad_load = True
 
     try:
-        new_trigger_variances.gyroscope_enabled = int(trigger_text_file[56].split('=')[0].strip())
-        new_trigger_variances.gyroscope_variance = float(trigger_text_file[57].split('=')[0].strip())
-        new_trigger_variances.gyroscope_wait_seconds = float(trigger_text_file[58].split('=')[0].strip())
+        new_trigger_variances.gyroscope_enabled = int(trigger_text_file[88].split('=')[0].strip())
+        new_trigger_variances.gyroscope_variance = float(trigger_text_file[89].split('=')[0].strip())
+        new_trigger_variances.gyroscope_wait_seconds = float(trigger_text_file[90].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Trigger - Gyroscope/Time: " + str(error))
         bad_load = True
@@ -424,4 +615,4 @@ def write_triggers_to_file(triggers):
         sensor_list_file.write(new_triggers)
         sensor_list_file.close()
     except Exception as error:
-        logger.primary_logger.error("Unable to open trigger file: " + str(error))
+        logger.primary_logger.error("Unable to write trigger file: " + str(error))

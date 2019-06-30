@@ -48,6 +48,123 @@ Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 EOF
   nano ${CONFIG_DIR}/sql_recording.conf
 fi
+# Add and Edit Variance Trigger Recording settings
+if [[ -f ${CONFIG_DIR}"/trigger_variances.conf" ]]
+then
+  printf ${CONFIG_DIR}"/trigger_variances.conf OK\n"
+else
+  printf ${CONFIG_DIR}"/trigger_variances.conf Setup\n"
+  cat > ${CONFIG_DIR}/trigger_variances.conf << "EOF"
+Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
+1 = Enable Sensor Uptime
+1209600.0 = Seconds between SQL Writes of Sensor Uptime
+
+1 = Enable CPU Temperature
+10.0 = CPU Temperature variance
+600.0 = Seconds between 'CPU Temperature' readings
+
+1 = Enable Environmental Temperature
+10.0 = Environmental Temperature variance
+600.0 = Seconds between 'Environmental Temperature' readings
+
+1 = Enable Pressure
+50 = Pressure variance
+300.0 = Seconds between 'Pressure' readings
+
+1 = Enable Altitude
+50 = Altitude variance
+300.0 = Seconds between 'Altitude' readings
+
+1 = Enable Humidity
+10.0 = Humidity variance
+600.0 = Seconds between 'Humidity' readings
+
+1 = Enable Distance
+10.0 = Distance variance
+600.0 = Seconds between 'Distance' readings
+
+1 = Enable Gas Resistance Index
+10.0 = Gas Resistance Index variance
+600.0 = Seconds between 'Gas Resistance Index' readings
+
+1 = Enable Gas Oxidising
+10.0 = Gas Oxidising variance
+600.0 = Seconds between 'Gas Oxidising' readings
+
+1 = Enable Gas Reducing
+10.0 = Gas Reducing variance
+600.0 = Seconds between 'Gas Reducing' readings
+
+1 = Enable Gas NH3
+10.0 = Gas NH3 variance
+600.0 = Seconds between 'Gas NH3' readings
+
+1 = Enable Particulate Matter 1 (PM1)
+10.0 = Particulate Matter 1 (PM1) variance
+600.0 = Seconds between 'Particulate Matter 1 (PM1)' readings
+
+1 = Enable Particulate Matter 2.5 (PM2.5)
+10.0 = Particulate Matter 2.5 (PM2.5) variance
+600.0 = Seconds between 'Particulate Matter 2.5 (PM2.5)' readings
+
+1 = Enable Particulate Matter 10 (PM10)
+10.0 = Particulate Matter 10 (PM10) variance
+600.0 = Seconds between 'Particulate Matter 10 (PM10)' readings
+
+1 = Enable Lumen
+200.0 = Lumen variance
+600.0 = Seconds between 'Lumen' readings
+
+1 = Enable Red
+25.0 = Red variance
+300.0 = Seconds between 'Red' readings
+
+1 = Enable Orange
+25.0 = Orange variance
+300.0 = Seconds between 'Orange' readings
+
+1 = Enable Yellow
+25.0 = Yellow variance
+300.0 = Seconds between 'Yellow' readings
+
+1 = Enable Green
+25.0 = Green variance
+300.0 = Seconds between 'Green' readings
+
+1 = Enable Blue
+25.0 = Blue variance
+300.0 = Seconds between 'Blue' readings
+
+1 = Enable Violet
+25.0 = Violet variance
+300.0 = Seconds between 'Violet' readings
+
+1 = Enable Ultra Violet Index
+25.0 = Ultra Violet Index variance
+300.0 = Seconds between 'Ultra Violet Index' readings
+
+1 = Enable Ultra Violet A
+25.0 = Ultra Violet A variance
+300.0 = Seconds between 'Ultra Violet A' readings
+
+1 = Enable Ultra Violet B
+25.0 = Ultra Violet B variance
+300.0 = Seconds between 'Ultra Violet B' readings
+
+1 = Enable Accelerometer
+99999.99 = Accelerometer variance
+0.15 = Seconds between 'Accelerometer' readings
+
+1 = Enable Magnetometer
+99999.99 = Magnetometer variance
+0.15 = Seconds between 'Magnetometer' readings
+
+1 = Enable Gyroscope
+99999.99 = Gyroscope variance
+0.15 = Seconds between 'Gyroscope' readings
+EOF
+  nano ${CONFIG_DIR}/trigger_variances.conf
+fi
 # Network + Other Setup
 if [[ -f ${CONFIG_DIR}"/installed_datetime.txt" ]]
 then

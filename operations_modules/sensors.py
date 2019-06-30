@@ -1006,9 +1006,8 @@ def add_note_to_database(datetime_note):
                        sql_data.sql_query_values_end)
 
         sqlite_database.sql_execute(sql_execute)
-        logger.sensors_logger.warn(str(sql_execute))
     else:
-        logger.sensors_logger.error("Unable to add bad Note.")
+        logger.sensors_logger.error("Unable to add bad Note")
 
 
 def update_note_in_database(datetime_note):

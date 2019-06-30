@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
 from operations_modules import configuration_files
+from operations_modules import trigger_variances
 from sensor_modules import sensor_variables
 
 
@@ -73,3 +74,9 @@ def reset_config():
     """ Writes a default configuration file. """
     logger.primary_logger.warning("Configuration Reset")
     configuration_files.write_config_to_file(app_variables.CreateConfig())
+
+
+def reset_variance_config():
+    """ Writes a default Trigger Variance configuration file. """
+    logger.primary_logger.warning("Trigger Variances Reset")
+    trigger_variances.write_triggers_to_file(trigger_variances.CreateTriggerVariances())

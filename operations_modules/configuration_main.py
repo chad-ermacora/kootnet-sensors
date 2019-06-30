@@ -60,7 +60,7 @@ else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = configuration_files.get_installed_sensors_from_file()
     current_config = configuration_files.get_config_from_file()
-    trigger_variances = trigger_variances.CreateTriggerVariances()
+    trigger_variances = trigger_variances.get_triggers_variances_from_file()
 
     current_config.temperature_offset = get_sensor_temperature_offset()
     # trigger_variances.init_trigger_variances(installed_sensors)

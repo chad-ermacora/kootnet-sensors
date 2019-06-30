@@ -121,6 +121,16 @@ def run_upgrade_checks():
                 upgrade_functions.reset_installed_sensors()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                            " || New: " + software_version.version)
+            elif previous_version.minor_version < 22:
+                no_changes = False
+                upgrade_functions.reset_variance_config()
+                logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                           " || New: " + software_version.version)
+            elif previous_version.minor_version < 23:
+                no_changes = False
+                upgrade_functions.reset_variance_config()
+                logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                           " || New: " + software_version.version)
     else:
         no_changes = False
         logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
