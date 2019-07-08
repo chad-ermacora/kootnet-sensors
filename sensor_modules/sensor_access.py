@@ -195,25 +195,25 @@ class CreateSensorHTTP:
         @self.app.route("/DownloadPrimaryLog")
         def download_primary_log():
             logger.network_logger.info("* Sent Full Primary Log")
-            log_name = sensors.get_ip()[-3:].replace(".", "_") + "PrimaryLog.txt"
+            log_name = sensors.get_ip()[-3:].replace(".", "_") + sensors.get_hostname() + "PrimaryLog.txt"
             return send_file(file_locations.primary_log, as_attachment=True, attachment_filename=log_name)
 
         @self.app.route("/DownloadNetworkLog")
         def download_network_log():
             logger.network_logger.info("* Sent Full Network Log")
-            log_name = sensors.get_ip()[-3:].replace(".", "_") + "NetworkLog.txt"
+            log_name = sensors.get_ip()[-3:].replace(".", "_") + sensors.get_hostname() + "NetworkLog.txt"
             return send_file(file_locations.network_log, as_attachment=True, attachment_filename=log_name)
 
         @self.app.route("/DownloadSensorsLog")
         def download_sensors_log():
             logger.network_logger.info("* Sent Full Sensor Log")
-            log_name = sensors.get_ip()[-3:].replace(".", "_") + "SensorLog.txt"
+            log_name = sensors.get_ip()[-3:].replace(".", "_") + sensors.get_hostname() + "SensorLog.txt"
             return send_file(file_locations.sensors_log, as_attachment=True, attachment_filename=log_name)
 
         @self.app.route("/DownloadSQLDatabase")
         def download_sensors_sql_database():
             logger.network_logger.info("* Sent Sensor SQL Database")
-            sql_filename = sensors.get_ip()[-3:].replace(".", "_") + "SensorRecordingDatabase.sqlite"
+            sql_filename = sensors.get_ip()[-3:].replace(".", "_") + sensors.get_hostname() + "SensorDatabase.sqlite"
             return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
 
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
