@@ -39,7 +39,7 @@ class CreateSensorHTTP:
 
         # If installed, start up SenseHAT Joystick program
         if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-            sense_joy_stick_thread = Thread(target=sensors.rp_sense_hat_sensor_access.start_joy_stick_commands)
+            sense_joy_stick_thread = Thread(target=sensors.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
             sense_joy_stick_thread.daemon = True
             sense_joy_stick_thread.start()
 
@@ -467,8 +467,10 @@ class CreateSensorHTTP:
 
             text_message = request.form['command_data']
             if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-                sensors.rp_sense_hat_sensor_access.display_led_message(text_message)
-            return "OK"
+                sensors.display_message(text_message)
+                return "OK"
+            else:
+                return "No Display Found"
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)

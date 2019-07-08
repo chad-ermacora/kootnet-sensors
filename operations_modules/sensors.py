@@ -19,221 +19,13 @@
 import os
 import psutil
 from datetime import datetime
-from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
 from operations_modules import sqlite_database
 from operations_modules import configuration_main
 from operations_modules import software_version
-from sensor_modules import linux_os
-from sensor_modules import pimoroni_as7262
-from sensor_modules import pimoroni_bh1745
-from sensor_modules import pimoroni_bme680
-from sensor_modules import pimoroni_bmp280
-from sensor_modules import pimoroni_enviro
-from sensor_modules import pimoroni_enviroplus
-from sensor_modules import pimoroni_lsm303d
-from sensor_modules import pimoroni_icm20948
-from sensor_modules import pimoroni_ltr_559
-from sensor_modules import pimoroni_vl53l1x
-from sensor_modules import pimoroni_veml6075
-from sensor_modules import raspberry_pi_sensehat
-from sensor_modules import raspberry_pi_system
-
-if software_version.old_version == software_version.version:
-    # Initialize sensor access, based on installed sensors file
-    if configuration_main.installed_sensors.linux_system:
-        try:
-            os_sensor_access = linux_os.CreateLinuxSystem()
-        except Exception as sensor_error:
-            logger.primary_logger.error("Linux OS Sensor Failed - " + str(sensor_error))
-
-    if configuration_main.installed_sensors.raspberry_pi_zero_w or \
-            configuration_main.installed_sensors.raspberry_pi_3b_plus:
-        try:
-            system_sensor_access = raspberry_pi_system.CreateRPSystem()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Raspberry Pi Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                system_sensor_access = raspberry_pi_system.CreateRPSystem()
-                logger.primary_logger.info("Raspberry Pi Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Raspberry Pi Sensor Attempt 2 Failed Skipping Sensor - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        try:
-            rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("RP SenseHAT Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
-                logger.primary_logger.info("RP SenseHAT Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("RP SenseHAT Sensor Attempt 2 Failed Skipping Sensor - " +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_bh1745:
-        try:
-            pimoroni_bh1745_sensor_access = pimoroni_bh1745.CreateBH1745()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni BH1745 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_bh1745_sensor_access = pimoroni_bh1745.CreateBH1745()
-                logger.primary_logger.info("Pimoroni BH1745 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni BH1745 Sensor Attempt 2 Failed Skipping Sensor - " +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_as7262:
-        try:
-            pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni AS7262 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
-                logger.primary_logger.info("Pimoroni AS7262 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni AS7262 Sensor Attempt 2 Failed Skipping Sensor - " +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_bme680:
-        try:
-            pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni BME680 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
-                logger.primary_logger.info("Pimoroni BME680 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni BME680 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_bmp280:
-        try:
-            pimoroni_bmp280_sensor_access = pimoroni_bmp280.CreateBMP280()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni BMP280 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_bmp280_sensor_access = pimoroni_bmp280.CreateBMP280()
-                logger.primary_logger.info("Pimoroni BMP280 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni BMP280 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        try:
-            pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni EnviroPHAT Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
-                logger.primary_logger.info("Pimoroni EnviroPHAT Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni EnviroPHAT Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        try:
-            pimoroni_enviroplus_sensor_access = pimoroni_enviroplus.CreateEnviroPlus()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni Enviro+ Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_enviroplus_sensor_access = pimoroni_enviroplus.CreateEnviroPlus()
-                logger.primary_logger.info("Pimoroni Enviro+ Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni Enviro+ Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_lsm303d:
-        try:
-            pimoroni_lsm303d_sensor_access = pimoroni_lsm303d.CreateLSM303D()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni LSM303D Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_lsm303d_sensor_access = pimoroni_lsm303d.CreateLSM303D()
-                logger.primary_logger.info("Pimoroni LSM303D Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni LSM303D Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_icm20948:
-        try:
-            pimoroni_icm20948_sensor_access = pimoroni_icm20948.CreateICM20948()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni ICM20948 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_icm20948_sensor_access = pimoroni_icm20948.CreateICM20948()
-                logger.primary_logger.info("Pimoroni ICM20948 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni ICM20948 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_ltr_559:
-        try:
-            pimoroni_ltr_559_sensor_access = pimoroni_ltr_559.CreateLTR559()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni LTR559 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_ltr_559_sensor_access = pimoroni_ltr_559.CreateLTR559()
-                logger.primary_logger.info("Pimoroni LTR559 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni LTR559 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_vl53l1x:
-        try:
-            pimoroni_vl53l1x_sensor_access = pimoroni_vl53l1x.CreateVL53L1X()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni VL53L1X Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_vl53l1x_sensor_access = pimoroni_vl53l1x.CreateVL53L1X()
-                logger.primary_logger.info("Pimoroni VL53L1X Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni VL53L1X Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-
-    if configuration_main.installed_sensors.pimoroni_veml6075:
-        try:
-            pimoroni_veml6075_sensor_access = pimoroni_veml6075.CreateVEML6075()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni VEML6075 Sensor Failed - " + str(sensor_error))
-            sleep(5)
-            try:
-                pimoroni_veml6075_sensor_access = pimoroni_veml6075.CreateVEML6075()
-                logger.primary_logger.info("Pimoroni VEML6075 Sensor Attempt 2 OK")
-            except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni VEML6075 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
-else:
-    # Sleep before loading anything due to needed updates
-    # The update service will automatically restart this app when it's done
-    pass
+from sensor_modules import sensors_direct_access_and_initialization as sensor_direct_access
 
 command_data_separator = configuration_main.command_data_separator
 
@@ -468,7 +260,7 @@ def get_interval_sensor_readings():
 def get_hostname():
     """ Returns sensors hostname. """
     if configuration_main.installed_sensors.linux_system:
-        return os_sensor_access.get_hostname()
+        return sensor_direct_access.os_sensor_access.get_hostname()
     else:
         return "NoSensor"
 
@@ -476,7 +268,7 @@ def get_hostname():
 def get_ip():
     """ Returns sensor IP Address. """
     if configuration_main.installed_sensors.linux_system:
-        return os_sensor_access.get_ip()
+        return sensor_direct_access.os_sensor_access.get_ip()
     else:
         return "NoSensor"
 
@@ -506,7 +298,7 @@ def get_memory_usage_percent():
 def get_system_datetime():
     """ Returns sensor current DateTime. """
     if configuration_main.installed_sensors.linux_system:
-        return os_sensor_access.get_sys_datetime()
+        return sensor_direct_access.os_sensor_access.get_sys_datetime()
     else:
         return "NoSensor"
 
@@ -514,7 +306,7 @@ def get_system_datetime():
 def get_uptime_minutes():
     """ Converts provided minutes into a human readable string. """
     if configuration_main.installed_sensors.linux_system:
-        return os_sensor_access.get_uptime()
+        return sensor_direct_access.os_sensor_access.get_uptime()
     else:
         return "NoSensor"
 
@@ -522,7 +314,7 @@ def get_uptime_minutes():
 def get_uptime_str():
     """ Converts provided minutes into a human readable string. """
     if configuration_main.installed_sensors.linux_system:
-        var_minutes = os_sensor_access.get_uptime()
+        var_minutes = sensor_direct_access.os_sensor_access.get_uptime()
         str_day_hour_min = ""
 
         try:
@@ -554,7 +346,7 @@ def get_uptime_str():
 def get_system_uptime():
     """ Returns sensors system UpTime. """
     if configuration_main.installed_sensors.linux_system:
-        sensor_uptime = os_sensor_access.get_uptime()
+        sensor_uptime = sensor_direct_access.os_sensor_access.get_uptime()
         return sensor_uptime
     else:
         return "NoSensor"
@@ -563,7 +355,7 @@ def get_system_uptime():
 def get_db_size():
     """ Returns sensor SQLite Database size in MB. """
     if configuration_main.installed_sensors.linux_system:
-        return os_sensor_access.get_sql_db_size()
+        return sensor_direct_access.os_sensor_access.get_sql_db_size()
     else:
         return "NoSensor"
 
@@ -586,7 +378,7 @@ def get_cpu_temperature():
     """ Returns sensors CPU temperature. """
     if configuration_main.installed_sensors.raspberry_pi_zero_w or \
             configuration_main.installed_sensors.raspberry_pi_3b_plus:
-        temperature = system_sensor_access.cpu_temperature()
+        temperature = sensor_direct_access.system_sensor_access.cpu_temperature()
         return temperature
     else:
         return "NoSensor"
@@ -595,19 +387,19 @@ def get_cpu_temperature():
 def get_sensor_temperature():
     """ Returns sensors Environmental temperature. """
     if configuration_main.installed_sensors.pimoroni_enviro:
-        temperature = pimoroni_enviro_sensor_access.temperature()
+        temperature = sensor_direct_access.pimoroni_enviro_sensor_access.temperature()
         return temperature
     elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        temperature = pimoroni_enviroplus_sensor_access.temperature()
+        temperature = sensor_direct_access.pimoroni_enviroplus_sensor_access.temperature()
         return temperature
     elif configuration_main.installed_sensors.pimoroni_bmp280:
-        temperature = pimoroni_bmp280_sensor_access.temperature()
+        temperature = sensor_direct_access.pimoroni_bmp280_sensor_access.temperature()
         return temperature
     elif configuration_main.installed_sensors.pimoroni_bme680:
-        temperature = pimoroni_bme680_sensor_access.temperature()
+        temperature = sensor_direct_access.pimoroni_bme680_sensor_access.temperature()
         return temperature
     elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        temperature = rp_sense_hat_sensor_access.temperature()
+        temperature = sensor_direct_access.rp_sense_hat_sensor_access.temperature()
         return temperature
     else:
         return "NoSensor"
@@ -616,19 +408,19 @@ def get_sensor_temperature():
 def get_pressure():
     """ Returns sensors pressure. """
     if configuration_main.installed_sensors.pimoroni_enviro:
-        pressure = pimoroni_enviro_sensor_access.pressure()
+        pressure = sensor_direct_access.pimoroni_enviro_sensor_access.pressure()
         return pressure
     elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        pressure = pimoroni_enviroplus_sensor_access.pressure()
+        pressure = sensor_direct_access.pimoroni_enviroplus_sensor_access.pressure()
         return pressure
     elif configuration_main.installed_sensors.pimoroni_bmp280:
-        pressure = pimoroni_bmp280_sensor_access.pressure()
+        pressure = sensor_direct_access.pimoroni_bmp280_sensor_access.pressure()
         return pressure
     elif configuration_main.installed_sensors.pimoroni_bme680:
-        pressure = pimoroni_bme680_sensor_access.pressure()
+        pressure = sensor_direct_access.pimoroni_bme680_sensor_access.pressure()
         return pressure
     elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        pressure = rp_sense_hat_sensor_access.pressure()
+        pressure = sensor_direct_access.rp_sense_hat_sensor_access.pressure()
         return pressure
     else:
         return "NoSensor"
@@ -637,7 +429,7 @@ def get_pressure():
 def get_altitude():
     """ Returns sensors altitude. """
     if configuration_main.installed_sensors.pimoroni_bmp280:
-        altitude = pimoroni_bmp280_sensor_access.altitude()
+        altitude = sensor_direct_access.pimoroni_bmp280_sensor_access.altitude()
         return altitude
     else:
         return "NoSensor"
@@ -646,13 +438,13 @@ def get_altitude():
 def get_humidity():
     """ Returns sensors humidity. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
-        humidity = pimoroni_enviroplus_sensor_access.humidity()
+        humidity = sensor_direct_access.pimoroni_enviroplus_sensor_access.humidity()
         return humidity
     elif configuration_main.installed_sensors.pimoroni_bme680:
-        humidity = pimoroni_bme680_sensor_access.humidity()
+        humidity = sensor_direct_access.pimoroni_bme680_sensor_access.humidity()
         return humidity
     elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        humidity = rp_sense_hat_sensor_access.humidity()
+        humidity = sensor_direct_access.rp_sense_hat_sensor_access.humidity()
         return humidity
     else:
         return "NoSensor"
@@ -661,13 +453,13 @@ def get_humidity():
 def get_distance():
     """ Returns sensors distance. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
-        distance = pimoroni_enviroplus_sensor_access.distance()
+        distance = sensor_direct_access.pimoroni_enviroplus_sensor_access.distance()
         return distance
     elif configuration_main.installed_sensors.pimoroni_vl53l1x:
-        distance = pimoroni_vl53l1x_sensor_access.distance()
+        distance = sensor_direct_access.pimoroni_vl53l1x_sensor_access.distance()
         return distance
     elif configuration_main.installed_sensors.pimoroni_ltr_559:
-        distance = pimoroni_ltr_559_sensor_access.distance()
+        distance = sensor_direct_access.pimoroni_ltr_559_sensor_access.distance()
         return distance
     else:
         return "NoSensor"
@@ -676,7 +468,7 @@ def get_distance():
 def get_gas_resistance_index():
     """ Returns sensors gas resistance index. """
     if configuration_main.installed_sensors.pimoroni_bme680:
-        index = pimoroni_bme680_sensor_access.gas_resistance_index()
+        index = sensor_direct_access.pimoroni_bme680_sensor_access.gas_resistance_index()
         return index
     else:
         return "NoSensor"
@@ -685,7 +477,7 @@ def get_gas_resistance_index():
 def get_gas_oxidised():
     """ Returns sensors gas reading for oxidising. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
-        oxidising = pimoroni_enviroplus_sensor_access.gas_data()[0]
+        oxidising = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[0]
         return oxidising
     else:
         return "NoSensor"
@@ -694,7 +486,7 @@ def get_gas_oxidised():
 def get_gas_reduced():
     """ Returns sensors gas reading for reducing. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
-        reducing = pimoroni_enviroplus_sensor_access.gas_data()[1]
+        reducing = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[1]
         return reducing
     else:
         return "NoSensor"
@@ -703,7 +495,7 @@ def get_gas_reduced():
 def get_gas_nh3():
     """ Returns sensors gas reading for NH3. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
-        nh3_reading = pimoroni_enviroplus_sensor_access.gas_data()[2]
+        nh3_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[2]
         return nh3_reading
     else:
         return "NoSensor"
@@ -713,7 +505,7 @@ def get_particulate_matter_1():
     """ Returns sensor reading for PM1. """
     if configuration_main.installed_sensors.pimoroni_enviroplus and \
             configuration_main.installed_sensors.pimoroni_pms5003:
-        pm1_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[0]
+        pm1_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[0]
         return pm1_reading
     else:
         return "NoSensor"
@@ -723,7 +515,7 @@ def get_particulate_matter_2_5():
     """ Returns sensor reading for PM2.5. """
     if configuration_main.installed_sensors.pimoroni_enviroplus and \
             configuration_main.installed_sensors.pimoroni_pms5003:
-        pm2_5_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[1]
+        pm2_5_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[1]
         return pm2_5_reading
     else:
         return "NoSensor"
@@ -733,7 +525,7 @@ def get_particulate_matter_10():
     """ Returns sensor reading for PM10. """
     if configuration_main.installed_sensors.pimoroni_enviroplus and \
             configuration_main.installed_sensors.pimoroni_pms5003:
-        pm10_reading = pimoroni_enviroplus_sensor_access.particulate_matter_data()[2]
+        pm10_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[2]
         return pm10_reading
     else:
         return "NoSensor"
@@ -742,16 +534,16 @@ def get_particulate_matter_10():
 def get_lumen():
     """ Returns sensors lumen. """
     if configuration_main.installed_sensors.pimoroni_enviro:
-        lumen = pimoroni_enviro_sensor_access.lumen()
+        lumen = sensor_direct_access.pimoroni_enviro_sensor_access.lumen()
         return lumen
     elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        lumen = pimoroni_enviroplus_sensor_access.lumen()
+        lumen = sensor_direct_access.pimoroni_enviroplus_sensor_access.lumen()
         return lumen
     elif configuration_main.installed_sensors.pimoroni_bh1745:
-        lumen = pimoroni_bh1745_sensor_access.lumen()
+        lumen = sensor_direct_access.pimoroni_bh1745_sensor_access.lumen()
         return lumen
     elif configuration_main.installed_sensors.pimoroni_ltr_559:
-        lumen = pimoroni_ltr_559_sensor_access.lumen()
+        lumen = sensor_direct_access.pimoroni_ltr_559_sensor_access.lumen()
         return lumen
     else:
         return "NoSensor"
@@ -760,13 +552,13 @@ def get_lumen():
 def get_ems():
     """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
     if configuration_main.installed_sensors.pimoroni_as7262:
-        six_chan = pimoroni_as7262_sensor_access.spectral_six_channel()
+        six_chan = sensor_direct_access.pimoroni_as7262_sensor_access.spectral_six_channel()
         return six_chan
     elif configuration_main.installed_sensors.pimoroni_enviro:
-        rgb = pimoroni_enviro_sensor_access.ems()
+        rgb = sensor_direct_access.pimoroni_enviro_sensor_access.ems()
         return rgb
     elif configuration_main.installed_sensors.pimoroni_bh1745:
-        rgb = pimoroni_bh1745_sensor_access.ems()
+        rgb = sensor_direct_access.pimoroni_bh1745_sensor_access.ems()
         return rgb
     else:
         return "NoSensor"
@@ -775,7 +567,7 @@ def get_ems():
 def get_ultra_violet_a():
     """ Returns Ultra Violet A (UVA). """
     if configuration_main.installed_sensors.pimoroni_veml6075:
-        uva_reading = pimoroni_veml6075_sensor_access.ultra_violet()[0]
+        uva_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[0]
         return uva_reading
     else:
         return "NoSensor"
@@ -784,7 +576,7 @@ def get_ultra_violet_a():
 def get_ultra_violet_b():
     """ Returns Ultra Violet B (UVB). """
     if configuration_main.installed_sensors.pimoroni_veml6075:
-        uvb_reading = pimoroni_veml6075_sensor_access.ultra_violet()[1]
+        uvb_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[1]
         return uvb_reading
     else:
         return "NoSensor"
@@ -793,16 +585,16 @@ def get_ultra_violet_b():
 def get_accelerometer_xyz():
     """ Returns sensors Accelerometer XYZ. """
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = rp_sense_hat_sensor_access.accelerometer_xyz()
+        xyz = sensor_direct_access.rp_sense_hat_sensor_access.accelerometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_enviro:
-        xyz = pimoroni_enviro_sensor_access.accelerometer_xyz()
+        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.accelerometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_lsm303d:
-        xyz = pimoroni_lsm303d_sensor_access.accelerometer_xyz()
+        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.accelerometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = pimoroni_icm20948_sensor_access.accelerometer_xyz()
+        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.accelerometer_xyz()
         return xyz
     else:
         return "NoSensor"
@@ -811,16 +603,16 @@ def get_accelerometer_xyz():
 def get_magnetometer_xyz():
     """ Returns sensors Magnetometer XYZ. """
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = rp_sense_hat_sensor_access.magnetometer_xyz()
+        xyz = sensor_direct_access.rp_sense_hat_sensor_access.magnetometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_enviro:
-        xyz = pimoroni_enviro_sensor_access.magnetometer_xyz()
+        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.magnetometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_lsm303d:
-        xyz = pimoroni_lsm303d_sensor_access.magnetometer_xyz()
+        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.magnetometer_xyz()
         return xyz
     elif configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = pimoroni_icm20948_sensor_access.magnetometer_xyz()
+        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.magnetometer_xyz()
         return xyz
     else:
         return "NoSensor"
@@ -829,13 +621,23 @@ def get_magnetometer_xyz():
 def get_gyroscope_xyz():
     """ Returns sensors Gyroscope XYZ. """
     if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = rp_sense_hat_sensor_access.gyroscope_xyz()
+        xyz = sensor_direct_access.rp_sense_hat_sensor_access.gyroscope_xyz()
         return xyz
     if configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = pimoroni_icm20948_sensor_access.gyroscope_xyz()
+        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.gyroscope_xyz()
         return xyz
     else:
         return "NoSensor"
+
+
+def display_message(text_message):
+    """ If a Display is installed, scroll provided text message on it. """
+    logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
+    if configuration_main.installed_sensors.has_display:
+        if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+            sensor_direct_access.rp_sense_hat_sensor_access.display_led_message(text_message)
+    else:
+        logger.primary_logger.warning("* No Display found for message: " + text_message)
 
 
 def restart_services():

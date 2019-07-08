@@ -63,8 +63,8 @@ def start_interval_recording():
 
             sqlite_database.write_to_sql_database(interval_sql_execute)
 
-            if configuration_main.installed_sensors.raspberry_pi_sense_hat and app_variables.sense_hat_show_led_message:
-                sensor_access.sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
+            if configuration_main.installed_sensors.has_display and app_variables.sense_hat_show_led_message:
+                sensor_access.sensors.display_message("SQL-Int-Rec")
         except Exception as error:
             logger.primary_logger.error("Interval Failure: " + str(error))
 
