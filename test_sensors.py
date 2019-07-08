@@ -16,12 +16,37 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import requests
 from operations_modules import configuration_main
-from operations_modules import get_http_sensor_data
+from operations_modules import variance_checks
 
-sensor_commands = get_http_sensor_data.CreateSensorCommands()
 
-interval_data = get_http_sensor_data.get_interval_sensor_data()
+def get_sensor_reading(command):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "http://127.0.0.1:10065/" + command
+    tmp_return_data = requests.get(url=url)
+    return tmp_return_data.text
+
+
+def get_interval_sensor_data():
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "http://127.0.0.1:10065/GetIntervalSensorReadings"
+    command_data_separator = "[new_data_section]"
+
+    tmp_return_data = requests.get(url=url)
+    return_data = tmp_return_data.text.split(command_data_separator)
+    return [str(return_data[0]), str(return_data[1])]
+
+
+def display_text_on_sensor(text_message):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "http://127.0.0.1:10065/DisplayText"
+    requests.put(url=url, data={'command_data': text_message})
+
+
+sensor_commands = variance_checks.CreateSensorCommands()
+
+interval_data = get_interval_sensor_data()
 sensor_types = interval_data[0].split(",")
 sensor_readings = interval_data[1].split(",")
 
@@ -51,7 +76,7 @@ count = 0
 
 if configuration_main.installed_sensors.raspberry_pi_sense_hat:
     print("\nShowing SenseHAT Temperature on LED's, Please Wait ...")
-    cpu_temp = float(get_http_sensor_data.get_sensor_reading(sensor_commands.environmental_temp))
-    get_http_sensor_data.display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
+    cpu_temp = float(get_sensor_reading(sensor_commands.environmental_temp))
+    display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
 
 print("\nTesting Complete")

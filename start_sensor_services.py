@@ -26,8 +26,7 @@ from operations_modules import program_start_checks
 from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
-from operations_modules import get_http_sensor_data
-
+from sensor_modules import sensor_access
 
 # Ensure files, database & configurations are OK
 program_start_checks.set_file_permissions()
@@ -41,18 +40,22 @@ if software_version.old_version != software_version.version:
     while True:
         sleep(10)
 
-# Ensure http_server.py is up before starting
-sleep(10)
+# Start the HTTP Server for remote access
+sensor_http_server_thread = Thread(target=sensor_access.CreateSensorHTTP)
+sensor_http_server_thread.daemon = True
+sensor_http_server_thread.start()
+# Sleep to make sure HTTP server is up first
+sleep(4)
 
-logger.primary_logger.info("Sensor Recording to SQLite3 DB Started")
+logger.primary_logger.info("Sensor Recording Programs Starting ...")
 
 
 def start_interval_recording():
     """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
+    logger.primary_logger.info("Interval Recoding Started")
     while True:
         try:
-            new_sensor_data = get_http_sensor_data.get_interval_sensor_data()
-            # new_sensor_data = sensors.get_interval_sensor_readings()
+            new_sensor_data = sensor_access.sensors.get_interval_sensor_readings().split(configuration_main.command_data_separator)
 
             logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
                                           str(new_sensor_data[1]))
@@ -61,7 +64,7 @@ def start_interval_recording():
             sqlite_database.write_to_sql_database(interval_sql_execute)
 
             if configuration_main.installed_sensors.raspberry_pi_sense_hat and app_variables.sense_hat_show_led_message:
-                get_http_sensor_data.display_text_on_sensor("SQL-Int-Rec")
+                sensor_access.sensors.rp_sense_hat_sensor_access.display_led_message("SQL-Int-Rec")
         except Exception as error:
             logger.primary_logger.error("Interval Failure: " + str(error))
 
@@ -78,16 +81,20 @@ if configuration_main.installed_sensors.no_sensors is False:
         logger.primary_logger.warning("Interval Recording Disabled in Config")
 
     if configuration_main.current_config.enable_trigger_recording:
-        threads = [Thread(target=variance_checks.check_sensor_uptime),
-                   Thread(target=variance_checks.check_cpu_temperature),
-                   Thread(target=variance_checks.check_env_temperature),
-                   Thread(target=variance_checks.check_pressure),
-                   Thread(target=variance_checks.check_humidity),
-                   Thread(target=variance_checks.check_lumen),
-                   Thread(target=variance_checks.check_ems),
-                   Thread(target=variance_checks.check_accelerometer_xyz),
-                   Thread(target=variance_checks.check_magnetometer_xyz),
-                   Thread(target=variance_checks.check_gyroscope_xyz)]
+        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
+
+        threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
+                   Thread(target=sensor_variance_checks.check_cpu_temperature),
+                   Thread(target=sensor_variance_checks.check_env_temperature),
+                   Thread(target=sensor_variance_checks.check_pressure),
+                   Thread(target=sensor_variance_checks.check_altitude),
+                   Thread(target=sensor_variance_checks.check_humidity),
+                   Thread(target=sensor_variance_checks.check_distance),
+                   Thread(target=sensor_variance_checks.check_lumen),
+                   Thread(target=sensor_variance_checks.check_ems),
+                   Thread(target=sensor_variance_checks.check_accelerometer_xyz),
+                   Thread(target=sensor_variance_checks.check_magnetometer_xyz),
+                   Thread(target=sensor_variance_checks.check_gyroscope_xyz)]
 
         for thread in threads:
             try:
@@ -95,6 +102,8 @@ if configuration_main.installed_sensors.no_sensors is False:
                 thread.start()
             except Exception as trigger_error:
                 logger.primary_logger.error("Trigger check failed to start: " + str(trigger_error))
+
+        logger.primary_logger.info("Trigger Recoding Started")
     else:
         logger.primary_logger.warning("Trigger Recording Disabled in Config")
 

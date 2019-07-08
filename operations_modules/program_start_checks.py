@@ -108,25 +108,24 @@ def run_upgrade_checks():
                                        " || New: " + software_version.version)
             upgrade_functions.reset_installed_sensors()
             upgrade_functions.reset_config()
+            upgrade_functions.reset_variance_config()
         elif previous_version.feature_version == 24:
             no_changes = False
             upgrade_functions.reset_installed_sensors()
             if previous_version.minor_version < 24:
                 upgrade_functions.reset_config()
+                upgrade_functions.reset_variance_config()
+                upgrade_functions.reset_installed_sensors()
             logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                        " || New: " + software_version.version)
         elif previous_version.feature_version == 25:
             if previous_version.minor_version < 7:
                 no_changes = False
                 upgrade_functions.reset_installed_sensors()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
-            elif previous_version.minor_version < 22:
-                no_changes = False
                 upgrade_functions.reset_variance_config()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                            " || New: " + software_version.version)
-            elif previous_version.minor_version < 23:
+            elif previous_version.minor_version < 27:
                 no_changes = False
                 upgrade_functions.reset_variance_config()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +

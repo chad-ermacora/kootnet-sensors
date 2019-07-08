@@ -235,8 +235,7 @@ else:
     # The update service will automatically restart this app when it's done
     pass
 
-database_columns_and_tables = app_variables.CreateDatabaseVariables()
-command_data_separator = "[new_data_section]"
+command_data_separator = configuration_main.command_data_separator
 
 
 def get_sensor_readings():
@@ -464,97 +463,6 @@ def get_interval_sensor_readings():
     return_interval_data = interval_data.sensor_types[:-2] + command_data_separator + interval_data.sensor_readings[:-2]
 
     return return_interval_data
-
-
-def get_trigger_sensor_readings():
-    """ Returns Trigger sensor readings from installed sensors (set in installed sensors file). """
-    trigger_data = sqlite_database.CreateTriggerDatabaseData()
-    trigger_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", "
-    trigger_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
-
-    if configuration_main.installed_sensors.linux_system:
-        sensor_types = configuration_main.database_variables.sensor_name + ", " + \
-                       configuration_main.database_variables.ip + ", "
-        sensor_readings = "'" + str(get_hostname()) + "', '" + str(get_ip()) + "', "
-
-        trigger_data.sensor_types += sensor_types
-        trigger_data.sensor_readings += sensor_readings
-
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        sensor_types = configuration_main.database_variables.acc_x + ", " + \
-                       configuration_main.database_variables.acc_y + ", " + \
-                       configuration_main.database_variables.acc_z + ", " + \
-                       configuration_main.database_variables.mag_x + ", " + \
-                       configuration_main.database_variables.mag_y + ", " + \
-                       configuration_main.database_variables.mag_z + ", " + \
-                       configuration_main.database_variables.gyro_x + ", " + \
-                       configuration_main.database_variables.gyro_y + ", " + \
-                       configuration_main.database_variables.gyro_z + ", "
-
-        acc_x, acc_y, acc_z = get_accelerometer_xyz()
-        mag_x, mag_y, mag_z = get_magnetometer_xyz()
-        gyro_x, gyro_y, gyro_z = get_gyroscope_xyz()
-
-        sensor_readings = "'" + str(acc_x) + "', '" + \
-                          str(acc_y) + "', '" + \
-                          str(acc_z) + "', '" + \
-                          str(mag_x) + "', '" + \
-                          str(mag_y) + "', '" + \
-                          str(mag_z) + "', '" + \
-                          str(gyro_x) + "', '" + \
-                          str(gyro_y) + "', '" + \
-                          str(gyro_z) + "', "
-
-        trigger_data.sensor_types += sensor_types
-        trigger_data.sensor_readings += sensor_readings
-
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        sensor_types = configuration_main.database_variables.acc_x + ", " + \
-                       configuration_main.database_variables.acc_y + ", " + \
-                       configuration_main.database_variables.acc_z + ", " + \
-                       configuration_main.database_variables.mag_x + ", " + \
-                       configuration_main.database_variables.mag_y + ", " + \
-                       configuration_main.database_variables.mag_z + ", "
-
-        acc_x, acc_y, acc_z = get_accelerometer_xyz()
-        mag_x, mag_y, mag_z = get_magnetometer_xyz()
-
-        sensor_readings = "'" + str(acc_x) + "', '" + \
-                          str(acc_y) + "', '" + \
-                          str(acc_z) + "', '" + \
-                          str(mag_x) + "', '" + \
-                          str(mag_y) + "', '" + \
-                          str(mag_z) + "', "
-
-        trigger_data.sensor_types += sensor_types
-        trigger_data.sensor_readings += sensor_readings
-
-    if configuration_main.installed_sensors.pimoroni_lsm303d:
-        sensor_types = configuration_main.database_variables.acc_x + ", " + \
-                       configuration_main.database_variables.acc_y + ", " + \
-                       configuration_main.database_variables.acc_z + ", " + \
-                       configuration_main.database_variables.mag_x + ", " + \
-                       configuration_main.database_variables.mag_y + ", " + \
-                       configuration_main.database_variables.mag_z + ", "
-
-        acc_x, acc_y, acc_z = get_accelerometer_xyz()
-        mag_x, mag_y, mag_z = get_magnetometer_xyz()
-
-        sensor_readings = "'" + str(acc_x) + "', '" + \
-                          str(acc_y) + "', '" + \
-                          str(acc_z) + "', '" + \
-                          str(mag_x) + "', '" + \
-                          str(mag_y) + "', '" + \
-                          str(mag_z) + "', "
-
-        trigger_data.sensor_types += sensor_types
-        trigger_data.sensor_readings += sensor_readings
-
-    trigger_data.sensor_types = trigger_data.sensor_types[:-2]
-    trigger_data.sensor_readings = trigger_data.sensor_readings[:-2]
-
-    if trigger_data.sensor_types != configuration_main.database_variables.all_tables_datetime:
-        return trigger_data
 
 
 def get_hostname():
@@ -937,9 +845,9 @@ def restart_services():
 
 def get_db_notes():
     sql_query = "SELECT " + \
-                database_columns_and_tables.other_table_column_notes + \
+                configuration_main.database_variables.other_table_column_notes + \
                 " FROM " + \
-                database_columns_and_tables.table_other
+                configuration_main.database_variables.table_other
 
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
 
@@ -948,9 +856,9 @@ def get_db_notes():
 
 def get_db_note_dates():
     sql_query_notes = "SELECT " + \
-                      database_columns_and_tables.all_tables_datetime + \
+                      configuration_main.database_variables.all_tables_datetime + \
                       " FROM " + \
-                      database_columns_and_tables.table_other
+                      configuration_main.database_variables.table_other
 
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
 
@@ -959,9 +867,9 @@ def get_db_note_dates():
 
 def get_db_note_user_dates():
     sql_query_user_datetime = "SELECT " + \
-                              database_columns_and_tables.other_table_column_user_date_time + \
+                              configuration_main.database_variables.other_table_column_user_date_time + \
                               " FROM " + \
-                              database_columns_and_tables.table_other
+                              configuration_main.database_variables.table_other
 
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
 
@@ -1031,9 +939,9 @@ def update_note_in_database(datetime_note):
 
 def delete_db_note(note_datetime):
     sql_query = "DELETE FROM " + \
-                str(database_columns_and_tables.table_other) + \
+                str(configuration_main.database_variables.table_other) + \
                 " WHERE " + \
-                str(database_columns_and_tables.all_tables_datetime) + \
+                str(configuration_main.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
 
     sqlite_database.sql_execute(sql_query)
