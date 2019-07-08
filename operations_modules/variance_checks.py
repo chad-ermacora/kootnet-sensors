@@ -350,7 +350,7 @@ class CreateVarianceRecording:
                     difference = 0.0
 
                 if difference > trigger_object.variance:
-                    logger.primary_logger.warning(trigger_object.sensor_type + " exceeded set trigger")
+                    # logger.primary_logger.warning(trigger_object.sensor_type + " exceeded set trigger")
                     variance_detected = True
 
                 if variance_detected:
@@ -361,8 +361,8 @@ class CreateVarianceRecording:
                 count += 1
 
     def _universal_triple_data_check(self, trigger_object):
-        logger.primary_logger.warning(trigger_object.sensor_type + " Starting Checks")
-        logger.primary_logger.warning(trigger_object.sensor_type + " wait:" + str(trigger_object.sensor_wait_seconds))
+        logger.primary_logger.info(trigger_object.sensor_type + " Starting Checks.  Checking every " +
+                                      str(trigger_object.sensor_wait_seconds) + " Seconds")
         while True:
             reading_and_datetime_stamps = self._get_sensor_readings_set(trigger_object.sensor_type,
                                                                             trigger_object.sensor_wait_seconds)
@@ -391,13 +391,13 @@ class CreateVarianceRecording:
 
                 try:
                     if difference1 > trigger_object.variance[0]:
-                        logger.primary_logger.warning(trigger_object.sensor_type + " 'X' exceeded set trigger")
+                        # logger.primary_logger.warning(trigger_object.sensor_type + " 'X' exceeded set trigger")
                         variance_detected = True
                     if difference2 > trigger_object.variance[1]:
-                        logger.primary_logger.warning(trigger_object.sensor_type + " 'Y' exceeded set trigger")
+                        # logger.primary_logger.warning(trigger_object.sensor_type + " 'Y' exceeded set trigger")
                         variance_detected = True
                     if difference3 > trigger_object.variance[2]:
-                        logger.primary_logger.warning(trigger_object.sensor_type + " 'Z' exceeded set trigger")
+                        # logger.primary_logger.warning(trigger_object.sensor_type + " 'Z' exceeded set trigger")
                         variance_detected = True
                 except Exception as error:
                     variance_detected = False
@@ -453,22 +453,22 @@ class CreateVarianceRecording:
                     difference6 = 0.0
 
                 if difference1 > trigger_object.variance[0]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '1 or x' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '1 or x' exceeded set trigger")
                     variance_detected = True
                 if difference2 > trigger_object.variance[1]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '2 or y' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '2 or y' exceeded set trigger")
                     variance_detected = True
                 if difference3 > trigger_object.variance[2]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '3 or z' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '3 or z' exceeded set trigger")
                     variance_detected = True
                 if difference4 > trigger_object.variance[3]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '4' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '4' exceeded set trigger")
                     variance_detected = True
                 if difference5 > trigger_object.variance[4]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '5' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '5' exceeded set trigger")
                     variance_detected = True
                 if difference6 > trigger_object.variance[5]:
-                    logger.primary_logger.debug(trigger_object.sensor_type + " '6' exceeded set trigger")
+                    # logger.primary_logger.debug(trigger_object.sensor_type + " '6' exceeded set trigger")
                     variance_detected = True
 
                 if variance_detected:

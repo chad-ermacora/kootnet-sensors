@@ -81,7 +81,7 @@ if configuration_main.installed_sensors.no_sensors is False:
         logger.primary_logger.warning("Interval Recording Disabled in Config")
 
     if configuration_main.current_config.enable_trigger_recording:
-        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
+        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access.sensors)
 
         threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
                    Thread(target=sensor_variance_checks.check_cpu_temperature),
