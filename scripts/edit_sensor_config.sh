@@ -18,7 +18,7 @@ then
   systemctl daemon-reload
   systemctl restart SensorCommands
   systemctl restart SensorRecording
-  sleep 15
+  sleep 5
   printf "Printing config & testing sensors\n\n"
   /home/kootnet_data/python-env/bin/python3 /opt/kootnet-sensors/test_sensors.py
 fi

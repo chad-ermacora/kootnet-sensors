@@ -136,8 +136,7 @@ sense_hat_show_led_message = False
 trigger_pairs = 3
 
 restart_sensor_services_command = "systemctl daemon-reload ; " + \
-                                  "systemctl restart SensorRecording & " + \
-                                  "systemctl restart SensorCommands"
+                                  "systemctl restart KootnetSensors"
 
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
                  "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
