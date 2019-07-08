@@ -31,10 +31,8 @@ def get_sensor_reading(command):
 def get_interval_sensor_data():
     """ Returns requested sensor data (based on the provided command data). """
     url = "http://127.0.0.1:10065/GetIntervalSensorReadings"
-    command_data_separator = "[new_data_section]"
-
     tmp_return_data = requests.get(url=url)
-    return_data = tmp_return_data.text.split(command_data_separator)
+    return_data = tmp_return_data.text.split(configuration_main.command_data_separator)
     return [str(return_data[0]), str(return_data[1])]
 
 
