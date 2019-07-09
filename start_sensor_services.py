@@ -26,6 +26,7 @@ from operations_modules import program_start_checks
 from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
+from operations_modules import http_server
 from sensor_modules import sensor_access
 
 # Ensure files, database & configurations are OK
@@ -41,7 +42,7 @@ if software_version.old_version != software_version.version:
         sleep(10)
 
 # Start the HTTP Server for remote access
-sensor_http_server_thread = Thread(target=sensor_access.CreateSensorHTTP)
+sensor_http_server_thread = Thread(target=http_server.CreateSensorHTTP, args=[sensor_access])
 sensor_http_server_thread.daemon = True
 sensor_http_server_thread.start()
 # Sleep to make sure HTTP server is up first
@@ -55,7 +56,7 @@ def start_interval_recording():
     logger.primary_logger.info("Interval Recoding Started")
     while True:
         try:
-            new_sensor_data = sensor_access.sensors.get_interval_sensor_readings().split(configuration_main.command_data_separator)
+            new_sensor_data = sensor_access.get_interval_sensor_readings().split(configuration_main.command_data_separator)
 
             logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
                                           str(new_sensor_data[1]))
@@ -64,7 +65,7 @@ def start_interval_recording():
             sqlite_database.write_to_sql_database(interval_sql_execute)
 
             if configuration_main.installed_sensors.has_display and app_variables.sense_hat_show_led_message:
-                sensor_access.sensors.display_message("SQL-Int-Rec")
+                sensor_access.display_message("SQL-Int-Rec")
         except Exception as error:
             logger.primary_logger.error("Interval Failure: " + str(error))
 
@@ -81,7 +82,7 @@ if configuration_main.installed_sensors.no_sensors is False:
         logger.primary_logger.warning("Interval Recording Disabled in Config")
 
     if configuration_main.current_config.enable_trigger_recording:
-        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access.sensors)
+        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
 
         threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
                    Thread(target=sensor_variance_checks.check_cpu_temperature),

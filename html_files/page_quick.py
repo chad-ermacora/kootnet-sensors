@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules import sensors
+from sensor_modules import sensor_access
 from operations_modules import software_version
 from operations_modules import configuration_main
 from html_files import html_templates
@@ -29,8 +29,8 @@ def _get_page_title():
      It contains up to and including the page title made up of the Local Name and IP.
     """
     logger.primary_logger.debug("Retrieved Quick Links HTML Page Start")
-    sensor_hostname = sensors.get_hostname()
-    sensor_ip = sensors.get_ip()
+    sensor_hostname = sensor_access.get_hostname()
+    sensor_ip = sensor_access.get_ip()
 
     page_start = html_templates.quick_page_title_start + \
                  sensor_hostname + " / " + sensor_ip + \
@@ -47,18 +47,18 @@ def _get_page_system():
     html_divider = "<span style='color: #ffffff;'> || </span>"
     html_colon = "<span style='color: #ffffff;'>: </span>"
 
-    sensor_hostname = sensors.get_hostname()
-    sensor_ip = sensors.get_ip()
-    sensor_free_disk = str(sensors.get_disk_usage_percent())
-    sensor_free_memory = str(sensors.get_memory_usage_percent())
-    sensor_last_updated = sensors.get_last_updated()
-    sensor_datetime = sensors.get_system_datetime()
-    sensor_uptime_str = sensors.get_uptime_str()
-    sensor_db_size = str(sensors.get_db_size())
+    sensor_hostname = sensor_access.get_hostname()
+    sensor_ip = sensor_access.get_ip()
+    sensor_free_disk = str(sensor_access.get_disk_usage_percent())
+    sensor_free_memory = str(sensor_access.get_memory_usage_percent())
+    sensor_last_updated = sensor_access.get_last_updated()
+    sensor_datetime = sensor_access.get_system_datetime()
+    sensor_uptime_str = sensor_access.get_uptime_str()
+    sensor_db_size = str(sensor_access.get_db_size())
     sensor_installed_sensors = configuration_main.installed_sensors.get_installed_names_str()
 
     try:
-        sensor_temperature = str(round(sensors.get_cpu_temperature(), 2))
+        sensor_temperature = str(round(sensor_access.get_cpu_temperature(), 2))
     except Exception as error:
         logger.primary_logger.error("CPU Temperature Error: " + str(error))
         sensor_temperature = "Error"

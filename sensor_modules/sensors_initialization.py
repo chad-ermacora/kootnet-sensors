@@ -35,6 +35,8 @@ from sensor_modules import pimoroni_veml6075
 from sensor_modules import raspberry_pi_sensehat
 from sensor_modules import raspberry_pi_system
 
+logger.primary_logger.info("Sensors Access Initializing ...")
+
 if software_version.old_version == software_version.version:
     # Initialize sensor access, based on installed sensors file
     if configuration_main.installed_sensors.linux_system:

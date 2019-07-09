@@ -28,78 +28,78 @@ class CreateTriggerVariances:
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
 
         self.cpu_temperature_enabled = 0
-        self.cpu_temperature_variance = 10.0
-        self.cpu_temperature_wait_seconds = 600.0
+        self.cpu_temperature_variance = 5.0
+        self.cpu_temperature_wait_seconds = 1.0
 
         self.env_temperature_enabled = 0
-        self.env_temperature_variance = 10.0
-        self.env_temperature_wait_seconds = 600.0
+        self.env_temperature_variance = 5.0
+        self.env_temperature_wait_seconds = 1.0
 
         self.pressure_enabled = 0
-        self.pressure_variance = 50
-        self.pressure_wait_seconds = 300.0
+        self.pressure_variance = 10
+        self.pressure_wait_seconds = 1.0
 
         self.altitude_enabled = 0
-        self.altitude_variance = 50
-        self.altitude_wait_seconds = 300.0
+        self.altitude_variance = 10
+        self.altitude_wait_seconds = 1.0
 
         self.humidity_enabled = 0
-        self.humidity_variance = 10.0
-        self.humidity_wait_seconds = 600.0
+        self.humidity_variance = 5.0
+        self.humidity_wait_seconds = 1.0
 
         self.distance_enabled = 0
-        self.distance_variance = 10.0
-        self.distance_wait_seconds = 600.0
+        self.distance_variance = 5.0
+        self.distance_wait_seconds = 1.0
 
         self.gas_enabled = 0
-        self.gas_resistance_index_variance = 10.0
-        self.gas_oxidising_variance = 10.0
-        self.gas_reducing_variance = 10.0
-        self.gas_nh3_variance = 10.0
-        self.gas_wait_seconds = 600.0
+        self.gas_resistance_index_variance = 100.0
+        self.gas_oxidising_variance = 100.0
+        self.gas_reducing_variance = 100.0
+        self.gas_nh3_variance = 100.0
+        self.gas_wait_seconds = 1.0
 
         self.particulate_matter_enabled = 0
-        self.particulate_matter_1_variance = 10.0
-        self.particulate_matter_2_5_variance = 10.0
-        self.particulate_matter_10_variance = 10.0
-        self.particulate_matter_wait_seconds = 600.0
+        self.particulate_matter_1_variance = 1000.0
+        self.particulate_matter_2_5_variance = 1000.0
+        self.particulate_matter_10_variance = 1000.0
+        self.particulate_matter_wait_seconds = 1.0
 
         self.lumen_enabled = 0
-        self.lumen_variance = 200.0
-        self.lumen_wait_seconds = 600.0
+        self.lumen_variance = 100.0
+        self.lumen_wait_seconds = 1.0
 
         self.colour_enabled = 0
-        self.red_variance = 25.0
-        self.orange_variance = 25.0
-        self.yellow_variance = 25.0
-        self.green_variance = 25.0
-        self.blue_variance = 25.0
-        self.violet_variance = 25.0
-        self.colour_wait_seconds = 300.0
+        self.red_variance = 5.0
+        self.orange_variance = 5.0
+        self.yellow_variance = 5.0
+        self.green_variance = 5.0
+        self.blue_variance = 5.0
+        self.violet_variance = 5.0
+        self.colour_wait_seconds = 1.0
 
         self.ultra_violet_enabled = 0
-        self.ultra_violet_index_variance = 25.0
-        self.ultra_violet_a_variance = 25.0
-        self.ultra_violet_b_variance = 25.0
-        self.ultra_violet_wait_seconds = 300.0
+        self.ultra_violet_index_variance = 5.0
+        self.ultra_violet_a_variance = 5.0
+        self.ultra_violet_b_variance = 5.0
+        self.ultra_violet_wait_seconds = 1.0
 
         self.accelerometer_enabled = 0
-        self.accelerometer_x_variance = 99999.99
-        self.accelerometer_y_variance = 99999.99
-        self.accelerometer_z_variance = 99999.99
-        self.accelerometer_wait_seconds = 0.15
+        self.accelerometer_x_variance = 25.0
+        self.accelerometer_y_variance = 25.0
+        self.accelerometer_z_variance = 25.0
+        self.accelerometer_wait_seconds = 0.25
 
         self.magnetometer_enabled = 0
-        self.magnetometer_x_variance = 99999.99
-        self.magnetometer_y_variance = 99999.99
-        self.magnetometer_z_variance = 99999.99
-        self.magnetometer_wait_seconds = 0.15
+        self.magnetometer_x_variance = 25.0
+        self.magnetometer_y_variance = 25.0
+        self.magnetometer_z_variance = 25.0
+        self.magnetometer_wait_seconds = 0.25
 
         self.gyroscope_enabled = 0
-        self.gyroscope_x_variance = 99999.99
-        self.gyroscope_y_variance = 99999.99
-        self.gyroscope_z_variance = 99999.99
-        self.gyroscope_wait_seconds = 0.15
+        self.gyroscope_x_variance = 25.0
+        self.gyroscope_y_variance = 25.0
+        self.gyroscope_z_variance = 25.0
+        self.gyroscope_wait_seconds = 0.25
 
     def init_trigger_variances(self, installed_sensors):
         """ Sets default values for all variances in the provided configuration object. """

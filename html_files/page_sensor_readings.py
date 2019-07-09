@@ -18,7 +18,7 @@
 """
 from time import strftime
 from operations_modules import logger
-from operations_modules import sensors
+from sensor_modules import sensor_access
 from html_files import html_templates
 
 
@@ -35,19 +35,19 @@ def get_sensor_readings_page():
     td_end = "</td>"
 
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
-    sensor_hostname = sensors.get_hostname()
-    sensor_ip = sensors.get_ip()
-    sensor_pressure = str(sensors.get_pressure())
-    sensor_humidity = str(sensors.get_humidity())
-    sensor_lumen = str(sensors.get_lumen())
-    sensor_ems = str(sensors.get_ems())
-    sensor_acc = str(sensors.get_accelerometer_xyz())
-    sensor_mag = str(sensors.get_magnetometer_xyz())
-    sensor_gyro = str(sensors.get_gyroscope_xyz())
+    sensor_hostname = sensor_access.get_hostname()
+    sensor_ip = sensor_access.get_ip()
+    sensor_pressure = str(sensor_access.get_pressure())
+    sensor_humidity = str(sensor_access.get_humidity())
+    sensor_lumen = str(sensor_access.get_lumen())
+    sensor_ems = str(sensor_access.get_ems())
+    sensor_acc = str(sensor_access.get_accelerometer_xyz())
+    sensor_mag = str(sensor_access.get_magnetometer_xyz())
+    sensor_gyro = str(sensor_access.get_gyroscope_xyz())
 
     try:
-        sensors_env_temperature_offset = sensors.configuration_main.current_config.temperature_offset
-        sensor_env_temperature = str(round(sensors.get_sensor_temperature(), 2))
+        sensors_env_temperature_offset = sensor_access.configuration_main.current_config.temperature_offset
+        sensor_env_temperature = str(round(sensor_access.get_sensor_temperature(), 2))
         sensor_env_temperature_adjusted = str(round(float(sensor_env_temperature) + sensors_env_temperature_offset, 2))
     except Exception as error:
         logger.primary_logger.error("Env Temperature Error: " + str(error))
