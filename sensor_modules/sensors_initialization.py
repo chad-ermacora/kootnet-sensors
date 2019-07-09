@@ -102,18 +102,25 @@ if software_version.old_version == software_version.version:
                                             str(sensor_error))
 
     if configuration_main.installed_sensors.pimoroni_bme680:
-        try:
-            pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
-        except Exception as sensor_error:
-            logger.primary_logger.warning("Pimoroni BME680 Sensor Failed - " + str(sensor_error))
-            sleep(5)
+        if configuration_main.installed_sensors.pimoroni_bmp280:
+            logger.primary_logger.warning("Pimoroni BME680 cannot be installed if the BMP280 is installed. " +
+                                          "Skipping BME680 & BMP280 - Please Remove the BMP280 OR the BME680 " +
+                                          "physically and from the Installed Sensors configuration")
+            configuration_main.installed_sensors.pimoroni_bme680 = 0
+            configuration_main.installed_sensors.pimoroni_bmp280 = 0
+        else:
             try:
                 pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
-                logger.primary_logger.info("Pimoroni BME680 Sensor Attempt 2 OK")
             except Exception as sensor_error:
-                logger.primary_logger.error("Pimoroni BME680 Sensor Attempt 2 Failed Skipping Sensor -" +
-                                            "SPI or I2C Disabled? - " +
-                                            str(sensor_error))
+                logger.primary_logger.warning("Pimoroni BME680 Sensor Failed - " + str(sensor_error))
+                sleep(5)
+                try:
+                    pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
+                    logger.primary_logger.info("Pimoroni BME680 Sensor Attempt 2 OK")
+                except Exception as sensor_error:
+                    logger.primary_logger.error("Pimoroni BME680 Sensor Attempt 2 Failed Skipping Sensor -" +
+                                                "SPI or I2C Disabled? - " +
+                                                str(sensor_error))
 
     if configuration_main.installed_sensors.pimoroni_bmp280:
         try:
