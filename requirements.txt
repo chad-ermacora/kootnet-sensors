@@ -17,7 +17,7 @@ lsm303d
 icm20948
 smbus2
 smbus
-# vl53l1x  Currently not supported in Raspbian Buster
+vl53l1x
 ltr559
 ST7735
 pms5003
