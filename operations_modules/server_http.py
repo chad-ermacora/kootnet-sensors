@@ -454,14 +454,10 @@ class CreateSensorHTTP:
 
         @self.app.route("/DisplayText", methods=["PUT"])
         def display_text():
-            logger.network_logger.info("* Displaying Text on LED Screen")
-
+            logger.network_logger.info("* Displaying Text on Installed Display")
             text_message = request.form['command_data']
-            if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-                sensor_access.display_message(text_message)
-                return "OK"
-            else:
-                return "No Display Found"
+            sensor_access.display_message(text_message)
+            return "OK"
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)
