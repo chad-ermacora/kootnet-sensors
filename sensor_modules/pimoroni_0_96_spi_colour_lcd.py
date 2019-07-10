@@ -15,6 +15,9 @@ Created on Tue July 9 15:53:56 2019
 @author: OO-Dragon
 """
 import time
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
 from operations_modules import logger
 
 
@@ -23,9 +26,6 @@ class CreateST7735:
 
     def __init__(self):
         self.st7735_import = __import__('ST7735')
-        self.image_import = __import__('PIL', fromlist=['Image'])
-        self.image_draw_import = __import__('PIL', fromlist=['ImageDraw'])
-        self.image_font_import = __import__('PIL', fromlist=['ImageFont'])
         try:
             # Create ST7735 LCD display class.
             self.display = self.st7735_import.ST7735(
@@ -41,12 +41,12 @@ class CreateST7735:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 10.96 SPI Colour LCD (160x80) Initialization- Failed - " + str(error))
 
-    def display_led_message(self, message):
+    def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         try:
-            img = self.image_import.new('RGB', (self.display.width, self.display.height), color=(0, 0, 0))
-            draw = self.image_draw_import.Draw(img)
-            font = self.image_font_import.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+            img = Image.new('RGB', (self.display.width, self.display.height), color=(0, 0, 0))
+            draw = ImageDraw.Draw(img)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
             size_x, size_y = draw.textsize(message, font)
 
             text_x = 160

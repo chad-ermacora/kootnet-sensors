@@ -160,7 +160,7 @@ class CreateRPSenseHAT:
 
                 if event.direction == "up":
                     shutdown_confirm = False
-                    self.display_led_message(self.linux_os_access.get_ip())
+                    self.display_text(self.linux_os_access.get_ip())
                 elif event.direction == "down":
                     self.sense.set_pixels(steve)
                     if shutdown_confirm:
@@ -170,10 +170,10 @@ class CreateRPSenseHAT:
                         system("shutdown -h now")
                 elif event.direction == "left":
                     shutdown_confirm = False
-                    self.display_led_message(str(int(self.humidity())) + "%RH")
+                    self.display_text(str(int(self.humidity())) + "%RH")
                 elif event.direction == "right":
                     shutdown_confirm = False
-                    self.display_led_message(str(int(self.temperature())) + "c")
+                    self.display_text(str(int(self.temperature())) + "c")
                 elif event.action == "held":
                     shutdown_confirm = True
                     self.sense.show_message("Off1",
@@ -185,7 +185,7 @@ class CreateRPSenseHAT:
         except Exception as error:
             logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations - " + str(error))
 
-    def display_led_message(self, message):
+    def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         try:
             acc = self.accelerometer_xyz()

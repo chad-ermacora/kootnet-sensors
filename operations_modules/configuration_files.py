@@ -269,6 +269,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if int(installed_sensor_lines[10][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_enviroplus = 1
+            new_installed_sensors.has_display = 1
             new_installed_sensors.has_env_temperature = 1
             new_installed_sensors.has_pressure = 1
             new_installed_sensors.has_humidity = 1

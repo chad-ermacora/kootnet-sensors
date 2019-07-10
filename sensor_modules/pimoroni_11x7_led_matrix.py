@@ -32,12 +32,12 @@ class CreateMatrix11x7:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 11x7 LED Matrix Initialization - Failed - " + str(error))
 
-    def display_led_message(self, message):
+    def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         message_length = len(message)
 
         try:
-            self.matrix11x7.write_string(" " + message + "    ")
+            self.matrix11x7.write_string("   " + message + "    ")
             # Scroll the buffer content
             count = 0
             while count < (message_length * 6) + 11:

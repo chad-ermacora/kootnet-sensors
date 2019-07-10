@@ -643,16 +643,19 @@ def display_message(text_message):
 
         if message_length > 0:
             if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_led_message,
+                display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_text,
                                         args=[text_message])
             elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message,
+                display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_text,
                                         args=[text_message])
             elif configuration_main.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message,
+                display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_text,
                                         args=[text_message])
             elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message,
+                display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_text,
+                                        args=[text_message])
+            elif configuration_main.installed_sensors.pimoroni_enviroplus:
+                display_thread = Thread(target=sensor_direct_access.pimoroni_enviroplus_sensor_access.display_text,
                                         args=[text_message])
             else:
                 display_thread = Thread(target=_empty_thread)

@@ -27,6 +27,8 @@ sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
+enviro_plus_font = "/opt/kootnet-sensors/extras/Asap-Bold.ttf"
+
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 

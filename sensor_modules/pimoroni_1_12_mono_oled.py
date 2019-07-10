@@ -28,7 +28,7 @@ class CreateLumaOLED:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
 
-    def display_led_message(self, message):
+    def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         try:
             pass
