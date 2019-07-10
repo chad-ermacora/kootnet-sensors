@@ -19,14 +19,14 @@
 import os
 from time import sleep
 from threading import Thread
-from operations_modules import sqlite_database
-from operations_modules import variance_checks
 from operations_modules import logger
 from operations_modules import program_start_checks
 from operations_modules import configuration_main
 from operations_modules import software_version
-from operations_modules import app_variables
-from operations_modules import http_server
+from operations_modules import recording_interval
+from operations_modules import recording_triggers
+from operations_modules import server_http
+from operations_modules import server_display
 from sensor_modules import sensor_access
 
 # Ensure files, database & configurations are OK
@@ -34,82 +34,50 @@ program_start_checks.set_file_permissions()
 program_start_checks.check_database_structure()
 
 if software_version.old_version != software_version.version:
-    logger.primary_logger.info("Checking files and configuration after upgrade")
     os.system("systemctl start SensorUpgradeChecks")
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done
     while True:
         sleep(10)
 
+logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
+
 # Start the HTTP Server for remote access
-sensor_http_server_thread = Thread(target=http_server.CreateSensorHTTP, args=[sensor_access])
+sensor_http_server_thread = Thread(target=server_http.CreateSensorHTTP, args=[sensor_access])
 sensor_http_server_thread.daemon = True
 sensor_http_server_thread.start()
-# Sleep to make sure HTTP server is up first
-sleep(4)
 
-logger.primary_logger.info("Sensor Recording Programs Starting ...")
+# If installed, start up SenseHAT Joystick program
+if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+    sense_joy_stick_thread = Thread(
+        target=sensor_access.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
+    sense_joy_stick_thread.daemon = True
+    sense_joy_stick_thread.start()
 
-
-def start_interval_recording():
-    """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
-    logger.primary_logger.info("Interval Recoding Started")
-    while True:
-        try:
-            new_sensor_data = sensor_access.get_interval_sensor_readings().split(configuration_main.command_data_separator)
-
-            logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
-                                          str(new_sensor_data[1]))
-            interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + str(new_sensor_data[0]) + ") VALUES (" + str(new_sensor_data[1]) + ")"
-
-            sqlite_database.write_to_sql_database(interval_sql_execute)
-
-            if configuration_main.installed_sensors.has_display and app_variables.sense_hat_show_led_message:
-                sensor_access.display_message("SQL-Int-Rec")
-        except Exception as error:
-            logger.primary_logger.error("Interval Failure: " + str(error))
-
-        sleep(configuration_main.current_config.sleep_duration_interval)
-
-
-# Load everything in its own thread and sleep.
 if configuration_main.installed_sensors.no_sensors is False:
+    # If there is a display installed, start up the display server
+    if configuration_main.installed_sensors.has_display:
+        display_thread = Thread(target=server_display.CreateSensorDisplay, args=[sensor_access])
+        display_thread.daemon = True
+        display_thread.start()
+    else:
+        logger.primary_logger.debug("No Compatible Displays Installed")
+
     if configuration_main.current_config.enable_interval_recording:
-        interval_recording_thread = Thread(target=start_interval_recording)
+        interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording, args=[sensor_access])
         interval_recording_thread.daemon = True
         interval_recording_thread.start()
     else:
-        logger.primary_logger.warning("Interval Recording Disabled in Config")
+        logger.primary_logger.debug("Interval Recording Disabled in Config")
 
     if configuration_main.current_config.enable_trigger_recording:
-        sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
-
-        threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
-                   Thread(target=sensor_variance_checks.check_cpu_temperature),
-                   Thread(target=sensor_variance_checks.check_env_temperature),
-                   Thread(target=sensor_variance_checks.check_pressure),
-                   Thread(target=sensor_variance_checks.check_altitude),
-                   Thread(target=sensor_variance_checks.check_humidity),
-                   Thread(target=sensor_variance_checks.check_distance),
-                   Thread(target=sensor_variance_checks.check_lumen),
-                   Thread(target=sensor_variance_checks.check_ems),
-                   Thread(target=sensor_variance_checks.check_accelerometer_xyz),
-                   Thread(target=sensor_variance_checks.check_magnetometer_xyz),
-                   Thread(target=sensor_variance_checks.check_gyroscope_xyz)]
-
-        for thread in threads:
-            try:
-                thread.daemon = True
-                thread.start()
-            except Exception as trigger_error:
-                logger.primary_logger.error("Trigger check failed to start: " + str(trigger_error))
-
-        logger.primary_logger.info("Trigger Recoding Started")
+        recording_triggers.start_trigger_recording(sensor_access)
     else:
-        logger.primary_logger.warning("Trigger Recording Disabled in Config")
+        logger.primary_logger.debug("Trigger Recording Disabled in Config")
 
 else:
     logger.primary_logger.warning("No sensors set in Installed Sensors")
 
+logger.primary_logger.debug("All Kootnet Sensor Programs Initiated")
 while True:
     sleep(600)

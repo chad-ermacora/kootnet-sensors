@@ -338,6 +338,36 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         logger.primary_logger.error("Invalid Installed Sensors Entry #16: " + new_installed_sensors.pimoroni_veml6075_name)
         bad_load = True
 
+    try:
+        if int(installed_sensor_lines[17][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_matrix_11x7 = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_matrix_11x7_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[18][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_st7735 = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_st7735_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[19][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_mono_oled_luma = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_mono_oled_luma_name)
+        bad_load = True
+
     if bad_load:
         logger.primary_logger.warning("One or more bad options in Installed Sensors configuration file.  " +
                                       "Disabling bad entries. Please review the Installed Sensors Configuration file.")
