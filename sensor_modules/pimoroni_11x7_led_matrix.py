@@ -35,17 +35,17 @@ class CreateMatrix11x7:
     def display_led_message(self, message):
         """ Scrolls Provided Text on LED Display. """
         message_length = len(message)
-        if message_length > 0:
-            try:
-                self.matrix11x7.write_string(" " + message + "    ")
-                # Scroll the buffer content
-                count = 0
-                while count < (message_length * 6) + 11:
-                    self.matrix11x7.show()
-                    self.matrix11x7.scroll()
-                    time.sleep(0.1)
-                    count += 1
-                self.matrix11x7.clear()
+
+        try:
+            self.matrix11x7.write_string(" " + message + "    ")
+            # Scroll the buffer content
+            count = 0
+            while count < (message_length * 6) + 11:
                 self.matrix11x7.show()
-            except Exception as error:
-                logger.sensors_logger.error("Scroll Message on Matrix11x7 Failed - " + str(error))
+                self.matrix11x7.scroll()
+                time.sleep(0.1)
+                count += 1
+            self.matrix11x7.clear()
+            self.matrix11x7.show()
+        except Exception as error:
+            logger.sensors_logger.error("Scroll Message on Matrix11x7 Failed - " + str(error))

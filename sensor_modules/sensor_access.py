@@ -639,24 +639,27 @@ def display_message(text_message):
     """ If a Display is installed, scroll provided text message on it. """
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
     if configuration_main.installed_sensors.has_display:
-        if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-            display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_led_message,
-                                    args=[text_message])
-        elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
-            display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message,
-                                    args=[text_message])
-        elif configuration_main.installed_sensors.pimoroni_st7735:
-            display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message,
-                                    args=[text_message])
-        elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
-            display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message,
-                args=[text_message])
+        message_length = len(text_message)
+
+        if message_length > 0:
+            if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+                display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_led_message,
+                                        args=[text_message])
+            elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
+                display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message,
+                                        args=[text_message])
+            elif configuration_main.installed_sensors.pimoroni_st7735:
+                display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message,
+                                        args=[text_message])
+            elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
+                display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message,
+                                        args=[text_message])
+            else:
+                display_thread = Thread(target=_empty_thread)
+            display_thread.daemon = True
+            display_thread.start()
         else:
-            display_thread = Thread(target=_empty_thread)
-        display_thread.daemon = True
-        display_thread.start()
-    else:
-        logger.primary_logger.warning("* No Display found for message: " + text_message)
+            logger.primary_logger.warning("* No Display found for message: " + text_message)
 
 
 def restart_services():
