@@ -140,6 +140,7 @@ class CreateRPSenseHAT:
                  s1, s1, b1, s1, s1, b1, s1, s1,
                  s1, s1, b1, b1, b1, b1, s1, s1]
         try:
+            logger.primary_logger.info("SenseHAT JoyStick Program Started")
             shutdown_confirm = False
             while True:
                 event = self.sense.stick.wait_for_event()

@@ -335,6 +335,8 @@ class CreateVarianceRecording:
         return [sensor_reading, datetime_stamps]
 
     def _universal_single_data_check(self, trigger_object):
+        logger.primary_logger.debug(trigger_object.sensor_type + " Starting Checks.  Checking every " +
+                                    str(trigger_object.sensor_wait_seconds) + " Seconds")
         while True:
             reading_and_datetime_stamps = self._get_sensor_readings_set(trigger_object.sensor_type,
                                                                         trigger_object.sensor_wait_seconds)
@@ -361,7 +363,7 @@ class CreateVarianceRecording:
                 count += 1
 
     def _universal_triple_data_check(self, trigger_object):
-        logger.primary_logger.info(trigger_object.sensor_type + " Starting Checks.  Checking every " +
+        logger.primary_logger.debug(trigger_object.sensor_type + " Starting Checks.  Checking every " +
                                       str(trigger_object.sensor_wait_seconds) + " Seconds")
         while True:
             reading_and_datetime_stamps = self._get_sensor_readings_set(trigger_object.sensor_type,
@@ -418,6 +420,8 @@ class CreateVarianceRecording:
                 count += 1
 
     def _universal_sextuple_data_check(self, trigger_object):
+        logger.primary_logger.debug(trigger_object.sensor_type + " Starting Checks.  Checking every " +
+                                    str(trigger_object.sensor_wait_seconds) + " Seconds")
         while True:
             reading_and_datetime_stamps = self._get_sensor_readings_set(trigger_object.sensor_type,
                                                                         trigger_object.sensor_wait_seconds)
