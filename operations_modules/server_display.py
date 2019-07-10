@@ -31,7 +31,7 @@ class CreateSensorDisplay:
     def scroll_interval_readings_on_display(self):
         logger.primary_logger.info("Display Server Started")
         while True:
-            message = "CPU: " + str(self.sensor_access.get_cpu_temperature()) + "°C "
-            message += "ENV: " + str(self.sensor_access.get_sensor_temperature()) + "°C "
+            message = "CPU: " + str(int(self.sensor_access.get_cpu_temperature())) + "°C "
+            message += "ENV: " + str(int(self.sensor_access.get_sensor_temperature())) + "°C "
             self.sensor_access.display_message(message)
             sleep(configuration_main.current_config.sleep_duration_interval)
