@@ -45,6 +45,10 @@ class CreateInstalledSensors:
         self.pimoroni_ltr_559 = 0
         self.pimoroni_veml6075 = 0
 
+        self.pimoroni_matrix_11x7 = 0
+        self.pimoroni_st7735 = 0
+        self.pimoroni_mono_oled_luma = 0
+
         self.has_display = 0
         self.has_real_time_clock = 0
 
@@ -87,6 +91,10 @@ class CreateInstalledSensors:
         self.pimoroni_ltr_559_name = "Pimoroni LTR-559"
         self.pimoroni_veml6075_name = "Pimoroni VEML6075"
 
+        self.pimoroni_matrix_11x7_name = "Pimoroni 11x7 LED Matrix"
+        self.pimoroni_st7735_name = "Pimoroni 10.96'' SPI Colour LCD (160x80)"
+        self.pimoroni_mono_oled_luma_name = "Pimoroni 1.12'' Mono OLED (128x128, white/black)"
+
     def get_installed_names_str(self):
         str_installed_sensors = ""
         if self.linux_system:
@@ -121,6 +129,12 @@ class CreateInstalledSensors:
             str_installed_sensors += self.pimoroni_ltr_559_name + " || "
         if self.pimoroni_veml6075:
             str_installed_sensors += self.pimoroni_veml6075_name + " || "
+        if self.pimoroni_matrix_11x7:
+            str_installed_sensors += self.pimoroni_matrix_11x7_name + " || "
+        if self.pimoroni_st7735:
+            str_installed_sensors += self.pimoroni_st7735_name + " || "
+        if self.pimoroni_mono_oled_luma:
+            str_installed_sensors += self.pimoroni_mono_oled_luma_name + " || "
 
         return str_installed_sensors[:-4]
 
@@ -157,7 +171,14 @@ class CreateInstalledSensors:
                                     str(self.pimoroni_ltr_559) + " = " + \
                                     self.pimoroni_ltr_559_name + "\n" + \
                                     str(self.pimoroni_veml6075) + " = " + \
-                                    self.pimoroni_veml6075_name + "\n"
+                                    self.pimoroni_veml6075_name + "\n" + \
+                                    str(self.pimoroni_matrix_11x7) + " = " + \
+                                    self.pimoroni_matrix_11x7_name + "\n" + \
+                                    str(self.pimoroni_st7735) + " = " + \
+                                    self.pimoroni_st7735_name + "\n" + \
+                                    str(self.pimoroni_mono_oled_luma) + " = " + \
+                                    self.pimoroni_mono_oled_luma_name + "\n"
+
         return new_installed_sensors_str
 
 

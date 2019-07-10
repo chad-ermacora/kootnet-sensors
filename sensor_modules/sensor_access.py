@@ -636,6 +636,12 @@ def display_message(text_message):
     if configuration_main.installed_sensors.has_display:
         if configuration_main.installed_sensors.raspberry_pi_sense_hat:
             sensor_direct_access.rp_sense_hat_sensor_access.display_led_message(text_message)
+        elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
+            sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message(text_message)
+        elif configuration_main.installed_sensors.pimoroni_st7735:
+            sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message(text_message)
+        elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
+            sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message(text_message)
     else:
         logger.primary_logger.warning("* No Display found for message: " + text_message)
 
