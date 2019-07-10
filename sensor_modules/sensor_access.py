@@ -19,6 +19,7 @@
 import os
 import psutil
 from datetime import datetime
+from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
@@ -630,18 +631,30 @@ def get_gyroscope_xyz():
         return "NoSensor"
 
 
+def _empty_thread():
+    return "stuff"
+
+
 def display_message(text_message):
     """ If a Display is installed, scroll provided text message on it. """
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
     if configuration_main.installed_sensors.has_display:
         if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-            sensor_direct_access.rp_sense_hat_sensor_access.display_led_message(text_message)
+            display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_led_message,
+                                    args=[text_message])
         elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
-            sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message(text_message)
+            display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_led_message,
+                                    args=[text_message])
         elif configuration_main.installed_sensors.pimoroni_st7735:
-            sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message(text_message)
+            display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_led_message,
+                                    args=[text_message])
         elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
-            sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message(text_message)
+            display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_led_message,
+                args=[text_message])
+        else:
+            display_thread = Thread(target=_empty_thread)
+        display_thread.daemon = True
+        display_thread.start()
     else:
         logger.primary_logger.warning("* No Display found for message: " + text_message)
 
