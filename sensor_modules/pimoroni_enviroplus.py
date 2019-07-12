@@ -16,7 +16,8 @@ Created on Tue June 25 10:53:56 2019
 
 @author: OO-Dragon
 """
-from time import sleep
+import time
+from threading import Thread
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -24,13 +25,17 @@ from operations_modules import logger
 from operations_modules import file_locations
 
 round_decimal_to = 5
-text_colour = (255, 255, 255)
-back_colour = (0, 170, 170)
+turn_off_display_seconds = 25
 
 
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
     def __init__(self):
+        self.display_off_count = 0
+        self.display_is_on = False
+        self.display_ready = True
+        self.font = ImageFont.truetype(file_locations.display_font, 40)
+
         try:
             self.enviroplus_import = __import__('enviroplus', fromlist=['gas'])
             self.pms5003_import = __import__('pms5003')
@@ -57,61 +62,64 @@ class CreateEnviroPlus:
             )
             # Initialize display
             self.st7735.begin()
-            self.top_pos = 25
-            self.x = 0
-            self.y = 0
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
 
-        try:
-            self.font = ImageFont.truetype(file_locations.enviro_plus_font, 20)
-            self.img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
-            self.draw = ImageDraw.Draw(self.img)
-        except Exception as error:
-            logger.sensors_logger.warning("Pimoroni Enviro+ PIL Initialization Failure - " + str(error))
-
         # First readings seem to return an error.  Getting them over with before needing readings
         self.bme280.get_temperature()
-        sleep(0.5)
+        time.sleep(0.5)
         self.bme280.get_humidity()
-        sleep(0.5)
+        time.sleep(0.5)
         self.bme280.get_pressure()
-        sleep(0.5)
+        time.sleep(0.5)
         self.ltr559_import.get_lux()
 
-    def _update_message_display_x_y(self, message, line_number):
-        # Calculate text position
-        size_x, size_y = self.draw.textsize(message, self.font)
+        self.thread_display_power_saving = Thread(target=self._display_timed_off)
+        self.thread_display_power_saving.daemon = True
+        self.thread_display_power_saving.start()
 
-        self.x = (self.st7735.width - size_x) / 2
-        self.y = (self.st7735.height / line_number) - (size_y / line_number)
+    def _display_timed_off(self):
+        while True:
+            if self.display_is_on:
+                if self.display_off_count > turn_off_display_seconds:
+                    self.st7735.set_backlight(0)
+                    self.display_is_on = False
+                else:
+                    self.display_off_count += 1
+            time.sleep(1)
 
     # Displays text on the 0.96" LCD
     def display_text(self, message):
-        line_count = 0
-        multi_line_message = []
-        count = 0
-        while count < len(message):
-            multi_line_message.append(message[count:count + 12] + "\n")
-            count += 12
-            line_count += 1
+        if self.display_ready:
+            self.display_ready = False
+            message_img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
+            blank_img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
+            draw = ImageDraw.Draw(message_img)
 
-        try:
-            # Draw background rectangle and write text.
-            self.draw.rectangle((0, 0, 160, 80), back_colour)
-            # Write the text at the top in black
-            self.draw.text((self.x, self.y), message, font=self.font, fill=text_colour)
-            if line_count > 1:
-                self._update_message_display_x_y(message, 2)
-                self.draw.text((self.x, self.y), message, font=self.font, fill=text_colour)
-            if line_count > 2:
-                self._update_message_display_x_y(message, 3)
-                self.draw.text((self.x, self.y), message, font=self.font, fill=text_colour)
-            self.st7735.display(self.img)
-            sleep(10)
-            self.st7735.set_backlight(0)
-        except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed - " + str(error))
+            self.st7735.set_backlight(1)
+            self.display_off_count = 0
+            self.display_is_on = True
+
+            size_x, size_y = draw.textsize(message, self.font)
+            text_x = 160
+            text_y = (80 - size_y) // 2
+
+            t_start = time.time()
+            try:
+                while self.display_off_count < turn_off_display_seconds and self.display_is_on:
+                    x = (time.time() - t_start) * 100
+                    x %= (size_x + 160)
+                    draw.rectangle((0, 0, 160, 80), (0, 0, 0))
+                    draw.text((int(text_x - x), text_y), message, font=self.font, fill=(255, 255, 255))
+                    self.st7735.display(message_img)
+                    time.sleep(.2)
+                self.st7735.display(blank_img)
+            except Exception as error:
+                logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed - " + str(error))
+
+            self.display_ready = True
+        else:
+            logger.sensors_logger.warning("Unable to display message on Pimoroni Enviro+.  Already in use.")
 
     def temperature(self):
         """ Returns Temperature as a Float. """

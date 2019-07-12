@@ -19,6 +19,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from operations_modules import logger
+from operations_modules import file_locations
 
 
 class CreateST7735:
@@ -46,7 +47,7 @@ class CreateST7735:
         try:
             img = Image.new('RGB', (self.display.width, self.display.height), color=(0, 0, 0))
             draw = ImageDraw.Draw(img)
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 30)
+            font = ImageFont.truetype(file_locations.display_font, 30)
             size_x, size_y = draw.textsize(message, font)
 
             text_x = 160
