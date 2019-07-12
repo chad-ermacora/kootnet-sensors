@@ -15,22 +15,69 @@ Created on Tue July 9 16:33:56 2019
 
 @author: OO-Dragon
 """
+from time import sleep
+from threading import Thread
 from operations_modules import logger
+
+turn_off_display = 30
 
 
 class CreateLumaOLED:
     """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128, white/black). """
 
     def __init__(self):
-        self.luma_oled_import = __import__('luma.oled')
+        self.display_off_count = 0
+        self.display_is_on = True
+
         try:
-            pass
+            self.luma_serial_import = __import__('luma.core.interface.serial', fromlist=['i2c'])
+            self.luma_sh1106_import = __import__('luma.oled.device', fromlist=['sh1106'])
+            self.luma_canvas_import = __import__('luma.core.render', fromlist=['canvas'])
+            serial = self.luma_serial_import.i2c(port=1, address=0x3C)
+            self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
 
+        self.thread_display_power_saving = Thread(target=self._display_timed_off)
+        self.thread_display_power_saving.daemon = True
+        self.thread_display_power_saving.start()
+
+    def _display_timed_off(self):
+        while True:
+            if self.display_is_on:
+                if self.display_off_count > turn_off_display:
+                    self.device.hide()
+                    self.display_is_on = False
+                else:
+                    self.display_off_count += 1
+            sleep(1)
+
+    @staticmethod
+    def _format_message(message):
+        message_length = len(message)
+
+        return_message = ""
+        character_count = 0
+        while message_length > character_count:
+            if character_count + 20 <= message_length:
+                end_character_count = character_count + 20
+                return_message += message[character_count:end_character_count] + "\n"
+                character_count = end_character_count
+            else:
+                return_message += message[character_count:]
+                character_count = message_length
+        return return_message
+
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
+        self.device.show()
+        self.display_off_count = 0
+        self.display_is_on = True
+
         try:
-            pass
+            clean_message = self._format_message(message)
+            with self.luma_canvas_import.canvas(self.device) as draw:
+                draw.rectangle(self.device.bounding_box, outline="white", fill="black")
+                draw.text((5, 5), clean_message, fill="white")
         except Exception as error:
-            logger.sensors_logger.error("Scroll Message on 1.12 Mono OLED Failed - " + str(error))
+            logger.sensors_logger.error("Message on 1.12 Mono OLED Failed - " + str(error))

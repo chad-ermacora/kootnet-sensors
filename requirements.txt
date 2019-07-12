@@ -19,3 +19,6 @@ smbus
 vl53l1x
 ltr559
 veml6075
+luma.oled
+matrix11x7
+st7735
