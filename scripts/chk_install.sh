@@ -27,6 +27,9 @@ Change the number in front of each line. Enable = 1 & Disable = 0
 0 = Pimoroni VL53L1X
 0 = Pimoroni LTR-559
 0 = Pimoroni VEML6075
+0 = Pimoroni 11x7 LED Matrix
+0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
+0 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
 EOF
   nano ${CONFIG_DIR}/installed_sensors.conf
 fi
@@ -40,6 +43,7 @@ else
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 0 = Enable Debug Logging
+0 = Enable Display (If present)
 1 = Record Interval Sensors to SQL Database
 0 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings

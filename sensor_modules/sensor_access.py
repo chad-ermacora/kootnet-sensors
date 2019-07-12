@@ -638,7 +638,7 @@ def _empty_thread():
 def display_message(text_message):
     """ If a Display is installed, scroll provided text message on it. """
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
-    if configuration_main.installed_sensors.has_display:
+    if configuration_main.installed_sensors.has_display and configuration_main.current_config.enable_display:
         message_length = len(text_message)
 
         if message_length > 0:
@@ -661,8 +661,8 @@ def display_message(text_message):
                 display_thread = Thread(target=_empty_thread)
             display_thread.daemon = True
             display_thread.start()
-        else:
-            logger.primary_logger.warning("* No Display found for message: " + text_message)
+    else:
+        logger.primary_logger.warning("* No Display found or it is disabled in the configuration")
 
 
 def restart_services():

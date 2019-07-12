@@ -27,6 +27,7 @@ def convert_config_to_str(config):
     """ Takes configuration Object and returns it as a string. """
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
+                      str(config.enable_display) + " = Enable Display (If present)" + \
                       str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
                       str(config.enable_trigger_recording) + " = Record Trigger Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + " = Seconds between Interval recordings\n" + \
@@ -70,31 +71,37 @@ def convert_config_lines_to_obj(config_text_file):
         bad_load = True
 
     try:
-        new_config.enable_interval_recording = int(config_text_file[2].split('=')[0].strip())
+        new_config.enable_display = int(config_text_file[2].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Config - Enable Display: " + str(error))
+        bad_load = True
+
+    try:
+        new_config.enable_interval_recording = int(config_text_file[3].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Record Interval Sensors: " + str(error))
         bad_load = True
 
     try:
-        new_config.enable_trigger_recording = int(config_text_file[3].split('=')[0].strip())
+        new_config.enable_trigger_recording = int(config_text_file[4].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Record Trigger Sensors: " + str(error))
         bad_load = True
 
     try:
-        new_config.sleep_duration_interval = float(config_text_file[4].split('=')[0].strip())
+        new_config.sleep_duration_interval = float(config_text_file[5].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Seconds between Interval recordings: " + str(error))
         bad_load = True
 
     try:
-        new_config.enable_custom_temp = int(config_text_file[5].split('=')[0].strip())
+        new_config.enable_custom_temp = int(config_text_file[6].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Enable Custom Temperature Offset: " + str(error))
         bad_load = True
 
     try:
-        new_config.temperature_offset = float(config_text_file[6].split('=')[0].strip())
+        new_config.temperature_offset = float(config_text_file[7].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
         bad_load = True
