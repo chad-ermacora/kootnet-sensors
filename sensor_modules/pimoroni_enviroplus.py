@@ -34,7 +34,7 @@ class CreateEnviroPlus:
     def __init__(self):
         try:
             self.display_off_count = 0
-            self.display_is_on = False
+            self.display_is_on = True
             self.display_ready = True
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
@@ -104,12 +104,12 @@ class CreateEnviroPlus:
             t_start = time.time()
             try:
                 while self.display_off_count < turn_off_display_seconds and self.display_is_on:
-                    x = (time.time() - t_start) * 100
+                    x = (time.time() - t_start) * 80
                     x %= (size_x + 160)
                     draw.rectangle((0, 0, 160, 80), (0, 0, 0))
                     draw.text((int(text_x - x), text_y), message, font=self.font, fill=(255, 255, 255))
                     self.st7735.display(message_img)
-                    time.sleep(.2)
+                    time.sleep(.1)
                 self.st7735.display(blank_img)
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed - " + str(error))

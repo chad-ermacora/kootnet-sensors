@@ -129,7 +129,7 @@ def run_upgrade_checks():
                 upgrade_functions.reset_variance_config()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                            " || New: " + software_version.version)
-            if previous_version.minor_version < 97:
+            if previous_version.minor_version < 98:
                 no_changes = False
                 upgrade_functions.reset_config()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +

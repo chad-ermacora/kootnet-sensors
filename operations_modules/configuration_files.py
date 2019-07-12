@@ -27,7 +27,7 @@ def convert_config_to_str(config):
     """ Takes configuration Object and returns it as a string. """
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
-                      str(config.enable_display) + " = Enable Display (If present)" + \
+                      str(config.enable_display) + " = Enable Display (If present)\n" + \
                       str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
                       str(config.enable_trigger_recording) + " = Record Trigger Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + " = Seconds between Interval recordings\n" + \

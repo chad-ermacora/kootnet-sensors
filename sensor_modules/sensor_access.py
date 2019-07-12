@@ -662,7 +662,7 @@ def display_message(text_message):
             display_thread.daemon = True
             display_thread.start()
     else:
-        logger.primary_logger.warning("* No Display found or it is disabled in the configuration")
+        logger.primary_logger.debug("* No Display found or it is disabled in the configuration")
 
 
 def restart_services():
