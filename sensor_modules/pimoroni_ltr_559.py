@@ -29,6 +29,7 @@ class CreateLTR559:
     def __init__(self):
         try:
             self.ltr_559 = __import__('ltr559')
+            self.ltr_559.get_lux()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Initialization Failed - " + str(error))
             configuration_main.installed_sensors.pimoroni_ltr_559 = 0

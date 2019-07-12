@@ -31,6 +31,7 @@ class CreateLSM303D:
         try:
             self.lsm303d_import = __import__('lsm303d')
             self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
+            self.lsm.accelerometer()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LSM303D Initialization Failed - " + str(error))
             configuration_main.installed_sensors.pimoroni_lsm303d = 0

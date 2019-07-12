@@ -26,6 +26,7 @@ class CreateEnviro:
     def __init__(self):
         try:
             self.enviro_import = __import__('envirophat')
+            self.enviro_import.weather.temperature()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Initialization Failed - " + str(error))
             configuration_main.installed_sensors.pimoroni_enviro = 0

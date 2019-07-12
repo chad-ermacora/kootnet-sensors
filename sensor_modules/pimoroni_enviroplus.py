@@ -71,8 +71,9 @@ class CreateEnviroPlus:
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
         except Exception as error:
-            logger.sensors_logger.warning("Pimoroni Enviro+ Initialization Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Initialization Failed - " + str(error))
             configuration_main.installed_sensors.pimoroni_enviroplus = 0
+            configuration_main.installed_sensors.pimoroni_pms5003 = 0
 
     def _display_timed_off(self):
         while True:
