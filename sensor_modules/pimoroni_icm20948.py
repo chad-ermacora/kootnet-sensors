@@ -17,6 +17,7 @@ Created on Tue June 27 18:43:56 2019
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -24,13 +25,13 @@ round_decimal_to = 5
 class CreateICM20948:
     """ Creates Function access to the ICM20948. """
     def __init__(self):
-        self.icm20948_import = __import__('icm20948', fromlist=['ICM20948'])
-
         try:
+            self.icm20948_import = __import__('icm20948', fromlist=['ICM20948'])
             self.imu = self.icm20948_import.ICM20948()
             logger.sensors_logger.debug("Pimoroni ICM20948 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni ICM20948 Initialization - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni ICM20948 Initialization Failed: " + str(error))
+            configuration_main.installed_sensors.pimoroni_icm20948 = 0
 
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """

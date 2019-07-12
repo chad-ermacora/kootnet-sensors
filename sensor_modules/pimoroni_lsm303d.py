@@ -18,6 +18,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 lsm303d_address = 0x1d
 round_decimal_to = 5
@@ -27,8 +28,12 @@ class CreateLSM303D:
     """ Creates Function access to the Pimoroni LSM303D. """
 
     def __init__(self):
-        self.lsm303d_import = __import__('lsm303d')
-        self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
+        try:
+            self.lsm303d_import = __import__('lsm303d')
+            self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni LSM303D Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_lsm303d = 0
 
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """

@@ -22,6 +22,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from operations_modules import logger
+from operations_modules import configuration_main
 from operations_modules import file_locations
 
 round_decimal_to = 5
@@ -31,26 +32,20 @@ turn_off_display_seconds = 25
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
     def __init__(self):
-        self.display_off_count = 0
-        self.display_is_on = False
-        self.display_ready = True
-        self.font = ImageFont.truetype(file_locations.display_font, 40)
-
         try:
+            self.display_off_count = 0
+            self.display_is_on = False
+            self.display_ready = True
+            self.font = ImageFont.truetype(file_locations.display_font, 40)
+
             self.enviroplus_import = __import__('enviroplus', fromlist=['gas'])
             self.pms5003_import = __import__('pms5003')
             self.bme280_import = __import__('bme280')
             self.ST7735_import = __import__('ST7735')
             self.ltr559_import = __import__('ltr559')
-        except Exception as error:
-            logger.sensors_logger.warning("Pimoroni Enviro+ Module Load Failure - " + str(error))
 
-        try:
             self.bme280 = self.bme280_import.BME280()
-        except Exception as error:
-            logger.sensors_logger.warning("Pimoroni Enviro+ BME280 Initialization Failure - " + str(error))
 
-        try:
             # Create ST7735 LCD display class
             self.st7735 = self.ST7735_import.ST7735(
                 port=0,
@@ -62,21 +57,22 @@ class CreateEnviroPlus:
             )
             # Initialize display
             self.st7735.begin()
+
+            # First readings seem to return an error.  Getting them over with before needing readings
+            self.bme280.get_temperature()
+            time.sleep(0.5)
+            self.bme280.get_humidity()
+            time.sleep(0.5)
+            self.bme280.get_pressure()
+            time.sleep(0.5)
+            self.ltr559_import.get_lux()
+
+            self.thread_display_power_saving = Thread(target=self._display_timed_off)
+            self.thread_display_power_saving.daemon = True
+            self.thread_display_power_saving.start()
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
-
-        # First readings seem to return an error.  Getting them over with before needing readings
-        self.bme280.get_temperature()
-        time.sleep(0.5)
-        self.bme280.get_humidity()
-        time.sleep(0.5)
-        self.bme280.get_pressure()
-        time.sleep(0.5)
-        self.ltr559_import.get_lux()
-
-        self.thread_display_power_saving = Thread(target=self._display_timed_off)
-        self.thread_display_power_saving.daemon = True
-        self.thread_display_power_saving.start()
+            logger.sensors_logger.warning("Pimoroni Enviro+ Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_enviroplus = 0
 
     def _display_timed_off(self):
         while True:

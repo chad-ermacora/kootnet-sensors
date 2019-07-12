@@ -21,6 +21,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -29,9 +30,13 @@ class CreateBH1745:
     """ Creates Function access to the Pimoroni BH1745. """
 
     def __init__(self):
-        bh1745_import = __import__('bh1745')
-        self.bh1745 = bh1745_import.BH1745()
-        self.bh1745.setup()
+        try:
+            bh1745_import = __import__('bh1745')
+            self.bh1745 = bh1745_import.BH1745()
+            self.bh1745.setup()
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni BH1745 Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_bh1745 = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """

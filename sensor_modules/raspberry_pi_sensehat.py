@@ -18,8 +18,8 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from os import system
-
 from operations_modules import logger
+from operations_modules import configuration_main
 from sensor_modules import linux_os
 
 round_decimal_to = 5
@@ -29,15 +29,14 @@ class CreateRPSenseHAT:
     """ Creates Function access to the Raspberry Pi Sense HAT. """
 
     def __init__(self):
-        self.display_ready = True
-
-        self.sense_hat_import = __import__("sense_hat")
         try:
+            self.display_ready = True
+            self.sense_hat_import = __import__("sense_hat")
             self.sense = self.sense_hat_import.SenseHat()
+            self.linux_os_access = linux_os.CreateLinuxSystem()
         except Exception as error:
-            logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
-
-        self.linux_os_access = linux_os.CreateLinuxSystem()
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.raspberry_pi_sense_hat = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """
@@ -213,4 +212,3 @@ class CreateRPSenseHAT:
             self.display_ready = True
         else:
             logger.sensors_logger.warning("Unable to display message on Raspberry Pi SenseHAT.  Already in use.")
-

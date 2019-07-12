@@ -16,6 +16,7 @@ pip3 install as7262
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -24,12 +25,16 @@ class CreateAS7262:
     """ Creates Function access to the Pimoroni AS7262. """
 
     def __init__(self):
-        self.as7262_import = __import__('as7262')
-        self.as7262_import.soft_reset()
-        self.as7262_import.set_gain(64)
-        self.as7262_import.set_integration_time(21)
-        self.as7262_import.set_measurement_mode(2)
-        self.as7262_import.set_illumination_led(0)
+        try:
+            self.as7262_import = __import__('as7262')
+            self.as7262_import.soft_reset()
+            self.as7262_import.set_gain(64)
+            self.as7262_import.set_integration_time(21)
+            self.as7262_import.set_measurement_mode(2)
+            self.as7262_import.set_illumination_led(0)
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni AS7262 Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_as7262 = 0
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """

@@ -18,6 +18,7 @@ pip3 install ltr559
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -26,7 +27,11 @@ class CreateLTR559:
     """ Creates Function access to the Pimoroni LTR-559. """
 
     def __init__(self):
-        self.ltr_559 = __import__('ltr559')
+        try:
+            self.ltr_559 = __import__('ltr559')
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni LTR-559 Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_ltr_559 = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """

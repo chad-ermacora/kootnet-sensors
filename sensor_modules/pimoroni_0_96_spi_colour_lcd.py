@@ -19,6 +19,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from operations_modules import logger
+from operations_modules import configuration_main
 from operations_modules import file_locations
 
 
@@ -26,8 +27,8 @@ class CreateST7735:
     """ Creates Function access to the Pimoroni 10.96" SPI Colour LCD (160x80). """
 
     def __init__(self):
-        self.st7735_import = __import__('ST7735')
         try:
+            self.st7735_import = __import__('ST7735')
             # Create ST7735 LCD display class.
             self.display = self.st7735_import.ST7735(
                 port=0,
@@ -41,6 +42,7 @@ class CreateST7735:
             self.display.begin()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 10.96 SPI Colour LCD (160x80) Initialization- Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_st7735 = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """

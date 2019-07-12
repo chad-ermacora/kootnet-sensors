@@ -9,6 +9,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -17,7 +18,12 @@ class CreateRPSystem:
     """ Creates Function access to Raspberry Pi Hardware Information. """
 
     def __init__(self):
-        self.gp_import = __import__('gpiozero')
+        try:
+            self.gp_import = __import__('gpiozero')
+        except Exception as error:
+            logger.sensors_logger.error("Raspberry Pi System Access Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.raspberry_pi_3b_plus = 0
+            configuration_main.installed_sensors.raspberry_pi_zero_w = 0
 
     def cpu_temperature(self):
         """ Returns System CPU Temperature as a Float. """

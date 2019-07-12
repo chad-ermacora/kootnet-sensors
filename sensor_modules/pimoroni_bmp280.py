@@ -17,6 +17,7 @@ Created on Tue June 25 10:53:56 2019
 """
 import smbus2
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -25,17 +26,14 @@ class CreateBMP280:
     """ Creates Function access to the Pimoroni BMP280. """
 
     def __init__(self):
-        self.bmp280_import = __import__('bmp280')
         try:
-            # Initialise the BMP280
+            self.bmp280_import = __import__('bmp280')
             bus = smbus2.SMBus(1)
             self.bmp280 = self.bmp280_import.BMP280(i2c_dev=bus)
             logger.sensors_logger.debug("Pimoroni BMP280 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BMP280 Initialization - Failed: " + str(error))
-
-        self.baseline_values = []
-        self.baseline_size = 100
+            logger.sensors_logger.error("Pimoroni BMP280 Initialization Failed: " + str(error))
+            configuration_main.installed_sensors.pimoroni_bmp280 = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

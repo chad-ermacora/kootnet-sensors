@@ -15,6 +15,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -23,14 +24,15 @@ class CreateBME680:
     """ Creates Function access to the Pimoroni BME680. """
 
     def __init__(self):
-        self.bme680_import = __import__('bme680')
         try:
+            self.bme680_import = __import__('bme680')
             self.sensor = self.bme680_import.BME680()
             self.sensor.set_humidity_oversample(self.bme680_import.OS_2X)
             self.sensor.set_filter(self.bme680_import.FILTER_SIZE_3)
             logger.sensors_logger.debug("Pimoroni BME680 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BME680 Initialization - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni BME680 Initialization Failed: " + str(error))
+            configuration_main.installed_sensors.pimoroni_bme680 = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

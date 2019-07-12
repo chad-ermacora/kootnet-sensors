@@ -18,19 +18,21 @@ Created on Tue July 9 15:53:56 2019
 """
 import time
 from operations_modules import logger
+from operations_modules import configuration_main
 
 
 class CreateMatrix11x7:
     """ Creates Function access to the Pimoroni 11x7 LED Matrix. """
 
     def __init__(self):
-        self.matrix_11x7_import = __import__('matrix11x7', fromlist=['Matrix11x7'])
-        self.matrix_11x7_fonts_import = __import__('matrix11x7.fonts', fromlist=['font5x7'])
         try:
+            self.matrix_11x7_import = __import__('matrix11x7', fromlist=['Matrix11x7'])
+            self.matrix_11x7_fonts_import = __import__('matrix11x7.fonts', fromlist=['font5x7'])
             self.matrix11x7 = self.matrix_11x7_import.Matrix11x7()
             self.matrix11x7.set_brightness(0.15)
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni 11x7 LED Matrix Initialization - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni 11x7 LED Matrix Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_matrix_11x7 = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """

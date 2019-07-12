@@ -16,6 +16,7 @@ Created on Tue June 25 10:53:56 2019
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -24,11 +25,9 @@ class CreateVEML6075:
     """ Creates Function access to the Pimoroni VEML6075. """
 
     def __init__(self):
-        self.time = __import__('time')
-        self.veml6075_import = __import__('veml6075')
-        self.smbus_import = __import__('smbus')
         try:
-            # Create VEML6075 instance and set up
+            self.veml6075_import = __import__('veml6075')
+            self.smbus_import = __import__('smbus')
             self.bus = self.smbus_import.SMBus(1)
             self.uv_sensor = self.veml6075_import.VEML6075(i2c_dev=self.bus)
             self.uv_sensor.set_shutdown(False)
@@ -36,7 +35,8 @@ class CreateVEML6075:
             self.uv_sensor.set_integration_time('100ms')
             logger.sensors_logger.debug("Pimoroni VEML6075 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni VEML6075 Initialization - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni VEML6075 Initialization Failed: " + str(error))
+            configuration_main.installed_sensors.pimoroni_veml6075 = 0
 
     def ultra_violet(self):
         """ Returns Ultra Violet (A,B) as a list. """

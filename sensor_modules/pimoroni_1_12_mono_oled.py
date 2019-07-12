@@ -18,6 +18,7 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
+from operations_modules import configuration_main
 
 turn_off_display = 30
 
@@ -26,21 +27,21 @@ class CreateLumaOLED:
     """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128, white/black). """
 
     def __init__(self):
-        self.display_off_count = 0
-        self.display_is_on = True
-
         try:
+            self.display_off_count = 0
+            self.display_is_on = True
             self.luma_serial_import = __import__('luma.core.interface.serial', fromlist=['i2c'])
             self.luma_sh1106_import = __import__('luma.oled.device', fromlist=['sh1106'])
             self.luma_canvas_import = __import__('luma.core.render', fromlist=['canvas'])
             serial = self.luma_serial_import.i2c(port=1, address=0x3C)
             self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
+
+            self.thread_display_power_saving = Thread(target=self._display_timed_off)
+            self.thread_display_power_saving.daemon = True
+            self.thread_display_power_saving.start()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
-
-        self.thread_display_power_saving = Thread(target=self._display_timed_off)
-        self.thread_display_power_saving.daemon = True
-        self.thread_display_power_saving.start()
+            configuration_main.installed_sensors.pimoroni_mono_oled_luma = 0
 
     def _display_timed_off(self):
         while True:

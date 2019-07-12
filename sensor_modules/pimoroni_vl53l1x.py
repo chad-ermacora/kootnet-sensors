@@ -17,6 +17,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -25,7 +26,11 @@ class CreateVL53L1X:
     """ Creates Function access to the Pimoroni VL53L1X. """
 
     def __init__(self):
-        self.vl53 = __import__('VL53L1X')
+        try:
+            self.vl53 = __import__('VL53L1X')
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni VL53L1X Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_vl53l1x = 0
 
     def distance(self):
         """ Returns distance in mm. """
