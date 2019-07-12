@@ -29,6 +29,8 @@ class CreateRPSenseHAT:
     """ Creates Function access to the Raspberry Pi Sense HAT. """
 
     def __init__(self):
+        self.display_ready = True
+
         self.sense_hat_import = __import__("sense_hat")
         try:
             self.sense = self.sense_hat_import.SenseHat()
@@ -187,22 +189,28 @@ class CreateRPSenseHAT:
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
-        try:
-            acc = self.accelerometer_xyz()
-            acc_x = round(acc[0], 0)
-            acc_y = round(acc[1], 0)
+        if self.display_ready:
+            self.display_ready = False
+            try:
+                acc = self.accelerometer_xyz()
+                acc_x = round(acc[0], 0)
+                acc_y = round(acc[1], 0)
 
-            if acc_x == -1:
-                self.sense.set_rotation(90)
-            elif acc_y == 1:
-                self.sense.set_rotation(0)
-            elif acc_y == -1:
-                self.sense.set_rotation(180)
-            else:
-                self.sense.set_rotation(270)
+                if acc_x == -1:
+                    self.sense.set_rotation(90)
+                elif acc_y == 1:
+                    self.sense.set_rotation(0)
+                elif acc_y == -1:
+                    self.sense.set_rotation(180)
+                else:
+                    self.sense.set_rotation(270)
 
-            self.sense.show_message(str(message),
-                                    scroll_speed=0.12,
-                                    text_colour=(75, 0, 0))
-        except Exception as error:
-            logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
+                self.sense.show_message(str(message),
+                                        scroll_speed=0.12,
+                                        text_colour=(75, 0, 0))
+            except Exception as error:
+                logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
+            self.display_ready = True
+        else:
+            logger.sensors_logger.warning("Unable to display message on Raspberry Pi SenseHAT.  Already in use.")
+
