@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [[ "$1" != "dev" ]]
+if [[ "$1" == "dev" ]]
 then
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
 else

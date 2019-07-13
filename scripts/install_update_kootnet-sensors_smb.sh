@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [[ "$1" != "dev" ]]
+if [[ "$1" == "dev" ]]
 then
   SMB_SHARE="/KootNetSMB/dev"
 else
