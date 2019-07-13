@@ -137,9 +137,9 @@ trigger_pairs = 3
 restart_sensor_services_command = "systemctl daemon-reload ; " + \
                                   "systemctl restart KootnetSensors"
 
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_e-ink.sh",
+                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_http.sh",
+                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_smb.sh",
                  "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
                  "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                  "RebootSystem": "reboot",

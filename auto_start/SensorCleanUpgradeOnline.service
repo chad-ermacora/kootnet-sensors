@@ -6,7 +6,7 @@ Type=simple
 Restart=no
 User=root
 Group=pi
-ExecStart=/bin/bash /home/kootnet_data/scripts/clean_upgrade_online.sh
+ExecStart=/bin/bash /home/kootnet_data/scripts/clean_upgrade_http.sh
 
 [Install]
 WantedBy=multi-user.target
