@@ -44,4 +44,4 @@ systemctl daemon-reload
 printf '\n\nUninstall Complete.\nPress enter to exit\n'
 read nothing2
 rm -f ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
-rm -f ${SPECIAL_SCRIPTS_DIR}/uninstall.sh
+rm -f ${SPECIAL_SCRIPTS_DIR}/uninstall_kootnet-sensors.sh

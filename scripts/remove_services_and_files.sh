@@ -19,7 +19,7 @@ rm -f /etc/systemd/system/SensorRecording.service 2>/dev/null
 printf '\nRemoving Program Files\n'
 rm -R -f /opt/kootnet-sensors 2>/dev/null
 rm -f -R /opt/kootnet-sensors
-rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_online.sh 2>/dev/null
+rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_http.sh 2>/dev/null
 rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_smb.sh 2>/dev/null
 rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
 sleep 4

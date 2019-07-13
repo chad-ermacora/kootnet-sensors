@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
+if [[ "$1" != "dev" ]]
+then
+  HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
+else
+  HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
+fi
 # Upgrade from Online HTTP server
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 # HTTP Server Options
 HTTP_SERVER="http://kootenay-networks.com"
-HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 HTTP_ZIP="/KootNetSensors.zip"
 CONTROL_INSTALL="n"
 # Make sure its running with root
@@ -79,10 +84,10 @@ then
   cp -f -R /tmp/SensorHTTPUpgrade/sensor-control-center/* /opt/kootnet-control-center
 fi
 # Updating Clean Upgrade files
-cp -f /opt/kootnet-sensors/scripts/clean_upgrade_online.sh ${DATA_DIR}/scripts
+cp -f /opt/kootnet-sensors/scripts/clean_upgrade_http.sh ${DATA_DIR}/scripts
 cp -f /opt/kootnet-sensors/scripts/clean_upgrade_smb.sh ${DATA_DIR}/scripts
 cp -f /opt/kootnet-sensors/scripts/remove_services_and_files.sh ${DATA_DIR}/scripts
-cp -f /opt/kootnet-sensors/scripts/uninstall.sh ${DATA_DIR}/scripts
+cp -f /opt/kootnet-sensors/scripts/uninstall_kootnet-sensors.sh ${DATA_DIR}/scripts
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_autostart.sh
 bash /opt/kootnet-sensors/scripts/set_permissions.sh
