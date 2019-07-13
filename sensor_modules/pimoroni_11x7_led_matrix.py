@@ -26,6 +26,7 @@ class CreateMatrix11x7:
 
     def __init__(self):
         try:
+            self.display_ready = True
             self.matrix_11x7_import = __import__('matrix11x7', fromlist=['Matrix11x7'])
             self.matrix_11x7_fonts_import = __import__('matrix11x7.fonts', fromlist=['font5x7'])
             self.matrix11x7 = self.matrix_11x7_import.Matrix11x7()
@@ -37,17 +38,21 @@ class CreateMatrix11x7:
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         message_length = len(message)
-
-        try:
-            self.matrix11x7.write_string("   " + message + "    ")
-            # Scroll the buffer content
-            count = 0
-            while count < (message_length * 6) + 11:
+        if self.display_ready:
+            self.display_ready = False
+            try:
+                self.matrix11x7.write_string("   " + message + "    ")
+                # Scroll the buffer content
+                count = 0
+                while count < (message_length * 6) + 11:
+                    self.matrix11x7.show()
+                    self.matrix11x7.scroll()
+                    time.sleep(0.1)
+                    count += 1
+                self.matrix11x7.clear()
                 self.matrix11x7.show()
-                self.matrix11x7.scroll()
-                time.sleep(0.1)
-                count += 1
-            self.matrix11x7.clear()
-            self.matrix11x7.show()
-        except Exception as error:
-            logger.sensors_logger.error("Scroll Message on Matrix11x7 Failed - " + str(error))
+            except Exception as error:
+                logger.sensors_logger.error("Scroll Message on Matrix11x7 Failed - " + str(error))
+            self.display_ready = True
+        else:
+            logger.sensors_logger.warning("Unable to display message on Pimoroni 11x7 LED Matrix.  Already in use.")
