@@ -20,6 +20,7 @@
 
 class CreateDatabaseVariables:
     """ Creates SQLite3 database variables object. """
+
     def __init__(self):
         self.table_interval = "IntervalData"
         self.table_trigger = "TriggerData"
@@ -139,7 +140,9 @@ restart_sensor_services_command = "systemctl daemon-reload ; " + \
 
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_e-ink.sh",
                  "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_http.sh",
+                 "UpgradeOnlineDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_http.sh",
                  "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_smb.sh",
+                 "UpgradeSMBDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_smb.sh",
                  "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
                  "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                  "RebootSystem": "reboot",

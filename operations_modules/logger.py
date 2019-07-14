@@ -80,6 +80,27 @@ def get_sensor_log_html(log_file):
     return html_return
 
 
+def clear_primary_log():
+    """ Clears all Primary Sensor Log. """
+    log_content = open(file_locations.primary_log, "w")
+    log_content.write("")
+    log_content.close()
+
+
+def clear_network_log():
+    """ Clears all Network Sensor Log. """
+    log_content = open(file_locations.network_log, "w")
+    log_content.write("")
+    log_content.close()
+
+
+def clear_sensor_log():
+    """ Clears all Sensor(s) Log. """
+    log_content = open(file_locations.sensors_log, "w")
+    log_content.write("")
+    log_content.close()
+
+
 # Primary Program Log
 primary_logger = logging.getLogger("PrimaryLog")
 debug_logging = check_debug_logging()

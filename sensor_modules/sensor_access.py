@@ -772,3 +772,8 @@ def delete_db_note(note_datetime):
                 " = '" + note_datetime + "'"
 
     sqlite_database.sql_execute(sql_query)
+
+
+def upgrade_linux_os():
+    os.system(app_variables.bash_commands["UpgradeSystemOS"])
+    configuration_main.linux_os_upgrade_ready = True

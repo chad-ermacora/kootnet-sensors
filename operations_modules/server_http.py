@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from threading import Thread
 from flask import Flask, request, send_file
 from gevent import pywsgi
 from html_files import page_quick
@@ -167,6 +168,21 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Sent Sensor Notes")
             return sensor_access.get_db_notes()
 
+        @self.app.route("/DeletePrimaryLog")
+        def delete_primary_log():
+            logger.network_logger.info("* Primary Sensor Log Deleted")
+            logger.clear_primary_log()
+
+        @self.app.route("/DeleteNetworkLog")
+        def delete_network_log():
+            logger.network_logger.info("* Network Sensor Log Deleted")
+            logger.clear_network_log()
+
+        @self.app.route("/DeleteSensorsLog")
+        def delete_sensors_log():
+            logger.network_logger.info("* Sensors Log Deleted")
+            logger.clear_sensor_log()
+
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
             logger.network_logger.info("* Sent Sensor Note Dates")
@@ -225,13 +241,19 @@ class CreateSensorHTTP:
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
             os.system(app_variables.bash_commands["UpgradeOnline"])
-            return "OK"
+            return "HTTP Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/CleanOnline")
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
             os.system(app_variables.bash_commands["CleanOnline"])
-            return "OK"
+            return "HTTP Clean Upgrade Started.  This may take a few minutes ..."
+
+        @self.app.route("/UpgradeOnlineDev")
+        def upgrade_http_dev():
+            logger.network_logger.info("* Started Upgrade - HTTP Developer")
+            os.system(app_variables.bash_commands["UpgradeOnlineDEV"])
+            return "HTTP Developer Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSMB")
         def upgrade_smb():
@@ -245,10 +267,22 @@ class CreateSensorHTTP:
             os.system(app_variables.bash_commands["CleanSMB"])
             return "SMB Clean Upgrade Started.  This may take a few minutes ..."
 
+        @self.app.route("/UpgradeSMBDev")
+        def upgrade_smb_dev():
+            logger.network_logger.info("* Started Upgrade - SMB Developer")
+            os.system(app_variables.bash_commands["UpgradeSMBDEV"])
+            return "SMB Developer Upgrade Started.  This may take a few minutes ..."
+
         @self.app.route("/UpgradeSystemOS")
         def upgrade_system_os():
             logger.network_logger.info("* Updating Operating System & rebooting")
-            os.system(app_variables.bash_commands["UpgradeSystemOS"])
+            if configuration_main.linux_os_upgrade_ready:
+                configuration_main.linux_os_upgrade_ready = False
+                system_upgrade_thread = Thread(target=sensor_access.upgrade_linux_os)
+                system_upgrade_thread.daemon = True
+                system_upgrade_thread.start()
+            else:
+                logger.sensors_logger.warning("* Operating System Upgrade Already Running")
             return "OK"
 
         @self.app.route("/inkupg")
@@ -457,7 +491,6 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Displaying Text on Installed Display")
             text_message = request.form['command_data']
             sensor_access.display_message(text_message)
-            return "OK"
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)
