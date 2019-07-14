@@ -775,5 +775,10 @@ def delete_db_note(note_datetime):
 
 
 def upgrade_linux_os():
-    os.system(app_variables.bash_commands["UpgradeSystemOS"])
-    configuration_main.linux_os_upgrade_ready = True
+    """ Runs a bash command to upgrade the Linux System with apt-get. """
+    try:
+        os.system(app_variables.bash_commands["UpgradeSystemOS"])
+        configuration_main.linux_os_upgrade_ready = True
+        logger.primary_logger.warning("Linux OS Upgrade Done")
+    except Exception as error:
+        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))

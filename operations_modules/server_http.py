@@ -273,6 +273,12 @@ class CreateSensorHTTP:
             os.system(app_variables.bash_commands["UpgradeSMBDEV"])
             return "SMB Developer Upgrade Started.  This may take a few minutes ..."
 
+        @self.app.route("/ReInstallRequirements")
+        def reinstall_program_requirements():
+            logger.network_logger.info("* Started Program Dependency Install")
+            os.system(app_variables.bash_commands["ReInstallRequirements"])
+            return "Dependency Install Started.  This may take a few minutes ..."
+
         @self.app.route("/UpgradeSystemOS")
         def upgrade_system_os():
             logger.network_logger.info("* Updating Operating System & rebooting")
