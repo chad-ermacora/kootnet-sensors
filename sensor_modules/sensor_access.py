@@ -642,6 +642,7 @@ def display_message(text_message):
         message_length = len(text_message)
 
         if message_length > 0:
+            text_message = "-- " + text_message
             if configuration_main.installed_sensors.raspberry_pi_sense_hat:
                 display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_text,
                                         args=[text_message])
@@ -662,7 +663,7 @@ def display_message(text_message):
             display_thread.daemon = True
             display_thread.start()
     else:
-        logger.primary_logger.debug("* No Display found or it is disabled in the configuration")
+        logger.primary_logger.debug("* Display Text: Sensor Display Disabled or not installed")
 
 
 def restart_services():

@@ -494,9 +494,12 @@ class CreateSensorHTTP:
 
         @self.app.route("/DisplayText", methods=["PUT"])
         def display_text():
-            logger.network_logger.info("* Displaying Text on Installed Display")
-            text_message = request.form['command_data']
-            sensor_access.display_message(text_message)
+            if configuration_main.current_config.enable_display and configuration_main.installed_sensors.has_display:
+                logger.network_logger.info("* Displaying Text on Installed Display")
+                text_message = request.form['command_data']
+                sensor_access.display_message(text_message)
+            else:
+                logger.network_logger.warning("* Unable to Display Text: Sensor Display Disabled or not installed")
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)

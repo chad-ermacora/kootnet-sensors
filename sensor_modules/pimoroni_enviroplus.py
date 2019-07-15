@@ -31,6 +31,7 @@ turn_off_display_seconds = 25
 
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
+
     def __init__(self):
         try:
             self.display_off_count = 0
@@ -39,7 +40,7 @@ class CreateEnviroPlus:
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
             self.enviroplus_import = __import__('enviroplus', fromlist=['gas'])
-            self.pms5003_import = __import__('pms5003')
+            self.pms5003_import = __import__('pms5003', fromlist=['PMS5003'])
             self.bme280_import = __import__('bme280')
             self.ST7735_import = __import__('ST7735')
             self.ltr559_import = __import__('ltr559')
@@ -74,6 +75,12 @@ class CreateEnviroPlus:
             logger.sensors_logger.error("Pimoroni Enviro+ Initialization Failed - " + str(error))
             configuration_main.installed_sensors.pimoroni_enviroplus = 0
             configuration_main.installed_sensors.pimoroni_pms5003 = 0
+
+        if configuration_main.installed_sensors.has_particulate_matter:
+            try:
+                self.enviro_plus_pm_access = self.pms5003_import.PMS5003()
+            except Exception as error:
+                logger.sensors_logger.error("Pimoroni Enviro+ PMS5003 Initialization Failed - " + str(error))
 
     def _display_timed_off(self):
         while True:
@@ -176,7 +183,9 @@ class CreateEnviroPlus:
             reduced = enviro_plus_gas_data.reducing / 1000
             nh3 = enviro_plus_gas_data.nh3 / 1000
 
-            gas_list_oxidised_reduced_nh3 = [round(oxidised, round_decimal_to), round(reduced, round_decimal_to), round(nh3, round_decimal_to)]
+            gas_list_oxidised_reduced_nh3 = [round(oxidised, round_decimal_to),
+                                             round(reduced, round_decimal_to),
+                                             round(nh3, round_decimal_to)]
 
             logger.sensors_logger.debug("Pimoroni Enviro+ GAS - OK")
         except Exception as error:
@@ -187,12 +196,15 @@ class CreateEnviroPlus:
     def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
         try:
-            enviro_plus_pm_data = self.pms5003_import.read()
+            enviro_plus_pm_data = self.enviro_plus_pm_access.read()
+
             pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
             pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
             pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
 
-            pm_list_pm1_pm25_pm10 = [round(pm1, round_decimal_to), round(pm25, round_decimal_to), round(pm10, round_decimal_to)]
+            pm_list_pm1_pm25_pm10 = [round(pm1, round_decimal_to),
+                                     round(pm25, round_decimal_to),
+                                     round(pm10, round_decimal_to)]
 
             logger.sensors_logger.debug("Pimoroni Enviro+ Particulate Matter - OK")
         except Exception as error:
