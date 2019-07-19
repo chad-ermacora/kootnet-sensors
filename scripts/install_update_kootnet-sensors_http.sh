@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+clear
 if [[ "$1" == "dev" ]]
 then
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
+  printf '\n-- DEVELOPMENT UPGRADE --\n'
 else
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 fi
@@ -13,7 +15,6 @@ HTTP_SERVER="http://kootenay-networks.com"
 HTTP_ZIP="/KootNetSensors.zip"
 CONTROL_INSTALL="n"
 # Make sure its running with root
-clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"

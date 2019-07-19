@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
+clear
 if [[ "$1" == "dev" ]]
 then
   SMB_SHARE="/KootNetSMB/dev"
+  printf '\n-- DEVELOPMENT UPGRADE --\n'
 else
   SMB_SHARE="/KootNetSMB"
 fi
@@ -13,7 +15,6 @@ SMB_SERVER="//xps-development01"
 SMB_FILE="/KootNetSensors.zip"
 CIFS_OPTIONS="username=myself,password='123'"
 # Make sure its running with root
-clear
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
   sudo "$0" "$@"
