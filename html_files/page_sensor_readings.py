@@ -18,6 +18,7 @@
 """
 from time import strftime
 from operations_modules import logger
+from operations_modules.configuration_main import command_data_separator
 from sensor_modules import sensor_access
 from html_files import html_templates
 
@@ -32,27 +33,16 @@ def get_sensor_readings_page():
     style_name_start = "<td span style='text-align: center;'><span style='background-color: #00ffff;'><strong>"
     style_data_start = "<td span style='text-align: center;'><span style='background-color: #0BB10D;'><strong>"
     style_end = "</strong></span>"
-    td_end = "</td>"
+    style_end_sensors = "</strong></span></td>"
 
     current_datetime = strftime("%Y-%m-%d %H:%M - %Z")
     sensor_hostname = sensor_access.get_hostname()
     sensor_ip = sensor_access.get_ip()
-    sensor_pressure = str(sensor_access.get_pressure())
-    sensor_humidity = str(sensor_access.get_humidity())
-    sensor_lumen = str(sensor_access.get_lumen())
-    sensor_ems = str(sensor_access.get_ems())
-    sensor_acc = str(sensor_access.get_accelerometer_xyz())
-    sensor_mag = str(sensor_access.get_magnetometer_xyz())
-    sensor_gyro = str(sensor_access.get_gyroscope_xyz())
 
-    try:
-        sensors_env_temperature_offset = sensor_access.configuration_main.current_config.temperature_offset
-        sensor_env_temperature = str(round(sensor_access.get_sensor_temperature(), 2))
-        sensor_env_temperature_adjusted = str(round(float(sensor_env_temperature) + sensors_env_temperature_offset, 2))
-    except Exception as error:
-        logger.primary_logger.error("Env Temperature Error: " + str(error))
-        sensor_env_temperature = "Error"
-        sensor_env_temperature_adjusted = "Error"
+    sensor_types_and_readings_list = sensor_access.get_interval_sensor_readings().split(command_data_separator)
+
+    sensor_types = sensor_types_and_readings_list[0].split(",")
+    sensor_readings = sensor_types_and_readings_list[1].split(",")
 
     text_date_taken = "<h3>" + style_pre_text_orange + \
                       "Date taken " + current_datetime + \
@@ -60,41 +50,24 @@ def get_sensor_readings_page():
                       "<br>Date format: YYYY-MM-DD hh:mm - Time Zone" + \
                       style_end + style_end + "</h3>"
 
-    return_html1 = "<table><tr>" + \
-                   style_name_start + "Env Temperature" + style_end + td_end + \
-                   style_name_start + "Pressure" + style_end + td_end + \
-                   style_name_start + "Humidity" + style_end + td_end + \
-                   "</tr><tr>" + \
-                   style_data_start + \
-                   "Raw: " + sensor_env_temperature + " °C" + \
-                   " / Adjusted: " + sensor_env_temperature_adjusted + " °C" + \
-                   style_end + td_end + \
-                   style_data_start + sensor_pressure + style_end + td_end + \
-                   style_data_start + sensor_humidity + style_end + td_end + \
-                   "</tr></table>"
+    sensor_type_html = ""
+    sensor_data_html = ""
+    big_return = "<table>"
+    count = 0
+    for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
+        sensor_type_html += style_name_start + sensor_type + style_end_sensors
+        sensor_data_html += style_data_start + sensor_reading + style_end_sensors
 
-    return_html2 = "<table><tr>" + \
-                   style_name_start + "Lumen" + style_end + td_end + \
-                   style_name_start + "Visible EMS - RGB or ROYGBV" + style_end + td_end + \
-                   "</tr><tr>" + \
-                   style_data_start + sensor_lumen + style_end + td_end + \
-                   style_data_start + sensor_ems + style_end + td_end + \
-                   "</tr></table><table><tr>"
+        count += 1
+        if count > 4:
+            count = 0
+            big_return += "<tr>" + sensor_type_html + "</tr><tr>" + sensor_data_html + "</tr></table><table>"
+            sensor_type_html = ""
+            sensor_data_html = ""
 
-    return_html3 = "<table><tr>" + \
-                   style_name_start + "Accelerometer XYZ" + style_end + td_end + \
-                   style_name_start + "Magnetometer XYZ" + style_end + td_end + \
-                   style_name_start + "Gyroscope XYZ" + style_end + td_end + \
-                   "</tr><tr>" + \
-                   style_data_start + sensor_acc + style_end + td_end + \
-                   style_data_start + sensor_mag + style_end + td_end + \
-                   style_data_start + sensor_gyro + style_end + td_end + \
-                   "</tr></table>"
-
-    final_return = html_templates.sensor_readings_start + "<H1>" + style_red + \
-                   "<u><a href='/TestSensor' style='color: red'>" + \
-                   sensor_hostname + " // " + sensor_ip + \
-                   style_end + "</a></u></H1>" + text_date_taken + \
-                   return_html1 + return_html2 + return_html3
+    final_return = html_templates.sensor_readings_start + \
+                   "<H1>" + style_red + "<u><a href='/TestSensor' style='color: red'>" + \
+                   sensor_hostname + " // " + sensor_ip + style_end + "</a></u></H1>" + \
+                   text_date_taken + big_return
 
     return final_return

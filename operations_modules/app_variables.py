@@ -18,6 +18,31 @@
 """
 
 
+class CreateSQLColumnsReadable:
+    """ Creates an object to hold all human readable SQL column names. """
+
+    def __init__(self):
+        self.no_sensor = " || No Sensor Detected || "
+        self.date_time = "Date & Time"
+        self.sensor_name = "Sensor Name"
+        self.ip = "IP"
+        self.system_uptime = "Sensor Uptime"
+        self.cpu_temp = "CPU Temperature"
+        self.environmental_temp = "Env Temperature"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "Gas"
+        self.particulate_matter = "Particulate Matter"
+        self.lumen = "Lumen"
+        self.colours = "Colours"
+        self.ultra_violet = "Ultra Violet"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+
+
 class CreateDatabaseVariables:
     """ Creates SQLite3 database variables object. """
 
