@@ -61,8 +61,8 @@ class CreateHTTPAuth:
     def save_http_auth_to_file(self, new_http_flask_user, new_http_flask_password):
         verified_user, verified_password = self._verify_http_credentials(new_http_flask_user, new_http_flask_password)
         self.http_flask_user = verified_user
-        self.http_flask_password = verified_password
-        save_data = verified_user + "\n" + generate_password_hash(verified_password)
+        self.http_flask_password = generate_password_hash(verified_password)
+        save_data = self.http_flask_user + "\n" + self.http_flask_password
         auth_file = open(file_locations.http_auth_file_location, "w")
         auth_file.write(save_data)
         auth_file.close()
