@@ -65,6 +65,9 @@ def get_sensor_readings_page():
             sensor_type_html = ""
             sensor_data_html = ""
 
+    if count > 0:
+        big_return += "<tr>" + sensor_type_html + "</tr><tr>" + sensor_data_html + "</tr></table><table>"
+
     final_return = html_templates.sensor_readings_start + \
                    "<H1>" + style_red + "<u><a href='/TestSensor' style='color: red'>" + \
                    sensor_hostname + " // " + sensor_ip + style_end + "</a></u></H1>" + \
