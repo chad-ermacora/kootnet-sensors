@@ -193,11 +193,13 @@ EOF
 #  apt-get -y upgrade
   printf '\nChecking dependencies\n'
   apt-get -y install ${APT_GET_INSTALL}
-  cd ${DATA_DIR}
+  cd ${DATA_DIR} || exit
   python3 -m venv --system-site-packages python-env
   source ${DATA_DIR}/python-env/bin/activate
   python3 -m pip install -U pip
   pip3 install -r /opt/kootnet-sensors/requirements.txt
+  # Set HTTP Authentication
+  bash /opt/kootnet-sensors/scripts/change_http_authentication.sh
   cat > ${CONFIG_DIR}/installed_version.txt << "EOF"
 New_Install.99.999
 EOF

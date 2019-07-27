@@ -19,6 +19,8 @@
 import os
 from threading import Thread
 from flask import Flask, request, send_file
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import check_password_hash
 from gevent import pywsgi
 from html_files import page_quick
 from html_files import page_sensor_readings
@@ -30,12 +32,18 @@ from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
 from operations_modules import configuration_files
+from operations_modules import server_http_auth
 
 
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
         self.app = Flask(__name__)
+        self.auth = HTTPBasicAuth()
+        http_auth = server_http_auth.CreateHTTPAuth()
+        http_auth.set_http_auth_from_file()
+
         @self.app.route("/")
+        @self.app.route("/index")
         @self.app.route("/Ver")
         @self.app.route("/About")
         def root_http():
@@ -45,10 +53,16 @@ class CreateSensorHTTP:
             message += "<p>" + config + "</p>"
             return message
 
+        @self.auth.verify_password
+        def verify_password(username, password):
+            if username == http_auth.http_flask_user:
+                return check_password_hash(http_auth.http_flask_password, password)
+            else:
+                return False
+
         @self.app.route("/Quick")
         def quick_links():
             logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
-
             return page_quick.get_quick_html_page()
 
         @self.app.route("/TestSensor")
@@ -90,11 +104,13 @@ class CreateSensorHTTP:
             return installed_config_str
 
         @self.app.route("/GetWifiConfiguration")
+        @self.auth.login_required
         def get_wifi_config():
             logger.network_logger.info("* Sent wpa_supplicant")
             return send_file(file_locations.wifi_config_file)
 
         @self.app.route("/SetWifiConfiguration", methods=["PUT"])
+        @self.auth.login_required
         def set_wifi_config():
             try:
                 new_wifi_config = request.form['command_data']
@@ -110,6 +126,7 @@ class CreateSensorHTTP:
             return send_file(file_locations.trigger_variances_file_location)
 
         @self.app.route("/SetVarianceConfiguration", methods=["PUT"])
+        @self.auth.login_required
         def set_variance_config():
             try:
                 new_variance_config = request.form['command_data']
@@ -169,16 +186,19 @@ class CreateSensorHTTP:
             return sensor_access.get_db_notes()
 
         @self.app.route("/DeletePrimaryLog")
+        @self.auth.login_required
         def delete_primary_log():
             logger.network_logger.info("* Primary Sensor Log Deleted")
             logger.clear_primary_log()
 
         @self.app.route("/DeleteNetworkLog")
+        @self.auth.login_required
         def delete_network_log():
             logger.network_logger.info("* Network Sensor Log Deleted")
             logger.clear_network_log()
 
         @self.app.route("/DeleteSensorsLog")
+        @self.auth.login_required
         def delete_sensors_log():
             logger.network_logger.info("* Sensors Log Deleted")
             logger.clear_sensor_log()
@@ -194,6 +214,7 @@ class CreateSensorHTTP:
             return sensor_access.get_db_note_user_dates()
 
         @self.app.route("/DeleteDatabaseNote", methods=["PUT"])
+        @self.auth.login_required
         def del_db_note():
             note_datetime = request.form['command_data']
             logger.network_logger.info("* Deleted Note from: " + str(note_datetime))
@@ -224,6 +245,7 @@ class CreateSensorHTTP:
             return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
 
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
+        @self.auth.login_required
         def put_sql_note():
             new_note = request.form['command_data']
             sensor_access.add_note_to_database(new_note)
@@ -231,6 +253,7 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/UpdateDatabaseNote", methods=["PUT"])
+        @self.auth.login_required
         def update_sql_note():
             datetime_entry_note_csv = request.form['command_data']
             sensor_access.update_note_in_database(datetime_entry_note_csv)
@@ -238,48 +261,56 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/UpgradeOnline")
+        @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
             os.system(app_variables.bash_commands["UpgradeOnline"])
             return "HTTP Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/CleanOnline")
+        @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
             os.system(app_variables.bash_commands["CleanOnline"])
             return "HTTP Clean Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeOnlineDev")
+        @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
             os.system(app_variables.bash_commands["UpgradeOnlineDEV"])
             return "HTTP Developer Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSMB")
+        @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Started Upgrade - SMB")
             os.system(app_variables.bash_commands["UpgradeSMB"])
             return "SMB Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/CleanSMB")
+        @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("* Started Clean Upgrade - SMB")
             os.system(app_variables.bash_commands["CleanSMB"])
             return "SMB Clean Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSMBDev")
+        @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("* Started Upgrade - SMB Developer")
             os.system(app_variables.bash_commands["UpgradeSMBDEV"])
             return "SMB Developer Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/ReInstallRequirements")
+        @self.auth.login_required
         def reinstall_program_requirements():
             logger.network_logger.info("* Started Program Dependency Install")
             os.system(app_variables.bash_commands["ReInstallRequirements"])
             return "Dependency Install Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSystemOS")
+        @self.auth.login_required
         def upgrade_system_os():
             logger.network_logger.info("* Updating Operating System & rebooting")
             if configuration_main.linux_os_upgrade_ready:
@@ -292,17 +323,20 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/inkupg")
+        @self.auth.login_required
         def upgrade_rp_controller():
             logger.network_logger.info("* Started Upgrade - E-Ink Mobile")
             os.system(app_variables.bash_commands["inkupg"])
             return "OK"
 
         @self.app.route("/RebootSystem")
+        @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("* Rebooting System")
             os.system(app_variables.bash_commands["RebootSystem"])
 
         @self.app.route("/ShutdownSystem")
+        @self.auth.login_required
         def system_shutdown():
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
             os.system(app_variables.bash_commands["ShutdownSystem"])
@@ -313,6 +347,7 @@ class CreateSensorHTTP:
             sensor_access.restart_services()
 
         @self.app.route("/SetHostName", methods=["PUT"])
+        @self.auth.login_required
         def set_hostname():
             try:
                 new_host = request.form['command_data']
@@ -323,6 +358,7 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/SetDateTime", methods=["PUT"])
+        @self.auth.login_required
         def set_date_time():
             new_datetime = request.form['command_data']
             os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
@@ -330,6 +366,7 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
+        @self.auth.login_required
         def set_configuration():
             logger.network_logger.info("* Setting Sensor Configuration")
 
@@ -340,6 +377,7 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
+        @self.auth.login_required
         def set_installed_sensors():
             logger.network_logger.info("* Setting Sensor Installed Sensors")
             raw_installed_sensors = request.form['command_data'].splitlines()
@@ -493,6 +531,7 @@ class CreateSensorHTTP:
             return str(sensor_access.get_interval_sensor_readings())
 
         @self.app.route("/DisplayText", methods=["PUT"])
+        @self.auth.login_required
         def display_text():
             if configuration_main.current_config.enable_display and configuration_main.installed_sensors.has_display:
                 logger.network_logger.info("* Displaying Text on Installed Display")

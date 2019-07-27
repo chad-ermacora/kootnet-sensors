@@ -1,8 +1,10 @@
 # Required Sensor Program Modules
+werkzeug
 psutil
 requests
 gpiozero
 flask
+Flask-HTTPAuth
 gevent
 # Sensor Hardware Modules
 envirophat

@@ -49,7 +49,7 @@ else
     echo
     if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
     then
-      read -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
+      read -r -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
     fi
   fi
 fi
@@ -64,7 +64,7 @@ if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
 then
   echo
 else
-  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh ${USER_NAME}
+  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh "${USER_NAME}"
 fi
 bash /opt/kootnet-sensors/scripts/chk_install.sh
 # Install Control Center requirements
@@ -75,8 +75,8 @@ then
   mkdir /opt/kootnet-control-center/logs 2>/dev/null
   cp -f -R /tmp/SensorHTTPUpgrade/sensor-control-center/* /opt/kootnet-control-center
   bash /opt/kootnet-control-center/scripts/install_dependencies.sh
-  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh ${USER_NAME}
-  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh ${USER_NAME}
+  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh "${USER_NAME}"
+  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh "${USER_NAME}"
   bash /opt/kootnet-control-center/scripts/set_permissions.sh
   printf '\nControl Center Requirements Installed\n\n'
 elif [[ -f /opt/kootnet-control-center/requirements.txt ]]

@@ -23,6 +23,7 @@
 debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
 config_file_location = "/etc/kootnet/sql_recording.conf"
+http_auth_file_location = "/home/kootnet_data/auth.conf"
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
