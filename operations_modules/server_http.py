@@ -18,7 +18,7 @@
 """
 import os
 from threading import Thread
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, render_template
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from gevent import pywsgi
@@ -46,12 +46,18 @@ class CreateSensorHTTP:
         @self.app.route("/index")
         @self.app.route("/Ver")
         @self.app.route("/About")
-        def root_http():
-            logger.network_logger.info("Root web page accessed from " + str(request.remote_addr))
-            message = "<p>KootNet Sensors || " + software_version.version + "</p>"
-            config = sensor_access.get_config_information().split(",")[-1]
-            message += "<p>" + config + "</p>"
-            return message
+        def index():
+            return render_template("index.html",
+                                   KootnetVersion=software_version.version,
+                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str())
+
+        @self.app.route("/mui.min.css")
+        def mui_min_css():
+            return send_file(file_locations.mui_min_css)
+
+        @self.app.route("/mui.min.js")
+        def mui_min_js():
+            return send_file(file_locations.mui_min_js)
 
         @self.auth.verify_password
         def verify_password(username, password):
@@ -63,7 +69,44 @@ class CreateSensorHTTP:
         @self.app.route("/Quick")
         def quick_links():
             logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
-            return page_quick.get_quick_html_page()
+            if configuration_main.current_config.enable_debug_logging:
+                debug_logging = True
+            else:
+                debug_logging = False
+
+            if configuration_main.current_config.enable_interval_recording:
+                interval_recording = True
+            else:
+                interval_recording = False
+
+            if configuration_main.current_config.enable_trigger_recording:
+                trigger_recording = True
+            else:
+                trigger_recording = False
+
+            if configuration_main.current_config.enable_custom_temp:
+                custom_temp_enabled = True
+            else:
+                custom_temp_enabled = False
+
+            return render_template("quick.html",
+                                   HostName=sensor_access.get_hostname(),
+                                   IPAddress=sensor_access.get_ip(),
+                                   CPUTemperature=sensor_access.get_cpu_temperature(),
+                                   SQLDatabaseSize=sensor_access.get_db_size(),
+                                   DiskUsage=sensor_access.get_disk_usage_percent(),
+                                   RAMUsage=sensor_access.get_memory_usage_percent(),
+                                   DateTime=sensor_access.get_system_datetime(),
+                                   SystemUptime=sensor_access.get_uptime_minutes(),
+                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
+                                   KootnetVersion=configuration_main.software_version.version,
+                                   LastUpdated=sensor_access.get_last_updated(),
+                                   DebugLogging=debug_logging,
+                                   IntervalRecording=interval_recording,
+                                   TriggerRecording=trigger_recording,
+                                   ManualTemperatureEnabled=custom_temp_enabled,
+                                   CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
+                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval)
 
         @self.app.route("/TestSensor")
         def test_sensor():

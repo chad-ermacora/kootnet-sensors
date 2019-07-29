@@ -29,6 +29,8 @@ trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 display_font = "/opt/kootnet-sensors/extras/DejaVuSans-Bold.ttf"
+mui_min_css = "/opt/kootnet-sensors/extras/mui.min.css"
+mui_min_js = "/opt/kootnet-sensors/extras/mui.min.js"
 
 old_version_file_location = "/etc/kootnet/installed_version.txt"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"

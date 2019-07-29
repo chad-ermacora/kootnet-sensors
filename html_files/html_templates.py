@@ -81,7 +81,7 @@ quick_page_links = """
 </span></p>
 
 <p><span style='background-color: #ccffcc;'>
-<a href="/UpgradeOnline-not" target="_blank">Upgrade Sensor over HTTP</a>
+<a href="/UpgradeOnline" target="_blank">Upgrade Sensor over HTTP</a>
 </span></p>
 """
 
