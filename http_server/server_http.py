@@ -22,8 +22,6 @@ from flask import Flask, request, send_file, render_template
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from gevent import pywsgi
-from html_files import page_quick
-from html_files import page_sensor_readings
 from operations_modules import wifi_file
 from operations_modules import trigger_variances
 from operations_modules import file_locations
@@ -32,7 +30,7 @@ from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import app_variables
 from operations_modules import configuration_files
-from operations_modules import server_http_auth
+from http_server import server_http_auth
 
 
 class CreateSensorHTTP:
@@ -67,7 +65,8 @@ class CreateSensorHTTP:
                 return False
 
         @self.app.route("/Quick")
-        def quick_links():
+        @self.app.route("/SensorInformation")
+        def sensor_information():
             logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
             if configuration_main.current_config.enable_debug_logging:
                 debug_logging = True
@@ -89,7 +88,7 @@ class CreateSensorHTTP:
             else:
                 custom_temp_enabled = False
 
-            return render_template("quick.html",
+            return render_template("sensor_information.html",
                                    HostName=sensor_access.get_hostname(),
                                    IPAddress=sensor_access.get_ip(),
                                    CPUTemperature=sensor_access.get_cpu_temperature(),
@@ -97,7 +96,7 @@ class CreateSensorHTTP:
                                    DiskUsage=sensor_access.get_disk_usage_percent(),
                                    RAMUsage=sensor_access.get_memory_usage_percent(),
                                    DateTime=sensor_access.get_system_datetime(),
-                                   SystemUptime=sensor_access.get_uptime_minutes(),
+                                   SystemUptime=sensor_access.get_uptime_str(),
                                    InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
                                    KootnetVersion=configuration_main.software_version.version,
                                    LastUpdated=sensor_access.get_last_updated(),
@@ -108,9 +107,38 @@ class CreateSensorHTTP:
                                    CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
                                    IntervalDelay=configuration_main.current_config.sleep_duration_interval)
 
+        @self.app.route("/SystemCommands")
+        def system_commands():
+            return render_template("system_commands.html")
+
         @self.app.route("/TestSensor")
         def test_sensor():
-            return page_sensor_readings.get_sensor_readings_page()
+            return render_template("sensor_readings.html",
+                                   HostName=sensor_access.get_hostname(),
+                                   IPAddress=sensor_access.get_ip(),
+                                   DateTime=sensor_access.get_system_datetime(),
+                                   SystemUptime=sensor_access.get_uptime_str(),
+                                   CPUTemperature=sensor_access.get_cpu_temperature(),
+                                   EnvTemperature=sensor_access.get_sensor_temperature(),
+                                   EnvTemperatureOffset=configuration_main.current_config.temperature_offset,
+                                   Pressure=sensor_access.get_pressure(),
+                                   Altitude=sensor_access.get_altitude(),
+                                   Humidity=sensor_access.get_humidity(),
+                                   Distance=sensor_access.get_distance(),
+                                   GasResistanceIndex=sensor_access.get_gas_resistance_index(),
+                                   GasOxidising=sensor_access.get_gas_oxidised(),
+                                   GasReducing=sensor_access.get_gas_reduced(),
+                                   GasNH3=sensor_access.get_gas_nh3(),
+                                   PM1=sensor_access.get_particulate_matter_1(),
+                                   PM25=sensor_access.get_particulate_matter_2_5(),
+                                   PM10=sensor_access.get_particulate_matter_10(),
+                                   Lumen=sensor_access.get_lumen(),
+                                   EMS=sensor_access.get_ems(),
+                                   UVA=sensor_access.get_ultra_violet_a(),
+                                   UVB=sensor_access.get_ultra_violet_b(),
+                                   Acc=sensor_access.get_accelerometer_xyz(),
+                                   Mag=sensor_access.get_magnetometer_xyz(),
+                                   Gyro=sensor_access.get_gyroscope_xyz())
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
@@ -233,18 +261,21 @@ class CreateSensorHTTP:
         def delete_primary_log():
             logger.network_logger.info("* Primary Sensor Log Deleted")
             logger.clear_primary_log()
+            return "Primary Log Deleted"
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
         def delete_network_log():
             logger.network_logger.info("* Network Sensor Log Deleted")
             logger.clear_network_log()
+            return "Network Log Deleted"
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
         def delete_sensors_log():
             logger.network_logger.info("* Sensors Log Deleted")
             logger.clear_sensor_log()
+            return "Sensors Log Deleted"
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
@@ -307,49 +338,63 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
-            os.system(app_variables.bash_commands["UpgradeOnline"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnline"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "HTTP Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
-            os.system(app_variables.bash_commands["CleanOnline"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanOnline"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "HTTP Clean Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
-            os.system(app_variables.bash_commands["UpgradeOnlineDEV"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnlineDEV"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "HTTP Developer Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Started Upgrade - SMB")
-            os.system(app_variables.bash_commands["UpgradeSMB"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMB"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "SMB Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("* Started Clean Upgrade - SMB")
-            os.system(app_variables.bash_commands["CleanSMB"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanSMB"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "SMB Clean Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("* Started Upgrade - SMB Developer")
-            os.system(app_variables.bash_commands["UpgradeSMBDEV"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMBDEV"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "SMB Developer Upgrade Started.  This may take a few minutes ..."
 
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
         def reinstall_program_requirements():
             logger.network_logger.info("* Started Program Dependency Install")
-            os.system(app_variables.bash_commands["ReInstallRequirements"])
+            check_requirements = Thread(target=os.system, args=[app_variables.bash_commands["ReInstallRequirements"]])
+            check_requirements.daemon = True
+            check_requirements.start()
             return "Dependency Install Started.  This may take a few minutes ..."
 
         @self.app.route("/UpgradeSystemOS")
@@ -369,25 +414,36 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_rp_controller():
             logger.network_logger.info("* Started Upgrade - E-Ink Mobile")
-            os.system(app_variables.bash_commands["inkupg"])
+            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["inkupg"]])
+            upgrade_thread.daemon = True
+            upgrade_thread.start()
             return "OK"
 
         @self.app.route("/RebootSystem")
         @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("* Rebooting System")
-            os.system(app_variables.bash_commands["RebootSystem"])
+            system_thread = Thread(target=os.system, args=[app_variables.bash_commands["RebootSystem"]])
+            system_thread.daemon = True
+            system_thread.start()
+            return "Sensor Rebooting.  This may take a minute or two..."
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
-            os.system(app_variables.bash_commands["ShutdownSystem"])
+            system_thread = Thread(target=os.system, args=[app_variables.bash_commands["ShutdownSystem"]])
+            system_thread.daemon = True
+            system_thread.start()
+            return "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
-            sensor_access.restart_services()
+            system_thread = Thread(target=sensor_access.restart_services)
+            system_thread.daemon = True
+            system_thread.start()
+            return "Restarting Sensor Service.  This should only take up to 30 seconds."
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required

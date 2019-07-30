@@ -19,13 +19,13 @@
 import os
 from time import sleep
 from threading import Thread
+from http_server import server_http
 from operations_modules import logger
 from operations_modules import program_start_checks
 from operations_modules import configuration_main
 from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
-from operations_modules import server_http
 from operations_modules import server_display
 from sensor_modules import sensor_access
 

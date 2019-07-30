@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules import server_http_auth
+from http_server import server_http_auth
 
 http_auth = server_http_auth.CreateHTTPAuth()
 

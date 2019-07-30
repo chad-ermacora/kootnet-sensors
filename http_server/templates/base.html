@@ -20,14 +20,12 @@
     </style>
 </head>
 <body>
-    <div class="mui-panel">Menu Bar -
+    <div class="mui-panel">
         <button class="mui-btn mui-btn--raised"><a href="/index">Home</a></button>
-        <button class="mui-btn mui-btn--raised"><a href="/Quick">Quick Links</a></button>
+        <button class="mui-btn mui-btn--raised"><a href="/SensorInformation">Sensor Information</a></button>
+        <button class="mui-btn mui-btn--raised"><a href="/TestSensor">View Sensor Readings</a></button>
+        <button class="mui-btn mui-btn--raised"><a href="/SystemCommands">System Commands</a></button>
     </div>
-    <h1><strong><span style="text-decoration: underline;">
-        <a href='/Quick' style='color: red'>Kootnet Sensor: {{ IPAddress }}</a>
-    </span></strong></h1>
-
     <hr>
     {% block content %}{% endblock %}
 </body>

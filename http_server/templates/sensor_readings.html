@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        table {
+            border: 3px solid white;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 5px;
+            white-space: nowrap;
+            color: black;
+        }
+
+        th {
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        body {
+            background-color: #000000;
+            white-space: nowrap;
+        }
+    </style>
+
+    <h1><strong><span style="text-decoration: underline;">
+        <a href='/TestSensor' style='color: red'>
+            {{ HostName }} || {{ IPAddress }}
+        </a>
+    </span></strong></h1>
+    <h3><strong>
+        <span style='color: #F4A460;'>
+            Date Taken: {{ DateTime }}
+        </span>
+        <br>
+        <span style='font-size: 14px;'>
+            Date Format: YYYY-MM-DD hh:mm - Time Zone
+        </span>
+    </strong></h3>
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Sensor Uptime
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                System Temperature
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Environmental Temperature
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Environmental Temperature Offset
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ SystemUptime }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ CPUTemperature }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ EnvTemperature }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ EnvTemperatureOffset }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Pressure
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Altitude
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Humidity
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Distance
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Pressure }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Altitude }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Humidity }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Distance }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Gas
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                Gas Resistance: {{ GasResistanceIndex }} ||
+                Gas Oxidising: {{ GasOxidising }} ||
+                Gas Reducing: {{ GasReducing }} ||
+                Gas NH3: {{ GasNH3 }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Particulate Matter
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                PM 1: {{ PM1 }} || PM 2.5: {{ PM25 }} || PM 10: {{ PM10 }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Lumen
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Electromagnetic Spectrum RGB or ROYGBV
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Lumen }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ EMS }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Ultra Violet
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                Ultra Violet A: {{ UVA }} || Ultra Violet B: {{ UVB }}
+            </strong></span></td>
+        </tr>
+    </table>
+
+
+    <table>
+        <tr>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Accelerometer XYZ
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Magnetometer XYZ
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #00ffff;'><strong>
+                Gyroscope XYZ
+            </strong></span></td>
+        </tr>
+
+        <tr>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Acc }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Mag }}
+            </strong></span></td>
+            <td><span style='text-align: center; background-color: #0BB10D;'><strong>
+                {{ Gyro }}
+            </strong></span></td>
+        </tr>
+    </table>
+{% endblock %}

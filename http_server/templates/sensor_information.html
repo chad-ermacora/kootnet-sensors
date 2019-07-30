@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <h1><strong><span style="text-decoration: underline;">
+        <a href='/SensorInformation' style='color: red'>
+            Kootnet Sensor || {{ IPAddress }}
+        </a>
+    </span></strong></h1>
+
     <p><strong><span style="text-decoration: underline; background-color: #000000;">
         System
     </span></strong></p>
@@ -97,42 +103,4 @@
     <span style='background-color: #000000;'>{{ IntervalDelay }}</span>
     <span style='color: #ffffff;'> || </span>
 
-
-    <H2 style="color: #00ffff;"><u>Live Sensor Readings</u></H2>
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/TestSensor" target="_blank">Sensor Readings</a>
-        </span></p>
-
-
-    <H2 style="color: #00ffff;"><u>Logs</u></H2>
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/GetPrimaryLogHTML" target="_blank">Primary Log</a>
-        </span></p>
-
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/GetNetworkLogHTML" target="_blank">Network Log</a>
-        </span></p>
-
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/GetSensorsLogHTML" target="_blank">Sensors Log</a>
-        </span></p>
-
-
-    <H2 style="color: #00ffff;"><u>Downloads</u></H2>
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/GetVarianceConfiguration" target="_blank">Download Trigger Variance Configuration</a>
-        </span></p>
-
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/DownloadSQLDatabase" target="_blank">Download Sensor SQL Database</a>
-        </span></p>
-
-    <H2 style="color: #00ffff;"><u>Initiate Sensor Upgrade</u></H2>
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/UpgradeSMB" target="_blank">Upgrade Sensor over SMB</a>
-        </span></p>
-
-        <p><span style='background-color: #ccffcc;'>
-            <a href="/UpgradeOnline" target="_blank">Upgrade Sensor over HTTP</a>
-        </span></p>
 {% endblock %}
