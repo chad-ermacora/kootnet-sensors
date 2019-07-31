@@ -1,22 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <button class="mui-btn" onclick="window.location.href = '/DownloadSQLDatabase';">
-        Download Sensor Database
+    <H2 style="color: #00ffff;"><u>Logs</u></H2>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/DownloadZippedLogs';">
+        Download Zipped Full Logs
     </button>
 
-    <H2 style="color: #00ffff;"><u>Logs</u></H2>
+    <br>
+
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             View Log
             <span class="mui-caret"></span>
         </button>
         <ul class="mui-dropdown__menu">
-            <li><a href="/GetPrimaryLogHTML" target="_blank">Primary</a></li>
-            <li><a href="/GetNetworkLogHTML" target="_blank">Network</a></li>
-            <li><a href="/GetSensorsLogHTML" target="_blank">Sensors</a></li>
+            <li><a href="/GetPrimaryLogHTML">Primary</a></li>
+            <li><a href="/GetNetworkLogHTML">Network</a></li>
+            <li><a href="/GetSensorsLogHTML">Sensors</a></li>
         </ul>
-        <br>
+    </div>
+
+    <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Clear Log
             <span class="mui-caret"></span>
@@ -28,7 +33,15 @@
         </ul>
     </div>
 
-    <H2 style="color: #00ffff;"><u>Initiate Sensor Upgrade</u></H2>
+
+    <H2 style="color: #00ffff;"><u>System</u></H2>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/DownloadSQLDatabase';">
+        Download Sensor Database
+    </button>
+
+    <br>
+
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Upgrade Options
@@ -41,5 +54,32 @@
             <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
         </ul>
     </div>
+
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Power Commands
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/RestartServices">Restart Service</a></li>
+            <li><a href="/RebootSystem">Reboot Sensor</a></li>
+            <li><a href="/ShutdownSystem">Shutdown</a></li>
+        </ul>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <H2 style="color: #00ffff;"><u>Experimental</u></H2>
+    <span style="color: darkorange">You may continue to use the sensor while the OS is upgrading.</span>
+    <br>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/UpgradeSystemOS';">
+        Upgrade OS & Reboot
+    </button>
 
 {% endblock %}

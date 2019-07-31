@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+    span {
+        white-space: nowrap;
+    }
+</style>
+
     <h2><strong><span style="text-decoration: underline;">
         <a href='/TestSensor' style='color: red'>
             {{ HostName }} || {{ IPAddress }}

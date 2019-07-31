@@ -40,6 +40,7 @@ old_version_file_location = "/etc/kootnet/installed_version.txt"
 last_updated_file_location = "/etc/kootnet/last_updated.txt"
 
 log_directory = "/home/kootnet_data/logs/"
+log_zip_file = log_directory + "all_logs.zip"
 primary_log = log_directory + "Primary_log.txt"
-sensors_log = log_directory + "Sensors_log.txt"
 network_log = log_directory + "Network_log.txt"
+sensors_log = log_directory + "Sensors_log.txt"

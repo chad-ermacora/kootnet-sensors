@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file, render_template
 from flask_httpauth import HTTPBasicAuth
@@ -33,12 +34,15 @@ from operations_modules import configuration_files
 from http_server import server_http_auth
 
 
+# noinspection PyUnresolvedReferences
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
         self.app = Flask(__name__)
         self.auth = HTTPBasicAuth()
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
+
+        self.max_log_lines = 600
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -229,44 +233,44 @@ class CreateSensorHTTP:
         @self.app.route("/GetPrimaryLog")
         def get_primary_log():
             logger.network_logger.info("* Sent Primary Log")
-            log = logger.get_sensor_log(file_locations.primary_log)
-            if len(log) > 1150:
-                log = log[:1150]
+            log = logger.get_sensor_log(file_locations.primary_log, max_log_lines=self.max_log_lines)
             return log
 
         @self.app.route("/GetPrimaryLogHTML")
         def get_primary_log_html():
-            logger.network_logger.info("* Sent Primary Log in HTML format")
-            log = logger.get_sensor_log_html(file_locations.primary_log)
-            return log
+            logger.network_logger.debug("* Sent Primary Log in HTML format")
+            return render_template("log_view.html",
+                                   Log=get_primary_log(),
+                                   LogName="Primary",
+                                   MaxLogLines=str(self.max_log_lines))
 
         @self.app.route("/GetNetworkLog")
         def get_network_log():
             logger.network_logger.info("* Sent Network Log")
             log = logger.get_sensor_log(file_locations.network_log)
-            if len(log) > 1150:
-                log = log[:1150]
             return log
 
         @self.app.route("/GetNetworkLogHTML")
         def get_network_log_html():
-            logger.network_logger.info("* Sent Network Log in HTML format")
-            log = logger.get_sensor_log_html(file_locations.network_log)
-            return log
+            logger.network_logger.debug("* Sent Network Log in HTML format")
+            return render_template("log_view.html",
+                                   Log=get_network_log(),
+                                   LogName="Network",
+                                   MaxLogLines=str(self.max_log_lines))
 
         @self.app.route("/GetSensorsLog")
         def get_sensors_log():
             logger.network_logger.info("* Sent Sensor Log")
-            log = logger.get_sensor_log(file_locations.sensors_log)
-            if len(log) > 1150:
-                log = log[:1150]
+            log = logger.get_sensor_log(file_locations.sensors_log, max_log_lines=self.max_log_lines)
             return log
 
         @self.app.route("/GetSensorsLogHTML")
         def get_sensors_log_html():
-            logger.network_logger.info("* Sent Sensor Log in HTML format")
-            log = logger.get_sensor_log_html(file_locations.sensors_log)
-            return log
+            logger.network_logger.debug("* Sent Sensor Log in HTML format")
+            return render_template("log_view.html",
+                                   Log=get_sensors_log(),
+                                   LogName="Sensors",
+                                   MaxLogLines=str(self.max_log_lines))
 
         @self.app.route("/GetDatabaseNotes")
         def get_db_notes():
@@ -314,28 +318,25 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Deleted Note from: " + str(note_datetime))
             sensor_access.delete_db_note(note_datetime)
 
-        @self.app.route("/DownloadPrimaryLog")
-        def download_primary_log():
-            logger.network_logger.info("* Sent Full Primary Log")
-            log_name = sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + "PrimaryLog.txt"
-            return send_file(file_locations.primary_log, as_attachment=True, attachment_filename=log_name)
-
-        @self.app.route("/DownloadNetworkLog")
-        def download_network_log():
-            logger.network_logger.info("* Sent Full Network Log")
-            log_name = sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + "NetworkLog.txt"
-            return send_file(file_locations.network_log, as_attachment=True, attachment_filename=log_name)
-
-        @self.app.route("/DownloadSensorsLog")
-        def download_sensors_log():
-            logger.network_logger.info("* Sent Full Sensor Log")
-            log_name = sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + "SensorLog.txt"
-            return send_file(file_locations.sensors_log, as_attachment=True, attachment_filename=log_name)
+        @self.app.route("/DownloadZippedLogs")
+        def download_zipped_logs():
+            logger.network_logger.info("* Sent Zip of all Full Logs")
+            log_name = "Logs_" + sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + ".zip"
+            try:
+                with ZipFile(file_locations.log_zip_file, "w", ZIP_DEFLATED) as zip_file:
+                    zip_file.write(file_locations.primary_log, os.path.basename(file_locations.primary_log))
+                    zip_file.write(file_locations.network_log, os.path.basename(file_locations.network_log))
+                    zip_file.write(file_locations.sensors_log, os.path.basename(file_locations.sensors_log))
+                return send_file(file_locations.log_zip_file, as_attachment=True, attachment_filename=log_name)
+            except Exception as error:
+                logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
 
         @self.app.route("/DownloadSQLDatabase")
         def download_sensors_sql_database():
             logger.network_logger.info("* Sent Sensor SQL Database")
-            sql_filename = sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + "SensorDatabase.sqlite"
+            sql_filename = sensor_access.get_ip()[-3:].replace(".", "_") + \
+                           sensor_access.get_hostname() + \
+                           "SensorDatabase.sqlite"
             return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
 
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
@@ -452,27 +453,30 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("* Rebooting System")
+            message = "Sensor Rebooting.  This may take a minute or two..."
             system_thread = Thread(target=os.system, args=[app_variables.bash_commands["RebootSystem"]])
             system_thread.daemon = True
             system_thread.start()
-            return "Sensor Rebooting.  This may take a minute or two..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
+            message = "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
             system_thread = Thread(target=os.system, args=[app_variables.bash_commands["ShutdownSystem"]])
             system_thread.daemon = True
             system_thread.start()
-            return "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
+            message = "Restarting Sensor Service.  This should only take up to 30 seconds."
             system_thread = Thread(target=sensor_access.restart_services)
             system_thread.daemon = True
             system_thread.start()
-            return "Restarting Sensor Service.  This should only take up to 30 seconds."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -481,9 +485,11 @@ class CreateSensorHTTP:
                 new_host = request.form['command_data']
                 os.system("hostnamectl set-hostname " + new_host)
                 logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
+                message = "Hostname Changed to " + new_host
             except Exception as error:
                 logger.network_logger.warning("* Hostname Change Failed: " + str(error))
-            return "OK"
+                message = "Failed to change Hostname"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/SetDateTime", methods=["PUT"])
         @self.auth.login_required
@@ -491,28 +497,30 @@ class CreateSensorHTTP:
             new_datetime = request.form['command_data']
             os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
             logger.network_logger.info("* Set System DateTime: " + new_datetime)
-            return "OK"
+            message = "DateTime Set to " + new_datetime
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
         def set_configuration():
             logger.network_logger.info("* Setting Sensor Configuration")
-
+            message = "Configuration Updated"
             raw_config = request.form['command_data'].splitlines()
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
             configuration_files.write_config_to_file(new_config)
             sensor_access.restart_services()
-            return "OK"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
         def set_installed_sensors():
             logger.network_logger.info("* Setting Sensor Installed Sensors")
+            message = "Installed Sensors Updated"
             raw_installed_sensors = request.form['command_data'].splitlines()
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
             configuration_files.write_installed_sensors_to_file(new_installed_sensors)
             sensor_access.restart_services()
-            return "OK"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/GetHostName")
         def get_hostname():
@@ -665,8 +673,12 @@ class CreateSensorHTTP:
                 logger.network_logger.info("* Displaying Text on Installed Display")
                 text_message = request.form['command_data']
                 sensor_access.display_message(text_message)
+                message = "Displaying Message " + text_message
             else:
-                logger.network_logger.warning("* Unable to Display Text: Sensor Display Disabled or not installed")
+                message = "Unable to Display Text: Sensor Display disabled or not installed"
+                logger.network_logger.warning("* " + message)
+
+            return render_template("message_return_home.html", TextMessage=message)
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)

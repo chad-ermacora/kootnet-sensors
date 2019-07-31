@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mui-container-fluid">
+  <!--
+
+  Container is centered on page with 15px of
+  padding on either side. The inner width is
+  fluid for all viewport widths.
+
+  -->
+    <h2 style="color: #90CAF9"><u>Last {{ MaxLogLines }} Log Entries from the {{ LogName }} Log</u></h2>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/SystemCommands';">
+        Return to System Commands
+    </button>
+    <br>
+    <span style="color: greenyellow; white-space: pre-wrap;">
+        {{ Log }}
+    </span>
+</div>
+
+{% endblock %}

@@ -52,7 +52,7 @@ def check_debug_logging():
         return 0
 
 
-def get_sensor_log(log_file):
+def get_sensor_log(log_file, max_log_lines=0):
     """ Opens provided log file location and returns its content. """
     log_content = open(log_file, "r")
     log_lines = log_content.readlines()
@@ -61,23 +61,13 @@ def get_sensor_log(log_file):
     log_lines.reverse()
 
     return_log = ""
-    for log in log_lines:
-        return_log += log
+    if max_log_lines:
+        for log in log_lines[:max_log_lines]:
+            return_log += log
+    else:
+        for log in log_lines:
+            return_log += log
     return return_log
-
-
-def get_sensor_log_html(log_file):
-    """ Opens provided log file location and returns its content. """
-    log_content = open(log_file, "r")
-    log_lines = log_content.readlines()
-    log_content.close()
-
-    log_lines.reverse()
-
-    html_return = ""
-    for log in log_lines:
-        html_return += "<br/>" + log
-    return html_return
 
 
 def clear_primary_log():
@@ -101,63 +91,56 @@ def clear_sensor_log():
     log_content.close()
 
 
-# Primary Program Log
+# Initialize 3 Logs, Primary, Network and Sensors
 primary_logger = logging.getLogger("PrimaryLog")
+network_logger = logging.getLogger("NetworkLog")
+sensors_logger = logging.getLogger("SensorsLog")
+
 debug_logging = check_debug_logging()
 
 if debug_logging:
     primary_logger.setLevel(logging.DEBUG)
+    network_logger.setLevel(logging.DEBUG)
+    sensors_logger.setLevel(logging.DEBUG)
+
 else:
     primary_logger.setLevel(logging.INFO)
+    network_logger.setLevel(logging.INFO)
+    sensors_logger.setLevel(logging.INFO)
 
-formatter_operations = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+formatter = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
+# Setup Primary Log
 file_handler_main = RotatingFileHandler(file_locations.primary_log,
                                         maxBytes=256000,
                                         backupCount=5)
-file_handler_main.setFormatter(formatter_operations)
+file_handler_main.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter_operations)
+stream_handler.setFormatter(formatter)
 
 primary_logger.addHandler(file_handler_main)
 primary_logger.addHandler(stream_handler)
 
-# Sensors Hardware Log
-sensors_logger = logging.getLogger("SensorsLog")
+# Setup Network Log
+file_handler_network = RotatingFileHandler(file_locations.network_log,
+                                           maxBytes=256000,
+                                           backupCount=5)
+file_handler_network.setFormatter(formatter)
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
 
-if debug_logging:
-    sensors_logger.setLevel(logging.DEBUG)
-else:
-    sensors_logger.setLevel(logging.INFO)
+network_logger.addHandler(file_handler_network)
+network_logger.addHandler(stream_handler)
 
-formatter_sensor = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+# Setup Sensors Log
+formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 
 file_handler_sensor = RotatingFileHandler(file_locations.sensors_log,
                                           maxBytes=256000,
                                           backupCount=5)
-file_handler_sensor.setFormatter(formatter_sensor)
+file_handler_sensor.setFormatter(formatter)
 stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter_sensor)
+stream_handler.setFormatter(formatter)
 
 sensors_logger.addHandler(file_handler_sensor)
 sensors_logger.addHandler(stream_handler)
-
-# Network Commands Log
-network_logger = logging.getLogger("NetworkLog")
-
-if debug_logging:
-    network_logger.setLevel(logging.DEBUG)
-else:
-    network_logger.setLevel(logging.INFO)
-
-formatter_network = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
-
-file_handler_network = RotatingFileHandler(file_locations.network_log,
-                                           maxBytes=256000,
-                                           backupCount=5)
-file_handler_network.setFormatter(formatter_network)
-stream_handler = logging.StreamHandler()
-stream_handler.setFormatter(formatter_network)
-
-network_logger.addHandler(file_handler_network)
-network_logger.addHandler(stream_handler)
