@@ -1,106 +1,106 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1><strong><span style="text-decoration: underline;">
+    <h2><strong><span style="text-decoration: underline;">
         <a href='/SensorInformation' style='color: red'>
             Kootnet Sensor || {{ IPAddress }}
         </a>
-    </span></strong></h1>
+    </span></strong></h2>
 
-    <p><strong><span style="text-decoration: underline; background-color: #000000;">
+    <p><strong><span style="text-decoration: underline; color: red;">
         System
     </span></strong></p>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Hostname</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ HostName }}</span>
+    <span style='background-color: #0BB10D;'>{{ HostName }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>IP Address</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ IPAddress }}</span>
+    <span style='background-color: #0BB10D;'>{{ IPAddress }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>System Temperature</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ CPUTemperature }}°C</span>
+    <span style='background-color: #0BB10D;'>{{ CPUTemperature }}°C</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>SQL Database Size</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ SQLDatabaseSize }}MB</span>
+    <span style='background-color: #0BB10D;'>{{ SQLDatabaseSize }}MB</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Drive Usage</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ DiskUsage }}%</span>
+    <span style='background-color: #0BB10D;'>{{ DiskUsage }}%</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>RAM Usage</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ RAMUsage }}%</span>
+    <span style='background-color: #0BB10D;'>{{ RAMUsage }}%</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Sensor Date & Time</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ DateTime }}</span>
+    <span style='background-color: #0BB10D;'>{{ DateTime }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Sensor Uptime</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ SystemUptime }}</span>
+    <span style='background-color: #0BB10D;'>{{ SystemUptime }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Installed Sensors</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ InstalledSensors }}</span>
+    <span style='background-color: #0BB10D;'>{{ InstalledSensors }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Version</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ KootnetVersion }}</span>
+    <span style='background-color: #0BB10D;'>{{ KootnetVersion }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Last Updated</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ LastUpdated }}</span>
+    <span style='background-color: #0BB10D;'>{{ LastUpdated }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
     <br>
 
-    <p><strong><span style="text-decoration: underline; background-color: #000000;">
+    <p><strong><span style="text-decoration: underline; color: red;">
         Configurations
     </span></strong></p>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Debug Logging</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ DebugLogging }}</span>
+    <span style='background-color: #0BB10D;'>{{ DebugLogging }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Interval Recording</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ IntervalRecording }}</span>
+    <span style='background-color: #0BB10D;'>{{ IntervalRecording }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Trigger Recording</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ TriggerRecording }}</span>
+    <span style='background-color: #0BB10D;'>{{ TriggerRecording }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <br>
 
     <span style='color: #ffffff;'> || </span>
     <span style='color: #00ffff;'>Manual Temperature Offset Enabled</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ ManualTemperatureEnabled }}</span>
+    <span style='background-color: #0BB10D;'>{{ ManualTemperatureEnabled }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Current Temperature Offset</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ CurrentTemperatureOffset }}</span>
+    <span style='background-color: #0BB10D;'>{{ CurrentTemperatureOffset }}</span>
     <span style='color: #ffffff;'> || </span>
 
     <span style='color: #00ffff;'>Interval Delay in Seconds</span><span style='color: #ffffff;'>: </span>
-    <span style='background-color: #000000;'>{{ IntervalDelay }}</span>
+    <span style='background-color: #0BB10D;'>{{ IntervalDelay }}</span>
     <span style='color: #ffffff;'> || </span>
 
 {% endblock %}

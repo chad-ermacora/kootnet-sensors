@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="/bootstrap.min.css">
+    <link rel="stylesheet" href="/form.css">
+    <link rel="stylesheet" href="/site.css">
+</head>
+
+<!-- sign up form here ... -->
+<h1>View & Edit Main Configuration</h1>
+
+<form action="" method="post">
+
+    <input type="text" name="main_configuration" required placeholder="{{ MainConfig }}">
+    <button type="submit">Update Configuration</button>
+
+</form>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="extras/form_hook.js"></script>
+{% endblock %}

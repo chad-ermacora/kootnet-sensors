@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p>KootNet Sensors || {{ KootnetVersion }}</p>
-    <p>{{ InstalledSensors }}</p>
+<span style="color: red; alignment: center">
+    KootNet Sensors || {{ KootnetVersion }}
+    <br>
+    {{ InstalledSensors }}
+</span>
 {% endblock %}

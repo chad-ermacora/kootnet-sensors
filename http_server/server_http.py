@@ -57,12 +57,29 @@ class CreateSensorHTTP:
         def mui_min_js():
             return send_file(file_locations.mui_min_js)
 
+        @self.app.route("/mui-colors.min.css")
+        def mui_colors_min_css():
+            return send_file(file_locations.mui_colors_min_css)
+
         @self.auth.verify_password
         def verify_password(username, password):
             if username == http_auth.http_flask_user:
                 return check_password_hash(http_auth.http_flask_password, password)
             else:
                 return False
+
+        @self.auth.error_handler
+        def auth_error():
+            return render_template("message_return_home.html", TextMessage="Unauthorized Access")
+
+        @self.app.route('/logout')
+        def logout():
+            return render_template("message_return_home.html", TextMessage="Logout OK.  Returning to Home."), 401
+
+        @self.app.route("/EditConfig")
+        def edit_config():
+            logger.network_logger.debug("Edit Configuration accessed from " + str(request.remote_addr))
+            return render_template("edit_configurations.html")
 
         @self.app.route("/Quick")
         @self.app.route("/SensorInformation")
@@ -260,22 +277,25 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def delete_primary_log():
             logger.network_logger.info("* Primary Sensor Log Deleted")
+            message = "Primary Log Deleted"
             logger.clear_primary_log()
-            return "Primary Log Deleted"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
         def delete_network_log():
             logger.network_logger.info("* Network Sensor Log Deleted")
+            message = "Network Log Deleted"
             logger.clear_network_log()
-            return "Network Log Deleted"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
         def delete_sensors_log():
             logger.network_logger.info("* Sensors Log Deleted")
+            message = "Sensors Log Deleted"
             logger.clear_sensor_log()
-            return "Sensors Log Deleted"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
@@ -338,77 +358,86 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
+            message = "HTTP Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnline"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "HTTP Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
+            message = "HTTP Clean Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanOnline"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "HTTP Clean Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
+            message = "HTTP Developer Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnlineDEV"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "HTTP Developer Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Started Upgrade - SMB")
+            message = "SMB Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMB"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "SMB Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("* Started Clean Upgrade - SMB")
+            message = "SMB Clean Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanSMB"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "SMB Clean Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("* Started Upgrade - SMB Developer")
+            message = "SMB Developer Upgrade Started.  This may take a few minutes ..."
             upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMBDEV"]])
             upgrade_thread.daemon = True
             upgrade_thread.start()
-            return "SMB Developer Upgrade Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
         def reinstall_program_requirements():
             logger.network_logger.info("* Started Program Dependency Install")
+            message = "Dependency Install Started.  This may take a few minutes ..."
             check_requirements = Thread(target=os.system, args=[app_variables.bash_commands["ReInstallRequirements"]])
             check_requirements.daemon = True
             check_requirements.start()
-            return "Dependency Install Started.  This may take a few minutes ..."
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
         def upgrade_system_os():
             logger.network_logger.info("* Updating Operating System & rebooting")
             if configuration_main.linux_os_upgrade_ready:
+                message = "Operating System Upgrade Started. The sensor will reboot when done. This will take awhile..."
                 configuration_main.linux_os_upgrade_ready = False
                 system_upgrade_thread = Thread(target=sensor_access.upgrade_linux_os)
                 system_upgrade_thread.daemon = True
                 system_upgrade_thread.start()
             else:
+                message = "Upgrade is already running.  The sensor will reboot when done."
                 logger.sensors_logger.warning("* Operating System Upgrade Already Running")
-            return "OK"
+            return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/inkupg")
         @self.auth.login_required

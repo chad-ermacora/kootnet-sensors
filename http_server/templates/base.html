@@ -7,26 +7,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/mui.min.css" rel="stylesheet" type="text/css" />
     <script src="/mui.min.js"></script>
+    <link href="/mui-colors.min.css" rel="stylesheet" type="text/css" />
+
     <style>
-        head {
-            color: #F50057;
-            background-color: #000000;
+        table {
+            border: 3px solid white;
+            border-collapse: collapse;
         }
+
+        td {
+            padding: 5px;
+        }
+
         body {
-            color: #F50057;
             background-color: #000000;
             white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div class="mui-panel">
-        <button class="mui-btn mui-btn--raised"><a href="/index">Home</a></button>
-        <button class="mui-btn mui-btn--raised"><a href="/SensorInformation">Sensor Information</a></button>
-        <button class="mui-btn mui-btn--raised"><a href="/TestSensor">View Sensor Readings</a></button>
-        <button class="mui-btn mui-btn--raised"><a href="/SystemCommands">System Commands</a></button>
+    <div class="mui-panel mui--bg-color-black">
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" onclick="window.location.href = '/index';">Home</button>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" onclick="window.location.href = '/SensorInformation';">Sensor Information</button>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" onclick="window.location.href = '/TestSensor';">View Sensor Readings</button>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" onclick="window.location.href = '/SystemCommands';">System Commands</button>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" onclick="window.location.href = '/logout';">Logout</button>
     </div>
-    <hr>
+<!--    <hr>-->
     {% block content %}{% endblock %}
 </body>
 </html>

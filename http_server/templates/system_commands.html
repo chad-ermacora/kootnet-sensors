@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <button class="mui-btn mui-btn--raised"><a href="/DownloadSQLDatabase" target="_blank">
+    <button class="mui-btn" onclick="window.location.href = '/DownloadSQLDatabase';">
         Download Sensor Database
-    </a></button>
+    </button>
 
     <H2 style="color: #00ffff;"><u>Logs</u></H2>
     <div class="mui-dropdown">
@@ -22,9 +22,9 @@
             <span class="mui-caret"></span>
         </button>
         <ul class="mui-dropdown__menu">
-            <li><a href="/DeletePrimaryLog" target="_blank">Primary</a></li>
-            <li><a href="/DeleteNetworkLog" target="_blank">Network</a></li>
-            <li><a href="/DeleteSensorsLog" target="_blank">Sensors</a></li>
+            <li><a href="/DeletePrimaryLog">Primary</a></li>
+            <li><a href="/DeleteNetworkLog">Network</a></li>
+            <li><a href="/DeleteSensorsLog">Sensors</a></li>
         </ul>
     </div>
 
@@ -35,10 +35,10 @@
             <span class="mui-caret"></span>
         </button>
         <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeOnline" target="_blank">HTTP Upgrade</a></li>
-            <li><a href="/UpgradeSMB" target="_blank">SMB Upgrade</a></li>
-            <li><a href="/UpgradeOnlineDev" target="_blank">DEV - HTTP Upgrade</a></li>
-            <li><a href="/UpgradeSMBDev" target="_blank">DEV - SMB Upgrade</a></li>
+            <li><a href="/UpgradeOnline">HTTP Upgrade</a></li>
+            <li><a href="/UpgradeSMB">SMB Upgrade</a></li>
+            <li><a href="/UpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
+            <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
         </ul>
     </div>
 
