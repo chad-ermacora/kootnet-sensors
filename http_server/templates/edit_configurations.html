@@ -3,19 +3,13 @@
 
 {% block content %}
 
-<h1>View & Edit Configurations</h1>
-
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Pick Configuration
-        <span class="mui-caret"></span>
-    </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/GetPrimaryLogHTML" target="_blank">Main Configuration</a></li>
-        <li><a href="/GetNetworkLogHTML" target="_blank">Installed Sensors</a></li>
-        <li><a href="/GetSensorsLogHTML" target="_blank">Wifi</a></li>
-        <li><a href="/GetSensorsLogHTML" target="_blank">Trigger Variances</a></li>
-    </ul>
-</div>
+<!-- Configuration Edit Box and Button ... -->
+<form class="mui-form" style="background-color: #00B0FF" method="POST" action="{{ PageURL }}">
+  <legend>{{ Title }}</legend>
+  <div class="mui-textfield">
+      <textarea name="configuration" required rows="16">{{ MainConfig }}</textarea>
+  </div>
+    <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+</form>
 
 {% endblock %}

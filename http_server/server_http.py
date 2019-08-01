@@ -80,10 +80,77 @@ class CreateSensorHTTP:
         def logout():
             return render_template("message_return_home.html", TextMessage="Logout OK.  Returning to Home."), 401
 
-        @self.app.route("/EditConfig")
-        def edit_config():
-            logger.network_logger.debug("Edit Configuration accessed from " + str(request.remote_addr))
-            return render_template("edit_configurations.html")
+        @self.app.route("/EditConfigMain", methods=["GET", "POST"])
+        @self.auth.login_required
+        def edit_config_main():
+            logger.network_logger.debug("Edit Configuration Main accessed from " + str(request.remote_addr))
+            if request.method == "POST" and "configuration" in request.form:
+                try:
+                    new_config = request.form.get("configuration").strip().split("\n")
+                    new_current_config = configuration_files.convert_config_lines_to_obj(new_config)
+                    configuration_files.write_config_to_file(new_current_config)
+                    thread_function(sensor_access.restart_services)
+                except Exception as error:
+                    logger.primary_logger.warning("Edit config: " + str(error))
+
+            text_configuration = configuration_files.convert_config_to_str(configuration_main.current_config)
+            return render_template("edit_configurations.html",
+                                   MainConfig=text_configuration,
+                                   PageURL="EditConfigMain",
+                                   Title="Main Configuration")
+
+        @self.app.route("/EditInstalledSensors", methods=["GET", "POST"])
+        @self.auth.login_required
+        def edit_installed_sensors():
+            logger.network_logger.debug("Edit Installed Sensors accessed from " + str(request.remote_addr))
+            if request.method == "POST" and "configuration" in request.form:
+                try:
+                    new_config = request.form.get("configuration").strip().split("\n")
+                    new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(new_config)
+                    configuration_files.write_installed_sensors_to_file(new_installed_sensors)
+                    thread_function(sensor_access.restart_services)
+                except Exception as error:
+                    logger.primary_logger.warning("Edit config: " + str(error))
+
+            text_configuration = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
+            return render_template("edit_configurations.html",
+                                   MainConfig=text_configuration,
+                                   PageURL="EditInstalledSensors",
+                                   Title="Installed Sensors")
+
+        @self.app.route("/EditConfigWifi", methods=["GET", "POST"])
+        @self.auth.login_required
+        def edit_config_wifi():
+            logger.network_logger.debug("Edit Wifi Configuration accessed from " + str(request.remote_addr))
+            if request.method == "POST" and "configuration" in request.form:
+                try:
+                    new_config = request.form.get("configuration").strip()
+                    wifi_file.write_wifi_config_to_file(new_config)
+                except Exception as error:
+                    logger.primary_logger.warning("Edit config: " + str(error))
+
+            text_configuration = wifi_file.get_wifi_config_from_file()
+            return render_template("edit_configurations.html",
+                                   MainConfig=text_configuration,
+                                   PageURL="EditConfigWifi",
+                                   Title="Wifi WPA Supplicant")
+
+        @self.app.route("/EditTriggerVariances", methods=["GET", "POST"])
+        @self.auth.login_required
+        def edit_trigger_variances():
+            logger.network_logger.debug("Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
+            if request.method == "POST" and "configuration" in request.form:
+                try:
+                    new_config = request.form.get("configuration").strip()
+                    trigger_variances.write_triggers_to_file(new_config)
+                except Exception as error:
+                    logger.primary_logger.warning("Edit config: " + str(error))
+
+            text_configuration = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
+            return render_template("edit_configurations.html",
+                                   MainConfig=text_configuration,
+                                   PageURL="EditTriggerVariances",
+                                   Title="Trigger Variances")
 
         @self.app.route("/Quick")
         @self.app.route("/SensorInformation")
@@ -360,9 +427,7 @@ class CreateSensorHTTP:
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
             message = "HTTP Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnline"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/CleanOnline")
@@ -370,9 +435,7 @@ class CreateSensorHTTP:
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
             message = "HTTP Clean Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanOnline"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeOnlineDev")
@@ -380,9 +443,7 @@ class CreateSensorHTTP:
         def upgrade_http_dev():
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
             message = "HTTP Developer Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeOnlineDEV"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSMB")
@@ -390,9 +451,7 @@ class CreateSensorHTTP:
         def upgrade_smb():
             logger.network_logger.info("* Started Upgrade - SMB")
             message = "SMB Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMB"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/CleanSMB")
@@ -400,9 +459,7 @@ class CreateSensorHTTP:
         def upgrade_clean_smb():
             logger.network_logger.info("* Started Clean Upgrade - SMB")
             message = "SMB Clean Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["CleanSMB"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSMBDev")
@@ -410,9 +467,7 @@ class CreateSensorHTTP:
         def upgrade_smb_dev():
             logger.network_logger.info("* Started Upgrade - SMB Developer")
             message = "SMB Developer Upgrade Started.  This may take a few minutes ..."
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["UpgradeSMBDEV"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/ReInstallRequirements")
@@ -420,9 +475,7 @@ class CreateSensorHTTP:
         def reinstall_program_requirements():
             logger.network_logger.info("* Started Program Dependency Install")
             message = "Dependency Install Started.  This may take a few minutes ..."
-            check_requirements = Thread(target=os.system, args=[app_variables.bash_commands["ReInstallRequirements"]])
-            check_requirements.daemon = True
-            check_requirements.start()
+            thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/UpgradeSystemOS")
@@ -432,9 +485,7 @@ class CreateSensorHTTP:
             if configuration_main.linux_os_upgrade_ready:
                 message = "Operating System Upgrade Started. The sensor will reboot when done. This will take awhile..."
                 configuration_main.linux_os_upgrade_ready = False
-                system_upgrade_thread = Thread(target=sensor_access.upgrade_linux_os)
-                system_upgrade_thread.daemon = True
-                system_upgrade_thread.start()
+                thread_function(sensor_access.upgrade_linux_os)
             else:
                 message = "Upgrade is already running.  The sensor will reboot when done."
                 logger.sensors_logger.warning("* Operating System Upgrade Already Running")
@@ -444,9 +495,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_rp_controller():
             logger.network_logger.info("* Started Upgrade - E-Ink Mobile")
-            upgrade_thread = Thread(target=os.system, args=[app_variables.bash_commands["inkupg"]])
-            upgrade_thread.daemon = True
-            upgrade_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["inkupg"])
             return "OK"
 
         @self.app.route("/RebootSystem")
@@ -454,9 +503,7 @@ class CreateSensorHTTP:
         def system_reboot():
             logger.network_logger.info("* Rebooting System")
             message = "Sensor Rebooting.  This may take a minute or two..."
-            system_thread = Thread(target=os.system, args=[app_variables.bash_commands["RebootSystem"]])
-            system_thread.daemon = True
-            system_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/ShutdownSystem")
@@ -464,18 +511,14 @@ class CreateSensorHTTP:
         def system_shutdown():
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
             message = "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
-            system_thread = Thread(target=os.system, args=[app_variables.bash_commands["ShutdownSystem"]])
-            system_thread.daemon = True
-            system_thread.start()
+            thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
             message = "Restarting Sensor Service.  This should only take up to 30 seconds."
-            system_thread = Thread(target=sensor_access.restart_services)
-            system_thread.daemon = True
-            system_thread.start()
+            thread_function(sensor_access.restart_services)
             return render_template("message_return_home.html", TextMessage=message)
 
         @self.app.route("/SetHostName", methods=["PUT"])
@@ -679,6 +722,16 @@ class CreateSensorHTTP:
                 logger.network_logger.warning("* " + message)
 
             return render_template("message_return_home.html", TextMessage=message)
+
+        def thread_function(function, args=0):
+            if args:
+                system_thread = Thread(target=function, args=[args])
+                system_thread.daemon = True
+                system_thread.start()
+            else:
+                system_thread = Thread(target=function)
+                system_thread.daemon = True
+                system_thread.start()
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)
