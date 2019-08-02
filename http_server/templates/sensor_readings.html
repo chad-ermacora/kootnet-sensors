@@ -2,158 +2,152 @@
 
 {% block content %}
 
-    <style>
-        span {
-            white-space: nowrap;
-        }
-    </style>
+<style>
+    span {
+        white-space: nowrap;
+    }
+</style>
 
-    <h2><strong><span style="text-decoration: underline;">
-        <a href='/TestSensor' style='color: red'>
-            {{ HostName }} - {{ IPAddress }}
-        </a>
-    </span></strong></h2>
-    <h3><strong>
-        <span style='color: #F4A460;'>
-            Date Taken: {{ DateTime }}
-        </span>
-        <br>
-        <span style='font-size: 14px; color: #F4A460;'>
-            Date Format: YYYY-MM-DD hh:mm - Time Zone
-        </span>
-    </strong></h3>
+<h2><strong><span style="text-decoration: underline;">
+    <a href='/TestSensor' style='color: red'>{{ HostName }} - {{ IPAddress }}</a>
+</span></strong></h2>
 
-    <div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">System Temperature</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ CPUTemperature }} °C</div>
-        </div>
+<h3><strong>
+    <span style='color: #F4A460;'>Date Taken: {{ DateTime }}</span>
+    <br>
+    <span style='font-size: 14px; color: #F4A460;'>Date Format: YYYY-MM-DD hh:mm - Time Zone</span>
+</strong></h3>
 
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Env Temp</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperature }} °C</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Env Temp Offset</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperatureOffset }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Pressure</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Pressure }} hPa</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Altitude</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Altitude }} Meters</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Humidity</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Humidity }} %RH</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Distance</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Distance }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Gas Resistance</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasResistanceIndex }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Gas Oxidising</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasOxidising }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Gas Reducing</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasReducing }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Gas NH3</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasNH3 }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 1</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM1 }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 2.5</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM25 }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 10</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM10 }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Lumen</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Lumen }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Red</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Red }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Orange</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Orange }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Yellow</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Yellow }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Green</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Green }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Blue</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Blue }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Violet</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Violet }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Ultra Violet A</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVA }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Ultra Violet B</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVB }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Accelerometer XYZ</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Acc }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Magnetometer XYZ</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Mag }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3" style="background-color: #00ffff">Gyroscope XYZ</div>
-            <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Gyro }}</div>
-        </div>
+<div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">System Temperature</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ CPUTemperature }} °C</div>
     </div>
-    <br><br>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Env Temp</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperature }} °C</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Env Temp Offset</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperatureOffset }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Pressure</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Pressure }} hPa</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Altitude</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Altitude }} Meters</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Humidity</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Humidity }} %RH</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Distance</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Distance }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Gas Resistance</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasResistanceIndex }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Gas Oxidising</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasOxidising }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Gas Reducing</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasReducing }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Gas NH3</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasNH3 }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 1</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM1 }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 2.5</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM25 }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Particulate Matter 10</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM10 }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Lumen</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Lumen }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Red</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Red }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Orange</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Orange }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Yellow</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Yellow }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Green</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Green }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Blue</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Blue }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Violet</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Violet }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Ultra Violet A</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVA }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Ultra Violet B</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVB }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Accelerometer XYZ</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Acc }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Magnetometer XYZ</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Mag }}</div>
+    </div>
+
+    <div class="mui-row">
+        <div class="mui-col-md-3" style="background-color: #00ffff">Gyroscope XYZ</div>
+        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Gyro }}</div>
+    </div>
+</div>
 
 {% endblock %}
