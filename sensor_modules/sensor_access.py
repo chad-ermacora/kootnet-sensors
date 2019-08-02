@@ -275,7 +275,7 @@ def get_ip():
 
 
 def get_disk_usage_percent():
-    """ Returns sensor root disk usage. """
+    """ Returns sensor root disk usage as a %. """
     try:
         drive_information = psutil.disk_usage("/")
         return_disk_usage = drive_information[3]
@@ -286,7 +286,7 @@ def get_disk_usage_percent():
 
 
 def get_memory_usage_percent():
-    """ Returns sensor RAM usage. """
+    """ Returns sensor RAM usage as a %. """
     try:
         mem = psutil.virtual_memory()
         return_mem = mem[2]

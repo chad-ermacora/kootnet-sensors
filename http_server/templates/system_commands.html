@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+
     <H2 style="color: #00ffff;"><u>Logs</u></H2>
     <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
             onclick="window.location.href = '/DownloadZippedLogs';">
@@ -33,15 +34,26 @@
         </ul>
     </div>
 
+    <br>
 
-    <H2 style="color: #00ffff;"><u>System</u></H2>
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/DownloadSQLDatabase';">
-        Download SQL Database
-    </button>
+    <h2 style="color: #00ffff;"><u>View & Edit Configurations</u></h2>
+
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Configuration
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/EditConfigMain">Main Configuration</a></li>
+            <li><a href="/EditInstalledSensors">Installed Sensors</a></li>
+            <li><a href="/EditConfigWifi">Wifi</a></li>
+            <li><a href="/EditTriggerVariances">Trigger Variances</a></li>
+        </ul>
+    </div>
 
     <br>
 
+    <H2 style="color: #00ffff;"><u>System</u></H2>
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Upgrade Options
@@ -67,29 +79,20 @@
         </ul>
     </div>
 
-    <h2 style="color: #00ffff;"><u>View & Edit Configurations</u></h2>
-
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Configuration
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/EditConfigMain">Main Configuration</a></li>
-            <li><a href="/EditInstalledSensors">Installed Sensors</a></li>
-            <li><a href="/EditConfigWifi">Wifi</a></li>
-            <li><a href="/EditTriggerVariances">Trigger Variances</a></li>
-        </ul>
-    </div>
-
     <br>
 
     <H2 style="color: #00ffff;"><u>Experimental</u></H2>
-    <span style="color: darkorange">You may continue to use the sensor while the OS is upgrading.</span>
+    <span style="color: darkorange">Use with caution. Functions here may not work properly under all conditions.</span>
     <br>
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/UpgradeSystemOS';">
-        Upgrade OS & Reboot
-    </button>
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Experimental
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
+        </ul>
+    </div>
+    <br><br>
 
 {% endblock %}

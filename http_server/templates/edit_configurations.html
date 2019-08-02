@@ -3,13 +3,14 @@
 
 {% block content %}
 
-<!-- Configuration Edit Box and Button ... -->
-<form class="mui-form" style="background-color: #00B0FF" method="POST" action="{{ PageURL }}">
-  <legend>{{ Title }}</legend>
-  <div class="mui-textfield">
-      <textarea name="configuration" required rows="16">{{ MainConfig }}</textarea>
-  </div>
-    <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-</form>
+    <!-- Configuration Edit Box and Button ... -->
+    <form class="mui-form" style="background-color: #00B0FF" method="POST" action="{{ PageURL }}">
+      <legend>{{ Title }}</legend>
+      <div class="mui-textfield">
+          <textarea name="configuration" required rows="16">{{ MainConfig }}</textarea>
+      </div>
+        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+    </form>
+    <br><br>
 
 {% endblock %}

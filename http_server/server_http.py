@@ -28,7 +28,6 @@ from operations_modules import trigger_variances
 from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules import configuration_main
-from operations_modules import software_version
 from operations_modules import app_variables
 from operations_modules import configuration_files
 from http_server import server_http_auth
@@ -46,12 +45,9 @@ class CreateSensorHTTP:
 
         @self.app.route("/")
         @self.app.route("/index")
-        @self.app.route("/Ver")
-        @self.app.route("/About")
+        @self.app.route("/index.html")
         def index():
-            return render_template("index.html",
-                                   KootnetVersion=software_version.version,
-                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str())
+            return render_template("index.html", HostName=sensor_access.get_hostname())
 
         @self.app.route("/mui.min.css")
         def mui_min_css():
@@ -68,17 +64,129 @@ class CreateSensorHTTP:
         @self.auth.verify_password
         def verify_password(username, password):
             if username == http_auth.http_flask_user:
+                logger.network_logger.debug("Login attempt from " + str(request.remote_addr))
                 return check_password_hash(http_auth.http_flask_password, password)
             else:
                 return False
 
         @self.auth.error_handler
         def auth_error():
+            logger.network_logger.warning(" *** Failed Login from " + str(request.remote_addr))
             return render_template("message_return_home.html", TextMessage="Unauthorized Access")
 
         @self.app.route('/logout')
         def logout():
             return render_template("message_return_home.html", TextMessage="Logout OK.  Returning to Home."), 401
+
+        @self.app.route("/About")
+        @self.app.route("/SensorInformation")
+        def sensor_information():
+            logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
+            if configuration_main.current_config.enable_debug_logging:
+                debug_logging = True
+            else:
+                debug_logging = False
+
+            if configuration_main.current_config.enable_interval_recording:
+                interval_recording = True
+            else:
+                interval_recording = False
+
+            if configuration_main.current_config.enable_trigger_recording:
+                trigger_recording = True
+            else:
+                trigger_recording = False
+
+            if configuration_main.current_config.enable_custom_temp:
+                custom_temp_enabled = True
+            else:
+                custom_temp_enabled = False
+
+            return render_template("sensor_information.html",
+                                   HostName=sensor_access.get_hostname(),
+                                   IPAddress=sensor_access.get_ip(),
+                                   CPUTemperature=sensor_access.get_cpu_temperature(),
+                                   SQLDatabaseSize=sensor_access.get_db_size(),
+                                   DiskUsage=sensor_access.get_disk_usage_percent(),
+                                   RAMUsage=sensor_access.get_memory_usage_percent(),
+                                   DateTime=sensor_access.get_system_datetime(),
+                                   SystemUptime=sensor_access.get_uptime_str(),
+                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
+                                   KootnetVersion=configuration_main.software_version.version,
+                                   LastUpdated=sensor_access.get_last_updated(),
+                                   DebugLogging=debug_logging,
+                                   IntervalRecording=interval_recording,
+                                   TriggerRecording=trigger_recording,
+                                   ManualTemperatureEnabled=custom_temp_enabled,
+                                   CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
+                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval)
+
+        @self.app.route("/TestSensor")
+        @self.app.route("/SensorReadings")
+        def test_sensor():
+            red, orange, yellow, green, blue, violet = _get_ems_render_template()
+            return render_template("sensor_readings.html",
+                                   HostName=sensor_access.get_hostname(),
+                                   IPAddress=sensor_access.get_ip(),
+                                   DateTime=sensor_access.get_system_datetime(),
+                                   SystemUptime=sensor_access.get_uptime_str(),
+                                   CPUTemperature=sensor_access.get_cpu_temperature(),
+                                   EnvTemperature=sensor_access.get_sensor_temperature(),
+                                   EnvTemperatureOffset=configuration_main.current_config.temperature_offset,
+                                   Pressure=sensor_access.get_pressure(),
+                                   Altitude=sensor_access.get_altitude(),
+                                   Humidity=sensor_access.get_humidity(),
+                                   Distance=sensor_access.get_distance(),
+                                   GasResistanceIndex=sensor_access.get_gas_resistance_index(),
+                                   GasOxidising=sensor_access.get_gas_oxidised(),
+                                   GasReducing=sensor_access.get_gas_reduced(),
+                                   GasNH3=sensor_access.get_gas_nh3(),
+                                   PM1=sensor_access.get_particulate_matter_1(),
+                                   PM25=sensor_access.get_particulate_matter_2_5(),
+                                   PM10=sensor_access.get_particulate_matter_10(),
+                                   Lumen=sensor_access.get_lumen(),
+                                   Red=red,
+                                   Orange=orange,
+                                   Yellow=yellow,
+                                   Green=green,
+                                   Blue=blue,
+                                   Violet=violet,
+                                   UVA=sensor_access.get_ultra_violet_a(),
+                                   UVB=sensor_access.get_ultra_violet_b(),
+                                   Acc=sensor_access.get_accelerometer_xyz(),
+                                   Mag=sensor_access.get_magnetometer_xyz(),
+                                   Gyro=sensor_access.get_gyroscope_xyz())
+
+        def _get_ems_render_template():
+            ems = sensor_access.get_ems()
+            if ems == "NoSensor":
+                red = "NoSensor"
+                orange = "NoSensor"
+                yellow = "NoSensor"
+                green = "NoSensor"
+                blue = "NoSensor"
+                violet = "NoSensor"
+            else:
+                if len(ems) > 3:
+                    red = ems[0]
+                    orange = ems[1]
+                    yellow = ems[2]
+                    green = ems[3]
+                    blue = ems[4]
+                    violet = ems[5]
+                else:
+                    red = ems[0]
+                    orange = "NoSensor"
+                    yellow = "NoSensor"
+                    green = ems[1]
+                    blue = ems[2]
+                    violet = "NoSensor"
+            return [red, orange, yellow, green, blue, violet]
+
+        @self.app.route("/Quick")
+        @self.app.route("/SystemCommands")
+        def system_commands():
+            return render_template("system_commands.html")
 
         @self.app.route("/EditConfigMain", methods=["GET", "POST"])
         @self.auth.login_required
@@ -151,82 +259,6 @@ class CreateSensorHTTP:
                                    MainConfig=text_configuration,
                                    PageURL="EditTriggerVariances",
                                    Title="Trigger Variances")
-
-        @self.app.route("/Quick")
-        @self.app.route("/SensorInformation")
-        def sensor_information():
-            logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
-            if configuration_main.current_config.enable_debug_logging:
-                debug_logging = True
-            else:
-                debug_logging = False
-
-            if configuration_main.current_config.enable_interval_recording:
-                interval_recording = True
-            else:
-                interval_recording = False
-
-            if configuration_main.current_config.enable_trigger_recording:
-                trigger_recording = True
-            else:
-                trigger_recording = False
-
-            if configuration_main.current_config.enable_custom_temp:
-                custom_temp_enabled = True
-            else:
-                custom_temp_enabled = False
-
-            return render_template("sensor_information.html",
-                                   HostName=sensor_access.get_hostname(),
-                                   IPAddress=sensor_access.get_ip(),
-                                   CPUTemperature=sensor_access.get_cpu_temperature(),
-                                   SQLDatabaseSize=sensor_access.get_db_size(),
-                                   DiskUsage=sensor_access.get_disk_usage_percent(),
-                                   RAMUsage=sensor_access.get_memory_usage_percent(),
-                                   DateTime=sensor_access.get_system_datetime(),
-                                   SystemUptime=sensor_access.get_uptime_str(),
-                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
-                                   KootnetVersion=configuration_main.software_version.version,
-                                   LastUpdated=sensor_access.get_last_updated(),
-                                   DebugLogging=debug_logging,
-                                   IntervalRecording=interval_recording,
-                                   TriggerRecording=trigger_recording,
-                                   ManualTemperatureEnabled=custom_temp_enabled,
-                                   CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
-                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval)
-
-        @self.app.route("/SystemCommands")
-        def system_commands():
-            return render_template("system_commands.html")
-
-        @self.app.route("/TestSensor")
-        def test_sensor():
-            return render_template("sensor_readings.html",
-                                   HostName=sensor_access.get_hostname(),
-                                   IPAddress=sensor_access.get_ip(),
-                                   DateTime=sensor_access.get_system_datetime(),
-                                   SystemUptime=sensor_access.get_uptime_str(),
-                                   CPUTemperature=sensor_access.get_cpu_temperature(),
-                                   EnvTemperature=sensor_access.get_sensor_temperature(),
-                                   EnvTemperatureOffset=configuration_main.current_config.temperature_offset,
-                                   Pressure=sensor_access.get_pressure(),
-                                   Altitude=sensor_access.get_altitude(),
-                                   Humidity=sensor_access.get_humidity(),
-                                   Distance=sensor_access.get_distance(),
-                                   GasResistanceIndex=sensor_access.get_gas_resistance_index(),
-                                   GasOxidising=sensor_access.get_gas_oxidised(),
-                                   GasReducing=sensor_access.get_gas_reduced(),
-                                   GasNH3=sensor_access.get_gas_nh3(),
-                                   PM1=sensor_access.get_particulate_matter_1(),
-                                   PM25=sensor_access.get_particulate_matter_2_5(),
-                                   PM10=sensor_access.get_particulate_matter_10(),
-                                   Lumen=sensor_access.get_lumen(),
-                                   EMS=sensor_access.get_ems(),
-                                   UVA=sensor_access.get_ultra_violet_a(),
-                                   UVB=sensor_access.get_ultra_violet_b(),
-                                   Acc=sensor_access.get_accelerometer_xyz(),
-                                   Mag=sensor_access.get_magnetometer_xyz(),
-                                   Gyro=sensor_access.get_gyroscope_xyz())
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
