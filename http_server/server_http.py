@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from time import strftime
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file, render_template
@@ -41,7 +42,8 @@ class CreateSensorHTTP:
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
 
-        self.max_log_lines = 600
+        sensor_reboot_count = sensor_access.get_system_reboot_count()
+        max_log_lines = 600
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -87,6 +89,11 @@ class CreateSensorHTTP:
             else:
                 debug_logging = False
 
+            if configuration_main.current_config.enable_display:
+                display_enabled = True
+            else:
+                display_enabled = False
+
             if configuration_main.current_config.enable_interval_recording:
                 interval_recording = True
             else:
@@ -105,21 +112,26 @@ class CreateSensorHTTP:
             return render_template("sensor_information.html",
                                    HostName=sensor_access.get_hostname(),
                                    IPAddress=sensor_access.get_ip(),
-                                   CPUTemperature=sensor_access.get_cpu_temperature(),
-                                   SQLDatabaseSize=sensor_access.get_db_size(),
-                                   DiskUsage=sensor_access.get_disk_usage_percent(),
-                                   RAMUsage=sensor_access.get_memory_usage_percent(),
-                                   DateTime=sensor_access.get_system_datetime(),
-                                   SystemUptime=sensor_access.get_uptime_str(),
-                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
                                    KootnetVersion=configuration_main.software_version.version,
                                    LastUpdated=sensor_access.get_last_updated(),
+                                   DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
+                                   SystemUptime=sensor_access.get_uptime_str(),
+                                   SensorReboots=sensor_reboot_count,
+                                   CPUTemperature=sensor_access.get_cpu_temperature(),
+                                   RAMUsage=sensor_access.get_memory_usage_percent(),
+                                   DiskUsage=sensor_access.get_disk_usage_percent(),
                                    DebugLogging=debug_logging,
+                                   SupportedDisplay=display_enabled,
                                    IntervalRecording=interval_recording,
+                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval,
                                    TriggerRecording=trigger_recording,
                                    ManualTemperatureEnabled=custom_temp_enabled,
                                    CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
-                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval)
+                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
+                                   SQLDatabaseLocation=file_locations.sensor_database_location,
+                                   SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
+                                   SQLDatabaseSize=sensor_access.get_db_size(),
+                                   NumberNotes=sensor_access.get_db_notes_count())
 
         @self.app.route("/TestSensor")
         @self.app.route("/SensorReadings")
@@ -128,7 +140,7 @@ class CreateSensorHTTP:
             return render_template("sensor_readings.html",
                                    HostName=sensor_access.get_hostname(),
                                    IPAddress=sensor_access.get_ip(),
-                                   DateTime=sensor_access.get_system_datetime(),
+                                   DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                    SystemUptime=sensor_access.get_uptime_str(),
                                    CPUTemperature=sensor_access.get_cpu_temperature(),
                                    EnvTemperature=sensor_access.get_sensor_temperature(),
@@ -332,44 +344,68 @@ class CreateSensorHTTP:
         @self.app.route("/GetPrimaryLog")
         def get_primary_log():
             logger.network_logger.info("* Sent Primary Log")
-            log = logger.get_sensor_log(file_locations.primary_log, max_log_lines=self.max_log_lines)
+            log = logger.get_sensor_log(file_locations.primary_log, max_log_lines=max_log_lines)
             return log
 
         @self.app.route("/GetPrimaryLogHTML")
         def get_primary_log_html():
             logger.network_logger.debug("* Sent Primary Log in HTML format")
+            log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
+
+            if max_log_lines > log_lines:
+                text_log_entries_return = "All " + str(log_lines)
+            else:
+                text_log_entries_return = "Last " + str(max_log_lines)
+
             return render_template("log_view.html",
                                    Log=get_primary_log(),
                                    LogName="Primary",
-                                   MaxLogLines=str(self.max_log_lines))
+                                   LogURL="GetPrimaryLogHTML",
+                                   LogLinesText=text_log_entries_return)
 
         @self.app.route("/GetNetworkLog")
         def get_network_log():
             logger.network_logger.info("* Sent Network Log")
-            log = logger.get_sensor_log(file_locations.network_log)
+            log = logger.get_sensor_log(file_locations.network_log, max_log_lines=max_log_lines)
             return log
 
         @self.app.route("/GetNetworkLogHTML")
         def get_network_log_html():
             logger.network_logger.debug("* Sent Network Log in HTML format")
+            log_lines = logger.get_number_of_log_entries(file_locations.network_log)
+
+            if max_log_lines > log_lines:
+                text_log_entries_return = "All " + str(log_lines + 1)
+            else:
+                text_log_entries_return = "Last " + str(max_log_lines)
+
             return render_template("log_view.html",
                                    Log=get_network_log(),
                                    LogName="Network",
-                                   MaxLogLines=str(self.max_log_lines))
+                                   LogURL="GetNetworkLogHTML",
+                                   LogLinesText=text_log_entries_return)
 
         @self.app.route("/GetSensorsLog")
         def get_sensors_log():
             logger.network_logger.info("* Sent Sensor Log")
-            log = logger.get_sensor_log(file_locations.sensors_log, max_log_lines=self.max_log_lines)
+            log = logger.get_sensor_log(file_locations.sensors_log, max_log_lines=max_log_lines)
             return log
 
         @self.app.route("/GetSensorsLogHTML")
         def get_sensors_log_html():
             logger.network_logger.debug("* Sent Sensor Log in HTML format")
+            log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
+
+            if max_log_lines > log_lines:
+                text_log_entries_return = "All " + str(log_lines)
+            else:
+                text_log_entries_return = "Last " + str(max_log_lines)
+
             return render_template("log_view.html",
                                    Log=get_sensors_log(),
                                    LogName="Sensors",
-                                   MaxLogLines=str(self.max_log_lines))
+                                   LogURL="GetSensorsLogHTML",
+                                   LogLinesText=text_log_entries_return)
 
         @self.app.route("/GetDatabaseNotes")
         def get_db_notes():

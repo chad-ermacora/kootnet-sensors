@@ -52,6 +52,15 @@ def check_debug_logging():
         return 0
 
 
+def get_number_of_log_entries(log_file):
+    """ Opens provided log file location and returns the amount of log entries in it. """
+    log_content = open(log_file, "r")
+    log_lines = log_content.readlines()
+    log_content.close()
+
+    return len(log_lines)
+
+
 def get_sensor_log(log_file, max_log_lines=0):
     """ Opens provided log file location and returns its content. """
     log_content = open(log_file, "r")

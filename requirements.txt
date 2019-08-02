@@ -18,7 +18,7 @@ lsm303d
 icm20948
 smbus2
 smbus
-vl53l1x
+#vl53l1x
 ltr559
 veml6075
 luma.oled

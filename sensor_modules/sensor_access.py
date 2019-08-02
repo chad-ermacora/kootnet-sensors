@@ -345,7 +345,7 @@ def get_uptime_str():
 
 
 def get_system_uptime():
-    """ Returns sensors system UpTime. """
+    """ Returns system UpTime. """
     if configuration_main.installed_sensors.linux_system:
         sensor_uptime = sensor_direct_access.os_sensor_access.get_uptime()
         return sensor_uptime
@@ -353,10 +353,35 @@ def get_system_uptime():
         return "NoSensor"
 
 
+def get_system_reboot_count():
+    """ Returns system reboot count from the SQLite Database. """
+    if configuration_main.installed_sensors.linux_system:
+        sensor_uptime = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
+        return sensor_uptime
+    else:
+        return "NoSensor"
+
+
 def get_db_size():
-    """ Returns sensor SQLite Database size in MB. """
+    """ Returns SQLite Database size in MB. """
     if configuration_main.installed_sensors.linux_system:
         return sensor_direct_access.os_sensor_access.get_sql_db_size()
+    else:
+        return "NoSensor"
+
+
+def get_db_notes_count():
+    """ Returns Number of Notes in the SQLite Database. """
+    if configuration_main.installed_sensors.linux_system:
+        return sensor_direct_access.os_sensor_access.get_db_notes_count()
+    else:
+        return "NoSensor"
+
+
+def get_db_first_last_date():
+    """ Returns First and Last recorded date in the SQLite Database as a str. """
+    if configuration_main.installed_sensors.linux_system:
+        return sensor_direct_access.os_sensor_access.get_db_first_last_date()
     else:
         return "NoSensor"
 
