@@ -263,6 +263,7 @@ class CreateSensorHTTP:
                 try:
                     new_config = request.form.get("configuration").strip()
                     trigger_variances.write_triggers_to_file(new_config)
+                    thread_function(sensor_access.restart_services)
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
