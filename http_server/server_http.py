@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from datetime import datetime
 from time import strftime
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
@@ -32,6 +33,8 @@ from operations_modules import configuration_main
 from operations_modules import app_variables
 from operations_modules import configuration_files
 from http_server import server_http_auth
+from http_server import server_plotly_graph
+from http_server import server_plotly_graph_variables
 
 
 # noinspection PyUnresolvedReferences
@@ -44,6 +47,124 @@ class CreateSensorHTTP:
 
         sensor_reboot_count = sensor_access.get_system_reboot_count()
         max_log_lines = 600
+
+        @self.app.route("/PlotlyGraph", methods=["GET", "POST"])
+        # @self.auth.login_required
+        def graph_plotly():
+            logger.network_logger.debug("Plotly Graph accessed from " + str(request.remote_addr))
+            try:
+                plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
+                                                                  file_locations.plotly_html_filename)
+                plotly_file_creation_date = str(datetime.fromtimestamp(plotly_file_creation_date_unix))[:-7]
+            except Exception as error:
+                logger.primary_logger.debug("No plotly file created for created DateTime stamp: " + str(error))
+                plotly_file_creation_date = "No Plotly Graph Found"
+
+            if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
+                logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
+                return render_template("plotly_graph_in_progress.html")
+            else:
+                if request.method == "POST" and "SQLRecordingType" in request.form:
+                    try:
+                        new_graph_data = server_plotly_graph_variables.CreateGraphData()
+                        new_graph_data.graph_table = request.form.get("SQLRecordingType")
+                        new_graph_data.enable_plotly_webgl = True
+                        # The format the received datetime should look like "2019-01-01 00:00:01.000"
+                        new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
+                        new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
+                        new_graph_data.datetime_offset = request.form.get("HourOffset")
+                        new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL").strip())
+                        new_graph_data.graph_columns = check_form_columns(request.form)
+
+                        if len(new_graph_data.graph_columns) < 4:
+                            return render_template("message_return_home.html",
+                                                   TextMessage="Please Select at least One Sensor")
+                        else:
+                            thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
+                    except Exception as error:
+                        logger.primary_logger.warning("Plotly Graph: " + str(error))
+                    return render_template("plotly_graph_in_progress.html")
+                else:
+                    return render_template("plotly_graph.html",
+                                           PlotlyCreationDate=plotly_file_creation_date)
+
+        def check_form_columns(form_request):
+            sql_column_selection = [configuration_main.database_variables.all_tables_datetime,
+                                    configuration_main.database_variables.sensor_name,
+                                    configuration_main.database_variables.ip]
+            if form_request.get("SensorUptime") is not None:
+                sql_column_selection.append(configuration_main.database_variables.sensor_uptime)
+
+            if form_request.get("CPUTemp") is not None:
+                sql_column_selection.append(configuration_main.database_variables.system_temperature)
+
+            if form_request.get("EnvTemp") is not None:
+                sql_column_selection.append(configuration_main.database_variables.env_temperature)
+
+            if form_request.get("Pressure") is not None:
+                sql_column_selection.append(configuration_main.database_variables.pressure)
+
+            if form_request.get("Altitude") is not None:
+                sql_column_selection.append(configuration_main.database_variables.altitude)
+
+            if form_request.get("Humidity") is not None:
+                sql_column_selection.append(configuration_main.database_variables.humidity)
+
+            if form_request.get("Distance") is not None:
+                sql_column_selection.append(configuration_main.database_variables.distance)
+
+            if form_request.get("Gas") is not None:
+                sql_column_selection.append(configuration_main.database_variables.gas_resistance_index)
+                sql_column_selection.append(configuration_main.database_variables.gas_nh3)
+                sql_column_selection.append(configuration_main.database_variables.gas_oxidising)
+                sql_column_selection.append(configuration_main.database_variables.gas_reducing)
+
+            if form_request.get("ParticulateMatter") is not None:
+                sql_column_selection.append(configuration_main.database_variables.particulate_matter_1)
+                sql_column_selection.append(configuration_main.database_variables.particulate_matter_2_5)
+                sql_column_selection.append(configuration_main.database_variables.particulate_matter_10)
+
+            if form_request.get("Lumen") is not None:
+                sql_column_selection.append(configuration_main.database_variables.lumen)
+
+            if form_request.get("Colours") is not None:
+                sql_column_selection.append(configuration_main.database_variables.red)
+                sql_column_selection.append(configuration_main.database_variables.orange)
+                sql_column_selection.append(configuration_main.database_variables.yellow)
+                sql_column_selection.append(configuration_main.database_variables.green)
+                sql_column_selection.append(configuration_main.database_variables.blue)
+                sql_column_selection.append(configuration_main.database_variables.violet)
+
+            if form_request.get("UltraViolet") is not None:
+                sql_column_selection.append(configuration_main.database_variables.ultra_violet_index)
+                sql_column_selection.append(configuration_main.database_variables.ultra_violet_a)
+                sql_column_selection.append(configuration_main.database_variables.ultra_violet_b)
+
+            if form_request.get("Accelerometer") is not None:
+                sql_column_selection.append(configuration_main.database_variables.acc_x)
+                sql_column_selection.append(configuration_main.database_variables.acc_y)
+                sql_column_selection.append(configuration_main.database_variables.acc_z)
+
+            if form_request.get("Magnetometer") is not None:
+                sql_column_selection.append(configuration_main.database_variables.mag_x)
+                sql_column_selection.append(configuration_main.database_variables.mag_y)
+                sql_column_selection.append(configuration_main.database_variables.mag_z)
+
+            if form_request.get("Gyroscope") is not None:
+                sql_column_selection.append(configuration_main.database_variables.gyro_x)
+                sql_column_selection.append(configuration_main.database_variables.gyro_y)
+                sql_column_selection.append(configuration_main.database_variables.gyro_z)
+
+            return sql_column_selection
+
+        @self.app.route("/ViewPlotlyGraph")
+        def view_graph_plotly():
+            logger.network_logger.debug("Plotly Graph View accessed from " + str(request.remote_addr))
+            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.plotly_html_filename):
+                return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
+            else:
+                return render_template("message_return_home.html",
+                                       TextMessage="No Plotly Graph Generated yet.  Returning to Home.")
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -473,7 +594,8 @@ class CreateSensorHTTP:
             sql_filename = sensor_access.get_ip()[-3:].replace(".", "_") + \
                            sensor_access.get_hostname() + \
                            "SensorDatabase.sqlite"
-            return send_file(file_locations.sensor_database_location, as_attachment=True, attachment_filename=sql_filename)
+            return send_file(file_locations.sensor_database_location, as_attachment=True,
+                             attachment_filename=sql_filename)
 
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
         @self.auth.login_required

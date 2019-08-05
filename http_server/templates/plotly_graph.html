@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 style="color: red;">KootNet Sensors Plotly Graphing</h2>
+
+<h3>
+    <u><a style="color: #90CAF9" href="/ViewPlotlyGraph" target="_blank">View previously generated Plotly Graph</a></u>
+</h3>
+<h4>
+    <span style="color: #90CAF9">Last Plotly Graph Creation Date (Sensor's Time): {{ PlotlyCreationDate }}</span>
+</h4>
+
+<form class="mui-form"
+      method="POST"
+      style="background-color: #00B0FF; width: max-content; border: #0BB10D"
+      action="/PlotlyGraph">
+
+    <legend>Graph Options</legend>
+    <label>SQL Recording Type</label>
+    <div class="mui-radio">
+        <label>
+            <input type="radio" name="SQLRecordingType" value="IntervalData" checked>
+            Interval
+        </label>
+        <label>
+            <input type="radio" name="SQLRecordingType" value="TriggerData">
+            Trigger
+        </label>
+    </div>
+
+    <div class="mui-textfield">
+        <label style="color: black">Start DateTime DD/MM/YYYY hh:mm</label>
+        <input type="datetime-local" name="graph_datetime_start" value="2019-07-01T00:00">
+    </div>
+
+    <div class="mui-textfield">
+        <label style="color: black">End DateTime DD/MM/YYYY hh:mm</label>
+        <input type="datetime-local" name="graph_datetime_end" value="2200-01-01T00:00">
+    </div>
+
+    <div class="mui-textfield">
+        <label style="color: black">Add Plot Data after skipping
+            <br>
+            (Does not apply to Trigger Type)
+            <br>
+            <input style="width: 75px" type="number" min="0" max="9999" name="SkipSQL" value="12">
+        </label>
+    </div>
+
+    <br>
+
+    <div class="mui-textfield">
+        <label style="color: black">Hour Offset
+            <br>
+            (Database saves in UTC 0)
+            <br>
+            <input style="width: 75px" type="number" min="-12" max="14" name="HourOffset" value="-7">
+        </label>
+    </div>
+
+    <br>
+    <hr>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="SelectAllCheckboxes" value="" disabled>
+            Select All
+        </label>
+    </div>
+
+    <br>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="SensorUptime" value="" checked>
+            Sensor Uptime
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="CPUTemp" value="" checked>
+            CPU Temperature
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="EnvTemp" value="" checked>
+            Environmental Temperature
+        </label>
+    </div>
+
+    <br>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Pressure" value="" checked>
+            Pressure
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Altitude" value="" checked>
+            Altitude
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Humidity" value="" checked>
+            Humidity
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Distance" value="" checked>
+            Distance
+        </label>
+    </div>
+
+    <br>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Gas" value="" checked>
+            Gas
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="ParticulateMatter" value="" checked>
+            Particulate Matter
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Lumen" value="" checked>
+            Lumen
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Colours" value="" checked>
+            Colours
+        </label>
+    </div>
+
+    <br>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="UltraViolet" value="" checked>
+            Ultra Violet
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Accelerometer" value="" checked>
+            Accelerometer
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Magnetometer" value="" checked>
+            Magnetometer
+        </label>
+    </div>
+
+    <div class="mui-checkbox" style="display: inline-block">
+        <label>
+            <input type="checkbox" name="Gyroscope" value="" checked>
+            Gyroscope
+        </label>
+    </div>
+
+
+    <br>
+    <button type="submit" class="mui-btn mui-btn--raised">Submit</button>
+</form>
+
+{% endblock %}
