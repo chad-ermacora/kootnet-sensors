@@ -18,7 +18,7 @@
 """
 import os
 from datetime import datetime
-from time import strftime
+from time import strftime, sleep
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file, render_template
@@ -197,6 +197,9 @@ class CreateSensorHTTP:
                     new_current_config = configuration_files.convert_config_lines_to_obj(new_config)
                     configuration_files.write_config_to_file(new_current_config)
                     thread_function(sensor_access.restart_services)
+                    return render_template("message_return.html",
+                                           TextMessage="Restarting Service, Please Wait ...",
+                                           URL="EditConfigMain")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
@@ -216,6 +219,9 @@ class CreateSensorHTTP:
                     new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(new_config)
                     configuration_files.write_installed_sensors_to_file(new_installed_sensors)
                     thread_function(sensor_access.restart_services)
+                    return render_template("message_return.html",
+                                           TextMessage="Restarting Service, Please Wait ...",
+                                           URL="EditInstalledSensors")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
@@ -251,6 +257,9 @@ class CreateSensorHTTP:
                     new_config = request.form.get("configuration").strip()
                     trigger_variances.write_triggers_to_file(new_config)
                     thread_function(sensor_access.restart_services)
+                    return render_template("message_return.html",
+                                           TextMessage="Restarting Service, Please Wait ...",
+                                           URL="EditInstalledSensors")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
@@ -483,70 +492,98 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Started Upgrade - HTTP")
-            message = "HTTP Upgrade Started.  This may take a few minutes ..."
+            message = "HTTP Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
-            message = "HTTP Clean Upgrade Started.  This may take a few minutes ..."
+            message = "HTTP Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
-            message = "HTTP Developer Upgrade Started.  This may take a few minutes ..."
+            message = "HTTP Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Started Upgrade - SMB")
-            message = "SMB Upgrade Started.  This may take a few minutes ..."
+            message = "SMB Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("* Started Clean Upgrade - SMB")
-            message = "SMB Clean Upgrade Started.  This may take a few minutes ..."
+            message = "SMB Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("* Started Upgrade - SMB Developer")
-            message = "SMB Developer Upgrade Started.  This may take a few minutes ..."
+            message = "SMB Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
         def reinstall_program_requirements():
             logger.network_logger.info("* Started Program Dependency Install")
-            message = "Dependency Install Started.  This may take a few minutes ..."
+            message = "Dependency Install Started"
+            message2 = "Once complete, the sensor programs will be restarted. " + app_variables.text_message_may_take_minutes
             thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=message2,
+                                   URL="SensorInformation")
 
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
         def upgrade_system_os():
             logger.network_logger.info("* Updating Operating System & rebooting")
+            message2 = "The sensor will reboot when done. This will take awhile.  " + \
+                       "You may continue to use the sensor during the upgrade process.  " + \
+                       "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
             if configuration_main.linux_os_upgrade_ready:
-                message = "Operating System Upgrade Started. The sensor will reboot when done. This will take awhile..."
+                message = "Operating System Upgrade Started"
                 configuration_main.linux_os_upgrade_ready = False
                 thread_function(sensor_access.upgrade_linux_os)
             else:
-                message = "Upgrade is already running.  The sensor will reboot when done."
                 logger.sensors_logger.warning("* Operating System Upgrade Already Running")
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+                message = "Upgrade is already running.  "
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=message2,
+                                   URL="SensorInformation")
 
         @self.app.route("/inkupg")
         @self.auth.login_required
@@ -559,24 +596,35 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("* Rebooting System")
-            message = "Sensor Rebooting.  This may take a minute or two..."
+            message = "Sensor Rebooting"
             thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=app_variables.text_message_may_take_minutes,
+                                   URL="SensorInformation")
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
-            message = "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
+            message = "Sensor Shutting Down"
+            message2 = "You will be unable to access it until some one turns it back on."
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=message2,
+                                   URL="SystemCommands")
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
-            message = "Restarting Sensor Service.  This should only take up to 30 seconds."
+            message = "Restarting Sensor Service"
+            message2 = "This should only take 5 to 30 seconds."
             thread_function(sensor_access.restart_services)
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html",
+                                   TextMessage=message,
+                                   TextMessage2=message2,
+                                   URL="SensorInformation")
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -770,6 +818,10 @@ class CreateSensorHTTP:
         # @self.auth.login_required
         def graph_plotly():
             logger.network_logger.debug("Plotly Graph accessed from " + str(request.remote_addr))
+
+            generating_message = "Generating Plotly Graph. This may take awhile."
+            generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
+
             try:
                 plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
                                                                   file_locations.plotly_html_filename)
@@ -780,7 +832,10 @@ class CreateSensorHTTP:
 
             if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
                 logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-                return render_template("plotly_graph_in_progress.html")
+                return render_template("message_return.html",
+                                       TextMessage=generating_message,
+                                       TextMessage2=generating_message2,
+                                       URL="PlotlyGraph")
             else:
                 if request.method == "POST" and "SQLRecordingType" in request.form:
                     try:
@@ -807,7 +862,10 @@ class CreateSensorHTTP:
                             thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
                     except Exception as error:
                         logger.primary_logger.warning("Plotly Graph: " + str(error))
-                    return render_template("plotly_graph_in_progress.html")
+                    return render_template("message_return.html",
+                                           TextMessage=generating_message,
+                                           TextMessage2=generating_message2,
+                                           URL="PlotlyGraph")
                 else:
                     return render_template("plotly_graph.html",
                                            PlotlyCreationDate=plotly_file_creation_date)
@@ -837,6 +895,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         def thread_function(function, args=None):
+            sleep(1)
             if args:
                 system_thread = Thread(target=function, args=[args])
                 system_thread.daemon = True

@@ -160,6 +160,8 @@ flask_http_port = 10065
 
 trigger_pairs = 3
 
+text_message_may_take_minutes = "This may take a few minutes ..."
+
 restart_sensor_services_command = "systemctl daemon-reload ; " + \
                                   "systemctl restart KootnetSensors"
 
@@ -173,5 +175,5 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_koo
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
                  "UpgradeSystemOS": "bash /opt/kootnet-sensors/scripts/linux_system_os_upgrade.sh",
-                 "ReInstallRequirements": "bash /opt/kootnet-sensors/scripts/reinstall_requirements.sh",
+                 "ReInstallRequirements": "bash /opt/kootnet-sensors/scripts/reinstall_requirements.sh && systemctl restart KootnetSensors",
                  "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}

@@ -387,7 +387,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
 def write_installed_sensors_to_file(installed_sensors):
     """ Writes provided 'installed sensors' to local disk. The provided sensors can be string or object. """
     try:
-        if type(installed_sensors) is str:
+        if type(installed_sensors) == str:
             new_installed_sensors = installed_sensors
         else:
             new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()

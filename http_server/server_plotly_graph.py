@@ -66,25 +66,28 @@ def _start_plotly_graph(graph_data):
                         "') LIMIT " + \
                         str(graph_data.max_sql_queries)
 
-        sql_column_data = _get_sql_data(graph_data, var_sql_query)
-
         # Adjust SQL data from its UTC time, to user set timezone (Hour Offset)
         if var_column == sql_column_names.all_tables_datetime:
+            sql_column_data = _get_sql_data(graph_data, var_sql_query)
+
             count = 0
             for data in sql_column_data:
                 sql_column_data[count] = server_plotly_graph_extras.adjust_datetime(data,
                                                                                     int(graph_data.datetime_offset))
                 count = count + 1
+
             graph_data.sql_time = sql_column_data
         elif var_column == sql_column_names.ip:
-            graph_data.sql_ip = sql_column_data
+            graph_data.sql_ip = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.sensor_name:
-            graph_data.sql_host_name = sql_column_data
+            graph_data.sql_host_name = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.sensor_uptime:
-            graph_data.sql_up_time = sql_column_data
+            graph_data.sql_up_time = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.system_temperature:
-            graph_data.sql_cpu_temp = sql_column_data
+            graph_data.sql_cpu_temp = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.env_temperature:
+            sql_column_data = _get_sql_data(graph_data, var_sql_query)
+
             count = 0
             if graph_data.enable_custom_temp_offset:
                 for data in sql_column_data:
@@ -125,72 +128,69 @@ def _start_plotly_graph(graph_data):
                                                   "One or more missing entries in 'EnvironmentTemp' or 'EnvTempOffset'")
 
             graph_data.sql_hat_temp = sql_column_data
-        elif var_column == sql_column_names.env_temperature_offset:
-            pass
         elif var_column == sql_column_names.pressure:
-            graph_data.sql_pressure = sql_column_data
+            graph_data.sql_pressure = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.altitude:
-            graph_data.sql_altitude = sql_column_data
+            graph_data.sql_altitude = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.humidity:
-            graph_data.sql_humidity = sql_column_data
+            graph_data.sql_humidity = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.distance:
-            graph_data.sql_distance = sql_column_data
+            graph_data.sql_distance = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gas_resistance_index:
-            graph_data.sql_gas_resistance = sql_column_data
+            graph_data.sql_gas_resistance = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gas_oxidising:
-            graph_data.sql_gas_oxidising = sql_column_data
+            graph_data.sql_gas_oxidising = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gas_reducing:
-            graph_data.sql_gas_reducing = sql_column_data
+            graph_data.sql_gas_reducing = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gas_nh3:
-            graph_data.sql_gas_nh3 = sql_column_data
+            graph_data.sql_gas_nh3 = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.particulate_matter_1:
-            graph_data.sql_pm_1 = sql_column_data
+            graph_data.sql_pm_1 = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.particulate_matter_2_5:
-            graph_data.sql_pm_2_5 = sql_column_data
+            graph_data.sql_pm_2_5 = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.particulate_matter_10:
-            graph_data.sql_pm_10 = sql_column_data
+            graph_data.sql_pm_10 = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.lumen:
-            graph_data.sql_lumen = sql_column_data
+            graph_data.sql_lumen = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.red:
-            graph_data.sql_red = sql_column_data
+            graph_data.sql_red = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.orange:
-            graph_data.sql_orange = sql_column_data
+            graph_data.sql_orange = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.yellow:
-            graph_data.sql_yellow = sql_column_data
+            graph_data.sql_yellow = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.green:
-            graph_data.sql_green = sql_column_data
+            graph_data.sql_green = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.blue:
-            graph_data.sql_blue = sql_column_data
+            graph_data.sql_blue = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.violet:
-            graph_data.sql_violet = sql_column_data
+            graph_data.sql_violet = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.ultra_violet_index:
-            graph_data.sql_uv_index = sql_column_data
+            graph_data.sql_uv_index = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.ultra_violet_a:
-            graph_data.sql_uv_a = sql_column_data
+            graph_data.sql_uv_a = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.ultra_violet_b:
-            graph_data.sql_uv_b = sql_column_data
+            graph_data.sql_uv_b = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.acc_x:
-            graph_data.sql_acc_x = sql_column_data
+            graph_data.sql_acc_x = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.acc_y:
-            graph_data.sql_acc_y = sql_column_data
+            graph_data.sql_acc_y = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.acc_z:
-            graph_data.sql_acc_z = sql_column_data
+            graph_data.sql_acc_z = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.mag_x:
-            graph_data.sql_mg_x = sql_column_data
+            graph_data.sql_mg_x = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.mag_y:
-            graph_data.sql_mg_y = sql_column_data
+            graph_data.sql_mg_y = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.mag_z:
-            graph_data.sql_mg_z = sql_column_data
+            graph_data.sql_mg_z = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gyro_x:
-            graph_data.sql_gyro_x = sql_column_data
+            graph_data.sql_gyro_x = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gyro_y:
-            graph_data.sql_gyro_y = sql_column_data
+            graph_data.sql_gyro_y = _get_sql_data(graph_data, var_sql_query)
         elif var_column == sql_column_names.gyro_z:
-            graph_data.sql_gyro_z = sql_column_data
+            graph_data.sql_gyro_z = _get_sql_data(graph_data, var_sql_query)
         else:
             logger.primary_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
-    logger.primary_logger.debug("Interval DB Graph Complete")
 
 
 def _get_sql_data(graph_interval_data, sql_command):
@@ -212,7 +212,7 @@ def _get_sql_data(graph_interval_data, sql_command):
     skip_count = 0
     null_data_entries = 0
     for data in sql_column_data:
-        if str(data) == "(None,)":
+        if data is None:
             null_data_entries += 1
         if skip_count >= int(graph_interval_data.sql_queries_skip) or graph_interval_data.bypass_sql_skip:
             return_data.append(str(data)[2:-3])
