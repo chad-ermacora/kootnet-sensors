@@ -8,32 +8,25 @@ Python3 programs to record sensor readings to a SQLite3 database and provides TC
 Controlling the Sensor
 -------------------------
 
+**Kootnet Sensors** has a built in HTTP server to help monitor and manage the individual sensor.  
+Assuming the IP is 192.168.10.11, you can access the sensor at http://192.168.10.11:10065
+
 **KootNet Sensors - Control Center** was created to interact with up to 16 sensors at a time, over a TCP/IP network.
 
 See [Control Center](https://github.com/chad-ermacora/sensor-control-center) for more information.
 
 
-Services
+Sensor System Service
 ----------
 
-The following are Linux systemd services that automatically start with the system and restart if terminated. 
+The following is a Linux systemd services that automatically starts with the system and restarts if terminated. 
 
-**SensorCommands**
->Network "server" to receive commands from the Control Center program.
+**KootnetSensors**
+>Launches an HTTP Server & SQLite3 Sensor Recording programs in separate threads.
 
-**SensorRecording**
->Records sensors to an SQLite3 database at a set Interval & by trigger variances.
-
-### The following Terminal commands disable and stop the corresponding service.
-
-**SensorCommands**
+**The following Terminal command disables and stops KootnetSensors.**
 ```
-sudo systemctl disable SensorCommands && sudo systemctl stop SensorCommands
-```
-
-**SensorRecording**
-```
-sudo systemctl disable SensorRecording && sudo systemctl stop SensorRecording
+sudo systemctl disable KootnetSensors && sudo systemctl stop KootnetSensors
 ```
 
 Sensor Hardware Units
