@@ -2,10 +2,14 @@
 
 {% block content %}
 
-<H2 style="color: #00ffff;"><u>Logs</u></H2>
+<h2><strong>
+        <a style="text-decoration: underline; color: red" href="/SystemCommands">Sensor Management</a>
+</strong></h2>
+
+<h2 style="color: red;">Logs</h2>
 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
         onclick="window.location.href = '/DownloadZippedLogs';">
-    Download Logs
+    Download All Logs
 </button>
 
 <br>
@@ -36,7 +40,7 @@
 
 <br>
 
-<h2 style="color: #00ffff;"><u>View & Edit Configurations</u></h2>
+<h2 style="color: red;">View & Edit Configurations</h2>
 
 <div class="mui-dropdown">
     <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
@@ -53,7 +57,7 @@
 
 <br>
 
-<H2 style="color: #00ffff;"><u>System</u></H2>
+<h2 style="color: red;">System</h2>
 <div class="mui-dropdown">
     <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
         Upgrade Options
@@ -81,7 +85,7 @@
 
 <br>
 
-<H2 style="color: #00ffff;"><u>Experimental</u></H2>
+<h2 style="color: red;">Experimental</h2>
 <span style="color: darkorange">
     Use with caution. Functions here may not work properly under all conditions.
 </span>

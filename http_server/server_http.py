@@ -348,17 +348,11 @@ class CreateSensorHTTP:
         def get_primary_log_html():
             logger.network_logger.debug("* Sent Primary Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
-
-            if max_log_lines > log_lines:
-                text_log_entries_return = "All " + str(log_lines)
-            else:
-                text_log_entries_return = "Last " + str(max_log_lines)
-
             return render_template("log_view.html",
                                    Log=get_primary_log(),
                                    LogName="Primary",
                                    LogURL="GetPrimaryLogHTML",
-                                   LogLinesText=text_log_entries_return)
+                                   LogLinesText=get_log_return_message(log_lines))
 
         @self.app.route("/GetNetworkLog")
         def get_network_log():
@@ -370,17 +364,11 @@ class CreateSensorHTTP:
         def get_network_log_html():
             logger.network_logger.debug("* Sent Network Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.network_log)
-
-            if max_log_lines > log_lines:
-                text_log_entries_return = "All " + str(log_lines + 1)
-            else:
-                text_log_entries_return = "Last " + str(max_log_lines)
-
             return render_template("log_view.html",
                                    Log=get_network_log(),
                                    LogName="Network",
                                    LogURL="GetNetworkLogHTML",
-                                   LogLinesText=text_log_entries_return)
+                                   LogLinesText=get_log_return_message(log_lines))
 
         @self.app.route("/GetSensorsLog")
         def get_sensors_log():
@@ -392,17 +380,21 @@ class CreateSensorHTTP:
         def get_sensors_log_html():
             logger.network_logger.debug("* Sent Sensor Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
-
-            if max_log_lines > log_lines:
-                text_log_entries_return = "All " + str(log_lines)
-            else:
-                text_log_entries_return = "Last " + str(max_log_lines)
-
             return render_template("log_view.html",
                                    Log=get_sensors_log(),
                                    LogName="Sensors",
                                    LogURL="GetSensorsLogHTML",
-                                   LogLinesText=text_log_entries_return)
+                                   LogLinesText=get_log_return_message(log_lines))
+
+        def get_log_return_message(log_lines_length):
+            if log_lines_length:
+                if max_log_lines > log_lines_length:
+                    text_log_entries_return = str(log_lines_length + 1) + " entries of " + str(log_lines_length + 1)
+                else:
+                    text_log_entries_return = str(max_log_lines) + " entries of " + str(log_lines_length + 1)
+            else:
+                text_log_entries_return = "0 entries of 0"
+            return text_log_entries_return
 
         @self.app.route("/GetDatabaseNotes")
         def get_db_notes():
@@ -895,7 +887,6 @@ class CreateSensorHTTP:
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         def thread_function(function, args=None):
-            sleep(1)
             if args:
                 system_thread = Thread(target=function, args=[args])
                 system_thread.daemon = True

@@ -58,9 +58,11 @@ if configuration_main.installed_sensors.no_sensors is False:
     # If there is a display installed, start up the display server
     if configuration_main.current_config.enable_display:
         if configuration_main.installed_sensors.has_display:
-            display_thread = Thread(target=server_display.CreateSensorDisplay, args=[sensor_access])
-            display_thread.daemon = True
-            display_thread.start()
+            pass
+            # This currently only displays sensor readings every interval recording. Disabled for now.
+            # display_thread = Thread(target=server_display.CreateSensorDisplay, args=[sensor_access])
+            # display_thread.daemon = True
+            # display_thread.start()
         else:
             logger.primary_logger.warning("No Compatible Displays Installed")
 
@@ -80,5 +82,6 @@ else:
     logger.primary_logger.warning("No sensors set in Installed Sensors")
 
 logger.primary_logger.debug("All Kootnet Sensor Programs Initiated")
+sensor_access.display_message("Kootnet Sensors Started")
 while True:
     sleep(600)

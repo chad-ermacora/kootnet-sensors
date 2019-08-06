@@ -67,15 +67,15 @@ def get_sensor_log(log_file, max_log_lines=0):
     log_lines = log_content.readlines()
     log_content.close()
 
+    if max_log_lines:
+        log_lines = log_lines[-max_log_lines:]
+
     log_lines.reverse()
 
     return_log = ""
-    if max_log_lines:
-        for log in log_lines[:max_log_lines]:
-            return_log += log
-    else:
-        for log in log_lines:
-            return_log += log
+    for log in log_lines:
+        return_log += log
+
     return return_log
 
 
