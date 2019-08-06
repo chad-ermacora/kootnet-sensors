@@ -18,7 +18,7 @@
 """
 import os
 from datetime import datetime
-from time import strftime, sleep
+from time import strftime
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file, render_template
@@ -869,7 +869,8 @@ class CreateSensorHTTP:
                 return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
             else:
                 return render_template("message_return.html",
-                                       TextMessage="No Plotly Graph Generated yet.",
+                                       TextMessage="No Plotly Graph Generated",
+                                       TextMessage2="Please goto the Graphing Page and Create a Graph.",
                                        URL="PlotlyGraph")
 
         @self.app.route("/DisplayText", methods=["PUT"])
