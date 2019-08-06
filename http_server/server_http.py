@@ -46,131 +46,17 @@ class CreateSensorHTTP:
         http_auth.set_http_auth_from_file()
 
         sensor_reboot_count = sensor_access.get_system_reboot_count()
-        max_log_lines = 600
-
-        @self.app.route("/PlotlyGraph", methods=["GET", "POST"])
-        # @self.auth.login_required
-        def graph_plotly():
-            logger.network_logger.debug("Plotly Graph accessed from " + str(request.remote_addr))
-            try:
-                plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                  file_locations.plotly_html_filename)
-                plotly_file_creation_date = str(datetime.fromtimestamp(plotly_file_creation_date_unix))[:-7]
-            except Exception as error:
-                logger.primary_logger.debug("No plotly file created for created DateTime stamp: " + str(error))
-                plotly_file_creation_date = "No Plotly Graph Found"
-
-            if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
-                logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-                return render_template("plotly_graph_in_progress.html")
-            else:
-                if request.method == "POST" and "SQLRecordingType" in request.form:
-                    try:
-                        new_graph_data = server_plotly_graph_variables.CreateGraphData()
-                        new_graph_data.graph_table = request.form.get("SQLRecordingType")
-                        new_graph_data.enable_plotly_webgl = True
-                        # The format the received datetime should look like "2019-01-01 00:00:01.000"
-                        new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
-                        new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
-                        new_graph_data.datetime_offset = request.form.get("HourOffset")
-                        new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL").strip())
-                        new_graph_data.graph_columns = check_form_columns(request.form)
-
-                        if len(new_graph_data.graph_columns) < 4:
-                            return render_template("message_return_home.html",
-                                                   TextMessage="Please Select at least One Sensor")
-                        else:
-                            thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
-                    except Exception as error:
-                        logger.primary_logger.warning("Plotly Graph: " + str(error))
-                    return render_template("plotly_graph_in_progress.html")
-                else:
-                    return render_template("plotly_graph.html",
-                                           PlotlyCreationDate=plotly_file_creation_date)
-
-        def check_form_columns(form_request):
-            sql_column_selection = [configuration_main.database_variables.all_tables_datetime,
-                                    configuration_main.database_variables.sensor_name,
-                                    configuration_main.database_variables.ip]
-            if form_request.get("SensorUptime") is not None:
-                sql_column_selection.append(configuration_main.database_variables.sensor_uptime)
-
-            if form_request.get("CPUTemp") is not None:
-                sql_column_selection.append(configuration_main.database_variables.system_temperature)
-
-            if form_request.get("EnvTemp") is not None:
-                sql_column_selection.append(configuration_main.database_variables.env_temperature)
-
-            if form_request.get("Pressure") is not None:
-                sql_column_selection.append(configuration_main.database_variables.pressure)
-
-            if form_request.get("Altitude") is not None:
-                sql_column_selection.append(configuration_main.database_variables.altitude)
-
-            if form_request.get("Humidity") is not None:
-                sql_column_selection.append(configuration_main.database_variables.humidity)
-
-            if form_request.get("Distance") is not None:
-                sql_column_selection.append(configuration_main.database_variables.distance)
-
-            if form_request.get("Gas") is not None:
-                sql_column_selection.append(configuration_main.database_variables.gas_resistance_index)
-                sql_column_selection.append(configuration_main.database_variables.gas_nh3)
-                sql_column_selection.append(configuration_main.database_variables.gas_oxidising)
-                sql_column_selection.append(configuration_main.database_variables.gas_reducing)
-
-            if form_request.get("ParticulateMatter") is not None:
-                sql_column_selection.append(configuration_main.database_variables.particulate_matter_1)
-                sql_column_selection.append(configuration_main.database_variables.particulate_matter_2_5)
-                sql_column_selection.append(configuration_main.database_variables.particulate_matter_10)
-
-            if form_request.get("Lumen") is not None:
-                sql_column_selection.append(configuration_main.database_variables.lumen)
-
-            if form_request.get("Colours") is not None:
-                sql_column_selection.append(configuration_main.database_variables.red)
-                sql_column_selection.append(configuration_main.database_variables.orange)
-                sql_column_selection.append(configuration_main.database_variables.yellow)
-                sql_column_selection.append(configuration_main.database_variables.green)
-                sql_column_selection.append(configuration_main.database_variables.blue)
-                sql_column_selection.append(configuration_main.database_variables.violet)
-
-            if form_request.get("UltraViolet") is not None:
-                sql_column_selection.append(configuration_main.database_variables.ultra_violet_index)
-                sql_column_selection.append(configuration_main.database_variables.ultra_violet_a)
-                sql_column_selection.append(configuration_main.database_variables.ultra_violet_b)
-
-            if form_request.get("Accelerometer") is not None:
-                sql_column_selection.append(configuration_main.database_variables.acc_x)
-                sql_column_selection.append(configuration_main.database_variables.acc_y)
-                sql_column_selection.append(configuration_main.database_variables.acc_z)
-
-            if form_request.get("Magnetometer") is not None:
-                sql_column_selection.append(configuration_main.database_variables.mag_x)
-                sql_column_selection.append(configuration_main.database_variables.mag_y)
-                sql_column_selection.append(configuration_main.database_variables.mag_z)
-
-            if form_request.get("Gyroscope") is not None:
-                sql_column_selection.append(configuration_main.database_variables.gyro_x)
-                sql_column_selection.append(configuration_main.database_variables.gyro_y)
-                sql_column_selection.append(configuration_main.database_variables.gyro_z)
-
-            return sql_column_selection
-
-        @self.app.route("/ViewPlotlyGraph")
-        def view_graph_plotly():
-            logger.network_logger.debug("Plotly Graph View accessed from " + str(request.remote_addr))
-            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.plotly_html_filename):
-                return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
-            else:
-                return render_template("message_return_home.html",
-                                       TextMessage="No Plotly Graph Generated yet.  Returning to Home.")
+        max_log_lines = 250
 
         @self.app.route("/")
         @self.app.route("/index")
         @self.app.route("/index.html")
         def index():
             return render_template("index.html", HostName=sensor_access.get_hostname())
+
+        @self.app.route("/jquery.slim.min.js")
+        def jquery_slim_min_js():
+            return send_file(file_locations.j_query_js)
 
         @self.app.route("/mui.min.css")
         def mui_min_css():
@@ -195,11 +81,15 @@ class CreateSensorHTTP:
         @self.auth.error_handler
         def auth_error():
             logger.network_logger.warning(" *** Failed Login from " + str(request.remote_addr))
-            return render_template("message_return_home.html", TextMessage="Unauthorized Access")
+            return render_template("message_return.html",
+                                   TextMessage="Unauthorized Access",
+                                   URL="")
 
         @self.app.route('/logout')
         def logout():
-            return render_template("message_return_home.html", TextMessage="Logout OK.  Returning to Home."), 401
+            return render_template("message_return.html",
+                                   TextMessage="Logout OK.  Returning to Home.",
+                                   URL=""), 401
 
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
@@ -257,7 +147,9 @@ class CreateSensorHTTP:
         @self.app.route("/TestSensor")
         @self.app.route("/SensorReadings")
         def test_sensor():
-            red, orange, yellow, green, blue, violet = _get_ems_render_template()
+            red, orange, yellow, green, blue, violet = server_plotly_graph.get_ems_for_render_template(
+                sensor_access.get_ems())
+
             return render_template("sensor_readings.html",
                                    HostName=sensor_access.get_hostname(),
                                    IPAddress=sensor_access.get_ip(),
@@ -289,32 +181,6 @@ class CreateSensorHTTP:
                                    Acc=sensor_access.get_accelerometer_xyz(),
                                    Mag=sensor_access.get_magnetometer_xyz(),
                                    Gyro=sensor_access.get_gyroscope_xyz())
-
-        def _get_ems_render_template():
-            ems = sensor_access.get_ems()
-            if ems == "NoSensor":
-                red = "NoSensor"
-                orange = "NoSensor"
-                yellow = "NoSensor"
-                green = "NoSensor"
-                blue = "NoSensor"
-                violet = "NoSensor"
-            else:
-                if len(ems) > 3:
-                    red = ems[0]
-                    orange = ems[1]
-                    yellow = ems[2]
-                    green = ems[3]
-                    blue = ems[4]
-                    violet = ems[5]
-                else:
-                    red = ems[0]
-                    orange = "NoSensor"
-                    yellow = "NoSensor"
-                    green = ems[1]
-                    blue = ems[2]
-                    violet = "NoSensor"
-            return [red, orange, yellow, green, blue, violet]
 
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
@@ -540,7 +406,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Primary Sensor Log Deleted")
             message = "Primary Log Deleted"
             logger.clear_primary_log()
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
@@ -548,7 +414,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Network Sensor Log Deleted")
             message = "Network Log Deleted"
             logger.clear_network_log()
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
@@ -556,7 +422,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Sensors Log Deleted")
             message = "Sensors Log Deleted"
             logger.clear_sensor_log()
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
@@ -619,7 +485,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Upgrade - HTTP")
             message = "HTTP Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
@@ -627,7 +493,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Clean Upgrade - HTTP")
             message = "HTTP Clean Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
@@ -635,7 +501,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Upgrade - HTTP Developer")
             message = "HTTP Developer Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
@@ -643,7 +509,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Upgrade - SMB")
             message = "SMB Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
@@ -651,7 +517,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Clean Upgrade - SMB")
             message = "SMB Clean Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
@@ -659,7 +525,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Upgrade - SMB Developer")
             message = "SMB Developer Upgrade Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
@@ -667,7 +533,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Started Program Dependency Install")
             message = "Dependency Install Started.  This may take a few minutes ..."
             thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
@@ -680,7 +546,7 @@ class CreateSensorHTTP:
             else:
                 message = "Upgrade is already running.  The sensor will reboot when done."
                 logger.sensors_logger.warning("* Operating System Upgrade Already Running")
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/inkupg")
         @self.auth.login_required
@@ -695,7 +561,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("* Rebooting System")
             message = "Sensor Rebooting.  This may take a minute or two..."
             thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
@@ -703,14 +569,14 @@ class CreateSensorHTTP:
             logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
             message = "Sensor Shutting Down.  You will be unable to access it until some one turns it back on."
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
             message = "Restarting Sensor Service.  This should only take up to 30 seconds."
             thread_function(sensor_access.restart_services)
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -723,7 +589,7 @@ class CreateSensorHTTP:
             except Exception as error:
                 logger.network_logger.warning("* Hostname Change Failed: " + str(error))
                 message = "Failed to change Hostname"
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/SetDateTime", methods=["PUT"])
         @self.auth.login_required
@@ -732,7 +598,7 @@ class CreateSensorHTTP:
             os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
             logger.network_logger.info("* Set System DateTime: " + new_datetime)
             message = "DateTime Set to " + new_datetime
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
@@ -743,7 +609,7 @@ class CreateSensorHTTP:
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
             configuration_files.write_config_to_file(new_config)
             sensor_access.restart_services()
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
@@ -754,7 +620,7 @@ class CreateSensorHTTP:
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
             configuration_files.write_installed_sensors_to_file(new_installed_sensors)
             sensor_access.restart_services()
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/GetHostName")
         def get_hostname():
@@ -900,6 +766,62 @@ class CreateSensorHTTP:
             logger.network_logger.debug("* Sent Interval Sensor Readings")
             return str(sensor_access.get_interval_sensor_readings())
 
+        @self.app.route("/PlotlyGraph", methods=["GET", "POST"])
+        # @self.auth.login_required
+        def graph_plotly():
+            logger.network_logger.debug("Plotly Graph accessed from " + str(request.remote_addr))
+            try:
+                plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
+                                                                  file_locations.plotly_html_filename)
+                plotly_file_creation_date = str(datetime.fromtimestamp(plotly_file_creation_date_unix))[:-7]
+            except Exception as error:
+                logger.primary_logger.debug("No plotly file created for created DateTime stamp: " + str(error))
+                plotly_file_creation_date = "No Plotly Graph Found"
+
+            if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
+                logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
+                return render_template("plotly_graph_in_progress.html")
+            else:
+                if request.method == "POST" and "SQLRecordingType" in request.form:
+                    try:
+                        new_graph_data = server_plotly_graph_variables.CreateGraphData()
+                        new_graph_data.graph_table = request.form.get("SQLRecordingType")
+
+                        if request.form.get("PlotlyRenderType") == "OpenGL":
+                            new_graph_data.enable_plotly_webgl = True
+                        else:
+                            new_graph_data.enable_plotly_webgl = False
+
+                        # The format the received datetime should look like "2019-01-01 00:00:00"
+                        new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
+                        new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
+                        new_graph_data.datetime_offset = request.form.get("HourOffset")
+                        new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL").strip())
+                        new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
+
+                        if len(new_graph_data.graph_columns) < 4:
+                            return render_template("message_return.html",
+                                                   TextMessage="Please Select at least One Sensor",
+                                                   URL="PlotlyGraph")
+                        else:
+                            thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
+                    except Exception as error:
+                        logger.primary_logger.warning("Plotly Graph: " + str(error))
+                    return render_template("plotly_graph_in_progress.html")
+                else:
+                    return render_template("plotly_graph.html",
+                                           PlotlyCreationDate=plotly_file_creation_date)
+
+        @self.app.route("/ViewPlotlyGraph")
+        def view_graph_plotly():
+            logger.network_logger.debug("Plotly Graph View accessed from " + str(request.remote_addr))
+            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.plotly_html_filename):
+                return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
+            else:
+                return render_template("message_return.html",
+                                       TextMessage="No Plotly Graph Generated yet.",
+                                       URL="PlotlyGraph")
+
         @self.app.route("/DisplayText", methods=["PUT"])
         @self.auth.login_required
         def display_text():
@@ -912,9 +834,9 @@ class CreateSensorHTTP:
                 message = "Unable to Display Text: Sensor Display disabled or not installed"
                 logger.network_logger.warning("* " + message)
 
-            return render_template("message_return_home.html", TextMessage=message)
+            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
-        def thread_function(function, args=0):
+        def thread_function(function, args=None):
             if args:
                 system_thread = Thread(target=function, args=[args])
                 system_thread.daemon = True

@@ -21,6 +21,7 @@ from plotly import subplots, offline
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
+from operations_modules import configuration_main
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
 
@@ -299,3 +300,99 @@ def _plotly_graph(graph_data):
             logger.primary_logger.error("Plotly Graph Creation - Failed - " + str(error))
     else:
         logger.primary_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+
+
+def check_form_columns(form_request):
+    sql_column_selection = [configuration_main.database_variables.all_tables_datetime,
+                            configuration_main.database_variables.sensor_name,
+                            configuration_main.database_variables.ip]
+    if form_request.get("SensorUptime") is not None:
+        sql_column_selection.append(configuration_main.database_variables.sensor_uptime)
+
+    if form_request.get("CPUTemp") is not None:
+        sql_column_selection.append(configuration_main.database_variables.system_temperature)
+
+    if form_request.get("EnvTemp") is not None:
+        sql_column_selection.append(configuration_main.database_variables.env_temperature)
+
+    if form_request.get("Pressure") is not None:
+        sql_column_selection.append(configuration_main.database_variables.pressure)
+
+    if form_request.get("Altitude") is not None:
+        sql_column_selection.append(configuration_main.database_variables.altitude)
+
+    if form_request.get("Humidity") is not None:
+        sql_column_selection.append(configuration_main.database_variables.humidity)
+
+    if form_request.get("Distance") is not None:
+        sql_column_selection.append(configuration_main.database_variables.distance)
+
+    if form_request.get("Gas") is not None:
+        sql_column_selection.append(configuration_main.database_variables.gas_resistance_index)
+        sql_column_selection.append(configuration_main.database_variables.gas_nh3)
+        sql_column_selection.append(configuration_main.database_variables.gas_oxidising)
+        sql_column_selection.append(configuration_main.database_variables.gas_reducing)
+
+    if form_request.get("ParticulateMatter") is not None:
+        sql_column_selection.append(configuration_main.database_variables.particulate_matter_1)
+        sql_column_selection.append(configuration_main.database_variables.particulate_matter_2_5)
+        sql_column_selection.append(configuration_main.database_variables.particulate_matter_10)
+
+    if form_request.get("Lumen") is not None:
+        sql_column_selection.append(configuration_main.database_variables.lumen)
+
+    if form_request.get("Colours") is not None:
+        sql_column_selection.append(configuration_main.database_variables.red)
+        sql_column_selection.append(configuration_main.database_variables.orange)
+        sql_column_selection.append(configuration_main.database_variables.yellow)
+        sql_column_selection.append(configuration_main.database_variables.green)
+        sql_column_selection.append(configuration_main.database_variables.blue)
+        sql_column_selection.append(configuration_main.database_variables.violet)
+
+    if form_request.get("UltraViolet") is not None:
+        sql_column_selection.append(configuration_main.database_variables.ultra_violet_index)
+        sql_column_selection.append(configuration_main.database_variables.ultra_violet_a)
+        sql_column_selection.append(configuration_main.database_variables.ultra_violet_b)
+
+    if form_request.get("Accelerometer") is not None:
+        sql_column_selection.append(configuration_main.database_variables.acc_x)
+        sql_column_selection.append(configuration_main.database_variables.acc_y)
+        sql_column_selection.append(configuration_main.database_variables.acc_z)
+
+    if form_request.get("Magnetometer") is not None:
+        sql_column_selection.append(configuration_main.database_variables.mag_x)
+        sql_column_selection.append(configuration_main.database_variables.mag_y)
+        sql_column_selection.append(configuration_main.database_variables.mag_z)
+
+    if form_request.get("Gyroscope") is not None:
+        sql_column_selection.append(configuration_main.database_variables.gyro_x)
+        sql_column_selection.append(configuration_main.database_variables.gyro_y)
+        sql_column_selection.append(configuration_main.database_variables.gyro_z)
+
+    return sql_column_selection
+
+
+def get_ems_for_render_template(ems):
+    if ems == "NoSensor":
+        red = "NoSensor"
+        orange = "NoSensor"
+        yellow = "NoSensor"
+        green = "NoSensor"
+        blue = "NoSensor"
+        violet = "NoSensor"
+    else:
+        if len(ems) > 3:
+            red = ems[0]
+            orange = ems[1]
+            yellow = ems[2]
+            green = ems[3]
+            blue = ems[4]
+            violet = ems[5]
+        else:
+            red = ems[0]
+            orange = "NoSensor"
+            yellow = "NoSensor"
+            green = ems[1]
+            blue = ems[2]
+            violet = "NoSensor"
+    return [red, orange, yellow, green, blue, violet]

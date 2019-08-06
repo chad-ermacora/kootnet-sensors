@@ -31,6 +31,7 @@ trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 display_font = "/opt/kootnet-sensors/extras/DejaVuSans-Bold.ttf"
+j_query_js = "/opt/kootnet-sensors/http_server/extras/jquery-3.4.1.slim.min.js"
 mui_min_css = "/opt/kootnet-sensors/http_server/extras/mui.min.css"
 mui_colors_min_css = "/opt/kootnet-sensors/http_server/extras/mui-colors.min.css"
 mui_min_js = "/opt/kootnet-sensors/http_server/extras/mui.min.js"
