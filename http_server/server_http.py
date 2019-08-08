@@ -46,7 +46,6 @@ class CreateSensorHTTP:
         http_auth.set_http_auth_from_file()
 
         sensor_reboot_count = sensor_access.get_system_reboot_count()
-        max_log_lines = 250
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -73,7 +72,7 @@ class CreateSensorHTTP:
         @self.auth.verify_password
         def verify_password(username, password):
             if username == http_auth.http_flask_user:
-                logger.network_logger.debug("Login attempt from " + str(request.remote_addr))
+                logger.network_logger.debug("* Login attempt from " + str(request.remote_addr))
                 return check_password_hash(http_auth.http_flask_password, password)
             else:
                 return False
@@ -94,7 +93,7 @@ class CreateSensorHTTP:
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
         def sensor_information():
-            logger.network_logger.debug("Sensor Information accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("* Sensor Information accessed from " + str(request.remote_addr))
             if configuration_main.current_config.enable_debug_logging:
                 debug_logging = True
             else:
@@ -185,13 +184,13 @@ class CreateSensorHTTP:
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
         def system_commands():
-            logger.network_logger.debug("System Commands accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
             return render_template("system_commands.html")
 
         @self.app.route("/EditConfigMain", methods=["GET", "POST"])
         @self.auth.login_required
         def edit_config_main():
-            logger.network_logger.debug("Edit Configuration Main accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("** Edit Configuration Main accessed from " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip().split("\n")
@@ -213,7 +212,7 @@ class CreateSensorHTTP:
         @self.app.route("/EditInstalledSensors", methods=["GET", "POST"])
         @self.auth.login_required
         def edit_installed_sensors():
-            logger.network_logger.debug("Edit Installed Sensors accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("** Edit Installed Sensors accessed from " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip().split("\n")
@@ -235,7 +234,7 @@ class CreateSensorHTTP:
         @self.app.route("/EditConfigWifi", methods=["GET", "POST"])
         @self.auth.login_required
         def edit_config_wifi():
-            logger.network_logger.debug("Edit Wifi Configuration accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("** Edit Wifi Configuration accessed from " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip()
@@ -252,7 +251,7 @@ class CreateSensorHTTP:
         @self.app.route("/EditTriggerVariances", methods=["GET", "POST"])
         @self.auth.login_required
         def edit_trigger_variances():
-            logger.network_logger.debug("Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("** Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip()
@@ -316,7 +315,7 @@ class CreateSensorHTTP:
             try:
                 new_wifi_config = request.form['command_data']
                 wifi_file.write_wifi_config_to_file(new_wifi_config)
-                logger.network_logger.info("* Wifi WPA Supplicant Changed by " + str(request.remote_addr))
+                logger.network_logger.info("** Wifi WPA Supplicant Changed by " + str(request.remote_addr))
             except Exception as error:
                 logger.network_logger.info("* Failed to change Wifi WPA Supplicant sent from " +
                                            str(request.remote_addr) + " - " +
@@ -334,7 +333,7 @@ class CreateSensorHTTP:
             try:
                 new_variance_config = request.form['command_data']
                 trigger_variances.write_triggers_to_file(new_variance_config)
-                logger.network_logger.info("* Variance Configuration Changed by " + str(request.remote_addr))
+                logger.network_logger.info("** Variance Configuration Changed by " + str(request.remote_addr))
             except Exception as error:
                 logger.network_logger.info("* Failed to change Variance Configuration sent from " +
                                            str(request.remote_addr) + " - " +
@@ -406,7 +405,7 @@ class CreateSensorHTTP:
         @self.app.route("/DeletePrimaryLog")
         @self.auth.login_required
         def delete_primary_log():
-            logger.network_logger.info("* Primary Sensor Log Deleted by " + str(request.remote_addr))
+            logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
             message = "Primary Log Deleted"
             logger.clear_primary_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
@@ -414,7 +413,7 @@ class CreateSensorHTTP:
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
         def delete_network_log():
-            logger.network_logger.info("* Network Sensor Log Deleted by " + str(request.remote_addr))
+            logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
             message = "Network Log Deleted"
             logger.clear_network_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
@@ -422,7 +421,7 @@ class CreateSensorHTTP:
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
         def delete_sensors_log():
-            logger.network_logger.info("* Sensors Log Deleted by " + str(request.remote_addr))
+            logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
             message = "Sensors Log Deleted"
             logger.clear_sensor_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
@@ -441,7 +440,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def del_db_note():
             note_datetime = request.form['command_data']
-            logger.network_logger.info("* " + str(request.remote_addr) +
+            logger.network_logger.info("** " + str(request.remote_addr) +
                                        " Deleted Note " +
                                        str(note_datetime))
             sensor_access.delete_db_note(note_datetime)
@@ -473,7 +472,7 @@ class CreateSensorHTTP:
         def put_sql_note():
             new_note = request.form['command_data']
             sensor_access.add_note_to_database(new_note)
-            logger.network_logger.debug("* SQL Note Inserted by " + str(request.remote_addr))
+            logger.network_logger.debug("** SQL Note Inserted by " + str(request.remote_addr))
             return "OK"
 
         @self.app.route("/UpdateDatabaseNote", methods=["PUT"])
@@ -481,7 +480,7 @@ class CreateSensorHTTP:
         def update_sql_note():
             datetime_entry_note_csv = request.form['command_data']
             sensor_access.update_note_in_database(datetime_entry_note_csv)
-            logger.network_logger.debug("* Updated Note in Database from " + str(request.remote_addr))
+            logger.network_logger.debug("** Updated Note in Database from " + str(request.remote_addr))
             return "OK"
 
         @self.app.route("/UpgradeOnline")
@@ -498,7 +497,7 @@ class CreateSensorHTTP:
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
-            logger.network_logger.info("* Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             message = "HTTP Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
             return render_template("message_return.html",
@@ -509,7 +508,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
-            logger.network_logger.info("* Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
             message = "HTTP Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
             return render_template("message_return.html",
@@ -531,7 +530,7 @@ class CreateSensorHTTP:
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
-            logger.network_logger.info("* Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
             message = "SMB Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
             return render_template("message_return.html",
@@ -542,7 +541,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
-            logger.network_logger.info("* Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
             message = "SMB Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
             return render_template("message_return.html",
@@ -560,7 +559,7 @@ class CreateSensorHTTP:
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
         def reinstall_program_requirements():
-            logger.network_logger.info("* Program Dependency Install Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Program Dependency Install Initiated by " + str(request.remote_addr))
             message = "Dependency Install Started"
             message2 = "Once complete, the sensor programs will be restarted. " + app_variables.text_message_may_take_minutes
             thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
@@ -572,7 +571,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
         def upgrade_system_os():
-            logger.network_logger.info("* OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
             message2 = "The sensor will reboot when done. This will take awhile.  " + \
                        "You may continue to use the sensor during the upgrade process.  " + \
                        "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
@@ -591,7 +590,7 @@ class CreateSensorHTTP:
         @self.app.route("/RebootSystem")
         @self.auth.login_required
         def system_reboot():
-            logger.network_logger.info("* System Reboot Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
             message = "Sensor Rebooting"
             thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
             return render_template("message_return.html",
@@ -602,7 +601,7 @@ class CreateSensorHTTP:
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
-            logger.network_logger.info("* System Shutdown Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
             message = "Sensor Shutting Down"
             message2 = "You will be unable to access it until some one turns it back on."
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
@@ -613,7 +612,7 @@ class CreateSensorHTTP:
 
         @self.app.route("/RestartServices")
         def services_restart():
-            logger.network_logger.info("* Service restart Initiated by " + str(request.remote_addr))
+            logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
             message = "Restarting Sensor Service"
             message2 = "This should only take 5 to 30 seconds."
             thread_function(sensor_access.restart_services)
@@ -628,10 +627,10 @@ class CreateSensorHTTP:
             try:
                 new_host = request.form['command_data']
                 os.system("hostnamectl set-hostname " + new_host)
-                logger.network_logger.info("* Hostname Change Initiated by " + str(request.remote_addr))
+                logger.network_logger.info("** Hostname Change Initiated by " + str(request.remote_addr))
                 message = "Hostname Changed to " + new_host
             except Exception as error:
-                logger.network_logger.info("* Hostname Change Failed from " +
+                logger.network_logger.info("** Hostname Change Failed from " +
                                            str(request.remote_addr) + " - " + str(error))
                 message = "Failed to change Hostname"
             return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
@@ -641,7 +640,7 @@ class CreateSensorHTTP:
         def set_date_time():
             new_datetime = request.form['command_data']
             os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-            logger.network_logger.info("* Set System DateTime Initiated by " +
+            logger.network_logger.info("** Set System DateTime Initiated by " +
                                        str(request.remote_addr) +
                                        " to " + new_datetime)
             message = "DateTime Set to " + new_datetime
@@ -650,7 +649,7 @@ class CreateSensorHTTP:
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
         def set_configuration():
-            logger.network_logger.info("* Sensor Configuration set by " + str(request.remote_addr))
+            logger.network_logger.info("** Sensor Configuration set by " + str(request.remote_addr))
             message = "Configuration Updated"
             raw_config = request.form['command_data'].splitlines()
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
@@ -661,7 +660,7 @@ class CreateSensorHTTP:
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
         def set_installed_sensors():
-            logger.network_logger.info("* Installed Sensors set by " + str(request.remote_addr))
+            logger.network_logger.info("** Installed Sensors set by " + str(request.remote_addr))
             message = "Installed Sensors Updated"
             raw_installed_sensors = request.form['command_data'].splitlines()
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
