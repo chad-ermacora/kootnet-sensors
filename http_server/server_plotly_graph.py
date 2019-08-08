@@ -59,7 +59,8 @@ def _start_plotly_graph(graph_data):
                         var_column + \
                         " FROM " + \
                         graph_data.graph_table + \
-                        " WHERE DateTime BETWEEN datetime('" + \
+                        " WHERE " + var_column + " IS NOT NULL AND " + \
+                        "DateTime BETWEEN datetime('" + \
                         get_sql_graph_start + \
                         "') AND datetime('" + \
                         get_sql_graph_end + \
@@ -214,20 +215,22 @@ def _get_sql_data(graph_interval_data, sql_command):
     for data in sql_column_data:
         if data is None:
             null_data_entries += 1
-        if skip_count >= int(graph_interval_data.sql_queries_skip) or graph_interval_data.bypass_sql_skip:
+        elif skip_count >= int(graph_interval_data.sql_queries_skip) or graph_interval_data.bypass_sql_skip:
             return_data.append(str(data)[2:-3])
             skip_count = 0
 
-        skip_count = skip_count + 1
-        count = count + 1
+        skip_count += 1
+        count += 1
 
     logger.primary_logger.debug("SQL execute Command: " + str(sql_command))
     logger.primary_logger.debug("SQL Column Data Length: " + str(len(return_data)))
-    if null_data_entries == len(sql_column_data):
+    if null_data_entries:
+        logger.primary_logger.warning("NULL SQL Entries found using: " + str(sql_command))
+
+    elif null_data_entries == len(sql_column_data):
         # Skip if all None
         return []
-    else:
-        return return_data
+    return return_data
 
 
 def _plotly_graph(graph_data):

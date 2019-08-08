@@ -94,7 +94,7 @@ class CreateSensorHTTP:
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
         def sensor_information():
-            logger.network_logger.info("Quick Links accessed from " + str(request.remote_addr))
+            logger.network_logger.debug("Sensor Information accessed from " + str(request.remote_addr))
             if configuration_main.current_config.enable_debug_logging:
                 debug_logging = True
             else:
@@ -185,6 +185,7 @@ class CreateSensorHTTP:
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
         def system_commands():
+            logger.network_logger.debug("System Commands accessed from " + str(request.remote_addr))
             return render_template("system_commands.html")
 
         @self.app.route("/EditConfigMain", methods=["GET", "POST"])
@@ -276,37 +277,37 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetSensorReadings")
         def get_sensor_readings():
-            logger.network_logger.info("* Sent Sensor Readings")
+            logger.network_logger.debug("* Sensor Readings sent to " + str(request.remote_addr))
             sensor_readings = sensor_access.get_sensor_readings()
             return_str = str(sensor_readings[0]) + "," + str(sensor_readings[1])
             return return_str
 
         @self.app.route("/GetSystemData")
         def get_system_data():
-            logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+            logger.network_logger.debug("* Sensor System Data Sent to " + str(request.remote_addr))
             return sensor_access.get_system_information()
 
         @self.app.route("/GetConfigurationReport")
         def get_configuration_report():
-            logger.network_logger.info("* Sensor Data Sent to " + str(request.remote_addr))
+            logger.network_logger.debug("* Sensor Configuration Data Sent to " + str(request.remote_addr))
             return sensor_access.get_config_information()
 
         @self.app.route("/GetInstalledSensors")
         def get_installed_sensors():
-            logger.network_logger.info("* Sent Installed Sensors")
+            logger.network_logger.debug("* Installed Sensors Sent to " + str(request.remote_addr))
             installed_sensors_str = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
             return installed_sensors_str
 
         @self.app.route("/GetConfiguration")
         def get_configuration():
-            logger.network_logger.info("* Sent Sensors Configuration")
+            logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
             installed_config_str = configuration_files.convert_config_to_str(configuration_main.current_config)
             return installed_config_str
 
         @self.app.route("/GetWifiConfiguration")
         @self.auth.login_required
         def get_wifi_config():
-            logger.network_logger.info("* Sent wpa_supplicant")
+            logger.network_logger.debug("* Wifi WPA Supplicant Sent to " + str(request.remote_addr))
             return send_file(file_locations.wifi_config_file)
 
         @self.app.route("/SetWifiConfiguration", methods=["PUT"])
@@ -315,14 +316,16 @@ class CreateSensorHTTP:
             try:
                 new_wifi_config = request.form['command_data']
                 wifi_file.write_wifi_config_to_file(new_wifi_config)
-                logger.network_logger.info("* wpa_supplicant Changed - OK")
+                logger.network_logger.info("* Wifi WPA Supplicant Changed by " + str(request.remote_addr))
             except Exception as error:
-                logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
+                logger.network_logger.info("* Failed to change Wifi WPA Supplicant sent from " +
+                                           str(request.remote_addr) + " - " +
+                                           str(error))
             return "OK"
 
         @self.app.route("/GetVarianceConfiguration")
         def get_variance_config():
-            logger.network_logger.info("* Sent Variance Configuration")
+            logger.network_logger.debug("* Variance Configuration Sent to " + str(request.remote_addr))
             return send_file(file_locations.trigger_variances_file_location)
 
         @self.app.route("/SetVarianceConfiguration", methods=["PUT"])
@@ -331,22 +334,22 @@ class CreateSensorHTTP:
             try:
                 new_variance_config = request.form['command_data']
                 trigger_variances.write_triggers_to_file(new_variance_config)
-                logger.network_logger.info("* wpa_supplicant Changed - OK")
+                logger.network_logger.info("* Variance Configuration Changed by " + str(request.remote_addr))
             except Exception as error:
-                logger.network_logger.warning("* wpa_supplicant Change - Failed: " + str(error))
-
+                logger.network_logger.info("* Failed to change Variance Configuration sent from " +
+                                           str(request.remote_addr) + " - " +
+                                           str(error))
             sensor_access.restart_services()
             return "OK"
 
         @self.app.route("/GetPrimaryLog")
         def get_primary_log():
-            logger.network_logger.info("* Sent Primary Log")
-            log = logger.get_sensor_log(file_locations.primary_log, max_log_lines=max_log_lines)
+            logger.network_logger.debug("* Primary Log Sent to " + str(request.remote_addr))
+            log = logger.get_sensor_log(file_locations.primary_log)
             return log
 
         @self.app.route("/GetPrimaryLogHTML")
         def get_primary_log_html():
-            logger.network_logger.debug("* Sent Primary Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
             return render_template("log_view.html",
                                    Log=get_primary_log(),
@@ -356,13 +359,12 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetNetworkLog")
         def get_network_log():
-            logger.network_logger.info("* Sent Network Log")
-            log = logger.get_sensor_log(file_locations.network_log, max_log_lines=max_log_lines)
+            logger.network_logger.debug("* Network Log Sent to " + str(request.remote_addr))
+            log = logger.get_sensor_log(file_locations.network_log)
             return log
 
         @self.app.route("/GetNetworkLogHTML")
         def get_network_log_html():
-            logger.network_logger.debug("* Sent Network Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.network_log)
             return render_template("log_view.html",
                                    Log=get_network_log(),
@@ -372,13 +374,12 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetSensorsLog")
         def get_sensors_log():
-            logger.network_logger.info("* Sent Sensor Log")
-            log = logger.get_sensor_log(file_locations.sensors_log, max_log_lines=max_log_lines)
+            logger.network_logger.debug("* Sensor Log Sent to " + str(request.remote_addr))
+            log = logger.get_sensor_log(file_locations.sensors_log)
             return log
 
         @self.app.route("/GetSensorsLogHTML")
         def get_sensors_log_html():
-            logger.network_logger.debug("* Sent Sensor Log in HTML format")
             log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
             return render_template("log_view.html",
                                    Log=get_sensors_log(),
@@ -388,23 +389,24 @@ class CreateSensorHTTP:
 
         def get_log_return_message(log_lines_length):
             if log_lines_length:
-                if max_log_lines > log_lines_length:
+                if logger.max_log_lines_return > log_lines_length:
                     text_log_entries_return = str(log_lines_length + 1) + " entries of " + str(log_lines_length + 1)
                 else:
-                    text_log_entries_return = str(max_log_lines) + " entries of " + str(log_lines_length + 1)
+                    text_log_entries_return = str(logger.max_log_lines_return) + " entries of " + str(
+                        log_lines_length + 1)
             else:
                 text_log_entries_return = "0 entries of 0"
             return text_log_entries_return
 
         @self.app.route("/GetDatabaseNotes")
         def get_db_notes():
-            logger.network_logger.info("* Sent Sensor Notes")
+            logger.network_logger.debug("* Sensor Notes Sent to " + str(request.remote_addr))
             return sensor_access.get_db_notes()
 
         @self.app.route("/DeletePrimaryLog")
         @self.auth.login_required
         def delete_primary_log():
-            logger.network_logger.info("* Primary Sensor Log Deleted")
+            logger.network_logger.info("* Primary Sensor Log Deleted by " + str(request.remote_addr))
             message = "Primary Log Deleted"
             logger.clear_primary_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
@@ -412,7 +414,7 @@ class CreateSensorHTTP:
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
         def delete_network_log():
-            logger.network_logger.info("* Network Sensor Log Deleted")
+            logger.network_logger.info("* Network Sensor Log Deleted by " + str(request.remote_addr))
             message = "Network Log Deleted"
             logger.clear_network_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
@@ -420,31 +422,33 @@ class CreateSensorHTTP:
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
         def delete_sensors_log():
-            logger.network_logger.info("* Sensors Log Deleted")
+            logger.network_logger.info("* Sensors Log Deleted by " + str(request.remote_addr))
             message = "Sensors Log Deleted"
             logger.clear_sensor_log()
             return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
-            logger.network_logger.info("* Sent Sensor Note Dates")
+            logger.network_logger.debug("* Sensor Note Dates Sent to " + str(request.remote_addr))
             return sensor_access.get_db_note_dates()
 
         @self.app.route("/GetDatabaseNoteUserDates")
         def get_db_note_user_dates():
-            logger.network_logger.info("* Sent Sensor Note User Set Dates")
+            logger.network_logger.debug("* User Set Sensor Notes Dates Sent to " + str(request.remote_addr))
             return sensor_access.get_db_note_user_dates()
 
         @self.app.route("/DeleteDatabaseNote", methods=["PUT"])
         @self.auth.login_required
         def del_db_note():
             note_datetime = request.form['command_data']
-            logger.network_logger.info("* Deleted Note from: " + str(note_datetime))
+            logger.network_logger.info("* " + str(request.remote_addr) +
+                                       " Deleted Note " +
+                                       str(note_datetime))
             sensor_access.delete_db_note(note_datetime)
 
         @self.app.route("/DownloadZippedLogs")
         def download_zipped_logs():
-            logger.network_logger.info("* Sent Zip of all Full Logs")
+            logger.network_logger.debug("* Zip of all Logs Sent to " + str(request.remote_addr))
             log_name = "Logs_" + sensor_access.get_ip()[-3:].replace(".", "_") + sensor_access.get_hostname() + ".zip"
             try:
                 with ZipFile(file_locations.log_zip_file, "w", ZIP_DEFLATED) as zip_file:
@@ -457,7 +461,7 @@ class CreateSensorHTTP:
 
         @self.app.route("/DownloadSQLDatabase")
         def download_sensors_sql_database():
-            logger.network_logger.info("* Sent Sensor SQL Database")
+            logger.network_logger.info("* Sensor SQL Database Sent to " + str(request.remote_addr))
             sql_filename = sensor_access.get_ip()[-3:].replace(".", "_") + \
                            sensor_access.get_hostname() + \
                            "SensorDatabase.sqlite"
@@ -469,7 +473,7 @@ class CreateSensorHTTP:
         def put_sql_note():
             new_note = request.form['command_data']
             sensor_access.add_note_to_database(new_note)
-            logger.network_logger.info("* Inserted Note into Database")
+            logger.network_logger.debug("* SQL Note Inserted by " + str(request.remote_addr))
             return "OK"
 
         @self.app.route("/UpdateDatabaseNote", methods=["PUT"])
@@ -477,13 +481,13 @@ class CreateSensorHTTP:
         def update_sql_note():
             datetime_entry_note_csv = request.form['command_data']
             sensor_access.update_note_in_database(datetime_entry_note_csv)
-            logger.network_logger.info("* Updated Note in Database")
+            logger.network_logger.debug("* Updated Note in Database from " + str(request.remote_addr))
             return "OK"
 
         @self.app.route("/UpgradeOnline")
         @self.auth.login_required
         def upgrade_http():
-            logger.network_logger.info("* Started Upgrade - HTTP")
+            logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
             message = "HTTP Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
             return render_template("message_return.html",
@@ -494,7 +498,7 @@ class CreateSensorHTTP:
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
-            logger.network_logger.info("* Started Clean Upgrade - HTTP")
+            logger.network_logger.info("* Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             message = "HTTP Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
             return render_template("message_return.html",
@@ -505,7 +509,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
-            logger.network_logger.info("* Started Upgrade - HTTP Developer")
+            logger.network_logger.info("* Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
             message = "HTTP Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
             return render_template("message_return.html",
@@ -516,7 +520,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
         def upgrade_smb():
-            logger.network_logger.info("* Started Upgrade - SMB")
+            logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
             message = "SMB Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
             return render_template("message_return.html",
@@ -527,7 +531,7 @@ class CreateSensorHTTP:
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
-            logger.network_logger.info("* Started Clean Upgrade - SMB")
+            logger.network_logger.info("* Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
             message = "SMB Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
             return render_template("message_return.html",
@@ -538,7 +542,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
-            logger.network_logger.info("* Started Upgrade - SMB Developer")
+            logger.network_logger.info("* Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
             message = "SMB Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
             return render_template("message_return.html",
@@ -546,10 +550,17 @@ class CreateSensorHTTP:
                                    TextMessage2=app_variables.text_message_may_take_minutes,
                                    URL="SensorInformation")
 
+        @self.app.route("/inkupg")
+        @self.auth.login_required
+        def upgrade_rp_controller():
+            logger.network_logger.info("* Upgrade - E-Ink Mobile Initiated by " + str(request.remote_addr))
+            thread_function(os.system, args=app_variables.bash_commands["inkupg"])
+            return "OK"
+
         @self.app.route("/ReInstallRequirements")
         @self.auth.login_required
         def reinstall_program_requirements():
-            logger.network_logger.info("* Started Program Dependency Install")
+            logger.network_logger.info("* Program Dependency Install Initiated by " + str(request.remote_addr))
             message = "Dependency Install Started"
             message2 = "Once complete, the sensor programs will be restarted. " + app_variables.text_message_may_take_minutes
             thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
@@ -561,7 +572,7 @@ class CreateSensorHTTP:
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
         def upgrade_system_os():
-            logger.network_logger.info("* Updating Operating System & rebooting")
+            logger.network_logger.info("* OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
             message2 = "The sensor will reboot when done. This will take awhile.  " + \
                        "You may continue to use the sensor during the upgrade process.  " + \
                        "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
@@ -570,24 +581,17 @@ class CreateSensorHTTP:
                 configuration_main.linux_os_upgrade_ready = False
                 thread_function(sensor_access.upgrade_linux_os)
             else:
-                logger.sensors_logger.warning("* Operating System Upgrade Already Running")
+                logger.network_logger.warning("* Operating System Upgrade Already Running")
                 message = "Upgrade is already running.  "
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=message2,
                                    URL="SensorInformation")
 
-        @self.app.route("/inkupg")
-        @self.auth.login_required
-        def upgrade_rp_controller():
-            logger.network_logger.info("* Started Upgrade - E-Ink Mobile")
-            thread_function(os.system, args=app_variables.bash_commands["inkupg"])
-            return "OK"
-
         @self.app.route("/RebootSystem")
         @self.auth.login_required
         def system_reboot():
-            logger.network_logger.info("* Rebooting System")
+            logger.network_logger.info("* System Reboot Initiated by " + str(request.remote_addr))
             message = "Sensor Rebooting"
             thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
             return render_template("message_return.html",
@@ -598,7 +602,7 @@ class CreateSensorHTTP:
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
-            logger.network_logger.info("* System Shutdown started by " + str(request.remote_addr))
+            logger.network_logger.info("* System Shutdown Initiated by " + str(request.remote_addr))
             message = "Sensor Shutting Down"
             message2 = "You will be unable to access it until some one turns it back on."
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
@@ -609,7 +613,7 @@ class CreateSensorHTTP:
 
         @self.app.route("/RestartServices")
         def services_restart():
-            logger.network_logger.info("* Service restart started by " + str(request.remote_addr))
+            logger.network_logger.info("* Service restart Initiated by " + str(request.remote_addr))
             message = "Restarting Sensor Service"
             message2 = "This should only take 5 to 30 seconds."
             thread_function(sensor_access.restart_services)
@@ -624,10 +628,11 @@ class CreateSensorHTTP:
             try:
                 new_host = request.form['command_data']
                 os.system("hostnamectl set-hostname " + new_host)
-                logger.network_logger.info("* Hostname Changed to " + new_host + " - OK")
+                logger.network_logger.info("* Hostname Change Initiated by " + str(request.remote_addr))
                 message = "Hostname Changed to " + new_host
             except Exception as error:
-                logger.network_logger.warning("* Hostname Change Failed: " + str(error))
+                logger.network_logger.info("* Hostname Change Failed from " +
+                                           str(request.remote_addr) + " - " + str(error))
                 message = "Failed to change Hostname"
             return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
@@ -636,14 +641,16 @@ class CreateSensorHTTP:
         def set_date_time():
             new_datetime = request.form['command_data']
             os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-            logger.network_logger.info("* Set System DateTime: " + new_datetime)
+            logger.network_logger.info("* Set System DateTime Initiated by " +
+                                       str(request.remote_addr) +
+                                       " to " + new_datetime)
             message = "DateTime Set to " + new_datetime
             return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
         def set_configuration():
-            logger.network_logger.info("* Setting Sensor Configuration")
+            logger.network_logger.info("* Sensor Configuration set by " + str(request.remote_addr))
             message = "Configuration Updated"
             raw_config = request.form['command_data'].splitlines()
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
@@ -654,7 +661,7 @@ class CreateSensorHTTP:
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
         def set_installed_sensors():
-            logger.network_logger.info("* Setting Sensor Installed Sensors")
+            logger.network_logger.info("* Installed Sensors set by " + str(request.remote_addr))
             message = "Installed Sensors Updated"
             raw_installed_sensors = request.form['command_data'].splitlines()
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
@@ -664,52 +671,52 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetHostName")
         def get_hostname():
-            logger.network_logger.debug("* Sent Sensor HostName")
+            logger.network_logger.debug("* Sensor's HostName sent to " + str(request.remote_addr))
             return str(sensor_access.get_hostname())
 
         @self.app.route("/GetSystemUptime")
         def get_system_uptime():
-            logger.network_logger.debug("* Sent Sensor System Uptime")
+            logger.network_logger.debug("* Sensor's Uptime sent to " + str(request.remote_addr))
             return str(sensor_access.get_system_uptime())
 
         @self.app.route("/GetCPUTemperature")
         def get_cpu_temperature():
-            logger.network_logger.debug("* Sent Sensor CPU Temperature")
+            logger.network_logger.debug("* Sensor's CPU Temperature sent to " + str(request.remote_addr))
             return str(sensor_access.get_cpu_temperature())
 
         @self.app.route("/GetEnvTemperature")
         def get_env_temperature():
-            logger.network_logger.debug("* Sent Sensor Environment Temperature")
+            logger.network_logger.debug("* Environment Temperature sent to " + str(request.remote_addr))
             return str(sensor_access.get_sensor_temperature())
 
         @self.app.route("/GetTempOffsetEnv")
         def get_env_temp_offset():
-            logger.network_logger.debug("* Sent Sensor Env Temperature Offset")
+            logger.network_logger.debug("* Environment Temperature Offset sent to " + str(request.remote_addr))
             return str(configuration_main.current_config.temperature_offset)
 
         @self.app.route("/GetPressure")
         def get_pressure():
-            logger.network_logger.debug("* Sent Sensor Pressure")
+            logger.network_logger.debug("* Pressure sent to " + str(request.remote_addr))
             return str(sensor_access.get_pressure())
 
         @self.app.route("/GetAltitude")
         def get_altitude():
-            logger.network_logger.debug("* Sent Sensor Altitude")
+            logger.network_logger.debug("* Altitude sent to " + str(request.remote_addr))
             return str(sensor_access.get_altitude())
 
         @self.app.route("/GetHumidity")
         def get_humidity():
-            logger.network_logger.debug("* Sent Sensor Humidity")
+            logger.network_logger.debug("* Humidity sent to " + str(request.remote_addr))
             return str(sensor_access.get_humidity())
 
         @self.app.route("/GetDistance")
         def get_distance():
-            logger.network_logger.debug("* Sent Sensor Distance")
+            logger.network_logger.debug("* Distance sent to " + str(request.remote_addr))
             return str(sensor_access.get_distance())
 
         @self.app.route("/GetAllGas")
         def get_all_gas():
-            logger.network_logger.debug("* Sent All GAS Sensors")
+            logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
             gas_return = [sensor_access.get_gas_resistance_index(),
                           sensor_access.get_gas_oxidised(),
                           sensor_access.get_gas_reduced(),
@@ -718,27 +725,27 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetGasResistanceIndex")
         def get_gas_resistance_index():
-            logger.network_logger.debug("* Sent Sensor GAS Resistance Index")
+            logger.network_logger.debug("* GAS Resistance Index sent to " + str(request.remote_addr))
             return str(sensor_access.get_gas_resistance_index())
 
         @self.app.route("/GetGasOxidised")
         def get_gas_oxidised():
-            logger.network_logger.debug("* Sent Sensor GAS Oxidised")
+            logger.network_logger.debug("* GAS Oxidised sent to " + str(request.remote_addr))
             return str(sensor_access.get_gas_oxidised())
 
         @self.app.route("/GetGasReduced")
         def get_gas_reduced():
-            logger.network_logger.debug("* Sent Sensor GAS Reduced")
+            logger.network_logger.debug("* GAS Reduced sent to " + str(request.remote_addr))
             return str(sensor_access.get_gas_reduced())
 
         @self.app.route("/GetGasNH3")
         def get_gas_nh3():
-            logger.network_logger.debug("* Sent Sensor GAS NH3")
+            logger.network_logger.debug("* GAS NH3 sent to " + str(request.remote_addr))
             return str(sensor_access.get_gas_nh3())
 
         @self.app.route("/GetAllParticulateMatter")
         def get_all_particulate_matter():
-            logger.network_logger.debug("* Sent All Particulate Matter Sensors")
+            logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
             return_pm = [sensor_access.get_particulate_matter_1(),
                          sensor_access.get_particulate_matter_2_5(),
                          sensor_access.get_particulate_matter_10()]
@@ -747,70 +754,68 @@ class CreateSensorHTTP:
 
         @self.app.route("/GetParticulateMatter1")
         def get_particulate_matter_1():
-            logger.network_logger.debug("* Sent Sensor Particulate Matter 1")
+            logger.network_logger.debug("* Particulate Matter 1 sent to " + str(request.remote_addr))
             return str(sensor_access.get_particulate_matter_1())
 
         @self.app.route("/GetParticulateMatter2_5")
         def get_particulate_matter_2_5():
-            logger.network_logger.debug("* Sent Sensor Particulate Matter 2.5")
+            logger.network_logger.debug("* Particulate Matter 2.5 sent to " + str(request.remote_addr))
             return str(sensor_access.get_particulate_matter_2_5())
 
         @self.app.route("/GetParticulateMatter10")
         def get_particulate_matter_10():
-            logger.network_logger.debug("* Sent Sensor Particulate Matter 10")
+            logger.network_logger.debug("* Particulate Matter 10 sent to " + str(request.remote_addr))
             return str(sensor_access.get_particulate_matter_10())
 
         @self.app.route("/GetLumen")
         def get_lumen():
-            logger.network_logger.debug("* Sent Sensor Lumen")
+            logger.network_logger.debug("* Lumen sent to " + str(request.remote_addr))
             return str(sensor_access.get_lumen())
 
         @self.app.route("/GetEMS")
         def get_ems():
-            logger.network_logger.debug("* Sent Sensor Electromagnetic Spectrum")
+            logger.network_logger.debug("* Electromagnetic Spectrum sent to " + str(request.remote_addr))
             return str(sensor_access.get_ems())
 
         @self.app.route("/GetAllUltraViolet")
         def get_all_ultra_violet():
-            logger.network_logger.debug("* Sent All Ultra Violet Sensors")
+            logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
             return_ultra_violet = [sensor_access.get_ultra_violet_a(), sensor_access.get_ultra_violet_b()]
             return str(return_ultra_violet)
 
         @self.app.route("/GetUltraVioletA")
         def get_ultra_violet_a():
-            logger.network_logger.debug("* Sent Sensor Ultra Violet A")
+            logger.network_logger.debug("* Ultra Violet A sent to " + str(request.remote_addr))
             return str(sensor_access.get_ultra_violet_a())
 
         @self.app.route("/GetUltraVioletB")
         def get_ultra_violet_b():
-            logger.network_logger.debug("* Sent Sensor Ultra Violet B")
+            logger.network_logger.debug("* Ultra Violet B sent to " + str(request.remote_addr))
             return str(sensor_access.get_ultra_violet_b())
 
         @self.app.route("/GetAccelerometerXYZ")
         def get_acc_xyz():
-            logger.network_logger.debug("* Sent Sensor Accelerometer XYZ")
+            logger.network_logger.debug("* Accelerometer XYZ sent to " + str(request.remote_addr))
             return str(sensor_access.get_accelerometer_xyz())
 
         @self.app.route("/GetMagnetometerXYZ")
         def get_mag_xyz():
-            logger.network_logger.debug("* Sent Sensor Magnetometer XYZ")
+            logger.network_logger.debug("* Magnetometer XYZ sent to " + str(request.remote_addr))
             return str(sensor_access.get_magnetometer_xyz())
 
         @self.app.route("/GetGyroscopeXYZ")
         def get_gyro_xyz():
-            logger.network_logger.debug("* Sent Sensor Gyroscope XYZ")
+            logger.network_logger.debug("* Gyroscope XYZ sent to " + str(request.remote_addr))
             return str(sensor_access.get_gyroscope_xyz())
 
         @self.app.route("/GetIntervalSensorReadings")
         def get_interval_readings():
-            logger.network_logger.debug("* Sent Interval Sensor Readings")
+            logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
             return str(sensor_access.get_interval_sensor_readings())
 
         @self.app.route("/PlotlyGraph", methods=["GET", "POST"])
         # @self.auth.login_required
         def graph_plotly():
-            logger.network_logger.debug("Plotly Graph accessed from " + str(request.remote_addr))
-
             generating_message = "Generating Plotly Graph. This may take awhile."
             generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
 
@@ -830,6 +835,7 @@ class CreateSensorHTTP:
                                        URL="PlotlyGraph")
             else:
                 if request.method == "POST" and "SQLRecordingType" in request.form:
+                    logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
                     try:
                         new_graph_data = server_plotly_graph_variables.CreateGraphData()
                         new_graph_data.graph_table = request.form.get("SQLRecordingType")
@@ -864,7 +870,7 @@ class CreateSensorHTTP:
 
         @self.app.route("/ViewPlotlyGraph")
         def view_graph_plotly():
-            logger.network_logger.debug("Plotly Graph View accessed from " + str(request.remote_addr))
+            logger.network_logger.info("* Plotly Graph Viewed from " + str(request.remote_addr))
             if os.path.isfile(file_locations.save_plotly_html_to + file_locations.plotly_html_filename):
                 return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
             else:
@@ -877,7 +883,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def display_text():
             if configuration_main.current_config.enable_display and configuration_main.installed_sensors.has_display:
-                logger.network_logger.info("* Displaying Text on Installed Display")
+                logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
                 text_message = request.form['command_data']
                 sensor_access.display_message(text_message)
                 message = "Displaying Message " + text_message

@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import file_locations
+
 graph_creation_in_progress = False
 
 mark_red_line = dict(size=10,

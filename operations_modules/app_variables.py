@@ -175,5 +175,5 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_koo
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
                  "UpgradeSystemOS": "bash /opt/kootnet-sensors/scripts/linux_system_os_upgrade.sh",
-                 "ReInstallRequirements": "bash /opt/kootnet-sensors/scripts/reinstall_requirements.sh && systemctl restart KootnetSensors",
+                 "ReInstallRequirements": "bash /opt/kootnet-sensors/scripts/reinstall_requirements.sh",
                  "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}
