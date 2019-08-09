@@ -2,28 +2,31 @@
 
 {% block content %}
 
-<style>
-    a:visited {
-        color: red;
-    }
-</style>
-
 <h2 style="color: red;"><u><a href="/PlotlyGraph">KootNet Sensors Plotly Graphing</a></u></h2>
 
 <h3>
-    <u><a style="color: #cc00ff" href="/ViewPlotlyGraph" target="_blank">
-        Click here to view the previously generated Plotly Graph
+    <u><a style="color: #cc00ff" href="/ViewIntervalPlotlyGraph" target="_blank">
+        Click here to view the previously generated Interval Plotly Graph
     </a></u>
 </h3>
 <h4>
-    <span style="color: #90CAF9">Previous Plotly Graph created (Sensor's Time): {{ PlotlyCreationDate }}</span>
+    <span style="color: #90CAF9">Graph Created (Sensor's Time): {{ IntervalPlotlyCreationDate }}</span>
+</h4>
+
+<h3>
+    <u><a style="color: #cc00ff" href="/ViewTriggerPlotlyGraph" target="_blank">
+        Click here to view the previously generated Trigger Plotly Graph
+    </a></u>
+</h3>
+<h4>
+    <span style="color: #90CAF9">Graph Created (Sensor's Time): {{ TriggerPlotlyCreationDate }}</span>
 </h4>
 
 <form class="mui-form"
       method="POST"
-      style="background-color: #00B0FF; width: max-content; border: #0BB10D"
+      style="background-color: #00B0FF; width: max-content; border: #0BB10D;"
       action="/PlotlyGraph">
-    <fieldset>
+    <fieldset style="text-align: center;">
 
         <legend>Graph Options</legend>
         <label>SQL Recording Type</label>
@@ -38,6 +41,8 @@
             </label>
         </div>
 
+        <hr>
+
         <label>Render Engine</label>
         <div class="mui-radio">
             <label>
@@ -50,14 +55,16 @@
             </label>
         </div>
 
+        <hr>
+
         <div class="mui-textfield">
             <label style="color: black">Start DateTime DD/MM/YYYY hh:mm</label>
-            <input type="datetime-local" name="graph_datetime_start" value="2019-07-01T00:00">
+            <input type="datetime-local" name="graph_datetime_start" style="text-align: center;" value="2019-07-01T00:00">
         </div>
 
         <div class="mui-textfield">
             <label style="color: black">End DateTime DD/MM/YYYY hh:mm</label>
-            <input type="datetime-local" name="graph_datetime_end" value="2200-01-01T00:00">
+            <input type="datetime-local" name="graph_datetime_end" style="text-align: center;" value="2200-01-01T00:00">
         </div>
 
         <div class="mui-textfield">
@@ -83,9 +90,9 @@
         <br>
         <hr>
 
-        <div class="mui-checkbox" style="display: inline-block">
+        <div class="mui-checkbox" style="display: inline-block;">
             <label>
-                <input type="checkbox" id="SelectAllCheckboxes" value="" disabled>
+                <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
                 Select All
             </label>
         </div>
@@ -98,6 +105,8 @@
                 Sensor Uptime
             </label>
         </div>
+
+        <br>
 
         <div class="mui-checkbox" style="display: inline-block">
             <label>
@@ -136,14 +145,14 @@
             </label>
         </div>
 
+        <br>
+
         <div class="mui-checkbox" style="display: inline-block">
             <label>
                 <input type="checkbox" name="Distance" value="" checked>
                 Distance
             </label>
         </div>
-
-        <br>
 
         <div class="mui-checkbox" style="display: inline-block">
             <label>
@@ -159,6 +168,8 @@
             </label>
         </div>
 
+        <br>
+
         <div class="mui-checkbox" style="display: inline-block">
             <label>
                 <input type="checkbox" name="Lumen" value="" checked>
@@ -173,14 +184,14 @@
             </label>
         </div>
 
-        <br>
-
         <div class="mui-checkbox" style="display: inline-block">
             <label>
                 <input type="checkbox" name="UltraViolet" value="" checked>
                 Ultra Violet
             </label>
         </div>
+
+        <br>
 
         <div class="mui-checkbox" style="display: inline-block">
             <label>
@@ -203,10 +214,13 @@
             </label>
         </div>
 
-
         <br>
+        <br>
+
         <button type="submit" class="mui-btn mui-btn--raised">Create Graph</button>
     </fieldset>
 </form>
+
+<script src="/GraphScript.js"></script>
 
 {% endblock %}

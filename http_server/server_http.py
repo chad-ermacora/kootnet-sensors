@@ -53,7 +53,19 @@ class CreateSensorHTTP:
         def index():
             return render_template("index.html", HostName=sensor_access.get_hostname())
 
-        @self.app.route("/jquery.slim.min.js")
+        @self.app.route("/MenuScript.js")
+        def menu_script():
+            return send_file(file_locations.menu_script)
+
+        @self.app.route("/GraphScript.js")
+        def graph_script():
+            return send_file(file_locations.graph_script)
+
+        @self.app.route("/MenuStyle.css")
+        def menu_style_css():
+            return send_file(file_locations.menu_css_style)
+
+        @self.app.route("/jquery.min.js")
         def jquery_slim_min_js():
             return send_file(file_locations.j_query_js)
 
@@ -251,7 +263,8 @@ class CreateSensorHTTP:
         @self.app.route("/EditTriggerVariances", methods=["GET", "POST"])
         @self.auth.login_required
         def edit_trigger_variances():
-            logger.network_logger.debug("** Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
+            logger.network_logger.debug(
+                "** Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip()
@@ -819,12 +832,20 @@ class CreateSensorHTTP:
             generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
 
             try:
-                plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                  file_locations.plotly_html_filename)
-                plotly_file_creation_date = str(datetime.fromtimestamp(plotly_file_creation_date_unix))[:-7]
+                interval_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
+                                                                           file_locations.interval_plotly_html_filename)
+                interval_creation_date = str(datetime.fromtimestamp(interval_plotly_file_creation_date_unix))[:-7]
             except Exception as error:
-                logger.primary_logger.debug("No plotly file created for created DateTime stamp: " + str(error))
-                plotly_file_creation_date = "No Plotly Graph Found"
+                logger.primary_logger.debug("No Interval Plotly file created: " + str(error))
+                interval_creation_date = "No Plotly Graph Found"
+
+            try:
+                triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
+                                                                           file_locations.triggers_plotly_html_filename)
+                triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
+            except Exception as error:
+                logger.primary_logger.debug("No Triggers Plotly file: " + str(error))
+                triggers_creation_date = "No Plotly Graph Found"
 
             if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
                 logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
@@ -865,16 +886,28 @@ class CreateSensorHTTP:
                                            URL="PlotlyGraph")
                 else:
                     return render_template("plotly_graph.html",
-                                           PlotlyCreationDate=plotly_file_creation_date)
+                                           IntervalPlotlyCreationDate=interval_creation_date,
+                                           TriggerPlotlyCreationDate=triggers_creation_date)
 
-        @self.app.route("/ViewPlotlyGraph")
-        def view_graph_plotly():
-            logger.network_logger.info("* Plotly Graph Viewed from " + str(request.remote_addr))
-            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.plotly_html_filename):
-                return send_file(file_locations.save_plotly_html_to + file_locations.plotly_html_filename)
+        @self.app.route("/ViewIntervalPlotlyGraph")
+        def view_interval_graph_plotly():
+            logger.network_logger.info("* Interval Plotly Graph Viewed from " + str(request.remote_addr))
+            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename):
+                return send_file(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename)
             else:
                 return render_template("message_return.html",
-                                       TextMessage="No Plotly Graph Generated",
+                                       TextMessage="No Interval Plotly Graph Generated",
+                                       TextMessage2="Please goto the Graphing Page and Create a Graph.",
+                                       URL="PlotlyGraph")
+
+        @self.app.route("/ViewTriggerPlotlyGraph")
+        def view_triggers_graph_plotly():
+            logger.network_logger.info("* Triggers Plotly Graph Viewed from " + str(request.remote_addr))
+            if os.path.isfile(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename):
+                return send_file(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename)
+            else:
+                return render_template("message_return.html",
+                                       TextMessage="No Triggers Plotly Graph Generated",
                                        TextMessage2="Please goto the Graphing Page and Create a Graph.",
                                        URL="PlotlyGraph")
 

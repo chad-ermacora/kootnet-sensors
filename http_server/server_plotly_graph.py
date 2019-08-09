@@ -297,7 +297,10 @@ def _plotly_graph(graph_data):
             fig['layout'].update(height=2048)
 
         try:
-            offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_html_filename)
+            if graph_data.graph_table == configuration_main.database_variables.table_interval:
+                offline.plot(fig, filename=graph_data.save_to + file_locations.interval_plotly_html_filename)
+            else:
+                offline.plot(fig, filename=graph_data.save_to + file_locations.triggers_plotly_html_filename)
             logger.primary_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             logger.primary_logger.error("Plotly Graph Creation - Failed - " + str(error))
