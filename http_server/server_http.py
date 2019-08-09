@@ -94,13 +94,13 @@ class CreateSensorHTTP:
             logger.network_logger.warning(" *** Failed Login from " + str(request.remote_addr))
             return render_template("message_return.html",
                                    TextMessage="Unauthorized Access",
-                                   URL="")
+                                   URL="/")
 
         @self.app.route('/logout')
         def logout():
             return render_template("message_return.html",
                                    TextMessage="Logout OK.  Returning to Home.",
-                                   URL=""), 401
+                                   URL="/"), 401
 
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
@@ -211,14 +211,14 @@ class CreateSensorHTTP:
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
-                                           URL="EditConfigMain")
+                                           URL="/EditConfigMain")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
             text_configuration = configuration_files.convert_config_to_str(configuration_main.current_config)
             return render_template("edit_configurations.html",
                                    MainConfig=text_configuration,
-                                   PageURL="EditConfigMain",
+                                   PageURL="/EditConfigMain",
                                    Title="Main Configuration")
 
         @self.app.route("/EditInstalledSensors", methods=["GET", "POST"])
@@ -233,14 +233,14 @@ class CreateSensorHTTP:
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
-                                           URL="EditInstalledSensors")
+                                           URL="/EditInstalledSensors")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
             text_configuration = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
             return render_template("edit_configurations.html",
                                    MainConfig=text_configuration,
-                                   PageURL="EditInstalledSensors",
+                                   PageURL="/EditInstalledSensors",
                                    Title="Installed Sensors")
 
         @self.app.route("/EditConfigWifi", methods=["GET", "POST"])
@@ -257,7 +257,7 @@ class CreateSensorHTTP:
             text_configuration = wifi_file.get_wifi_config_from_file()
             return render_template("edit_configurations.html",
                                    MainConfig=text_configuration,
-                                   PageURL="EditConfigWifi",
+                                   PageURL="/EditConfigWifi",
                                    Title="Wifi WPA Supplicant")
 
         @self.app.route("/EditTriggerVariances", methods=["GET", "POST"])
@@ -272,14 +272,14 @@ class CreateSensorHTTP:
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
-                                           URL="EditInstalledSensors")
+                                           URL="/EditInstalledSensors")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
             text_configuration = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
             return render_template("edit_configurations.html",
                                    MainConfig=text_configuration,
-                                   PageURL="EditTriggerVariances",
+                                   PageURL="/EditTriggerVariances",
                                    Title="Trigger Variances")
 
         @self.app.route("/CheckOnlineStatus")
@@ -366,7 +366,7 @@ class CreateSensorHTTP:
             return render_template("log_view.html",
                                    Log=get_primary_log(),
                                    LogName="Primary",
-                                   LogURL="GetPrimaryLogHTML",
+                                   LogURL="/GetPrimaryLogHTML",
                                    LogLinesText=get_log_return_message(log_lines))
 
         @self.app.route("/GetNetworkLog")
@@ -381,7 +381,7 @@ class CreateSensorHTTP:
             return render_template("log_view.html",
                                    Log=get_network_log(),
                                    LogName="Network",
-                                   LogURL="GetNetworkLogHTML",
+                                   LogURL="/GetNetworkLogHTML",
                                    LogLinesText=get_log_return_message(log_lines))
 
         @self.app.route("/GetSensorsLog")
@@ -396,7 +396,7 @@ class CreateSensorHTTP:
             return render_template("log_view.html",
                                    Log=get_sensors_log(),
                                    LogName="Sensors",
-                                   LogURL="GetSensorsLogHTML",
+                                   LogURL="/GetSensorsLogHTML",
                                    LogLinesText=get_log_return_message(log_lines))
 
         def get_log_return_message(log_lines_length):
@@ -421,7 +421,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
             message = "Primary Log Deleted"
             logger.clear_primary_log()
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
@@ -429,7 +429,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
             message = "Network Log Deleted"
             logger.clear_network_log()
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
@@ -437,7 +437,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
             message = "Sensors Log Deleted"
             logger.clear_sensor_log()
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():
@@ -505,7 +505,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
@@ -516,7 +516,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
@@ -527,7 +527,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
@@ -538,7 +538,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
@@ -549,7 +549,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
@@ -560,7 +560,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/inkupg")
         @self.auth.login_required
@@ -579,7 +579,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=message2,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
@@ -598,7 +598,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=message2,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/RebootSystem")
         @self.auth.login_required
@@ -609,7 +609,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
@@ -621,7 +621,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=message2,
-                                   URL="SystemCommands")
+                                   URL="/SystemCommands")
 
         @self.app.route("/RestartServices")
         def services_restart():
@@ -632,7 +632,7 @@ class CreateSensorHTTP:
             return render_template("message_return.html",
                                    TextMessage=message,
                                    TextMessage2=message2,
-                                   URL="SensorInformation")
+                                   URL="/SensorInformation")
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -646,7 +646,7 @@ class CreateSensorHTTP:
                 logger.network_logger.info("** Hostname Change Failed from " +
                                            str(request.remote_addr) + " - " + str(error))
                 message = "Failed to change Hostname"
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html", TextMessage=message, URL="/SensorInformation")
 
         @self.app.route("/SetDateTime", methods=["PUT"])
         @self.auth.login_required
@@ -657,7 +657,7 @@ class CreateSensorHTTP:
                                        str(request.remote_addr) +
                                        " to " + new_datetime)
             message = "DateTime Set to " + new_datetime
-            return render_template("message_return.html", TextMessage=message, URL="SensorInformation")
+            return render_template("message_return.html", TextMessage=message, URL="/SensorInformation")
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
@@ -668,7 +668,7 @@ class CreateSensorHTTP:
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
             configuration_files.write_config_to_file(new_config)
             sensor_access.restart_services()
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
@@ -679,7 +679,7 @@ class CreateSensorHTTP:
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
             configuration_files.write_installed_sensors_to_file(new_installed_sensors)
             sensor_access.restart_services()
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/GetHostName")
         def get_hostname():
@@ -852,7 +852,7 @@ class CreateSensorHTTP:
                 return render_template("message_return.html",
                                        TextMessage=generating_message,
                                        TextMessage2=generating_message2,
-                                       URL="PlotlyGraph")
+                                       URL="/PlotlyGraph")
             else:
                 if request.method == "POST" and "SQLRecordingType" in request.form:
                     logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
@@ -875,7 +875,7 @@ class CreateSensorHTTP:
                         if len(new_graph_data.graph_columns) < 4:
                             return render_template("message_return.html",
                                                    TextMessage="Please Select at least One Sensor",
-                                                   URL="PlotlyGraph")
+                                                   URL="/PlotlyGraph")
                         else:
                             thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
                     except Exception as error:
@@ -883,7 +883,7 @@ class CreateSensorHTTP:
                     return render_template("message_return.html",
                                            TextMessage=generating_message,
                                            TextMessage2=generating_message2,
-                                           URL="PlotlyGraph")
+                                           URL="/PlotlyGraph")
                 else:
                     return render_template("plotly_graph.html",
                                            IntervalPlotlyCreationDate=interval_creation_date,
@@ -897,8 +897,8 @@ class CreateSensorHTTP:
             else:
                 return render_template("message_return.html",
                                        TextMessage="No Interval Plotly Graph Generated",
-                                       TextMessage2="Please goto the Graphing Page and Create a Graph.",
-                                       URL="PlotlyGraph")
+                                       TextMessage2="Click above to close the window and return to Graphing.",
+                                       CloseWindow="JavaScript:window.close()")
 
         @self.app.route("/ViewTriggerPlotlyGraph")
         def view_triggers_graph_plotly():
@@ -908,8 +908,8 @@ class CreateSensorHTTP:
             else:
                 return render_template("message_return.html",
                                        TextMessage="No Triggers Plotly Graph Generated",
-                                       TextMessage2="Please goto the Graphing Page and Create a Graph.",
-                                       URL="PlotlyGraph")
+                                       TextMessage2="Click above to close the window and return to Graphing.",
+                                       CloseWindow="JavaScript:window.close()")
 
         @self.app.route("/DisplayText", methods=["PUT"])
         @self.auth.login_required
@@ -923,7 +923,7 @@ class CreateSensorHTTP:
                 message = "Unable to Display Text: Sensor Display disabled or not installed"
                 logger.network_logger.warning("* " + message)
 
-            return render_template("message_return.html", TextMessage=message, URL="SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         def thread_function(function, args=None):
             if args:

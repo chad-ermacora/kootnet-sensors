@@ -2,12 +2,14 @@
 
 {% block content %}
 
-<meta http-equiv="refresh" content="10; url = /{{ URL }}"/>
+<meta http-equiv="refresh" content="10; url = {{ URL }}"/>
 
 <h2>
-    <a href="/{{ URL }}">{{ TextMessage }}</a>
+    <a style="color: red" href="{{ URL }}{{ CloseWindow }}">{{ TextMessage }}</a>
 </h2>
+
 <h2 style="color: #90CAF9">
     {{ TextMessage2 }}
 </h2>
+
 {% endblock %}
