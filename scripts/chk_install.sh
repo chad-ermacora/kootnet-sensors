@@ -199,6 +199,7 @@ EOF
   python3 -m pip install -U pip
   pip3 install -r /opt/kootnet-sensors/requirements.txt
   # Set HTTP Authentication
+  printf '\n'
   bash /opt/kootnet-sensors/scripts/change_http_authentication.sh
   cat > ${CONFIG_DIR}/installed_version.txt << "EOF"
 New_Install.99.999

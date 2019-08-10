@@ -164,8 +164,4 @@ class CreateLinuxSystem:
             logger.sensors_logger.warning(str(bad_entries) + " bad entries in DB reboot column")
 
         logger.sensors_logger.debug(str(len(sql_column_data)) + " entries in DB reboot column retrieved")
-        if reboot_count:
-            return str(reboot_count)
-        else:
-            logger.sensors_logger.error("Database get reboot count - Failed")
-            return "Error"
+        return str(reboot_count)
