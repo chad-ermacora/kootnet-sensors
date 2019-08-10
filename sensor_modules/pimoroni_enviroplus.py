@@ -194,9 +194,9 @@ class CreateEnviroPlus:
         """ Returns 3 gas readings Oxidised, Reduced and nh3 as a list. """
         try:
             enviro_plus_gas_data = self.enviroplus_import.gas.read_all()
-            oxidised = enviro_plus_gas_data.oxidising
-            reduced = enviro_plus_gas_data.reducing
-            nh3 = enviro_plus_gas_data.nh3
+            oxidised = enviro_plus_gas_data.oxidising / 1000
+            reduced = enviro_plus_gas_data.reducing / 1000
+            nh3 = enviro_plus_gas_data.nh3 / 1000
 
             gas_list_oxidised_reduced_nh3 = [round(oxidised, round_decimal_to),
                                              round(reduced, round_decimal_to),
