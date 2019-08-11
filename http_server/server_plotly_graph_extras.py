@@ -48,7 +48,6 @@ def adjust_datetime(var_datetime, datetime_offset):
             logger.primary_logger.error("Unable to convert Hour Offset to int - " + str(error))
             new_time = var_datetime
 
-        logger.primary_logger.debug("Adjusted datetime: " + str(new_time))
         return str(new_time) + tmp_ms
     except Exception as error:
         logger.primary_logger.error("Date Conversion Error - " + str(error))
@@ -56,6 +55,8 @@ def adjust_datetime(var_datetime, datetime_offset):
 
 def graph_host_name(graph_data):
     """ Add Host Name to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_host_name_date_time
+
     graph_data.row_count = graph_data.row_count + 1
     first_hostname = graph_data.sql_host_name[0]
     last_hostname = graph_data.sql_host_name[-1]
@@ -78,6 +79,8 @@ def graph_host_name(graph_data):
 
 def graph_sql_uptime(graph_data):
     """ Add Sensor Uptime to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_up_time_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Sensor Uptime"
@@ -97,6 +100,8 @@ def graph_sql_uptime(graph_data):
 
 def graph_sql_cpu_env_temperature(graph_data):
     """ Add CPU Temperature to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_cpu_temp_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "CPU Temp"
@@ -109,6 +114,7 @@ def graph_sql_cpu_env_temperature(graph_data):
 
     trace_cpu_temp = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_hat_temp_date_time
     graph_data.temp_text_name = "Environmental Temp"
     graph_data.temp_sql = graph_data.sql_hat_temp
 
@@ -127,6 +133,8 @@ def graph_sql_cpu_env_temperature(graph_data):
 
 def graph_sql_pressure(graph_data):
     """ Add Pressure to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_pressure_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Pressure hPa"
@@ -146,6 +154,8 @@ def graph_sql_pressure(graph_data):
 
 def graph_sql_altitude(graph_data):
     """ Add Altitude to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_altitude_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Altitude meters"
@@ -165,6 +175,8 @@ def graph_sql_altitude(graph_data):
 
 def graph_sql_humidity(graph_data):
     """ Add Humidity to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_humidity_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Humidity %"
@@ -184,6 +196,8 @@ def graph_sql_humidity(graph_data):
 
 def graph_sql_distance(graph_data):
     """ Add Distance to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_distance_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Distance meters?"
@@ -203,6 +217,8 @@ def graph_sql_distance(graph_data):
 
 def graph_sql_gas(graph_data):
     """ Add Gas resistance to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_gas_resistance_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Gas Resistance"
@@ -215,6 +231,7 @@ def graph_sql_gas(graph_data):
 
     trace_gas_resistance = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_gas_oxidising_date_time
     graph_data.temp_text_name = "Gas Oxidising"
     graph_data.temp_sql = graph_data.sql_gas_oxidising
 
@@ -225,6 +242,7 @@ def graph_sql_gas(graph_data):
 
     trace_gas_oxidising = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_gas_reducing_date_time
     graph_data.temp_text_name = "Gas Reducing"
     graph_data.temp_sql = graph_data.sql_gas_reducing
 
@@ -235,6 +253,7 @@ def graph_sql_gas(graph_data):
 
     trace_gas_reducing = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_gas_nh3_date_time
     graph_data.temp_text_name = "Gas NH3"
     graph_data.temp_sql = graph_data.sql_gas_nh3
 
@@ -255,6 +274,8 @@ def graph_sql_gas(graph_data):
 
 def graph_sql_particulate_matter(graph_data):
     """ Add Particulate Matter to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_pm_1_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "PM1"
@@ -267,6 +288,7 @@ def graph_sql_particulate_matter(graph_data):
 
     trace_pm_1 = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_pm_2_5_date_time
     graph_data.temp_text_name = "PM2.5"
     graph_data.temp_sql = graph_data.sql_pm_2_5
 
@@ -277,6 +299,7 @@ def graph_sql_particulate_matter(graph_data):
 
     trace_pm_2_5 = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_pm_10_date_time
     graph_data.temp_text_name = "PM10"
     graph_data.temp_sql = graph_data.sql_pm_10
 
@@ -296,6 +319,8 @@ def graph_sql_particulate_matter(graph_data):
 
 def graph_sql_lumen(graph_data):
     """ Add Lumen to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_lumen_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Lumen"
@@ -315,6 +340,8 @@ def graph_sql_lumen(graph_data):
 
 def graph_sql_ems_colours(graph_data):
     """ Add Electromagnetic Spectrum (usually the visible spectrum) to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_red_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Red"
@@ -327,6 +354,7 @@ def graph_sql_ems_colours(graph_data):
 
     trace_red = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_orange_date_time
     graph_data.temp_text_name = "Orange"
     graph_data.temp_sql = graph_data.sql_orange
 
@@ -337,6 +365,7 @@ def graph_sql_ems_colours(graph_data):
 
     trace_orange = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_yellow_date_time
     graph_data.temp_text_name = "Yellow"
     graph_data.temp_sql = graph_data.sql_yellow
 
@@ -347,6 +376,7 @@ def graph_sql_ems_colours(graph_data):
 
     trace_yellow = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_green_date_time
     graph_data.temp_text_name = "Green"
     graph_data.temp_sql = graph_data.sql_green
 
@@ -357,6 +387,7 @@ def graph_sql_ems_colours(graph_data):
 
     trace_green = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_blue_date_time
     graph_data.temp_text_name = "Blue"
     graph_data.temp_sql = graph_data.sql_blue
 
@@ -367,6 +398,7 @@ def graph_sql_ems_colours(graph_data):
 
     trace_blue = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_violet_date_time
     graph_data.temp_text_name = "Violet"
     graph_data.temp_sql = graph_data.sql_violet
 
@@ -389,6 +421,8 @@ def graph_sql_ems_colours(graph_data):
 
 def graph_sql_ultra_violet(graph_data):
     """ Add Ultra Violet to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_uv_index_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "UV Index"
@@ -401,6 +435,7 @@ def graph_sql_ultra_violet(graph_data):
 
     trace_uv_index = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_uv_a_date_time
     graph_data.temp_text_name = "UVA"
     graph_data.temp_sql = graph_data.sql_uv_a
 
@@ -411,6 +446,7 @@ def graph_sql_ultra_violet(graph_data):
 
     trace_uva = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_uv_b_date_time
     graph_data.temp_text_name = "UVB"
     graph_data.temp_sql = graph_data.sql_uv_b
 
@@ -430,6 +466,8 @@ def graph_sql_ultra_violet(graph_data):
 
 def graph_sql_accelerometer(graph_data):
     """ Add Accelerometer to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_acc_x_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Accelerometer X"
@@ -439,6 +477,7 @@ def graph_sql_accelerometer(graph_data):
 
     trace_acc_x = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_acc_y_date_time
     graph_data.temp_text_name = "Accelerometer Y"
     graph_data.temp_sql = graph_data.sql_acc_y
 
@@ -446,6 +485,7 @@ def graph_sql_accelerometer(graph_data):
 
     trace_acc_y = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_acc_z_date_time
     graph_data.temp_text_name = "Accelerometer Z"
     graph_data.temp_sql = graph_data.sql_acc_z
 
@@ -462,6 +502,8 @@ def graph_sql_accelerometer(graph_data):
 
 def graph_sql_magnetometer(graph_data):
     """ Add Magnetometer to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_mg_x_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Magnetic X"
@@ -471,6 +513,7 @@ def graph_sql_magnetometer(graph_data):
 
     trace_mag_x = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_mg_y_date_time
     graph_data.temp_text_name = "Magnetic Y"
     graph_data.temp_sql = graph_data.sql_mg_y
 
@@ -478,6 +521,7 @@ def graph_sql_magnetometer(graph_data):
 
     trace_mag_y = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_mg_z_date_time
     graph_data.temp_text_name = "Magnetic Z"
     graph_data.temp_sql = graph_data.sql_mg_z
 
@@ -494,6 +538,8 @@ def graph_sql_magnetometer(graph_data):
 
 def graph_sql_gyroscope(graph_data):
     """ Add Gyroscope to the plotly graph. """
+    graph_data.sql_time = graph_data.sql_gyro_x_date_time
+
     graph_data.row_count = graph_data.row_count + 1
 
     graph_data.temp_text_name = "Gyroscopic X"
@@ -503,6 +549,7 @@ def graph_sql_gyroscope(graph_data):
 
     trace_gyro_x = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_gyro_y_date_time
     graph_data.temp_text_name = "Gyroscopic Y"
     graph_data.temp_sql = graph_data.sql_gyro_y
 
@@ -510,6 +557,7 @@ def graph_sql_gyroscope(graph_data):
 
     trace_gyro_y = _add_scatter(graph_data)
 
+    graph_data.sql_time = graph_data.sql_gyro_z_date_time
     graph_data.temp_text_name = "Gyroscopic Z"
     graph_data.temp_sql = graph_data.sql_gyro_z
 

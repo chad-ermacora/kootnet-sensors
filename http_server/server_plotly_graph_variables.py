@@ -29,7 +29,7 @@ mark_orange_line = dict(size=10,
                         line=dict(width=2, color='rgb(0, 0, 0)'))
 
 mark_yellow_line = dict(size=10,
-                        color='rgba(230, 230, 0, .9)',
+                        color='rgba(255, 170, 29, .9)',
                         line=dict(width=2, color='rgb(0, 0, 0)'))
 
 mark_green_line = dict(size=10,
@@ -51,7 +51,7 @@ mark_orange_dot = dict(size=5,
                        color='rgba(255, 102, 0, .9)')
 
 mark_yellow_dot = dict(size=5,
-                       color='rgba(230, 230, 0, .9)')
+                       color='rgba(255, 170, 29, .9)')
 
 mark_green_dot = dict(size=5,
                       color='rgba(0, 255, 0, .9)')
@@ -106,6 +106,7 @@ class CreateGraphData:
 
         # Graph data holders for SQL DataBase
         self.sql_time = []
+
         self.sql_ip = []
         self.sql_host_name = []
         self.sql_up_time = []
@@ -142,3 +143,39 @@ class CreateGraphData:
         self.sql_gyro_x = []
         self.sql_gyro_y = []
         self.sql_gyro_z = []
+
+        self.sql_ip_date_time = []
+        self.sql_host_name_date_time = []
+        self.sql_up_time_date_time = []
+        self.sql_cpu_temp_date_time = []
+        self.sql_hat_temp_date_time = []
+        self.sql_pressure_date_time = []
+        self.sql_altitude_date_time = []
+        self.sql_humidity_date_time = []
+        self.sql_distance_date_time = []
+        self.sql_gas_resistance_date_time = []
+        self.sql_gas_oxidising_date_time = []
+        self.sql_gas_reducing_date_time = []
+        self.sql_gas_nh3_date_time = []
+        self.sql_pm_1_date_time = []
+        self.sql_pm_2_5_date_time = []
+        self.sql_pm_10_date_time = []
+        self.sql_lumen_date_time = []
+        self.sql_red_date_time = []
+        self.sql_orange_date_time = []
+        self.sql_yellow_date_time = []
+        self.sql_green_date_time = []
+        self.sql_blue_date_time = []
+        self.sql_violet_date_time = []
+        self.sql_uv_index_date_time = []
+        self.sql_uv_a_date_time = []
+        self.sql_uv_b_date_time = []
+        self.sql_acc_x_date_time = []
+        self.sql_acc_y_date_time = []
+        self.sql_acc_z_date_time = []
+        self.sql_mg_x_date_time = []
+        self.sql_mg_y_date_time = []
+        self.sql_mg_z_date_time = []
+        self.sql_gyro_x_date_time = []
+        self.sql_gyro_y_date_time = []
+        self.sql_gyro_z_date_time = []

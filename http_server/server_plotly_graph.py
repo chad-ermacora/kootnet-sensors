@@ -46,7 +46,6 @@ def _start_plotly_graph(graph_data):
     logger.primary_logger.debug("SQL Table(s): " + graph_data.graph_table)
     logger.primary_logger.debug("SQL Start DateTime: " + graph_data.graph_start)
     logger.primary_logger.debug("SQL End DateTime: " + graph_data.graph_end)
-    logger.primary_logger.debug("SQL DataBase Location: " + graph_data.db_location)
 
     # Adjust dates to Database timezone in UTC 0
     sql_column_names = app_variables.CreateDatabaseVariables()
@@ -67,25 +66,39 @@ def _start_plotly_graph(graph_data):
                         "') LIMIT " + \
                         str(graph_data.max_sql_queries)
 
-        # Adjust SQL data from its UTC time, to user set timezone (Hour Offset)
+        var_time_sql_query = "SELECT " + \
+                             sql_column_names.all_tables_datetime + \
+                             " FROM " + \
+                             graph_data.graph_table + \
+                             " WHERE " + var_column + " IS NOT NULL AND " + \
+                             "DateTime BETWEEN datetime('" + \
+                             get_sql_graph_start + \
+                             "') AND datetime('" + \
+                             get_sql_graph_end + \
+                             "') LIMIT " + \
+                             str(graph_data.max_sql_queries)
+
+        # Get accompanying DateTime based on sensor data actually being present
+        sql_column_date_time = _get_sql_data(graph_data, var_time_sql_query)
+        logger.primary_logger.debug("SQL DateTime before conversion: " + graph_data.graph_end)
+        apply_sql_date_time_hour_offset(sql_column_date_time, graph_data.datetime_offset)
+
         if var_column == sql_column_names.all_tables_datetime:
             sql_column_data = _get_sql_data(graph_data, var_sql_query)
-
-            count = 0
-            for data in sql_column_data:
-                sql_column_data[count] = server_plotly_graph_extras.adjust_datetime(data,
-                                                                                    int(graph_data.datetime_offset))
-                count = count + 1
-
+            apply_sql_date_time_hour_offset(sql_column_data, graph_data.datetime_offset)
             graph_data.sql_time = sql_column_data
         elif var_column == sql_column_names.ip:
             graph_data.sql_ip = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_ip_date_time = sql_column_date_time
         elif var_column == sql_column_names.sensor_name:
             graph_data.sql_host_name = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_host_name_date_time = sql_column_date_time
         elif var_column == sql_column_names.sensor_uptime:
             graph_data.sql_up_time = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_up_time_date_time = sql_column_date_time
         elif var_column == sql_column_names.system_temperature:
             graph_data.sql_cpu_temp = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_cpu_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.env_temperature:
             sql_column_data = _get_sql_data(graph_data, var_sql_query)
 
@@ -129,66 +142,97 @@ def _start_plotly_graph(graph_data):
                                                   "One or more missing entries in 'EnvironmentTemp' or 'EnvTempOffset'")
 
             graph_data.sql_hat_temp = sql_column_data
+            graph_data.sql_hat_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.pressure:
             graph_data.sql_pressure = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_pressure_date_time = sql_column_date_time
         elif var_column == sql_column_names.altitude:
             graph_data.sql_altitude = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_altitude_date_time = sql_column_date_time
         elif var_column == sql_column_names.humidity:
             graph_data.sql_humidity = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_humidity_date_time = sql_column_date_time
         elif var_column == sql_column_names.distance:
             graph_data.sql_distance = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_distance_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_resistance_index:
             graph_data.sql_gas_resistance = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gas_resistance_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_oxidising:
             graph_data.sql_gas_oxidising = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gas_oxidising_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_reducing:
             graph_data.sql_gas_reducing = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gas_reducing_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_nh3:
             graph_data.sql_gas_nh3 = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gas_nh3_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_1:
             graph_data.sql_pm_1 = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_pm_1_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_2_5:
             graph_data.sql_pm_2_5 = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_pm_2_5_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_10:
             graph_data.sql_pm_10 = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_pm_10_date_time = sql_column_date_time
         elif var_column == sql_column_names.lumen:
             graph_data.sql_lumen = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_lumen_date_time = sql_column_date_time
         elif var_column == sql_column_names.red:
             graph_data.sql_red = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_red_date_time = sql_column_date_time
         elif var_column == sql_column_names.orange:
             graph_data.sql_orange = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_orange_date_time = sql_column_date_time
         elif var_column == sql_column_names.yellow:
             graph_data.sql_yellow = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_yellow_date_time = sql_column_date_time
         elif var_column == sql_column_names.green:
             graph_data.sql_green = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_green_date_time = sql_column_date_time
         elif var_column == sql_column_names.blue:
             graph_data.sql_blue = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_blue_date_time = sql_column_date_time
         elif var_column == sql_column_names.violet:
             graph_data.sql_violet = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_violet_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_index:
             graph_data.sql_uv_index = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_uv_index_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_a:
             graph_data.sql_uv_a = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_uv_a_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_b:
             graph_data.sql_uv_b = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_uv_b_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_x:
             graph_data.sql_acc_x = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_acc_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_y:
             graph_data.sql_acc_y = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_acc_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_z:
             graph_data.sql_acc_z = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_acc_z_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_x:
             graph_data.sql_mg_x = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_mg_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_y:
             graph_data.sql_mg_y = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_mg_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_z:
             graph_data.sql_mg_z = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_mg_z_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_x:
             graph_data.sql_gyro_x = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gyro_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_y:
             graph_data.sql_gyro_y = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gyro_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_z:
             graph_data.sql_gyro_z = _get_sql_data(graph_data, var_sql_query)
+            graph_data.sql_gyro_z_date_time = sql_column_date_time
         else:
             logger.primary_logger.error(var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
@@ -402,3 +446,14 @@ def get_ems_for_render_template(ems):
             blue = ems[2]
             violet = "NoSensor"
     return [red, orange, yellow, green, blue, violet]
+
+
+def apply_sql_date_time_hour_offset(datetime_list, hour_offset):
+    # Adjust SQL data from its UTC time, to user set timezone (Hour Offset)
+    count = 0
+    try:
+        for data in datetime_list:
+            datetime_list[count] = server_plotly_graph_extras.adjust_datetime(data, int(hour_offset))
+            count = count + 1
+    except Exception as error:
+        logger.primary_logger.error("Bad SQL DateTime Conversion during Plotly Graph - " + str(error))
