@@ -67,3 +67,9 @@ else:
 database_variables = app_variables.CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"
 linux_os_upgrade_ready = True
+
+# Help lessen disk reads by caching commonly used variables
+cache_hostname = ""
+cache_ip = ""
+cache_program_last_updated = ""
+cache_reboot_count = ""

@@ -45,7 +45,10 @@ class CreateSensorHTTP:
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
 
-        sensor_reboot_count = sensor_access.get_system_reboot_count()
+        configuration_main.cache_hostname = sensor_access.get_hostname()
+        configuration_main.cache_ip = sensor_access.get_ip()
+        configuration_main.cache_program_last_updated = sensor_access.get_last_updated()
+        configuration_main.cache_reboot_count = str(sensor_access.get_system_reboot_count())
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -132,13 +135,13 @@ class CreateSensorHTTP:
                 custom_temp_enabled = False
 
             return render_template("sensor_information.html",
-                                   HostName=sensor_access.get_hostname(),
-                                   IPAddress=sensor_access.get_ip(),
+                                   HostName=configuration_main.cache_hostname,
+                                   IPAddress=configuration_main.cache_ip,
                                    KootnetVersion=configuration_main.software_version.version,
-                                   LastUpdated=sensor_access.get_last_updated(),
+                                   LastUpdated=configuration_main.cache_program_last_updated,
                                    DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                    SystemUptime=sensor_access.get_uptime_str(),
-                                   SensorReboots=sensor_reboot_count,
+                                   SensorReboots=configuration_main.cache_reboot_count,
                                    CPUTemperature=sensor_access.get_cpu_temperature(),
                                    RAMUsage=sensor_access.get_memory_usage_percent(),
                                    DiskUsage=sensor_access.get_disk_usage_percent(),
@@ -162,8 +165,8 @@ class CreateSensorHTTP:
                 sensor_access.get_ems())
 
             return render_template("sensor_readings.html",
-                                   HostName=sensor_access.get_hostname(),
-                                   IPAddress=sensor_access.get_ip(),
+                                   HostName=configuration_main.cache_hostname,
+                                   IPAddress=configuration_main.cache_ip,
                                    DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                    SystemUptime=sensor_access.get_uptime_str(),
                                    CPUTemperature=sensor_access.get_cpu_temperature(),
@@ -642,6 +645,7 @@ class CreateSensorHTTP:
                 os.system("hostnamectl set-hostname " + new_host)
                 logger.network_logger.info("** Hostname Change Initiated by " + str(request.remote_addr))
                 message = "Hostname Changed to " + new_host
+                configuration_main.cache_hostname = new_host
             except Exception as error:
                 logger.network_logger.info("** Hostname Change Failed from " +
                                            str(request.remote_addr) + " - " + str(error))

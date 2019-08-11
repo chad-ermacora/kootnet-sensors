@@ -356,8 +356,8 @@ def get_system_uptime():
 def get_system_reboot_count():
     """ Returns system reboot count from the SQLite Database. """
     if configuration_main.installed_sensors.linux_system:
-        sensor_uptime = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
-        return sensor_uptime
+        reboot_count = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
+        return reboot_count
     else:
         return "NoSensor"
 
