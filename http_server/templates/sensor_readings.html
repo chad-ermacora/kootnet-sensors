@@ -6,6 +6,8 @@
     span {white-space: nowrap;}
     a:visited {color: #0705ff;}
     a:link {color: #0705ff;}
+    .mui-col-md-4 {background-color: #00ffff; width: 340px;}
+    .mui-col-md-6 {background-color: #0BB10D; width: 340px;}
 </style>
 
 <h2><strong><span style="text-decoration: underline;">
@@ -20,229 +22,229 @@
 
 <div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4" style="">
             <a href="https://en.wikipedia.org/wiki/Temperature"
             target="_blank">System Temperature
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ CPUTemperature }} °C</div>
+        <div class="mui-col-md-6">{{ CPUTemperature }} °C</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Temperature"
             target="_blank">Env Temperature
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperature }} °C</div>
+        <div class="mui-col-md-6">{{ EnvTemperature }} °C</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Env Temp Offset</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ EnvTemperatureOffset }} °C</div>
+        <div class="mui-col-md-4">Env Temp Offset</div>
+        <div class="mui-col-md-6">{{ EnvTemperatureOffset }} °C</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Pressure"
             target="_blank">Pressure
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Pressure }} hPa</div>
+        <div class="mui-col-md-6">{{ Pressure }} hPa</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Altitude"
             target="_blank">Altitude
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Altitude }} Meters</div>
+        <div class="mui-col-md-6" style="">{{ Altitude }} Meters</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Humidity"
             target="_blank">Humidity
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Humidity }} %RH</div>
+        <div class="mui-col-md-6">{{ Humidity }} %RH</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Distance"
             target="_blank">Distance
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Distance }} ?</div>
+        <div class="mui-col-md-6">{{ Distance }} ?</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Gas Resistance</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasResistanceIndex }} kΩ</div>
+        <div class="mui-col-md-4">Gas Resistance</div>
+        <div class="mui-col-md-6">{{ GasResistanceIndex }} kΩ</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Oxidation_state"
             target="_blank">Nitrogen Dioxide - Oxidising
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasOxidising }} kΩ</div>
+        <div class="mui-col-md-6">{{ GasOxidising }} kΩ</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Reduced_gas"
             target="_blank">Carbon Monoxide - Reducing
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasReducing }} kΩ</div>
+        <div class="mui-col-md-6">{{ GasReducing }} kΩ</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Ammonia"
             target="_blank">Ammonia - NH3
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ GasNH3 }} kΩ</div>
+        <div class="mui-col-md-6">{{ GasNH3 }} kΩ</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Particulates"
             target="_blank">Particulate Matter 1.0
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM1 }} μg/m3</div>
+        <div class="mui-col-md-6">{{ PM1 }} μg/m3</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Particulates"
             target="_blank">Particulate Matter 2.5
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM25 }} μg/m3</div>
+        <div class="mui-col-md-6">{{ PM25 }} μg/m3</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Particulates"
                target="_blank">Particulate Matter 10
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ PM10 }} μg/m3</div>
+        <div class="mui-col-md-6">{{ PM10 }} μg/m3</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Lumen_(unit)"
                target="_blank">Lumen
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Lumen }} lm</div>
+        <div class="mui-col-md-6">{{ Lumen }} lm</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Red
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Red }}</div>
+        <div class="mui-col-md-6">{{ Red }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Orange
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Orange }}</div>
+        <div class="mui-col-md-6">{{ Orange }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Yellow
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Yellow }}</div>
+        <div class="mui-col-md-6">{{ Yellow }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Green
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Green }}</div>
+        <div class="mui-col-md-6">{{ Green }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Blue
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Blue }}</div>
+        <div class="mui-col-md-6">{{ Blue }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Light"
                target="_blank">Violet
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Violet }}</div>
+        <div class="mui-col-md-6">{{ Violet }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Electromagnetic_spectrum"
                target="_blank">Ultra Violet A
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVA }}</div>
+        <div class="mui-col-md-6">{{ UVA }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Electromagnetic_spectrum"
                target="_blank">Ultra Violet B
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ UVB }}</div>
+        <div class="mui-col-md-6">{{ UVB }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Accelerometer"
                target="_blank">Accelerometer XYZ
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Acc }} g</div>
+        <div class="mui-col-md-6">{{ Acc }} g</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Magnetometer"
                target="_blank">Magnetometer XYZ
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Mag }} μT</div>
+        <div class="mui-col-md-6">{{ Mag }} μT</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">
+        <div class="mui-col-md-4">
             <a href="https://en.wikipedia.org/wiki/Gyroscope"
                target="_blank">Gyroscope XYZ
             </a>
         </div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ Gyro }} °/s</div>
+        <div class="mui-col-md-6">{{ Gyro }} °/s</div>
     </div>
 </div>
 

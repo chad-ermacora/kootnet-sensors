@@ -38,7 +38,7 @@ class CreateEnviroPlus:
             self.display_is_on = True
             self.display_ready = True
 
-            self.pause_particle_matter = False
+            self.pause_particle_matter_keep_alive = False
 
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
@@ -82,7 +82,7 @@ class CreateEnviroPlus:
         if configuration_main.installed_sensors.has_particulate_matter:
             try:
                 self.enviro_plus_pm_access = self.pms5003_import.PMS5003()
-                self.thread_pm_keep_alive = Thread(target=self._pm_readings_keep_alive)
+                self.thread_pm_keep_alive = Thread(target=self._readings_keep_alive)
                 self.thread_pm_keep_alive.daemon = True
                 self.thread_pm_keep_alive.start()
             except Exception as error:
@@ -98,11 +98,12 @@ class CreateEnviroPlus:
                     self.display_off_count += 1
             time.sleep(1)
 
-    def _pm_readings_keep_alive(self):
-        logger.sensors_logger.debug("Pimoroni Enviro+ PMS5003 Particulate Matter keep alive started")
+    def _readings_keep_alive(self):
+        logger.sensors_logger.debug("Pimoroni Enviro+ PMS5003 Particulate Matter & Gas keep alive started")
         while True:
-            if not self.pause_particle_matter:
+            if not self.pause_particle_matter_keep_alive:
                 self.enviro_plus_pm_access.read()
+                self.enviroplus_import.gas.read_all()
             else:
                 time.sleep(1)
             time.sleep(1)
@@ -210,8 +211,7 @@ class CreateEnviroPlus:
 
     def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
-        self.pause_particle_matter = True
-        time.sleep(.25)
+        self.pause_particle_matter_keep_alive = True
         try:
             enviro_plus_pm_data = self.enviro_plus_pm_access.read()
 
@@ -228,5 +228,5 @@ class CreateEnviroPlus:
             logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter - Failed - " + str(error))
             pm_list_pm1_pm25_pm10 = [0.0, 0.0, 0.0]
 
-        self.pause_particle_matter = False
+        self.pause_particle_matter_keep_alive = False
         return pm_list_pm1_pm25_pm10

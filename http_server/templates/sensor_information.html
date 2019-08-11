@@ -2,6 +2,13 @@
 
 {% block content %}
 
+<style>
+    .mui-container-fluid {font-weight: bold; font-size: large;}
+    .mui-col-md-3 {background-color: #00ffff; width: 275px;}
+    .mui-col-md-4 {background-color: #0BB10D; width: 275px;}
+    .mui-col-md-8 {background-color: #0BB10D; width: auto;}
+</style>
+
 <h2><strong>
         <a style="text-decoration: underline; color: red" href="/SensorInformation">
             Kootnet Sensor - {{ HostName }} - {{ IPAddress }}
@@ -9,44 +16,44 @@
 </strong></h2>
 
 
-<div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
+<div class="mui-container-fluid">
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Version</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ KootnetVersion }}</div>
+        <div class="mui-col-md-3">Version</div>
+        <div class="mui-col-md-4">{{ KootnetVersion }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Last Updated</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ LastUpdated }}</div>
+        <div class="mui-col-md-3">Last Updated</div>
+        <div class="mui-col-md-8">{{ LastUpdated }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Sensor Date & Time</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ DateTime }}</div>
+        <div class="mui-col-md-3">Sensor Date & Time</div>
+        <div class="mui-col-md-8">{{ DateTime }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Sensor Uptime</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ SystemUptime }}</div>
+        <div class="mui-col-md-3">Sensor Uptime</div>
+        <div class="mui-col-md-8">{{ SystemUptime }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Sensor Reboots</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ SensorReboots }}</div>
+        <div class="mui-col-md-3">Sensor Reboots</div>
+        <div class="mui-col-md-4">{{ SensorReboots }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">System Temperature</div>
+        <div class="mui-col-md-3">System Temperature</div>
         <div class="mui-col-md-4" style="background-color: #ff4a54">{{ CPUTemperature }} °C</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">RAM Usage</div>
+        <div class="mui-col-md-3">RAM Usage</div>
         <div class="mui-col-md-4" style="background-color: green">{{ RAMUsage }} %</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Drive Usage</div>
+        <div class="mui-col-md-3">Drive Usage</div>
         <div class="mui-col-md-4" style="background-color: green">{{ DiskUsage }} %</div>
     </div>
 </div>
@@ -56,49 +63,49 @@
         Configurations
     </span></strong></h2>
 
-<div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
+<div class="mui-container-fluid">
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Debug Logging</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ DebugLogging }}</div>
+        <div class="mui-col-md-3">Debug Logging</div>
+        <div class="mui-col-md-4">{{ DebugLogging }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Display Enabled</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ SupportedDisplay }}</div>
+        <div class="mui-col-md-3">Display Enabled</div>
+        <div class="mui-col-md-4">{{ SupportedDisplay }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Interval Recording</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ IntervalRecording }}</div>
+        <div class="mui-col-md-3">Interval Recording</div>
+        <div class="mui-col-md-4">{{ IntervalRecording }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Interval Delay</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ IntervalDelay }} Seconds</div>
+        <div class="mui-col-md-3">Interval Delay</div>
+        <div class="mui-col-md-4">{{ IntervalDelay }} Seconds</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Trigger Recording</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ TriggerRecording }}</div>
+        <div class="mui-col-md-3">Trigger Recording</div>
+        <div class="mui-col-md-4">{{ TriggerRecording }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Manual Temperature Offset</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ ManualTemperatureEnabled }}</div>
+        <div class="mui-col-md-3">Manual Temperature Offset</div>
+        <div class="mui-col-md-4">{{ ManualTemperatureEnabled }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Current Temperature Offset</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ CurrentTemperatureOffset }}</div>
+        <div class="mui-col-md-3">Current Temperature Offset</div>
+        <div class="mui-col-md-4">{{ CurrentTemperatureOffset }}</div>
     </div>
 </div>
 
 <br>
 
-<div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
+<div class="mui-container-fluid">
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Installed Sensors</div>
-        <div class="mui-col-md-8" style="background-color: #0BB10D">{{ InstalledSensors }}</div>
+        <div class="mui-col-md-3">Installed Sensors</div>
+        <div class="mui-col-md-8">{{ InstalledSensors }}</div>
     </div>
 </div>
 
@@ -108,25 +115,25 @@
         Database Information
     </span></strong></h2>
 
-<div class="mui-container-fluid" style="font-weight: bold; font-size: large;">
+<div class="mui-container-fluid">
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Local Location</div>
-        <div class="mui-col-md-8" style="background-color: #0BB10D">{{ SQLDatabaseLocation }}</div>
+        <div class="mui-col-md-3">Local Location</div>
+        <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Date Range</div>
-        <div class="mui-col-md-8" style="background-color: #0BB10D">{{ SQLDatabaseDateRange }}</div>
+        <div class="mui-col-md-3">Date Range</div>
+        <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Size on Disk</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ SQLDatabaseSize }} MB</div>
+        <div class="mui-col-md-3">Size on Disk</div>
+        <div class="mui-col-md-4">{{ SQLDatabaseSize }} MB</div>
     </div>
 
     <div class="mui-row">
-        <div class="mui-col-md-3" style="background-color: #00ffff">Number of Notes</div>
-        <div class="mui-col-md-4" style="background-color: #0BB10D">{{ NumberNotes }}</div>
+        <div class="mui-col-md-3">Number of Notes</div>
+        <div class="mui-col-md-4">{{ NumberNotes }}</div>
     </div>
 </div>
 
