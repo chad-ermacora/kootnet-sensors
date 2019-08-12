@@ -44,8 +44,8 @@ td {
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 200px;
-  left: -200px;
+  width: 225px;
+  left: -225px;
   overflow: auto;
   z-index: 2;
   background-color: #000000;
@@ -73,19 +73,19 @@ td {
 
 @media (min-width: 768px) {
   #header {
-    left: 200px;
+    left: 225px;
   }
   
   #sidedrawer {
-    transform: translate(200px);
+    transform: translate(225px);
   }
   
   #content-wrapper {
-    margin-left: 200px;
+    margin-left: 225px;
   }
   
   #footer {
-    margin-left: 200px;
+    margin-left: 225px;
   }
   
   body.hide-sidedrawer #header {
@@ -110,7 +110,7 @@ td {
  * Toggle Sidedrawer
  */
 #sidedrawer.active {
-  transform: translate(200px);
+  transform: translate(225px);
 }
 
 
