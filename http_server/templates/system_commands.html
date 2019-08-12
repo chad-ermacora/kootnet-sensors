@@ -6,58 +6,18 @@
         <a style="text-decoration: underline; color: red" href="/SystemCommands">Sensor Management</a>
 </strong></h2>
 
-<h2 style="color: red;">Logs</h2>
 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-        onclick="window.location.href = '/DownloadZippedLogs';">
-    Download All Logs
+        onclick="window.location.href = '/ConfigurationsHTML';">
+    View & Edit Configurations
+</button>
+
+<button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+        onclick="window.location.href = '/GetLogsHTML';">
+    View Logs
 </button>
 
 <br>
 
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        View Log
-        <span class="mui-caret"></span>
-    </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/GetPrimaryLogHTML">Primary</a></li>
-        <li><a href="/GetNetworkLogHTML">Network</a></li>
-        <li><a href="/GetSensorsLogHTML">Sensors</a></li>
-    </ul>
-</div>
-
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Clear Log
-        <span class="mui-caret"></span>
-    </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/DeletePrimaryLog">Primary</a></li>
-        <li><a href="/DeleteNetworkLog">Network</a></li>
-        <li><a href="/DeleteSensorsLog">Sensors</a></li>
-    </ul>
-</div>
-
-<br>
-
-<h2 style="color: red;">View & Edit Configurations</h2>
-
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Configuration
-        <span class="mui-caret"></span>
-    </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/EditConfigMain">Main Configuration</a></li>
-        <li><a href="/EditInstalledSensors">Installed Sensors</a></li>
-        <li><a href="/EditConfigWifi">Wifi</a></li>
-        <li><a href="/EditTriggerVariances">Trigger Variances</a></li>
-    </ul>
-</div>
-
-<br>
-
-<h2 style="color: red;">System</h2>
 <div class="mui-dropdown">
     <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
         Upgrade Options

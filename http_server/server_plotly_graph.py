@@ -17,13 +17,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
-from plotly import subplots, offline
+from plotly import subplots, offline, io as plotly_io
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
 from operations_modules import configuration_main
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
+
+plotly_io.templates.default = configuration_main.plotly_theme
 
 
 def create_plotly_graph(new_graph_data):

@@ -202,7 +202,27 @@ class CreateSensorHTTP:
             logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
             return render_template("system_commands.html")
 
-        @self.app.route("/EditConfigMain", methods=["GET", "POST"])
+        @self.app.route("/ConfigurationsHTML")
+        @self.auth.login_required
+        def configurations_html():
+            logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
+            text_primary_config = configuration_files.convert_config_to_str(configuration_main.current_config)
+            text_installed_sensors_config = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
+            text_variance_triggers = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
+            text_wifi_config = wifi_file.get_wifi_config_from_file()
+
+            return render_template("edit_configurations.html",
+                                   PageURL="/ConfigurationsHTML",
+                                   PrimaryTitle="Main Configuration",
+                                   PrimaryConfig=text_primary_config,
+                                   InstalledSensorsTitle="Installed Sensors",
+                                   InstalledSensorsConfig=text_installed_sensors_config,
+                                   VariancesTitle="Trigger Variances",
+                                   VariancesConfig=text_variance_triggers,
+                                   WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
+                                   WiFiConfig=text_wifi_config)
+
+        @self.app.route("/EditConfigMain", methods=["POST"])
         @self.auth.login_required
         def edit_config_main():
             logger.network_logger.debug("** Edit Configuration Main accessed from " + str(request.remote_addr))
@@ -214,17 +234,11 @@ class CreateSensorHTTP:
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
-                                           URL="/EditConfigMain")
+                                           URL="/ConfigurationsHTML")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
-            text_configuration = configuration_files.convert_config_to_str(configuration_main.current_config)
-            return render_template("edit_configurations.html",
-                                   MainConfig=text_configuration,
-                                   PageURL="/EditConfigMain",
-                                   Title="Main Configuration")
-
-        @self.app.route("/EditInstalledSensors", methods=["GET", "POST"])
+        @self.app.route("/EditInstalledSensors", methods=["POST"])
         @self.auth.login_required
         def edit_installed_sensors():
             logger.network_logger.debug("** Edit Installed Sensors accessed from " + str(request.remote_addr))
@@ -240,13 +254,7 @@ class CreateSensorHTTP:
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
-            text_configuration = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
-            return render_template("edit_configurations.html",
-                                   MainConfig=text_configuration,
-                                   PageURL="/EditInstalledSensors",
-                                   Title="Installed Sensors")
-
-        @self.app.route("/EditConfigWifi", methods=["GET", "POST"])
+        @self.app.route("/EditConfigWifi", methods=["POST"])
         @self.auth.login_required
         def edit_config_wifi():
             logger.network_logger.debug("** Edit Wifi Configuration accessed from " + str(request.remote_addr))
@@ -257,13 +265,7 @@ class CreateSensorHTTP:
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
 
-            text_configuration = wifi_file.get_wifi_config_from_file()
-            return render_template("edit_configurations.html",
-                                   MainConfig=text_configuration,
-                                   PageURL="/EditConfigWifi",
-                                   Title="Wifi WPA Supplicant")
-
-        @self.app.route("/EditTriggerVariances", methods=["GET", "POST"])
+        @self.app.route("/EditTriggerVariances", methods=["POST"])
         @self.auth.login_required
         def edit_trigger_variances():
             logger.network_logger.debug(
@@ -278,12 +280,6 @@ class CreateSensorHTTP:
                                            URL="/EditInstalledSensors")
                 except Exception as error:
                     logger.primary_logger.warning("Edit config: " + str(error))
-
-            text_configuration = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
-            return render_template("edit_configurations.html",
-                                   MainConfig=text_configuration,
-                                   PageURL="/EditTriggerVariances",
-                                   Title="Trigger Variances")
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
@@ -363,29 +359,11 @@ class CreateSensorHTTP:
             log = logger.get_sensor_log(file_locations.primary_log)
             return log
 
-        @self.app.route("/GetPrimaryLogHTML")
-        def get_primary_log_html():
-            log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
-            return render_template("log_view.html",
-                                   Log=get_primary_log(),
-                                   LogName="Primary",
-                                   LogURL="/GetPrimaryLogHTML",
-                                   LogLinesText=get_log_return_message(log_lines))
-
         @self.app.route("/GetNetworkLog")
         def get_network_log():
             logger.network_logger.debug("* Network Log Sent to " + str(request.remote_addr))
             log = logger.get_sensor_log(file_locations.network_log)
             return log
-
-        @self.app.route("/GetNetworkLogHTML")
-        def get_network_log_html():
-            log_lines = logger.get_number_of_log_entries(file_locations.network_log)
-            return render_template("log_view.html",
-                                   Log=get_network_log(),
-                                   LogName="Network",
-                                   LogURL="/GetNetworkLogHTML",
-                                   LogLinesText=get_log_return_message(log_lines))
 
         @self.app.route("/GetSensorsLog")
         def get_sensors_log():
@@ -393,16 +371,24 @@ class CreateSensorHTTP:
             log = logger.get_sensor_log(file_locations.sensors_log)
             return log
 
-        @self.app.route("/GetSensorsLogHTML")
-        def get_sensors_log_html():
-            log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
+        @self.app.route("/GetLogsHTML")
+        def get_html_log_view():
+            primary_log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
+            network_log_lines = logger.get_number_of_log_entries(file_locations.network_log)
+            sensors_log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
             return render_template("log_view.html",
-                                   Log=get_sensors_log(),
-                                   LogName="Sensors",
-                                   LogURL="/GetSensorsLogHTML",
-                                   LogLinesText=get_log_return_message(log_lines))
+                                   LogURL="/GetLogsHTML",
+                                   PrimaryLog=get_primary_log(),
+                                   PrimaryLogName="Primary",
+                                   PrimaryLogLinesText=get_html_log_view_message(primary_log_lines),
+                                   NetworkLog=get_network_log(),
+                                   NetworkLogName="Network",
+                                   NetworkLogLinesText=get_html_log_view_message(network_log_lines),
+                                   SensorsLog=get_sensors_log(),
+                                   SensorsLogName="Sensors",
+                                   SensorsLogLinesText=get_html_log_view_message(sensors_log_lines))
 
-        def get_log_return_message(log_lines_length):
+        def get_html_log_view_message(log_lines_length):
             if log_lines_length:
                 if logger.max_log_lines_return > log_lines_length:
                     text_log_entries_return = str(log_lines_length + 1) + " entries of " + str(log_lines_length + 1)
@@ -424,7 +410,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
             message = "Primary Log Deleted"
             logger.clear_primary_log()
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
@@ -432,7 +418,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
             message = "Network Log Deleted"
             logger.clear_network_log()
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
@@ -440,7 +426,7 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
             message = "Sensors Log Deleted"
             logger.clear_sensor_log()
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
+            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
 
         @self.app.route("/GetDatabaseNoteDates")
         def get_db_note_dates():

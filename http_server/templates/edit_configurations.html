@@ -3,13 +3,82 @@
 
 {% block content %}
 
-<!-- Configuration Edit Box and Button ... -->
-<form class="mui-form" style="background-color: #00B0FF" method="POST" action="{{ PageURL }}">
-    <legend><a style="color: black" href="{{ PageURL }}">{{ Title }}</a></legend>
-    <div class="mui-textfield">
-        <textarea name="configuration" required rows="16">{{ MainConfig }}</textarea>
-    </div>
-    <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-</form>
+<style>
+    .mui-form {
+        background-color: #00B0FF;
+    }
+</style>
+
+<ul class="mui-tabs__bar">
+    <li class="mui--is-active">
+        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+           data-mui-controls="primary-config-tab">
+            Main Configuration
+        </a>
+    </li>
+
+    <li>
+        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+           data-mui-controls="installed-sensors-tab">
+            Installed Sensors
+        </a>
+    </li>
+
+    <li>
+        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+           data-mui-controls="trigger-variances-tab">
+            Trigger Variances
+        </a>
+    </li>
+
+    <li>
+        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+           data-mui-controls="wifi-config-tab">
+            WiFi Configuration
+        </a>
+    </li>
+</ul>
+
+<br>
+
+<div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
+    <form class="mui-form" method="post" action="/EditConfigMain">
+        <legend><a style="color: black" href="{{ PageURL }}">{{ PrimaryTitle }}</a></legend>
+        <div class="mui-textfield">
+            <textarea name="configuration" required rows="16">{{ PrimaryConfig }}</textarea>
+        </div>
+        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+    </form>
+</div>
+
+<div class="mui-tabs__pane" id="installed-sensors-tab">
+    <form class="mui-form" method="POST" action="/EditInstalledSensors">
+        <legend><a style="color: black" href="{{ PageURL }}">{{ InstalledSensorsTitle }}</a></legend>
+        <div class="mui-textfield">
+            <textarea name="configuration" required rows="21">{{ InstalledSensorsConfig }}</textarea>
+        </div>
+        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+    </form>
+</div>
+
+<div class="mui-tabs__pane" id="trigger-variances-tab">
+    <form class="mui-form" method="POST" action="/EditTriggerVariances">
+        <legend><a style="color: black" href="{{ PageURL }}">{{ VariancesTitle }}</a></legend>
+        <div class="mui-textfield">
+            <textarea name="configuration" required rows="78">{{ VariancesConfig }}</textarea>
+        </div>
+        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+    </form>
+</div>
+
+<div class="mui-tabs__pane" id="wifi-config-tab">
+    <form class="mui-form" method="POST" action="/EditConfigWifi">
+        <legend><a style="color: black" href="{{ PageURL }}">{{ WiFiTitle }}</a></legend>
+        <div class="mui-textfield">
+            <textarea name="configuration" required rows="24">{{ WiFiConfig }}</textarea>
+        </div>
+        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+    </form>
+</div>
 
 {% endblock %}

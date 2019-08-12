@@ -33,7 +33,7 @@ from operations_modules import file_locations
 if not os.path.exists(os.path.dirname(file_locations.log_directory)):
     os.makedirs(os.path.dirname(file_locations.log_directory))
 
-max_log_lines_return = 250
+max_log_lines_return = 150
 
 
 def initialize_logger(logger, log_location, formatter):

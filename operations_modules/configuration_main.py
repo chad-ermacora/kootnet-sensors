@@ -68,6 +68,9 @@ database_variables = app_variables.CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"
 linux_os_upgrade_ready = True
 
+# Plotly Configuration Variables
+plotly_theme = "plotly_dark"
+
 # Help lessen disk reads by caching commonly used variables
 cache_hostname = ""
 cache_ip = ""
