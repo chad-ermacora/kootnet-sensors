@@ -17,11 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from datetime import datetime
-from time import strftime
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
-from flask import Flask, request, send_file, render_template
+from flask import Flask, request, send_file
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from gevent import pywsgi
@@ -32,30 +30,26 @@ from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import app_variables
 from operations_modules import configuration_files
+from http_server import server_http_flask_render_templates
 from http_server import server_http_post_checks as http_post_checks
 from http_server import server_http_auth
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 
 
-# noinspection PyUnresolvedReferences
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
         self.app = Flask(__name__)
         self.auth = HTTPBasicAuth()
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
-
-        configuration_main.cache_hostname = sensor_access.get_hostname()
-        configuration_main.cache_ip = sensor_access.get_ip()
-        configuration_main.cache_program_last_updated = sensor_access.get_last_updated()
-        configuration_main.cache_reboot_count = str(sensor_access.get_system_reboot_count())
+        render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
 
         @self.app.route("/")
         @self.app.route("/index")
         @self.app.route("/index.html")
         def index():
-            return render_template("index.html", HostName=sensor_access.get_hostname())
+            return render_templates.index_page()
 
         @self.app.route("/MenuScript.js")
         def menu_script():
@@ -95,226 +89,93 @@ class CreateSensorHTTP:
         @self.auth.error_handler
         def auth_error():
             logger.network_logger.info(" *** First or Failed Login from " + str(request.remote_addr))
-            return render_template("message_return.html",
-                                   TextMessage="Unauthorized Access",
-                                   URL="/")
+            return render_templates.message_and_return("Unauthorized Access")
 
         @self.app.route('/logout')
         def logout():
-            return render_template("message_return.html",
-                                   TextMessage="Logout OK.  Returning to Home.",
-                                   URL="/"), 401
+            return render_templates.logout()
 
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
-        def sensor_information():
+        def html_system_information():
             logger.network_logger.debug("* Sensor Information accessed from " + str(request.remote_addr))
-            if configuration_main.current_config.enable_debug_logging:
-                debug_logging = True
-            else:
-                debug_logging = False
-
-            if configuration_main.current_config.enable_display:
-                display_enabled = True
-            else:
-                display_enabled = False
-
-            if configuration_main.current_config.enable_interval_recording:
-                interval_recording = True
-            else:
-                interval_recording = False
-
-            if configuration_main.current_config.enable_trigger_recording:
-                trigger_recording = True
-            else:
-                trigger_recording = False
-
-            if configuration_main.current_config.enable_custom_temp:
-                custom_temp_enabled = True
-            else:
-                custom_temp_enabled = False
-
-            return render_template("sensor_information.html",
-                                   HostName=configuration_main.cache_hostname,
-                                   IPAddress=configuration_main.cache_ip,
-                                   KootnetVersion=configuration_main.software_version.version,
-                                   LastUpdated=configuration_main.cache_program_last_updated,
-                                   DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
-                                   SystemUptime=sensor_access.get_uptime_str(),
-                                   SensorReboots=configuration_main.cache_reboot_count,
-                                   CPUTemperature=sensor_access.get_cpu_temperature(),
-                                   RAMUsage=sensor_access.get_memory_usage_percent(),
-                                   DiskUsage=sensor_access.get_disk_usage_percent(),
-                                   DebugLogging=debug_logging,
-                                   SupportedDisplay=display_enabled,
-                                   IntervalRecording=interval_recording,
-                                   IntervalDelay=configuration_main.current_config.sleep_duration_interval,
-                                   TriggerRecording=trigger_recording,
-                                   ManualTemperatureEnabled=custom_temp_enabled,
-                                   CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
-                                   InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
-                                   SQLDatabaseLocation=file_locations.sensor_database_location,
-                                   SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-                                   SQLDatabaseSize=sensor_access.get_db_size(),
-                                   NumberNotes=sensor_access.get_db_notes_count())
+            return render_templates.system_information()
 
         @self.app.route("/TestSensor")
         @self.app.route("/SensorReadings")
-        def test_sensor():
-            red, orange, yellow, green, blue, violet = server_plotly_graph.get_ems_for_render_template(
-                sensor_access.get_ems())
-
-            return render_template("sensor_readings.html",
-                                   HostName=configuration_main.cache_hostname,
-                                   IPAddress=configuration_main.cache_ip,
-                                   DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
-                                   SystemUptime=sensor_access.get_uptime_str(),
-                                   CPUTemperature=sensor_access.get_cpu_temperature(),
-                                   EnvTemperature=sensor_access.get_sensor_temperature(),
-                                   EnvTemperatureOffset=configuration_main.current_config.temperature_offset,
-                                   Pressure=sensor_access.get_pressure(),
-                                   Altitude=sensor_access.get_altitude(),
-                                   Humidity=sensor_access.get_humidity(),
-                                   Distance=sensor_access.get_distance(),
-                                   GasResistanceIndex=sensor_access.get_gas_resistance_index(),
-                                   GasOxidising=sensor_access.get_gas_oxidised(),
-                                   GasReducing=sensor_access.get_gas_reduced(),
-                                   GasNH3=sensor_access.get_gas_nh3(),
-                                   PM1=sensor_access.get_particulate_matter_1(),
-                                   PM25=sensor_access.get_particulate_matter_2_5(),
-                                   PM10=sensor_access.get_particulate_matter_10(),
-                                   Lumen=sensor_access.get_lumen(),
-                                   Red=red,
-                                   Orange=orange,
-                                   Yellow=yellow,
-                                   Green=green,
-                                   Blue=blue,
-                                   Violet=violet,
-                                   UVA=sensor_access.get_ultra_violet_a(),
-                                   UVB=sensor_access.get_ultra_violet_b(),
-                                   Acc=sensor_access.get_accelerometer_xyz(),
-                                   Mag=sensor_access.get_magnetometer_xyz(),
-                                   Gyro=sensor_access.get_gyroscope_xyz())
+        def html_sensors_readings():
+            return render_templates.sensors_readings()
 
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
-        def system_commands():
+        def html_system_management():
             logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
-            return render_template("system_commands.html")
+            return render_templates.system_management()
 
         @self.app.route("/ConfigurationsHTML")
         @self.auth.login_required
-        def configurations_html():
+        def html_edit_configurations():
             logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
-            text_installed_sensors_config = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
-            text_variance_triggers = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
-            text_wifi_config = wifi_file.get_wifi_config_from_file()
-
-            current_config = configuration_main.current_config
-            sensors = configuration_main.installed_sensors
-
-            debug_logging = http_post_checks.get_html_checkbox_state(current_config.enable_debug_logging)
-            display = http_post_checks.get_html_checkbox_state(current_config.enable_display)
-            interval_recording = http_post_checks.get_html_checkbox_state(current_config.enable_interval_recording)
-            trigger_recording = http_post_checks.get_html_checkbox_state(current_config.enable_trigger_recording)
-            custom_temp_offset = http_post_checks.get_html_checkbox_state(current_config.enable_custom_temp)
-
-            return render_template("edit_configurations.html",
-                                   PageURL="/ConfigurationsHTML",
-                                   CheckedDebug=debug_logging,
-                                   CheckedDisplay=display,
-                                   CheckedInterval=interval_recording,
-                                   IntervalDelay=int(configuration_main.current_config.sleep_duration_interval),
-                                   CheckedTrigger=trigger_recording,
-                                   CheckedCustomTempOffset=custom_temp_offset,
-                                   temperature_offset=int(configuration_main.current_config.temperature_offset),
-                                   GnuLinux=http_post_checks.get_html_checkbox_state(sensors.linux_system),
-                                   RPIZeroW=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_zero_w),
-                                   RPI3BPlus=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_3b_plus),
-                                   SenseHAT=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_sense_hat),
-                                   PimoroniBH1745=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bh1745),
-                                   PimoroniAS7262=http_post_checks.get_html_checkbox_state(sensors.pimoroni_as7262),
-                                   PimoroniBMP280=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bmp280),
-                                   PimoroniBME680=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bme680),
-                                   PimoroniEnviroPHAT=http_post_checks.get_html_checkbox_state(sensors.pimoroni_enviro),
-                                   PimoroniEnviroPlus=http_post_checks.get_html_checkbox_state(sensors.pimoroni_enviroplus),
-                                   PimoroniPMS5003=http_post_checks.get_html_checkbox_state(sensors.pimoroni_pms5003),
-                                   PimoroniLSM303D=http_post_checks.get_html_checkbox_state(sensors.pimoroni_lsm303d),
-                                   PimoroniICM20948=http_post_checks.get_html_checkbox_state(sensors.pimoroni_icm20948),
-                                   PimoroniVL53L1X=http_post_checks.get_html_checkbox_state(sensors.pimoroni_vl53l1x),
-                                   PimoroniLTR559=http_post_checks.get_html_checkbox_state(sensors.pimoroni_ltr_559),
-                                   PimoroniVEML6075=http_post_checks.get_html_checkbox_state(sensors.pimoroni_veml6075),
-                                   Pimoroni11x7LEDMatrix=http_post_checks.get_html_checkbox_state(sensors.pimoroni_matrix_11x7),
-                                   PimoroniSPILCD10_96=http_post_checks.get_html_checkbox_state(sensors.pimoroni_st7735),
-                                   PimoroniMonoOLED128x128BW=http_post_checks.get_html_checkbox_state(sensors.pimoroni_mono_oled_luma),
-                                   VariancesTitle="Trigger Variances",
-                                   VariancesConfig=text_variance_triggers,
-                                   WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
-                                   WiFiConfig=text_wifi_config)
+            return render_templates.edit_configurations()
 
         @self.app.route("/EditConfigMain", methods=["POST"])
         @self.auth.login_required
-        def edit_config_main():
-            logger.network_logger.debug("** Edit Configuration Main accessed from " + str(request.remote_addr))
+        def html_set_config_main():
+            logger.network_logger.debug("** HTML Apply - Main Configuration - Source: " + str(request.remote_addr))
             if request.method == "POST" and "interval_delay_seconds" in request.form:
                 try:
                     http_post_checks.check_html_config_main(request)
                     configuration_files.write_config_to_file(configuration_main.current_config)
                     thread_function(sensor_access.restart_services)
-                    return render_template("message_return.html",
-                                           TextMessage="Restarting Service, Please Wait ...",
-                                           URL="/ConfigurationsHTML")
+                    return render_templates.message_and_return("Restarting Service, Please Wait ...",
+                                                               url="/ConfigurationsHTML")
+
                 except Exception as error:
-                    logger.primary_logger.warning("Edit Main Configuration Error: " + str(error))
-                    return render_template("message_return.html",
-                                           TextMessage="Bad Configuration POST Request",
-                                           URL="/ConfigurationsHTML")
+                    logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
+                    return render_templates.message_and_return("Bad Configuration POST Request",
+                                                               url="/ConfigurationsHTML")
 
         @self.app.route("/EditInstalledSensors", methods=["POST"])
         @self.auth.login_required
-        def edit_installed_sensors():
-            logger.network_logger.debug("** Edit Installed Sensors accessed from " + str(request.remote_addr))
+        def html_set_installed_sensors():
+            logger.network_logger.debug("** HTML Apply - Installed Sensors - Source " + str(request.remote_addr))
             if request.method == "POST":
                 try:
                     http_post_checks.check_html_installed_sensors(request)
                     installed_sensors = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
                     configuration_files.write_installed_sensors_to_file(installed_sensors)
                     thread_function(sensor_access.restart_services)
-                    return render_template("message_return.html",
-                                           TextMessage="Restarting Service, Please Wait ...",
-                                           URL="/ConfigurationsHTML")
+                    return render_templates.message_and_return("Restarting Service, Please Wait ...",
+                                                               url="/ConfigurationsHTML")
                 except Exception as error:
-                    logger.primary_logger.warning("Edit Installed Sensors Error: " + str(error))
-                    return render_template("message_return.html",
-                                           TextMessage="Bad Installed Sensors POST Request",
-                                           URL="/ConfigurationsHTML")
+                    logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
+                    return render_templates.message_and_return("Bad Installed Sensors POST Request",
+                                                               url="/ConfigurationsHTML")
 
         @self.app.route("/EditConfigWifi", methods=["POST"])
         @self.auth.login_required
-        def edit_config_wifi():
-            logger.network_logger.debug("** Edit Wifi Configuration accessed from " + str(request.remote_addr))
+        def html_set_wifi_config():
+            logger.network_logger.debug("** HTML Apply - WiFi Configuration - Source " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip()
                     wifi_file.write_wifi_config_to_file(new_config)
                 except Exception as error:
-                    logger.primary_logger.warning("Edit config: " + str(error))
+                    logger.primary_logger.error("HTML Apply - WiFi Configuration - Error: " + str(error))
 
         @self.app.route("/EditTriggerVariances", methods=["POST"])
         @self.auth.login_required
-        def edit_trigger_variances():
-            logger.network_logger.debug(
-                "** Edit Trigger Variance Configuration accessed from " + str(request.remote_addr))
+        def html_set_trigger_variances():
+            logger.network_logger.debug("** HTML Apply - Trigger Variances - Source " + str(request.remote_addr))
             if request.method == "POST" and "configuration" in request.form:
                 try:
                     new_config = request.form.get("configuration").strip()
                     trigger_variances.write_triggers_to_file(new_config)
                     thread_function(sensor_access.restart_services)
-                    return render_template("message_return.html",
-                                           TextMessage="Restarting Service, Please Wait ...",
-                                           URL="/EditInstalledSensors")
+                    return render_templates.message_and_return("Restarting Service, Please Wait ...",
+                                                               url="/EditInstalledSensors")
                 except Exception as error:
-                    logger.primary_logger.warning("Edit config: " + str(error))
+                    logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
@@ -322,43 +183,43 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/GetSensorReadings")
-        def get_sensor_readings():
+        def cc_get_sensor_readings():
             logger.network_logger.debug("* Sensor Readings sent to " + str(request.remote_addr))
             sensor_readings = sensor_access.get_sensor_readings()
             return_str = str(sensor_readings[0]) + "," + str(sensor_readings[1])
             return return_str
 
         @self.app.route("/GetSystemData")
-        def get_system_data():
+        def cc_get_system_data():
             logger.network_logger.debug("* Sensor System Data Sent to " + str(request.remote_addr))
             return sensor_access.get_system_information()
 
         @self.app.route("/GetConfigurationReport")
-        def get_configuration_report():
+        def cc_get_configuration_report():
             logger.network_logger.debug("* Sensor Configuration Data Sent to " + str(request.remote_addr))
             return sensor_access.get_config_information()
 
         @self.app.route("/GetInstalledSensors")
-        def get_installed_sensors():
+        def cc_get_installed_sensors():
             logger.network_logger.debug("* Installed Sensors Sent to " + str(request.remote_addr))
             installed_sensors_str = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
             return installed_sensors_str
 
         @self.app.route("/GetConfiguration")
-        def get_configuration():
+        def cc_get_configuration():
             logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
             installed_config_str = configuration_files.convert_config_to_str(configuration_main.current_config)
             return installed_config_str
 
         @self.app.route("/GetWifiConfiguration")
         @self.auth.login_required
-        def get_wifi_config():
+        def cc_get_wifi_config():
             logger.network_logger.debug("* Wifi WPA Supplicant Sent to " + str(request.remote_addr))
             return send_file(file_locations.wifi_config_file)
 
         @self.app.route("/SetWifiConfiguration", methods=["PUT"])
         @self.auth.login_required
-        def set_wifi_config():
+        def cc_set_wifi_config():
             try:
                 new_wifi_config = request.form['command_data']
                 wifi_file.write_wifi_config_to_file(new_wifi_config)
@@ -370,13 +231,13 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/GetVarianceConfiguration")
-        def get_variance_config():
+        def cc_get_variance_config():
             logger.network_logger.debug("* Variance Configuration Sent to " + str(request.remote_addr))
             return send_file(file_locations.trigger_variances_file_location)
 
         @self.app.route("/SetVarianceConfiguration", methods=["PUT"])
         @self.auth.login_required
-        def set_variance_config():
+        def cc_set_variance_config():
             try:
                 new_variance_config = request.form['command_data']
                 trigger_variances.write_triggers_to_file(new_variance_config)
@@ -389,49 +250,29 @@ class CreateSensorHTTP:
             return "OK"
 
         @self.app.route("/GetPrimaryLog")
-        def get_primary_log():
+        def cc_get_primary_log():
             logger.network_logger.debug("* Primary Log Sent to " + str(request.remote_addr))
             log = logger.get_sensor_log(file_locations.primary_log)
             return log
 
         @self.app.route("/GetNetworkLog")
-        def get_network_log():
+        def cc_get_network_log():
             logger.network_logger.debug("* Network Log Sent to " + str(request.remote_addr))
             log = logger.get_sensor_log(file_locations.network_log)
             return log
 
         @self.app.route("/GetSensorsLog")
-        def get_sensors_log():
+        def cc_get_sensors_log():
             logger.network_logger.debug("* Sensor Log Sent to " + str(request.remote_addr))
             log = logger.get_sensor_log(file_locations.sensors_log)
             return log
 
         @self.app.route("/GetLogsHTML")
-        def get_html_log_view():
-            primary_log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
-            network_log_lines = logger.get_number_of_log_entries(file_locations.network_log)
-            sensors_log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
-            return render_template("log_view.html",
-                                   LogURL="/GetLogsHTML",
-                                   PrimaryLog=get_primary_log(),
-                                   PrimaryLogLinesText=get_html_log_view_message(primary_log_lines),
-                                   NetworkLog=get_network_log(),
-                                   NetworkLogLinesText=get_html_log_view_message(network_log_lines),
-                                   SensorsLog=get_sensors_log(),
-                                   SensorsLogLinesText=get_html_log_view_message(sensors_log_lines))
-
-        def get_html_log_view_message(log_lines_length):
-            if log_lines_length:
-                if logger.max_log_lines_return > log_lines_length:
-                    text_log_entries_return = str(log_lines_length) + "/" + str(log_lines_length)
-                else:
-                    text_log_entries_return = str(logger.max_log_lines_return) + "/" + str(log_lines_length)
-            else:
-                text_log_entries_return = "0/0"
-            return text_log_entries_return
+        def html_get_log_view():
+            return render_templates.get_log_view()
 
         @self.app.route("/GetDatabaseNotes")
-        def get_db_notes():
+        def cc_get_db_notes():
             logger.network_logger.debug("* Sensor Notes Sent to " + str(request.remote_addr))
             return sensor_access.get_db_notes()
 
@@ -439,39 +280,36 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def delete_primary_log():
             logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
-            message = "Primary Log Deleted"
             logger.clear_primary_log()
-            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
+            return render_templates.message_and_return("Primary Log Deleted", url="/GetLogsHTML")
 
         @self.app.route("/DeleteNetworkLog")
         @self.auth.login_required
         def delete_network_log():
             logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
-            message = "Network Log Deleted"
             logger.clear_network_log()
-            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
+            return render_templates.message_and_return("Network Log Deleted", url="/GetLogsHTML")
 
         @self.app.route("/DeleteSensorsLog")
         @self.auth.login_required
         def delete_sensors_log():
             logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
-            message = "Sensors Log Deleted"
             logger.clear_sensor_log()
-            return render_template("message_return.html", TextMessage=message, URL="/GetLogsHTML")
+            return render_templates.message_and_return("Sensors Log Deleted", url="/GetLogsHTML")
 
         @self.app.route("/GetDatabaseNoteDates")
-        def get_db_note_dates():
+        def cc_get_db_note_dates():
             logger.network_logger.debug("* Sensor Note Dates Sent to " + str(request.remote_addr))
             return sensor_access.get_db_note_dates()
 
         @self.app.route("/GetDatabaseNoteUserDates")
-        def get_db_note_user_dates():
+        def cc_get_db_note_user_dates():
             logger.network_logger.debug("* User Set Sensor Notes Dates Sent to " + str(request.remote_addr))
             return sensor_access.get_db_note_user_dates()
 
         @self.app.route("/DeleteDatabaseNote", methods=["PUT"])
         @self.auth.login_required
-        def del_db_note():
+        def cc_del_db_note():
             note_datetime = request.form['command_data']
             logger.network_logger.info("** " + str(request.remote_addr) +
                                        " Deleted Note " +
@@ -520,67 +358,55 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            message = "HTTP Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("HTTP Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/CleanOnline")
         @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            message = "HTTP Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("HTTP Clean Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/UpgradeOnlineDev")
         @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            message = "HTTP Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("HTTP Developer Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/UpgradeSMB")
         @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-            message = "SMB Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("SMB Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/CleanSMB")
         @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-            message = "SMB Clean Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("SMB Clean Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/UpgradeSMBDev")
         @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-            message = "SMB Developer Upgrade Started"
             thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("SMB Developer Upgrade Started",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/inkupg")
         @self.auth.login_required
@@ -593,18 +419,17 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def reinstall_program_requirements():
             logger.network_logger.info("** Program Dependency Install Initiated by " + str(request.remote_addr))
-            message = "Dependency Install Started"
             message2 = "Once complete, the sensor programs will be restarted. " + app_variables.text_message_may_take_minutes
             thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=message2,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("Dependency Install Started",
+                                                       text_message2=message2,
+                                                       url="/SensorInformation")
 
         @self.app.route("/UpgradeSystemOS")
         @self.auth.login_required
         def upgrade_system_os():
             logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
+            message = "Upgrade is already running.  "
             message2 = "The sensor will reboot when done. This will take awhile.  " + \
                        "You may continue to use the sensor during the upgrade process.  " + \
                        "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
@@ -614,45 +439,36 @@ class CreateSensorHTTP:
                 thread_function(sensor_access.upgrade_linux_os)
             else:
                 logger.network_logger.warning("* Operating System Upgrade Already Running")
-                message = "Upgrade is already running.  "
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=message2,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return(message,
+                                                       text_message2=message2,
+                                                       url="/SensorInformation")
 
         @self.app.route("/RebootSystem")
         @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
-            message = "Sensor Rebooting"
             thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=app_variables.text_message_may_take_minutes,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("Sensor Rebooting",
+                                                       text_message2=app_variables.text_message_may_take_minutes,
+                                                       url="/SensorInformation")
 
         @self.app.route("/ShutdownSystem")
         @self.auth.login_required
         def system_shutdown():
             logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
-            message = "Sensor Shutting Down"
             message2 = "You will be unable to access it until some one turns it back on."
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=message2,
-                                   URL="/SystemCommands")
+            return render_templates.message_and_return("Sensor Shutting Down",
+                                                       text_message2=message2,
+                                                       url="/SystemCommands")
 
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
-            message = "Restarting Sensor Service"
-            message2 = "This should only take 5 to 30 seconds."
             thread_function(sensor_access.restart_services)
-            return render_template("message_return.html",
-                                   TextMessage=message,
-                                   TextMessage2=message2,
-                                   URL="/SensorInformation")
+            return render_templates.message_and_return("Restarting Sensor Service",
+                                                       text_message2="This should only take 5 to 30 seconds.",
+                                                       url="/SensorInformation")
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -667,7 +483,7 @@ class CreateSensorHTTP:
                 logger.network_logger.info("** Hostname Change Failed from " +
                                            str(request.remote_addr) + " - " + str(error))
                 message = "Failed to change Hostname"
-            return render_template("message_return.html", TextMessage=message, URL="/SensorInformation")
+            return render_templates.message_and_return(message, url="/SensorInformation")
 
         @self.app.route("/SetDateTime", methods=["PUT"])
         @self.auth.login_required
@@ -677,30 +493,24 @@ class CreateSensorHTTP:
             logger.network_logger.info("** Set System DateTime Initiated by " +
                                        str(request.remote_addr) +
                                        " to " + new_datetime)
-            message = "DateTime Set to " + new_datetime
-            return render_template("message_return.html", TextMessage=message, URL="/SensorInformation")
 
         @self.app.route("/SetConfiguration", methods=["PUT"])
         @self.auth.login_required
-        def set_configuration():
+        def cc_set_configuration():
             logger.network_logger.info("** Sensor Configuration set by " + str(request.remote_addr))
-            message = "Configuration Updated"
             raw_config = request.form['command_data'].splitlines()
             new_config = configuration_files.convert_config_lines_to_obj(raw_config)
             configuration_files.write_config_to_file(new_config)
             sensor_access.restart_services()
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/SetInstalledSensors", methods=["PUT"])
         @self.auth.login_required
-        def set_installed_sensors():
+        def cc_set_installed_sensors():
             logger.network_logger.info("** Installed Sensors set by " + str(request.remote_addr))
-            message = "Installed Sensors Updated"
             raw_installed_sensors = request.form['command_data'].splitlines()
             new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
             configuration_files.write_installed_sensors_to_file(new_installed_sensors)
             sensor_access.restart_services()
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         @self.app.route("/GetHostName")
         def get_hostname():
@@ -842,38 +652,21 @@ class CreateSensorHTTP:
             return str(sensor_access.get_gyroscope_xyz())
 
         @self.app.route("/GetIntervalSensorReadings")
-        def get_interval_readings():
+        def cc_get_interval_readings():
             logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
             return str(sensor_access.get_interval_sensor_readings())
 
         @self.app.route("/PlotlyGraph", methods=["GET", "POST"])
         # @self.auth.login_required
-        def graph_plotly():
+        def html_graph_plotly():
             generating_message = "Generating Plotly Graph. This may take awhile."
             generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
 
-            try:
-                interval_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                           file_locations.interval_plotly_html_filename)
-                interval_creation_date = str(datetime.fromtimestamp(interval_plotly_file_creation_date_unix))[:-7]
-            except Exception as error:
-                logger.primary_logger.debug("No Interval Plotly file created: " + str(error))
-                interval_creation_date = "No Plotly Graph Found"
-
-            try:
-                triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                           file_locations.triggers_plotly_html_filename)
-                triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
-            except Exception as error:
-                logger.primary_logger.debug("No Triggers Plotly file: " + str(error))
-                triggers_creation_date = "No Plotly Graph Found"
-
             if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
                 logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-                return render_template("message_return.html",
-                                       TextMessage=generating_message,
-                                       TextMessage2=generating_message2,
-                                       URL="/PlotlyGraph")
+                return render_templates.message_and_return(generating_message,
+                                                           text_message2=generating_message2,
+                                                           url="/PlotlyGraph")
             else:
                 if request.method == "POST" and "SQLRecordingType" in request.form:
                     logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
@@ -894,43 +687,38 @@ class CreateSensorHTTP:
                         new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
 
                         if len(new_graph_data.graph_columns) < 4:
-                            return render_template("message_return.html",
-                                                   TextMessage="Please Select at least One Sensor",
-                                                   URL="/PlotlyGraph")
+                            return render_templates.message_and_return("Please Select at least One Sensor",
+                                                                       url="/PlotlyGraph")
                         else:
                             thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
                     except Exception as error:
                         logger.primary_logger.warning("Plotly Graph: " + str(error))
-                    return render_template("message_return.html",
-                                           TextMessage=generating_message,
-                                           TextMessage2=generating_message2,
-                                           URL="/PlotlyGraph")
+
+                    return render_templates.message_and_return(generating_message,
+                                                               text_message2=generating_message2,
+                                                               url="/PlotlyGraph")
                 else:
-                    return render_template("plotly_graph.html",
-                                           IntervalPlotlyCreationDate=interval_creation_date,
-                                           TriggerPlotlyCreationDate=triggers_creation_date)
+                    return render_templates.plotly_graph_main()
 
         @self.app.route("/ViewIntervalPlotlyGraph")
-        def view_interval_graph_plotly():
+        def html_view_interval_graph_plotly():
             logger.network_logger.info("* Interval Plotly Graph Viewed from " + str(request.remote_addr))
             if os.path.isfile(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename):
                 return send_file(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename)
             else:
-                return render_template("message_return.html",
-                                       TextMessage="No Interval Plotly Graph Generated",
-                                       TextMessage2="Click above to close the window and return to Graphing.",
-                                       CloseWindow="JavaScript:window.close()")
+                return render_templates.message_and_return("No Interval Plotly Graph Generated - Click to Close Tab",
+                                                           special_command="JavaScript:window.close()",
+                                                           url="")
 
         @self.app.route("/ViewTriggerPlotlyGraph")
-        def view_triggers_graph_plotly():
+        def html_view_triggers_graph_plotly():
             logger.network_logger.info("* Triggers Plotly Graph Viewed from " + str(request.remote_addr))
             if os.path.isfile(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename):
                 return send_file(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename)
             else:
-                return render_template("message_return.html",
-                                       TextMessage="No Triggers Plotly Graph Generated",
-                                       TextMessage2="Click above to close the window and return to Graphing.",
-                                       CloseWindow="JavaScript:window.close()")
+                return render_templates.message_and_return("No Triggers Plotly Graph Generated - Click to Close Tab",
+                                                           special_command="JavaScript:window.close()",
+                                                           url="")
 
         @self.app.route("/DisplayText", methods=["PUT"])
         @self.auth.login_required
@@ -939,12 +727,9 @@ class CreateSensorHTTP:
                 logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
                 text_message = request.form['command_data']
                 sensor_access.display_message(text_message)
-                message = "Displaying Message " + text_message
             else:
                 message = "Unable to Display Text: Sensor Display disabled or not installed"
                 logger.network_logger.warning("* " + message)
-
-            return render_template("message_return.html", TextMessage=message, URL="/SystemCommands")
 
         def thread_function(function, args=None):
             if args:
