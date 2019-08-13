@@ -32,6 +32,7 @@ from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import app_variables
 from operations_modules import configuration_files
+from http_server import server_http_post_checks as http_post_checks
 from http_server import server_http_auth
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
@@ -89,12 +90,11 @@ class CreateSensorHTTP:
             if username == http_auth.http_flask_user:
                 logger.network_logger.debug("* Login attempt from " + str(request.remote_addr))
                 return check_password_hash(http_auth.http_flask_password, password)
-            else:
-                return False
+            return False
 
         @self.auth.error_handler
         def auth_error():
-            logger.network_logger.warning(" *** Failed Login from " + str(request.remote_addr))
+            logger.network_logger.info(" *** First or Failed Login from " + str(request.remote_addr))
             return render_template("message_return.html",
                                    TextMessage="Unauthorized Access",
                                    URL="/")
@@ -206,17 +206,47 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def configurations_html():
             logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
-            text_primary_config = configuration_files.convert_config_to_str(configuration_main.current_config)
             text_installed_sensors_config = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
             text_variance_triggers = trigger_variances.convert_triggers_to_str(configuration_main.trigger_variances)
             text_wifi_config = wifi_file.get_wifi_config_from_file()
 
+            current_config = configuration_main.current_config
+            sensors = configuration_main.installed_sensors
+
+            debug_logging = http_post_checks.get_html_checkbox_state(current_config.enable_debug_logging)
+            display = http_post_checks.get_html_checkbox_state(current_config.enable_display)
+            interval_recording = http_post_checks.get_html_checkbox_state(current_config.enable_interval_recording)
+            trigger_recording = http_post_checks.get_html_checkbox_state(current_config.enable_trigger_recording)
+            custom_temp_offset = http_post_checks.get_html_checkbox_state(current_config.enable_custom_temp)
+
             return render_template("edit_configurations.html",
                                    PageURL="/ConfigurationsHTML",
-                                   PrimaryTitle="Main Configuration",
-                                   PrimaryConfig=text_primary_config,
-                                   InstalledSensorsTitle="Installed Sensors",
-                                   InstalledSensorsConfig=text_installed_sensors_config,
+                                   CheckedDebug=debug_logging,
+                                   CheckedDisplay=display,
+                                   CheckedInterval=interval_recording,
+                                   IntervalDelay=int(configuration_main.current_config.sleep_duration_interval),
+                                   CheckedTrigger=trigger_recording,
+                                   CheckedCustomTempOffset=custom_temp_offset,
+                                   temperature_offset=int(configuration_main.current_config.temperature_offset),
+                                   GnuLinux=http_post_checks.get_html_checkbox_state(sensors.linux_system),
+                                   RPIZeroW=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_zero_w),
+                                   RPI3BPlus=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_3b_plus),
+                                   SenseHAT=http_post_checks.get_html_checkbox_state(sensors.raspberry_pi_sense_hat),
+                                   PimoroniBH1745=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bh1745),
+                                   PimoroniAS7262=http_post_checks.get_html_checkbox_state(sensors.pimoroni_as7262),
+                                   PimoroniBMP280=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bmp280),
+                                   PimoroniBME680=http_post_checks.get_html_checkbox_state(sensors.pimoroni_bme680),
+                                   PimoroniEnviroPHAT=http_post_checks.get_html_checkbox_state(sensors.pimoroni_enviro),
+                                   PimoroniEnviroPlus=http_post_checks.get_html_checkbox_state(sensors.pimoroni_enviroplus),
+                                   PimoroniPMS5003=http_post_checks.get_html_checkbox_state(sensors.pimoroni_pms5003),
+                                   PimoroniLSM303D=http_post_checks.get_html_checkbox_state(sensors.pimoroni_lsm303d),
+                                   PimoroniICM20948=http_post_checks.get_html_checkbox_state(sensors.pimoroni_icm20948),
+                                   PimoroniVL53L1X=http_post_checks.get_html_checkbox_state(sensors.pimoroni_vl53l1x),
+                                   PimoroniLTR559=http_post_checks.get_html_checkbox_state(sensors.pimoroni_ltr_559),
+                                   PimoroniVEML6075=http_post_checks.get_html_checkbox_state(sensors.pimoroni_veml6075),
+                                   Pimoroni11x7LEDMatrix=http_post_checks.get_html_checkbox_state(sensors.pimoroni_matrix_11x7),
+                                   PimoroniSPILCD10_96=http_post_checks.get_html_checkbox_state(sensors.pimoroni_st7735),
+                                   PimoroniMonoOLED128x128BW=http_post_checks.get_html_checkbox_state(sensors.pimoroni_mono_oled_luma),
                                    VariancesTitle="Trigger Variances",
                                    VariancesConfig=text_variance_triggers,
                                    WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
@@ -226,33 +256,38 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def edit_config_main():
             logger.network_logger.debug("** Edit Configuration Main accessed from " + str(request.remote_addr))
-            if request.method == "POST" and "configuration" in request.form:
+            if request.method == "POST" and "interval_delay_seconds" in request.form:
                 try:
-                    new_config = request.form.get("configuration").strip().split("\n")
-                    new_current_config = configuration_files.convert_config_lines_to_obj(new_config)
-                    configuration_files.write_config_to_file(new_current_config)
+                    http_post_checks.check_html_config_main(request)
+                    configuration_files.write_config_to_file(configuration_main.current_config)
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
                                            URL="/ConfigurationsHTML")
                 except Exception as error:
-                    logger.primary_logger.warning("Edit config: " + str(error))
+                    logger.primary_logger.warning("Edit Main Configuration Error: " + str(error))
+                    return render_template("message_return.html",
+                                           TextMessage="Bad Configuration POST Request",
+                                           URL="/ConfigurationsHTML")
 
         @self.app.route("/EditInstalledSensors", methods=["POST"])
         @self.auth.login_required
         def edit_installed_sensors():
             logger.network_logger.debug("** Edit Installed Sensors accessed from " + str(request.remote_addr))
-            if request.method == "POST" and "configuration" in request.form:
+            if request.method == "POST":
                 try:
-                    new_config = request.form.get("configuration").strip().split("\n")
-                    new_installed_sensors = configuration_files.convert_installed_sensors_lines_to_obj(new_config)
-                    configuration_files.write_installed_sensors_to_file(new_installed_sensors)
+                    http_post_checks.check_html_installed_sensors(request)
+                    installed_sensors = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
+                    configuration_files.write_installed_sensors_to_file(installed_sensors)
                     thread_function(sensor_access.restart_services)
                     return render_template("message_return.html",
                                            TextMessage="Restarting Service, Please Wait ...",
-                                           URL="/EditInstalledSensors")
+                                           URL="/ConfigurationsHTML")
                 except Exception as error:
-                    logger.primary_logger.warning("Edit config: " + str(error))
+                    logger.primary_logger.warning("Edit Installed Sensors Error: " + str(error))
+                    return render_template("message_return.html",
+                                           TextMessage="Bad Installed Sensors POST Request",
+                                           URL="/ConfigurationsHTML")
 
         @self.app.route("/EditConfigWifi", methods=["POST"])
         @self.auth.login_required
@@ -379,24 +414,20 @@ class CreateSensorHTTP:
             return render_template("log_view.html",
                                    LogURL="/GetLogsHTML",
                                    PrimaryLog=get_primary_log(),
-                                   PrimaryLogName="Primary",
                                    PrimaryLogLinesText=get_html_log_view_message(primary_log_lines),
                                    NetworkLog=get_network_log(),
-                                   NetworkLogName="Network",
                                    NetworkLogLinesText=get_html_log_view_message(network_log_lines),
                                    SensorsLog=get_sensors_log(),
-                                   SensorsLogName="Sensors",
                                    SensorsLogLinesText=get_html_log_view_message(sensors_log_lines))
 
         def get_html_log_view_message(log_lines_length):
             if log_lines_length:
                 if logger.max_log_lines_return > log_lines_length:
-                    text_log_entries_return = str(log_lines_length + 1) + " entries of " + str(log_lines_length + 1)
+                    text_log_entries_return = str(log_lines_length) + "/" + str(log_lines_length)
                 else:
-                    text_log_entries_return = str(logger.max_log_lines_return) + " entries of " + str(
-                        log_lines_length + 1)
+                    text_log_entries_return = str(logger.max_log_lines_return) + "/" + str(log_lines_length)
             else:
-                text_log_entries_return = "0 entries of 0"
+                text_log_entries_return = "0/0"
             return text_log_entries_return
 
         @self.app.route("/GetDatabaseNotes")

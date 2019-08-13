@@ -3,82 +3,277 @@
 
 {% block content %}
 
-<style>
-    .mui-form {
-        background-color: #00B0FF;
-    }
-</style>
+    <style>
+        .mui-form {
+            background-color: #00B0FF;
+        }
+    </style>
 
-<ul class="mui-tabs__bar">
-    <li class="mui--is-active">
-        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-           data-mui-controls="primary-config-tab">
-            Main Configuration
-        </a>
-    </li>
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active">
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="primary-config-tab">
+                Main Configuration
+            </a>
+        </li>
 
-    <li>
-        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-           data-mui-controls="installed-sensors-tab">
-            Installed Sensors
-        </a>
-    </li>
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="installed-sensors-tab">
+                Installed Sensors
+            </a>
+        </li>
 
-    <li>
-        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-           data-mui-controls="trigger-variances-tab">
-            Trigger Variances
-        </a>
-    </li>
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="trigger-variances-tab">
+                Trigger Variances
+            </a>
+        </li>
 
-    <li>
-        <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-           data-mui-controls="wifi-config-tab">
-            WiFi Configuration
-        </a>
-    </li>
-</ul>
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="wifi-config-tab">
+                WiFi Configuration
+            </a>
+        </li>
+    </ul>
 
-<br>
+    <br>
 
-<div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
-    <form class="mui-form" method="post" action="/EditConfigMain">
-        <legend><a style="color: black" href="{{ PageURL }}">{{ PrimaryTitle }}</a></legend>
-        <div class="mui-textfield">
-            <textarea name="configuration" required rows="16">{{ PrimaryConfig }}</textarea>
-        </div>
-        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-    </form>
-</div>
+    <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigMain">
+            <fieldset style="text-align: center">
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="debug_logging" value="" {{ CheckedDebug }}>
+                        Enable Debug Logging
+                    </label>
+                </div>
 
-<div class="mui-tabs__pane" id="installed-sensors-tab">
-    <form class="mui-form" method="POST" action="/EditInstalledSensors">
-        <legend><a style="color: black" href="{{ PageURL }}">{{ InstalledSensorsTitle }}</a></legend>
-        <div class="mui-textfield">
-            <textarea name="configuration" required rows="21">{{ InstalledSensorsConfig }}</textarea>
-        </div>
-        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-    </form>
-</div>
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_display" value="" {{ CheckedDisplay }}>
+                        Enable Display
+                    </label>
+                </div>
 
-<div class="mui-tabs__pane" id="trigger-variances-tab">
-    <form class="mui-form" method="POST" action="/EditTriggerVariances">
-        <legend><a style="color: black" href="{{ PageURL }}">{{ VariancesTitle }}</a></legend>
-        <div class="mui-textfield">
-            <textarea name="configuration" required rows="78">{{ VariancesConfig }}</textarea>
-        </div>
-        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-    </form>
-</div>
+                <br>
 
-<div class="mui-tabs__pane" id="wifi-config-tab">
-    <form class="mui-form" method="POST" action="/EditConfigWifi">
-        <legend><a style="color: black" href="{{ PageURL }}">{{ WiFiTitle }}</a></legend>
-        <div class="mui-textfield">
-            <textarea name="configuration" required rows="24">{{ WiFiConfig }}</textarea>
-        </div>
-        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-    </form>
-</div>
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_interval_recording" value="" {{ CheckedInterval }}>
+                        Record sensors to SQL database based on set Interval
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between Interval recordings
+                        <br>
+                        <input style="width: 75px" type="number" min="1" name="interval_delay_seconds"
+                               value="{{ IntervalDelay }}">
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_trigger_recording" value="" {{ CheckedTrigger }}>
+                        Record sensors to SQL database based on set Triggers
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_custom_temp_offset" value="" {{ CheckedCustomTempOffset }}>
+                        Enable custom Temperature Offset
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">Current / Custom Temperature Offset
+                        <br>
+                        <input style="width: 75px" type="number" min="-100" max="100" name="custom_temperature_offset"
+                               value="{{ temperature_offset }}">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="installed-sensors-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditInstalledSensors">
+            <fieldset style="text-align: center">
+                <h2><u>Supported System & Sensor Modules</u></h2>
+
+                <h4><u>Raspberry Pi</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="linux_system" value="" {{ GnuLinux }}>
+                        Gnu/Linux - Raspbian
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_zero_w" value="" {{ RPIZeroW }}>
+                        Zero W
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_3b_plus" value="" {{ RPI3BPlus }}>
+                        3BPlus
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_sense_hat" value="" {{ SenseHAT }}>
+                        Sense HAT
+                    </label>
+                </div>
+
+                <h4><u>Pimoroni</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bh1745" value="" {{ PimoroniBH1745 }}>
+                        BH1745
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_as7262" value="" {{ PimoroniAS7262 }}>
+                        AS7262
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bmp280" value="" {{ PimoroniBMP280 }}>
+                        BMP280
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bme680" value="" {{ PimoroniBME680 }}>
+                        BME680
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_enviro" value="" {{ PimoroniEnviroPHAT }}>
+                        EnviroPHAT
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_enviroplus" value="" {{ PimoroniEnviroPlus }}>
+                        Enviro+
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_pms5003" value="" {{ PimoroniPMS5003 }}>
+                        PMS5003
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_lsm303d" value="" {{ PimoroniLSM303D }}>
+                        LSM303D
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_icm20948" value="" {{ PimoroniICM20948 }}>
+                        ICM20948
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_vl53l1x" value="" {{ PimoroniVL53L1X }}>
+                        VL53L1X
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_ltr_559" value="" {{ PimoroniLTR559 }}>
+                        LTR-559
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_veml6075" value="" {{ PimoroniVEML6075 }}>
+                        VEML6075
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_matrix_11x7" value="" {{ Pimoroni11x7LEDMatrix }}>
+                        11x7 LED Matrix
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_st7735" value="" {{ PimoroniSPILCD10_96 }}>
+                        10.96'' SPI Colour LCD (160x80)
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_mono_oled_luma" value="" {{ PimoroniMonoOLED128x128BW }}>
+                        1.12'' Mono OLED (128x128, white/black)
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="trigger-variances-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditTriggerVariances">
+            <legend><a style="color: black" href="{{ PageURL }}">{{ VariancesTitle }}</a></legend>
+            <div class="mui-textfield">
+                <textarea name="configuration" required rows="78">{{ VariancesConfig }}</textarea>
+            </div>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="wifi-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigWifi">
+            <legend><a style="color: black" href="{{ PageURL }}">{{ WiFiTitle }}</a></legend>
+            <div class="mui-textfield">
+                <textarea name="configuration" required rows="24">{{ WiFiConfig }}</textarea>
+            </div>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </form>
+    </div>
 
 {% endblock %}

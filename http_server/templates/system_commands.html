@@ -2,65 +2,65 @@
 
 {% block content %}
 
-<h2><strong>
+    <h2><strong>
         <a style="text-decoration: underline; color: red" href="/SystemCommands">Sensor Management</a>
-</strong></h2>
+    </strong></h2>
 
-<button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-        onclick="window.location.href = '/ConfigurationsHTML';">
-    View & Edit Configurations
-</button>
-
-<button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-        onclick="window.location.href = '/GetLogsHTML';">
-    View Logs
-</button>
-
-<br>
-
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Upgrade Options
-        <span class="mui-caret"></span>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/ConfigurationsHTML';">
+        View & Edit Configurations
     </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/UpgradeOnline">HTTP Upgrade</a></li>
-        <li><a href="/UpgradeSMB">SMB Upgrade</a></li>
-        <li><a href="/UpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
-        <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
-    </ul>
-</div>
 
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Power Commands
-        <span class="mui-caret"></span>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/GetLogsHTML';">
+        View Logs
     </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/RestartServices">Restart Program</a></li>
-        <li><a href="/RebootSystem">Reboot System</a></li>
-        <li><a href="/ShutdownSystem">Shutdown System</a></li>
-    </ul>
-</div>
 
-<br>
+    <br>
 
-<h2 style="color: red;">Experimental</h2>
-<span style="color: darkorange">
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Upgrade Options
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/UpgradeOnline">HTTP Upgrade</a></li>
+            <li><a href="/UpgradeSMB">SMB Upgrade</a></li>
+            <li><a href="/UpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
+            <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
+        </ul>
+    </div>
+
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Power Commands
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/RestartServices">Restart Program</a></li>
+            <li><a href="/RebootSystem">Reboot System</a></li>
+            <li><a href="/ShutdownSystem">Shutdown System</a></li>
+        </ul>
+    </div>
+
+    <br>
+
+    <h2 style="color: red;">Experimental</h2>
+    <span style="color: darkorange">
     Use with caution. Functions here may not work properly under all conditions.
 </span>
 
-<br>
+    <br>
 
-<div class="mui-dropdown">
-    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-        Experimental
-        <span class="mui-caret"></span>
-    </button>
-    <ul class="mui-dropdown__menu">
-        <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
-        <li><a href="/ReInstallRequirements">Check and Install Requirements</a></li>
-    </ul>
-</div>
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Experimental
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
+            <li><a href="/ReInstallRequirements">Check and Install Requirements</a></li>
+        </ul>
+    </div>
 
 {% endblock %}
