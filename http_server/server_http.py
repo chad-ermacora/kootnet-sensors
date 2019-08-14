@@ -31,7 +31,7 @@ from operations_modules import configuration_main
 from operations_modules import app_variables
 from operations_modules import configuration_files
 from http_server import server_http_flask_render_templates
-from http_server import server_http_post_checks as http_post_checks
+from http_server import server_http_flask_post_checks as http_post_checks
 from http_server import server_http_auth
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
@@ -125,7 +125,6 @@ class CreateSensorHTTP:
             if request.method == "POST" and "interval_delay_seconds" in request.form:
                 try:
                     http_post_checks.check_html_config_main(request)
-                    configuration_files.write_config_to_file(configuration_main.current_config)
                     thread_function(sensor_access.restart_services)
                     return render_templates.message_and_return("Restarting Service, Please Wait ...",
                                                                url="/ConfigurationsHTML")
@@ -142,8 +141,6 @@ class CreateSensorHTTP:
             if request.method == "POST":
                 try:
                     http_post_checks.check_html_installed_sensors(request)
-                    installed_sensors = configuration_main.installed_sensors.get_installed_sensors_config_as_str()
-                    configuration_files.write_installed_sensors_to_file(installed_sensors)
                     thread_function(sensor_access.restart_services)
                     return render_templates.message_and_return("Restarting Service, Please Wait ...",
                                                                url="/ConfigurationsHTML")
@@ -151,6 +148,28 @@ class CreateSensorHTTP:
                     logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
                     return render_templates.message_and_return("Bad Installed Sensors POST Request",
                                                                url="/ConfigurationsHTML")
+
+        @self.app.route("/EditTriggerVariances", methods=["POST"])
+        @self.auth.login_required
+        def html_set_trigger_variances():
+            logger.network_logger.debug("** HTML Apply - Trigger Variances - Source " + str(request.remote_addr))
+            if request.method == "POST" and "days_sensor_uptime" in request.form:
+                try:
+                    http_post_checks.check_html_variance_triggers(request)
+                    return render_templates.message_and_return("Trigger Variances Set",
+                                                               url="/ConfigurationsHTML")
+                except Exception as error:
+                    logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
+
+        @self.app.route("/ResetTriggerVariances")
+        @self.auth.login_required
+        def html_reset_trigger_variances():
+            logger.network_logger.info("** Trigger Variances Reset - Source " + str(request.remote_addr))
+            default_trigger_variances = trigger_variances.CreateTriggerVariances()
+            configuration_main.trigger_variances = default_trigger_variances
+            trigger_variances.write_triggers_to_file(default_trigger_variances)
+            return render_templates.message_and_return("Trigger Variances Reset",
+                                                       url="/ConfigurationsHTML")
 
         @self.app.route("/EditConfigWifi", methods=["POST"])
         @self.auth.login_required
@@ -162,20 +181,6 @@ class CreateSensorHTTP:
                     wifi_file.write_wifi_config_to_file(new_config)
                 except Exception as error:
                     logger.primary_logger.error("HTML Apply - WiFi Configuration - Error: " + str(error))
-
-        @self.app.route("/EditTriggerVariances", methods=["POST"])
-        @self.auth.login_required
-        def html_set_trigger_variances():
-            logger.network_logger.debug("** HTML Apply - Trigger Variances - Source " + str(request.remote_addr))
-            if request.method == "POST" and "configuration" in request.form:
-                try:
-                    new_config = request.form.get("configuration").strip()
-                    trigger_variances.write_triggers_to_file(new_config)
-                    thread_function(sensor_access.restart_services)
-                    return render_templates.message_and_return("Restarting Service, Please Wait ...",
-                                                               url="/EditInstalledSensors")
-                except Exception as error:
-                    logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():

@@ -24,9 +24,8 @@ from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import file_locations
 from operations_modules import wifi_file
-from operations_modules import trigger_variances
 from http_server import server_plotly_graph
-from http_server.server_http_post_checks import get_html_checkbox_state
+from http_server.server_http_flask_post_checks import get_html_checkbox_state
 
 
 class CreateRenderTemplates:
@@ -149,8 +148,7 @@ class CreateRenderTemplates:
 
     def edit_configurations(self):
         try:
-            text_variance_triggers = trigger_variances.convert_triggers_to_str(
-                configuration_main.trigger_variances)
+            variances = configuration_main.trigger_variances
             text_wifi_config = wifi_file.get_wifi_config_from_file()
 
             debug_logging = get_html_checkbox_state(self.current_config.enable_debug_logging)
@@ -164,10 +162,10 @@ class CreateRenderTemplates:
                                    CheckedDebug=debug_logging,
                                    CheckedDisplay=display,
                                    CheckedInterval=interval_recording,
-                                   IntervalDelay=int(configuration_main.current_config.sleep_duration_interval),
+                                   IntervalDelay=float(configuration_main.current_config.sleep_duration_interval),
                                    CheckedTrigger=trigger_recording,
                                    CheckedCustomTempOffset=custom_temp_offset,
-                                   temperature_offset=int(configuration_main.current_config.temperature_offset),
+                                   temperature_offset=float(configuration_main.current_config.temperature_offset),
                                    GnuLinux=get_html_checkbox_state(self.installed_sensors.linux_system),
                                    RPIZeroW=get_html_checkbox_state(self.installed_sensors.raspberry_pi_zero_w),
                                    RPI3BPlus=get_html_checkbox_state(self.installed_sensors.raspberry_pi_3b_plus),
@@ -190,8 +188,67 @@ class CreateRenderTemplates:
                                    PimoroniSPILCD10_96=get_html_checkbox_state(self.installed_sensors.pimoroni_st7735),
                                    PimoroniMonoOLED128x128BW=get_html_checkbox_state(
                                        self.installed_sensors.pimoroni_mono_oled_luma),
-                                   VariancesTitle="Trigger Variances",
-                                   VariancesConfig=text_variance_triggers,
+                                   CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
+                                   DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
+                                   CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
+                                   TriggerCPUTemperature=variances.cpu_temperature_variance,
+                                   SecondsCPUTemperature=variances.cpu_temperature_wait_seconds,
+                                   CheckedEnvTemperature=get_html_checkbox_state(variances.env_temperature_enabled),
+                                   TriggerEnvTemperature=variances.env_temperature_variance,
+                                   SecondsEnvTemperature=variances.env_temperature_wait_seconds,
+                                   CheckedPressure=get_html_checkbox_state(variances.pressure_enabled),
+                                   TriggerPressure=variances.pressure_variance,
+                                   SecondsPressure=variances.pressure_wait_seconds,
+                                   CheckedAltitude=get_html_checkbox_state(variances.altitude_enabled),
+                                   TriggerAltitude=variances.altitude_variance,
+                                   SecondsAltitude=variances.altitude_wait_seconds,
+                                   CheckedHumidity=get_html_checkbox_state(variances.humidity_enabled),
+                                   TriggerHumidity=variances.humidity_variance,
+                                   SecondsHumidity=variances.humidity_wait_seconds,
+                                   CheckedDistance=get_html_checkbox_state(variances.distance_enabled),
+                                   TriggerDistance=variances.distance_variance,
+                                   SecondsDistance=variances.distance_wait_seconds,
+                                   CheckedLumen=get_html_checkbox_state(variances.lumen_enabled),
+                                   TriggerLumen=variances.lumen_variance,
+                                   SecondsLumen=variances.lumen_wait_seconds,
+                                   CheckedColour=get_html_checkbox_state(variances.colour_enabled),
+                                   TriggerRed=variances.red_variance,
+                                   TriggerOrange=variances.orange_variance,
+                                   TriggerYellow=variances.yellow_variance,
+                                   TriggerGreen=variances.green_variance,
+                                   TriggerBlue=variances.blue_variance,
+                                   TriggerViolet=variances.violet_variance,
+                                   SecondsColour=variances.colour_wait_seconds,
+                                   CheckedUltraViolet=get_html_checkbox_state(variances.ultra_violet_enabled),
+                                   TriggerUltraVioletA=variances.ultra_violet_a_variance,
+                                   TriggerUltraVioletB=variances.ultra_violet_b_variance,
+                                   SecondsUltraViolet=variances.ultra_violet_wait_seconds,
+                                   CheckedGas=get_html_checkbox_state(variances.gas_enabled),
+                                   TriggerGasIndex=variances.gas_resistance_index_variance,
+                                   TriggerGasOxidising=variances.gas_oxidising_variance,
+                                   TriggerGasReducing=variances.gas_reducing_variance,
+                                   TriggerGasNH3=variances.gas_nh3_variance,
+                                   SecondsGas=variances.gas_wait_seconds,
+                                   CheckedPM=get_html_checkbox_state(variances.particulate_matter_enabled),
+                                   TriggerPM1=variances.particulate_matter_1_variance,
+                                   TriggerPM25=variances.particulate_matter_2_5_variance,
+                                   TriggerPM10=variances.particulate_matter_10_variance,
+                                   SecondsPM=variances.particulate_matter_wait_seconds,
+                                   CheckedAccelerometer=get_html_checkbox_state(variances.accelerometer_enabled),
+                                   TriggerAccelerometerX=variances.accelerometer_x_variance,
+                                   TriggerAccelerometerY=variances.accelerometer_y_variance,
+                                   TriggerAccelerometerZ=variances.accelerometer_z_variance,
+                                   SecondsAccelerometer=variances.accelerometer_wait_seconds,
+                                   CheckedMagnetometer=get_html_checkbox_state(variances.magnetometer_enabled),
+                                   TriggerMagnetometerX=variances.magnetometer_x_variance,
+                                   TriggerMagnetometerY=variances.magnetometer_y_variance,
+                                   TriggerMagnetometerZ=variances.magnetometer_z_variance,
+                                   SecondsMagnetometer=variances.magnetometer_wait_seconds,
+                                   CheckedGyroscope=get_html_checkbox_state(variances.gyroscope_enabled),
+                                   TriggerGyroscopeX=variances.gyroscope_x_variance,
+                                   TriggerGyroscopeY=variances.gyroscope_y_variance,
+                                   TriggerGyroscopeZ=variances.gyroscope_z_variance,
+                                   SecondsGyroscope=variances.gyroscope_wait_seconds,
                                    WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
                                    WiFiConfig=text_wifi_config)
         except Exception as error:
