@@ -29,6 +29,10 @@ interval_plotly_html_filename = "IntervalPlotlySensorGraph.html"
 triggers_plotly_html_filename = "TriggersPlotlySensorGraph.html"
 sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
 trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
+
+dhcpcd_config_file_template = "/opt/kootnet-sensors/extras/dhcpcd_template.conf"
+dhcpcd_config_file = "/etc/dhcpcd.conf"
+wifi_config_file_template = "/opt/kootnet-sensors/extras/wpa_supplicant_template.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
 display_font = "/opt/kootnet-sensors/extras/DejaVuSans-Bold.ttf"

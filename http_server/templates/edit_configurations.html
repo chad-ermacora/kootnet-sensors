@@ -47,7 +47,7 @@
     <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigMain">
             <fieldset style="text-align: center">
-                <h2><u>Main Configuration</u></h2>
+                <h2><u><a style="color: black" href="{{ PageURL }}">Main Configuration</a></u></h2>
 
                 <div class="mui-checkbox" style="display: inline-block;">
                     <label>
@@ -100,7 +100,8 @@
                 <div class="mui-textfield">
                     <label style="color: black">Current / Custom Temperature Offset
                         <br>
-                        <input style="width: 75px" type="number" step="0.01" min="-100" max="100" name="custom_temperature_offset"
+                        <input style="width: 75px" type="number" step="0.01" min="-100" max="100"
+                               name="custom_temperature_offset"
                                value="{{ temperature_offset }}">
                     </label>
                 </div>
@@ -114,7 +115,7 @@
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
               action="/EditInstalledSensors">
             <fieldset style="text-align: center">
-                <h2><u>Supported System & Sensor Modules</u></h2>
+                <h2><u><a style="color: black" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
 
                 <h4><u>Raspberry Pi</u></h4>
 
@@ -264,7 +265,7 @@
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
               action="/EditTriggerVariances">
             <fieldset style="text-align: center">
-                <h2><u>Trigger Variances</u></h2>
+                <h2><u><a style="color: black" href="{{ PageURL }}">Trigger Variances</a></u></h2>
 
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="window.location.href = '/ResetTriggerVariances';">
@@ -795,12 +796,103 @@
     </div>
 
     <div class="mui-tabs__pane" id="wifi-config-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigWifi">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigWifi">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
+
+                <label><a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
+                    Two Character Country Code
+                </a></label>
+                <br>
+                <input type="text" style="width: 25px" maxlength="2" minlength="2"
+                       name="country_code" value="{{ WirelessCountryCode }}" required>
+
+                <br>
+
+                <div class="mui-row" style="alignment: center">
+                    <div class="mui-col-md-4">
+                        <h4><u>Primary Wireless Network</u></h4>
+                        <label>Wireless Security</label>
+                        <div class="mui-radio">
+                            <label>
+                                <input type="radio" name="wifi_security1"
+                                       value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                                WPA
+                            </label>
+                            <label>
+                                <input type="radio" name="wifi_security1"
+                                       value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                                Open (None)
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Wireless Network Name (SSID)
+                                <br>
+                                <input style="width: 150px" type="text" name="ssid1" maxlength="32"
+                                       value="{{ SSID1 }}">
+                            </label>
+                        </div>
+                        <br>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Wireless Key
+                                <br>
+                                <input style="width: 175px" type="password" name="wifi_key1"
+                                       placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
+                                       value="">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mui-col-md-4">
+                        <h4><u>Secondary Wireless Network</u></h4>
+                        <label>Wireless Security</label>
+                        <div class="mui-radio">
+                            <label>
+                                <input type="radio" name="wifi_security2"
+                                       value="wireless_wpa" {{ CheckedWiFiSecurityWPA2 }}>
+                                WPA
+                            </label>
+                            <label>
+                                <input type="radio" name="wifi_security2"
+                                       value="wireless_none" {{ CheckedWiFiSecurityNone2 }}>
+                                Open (None)
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Wireless Network Name (SSID)
+                                <br>
+                                <input style="width: 150px" type="text" name="ssid2" maxlength="32"
+                                       value="{{ SSID2 }}">
+                            </label>
+                        </div>
+                        <br>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Wireless Key
+                                <br>
+                                <input style="width: 175px" type="password" name="wifi_key2"
+                                       placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
+                                       value="">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+
+
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigWifi">
             <legend><a style="color: black" href="{{ PageURL }}">{{ WiFiTitle }}</a></legend>
             <div class="mui-textfield">
                 <textarea name="configuration" required rows="24">{{ WiFiConfig }}</textarea>
             </div>
-            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
         </form>
     </div>
 

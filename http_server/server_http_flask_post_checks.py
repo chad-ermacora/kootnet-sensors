@@ -17,8 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
+from operations_modules import file_locations
 from operations_modules import configuration_main
 from operations_modules import configuration_files
+from operations_modules import wifi_file
 from operations_modules import trigger_variances as trigger_import
 
 
@@ -331,6 +333,56 @@ def check_html_variance_triggers(html_request):
         configuration_main.trigger_variances.gyroscope_enabled = 0
 
     trigger_import.write_triggers_to_file(configuration_main.trigger_variances)
+
+
+def check_html_config_wifi(html_request):
+    logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
+    if html_request.form.get("ssid1") is not None and html_request.form.get("ssid2") is not None:
+        wifi_template = wifi_file.get_wifi_config_from_file(load_file=file_locations.wifi_config_file_template)
+
+        wifi_country_code = "CA"
+        if len(html_request.form.get("country_code")) == 2:
+            wifi_country_code = html_request.form.get("country_code").upper()
+
+        wifi_ssid1 = html_request.form.get("ssid1")
+        wifi_security_type1 = html_request.form.get("wifi_security1")
+        wifi_psk1 = html_request.form.get("wifi_key1")
+
+        wifi_ssid2 = html_request.form.get("ssid2")
+        wifi_security_type2 = html_request.form.get("wifi_security2")
+        wifi_psk2 = html_request.form.get("wifi_key2")
+
+        if wifi_security_type1 == "wireless_wpa":
+            wifi_security_type1 = "WPA-PSK"
+            if wifi_psk1 is not "":
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
+            else:
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", configuration_main.cache_wifi_psk1)
+        else:
+            wifi_security_type1 = "None"
+            wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
+
+        if wifi_security_type2 == "wireless_wpa":
+            wifi_security_type2 = "WPA-PSK"
+            if wifi_psk2 is not "":
+                wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", wifi_psk2)
+            else:
+                wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", configuration_main.cache_wifi_psk2)
+        else:
+            wifi_security_type2 = "None"
+            wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", "")
+
+        wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)
+        wifi_template = wifi_template.replace("{{ WirelessSSID1 }}", wifi_ssid1)
+        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
+        wifi_template = wifi_template.replace("{{ WirelessSSID2 }}", wifi_ssid2)
+        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt2 }}", wifi_security_type2)
+
+        wifi_file.write_wifi_config_to_file(wifi_template)
+        return wifi_template
+    else:
+        logger.network_logger.warning("HTML WiFi Configuration Update Failed: Missing 1 or more SSID's")
+        return ""
 
 
 def get_html_checkbox_state(config_setting):

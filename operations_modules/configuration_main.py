@@ -76,3 +76,13 @@ cache_hostname = ""
 cache_ip = ""
 cache_program_last_updated = ""
 cache_reboot_count = ""
+
+cache_wifi_country_code = ""
+
+cache_wifi_ssid1 = ""
+cache_wifi_security_type1 = ""
+cache_wifi_psk1 = ""
+
+cache_wifi_ssid2 = ""
+cache_wifi_security_type2 = ""
+cache_wifi_psk2 = ""

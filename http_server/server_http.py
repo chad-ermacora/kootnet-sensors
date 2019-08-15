@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import re
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file
@@ -175,12 +176,45 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def html_set_wifi_config():
             logger.network_logger.debug("** HTML Apply - WiFi Configuration - Source " + str(request.remote_addr))
-            if request.method == "POST" and "configuration" in request.form:
-                try:
-                    new_config = request.form.get("configuration").strip()
-                    wifi_file.write_wifi_config_to_file(new_config)
-                except Exception as error:
-                    logger.primary_logger.error("HTML Apply - WiFi Configuration - Error: " + str(error))
+            if request.method == "POST" and "ssid1" in request.form:
+
+                if request.form.get("wifi_key1").find('"') is not -1 \
+                        or request.form.get("wifi_key2").find('"') is not -1:
+                    message = "Do not use double quotes in the Wireless Key Sections."
+                    return render_templates.message_and_return("Invalid Wireless Key",
+                                                               text_message2=message,
+                                                               url="/ConfigurationsHTML")
+                ssid1_text_is_safe = False
+                ssid2_text_is_safe = False
+
+                if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', request.form.get("ssid1")):
+                    ssid1_text_is_safe = True
+                if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', request.form.get("ssid2")):
+                    ssid2_text_is_safe = True
+
+                if ssid1_text_is_safe and ssid2_text_is_safe:
+                    new_wireless_config = http_post_checks.check_html_config_wifi(request)
+                    if new_wireless_config is not "":
+                        return_message = "You must reboot the sensor to take effect."
+                        render_templates.wifi_access.wifi_configuration_lines_list = new_wireless_config.split("\n")
+                        render_templates.wifi_access.update_all_wifi_cache()
+                        return render_templates.message_and_return("WiFi Configuration Updated",
+                                                                   text_message2=return_message,
+                                                                   url="/ConfigurationsHTML")
+                else:
+                    return_message = ""
+                    if not ssid1_text_is_safe:
+                        return_message += "Primary "
+                    if not ssid2_text_is_safe:
+                        return_message += "and Secondary "
+                    return_message += "Network Names cannot be blank and can only use " + \
+                                      "Alphanumeric Characters, dashes, underscores and spaces."
+                    return render_templates.message_and_return("Unable to Process Wireless Configuration",
+                                                               text_message2=return_message,
+                                                               url="/ConfigurationsHTML")
+
+            return render_templates.message_and_return("Unable to Process WiFi Configuration",
+                                                       url="/ConfigurationsHTML")
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():

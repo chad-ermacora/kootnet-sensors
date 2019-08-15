@@ -31,6 +31,7 @@ from http_server.server_http_flask_post_checks import get_html_checkbox_state
 class CreateRenderTemplates:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
+        self.wifi_access = wifi_file.CreateWiFiAccess(configuration_main)
         self.current_config = configuration_main.current_config
         self.installed_sensors = configuration_main.installed_sensors
 
@@ -149,13 +150,27 @@ class CreateRenderTemplates:
     def edit_configurations(self):
         try:
             variances = configuration_main.trigger_variances
-            text_wifi_config = wifi_file.get_wifi_config_from_file()
+            text_wifi_config = wifi_file.get_wifi_config_from_file(load_file=file_locations.dhcpcd_config_file)
 
             debug_logging = get_html_checkbox_state(self.current_config.enable_debug_logging)
             display = get_html_checkbox_state(self.current_config.enable_display)
             interval_recording = get_html_checkbox_state(self.current_config.enable_interval_recording)
             trigger_recording = get_html_checkbox_state(self.current_config.enable_trigger_recording)
             custom_temp_offset = get_html_checkbox_state(self.current_config.enable_custom_temp)
+
+            if configuration_main.cache_wifi_security_type1 == "WPA-PSK":
+                wifi_security_type_wpa1 = "checked"
+                wifi_security_type_none1 = ""
+            else:
+                wifi_security_type_wpa1 = ""
+                wifi_security_type_none1 = "checked"
+
+            if configuration_main.cache_wifi_security_type2 == "WPA-PSK":
+                wifi_security_type_wpa2 = "checked"
+                wifi_security_type_none2 = ""
+            else:
+                wifi_security_type_wpa2 = ""
+                wifi_security_type_none2 = "checked"
 
             return render_template("edit_configurations.html",
                                    PageURL="/ConfigurationsHTML",
@@ -249,6 +264,13 @@ class CreateRenderTemplates:
                                    TriggerGyroscopeY=variances.gyroscope_y_variance,
                                    TriggerGyroscopeZ=variances.gyroscope_z_variance,
                                    SecondsGyroscope=variances.gyroscope_wait_seconds,
+                                   WirelessCountryCode=configuration_main.cache_wifi_country_code,
+                                   SSID1=configuration_main.cache_wifi_ssid1,
+                                   CheckedWiFiSecurityWPA1=wifi_security_type_wpa1,
+                                   CheckedWiFiSecurityNone1=wifi_security_type_none1,
+                                   SSID2=configuration_main.cache_wifi_ssid2,
+                                   CheckedWiFiSecurityWPA2=wifi_security_type_wpa2,
+                                   CheckedWiFiSecurityNone2=wifi_security_type_none2,
                                    WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
                                    WiFiConfig=text_wifi_config)
         except Exception as error:
