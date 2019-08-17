@@ -6,4 +6,4 @@ if [[ $EUID != 0 ]]; then
   exit $?
 fi
 /home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/change_http_auth_credentials.py
-systemctl restart KootnetSensors
+systemctl restart KootnetSensors 2>/dev/null

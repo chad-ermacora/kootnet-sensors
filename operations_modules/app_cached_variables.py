@@ -16,13 +16,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from http_server import server_http_auth
+# This file is updated with variables at runtime.
+# This helps lessen disk reads by caching commonly used variables
+program_last_updated = ""
+reboot_count = ""
 
-http_auth = server_http_auth.CreateHTTPAuth()
+hostname = ""
+ip = ""
+ip_subnet = "/24"
+gateway = ""
+dns1 = ""
+dns2 = ""
 
-print("Please enter in a Username and Password for Sensor Web Management")
-new_user = input("New Username: ")
-new_password = input("New Password: ")
-
-http_auth.save_http_auth_to_file(new_user, new_password)
-input("New Username and Password set.  Press enter to continue.")
+wifi_country_code = ""
+wifi_ssid = ""
+wifi_security_type = ""
+wifi_psk = ""
