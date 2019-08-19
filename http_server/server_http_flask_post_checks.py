@@ -16,11 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
+import shutil
 from operations_modules import logger
+from operations_modules import app_cached_variables
 from operations_modules import file_locations
 from operations_modules import configuration_main
 from operations_modules import configuration_files
-from operations_modules import wifi_file
+from operations_modules import app_generic_functions
+from operations_modules import network_ip
+from operations_modules import network_wifi
 from operations_modules import trigger_variances as trigger_import
 
 
@@ -337,8 +342,8 @@ def check_html_variance_triggers(html_request):
 
 def check_html_config_wifi(html_request):
     logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
-    if html_request.form.get("ssid1") is not None and html_request.form.get("ssid2") is not None:
-        wifi_template = wifi_file.get_wifi_config_from_file(load_file=file_locations.wifi_config_file_template)
+    if html_request.form.get("ssid1") is not None:
+        wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
 
         wifi_country_code = "CA"
         if len(html_request.form.get("country_code")) == 2:
@@ -348,41 +353,60 @@ def check_html_config_wifi(html_request):
         wifi_security_type1 = html_request.form.get("wifi_security1")
         wifi_psk1 = html_request.form.get("wifi_key1")
 
-        wifi_ssid2 = html_request.form.get("ssid2")
-        wifi_security_type2 = html_request.form.get("wifi_security2")
-        wifi_psk2 = html_request.form.get("wifi_key2")
-
         if wifi_security_type1 == "wireless_wpa":
-            wifi_security_type1 = "WPA-PSK"
+            wifi_security_type1 = ""
             if wifi_psk1 is not "":
                 wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
             else:
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", configuration_main.cache_wifi_psk1)
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", app_cached_variables.wifi_psk)
         else:
-            wifi_security_type1 = "None"
+            wifi_security_type1 = "key_mgmt=None"
             wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
-
-        if wifi_security_type2 == "wireless_wpa":
-            wifi_security_type2 = "WPA-PSK"
-            if wifi_psk2 is not "":
-                wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", wifi_psk2)
-            else:
-                wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", configuration_main.cache_wifi_psk2)
-        else:
-            wifi_security_type2 = "None"
-            wifi_template = wifi_template.replace("{{ WirelessPSK2 }}", "")
 
         wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)
         wifi_template = wifi_template.replace("{{ WirelessSSID1 }}", wifi_ssid1)
         wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
-        wifi_template = wifi_template.replace("{{ WirelessSSID2 }}", wifi_ssid2)
-        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt2 }}", wifi_security_type2)
 
-        wifi_file.write_wifi_config_to_file(wifi_template)
+        network_wifi.write_wifi_config_to_file(wifi_template)
         return wifi_template
     else:
-        logger.network_logger.warning("HTML WiFi Configuration Update Failed: Missing 1 or more SSID's")
+        logger.network_logger.warning("HTML WiFi Configuration Update Failed: Missing SSID")
         return ""
+
+
+def check_html_config_ipv4(html_request):
+    logger.network_logger.debug("Starting HTML IPv4 Configuration Update Check")
+
+    dhcpcd_template = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file_template)
+
+    if html_request.form.get("ip_dhcp") is not None:
+        dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
+
+        network_ip.write_ipv4_config_to_file(dhcpcd_template)
+    else:
+        if html_request.form.get("ip_address") is not None:
+            hostname = html_request.form.get("ip_hostname")
+            ip_address = html_request.form.get("ip_address")
+            ip_gateway = html_request.form.get("ip_gateway")
+            ip_dns1 = html_request.form.get("ip_dns1")
+            ip_dns2 = html_request.form.get("ip_dns2")
+
+            if hostname is not None and hostname.isalnum():
+                os.system("hostnamectl set-hostname " + hostname)
+                app_cached_variables.hostname = hostname
+            else:
+                logger.network_logger.warning("HTML Network Configuration - " +
+                                              "Invalid or Missing Hostname - Hostname Unchanged")
+
+            ip_network_text = "interface wlan0\nstatic ip_address=" + ip_address + "\nstatic routers=" + ip_gateway + \
+                              "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
+
+            dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
+
+            network_ip.write_ipv4_config_to_file(dhcpcd_template)
+
+    shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
+    os.chmod(file_locations.dhcpcd_config_file, 664)
 
 
 def get_html_checkbox_state(config_setting):

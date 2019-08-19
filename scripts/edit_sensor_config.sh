@@ -19,7 +19,7 @@ then
   printf "\nPrevious install detected, opening configuration files\n"
   nano ${CONFIG_DIR}/installed_sensors.conf
   nano ${CONFIG_DIR}/sql_recording.conf
-  nano /etc/network/interfaces
+  nano /etc/dhcpcd.conf
   nano /etc/wpa_supplicant/wpa_supplicant.conf
   printf "\nRestarting Services, please wait ...\n\n"
   systemctl daemon-reload

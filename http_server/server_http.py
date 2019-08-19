@@ -17,19 +17,21 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import re
 from zipfile import ZipFile, ZIP_DEFLATED
 from threading import Thread
 from flask import Flask, request, send_file
+from flask_compress import Compress
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import check_password_hash
 from gevent import pywsgi
-from operations_modules import wifi_file
+from operations_modules import network_wifi
 from operations_modules import trigger_variances
 from operations_modules import file_locations
 from operations_modules import logger
+from operations_modules import app_generic_functions
 from operations_modules import configuration_main
 from operations_modules import app_variables
+from operations_modules import app_validation_checks
 from operations_modules import configuration_files
 from http_server import server_http_flask_render_templates
 from http_server import server_http_flask_post_checks as http_post_checks
@@ -41,9 +43,11 @@ from http_server import server_plotly_graph_variables
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
         self.app = Flask(__name__)
+        Compress(self.app)
         self.auth = HTTPBasicAuth()
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
+        app_generic_functions.update_cached_variables(sensor_access)
         render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
 
         @self.app.route("/")
@@ -55,6 +59,10 @@ class CreateSensorHTTP:
         @self.app.route("/MenuScript.js")
         def menu_script():
             return send_file(file_locations.menu_script)
+
+        @self.app.route("/EditConfigurations.js")
+        def config_script():
+            return send_file(file_locations.configuration_script)
 
         @self.app.route("/GraphScript.js")
         def graph_script():
@@ -178,43 +186,48 @@ class CreateSensorHTTP:
             logger.network_logger.debug("** HTML Apply - WiFi Configuration - Source " + str(request.remote_addr))
             if request.method == "POST" and "ssid1" in request.form:
 
-                if request.form.get("wifi_key1").find('"') is not -1 \
-                        or request.form.get("wifi_key2").find('"') is not -1:
+                if app_validation_checks.text_has_no_double_quotes(request.form.get("wifi_key1")):
+                    pass
+                else:
                     message = "Do not use double quotes in the Wireless Key Sections."
                     return render_templates.message_and_return("Invalid Wireless Key",
                                                                text_message2=message,
                                                                url="/ConfigurationsHTML")
-                ssid1_text_is_safe = False
-                ssid2_text_is_safe = False
 
-                if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', request.form.get("ssid1")):
-                    ssid1_text_is_safe = True
-                if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', request.form.get("ssid2")):
-                    ssid2_text_is_safe = True
-
-                if ssid1_text_is_safe and ssid2_text_is_safe:
+                if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
                     new_wireless_config = http_post_checks.check_html_config_wifi(request)
                     if new_wireless_config is not "":
                         return_message = "You must reboot the sensor to take effect."
-                        render_templates.wifi_access.wifi_configuration_lines_list = new_wireless_config.split("\n")
-                        render_templates.wifi_access.update_all_wifi_cache()
+                        app_generic_functions.update_cached_variables(sensor_access)
                         return render_templates.message_and_return("WiFi Configuration Updated",
                                                                    text_message2=return_message,
                                                                    url="/ConfigurationsHTML")
                 else:
-                    return_message = ""
-                    if not ssid1_text_is_safe:
-                        return_message += "Primary "
-                    if not ssid2_text_is_safe:
-                        return_message += "and Secondary "
-                    return_message += "Network Names cannot be blank and can only use " + \
-                                      "Alphanumeric Characters, dashes, underscores and spaces."
+                    return_message = "Network Names cannot be blank and can only use " + \
+                                     "Alphanumeric Characters, dashes, underscores and spaces."
                     return render_templates.message_and_return("Unable to Process Wireless Configuration",
                                                                text_message2=return_message,
                                                                url="/ConfigurationsHTML")
 
             return render_templates.message_and_return("Unable to Process WiFi Configuration",
                                                        url="/ConfigurationsHTML")
+
+        @self.app.route("/EditConfigIPv4", methods=["POST"])
+        @self.auth.login_required
+        def html_set_ipv4_config():
+            logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
+            if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
+                http_post_checks.check_html_config_ipv4(request)
+                app_generic_functions.update_cached_variables(sensor_access)
+                return render_templates.message_and_return("IPv4 Configuration Updated",
+                                                           text_message2="You must reboot the sensor to take effect.",
+                                                           url="/ConfigurationsHTML")
+            else:
+                return_message = "Invalid or Missing Hostname.\n\n" + \
+                                 "Only Alphanumeric Characters, Dashes and Underscores may be used."
+                return render_templates.message_and_return("Unable to Process IPv4 Configuration",
+                                                           text_message2=return_message,
+                                                           url="/ConfigurationsHTML")
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
@@ -261,7 +274,7 @@ class CreateSensorHTTP:
         def cc_set_wifi_config():
             try:
                 new_wifi_config = request.form['command_data']
-                wifi_file.write_wifi_config_to_file(new_wifi_config)
+                network_wifi.write_wifi_config_to_file(new_wifi_config)
                 logger.network_logger.info("** Wifi WPA Supplicant Changed by " + str(request.remote_addr))
             except Exception as error:
                 logger.network_logger.info("* Failed to change Wifi WPA Supplicant sent from " +
@@ -499,7 +512,7 @@ class CreateSensorHTTP:
             thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
             return render_templates.message_and_return("Sensor Shutting Down",
                                                        text_message2=message2,
-                                                       url="/SystemCommands")
+                                                       url="/")
 
         @self.app.route("/RestartServices")
         def services_restart():

@@ -21,11 +21,21 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 
 
+def check_for_dhcp(dhcpcd_config_lines):
+    dhcp_status = True
+    for line in dhcpcd_config_lines:
+        line_stripped = line.strip()
+        if line_stripped[:18] == "static ip_address=":
+            dhcp_status = False
+    return dhcp_status
+
+
 def get_dhcpcd_ip(dhcpcd_config_lines):
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
             return line_stripped[18:-3]
+    return ""
 
 
 def get_gateway(dhcpcd_config_lines):
@@ -33,6 +43,7 @@ def get_gateway(dhcpcd_config_lines):
         line_stripped = line.strip()
         if line_stripped[:15] == "static routers=":
             return line_stripped[15:]
+    return ""
 
 
 def get_subnet(dhcpcd_config_lines):
@@ -40,6 +51,7 @@ def get_subnet(dhcpcd_config_lines):
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
             return line_stripped[-3:]
+    return ""
 
 
 def get_dns(dhcpcd_config_lines, dns_server=0):
@@ -49,6 +61,7 @@ def get_dns(dhcpcd_config_lines, dns_server=0):
             dns_list = line_stripped[27:].split(" ")
             if len(dns_list) > 1 or dns_server == 0:
                 return dns_list[dns_server]
+    return ""
 
 
 def get_dhcpcd_config_from_file():

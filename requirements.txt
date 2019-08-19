@@ -5,6 +5,7 @@ psutil
 requests
 gpiozero
 flask
+Flask-Compress
 Flask-HTTPAuth
 gevent
 # Sensor Hardware Modules

@@ -13,6 +13,7 @@ CONFIG_DIR="/etc/kootnet"
 # Make sure SMB_SHARE points to the root share holding the upgrade zip file
 SMB_SERVER="//xps-development01"
 SMB_FILE="/KootNetSensors.zip"
+# shellcheck disable=SC2089
 CIFS_OPTIONS="username=myself,password='123'"
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
@@ -64,7 +65,7 @@ if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
 then
   echo
 else
-  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh ${USER_NAME}
+  bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh "${USER_NAME}"
 fi
 bash /opt/kootnet-sensors/scripts/chk_install.sh
 # Install Control Center requirements
@@ -75,8 +76,8 @@ then
   mkdir /opt/kootnet-control-center/logs 2>/dev/null
   cp -f -R /tmp/SensorSMBUpgrade/sensor-control-center/* /opt/kootnet-control-center
   bash /opt/kootnet-control-center/scripts/install_dependencies.sh
-  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh ${USER_NAME}
-  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh ${USER_NAME}
+  bash /opt/kootnet-control-center/scripts/create_shortcuts.sh "${USER_NAME}"
+  bash /opt/kootnet-control-center/scripts/create_custom_uninstall.sh "${USER_NAME}"
   bash /opt/kootnet-control-center/scripts/set_permissions.sh
   printf '\nControl Center Requirements Installed\n\n'
 elif [[ -f /opt/kootnet-control-center/requirements.txt ]]

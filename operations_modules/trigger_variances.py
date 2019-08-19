@@ -22,7 +22,7 @@ from operations_modules import file_locations
 
 
 class CreateTriggerVariances:
-    """ Create a Trigger Variance configuration object. """
+    """ Create a Trigger Variance configuration object. These are also the default values. """
     def __init__(self):
         self.sensor_uptime_enabled = 1
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
@@ -56,37 +56,37 @@ class CreateTriggerVariances:
         self.gas_oxidising_variance = 100.0
         self.gas_reducing_variance = 100.0
         self.gas_nh3_variance = 100.0
-        self.gas_wait_seconds = 1.0
+        self.gas_wait_seconds = 30.0
 
         self.particulate_matter_enabled = 0
-        self.particulate_matter_1_variance = 1000.0
-        self.particulate_matter_2_5_variance = 1000.0
-        self.particulate_matter_10_variance = 1000.0
-        self.particulate_matter_wait_seconds = 1.0
+        self.particulate_matter_1_variance = 4.0
+        self.particulate_matter_2_5_variance = 4.0
+        self.particulate_matter_10_variance = 4.0
+        self.particulate_matter_wait_seconds = 60.0
 
         self.lumen_enabled = 0
         self.lumen_variance = 100.0
         self.lumen_wait_seconds = 1.0
 
         self.colour_enabled = 0
-        self.red_variance = 5.0
-        self.orange_variance = 5.0
-        self.yellow_variance = 5.0
-        self.green_variance = 5.0
-        self.blue_variance = 5.0
-        self.violet_variance = 5.0
-        self.colour_wait_seconds = 1.0
+        self.red_variance = 15.0
+        self.orange_variance = 15.0
+        self.yellow_variance = 15.0
+        self.green_variance = 15.0
+        self.blue_variance = 15.0
+        self.violet_variance = 15.0
+        self.colour_wait_seconds = 10.0
 
         self.ultra_violet_enabled = 0
         self.ultra_violet_index_variance = 5.0
-        self.ultra_violet_a_variance = 5.0
-        self.ultra_violet_b_variance = 5.0
-        self.ultra_violet_wait_seconds = 1.0
+        self.ultra_violet_a_variance = 10.0
+        self.ultra_violet_b_variance = 10.0
+        self.ultra_violet_wait_seconds = 5.0
 
         self.accelerometer_enabled = 0
-        self.accelerometer_x_variance = 25.0
-        self.accelerometer_y_variance = 25.0
-        self.accelerometer_z_variance = 25.0
+        self.accelerometer_x_variance = 0.1
+        self.accelerometer_y_variance = 0.1
+        self.accelerometer_z_variance = 0.1
         self.accelerometer_wait_seconds = 0.25
 
         self.magnetometer_enabled = 0

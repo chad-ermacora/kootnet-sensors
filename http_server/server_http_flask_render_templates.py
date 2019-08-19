@@ -21,9 +21,11 @@ from datetime import datetime
 from time import strftime
 from flask import render_template
 from operations_modules import logger
+from operations_modules import app_cached_variables
+from operations_modules import app_generic_functions
 from operations_modules import configuration_main
 from operations_modules import file_locations
-from operations_modules import wifi_file
+from operations_modules import network_ip
 from http_server import server_plotly_graph
 from http_server.server_http_flask_post_checks import get_html_checkbox_state
 
@@ -31,14 +33,6 @@ from http_server.server_http_flask_post_checks import get_html_checkbox_state
 class CreateRenderTemplates:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
-        self.wifi_access = wifi_file.CreateWiFiAccess(configuration_main)
-        self.current_config = configuration_main.current_config
-        self.installed_sensors = configuration_main.installed_sensors
-
-        configuration_main.cache_hostname = sensor_access.get_hostname()
-        configuration_main.cache_ip = sensor_access.get_ip()
-        configuration_main.cache_program_last_updated = sensor_access.get_last_updated()
-        configuration_main.cache_reboot_count = str(sensor_access.get_system_reboot_count())
 
     @staticmethod
     def message_and_return(return_message, text_message2="", url="/", special_command=""):
@@ -48,8 +42,9 @@ class CreateRenderTemplates:
                                CloseWindow=special_command,
                                URL=url)
 
-    def index_page(self):
-        return render_template("index.html", HostName=self.sensor_access.get_hostname())
+    @staticmethod
+    def index_page():
+        return render_template("index.html", HostName=app_cached_variables.hostname)
 
     @staticmethod
     def system_management():
@@ -88,20 +83,20 @@ class CreateRenderTemplates:
             custom_temp_enabled = False
 
         return render_template("sensor_information.html",
-                               HostName=configuration_main.cache_hostname,
-                               IPAddress=configuration_main.cache_ip,
+                               HostName=app_cached_variables.hostname,
+                               IPAddress=app_cached_variables.ip,
                                KootnetVersion=configuration_main.software_version.version,
-                               LastUpdated=configuration_main.cache_program_last_updated,
+                               LastUpdated=app_cached_variables.program_last_updated,
                                DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                SystemUptime=self.sensor_access.get_uptime_str(),
-                               SensorReboots=configuration_main.cache_reboot_count,
+                               SensorReboots=app_cached_variables.reboot_count,
                                CPUTemperature=self.sensor_access.get_cpu_temperature(),
                                RAMUsage=self.sensor_access.get_memory_usage_percent(),
                                DiskUsage=self.sensor_access.get_disk_usage_percent(),
                                DebugLogging=debug_logging,
                                SupportedDisplay=display_enabled,
                                IntervalRecording=interval_recording,
-                               IntervalDelay=self.current_config.sleep_duration_interval,
+                               IntervalDelay=configuration_main.current_config.sleep_duration_interval,
                                TriggerRecording=trigger_recording,
                                ManualTemperatureEnabled=custom_temp_enabled,
                                CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
@@ -116,8 +111,8 @@ class CreateRenderTemplates:
             self.sensor_access.get_ems())
 
         return render_template("sensor_readings.html",
-                               HostName=configuration_main.cache_hostname,
-                               IPAddress=configuration_main.cache_ip,
+                               HostName=app_cached_variables.hostname,
+                               IPAddress=app_cached_variables.ip,
                                DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                SystemUptime=self.sensor_access.get_uptime_str(),
                                CPUTemperature=self.sensor_access.get_cpu_temperature(),
@@ -147,62 +142,91 @@ class CreateRenderTemplates:
                                Mag=self.sensor_access.get_magnetometer_xyz(),
                                Gyro=self.sensor_access.get_gyroscope_xyz())
 
-    def edit_configurations(self):
+    @staticmethod
+    def edit_configurations():
         try:
             variances = configuration_main.trigger_variances
-            text_wifi_config = wifi_file.get_wifi_config_from_file(load_file=file_locations.dhcpcd_config_file)
 
-            debug_logging = get_html_checkbox_state(self.current_config.enable_debug_logging)
-            display = get_html_checkbox_state(self.current_config.enable_display)
-            interval_recording = get_html_checkbox_state(self.current_config.enable_interval_recording)
-            trigger_recording = get_html_checkbox_state(self.current_config.enable_trigger_recording)
-            custom_temp_offset = get_html_checkbox_state(self.current_config.enable_custom_temp)
+            debug_logging = get_html_checkbox_state(configuration_main.current_config.enable_debug_logging)
+            display = get_html_checkbox_state(configuration_main.current_config.enable_display)
+            interval_recording = get_html_checkbox_state(configuration_main.current_config.enable_interval_recording)
+            interval_recording_disabled = "disabled"
+            if interval_recording:
+                interval_recording_disabled = ""
+            trigger_recording = get_html_checkbox_state(configuration_main.current_config.enable_trigger_recording)
+            custom_temp_offset = get_html_checkbox_state(configuration_main.current_config.enable_custom_temp)
+            custom_temp_offset_disabled = "disabled"
+            if custom_temp_offset:
+                custom_temp_offset_disabled = ""
 
-            if configuration_main.cache_wifi_security_type1 == "WPA-PSK":
+            dhcp_checkbox = ""
+            ip_disabled = ""
+            gateway_disabled = ""
+            dns1_disabled = ""
+            dns2_disabled = ""
+            dhcpcd_lines = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file).split("\n")
+            if network_ip.check_for_dhcp(dhcpcd_lines):
+                dhcp_checkbox = "checked"
+                ip_disabled = "disabled"
+                gateway_disabled = "disabled"
+                dns1_disabled = "disabled"
+                dns2_disabled = "disabled"
+
+            if app_cached_variables.wifi_security_type is None:
                 wifi_security_type_wpa1 = "checked"
                 wifi_security_type_none1 = ""
             else:
                 wifi_security_type_wpa1 = ""
                 wifi_security_type_none1 = "checked"
 
-            if configuration_main.cache_wifi_security_type2 == "WPA-PSK":
-                wifi_security_type_wpa2 = "checked"
-                wifi_security_type_none2 = ""
-            else:
-                wifi_security_type_wpa2 = ""
-                wifi_security_type_none2 = "checked"
-
             return render_template("edit_configurations.html",
                                    PageURL="/ConfigurationsHTML",
                                    CheckedDebug=debug_logging,
                                    CheckedDisplay=display,
                                    CheckedInterval=interval_recording,
+                                   DisabledIntervalDelay=interval_recording_disabled,
                                    IntervalDelay=float(configuration_main.current_config.sleep_duration_interval),
                                    CheckedTrigger=trigger_recording,
                                    CheckedCustomTempOffset=custom_temp_offset,
+                                   DisabledCustomTempOffset=custom_temp_offset_disabled,
                                    temperature_offset=float(configuration_main.current_config.temperature_offset),
-                                   GnuLinux=get_html_checkbox_state(self.installed_sensors.linux_system),
-                                   RPIZeroW=get_html_checkbox_state(self.installed_sensors.raspberry_pi_zero_w),
-                                   RPI3BPlus=get_html_checkbox_state(self.installed_sensors.raspberry_pi_3b_plus),
-                                   SenseHAT=get_html_checkbox_state(self.installed_sensors.raspberry_pi_sense_hat),
-                                   PimoroniBH1745=get_html_checkbox_state(self.installed_sensors.pimoroni_bh1745),
-                                   PimoroniAS7262=get_html_checkbox_state(self.installed_sensors.pimoroni_as7262),
-                                   PimoroniBMP280=get_html_checkbox_state(self.installed_sensors.pimoroni_bmp280),
-                                   PimoroniBME680=get_html_checkbox_state(self.installed_sensors.pimoroni_bme680),
-                                   PimoroniEnviroPHAT=get_html_checkbox_state(self.installed_sensors.pimoroni_enviro),
+                                   GnuLinux=get_html_checkbox_state(configuration_main.installed_sensors.linux_system),
+                                   RPIZeroW=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.raspberry_pi_zero_w),
+                                   RPI3BPlus=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.raspberry_pi_3b_plus),
+                                   SenseHAT=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.raspberry_pi_sense_hat),
+                                   PimoroniBH1745=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_bh1745),
+                                   PimoroniAS7262=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_as7262),
+                                   PimoroniBMP280=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_bmp280),
+                                   PimoroniBME680=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_bme680),
+                                   PimoroniEnviroPHAT=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_enviro),
                                    PimoroniEnviroPlus=get_html_checkbox_state(
-                                       self.installed_sensors.pimoroni_enviroplus),
-                                   PimoroniPMS5003=get_html_checkbox_state(self.installed_sensors.pimoroni_pms5003),
-                                   PimoroniLSM303D=get_html_checkbox_state(self.installed_sensors.pimoroni_lsm303d),
-                                   PimoroniICM20948=get_html_checkbox_state(self.installed_sensors.pimoroni_icm20948),
-                                   PimoroniVL53L1X=get_html_checkbox_state(self.installed_sensors.pimoroni_vl53l1x),
-                                   PimoroniLTR559=get_html_checkbox_state(self.installed_sensors.pimoroni_ltr_559),
-                                   PimoroniVEML6075=get_html_checkbox_state(self.installed_sensors.pimoroni_veml6075),
+                                       configuration_main.installed_sensors.pimoroni_enviroplus),
+                                   PimoroniPMS5003=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_pms5003),
+                                   PimoroniLSM303D=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_lsm303d),
+                                   PimoroniICM20948=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_icm20948),
+                                   PimoroniVL53L1X=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_vl53l1x),
+                                   PimoroniLTR559=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_ltr_559),
+                                   PimoroniVEML6075=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_veml6075),
                                    Pimoroni11x7LEDMatrix=get_html_checkbox_state(
-                                       self.installed_sensors.pimoroni_matrix_11x7),
-                                   PimoroniSPILCD10_96=get_html_checkbox_state(self.installed_sensors.pimoroni_st7735),
+                                       configuration_main.installed_sensors.pimoroni_matrix_11x7),
+                                   PimoroniSPILCD10_96=get_html_checkbox_state(
+                                       configuration_main.installed_sensors.pimoroni_st7735),
                                    PimoroniMonoOLED128x128BW=get_html_checkbox_state(
-                                       self.installed_sensors.pimoroni_mono_oled_luma),
+                                       configuration_main.installed_sensors.pimoroni_mono_oled_luma),
                                    CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
                                    DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
                                    CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
@@ -264,15 +288,20 @@ class CreateRenderTemplates:
                                    TriggerGyroscopeY=variances.gyroscope_y_variance,
                                    TriggerGyroscopeZ=variances.gyroscope_z_variance,
                                    SecondsGyroscope=variances.gyroscope_wait_seconds,
-                                   WirelessCountryCode=configuration_main.cache_wifi_country_code,
-                                   SSID1=configuration_main.cache_wifi_ssid1,
+                                   WirelessCountryCode=app_cached_variables.wifi_country_code,
+                                   SSID1=app_cached_variables.wifi_ssid,
                                    CheckedWiFiSecurityWPA1=wifi_security_type_wpa1,
                                    CheckedWiFiSecurityNone1=wifi_security_type_none1,
-                                   SSID2=configuration_main.cache_wifi_ssid2,
-                                   CheckedWiFiSecurityWPA2=wifi_security_type_wpa2,
-                                   CheckedWiFiSecurityNone2=wifi_security_type_none2,
-                                   WiFiTitle="WiFi Configuration (GNU/Linux WPA Supplicant)",
-                                   WiFiConfig=text_wifi_config)
+                                   CheckedDHCP=dhcp_checkbox,
+                                   IPHostname=app_cached_variables.hostname,
+                                   IPv4Address=app_cached_variables.ip + app_cached_variables.ip_subnet,
+                                   IPv4AddressDisabled=ip_disabled,
+                                   IPGateway=app_cached_variables.gateway,
+                                   IPGatewayDisabled=gateway_disabled,
+                                   IPDNS1=app_cached_variables.dns1,
+                                   IPDNS1Disabled=dns1_disabled,
+                                   IPDNS2=app_cached_variables.dns2,
+                                   IPDNS2Disabled=dns2_disabled)
         except Exception as error:
             logger.network_logger.error("Stuff broke!: " + str(error))
 
