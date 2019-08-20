@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import app_generic_functions
-from operations_modules import logger
 from operations_modules import file_locations
 
 
@@ -51,11 +50,9 @@ def get_wifi_psk(wifi_config_lines):
 
 def get_wifi_config_from_file():
     """ Loads wpa_supplicant.conf from file and returns it. """
-    logger.primary_logger.debug("Loading Wifi wpa_supplicant File")
     return app_generic_functions.get_file_content(file_locations.wifi_config_file)
 
 
 def write_wifi_config_to_file(config):
     """ Writes provided wpa_supplicant file to local disk. """
-    logger.primary_logger.debug("Writing Wifi wpa_supplicant to File")
     app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, config)

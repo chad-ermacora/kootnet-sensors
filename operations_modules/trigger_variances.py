@@ -19,6 +19,7 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_generic_functions
 
 
 class CreateTriggerVariances:
@@ -324,28 +325,6 @@ def convert_triggers_to_str(triggers):
     return triggers_file_str
 
 
-def get_triggers_variances_from_file():
-    """ Loads configuration from file and returns it as a configuration object. """
-    logger.primary_logger.debug("Loading Trigger Variances File")
-
-    if os.path.isfile(file_locations.trigger_variances_file_location):
-        try:
-            trigger_file = open(file_locations.trigger_variances_file_location, "r")
-            trigger_file_content = trigger_file.readlines()
-            trigger_file.close()
-            installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
-        except Exception as error:
-            installed_trigger_variances = CreateTriggerVariances()
-            logger.primary_logger.error("Unable to load Trigger Variance Configuration file, using defaults: " + str(error))
-
-    else:
-        logger.primary_logger.error("Trigger Variance Configuration file not found, using and saving default")
-        installed_trigger_variances = CreateTriggerVariances()
-        write_triggers_to_file(installed_trigger_variances)
-
-    return installed_trigger_variances
-
-
 def convert_triggers_lines_to_obj(trigger_text_file):
     """ Creates a Trigger Variance object with provided text from the variance configuration file. """
     new_trigger_variances = CreateTriggerVariances()
@@ -496,17 +475,27 @@ def convert_triggers_lines_to_obj(trigger_text_file):
     return new_trigger_variances
 
 
+def get_triggers_variances_from_file():
+    """ Loads configuration from file and returns it as a configuration object. """
+    if os.path.isfile(file_locations.trigger_variances_file_location):
+        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location).split("\n")
+        installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
+    else:
+        logger.primary_logger.error("Trigger Variance Configuration file not found, using and saving default")
+        installed_trigger_variances = CreateTriggerVariances()
+        write_triggers_to_file(installed_trigger_variances)
+
+    return installed_trigger_variances
+
+
 def write_triggers_to_file(triggers):
     """ Writes provided trigger variances object instance or string to local disk. """
-    logger.primary_logger.debug("Writing Trigger Variances to File")
     try:
         if type(triggers) is str:
             new_triggers = triggers
         else:
             new_triggers = convert_triggers_to_str(triggers)
 
-        sensor_list_file = open(file_locations.trigger_variances_file_location, 'w')
-        sensor_list_file.write(new_triggers)
-        sensor_list_file.close()
+        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_file_location, new_triggers)
     except Exception as error:
         logger.primary_logger.error("Unable to write trigger file: " + str(error))

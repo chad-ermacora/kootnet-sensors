@@ -20,6 +20,7 @@ import os
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
+from operations_modules import app_generic_functions
 from sensor_modules import sensor_variables
 
 
@@ -39,18 +40,9 @@ def convert_config_to_str(config):
 
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
-    logger.primary_logger.debug("Loading Configuration File")
-
     if os.path.isfile(file_locations.config_file_location):
-        try:
-            config_file = open(file_locations.config_file_location, "r")
-            config_file_content = config_file.readlines()
-            config_file.close()
-            installed_config = convert_config_lines_to_obj(config_file_content)
-        except Exception as error:
-            installed_config = app_variables.CreateConfig()
-            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
-
+        config_file_content = app_generic_functions.get_file_content(file_locations.config_file_location).split("\n")
+        installed_config = convert_config_lines_to_obj(config_file_content)
     else:
         logger.primary_logger.error("Configuration file not found, using and saving default")
         installed_config = app_variables.CreateConfig()
@@ -116,7 +108,6 @@ def convert_config_lines_to_obj(config_text_file):
 
 def write_config_to_file(config):
     """ Writes provided configuration file to local disk. The provided configuration can be string or object. """
-    logger.primary_logger.debug("Writing Configuration to File")
     try:
         if type(config) is str:
             new_config = config
@@ -124,32 +115,19 @@ def write_config_to_file(config):
         else:
             new_config = convert_config_to_str(config)
 
-        sensor_list_file = open(file_locations.config_file_location, 'w')
-        sensor_list_file.write(new_config)
-        sensor_list_file.close()
+        app_generic_functions.write_file_to_disk(file_locations.config_file_location, new_config)
 
         # Save Log level with each config file save
-        enable_debug = open(file_locations.debug_file_location, 'w')
-        enable_debug.write(str(config.enable_debug_logging))
-        enable_debug.close()
-
+        app_generic_functions.write_file_to_disk(file_locations.debug_file_location, str(config.enable_debug_logging))
     except Exception as error:
         logger.primary_logger.error("Unable to open config file: " + str(error))
 
 
 def get_installed_sensors_from_file():
     """ Loads installed sensors from file and returns it as an object. """
-    logger.primary_logger.debug("Loading Installed Sensors and Returning")
-
     if os.path.isfile(file_locations.sensors_installed_file_location):
-        try:
-            sensor_list_file = open(file_locations.sensors_installed_file_location, 'r')
-            installed_sensor_lines = sensor_list_file.readlines()
-            sensor_list_file.close()
-            installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
-        except Exception as error:
-            logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
-            installed_sensors = sensor_variables.CreateInstalledSensors()
+        installed_sensor_lines = app_generic_functions.get_file_content(file_locations.sensors_installed_file_location).split("\n")
+        installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
     else:
         logger.primary_logger.error("Installed Sensors file not found, using and saving default")
         installed_sensors = sensor_variables.CreateInstalledSensors()
@@ -392,9 +370,6 @@ def write_installed_sensors_to_file(installed_sensors):
         else:
             new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
 
-        installed_sensors_config_file = open(file_locations.sensors_installed_file_location, 'w')
-        installed_sensors_config_file.write(new_installed_sensors)
-        installed_sensors_config_file.close()
-
+        app_generic_functions.write_file_to_disk(file_locations.sensors_installed_file_location, new_installed_sensors)
     except Exception as error:
         logger.primary_logger.error("Unable to open installed sensors config file: " + str(error))
