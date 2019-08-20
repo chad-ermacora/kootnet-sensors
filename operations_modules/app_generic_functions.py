@@ -68,7 +68,12 @@ def update_cached_variables(sensor_access):
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
 
     app_cached_variables.hostname = sensor_access.get_hostname()
-    app_cached_variables.ip = sensor_access.get_ip()
+
+    if network_ip.check_for_dhcp(dhcpcd_config_lines):
+        app_cached_variables.ip = sensor_access.get_ip()
+    else:
+        app_cached_variables.ip = network_ip.get_dhcpcd_ip(dhcpcd_config_lines)
+
     app_cached_variables.gateway = network_ip.get_gateway(dhcpcd_config_lines)
     app_cached_variables.dns1 = network_ip.get_dns(dhcpcd_config_lines)
     app_cached_variables.dns2 = network_ip.get_dns(dhcpcd_config_lines, dns_server=1)
