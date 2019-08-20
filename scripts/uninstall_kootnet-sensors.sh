@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-USER_DIR="/home/pi"
 CONFIG_DIR="/etc/kootnet"
 SPECIAL_SCRIPTS_DIR="/home/kootnet_data/scripts"
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
@@ -15,12 +14,7 @@ then
   read -p "Would you like to Uninstall Control Center as well? (Y/N): " -n 1 -r CONTROL_UNINSTALL
 fi
 bash ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
-# Restore /etc/network/interfaces & /etc/wpa_supplicant/wpa_supplicant.conf
-if [[ -f ${CONFIG_DIR}"/backups/interfaces" ]]
-then
-  printf '\nRestoring original /etc/network/interfaces\n'
-  cp -f ${CONFIG_DIR}/backups/interfaces /etc/network/interfaces 2>/dev/null
-fi
+# Restore /etc/wpa_supplicant/wpa_supplicant.conf
 if [[ -f ${CONFIG_DIR}"/backups/wpa_supplicant.conf" ]]
 then
   printf 'Restoring original /etc/wpa_supplicant/wpa_supplicant.conf\n'
@@ -32,8 +26,8 @@ then
   bash ${SPECIAL_SCRIPTS_DIR}/control_center_uninstall.sh
 fi
 printf '\nRemoving easy access shortcuts\n'
-rm -f ${USER_DIR}/Desktop/KootNet-Sensor-Config.desktop 2>/dev/null
 rm -f /usr/share/applications/KootNet-Sensor-Config.desktop
+rm -f /usr/share/applications/KootNet-Sensor-Web-Config.desktop
 # Remove install check files & configurations
 rm -f ${CONFIG_DIR}/installed_datetime.txt 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_sensors.conf 2>/dev/null

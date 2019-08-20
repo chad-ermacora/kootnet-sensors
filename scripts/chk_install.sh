@@ -43,7 +43,7 @@ else
   cat > ${CONFIG_DIR}/sql_recording.conf << "EOF"
 Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)
 0 = Enable Debug Logging
-0 = Enable Display (If present)
+1 = Enable Display (If present)
 1 = Record Interval Sensors to SQL Database
 0 = Record Trigger Sensors to SQL Database
 300.0 = Seconds between Interval recordings
@@ -92,37 +92,37 @@ Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
 100.0 = Gas Oxidising variance
 100.0 = Gas Reducing variance
 100.0 = Gas NH3 variance
-1.0 = Seconds between 'Gas' readings
+30.0 = Seconds between 'Gas' readings
 
 0 = Enable Particulate Matter (PM)
-1000.0 = Particulate Matter 1 (PM1) variance
-1000.0 = Particulate Matter 2.5 (PM2.5) variance
-1000.0 = Particulate Matter 10 (PM10) variance
-1.0 = Seconds between 'Particulate Matter' readings
+4.0 = Particulate Matter 1 (PM1) variance
+4.0 = Particulate Matter 2.5 (PM2.5) variance
+4.0 = Particulate Matter 10 (PM10) variance
+60.0 = Seconds between 'Particulate Matter' readings
 
 0 = Enable Lumen
 100.0 = Lumen variance
 1.0 = Seconds between 'Lumen' readings
 
 0 = Enable Colour
-5.0 = Red variance
-5.0 = Orange variance
-5.0 = Yellow variance
-5.0 = Green variance
-5.0 = Blue variance
-5.0 = Violet variance
-1.0 = Seconds between 'Colour' readings
+15.0 = Red variance
+15.0 = Orange variance
+15.0 = Yellow variance
+15.0 = Green variance
+15.0 = Blue variance
+15.0 = Violet variance
+10.0 = Seconds between 'Colour' readings
 
 0 = Enable Ultra Violet
 5.0 = Ultra Violet Index variance
-5.0 = Ultra Violet A variance
-5.0 = Ultra Violet B variance
-1.0 = Seconds between 'Ultra Violet' readings
+10.0 = Ultra Violet A variance
+10.0 = Ultra Violet B variance
+5.0 = Seconds between 'Ultra Violet' readings
 
 0 = Enable Accelerometer
-25.0 = Accelerometer X variance
-25.0 = Accelerometer Y variance
-25.0 = Accelerometer Z variance
+0.1 = Accelerometer X variance
+0.1 = Accelerometer Y variance
+0.1 = Accelerometer Z variance
 0.25 = Seconds between 'Accelerometer' readings
 
 0 = Enable Magnetometer

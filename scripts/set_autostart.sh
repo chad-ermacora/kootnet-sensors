@@ -5,12 +5,5 @@ crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt
 printf 'Recopying, enabling and restarting KootNet sensor services\n'
 cp -f /opt/kootnet-sensors/auto_start/*.service /etc/systemd/system
-printf '\nRemoving legacy services\n\n'
-systemctl disable SensorCommands 2>/dev/null
-systemctl disable SensorRecording 2>/dev/null
-systemctl stop SensorCommands 2>/dev/null
-systemctl stop SensorRecording 2>/dev/null
-rm -f /etc/systemd/system/SensorCommands.service 2>/dev/null
-rm -f /etc/systemd/system/SensorRecording.service 2>/dev/null
 systemctl daemon-reload
 systemctl enable KootnetSensors 2>/dev/null
