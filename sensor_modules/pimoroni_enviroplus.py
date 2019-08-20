@@ -21,6 +21,7 @@ from threading import Thread
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
+from smbus2 import SMBus
 from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import file_locations
@@ -48,7 +49,8 @@ class CreateEnviroPlus:
             self.ST7735_import = __import__('ST7735')
             self.ltr559_import = __import__('ltr559')
 
-            self.bme280 = self.bme280_import.BME280()
+            bus = SMBus(1)
+            self.bme280 = self.bme280_import.BME280(i2c_dev=bus)
 
             # Create ST7735 LCD display class
             self.st7735 = self.ST7735_import.ST7735(
