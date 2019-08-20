@@ -406,7 +406,7 @@ def check_html_config_ipv4(html_request):
             network_ip.write_ipv4_config_to_file(dhcpcd_template)
 
     shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
-    os.chmod(file_locations.dhcpcd_config_file, 664)
+    os.chmod(file_locations.dhcpcd_config_file, 0o664)
 
 
 def get_html_checkbox_state(config_setting):
