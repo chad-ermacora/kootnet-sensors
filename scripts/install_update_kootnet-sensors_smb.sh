@@ -3,7 +3,7 @@ clear
 if [[ "$1" == "dev" ]]
 then
   SMB_SHARE="/KootNetSMB/dev"
-  printf '\n-- DEVELOPMENT UPGRADE --\n'
+  printf '\n-- DEVELOPMENT UPGRADE OR INSTALL --\n'
 else
   SMB_SHARE="/KootNetSMB"
 fi

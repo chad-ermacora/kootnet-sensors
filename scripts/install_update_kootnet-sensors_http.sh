@@ -3,7 +3,7 @@ clear
 if [[ "$1" == "dev" ]]
 then
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
-  printf '\n-- DEVELOPMENT UPGRADE --\n'
+  printf '\n-- DEVELOPMENT UPGRADE OR INSTALL --\n'
 else
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 fi
