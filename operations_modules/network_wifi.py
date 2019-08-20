@@ -25,6 +25,7 @@ def get_wifi_country_code(wifi_config_lines):
         line_stripped = line.strip()
         if line_stripped[:8] == "country=":
             return line_stripped[8:]
+    return ""
 
 
 def get_wifi_ssid(wifi_config_lines):
@@ -32,6 +33,7 @@ def get_wifi_ssid(wifi_config_lines):
         line_stripped = line.strip()
         if line_stripped[:5] == "ssid=":
             return line_stripped[6:-1]
+    return ""
 
 
 def get_wifi_security_type(wifi_config_lines):

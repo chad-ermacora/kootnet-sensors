@@ -138,6 +138,7 @@ Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.
 0.25 = Seconds between 'Gyroscope' readings
 EOF
   nano ${CONFIG_DIR}/trigger_variances.conf
+  clear
 fi
 # Network + Other Setup
 if [[ -f ${CONFIG_DIR}"/installed_datetime.txt" ]]
@@ -145,6 +146,10 @@ then
   printf '\nPrevious install detected, skipping setup\n'
 else
   # Install needed programs and dependencies
+  printf '\nEnabling SPI, i2c & Wireless\n\n'
+  raspi-config nonint do_i2c 0
+  raspi-config nonint do_spi 0
+  rfkill unblock wifi
   printf '\nStarting Dependency Install. This may take awhile ...\n\n'
   apt-get update
   apt-get -y install ${APT_GET_INSTALL}

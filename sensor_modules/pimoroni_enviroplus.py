@@ -16,6 +16,7 @@ Created on Tue June 25 10:53:56 2019
 
 @author: OO-Dragon
 """
+import os
 import time
 from threading import Thread
 from PIL import Image
@@ -25,6 +26,7 @@ from smbus2 import SMBus
 from operations_modules import logger
 from operations_modules import configuration_main
 from operations_modules import file_locations
+from operations_modules import app_generic_functions
 
 round_decimal_to = 5
 turn_off_display_seconds = 25
@@ -38,7 +40,6 @@ class CreateEnviroPlus:
             self.display_off_count = 0
             self.display_is_on = True
             self.display_ready = True
-
             self.pause_particle_matter_keep_alive = False
 
             self.font = ImageFont.truetype(file_locations.display_font, 40)
@@ -83,6 +84,7 @@ class CreateEnviroPlus:
 
         if configuration_main.installed_sensors.has_particulate_matter:
             try:
+                self._enable_psm5003_serial()
                 self.enviro_plus_pm_access = self.pms5003_import.PMS5003()
                 self.thread_pm_keep_alive = Thread(target=self._readings_keep_alive)
                 self.thread_pm_keep_alive.daemon = True
@@ -232,3 +234,28 @@ class CreateEnviroPlus:
 
         self.pause_particle_matter_keep_alive = False
         return pm_list_pm1_pm25_pm10
+
+    @staticmethod
+    def _enable_psm5003_serial():
+        logger.sensors_logger.debug("Enabling Serial for Pimoroni PSM5003")
+        try:
+            serial_disabled = True
+            boot_config_lines = app_generic_functions.get_file_content("/boot/config.txt").split("\n")
+
+            new_config = ""
+            for line in boot_config_lines:
+                if line.strip() == "dtoverlay=pi3-miniuart-bt":
+                    serial_disabled = False
+                new_config += line + "\n"
+
+            if serial_disabled:
+                logger.sensors_logger.info("Serial not enabled for PSM5003 - Enabling")
+                logger.primary_logger.warning("You must reboot the System before the PSM5003 will function properly")
+                os.system("raspi-config nonint set_config_var enable_uart 1 /boot/config.txt")
+                os.system("raspi-config nonint do_serial 1")
+                time.sleep(0.5)
+                new_config = new_config.strip()
+                new_config += "\n\n# Kootnet Sensors Addition\ndtoverlay=pi3-miniuart-bt\n"
+                app_generic_functions.write_file_to_disk("/boot/config.txt", new_config)
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni Enviro+ PSM5003 Enable Serial - Failed - " + str(error))
