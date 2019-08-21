@@ -16,32 +16,45 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
-from zipfile import ZipFile, ZIP_DEFLATED
-from threading import Thread
-from flask import Flask, request, send_file
-from flask_compress import Compress
-from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import check_password_hash
-from gevent import pywsgi
-from operations_modules import network_wifi
-from operations_modules import trigger_variances
-from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import app_generic_functions
-from operations_modules import configuration_main
-from operations_modules import app_variables
-from operations_modules import app_validation_checks
-from operations_modules import configuration_files
-from http_server import server_http_flask_render_templates
-from http_server import server_http_flask_post_checks as http_post_checks
-from http_server import server_http_auth
-from http_server import server_plotly_graph
-from http_server import server_plotly_graph_variables
+from time import sleep
+
+try:
+    import os
+    from zipfile import ZipFile, ZIP_DEFLATED
+    from threading import Thread
+    from flask import Flask, request, send_file
+    from flask_compress import Compress
+    from flask_httpauth import HTTPBasicAuth
+    from werkzeug.security import check_password_hash
+    from gevent import pywsgi
+    from operations_modules import network_wifi
+    from operations_modules import trigger_variances
+    from operations_modules import file_locations
+    from operations_modules import app_generic_functions
+    from operations_modules import configuration_main
+    from operations_modules import app_variables
+    from operations_modules import app_validation_checks
+    from operations_modules import configuration_files
+    from http_server import server_http_flask_render_templates
+    from http_server import server_http_flask_post_checks as http_post_checks
+    from http_server import server_http_auth
+    from http_server import server_plotly_graph
+    from http_server import server_plotly_graph_variables
+    import_errors = False
+except ImportError as import_error:
+    logger.network_logger.critical("**** Missing Dependencies: " + str(import_error))
+    import_errors = True
 
 
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
+        if import_error:
+            logger.network_logger.critical("**** Unable to load HTTP Server, missing Python Modules\n" +
+                                           "Try Re-installing dependencies or "
+                                           "uninstalling and re-installing Kootnet Sensors")
+            while True:
+                sleep(600)
         self.app = Flask(__name__)
         Compress(self.app)
         self.auth = HTTPBasicAuth()
