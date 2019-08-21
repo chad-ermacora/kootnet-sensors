@@ -43,16 +43,14 @@ try:
     from http_server import server_plotly_graph_variables
     import_errors = False
 except ImportError as import_error:
-    logger.network_logger.critical("**** Missing Dependencies: " + str(import_error))
+    logger.primary_logger.critical("**** Missing Dependencies: " + str(import_error))
     import_errors = True
 
 
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
-        if import_error:
-            logger.network_logger.critical("**** Unable to load HTTP Server, missing Python Modules\n" +
-                                           "Try Re-installing dependencies or "
-                                           "uninstalling and re-installing Kootnet Sensors")
+        if import_errors:
+            logger.network_logger.critical("**** Unable to load HTTP Server, missing Python Modules")
             while True:
                 sleep(600)
         self.app = Flask(__name__)
