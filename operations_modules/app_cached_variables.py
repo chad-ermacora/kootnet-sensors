@@ -23,7 +23,7 @@ reboot_count = ""
 
 hostname = ""
 ip = ""
-ip_subnet = "/24"
+ip_subnet = ""
 gateway = ""
 dns1 = ""
 dns2 = ""

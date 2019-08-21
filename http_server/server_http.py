@@ -216,7 +216,55 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def html_set_ipv4_config():
             logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
+            message2 = "Network settings have not been changed."
             if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
+                if request.form.get("ip_dhcp") is not None:
+                    dhcpcd_template = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file_template)
+                    dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
+                    app_generic_functions.write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
+                    app_generic_functions.update_cached_variables(sensor_access)
+                    return render_templates.message_and_return("IPv4 Configuration Updated",
+                                                               text_message2="You must reboot the sensor to take effect.",
+                                                               url="/ConfigurationsHTML")
+
+                ip_address = request.form.get("ip_address")
+                ip_subnet = request.form.get("ip_subnet")
+                ip_gateway = request.form.get("ip_gateway")
+                ip_dns1 = request.form.get("ip_dns1")
+                ip_dns2 = request.form.get("ip_dns2")
+
+                try:
+                    app_validation_checks.ip_address_is_valid(ip_address)
+                except ValueError:
+                    return render_templates.message_and_return("Invalid IP Address",
+                                                               text_message2=message2,
+                                                               url="/ConfigurationsHTML")
+                if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
+                    return render_templates.message_and_return("Invalid Subnet Mask",
+                                                               text_message2=message2,
+                                                               url="/ConfigurationsHTML")
+                if ip_gateway is not "":
+                    try:
+                        app_validation_checks.ip_address_is_valid(ip_gateway)
+                    except ValueError:
+                        return render_templates.message_and_return("Invalid Gateway",
+                                                                   text_message2=message2,
+                                                                   url="/ConfigurationsHTML")
+                if ip_dns1 is not "":
+                    try:
+                        app_validation_checks.ip_address_is_valid(ip_dns1)
+                    except ValueError:
+                        return render_templates.message_and_return("Invalid Primary DNS Address",
+                                                                   text_message2=message2,
+                                                                   url="/ConfigurationsHTML")
+                if ip_dns2 is not "":
+                    try:
+                        app_validation_checks.ip_address_is_valid(ip_dns2)
+                    except ValueError:
+                        return render_templates.message_and_return("Invalid Secondary DNS Address",
+                                                                   text_message2=message2,
+                                                                   url="/ConfigurationsHTML")
+
                 http_post_checks.check_html_config_ipv4(request)
                 app_generic_functions.update_cached_variables(sensor_access)
                 return render_templates.message_and_return("IPv4 Configuration Updated",

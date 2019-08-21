@@ -9,11 +9,13 @@ jQuery('#enable_custom_temp_offset').change(function () {
 jQuery('#IP_DHCP').change(function () {
     if (jQuery(this).prop('checked')) {
         document.getElementsByName("ip_address")[0].disabled = true;
+        document.getElementsByName("ip_subnet")[0].disabled = true;
         document.getElementsByName("ip_gateway")[0].disabled = true;
         document.getElementsByName("ip_dns1")[0].disabled = true;
         document.getElementsByName("ip_dns2")[0].disabled = true;
     } else {
         document.getElementsByName("ip_address")[0].disabled = false;
+        document.getElementsByName("ip_subnet")[0].disabled = false;
         document.getElementsByName("ip_gateway")[0].disabled = false;
         document.getElementsByName("ip_dns1")[0].disabled = false;
         document.getElementsByName("ip_dns2")[0].disabled = false;

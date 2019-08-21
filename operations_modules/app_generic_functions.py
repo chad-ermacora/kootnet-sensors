@@ -74,6 +74,7 @@ def update_cached_variables(sensor_access):
     else:
         app_cached_variables.ip = network_ip.get_dhcpcd_ip(dhcpcd_config_lines)
 
+    app_cached_variables.ip_subnet = network_ip.get_subnet(dhcpcd_config_lines)
     app_cached_variables.gateway = network_ip.get_gateway(dhcpcd_config_lines)
     app_cached_variables.dns1 = network_ip.get_dns(dhcpcd_config_lines)
     app_cached_variables.dns2 = network_ip.get_dns(dhcpcd_config_lines, dns_server=1)

@@ -161,6 +161,7 @@ class CreateRenderTemplates:
 
             dhcp_checkbox = ""
             ip_disabled = ""
+            subnet_disabled = ""
             gateway_disabled = ""
             dns1_disabled = ""
             dns2_disabled = ""
@@ -168,6 +169,7 @@ class CreateRenderTemplates:
             if network_ip.check_for_dhcp(dhcpcd_lines):
                 dhcp_checkbox = "checked"
                 ip_disabled = "disabled"
+                subnet_disabled = "disabled"
                 gateway_disabled = "disabled"
                 dns1_disabled = "disabled"
                 dns2_disabled = "disabled"
@@ -294,8 +296,10 @@ class CreateRenderTemplates:
                                    CheckedWiFiSecurityNone1=wifi_security_type_none1,
                                    CheckedDHCP=dhcp_checkbox,
                                    IPHostname=app_cached_variables.hostname,
-                                   IPv4Address=app_cached_variables.ip + app_cached_variables.ip_subnet,
+                                   IPv4Address=app_cached_variables.ip,
                                    IPv4AddressDisabled=ip_disabled,
+                                   IPv4Subnet=app_cached_variables.ip_subnet,
+                                   IPv4SubnetDisabled=subnet_disabled,
                                    IPGateway=app_cached_variables.gateway,
                                    IPGatewayDisabled=gateway_disabled,
                                    IPDNS1=app_cached_variables.dns1,

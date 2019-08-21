@@ -376,34 +376,23 @@ def check_html_config_wifi(html_request):
 
 def check_html_config_ipv4(html_request):
     logger.network_logger.debug("Starting HTML IPv4 Configuration Update Check")
-
     dhcpcd_template = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file_template)
 
     hostname = html_request.form.get("ip_hostname")
-    if hostname is not None and hostname.isalnum():
-        os.system("hostnamectl set-hostname " + hostname)
-        app_cached_variables.hostname = hostname
-    else:
-        logger.network_logger.warning("HTML Network Configuration - " +
-                                      "Invalid or Missing Hostname - Hostname Unchanged")
+    os.system("hostnamectl set-hostname " + hostname)
+    app_cached_variables.hostname = hostname
 
-    if html_request.form.get("ip_dhcp") is not None:
-        dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
+    ip_address = html_request.form.get("ip_address")
+    ip_subnet_mask = html_request.form.get("ip_subnet")
+    ip_gateway = html_request.form.get("ip_gateway")
+    ip_dns1 = html_request.form.get("ip_dns1")
+    ip_dns2 = html_request.form.get("ip_dns2")
 
-        network_ip.write_ipv4_config_to_file(dhcpcd_template)
-    else:
-        if html_request.form.get("ip_address") is not None:
-            ip_address = html_request.form.get("ip_address")
-            ip_gateway = html_request.form.get("ip_gateway")
-            ip_dns1 = html_request.form.get("ip_dns1")
-            ip_dns2 = html_request.form.get("ip_dns2")
+    ip_network_text = "interface wlan0\nstatic ip_address=" + ip_address + ip_subnet_mask + "\nstatic routers=" + ip_gateway + \
+                      "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
 
-            ip_network_text = "interface wlan0\nstatic ip_address=" + ip_address + "\nstatic routers=" + ip_gateway + \
-                              "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
-
-            dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
-
-            network_ip.write_ipv4_config_to_file(dhcpcd_template)
+    dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
+    network_ip.write_ipv4_config_to_file(dhcpcd_template)
 
     shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
     os.chmod(file_locations.dhcpcd_config_file, 0o664)

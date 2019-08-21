@@ -33,7 +33,8 @@ def get_dhcpcd_ip(dhcpcd_config_lines):
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
-            return line_stripped[18:-3]
+            ip_address = line_stripped[18:].split("/")[0]
+            return ip_address
     return ""
 
 
@@ -49,7 +50,8 @@ def get_subnet(dhcpcd_config_lines):
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
-            return line_stripped[-3:]
+            subnet_mask = "/" + line_stripped[18:].split("/")[1]
+            return subnet_mask
     return ""
 
 

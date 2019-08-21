@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import re
+from ipaddress import ip_address as _check_ip_address
 
 
 def text_is_alphanumeric(text_string):
@@ -28,6 +29,18 @@ def text_is_alphanumeric(text_string):
         return True
     else:
         return False
+
+
+def ip_address_is_valid(ip_address):
+    if _check_ip_address(ip_address):
+        return True
+    return False
+
+
+def subnet_mask_is_valid(subnet_mask):
+    if re.match(r'/[0-9][0-9]|/[0-9]', subnet_mask):
+        return True
+    return False
 
 
 def wireless_ssid_is_valid(text_ssid):
@@ -53,7 +66,8 @@ def hostname_is_valid(text_hostname):
     Returns True if provided text only uses Alphanumeric characters plus underscores and dashes.
     Otherwise returns False.
     """
+    if text_hostname is None:
+        return False
     if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
         return True
-    else:
-        return False
+    return False

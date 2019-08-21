@@ -298,11 +298,24 @@
 
                 <div class="mui-textfield">
                     <label style="color: black">
-                        IPv4 & Subnet mask
+                        IPv4
                         <br>
                         <input style="width: 125px" type="text" name="ip_address"
-                               placeholder="eg. 192.168.10.11/24" minlength="9" maxlength="19"
+                               placeholder="eg. 192.168.10.11" minlength="7"
                                value="{{ IPv4Address }}" {{ IPv4AddressDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield" style="inset-inline-end: auto">
+                    <label style="color: black">
+                        <a style="color: black" target="_blank"
+                           href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                            Subnet mask
+                        </a>
+                        <br>
+                        <input style="width: 50px" type="text" name="ip_subnet"
+                               placeholder="eg. /24" minlength="2" maxlength="3"
+                               value="{{ IPv4Subnet }}" {{ IPv4SubnetDisabled }}>
                     </label>
                 </div>
 
@@ -318,7 +331,7 @@
 
                 <div class="mui-textfield">
                     <label style="color: black">
-                        DNS 1
+                        Primary DNS
                         <br>
                         <input style="width: 125px" type="text" name="ip_dns1"
                                placeholder="eg. 8.8.8.8" minlength="7" maxlength="15"
@@ -328,7 +341,7 @@
 
                 <div class="mui-textfield">
                     <label style="color: black">
-                        DNS 2
+                        Secondary DNS
                         <br>
                         <input style="width: 125px" type="text" name="ip_dns2"
                                placeholder="eg. 8.8.4.4" minlength="7" maxlength="15"
