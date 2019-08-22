@@ -14,12 +14,6 @@ then
   read -p "Would you like to Uninstall Control Center as well? (Y/N): " -n 1 -r CONTROL_UNINSTALL
 fi
 bash ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
-# Restore /etc/wpa_supplicant/wpa_supplicant.conf
-if [[ -f ${CONFIG_DIR}"/backups/wpa_supplicant.conf" ]]
-then
-  printf 'Restoring original /etc/wpa_supplicant/wpa_supplicant.conf\n'
-  cp -f ${CONFIG_DIR}/backups/wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf 2>/dev/null
-fi
 # Uninstall Control Center
 if [[ ${CONTROL_UNINSTALL} =~ ^[Yy]$ ]]
 then

@@ -27,7 +27,6 @@ mkdir ${DATA_DIR} 2>/dev/null
 mkdir ${DATA_DIR}/logs 2>/dev/null
 mkdir ${DATA_DIR}/scripts 2>/dev/null
 mkdir ${CONFIG_DIR} 2>/dev/null
-mkdir ${CONFIG_DIR}/backups 2>/dev/null
 mkdir /mnt/supernas 2>/dev/null
 mkdir /opt/kootnet-sensors 2>/dev/null
 mkdir /opt/kootnet-sensors/auto_start 2>/dev/null
