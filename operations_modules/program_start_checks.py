@@ -42,6 +42,33 @@ class CreateRefinedVersion:
             self.minor_version = 0
 
 
+def check_ssl_files():
+    logger.primary_logger.debug("Running SSL Certificate & Key Checks")
+
+    if os.path.isfile(file_locations.http_ssl_key):
+        logger.primary_logger.debug("SSL Key Found")
+    else:
+        logger.primary_logger.warning("SSL Key not Found - Generating Key")
+        command = "openssl genrsa -out " + file_locations.http_ssl_key + " 2048"
+        os.system(command)
+
+    if os.path.isfile(file_locations.http_ssl_csr):
+        logger.primary_logger.debug("SSL CSR Found")
+    else:
+        logger.primary_logger.warning("SSL CSR not Found - Generating CSR")
+        command2 = "openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr + \
+                   " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
+        os.system(command2)
+
+    if os.path.isfile(file_locations.http_ssl_crt):
+        logger.primary_logger.debug("SSL Certificate Found")
+    else:
+        logger.primary_logger.warning("SSL Certificate not Found - Generating Certificate")
+        command3 = "openssl x509 -req -days 2048 -in " + file_locations.http_ssl_csr + \
+                   " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
+        os.system(command3)
+
+
 def check_database_structure():
     """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")

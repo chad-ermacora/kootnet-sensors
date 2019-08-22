@@ -481,7 +481,7 @@ def get_triggers_variances_from_file():
         trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location).split("\n")
         installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
     else:
-        logger.primary_logger.error("Trigger Variance Configuration file not found, using and saving default")
+        logger.primary_logger.warning("Trigger Variance Configuration file not found, using and saving default")
         installed_trigger_variances = CreateTriggerVariances()
         write_triggers_to_file(installed_trigger_variances)
 

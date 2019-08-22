@@ -174,7 +174,7 @@ class CreateRenderTemplates:
                 dns1_disabled = "disabled"
                 dns2_disabled = "disabled"
 
-            if app_cached_variables.wifi_security_type is None:
+            if app_cached_variables.wifi_security_type is None or app_cached_variables.wifi_security_type == "WPA-PSK":
                 wifi_security_type_wpa1 = "checked"
                 wifi_security_type_none1 = ""
             else:

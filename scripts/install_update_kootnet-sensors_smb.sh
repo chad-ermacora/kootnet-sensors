@@ -38,15 +38,20 @@ rm -f /tmp/KootNetSensors.zip 2>/dev/null
 rm -R /tmp/SensorSMBUpgrade 2>/dev/null
 mkdir /tmp/SensorSMBUpgrade 2>/dev/null
 # Start Script
-if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+if [[ -f /opt/kootnet-control-center/requirements.txt ]]
 then
   echo
 else
-  read -p "Do you want to Install Control Center as well? (Y/N) " -n 1 -r CONTROL_INSTALL
-  echo
-  if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
+  if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+  then
+    echo
+  else
+    read -p "Do you want to Install Control Center as well? (Y/N) " -n 1 -r CONTROL_INSTALL
+    echo
+    if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
     then
       read -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
+    fi
   fi
 fi
 # Make sure cifs is installed for SMB mount
@@ -96,6 +101,10 @@ bash /opt/kootnet-sensors/scripts/set_permissions.sh
 # Save datetime to last updated file
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - SMB' >> ${CONFIG_DIR}/last_updated.txt
-printf '\nDone\n\n'
+printf '\nDone\n\nOpen https://localhost:10065 on the local sensor to configure\n\n'
+printf 'To access the sensor from another device, replace "localhost" with an IP\n'
+printf 'IP addresses show below  ** Note: 127.0.0.1 is the same as localhost **\n\n'
+ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+printf '\n'
 umount /mnt/supernas
 systemctl restart KootnetSensors

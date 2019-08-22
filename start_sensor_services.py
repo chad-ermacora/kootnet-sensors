@@ -30,6 +30,7 @@ from operations_modules import server_display
 from sensor_modules import sensor_access
 
 # Ensure files, database & configurations are OK
+program_start_checks.check_ssl_files()
 program_start_checks.set_file_permissions()
 program_start_checks.check_database_structure()
 

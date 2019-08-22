@@ -95,5 +95,9 @@ bash /opt/kootnet-sensors/scripts/set_permissions.sh
 # Save datetime to last updated file
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - HTTP ' >> ${CONFIG_DIR}/last_updated.txt
-printf '\nDone\n\n'
+printf '\nDone\n\nOpen https://localhost:10065 on the local sensor to configure\n\n'
+printf 'To access the sensor from another device, replace "localhost" with an IP\n'
+printf 'IP addresses show below  ** Note: 127.0.0.1 is the same as localhost **\n\n'
+ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+printf '\n'
 systemctl restart KootnetSensors

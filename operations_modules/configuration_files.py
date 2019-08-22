@@ -44,7 +44,7 @@ def get_config_from_file():
         config_file_content = app_generic_functions.get_file_content(file_locations.config_file_location).split("\n")
         installed_config = convert_config_lines_to_obj(config_file_content)
     else:
-        logger.primary_logger.error("Configuration file not found, using and saving default")
+        logger.primary_logger.warning("Configuration file not found, using and saving default")
         installed_config = app_variables.CreateConfig()
         write_config_to_file(installed_config)
 
@@ -129,7 +129,7 @@ def get_installed_sensors_from_file():
         installed_sensor_lines = app_generic_functions.get_file_content(file_locations.sensors_installed_file_location).split("\n")
         installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
     else:
-        logger.primary_logger.error("Installed Sensors file not found, using and saving default")
+        logger.primary_logger.warning("Installed Sensors file not found, using and saving default")
         installed_sensors = sensor_variables.CreateInstalledSensors()
         write_installed_sensors_to_file(installed_sensors)
 

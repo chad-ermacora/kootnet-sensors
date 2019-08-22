@@ -853,6 +853,9 @@ class CreateSensorHTTP:
                 system_thread.start()
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
-        http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port), self.app)
-        logger.primary_logger.info("HTTP Server Started")
+        http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port),
+                                        self.app,
+                                        keyfile=file_locations.http_ssl_key,
+                                        certfile=file_locations.http_ssl_crt)
+        logger.primary_logger.info("HTTPS Server Started")
         http_server.serve_forever()

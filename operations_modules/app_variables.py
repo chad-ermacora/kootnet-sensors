@@ -146,7 +146,7 @@ class CreateConfig:
 
     def __init__(self):
         self.enable_debug_logging = 0
-        self.enable_display = 0
+        self.enable_display = 1
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 300.0
