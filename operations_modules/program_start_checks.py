@@ -64,7 +64,7 @@ def check_ssl_files():
         logger.primary_logger.debug("SSL Certificate Found")
     else:
         logger.primary_logger.warning("SSL Certificate not Found - Generating Certificate")
-        command3 = "openssl x509 -req -days 2048 -in " + file_locations.http_ssl_csr + \
+        command3 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr + \
                    " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
         os.system(command3)
 
