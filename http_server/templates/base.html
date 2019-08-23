@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensor Management</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="/mui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/MenuStyle.css" rel="stylesheet" type="text/css"/>
+    <script src="/mui.min.js"></script>
+    <link href="/mui-colors.min.css" rel="stylesheet" type="text/css"/>
+    <script src="/jquery.min.js"></script>
+    <script src="/MenuScript.js"></script>
+
+    <style>
+        .head_foot:visited {
+            color: red;
+        }
+
+        .head_foot:link {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div id="sidedrawer" class="mui--no-user-select">
+    <div id="sidedrawer-brand" class="mui--appbar-line-height">
+        <span class="mui--text-title"><a class="head_foot" href="/">Kootnet Sensor</a></span>
+    </div>
+    <div class="mui-divider"></div>
+    <ul>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/';">
+                Download Database
+            </button>
+        </li>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/SensorInformation';">
+                System Information
+            </button>
+        </li>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/SensorReadings';">
+                Sensor Readings
+            </button>
+        </li>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/PlotlyGraph';">
+                Graphing
+            </button>
+        </li>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/SystemCommands';">
+                System Management
+            </button>
+        </li>
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/logout';">
+                Logout
+            </button>
+        </li>
+        <li>
+            <strong><a style="color: red">
+                Project Links
+            </a></strong>
+            <ul>
+                <li><a style="color: #00B0FF" href="http://kootenay-networks.com/?page_id=170" target="_blank">Project
+                    Homepage</a></li>
+                <li><a style="color: #00B0FF" href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub
+                    Repository</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<header id="header">
+    <div class="mui-appbar mui--appbar-line-height">
+        <div class="mui-container-fluid" style="background-color: black;">
+            <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
+            <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
+            <span class="mui--text-title mui--visible-xs-inline-block mui--visible-sm-inline-block"><a class="head_foot"
+                                                                                                       href="/">Kootnet Sensor</a></span>
+        </div>
+    </div>
+</header>
+<div id="content-wrapper">
+    <div class="mui--appbar-height"></div>
+    <div class="mui-container-fluid">
+        <br>
+        {% block content %}{% endblock %}
+        <br>
+        <br>
+    </div>
+</div>
+<footer id="footer">
+    <div class="mui-container-fluid">
+        <br>
+    </div>
+</footer>
+</body>
+</html>

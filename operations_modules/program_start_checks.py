@@ -21,12 +21,13 @@ import sqlite3
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import logger
-from operations_modules import upgrade_functions
+from operations_modules import program_upgrade_functions
 from operations_modules import app_variables
 
 
 class CreateRefinedVersion:
     """ Takes the provided program version and creates a data class object. """
+
     def __init__(self, version):
         try:
             version_split = version.split(".")
@@ -41,6 +42,33 @@ class CreateRefinedVersion:
             self.minor_version = 0
 
 
+def check_ssl_files():
+    logger.primary_logger.debug("Running SSL Certificate & Key Checks")
+
+    if os.path.isfile(file_locations.http_ssl_key):
+        logger.primary_logger.debug("SSL Key Found")
+    else:
+        logger.primary_logger.warning("SSL Key not Found - Generating Key")
+        command = "openssl genrsa -out " + file_locations.http_ssl_key + " 2048"
+        os.system(command)
+
+    if os.path.isfile(file_locations.http_ssl_csr):
+        logger.primary_logger.debug("SSL CSR Found")
+    else:
+        logger.primary_logger.warning("SSL CSR not Found - Generating CSR")
+        command2 = "openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr + \
+                   " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
+        os.system(command2)
+
+    if os.path.isfile(file_locations.http_ssl_crt):
+        logger.primary_logger.debug("SSL Certificate Found")
+    else:
+        logger.primary_logger.warning("SSL Certificate not Found - Generating Certificate")
+        command3 = "openssl x509 -req -days 2048 -in " + file_locations.http_ssl_csr + \
+                   " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
+        os.system(command3)
+
+
 def check_database_structure():
     """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")
@@ -52,12 +80,13 @@ def check_database_structure():
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)
         _create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        _create_table_and_datetime(database_variables.table_other, db_cursor)
-        for column_intervals, column_trigger, column_other in zip(database_variables.get_sensor_columns_list(),
-                                                                  database_variables.get_sensor_columns_list(),
-                                                                  database_variables.get_other_columns_list()):
+        for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
+                                                    database_variables.get_sensor_columns_list()):
             _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
             _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+
+        _create_table_and_datetime(database_variables.table_other, db_cursor)
+        for column_other in database_variables.get_other_columns_list():
             _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
 
         db_connection.commit()
@@ -95,26 +124,50 @@ def run_upgrade_checks():
     previous_version = CreateRefinedVersion(software_version.old_version)
     no_changes = True
 
-    if previous_version.major_version == 0:
+    if previous_version.major_version == "New_Install":
         no_changes = False
-        logger.primary_logger.info("New Install or broken/missing Old Version File")
-        upgrade_functions.reset_installed_sensors()
-        upgrade_functions.reset_config()
+        logger.primary_logger.info("New Install Detected")
 
-    if previous_version.major_version == "Alpha":
-        if previous_version.feature_version == 22:
+    elif previous_version.major_version == "Alpha":
+        if previous_version.feature_version < 24:
             no_changes = False
             logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                        " || New: " + software_version.version)
-            upgrade_functions.reset_installed_sensors()
-            upgrade_functions.reset_config()
-        elif previous_version.feature_version == 23:
+            program_upgrade_functions.reset_installed_sensors()
+            program_upgrade_functions.reset_config()
+            program_upgrade_functions.reset_variance_config()
+        elif previous_version.feature_version == 24:
+            no_changes = False
+            program_upgrade_functions.reset_installed_sensors()
             if previous_version.minor_version < 24:
+                program_upgrade_functions.reset_config()
+                program_upgrade_functions.reset_variance_config()
+                program_upgrade_functions.reset_installed_sensors()
+            logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                       " || New: " + software_version.version)
+        elif previous_version.feature_version == 25:
+            if previous_version.minor_version < 7:
                 no_changes = False
-                upgrade_functions.reset_config()
+                program_upgrade_functions.reset_installed_sensors()
                 logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                            " || New: " + software_version.version)
+            if previous_version.minor_version < 27:
+                no_changes = False
+                program_upgrade_functions.reset_variance_config()
+                logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                           " || New: " + software_version.version)
+            if previous_version.minor_version < 98:
+                no_changes = False
+                program_upgrade_functions.reset_config()
+                logger.primary_logger.info("Upgraded: " + software_version.old_version +
+                                           " || New: " + software_version.version)
+    else:
+        no_changes = False
+        logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
+        program_upgrade_functions.reset_installed_sensors()
+        program_upgrade_functions.reset_config()
 
+    # Since run_upgrade_checks is only run if there is a different version, show upgrade but no configuration changes
     if no_changes:
         logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                    software_version.old_version + " New: " + software_version.version)

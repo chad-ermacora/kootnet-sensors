@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-container-fluid {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .mui-col-md-3 {
+            background-color: #00ffff;
+            width: 275px;
+        }
+
+        .mui-col-md-4 {
+            background-color: #0BB10D;
+            width: 275px;
+        }
+
+        .mui-col-md-8 {
+            background-color: #0BB10D;
+            width: auto;
+        }
+    </style>
+
+    <h2><strong>
+        <a style="text-decoration: underline; color: red" href="/SensorInformation">
+            {{ HostName }} - {{ IPAddress }}
+        </a>
+    </strong></h2>
+
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-3">Version</div>
+            <div class="mui-col-md-4">{{ KootnetVersion }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Last Updated</div>
+            <div class="mui-col-md-8">{{ LastUpdated }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Sensor Date & Time</div>
+            <div class="mui-col-md-8">{{ DateTime }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Sensor Uptime</div>
+            <div class="mui-col-md-8">{{ SystemUptime }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Sensor Reboots</div>
+            <div class="mui-col-md-4">{{ SensorReboots }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">System Temperature</div>
+            <div class="mui-col-md-4" style="background-color: #ff4a54">{{ CPUTemperature }} °C</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">RAM Usage</div>
+            <div class="mui-col-md-4" style="background-color: green">{{ RAMUsage }} %</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Drive Usage</div>
+            <div class="mui-col-md-4" style="background-color: green">{{ DiskUsage }} %</div>
+        </div>
+    </div>
+
+
+    <h2><strong><span style="color: red">
+        Configurations
+    </span></strong></h2>
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-3">Debug Logging</div>
+            <div class="mui-col-md-4">{{ DebugLogging }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Display Enabled</div>
+            <div class="mui-col-md-4">{{ SupportedDisplay }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Interval Recording</div>
+            <div class="mui-col-md-4">{{ IntervalRecording }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Interval Delay</div>
+            <div class="mui-col-md-4">{{ IntervalDelay }} Seconds</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Trigger Recording</div>
+            <div class="mui-col-md-4">{{ TriggerRecording }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Manual Temperature Offset</div>
+            <div class="mui-col-md-4">{{ ManualTemperatureEnabled }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Current Temperature Offset</div>
+            <div class="mui-col-md-4">{{ CurrentTemperatureOffset }}</div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-3">Installed Sensors</div>
+            <div class="mui-col-md-8">{{ InstalledSensors }}</div>
+        </div>
+    </div>
+
+    <br>
+
+    <h2><strong><span style="color: red">
+        Database Information
+    </span></strong></h2>
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-3">Local Location</div>
+            <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Date Range</div>
+            <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Size on Disk</div>
+            <div class="mui-col-md-4">{{ SQLDatabaseSize }} MB</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Number of Notes</div>
+            <div class="mui-col-md-4">{{ NumberNotes }}</div>
+        </div>
+    </div>
+
+{% endblock %}

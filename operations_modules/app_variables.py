@@ -18,8 +18,34 @@
 """
 
 
+class CreateSQLColumnsReadable:
+    """ Creates an object to hold all human readable SQL column names. """
+
+    def __init__(self):
+        self.no_sensor = " || No Sensor Detected || "
+        self.date_time = "Date & Time"
+        self.sensor_name = "Sensor Name"
+        self.ip = "IP"
+        self.system_uptime = "Sensor Uptime"
+        self.cpu_temp = "CPU Temperature"
+        self.environmental_temp = "Env Temperature"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "Gas"
+        self.particulate_matter = "Particulate Matter"
+        self.lumen = "Lumen"
+        self.colours = "Colours"
+        self.ultra_violet = "Ultra Violet"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+
+
 class CreateDatabaseVariables:
     """ Creates SQLite3 database variables object. """
+
     def __init__(self):
         self.table_interval = "IntervalData"
         self.table_trigger = "TriggerData"
@@ -36,7 +62,17 @@ class CreateDatabaseVariables:
         self.env_temperature = "EnvironmentTemp"
         self.env_temperature_offset = "EnvTempOffset"
         self.pressure = "Pressure"
+        self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas_resistance_index = "Gas_Resistance_Index"
+        self.gas_oxidising = "Gas_Oxidising"
+        self.gas_reducing = "Gas_Reducing"
+        self.gas_nh3 = "Gas_NH3"
+        self.particulate_matter_1 = "Particulate_Matter_1"
+        self.particulate_matter_2_5 = "Particulate_Matter_2_5"
+        self.particulate_matter_10 = "Particulate_Matter_10"
+
         self.lumen = "Lumen"
         self.red = "Red"
         self.orange = "Orange"
@@ -44,6 +80,10 @@ class CreateDatabaseVariables:
         self.green = "Green"
         self.blue = "Blue"
         self.violet = "Violet"
+        self.ultra_violet_index = "Ultra_Violet_Index"
+        self.ultra_violet_a = "Ultra_Violet_A"
+        self.ultra_violet_b = "Ultra_Violet_B"
+
         self.acc_x = "Acc_X"
         self.acc_y = "Acc_Y"
         self.acc_z = "Acc_Z"
@@ -63,7 +103,16 @@ class CreateDatabaseVariables:
                               self.env_temperature,
                               self.env_temperature_offset,
                               self.pressure,
+                              self.altitude,
                               self.humidity,
+                              self.distance,
+                              self.gas_resistance_index,
+                              self.gas_oxidising,
+                              self.gas_reducing,
+                              self.gas_nh3,
+                              self.particulate_matter_1,
+                              self.particulate_matter_2_5,
+                              self.particulate_matter_10,
                               self.lumen,
                               self.red,
                               self.orange,
@@ -71,6 +120,9 @@ class CreateDatabaseVariables:
                               self.green,
                               self.blue,
                               self.violet,
+                              self.ultra_violet_index,
+                              self.ultra_violet_a,
+                              self.ultra_violet_b,
                               self.acc_x,
                               self.acc_y,
                               self.acc_z,
@@ -94,8 +146,9 @@ class CreateConfig:
 
     def __init__(self):
         self.enable_debug_logging = 0
+        self.enable_display = 1
         self.enable_interval_recording = 1
-        self.enable_trigger_recording = 1
+        self.enable_trigger_recording = 0
         self.sleep_duration_interval = 300.0
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
@@ -105,20 +158,22 @@ class CreateConfig:
 flask_http_ip = ""
 flask_http_port = 10065
 
-sense_hat_show_led_message = False
-
 trigger_pairs = 3
 
-restart_sensor_services_command = "systemctl daemon-reload && " + \
-                                  "systemctl restart SensorRecording && " + \
-                                  "systemctl restart SensorCommands"
+text_message_may_take_minutes = "This may take a few minutes ..."
 
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_programs_e-Ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/update_programs_online.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/update_programs_smb.sh",
+restart_sensor_services_command = "systemctl daemon-reload ; " + \
+                                  "systemctl restart KootnetSensors"
+
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_e-ink.sh",
+                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_http.sh",
+                 "UpgradeOnlineDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_http.sh",
+                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_smb.sh",
+                 "UpgradeSMBDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_smb.sh",
                  "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
                  "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
-                 "UpgradeSystemOS": "apt-get update && apt-get upgrade -y && reboot",
+                 "UpgradeSystemOS": "bash /opt/kootnet-sensors/scripts/linux_system_os_upgrade.sh",
+                 "ReInstallRequirements": "bash /opt/kootnet-sensors/scripts/reinstall_requirements.sh",
                  "SetPermissions": "bash /opt/kootnet-sensors/scripts/set_permissions.sh"}

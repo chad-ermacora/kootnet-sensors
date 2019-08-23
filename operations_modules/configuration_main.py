@@ -61,8 +61,14 @@ else:
     installed_sensors = configuration_files.get_installed_sensors_from_file()
     current_config = configuration_files.get_config_from_file()
     trigger_variances = trigger_variances.get_triggers_variances_from_file()
-
     current_config.temperature_offset = get_sensor_temperature_offset()
-    trigger_variances.init_trigger_variances(installed_sensors)
+    # trigger_variances.init_trigger_variances(installed_sensors)
 
 database_variables = app_variables.CreateDatabaseVariables()
+command_data_separator = "[new_data_section]"
+linux_os_upgrade_ready = True
+
+# Plotly Configuration Variables
+plotly_theme = "plotly_dark"
+
+

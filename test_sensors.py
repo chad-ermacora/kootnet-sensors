@@ -16,14 +16,37 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import requests
 from operations_modules import configuration_main
-from operations_modules import sensors
-from sensor_modules import raspberry_pi_sensehat
+from operations_modules import variance_checks
 
 
-interval_data = sensors.get_interval_sensor_readings()
-interval_data.sensor_types = interval_data.sensor_types.split(",")
-interval_data.sensor_readings = interval_data.sensor_readings.split(",")
+def get_sensor_reading(command):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "https://127.0.0.1:10065/" + command
+    tmp_return_data = requests.get(url=url, verify=False)
+    return tmp_return_data.text
+
+
+def get_interval_sensor_data():
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "https://127.0.0.1:10065/GetIntervalSensorReadings"
+    tmp_return_data = requests.get(url=url, verify=False)
+    return_data = tmp_return_data.text.split(configuration_main.command_data_separator)
+    return [str(return_data[0]), str(return_data[1])]
+
+
+def display_text_on_sensor(text_message):
+    """ Returns requested sensor data (based on the provided command data). """
+    url = "https://127.0.0.1:10065/DisplayText"
+    requests.put(url=url, data={'command_data': text_message}, verify=False)
+
+
+sensor_commands = variance_checks.CreateSensorCommands()
+
+interval_data = get_interval_sensor_data()
+sensor_types = interval_data[0].split(",")
+sensor_readings = interval_data[1].split(",")
 
 configuration_main.current_config.custom_temperature_offset = configuration_main.current_config.temperature_offset
 
@@ -37,13 +60,12 @@ print("\n  Enable Custom Temperature Offset: " + str(configuration_main.current_
 print("\n*** Sensor Data test ***")
 str_message = ""
 count = 0
-while count < len(interval_data.sensor_types):
+while count < len(sensor_types):
     str_message = str_message + \
-                  str(interval_data.sensor_types[count]) + ": " + \
-                  str(interval_data.sensor_readings[count] + " | ")
+                  str(sensor_types[count]) + ": " + \
+                  str(sensor_readings[count] + " | ")
 
-    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(
-            interval_data.sensor_types) - 1:
+    if count is 1 or count is 4 or count is 6 or count is 8 or count is 11 or count is 14 or count == len(sensor_types) - 1:
         print(str_message)
         str_message = ""
     count = count + 1
@@ -52,7 +74,7 @@ count = 0
 
 if configuration_main.installed_sensors.raspberry_pi_sense_hat:
     print("\nShowing SenseHAT Temperature on LED's, Please Wait ...")
-    sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
-    sensor_access.display_led_message(str(round(sensor_access.temperature(), 2)) + "c")
+    cpu_temp = float(get_sensor_reading(sensor_commands.environmental_temp))
+    display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
 
 print("\nTesting Complete")

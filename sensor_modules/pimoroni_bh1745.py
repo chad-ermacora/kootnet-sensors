@@ -21,6 +21,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -29,11 +30,16 @@ class CreateBH1745:
     """ Creates Function access to the Pimoroni BH1745. """
 
     def __init__(self):
-        bh1745_import = __import__('bh1745')
-        self.bh1745 = bh1745_import.BH1745()
-        self.bh1745.setup()
+        try:
+            bh1745_import = __import__('bh1745')
+            self.bh1745 = bh1745_import.BH1745()
+            self.bh1745.setup()
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni BH1745 Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_bh1745 = 0
 
     def lumen(self):
+        """ Returns Lumen as a Float. """
         try:
             var_lumen = self.bh1745.get_rgbc_raw()[3]
             logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
@@ -44,6 +50,7 @@ class CreateBH1745:
         return round(var_lumen, round_decimal_to)
 
     def ems(self):
+        """ Returns Electromagnetic Spectrum of Red, Green, Blue as a list of Floats. """
         try:
             rgb_red, rgb_green, rgb_blue, var_lumen = self.bh1745.get_rgbc_raw()
             logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")
@@ -51,4 +58,4 @@ class CreateBH1745:
             logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
             rgb_red, rgb_green, rgb_blue = 0, 0, 0
 
-        return [round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)]
+        return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)

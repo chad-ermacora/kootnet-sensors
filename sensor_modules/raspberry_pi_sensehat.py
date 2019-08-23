@@ -18,8 +18,8 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from os import system
-
 from operations_modules import logger
+from operations_modules import configuration_main
 from sensor_modules import linux_os
 
 round_decimal_to = 5
@@ -29,15 +29,17 @@ class CreateRPSenseHAT:
     """ Creates Function access to the Raspberry Pi Sense HAT. """
 
     def __init__(self):
-        self.sense_hat_import = __import__("sense_hat")
         try:
+            self.display_ready = True
+            self.sense_hat_import = __import__("sense_hat")
             self.sense = self.sense_hat_import.SenseHat()
+            self.linux_os_access = linux_os.CreateLinuxSystem()
         except Exception as error:
-            logger.sensors_logger.error("Raspberry Pi Sense HAT - Failed - " + str(error))
-
-        self.linux_os_access = linux_os.CreateLinuxSystem()
+            logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.raspberry_pi_sense_hat = 0
 
     def temperature(self):
+        """ Returns Temperature as a Float. """
         try:
             env_temp = float(self.sense.get_temperature())
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Temperature - OK")
@@ -48,6 +50,7 @@ class CreateRPSenseHAT:
         return round(env_temp, round_decimal_to)
 
     def pressure(self):
+        """ Returns Pressure as a Integer. """
         try:
             pressure_hpa = self.sense.get_pressure()
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Pressure - OK")
@@ -58,6 +61,7 @@ class CreateRPSenseHAT:
         return int(pressure_hpa)
 
     def humidity(self):
+        """ Returns Humidity as a Float. """
         try:
             var_humidity = self.sense.get_humidity()
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Humidity - OK")
@@ -68,6 +72,7 @@ class CreateRPSenseHAT:
         return round(var_humidity, round_decimal_to)
 
     def magnetometer_xyz(self):
+        """ Returns Magnetometer X, Y, Z as Floats. """
         try:
             tmp_mag = self.sense.get_compass_raw()
             mag_x, mag_y, mag_z = tmp_mag["x"], tmp_mag["y"], tmp_mag["z"]
@@ -79,6 +84,7 @@ class CreateRPSenseHAT:
         return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
 
     def accelerometer_xyz(self):
+        """ Returns Accelerometer X, Y, Z as Floats. """
         try:
             tmp_acc = self.sense.get_accelerometer_raw()
 
@@ -91,6 +97,7 @@ class CreateRPSenseHAT:
         return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
 
     def gyroscope_xyz(self):
+        """ Returns Gyroscope X, Y, Z as Floats. """
         try:
             tmp_gyro = self.sense.get_gyroscope_raw()
             gyro_x, gyro_y, gyro_z = tmp_gyro["x"], tmp_gyro["y"], tmp_gyro["z"]
@@ -102,6 +109,7 @@ class CreateRPSenseHAT:
         return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
 
     def start_joy_stick_commands(self):
+        """ Scrolls Different readings on LED display based on Joystick Movements. """
         # Makes a nice Rainbow on the LED grid.  Not using right now ...
         # rainbow = [[255, 0, 0], [255, 0, 0], [255, 87, 0], [255, 196, 0],
         #            [205, 255, 0], [95, 255, 0], [0, 255, 13], [0, 255, 122],
@@ -133,6 +141,7 @@ class CreateRPSenseHAT:
                  s1, s1, b1, s1, s1, b1, s1, s1,
                  s1, s1, b1, b1, b1, b1, s1, s1]
         try:
+            logger.primary_logger.info("SenseHAT JoyStick Program Started")
             shutdown_confirm = False
             while True:
                 event = self.sense.stick.wait_for_event()
@@ -152,7 +161,7 @@ class CreateRPSenseHAT:
 
                 if event.direction == "up":
                     shutdown_confirm = False
-                    self.display_led_message(self.linux_os_access.get_ip())
+                    self.display_text(self.linux_os_access.get_ip())
                 elif event.direction == "down":
                     self.sense.set_pixels(steve)
                     if shutdown_confirm:
@@ -162,10 +171,10 @@ class CreateRPSenseHAT:
                         system("shutdown -h now")
                 elif event.direction == "left":
                     shutdown_confirm = False
-                    self.display_led_message(str(int(self.humidity())) + "%RH")
+                    self.display_text(str(int(self.humidity())) + "%RH")
                 elif event.direction == "right":
                     shutdown_confirm = False
-                    self.display_led_message(str(int(self.temperature())) + "c")
+                    self.display_text(str(int(self.temperature())) + "c")
                 elif event.action == "held":
                     shutdown_confirm = True
                     self.sense.show_message("Off1",
@@ -175,25 +184,31 @@ class CreateRPSenseHAT:
                 # Clear events to prevent multiple loops if button(s) hit multiple times
                 self.sense.stick.get_events()
         except Exception as error:
-            logger.sensors_logger.error("Unable start SenseHAT JoyStick Operations - " + str(error))
+            logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations - " + str(error))
 
-    def display_led_message(self, message):
-        try:
-            acc = self.accelerometer_xyz()
-            acc_x = round(acc[0], 0)
-            acc_y = round(acc[1], 0)
+    def display_text(self, message):
+        """ Scrolls Provided Text on LED Display. """
+        if self.display_ready:
+            self.display_ready = False
+            try:
+                acc = self.accelerometer_xyz()
+                acc_x = round(acc[0], 0)
+                acc_y = round(acc[1], 0)
 
-            if acc_x == -1:
-                self.sense.set_rotation(90)
-            elif acc_y == 1:
-                self.sense.set_rotation(0)
-            elif acc_y == -1:
-                self.sense.set_rotation(180)
-            else:
-                self.sense.set_rotation(270)
+                if acc_x == -1:
+                    self.sense.set_rotation(90)
+                elif acc_y == 1:
+                    self.sense.set_rotation(0)
+                elif acc_y == -1:
+                    self.sense.set_rotation(180)
+                else:
+                    self.sense.set_rotation(270)
 
-            self.sense.show_message(str(message),
-                                    scroll_speed=0.12,
-                                    text_colour=(75, 0, 0))
-        except Exception as error:
-            logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
+                self.sense.show_message(str(message),
+                                        scroll_speed=0.12,
+                                        text_colour=(75, 0, 0))
+            except Exception as error:
+                logger.sensors_logger.error("Unable to set Message Orientation - " + str(error))
+            self.display_ready = True
+        else:
+            logger.sensors_logger.warning("Unable to display message on Raspberry Pi SenseHAT.  Already in use.")

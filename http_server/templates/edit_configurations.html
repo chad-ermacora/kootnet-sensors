@@ -1,0 +1,948 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-form {
+            background-color: #00B0FF;
+        }
+
+        .mui-col-md-4 {
+            width: 275px;
+        }
+    </style>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active">
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="primary-config-tab">
+                Main
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="installed-sensors-tab">
+                Installed Sensors
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="network-config-tab">
+                Networking
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="wifi-config-tab">
+                WiFi
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="trigger-variances-tab">
+                Trigger Variances
+            </a>
+        </li>
+    </ul>
+
+    <br>
+
+    <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigMain">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">Main Configuration</a></u></h2>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="debug_logging" value="" {{ CheckedDebug }}>
+                        Enable Debug Logging
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_display" value="" {{ CheckedDisplay }}>
+                        Enable Display
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_interval_recording" id="enable_interval_recording"
+                               value="" {{ CheckedInterval }}>
+                        Record sensors to SQL database based on set Interval
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between Interval recordings
+                        <br>
+                        <input style="width: 75px" type="number" step="0.1" min="1" name="interval_delay_seconds"
+                               value="{{ IntervalDelay }}" {{ DisabledIntervalDelay }}>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="enable_trigger_recording" value="" {{ CheckedTrigger }}>
+                        Record sensors to SQL database based on set Triggers
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset"
+                               value="" {{ CheckedCustomTempOffset }}>
+                        Enable custom Temperature Offset
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">Current / Custom Temperature Offset
+                        <br>
+                        <input style="width: 75px" type="number" step="0.01" min="-100" max="100"
+                               name="custom_temperature_offset"
+                               value="{{ temperature_offset }}" {{ DisabledCustomTempOffset }}>
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="installed-sensors-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditInstalledSensors">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
+
+                <h4><u>Raspberry Pi</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="linux_system" value="" {{ GnuLinux }}>
+                        Gnu/Linux - Raspbian
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_zero_w" value="" {{ RPIZeroW }}>
+                        Zero W
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_3b_plus" value="" {{ RPI3BPlus }}>
+                        3BPlus
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="raspberry_pi_sense_hat" value="" {{ SenseHAT }}>
+                        Sense HAT
+                    </label>
+                </div>
+
+                <h4><u>Pimoroni</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bh1745" value="" {{ PimoroniBH1745 }}>
+                        BH1745
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_as7262" value="" {{ PimoroniAS7262 }}>
+                        AS7262
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bmp280" value="" {{ PimoroniBMP280 }}>
+                        BMP280
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_bme680" value="" {{ PimoroniBME680 }}>
+                        BME680
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_enviro" value="" {{ PimoroniEnviroPHAT }}>
+                        EnviroPHAT
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_enviroplus" value="" {{ PimoroniEnviroPlus }}>
+                        Enviro+
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_pms5003" value="" {{ PimoroniPMS5003 }}>
+                        PMS5003
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_lsm303d" value="" {{ PimoroniLSM303D }}>
+                        LSM303D
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_icm20948" value="" {{ PimoroniICM20948 }}>
+                        ICM20948
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_vl53l1x" value="" {{ PimoroniVL53L1X }}>
+                        VL53L1X
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_ltr_559" value="" {{ PimoroniLTR559 }}>
+                        LTR-559
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_veml6075" value="" {{ PimoroniVEML6075 }}>
+                        VEML6075
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_matrix_11x7" value="" {{ Pimoroni11x7LEDMatrix }}>
+                        11x7 LED Matrix
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_st7735" value="" {{ PimoroniSPILCD10_96 }}>
+                        10.96'' SPI Colour LCD (160x80)
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="pimoroni_mono_oled_luma" value="" {{ PimoroniMonoOLED128x128BW }}>
+                        1.12'' Mono OLED (128x128, white/black)
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="network-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigIPv4">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">Network Configuration</a></u></h2>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        HostName
+                        <br>
+                        <input style="width: 125px" type="text" id="ip_hostname" name="ip_hostname" required
+                               placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
+                               value="{{ IPHostname }}">
+                    </label>
+                </div>
+
+                <br>
+                <h4><u>Wireless IP Settings</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" id="IP_DHCP" name="ip_dhcp" value="" {{ CheckedDHCP }}>
+                        DHCP
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        IPv4 Address
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_address"
+                               placeholder="eg. 192.168.10.11" minlength="7"
+                               value="{{ IPv4Address }}" {{ IPv4AddressDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield" style="inset-inline-end: auto">
+                    <label style="color: black">
+                        <a style="color: black" target="_blank"
+                           href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                            Subnet mask
+                        </a>
+                        <br>
+                        <input style="width: 50px" type="text" name="ip_subnet"
+                               placeholder="eg. /24" minlength="2" maxlength="3"
+                               value="{{ IPv4Subnet }}" {{ IPv4SubnetDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Gateway
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_gateway"
+                               placeholder="eg. 192.168.10.1" minlength="7" maxlength="15"
+                               value="{{ IPGateway }}" {{ IPGatewayDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Primary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns1"
+                               placeholder="eg. 8.8.8.8" minlength="7" maxlength="15"
+                               value="{{ IPDNS1 }}" {{ IPDNS1Disabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Secondary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns2"
+                               placeholder="eg. 8.8.4.4" minlength="7" maxlength="15"
+                               value="{{ IPDNS2 }}" {{ IPDNS2Disabled }}>
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="wifi-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigWifi">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
+
+                <label>
+                    <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
+                        Two Character Country Code
+                    </a>
+                    <br>
+                    <input type="text" style="width: 25px" maxlength="2" minlength="2"
+                           name="country_code" value="{{ WirelessCountryCode }}" required>
+                </label>
+
+                <br>
+                <br>
+
+                <label>Wireless Security</label>
+                <div class="mui-radio">
+                    <label>
+                        <input type="radio" name="wifi_security1"
+                               value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                        Secured (WEP/WPA/WPA2)
+                    </label>
+                    <label>
+                        <input type="radio" name="wifi_security1"
+                               value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                        Open (None)
+                    </label>
+                </div>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Network Name (SSID)
+                        <br>
+                        <input style="width: 150px" type="text" name="ssid1" maxlength="32"
+                               placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                    </label>
+                </div>
+                <br>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Key
+                        <br>
+                        <input style="width: 175px" type="password" name="wifi_key1"
+                               placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
+                               value="">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="trigger-variances-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditTriggerVariances">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">Trigger Variances</a></u></h2>
+
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="window.location.href = '/ResetTriggerVariances';">
+                    Reset Trigger Variances
+                </button>
+
+                <br>
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label>
+                        <input type="checkbox" name="checkbox_sensor_uptime" value="" {{ CheckedSensorUptime }}>
+                        Sensor Uptime
+                    </label>
+                </div>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Days between SQL writes of sensor uptime
+                        <br>
+                        <input style="width: 75px" type="number" step="0.01" min="0.10" name="days_sensor_uptime"
+                               value="{{ DaysSensorUptime }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-row" style="alignment: center">
+                    <div class="mui-col-md-4">
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="checkbox_cpu_temperature"
+                                       value="" {{ CheckedCPUTemperature }}>
+                                CPU Temperature
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="trigger_cpu_temperature"
+                                       value="{{ TriggerCPUTemperature }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="seconds_cpu_temperature"
+                                       value="{{ SecondsCPUTemperature }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="pressure" value="" {{ CheckedPressure }}>
+                                Pressure
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_pressure"
+                                       value="{{ TriggerPressure }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_pressure"
+                                       value="{{ SecondsPressure }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="humidity" value="" {{ CheckedHumidity }}>
+                                Humidity
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_humidity"
+                                       value="{{ TriggerHumidity }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_humidity"
+                                       value="{{ SecondsHumidity }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="gas" value="" {{ CheckedGas }}>
+                                Gas
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Index Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_gas_index"
+                                       value="{{ TriggerGasIndex }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Oxidising Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="trigger_gas_oxidising"
+                                       value="{{ TriggerGasOxidising }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Reducing Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="trigger_gas_reducing"
+                                       value="{{ TriggerGasReducing }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                NH3 Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_gas_nh3"
+                                       value="{{ TriggerGasNH3 }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_gas"
+                                       value="{{ SecondsGas }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="particulate_matter" value="" {{ CheckedPM }}>
+                                Particulate Matter
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM1 Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_pm1"
+                                       value="{{ TriggerPM1 }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM2.5 Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_pm2_5"
+                                       value="{{ TriggerPM25 }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM10 Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_pm10"
+                                       value="{{ TriggerPM10 }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_pm"
+                                       value="{{ SecondsPM }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="accelerometer" value="" {{ CheckedAccelerometer }}>
+                                Accelerometer
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                X Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="accelerometer_x"
+                                       value="{{ TriggerAccelerometerX }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Y Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="accelerometer_y"
+                                       value="{{ TriggerAccelerometerY }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Z Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="accelerometer_z"
+                                       value="{{ TriggerAccelerometerZ }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="seconds_accelerometer"
+                                       value="{{ SecondsAccelerometer }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="magnetometer" value="" {{ CheckedMagnetometer }}>
+                                Magnetometer
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                X Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="magnetometer_x"
+                                       value="{{ TriggerMagnetometerX }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Y Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="magnetometer_y"
+                                       value="{{ TriggerMagnetometerY }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Z Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="magnetometer_z"
+                                       value="{{ TriggerMagnetometerZ }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="seconds_magnetometer"
+                                       value="{{ SecondsMagnetometer }}">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mui-col-md-4">
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="env_temperature" value="" {{ CheckedEnvTemperature }}>
+                                Environmental Temperature
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="trigger_env_temperature"
+                                       value="{{ TriggerEnvTemperature }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="seconds_env_temperature"
+                                       value="{{ SecondsEnvTemperature }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="altitude" value="" {{ CheckedAltitude }}>
+                                Altitude
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_altitude"
+                                       value="{{ TriggerAltitude }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_altitude"
+                                       value="{{ SecondsAltitude }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="distance" value="" {{ CheckedDistance }}>
+                                Distance
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_distance"
+                                       value="{{ TriggerDistance }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_distance"
+                                       value="{{ SecondsDistance }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="lumen" value="" {{ CheckedLumen }}>
+                                Lumen
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="trigger_lumen"
+                                       value="{{ TriggerLumen }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_lumen"
+                                       value="{{ SecondsLumen }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="colour" value="" {{ CheckedColour }}>
+                                Colour
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Red Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="red"
+                                       value="{{ TriggerRed }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Orange Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="orange"
+                                       value="{{ TriggerOrange }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Yellow Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="yellow"
+                                       value="{{ TriggerYellow }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Green Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="green"
+                                       value="{{ TriggerGreen }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Blue Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="blue"
+                                       value="{{ TriggerBlue }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Violet Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="violet"
+                                       value="{{ TriggerViolet }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_colour"
+                                       value="{{ SecondsColour }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }}>
+                                Ultra Violet
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                UVA Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="ultra_violet_a"
+                                       value="{{ TriggerUltraVioletA }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                UVB Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="ultra_violet_b"
+                                       value="{{ TriggerUltraVioletB }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10"
+                                       name="seconds_ultra_violet"
+                                       value="{{ SecondsUltraViolet }}">
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" name="gyroscope" value="" {{ CheckedGyroscope }}>
+                                Gyroscope
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                X Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="gyroscope_x"
+                                       value="{{ TriggerGyroscopeX }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Y Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="gyroscope_y"
+                                       value="{{ TriggerGyroscopeY }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Z Trigger variance
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="gyroscope_z"
+                                       value="{{ TriggerGyroscopeZ }}">
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between readings
+                                <br>
+                                <input style="width: 75px" type="number" step="0.01" min="0.10" name="seconds_gyroscope"
+                                       value="{{ SecondsGyroscope }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <script src="/EditConfigurations.js"></script>
+
+{% endblock %}

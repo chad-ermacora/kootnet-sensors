@@ -20,6 +20,7 @@ import os
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_variables
+from operations_modules import app_generic_functions
 from sensor_modules import sensor_variables
 
 
@@ -27,6 +28,7 @@ def convert_config_to_str(config):
     """ Takes configuration Object and returns it as a string. """
     config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
                       str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
+                      str(config.enable_display) + " = Enable Display (If present)\n" + \
                       str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
                       str(config.enable_trigger_recording) + " = Record Trigger Sensors to SQL Database\n" + \
                       str(config.sleep_duration_interval) + " = Seconds between Interval recordings\n" + \
@@ -38,20 +40,11 @@ def convert_config_to_str(config):
 
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
-    logger.primary_logger.debug("Loading Configuration File")
-
     if os.path.isfile(file_locations.config_file_location):
-        try:
-            config_file = open(file_locations.config_file_location, "r")
-            config_file_content = config_file.readlines()
-            config_file.close()
-            installed_config = convert_config_lines_to_obj(config_file_content)
-        except Exception as error:
-            installed_config = app_variables.CreateConfig()
-            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
-
+        config_file_content = app_generic_functions.get_file_content(file_locations.config_file_location).split("\n")
+        installed_config = convert_config_lines_to_obj(config_file_content)
     else:
-        logger.primary_logger.error("Configuration file not found, using and saving default")
+        logger.primary_logger.warning("Configuration file not found, using and saving default")
         installed_config = app_variables.CreateConfig()
         write_config_to_file(installed_config)
 
@@ -70,38 +63,44 @@ def convert_config_lines_to_obj(config_text_file):
         bad_load = True
 
     try:
-        new_config.enable_interval_recording = int(config_text_file[2].split('=')[0].strip())
+        new_config.enable_display = int(config_text_file[2].split('=')[0].strip())
+    except Exception as error:
+        logger.primary_logger.warning("Invalid Config - Enable Display: " + str(error))
+        bad_load = True
+
+    try:
+        new_config.enable_interval_recording = int(config_text_file[3].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Record Interval Sensors: " + str(error))
         bad_load = True
 
     try:
-        new_config.enable_trigger_recording = int(config_text_file[3].split('=')[0].strip())
+        new_config.enable_trigger_recording = int(config_text_file[4].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Record Trigger Sensors: " + str(error))
         bad_load = True
 
     try:
-        new_config.sleep_duration_interval = float(config_text_file[4].split('=')[0].strip())
+        new_config.sleep_duration_interval = float(config_text_file[5].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Seconds between Interval recordings: " + str(error))
         bad_load = True
 
     try:
-        new_config.enable_custom_temp = int(config_text_file[5].split('=')[0].strip())
+        new_config.enable_custom_temp = int(config_text_file[6].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Enable Custom Temperature Offset: " + str(error))
         bad_load = True
 
     try:
-        new_config.temperature_offset = float(config_text_file[6].split('=')[0].strip())
+        new_config.temperature_offset = float(config_text_file[7].split('=')[0].strip())
     except Exception as error:
         logger.primary_logger.warning("Invalid Config - Temperature Offset: " + str(error))
         bad_load = True
 
     if bad_load:
         logger.primary_logger.warning("One or more bad options in main configuration file.  " +
-                                      "Using defaults for bad entries and saving.")
+                                      "Using defaults for bad entries and saving. Please review the Configuration file.")
         write_config_to_file(new_config)
 
     return new_config
@@ -109,7 +108,6 @@ def convert_config_lines_to_obj(config_text_file):
 
 def write_config_to_file(config):
     """ Writes provided configuration file to local disk. The provided configuration can be string or object. """
-    logger.primary_logger.debug("Writing Configuration to File")
     try:
         if type(config) is str:
             new_config = config
@@ -117,34 +115,21 @@ def write_config_to_file(config):
         else:
             new_config = convert_config_to_str(config)
 
-        sensor_list_file = open(file_locations.config_file_location, 'w')
-        sensor_list_file.write(new_config)
-        sensor_list_file.close()
+        app_generic_functions.write_file_to_disk(file_locations.config_file_location, new_config)
 
         # Save Log level with each config file save
-        enable_debug = open(file_locations.debug_file_location, 'w')
-        enable_debug.write(str(config.enable_debug_logging))
-        enable_debug.close()
-
+        app_generic_functions.write_file_to_disk(file_locations.debug_file_location, str(config.enable_debug_logging))
     except Exception as error:
         logger.primary_logger.error("Unable to open config file: " + str(error))
 
 
 def get_installed_sensors_from_file():
     """ Loads installed sensors from file and returns it as an object. """
-    logger.primary_logger.debug("Loading Installed Sensors and Returning")
-
     if os.path.isfile(file_locations.sensors_installed_file_location):
-        try:
-            sensor_list_file = open(file_locations.sensors_installed_file_location, 'r')
-            installed_sensor_lines = sensor_list_file.readlines()
-            sensor_list_file.close()
-            installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
-        except Exception as error:
-            logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
-            installed_sensors = sensor_variables.CreateInstalledSensors()
+        installed_sensor_lines = app_generic_functions.get_file_content(file_locations.sensors_installed_file_location).split("\n")
+        installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
     else:
-        logger.primary_logger.error("Installed Sensors file not found, using and saving default")
+        logger.primary_logger.warning("Installed Sensors file not found, using and saving default")
         installed_sensors = sensor_variables.CreateInstalledSensors()
         write_installed_sensors_to_file(installed_sensors)
 
@@ -162,29 +147,32 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         else:
             new_installed_sensors.linux_system = 0
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.linux_system_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #1: " + new_installed_sensors.linux_system_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[2][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_zero_w = 1
+            new_installed_sensors.has_cpu_temperature = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_zero_w_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #2: " + new_installed_sensors.raspberry_pi_zero_w_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[3][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_3b_plus = 1
+            new_installed_sensors.has_cpu_temperature = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_3b_plus_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #3: " + new_installed_sensors.raspberry_pi_3b_plus_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[4][:1]):
             new_installed_sensors.no_sensors = False
             new_installed_sensors.raspberry_pi_sense_hat = 1
+            new_installed_sensors.has_display = 1
             new_installed_sensors.has_env_temperature = 1
             new_installed_sensors.has_pressure = 1
             new_installed_sensors.has_humidity = 1
@@ -192,7 +180,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_mag = 1
             new_installed_sensors.has_gyro = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.raspberry_pi_sense_hat_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #4: " + new_installed_sensors.raspberry_pi_sense_hat_name)
         bad_load = True
 
     try:
@@ -204,7 +192,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_green = 1
             new_installed_sensors.has_blue = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bh1745_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #5: " + new_installed_sensors.pimoroni_bh1745_name)
         bad_load = True
 
     try:
@@ -218,25 +206,40 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_blue = 1
             new_installed_sensors.has_violet = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_as7262_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #6: " + new_installed_sensors.pimoroni_as7262_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[7][:1]):
             new_installed_sensors.no_sensors = False
-            new_installed_sensors.pimoroni_bme680 = 1
+            new_installed_sensors.pimoroni_bmp280 = 1
             new_installed_sensors.has_env_temperature = 1
             new_installed_sensors.has_pressure = 1
-            new_installed_sensors.has_humidity = 1
+            new_installed_sensors.has_altitude = 1
 
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_bme680_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #7: " + new_installed_sensors.pimoroni_bmp280_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[8][:1]):
             new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_bme680 = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_humidity = 1
+            new_installed_sensors.has_gas = 1
+
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #8: " + new_installed_sensors.pimoroni_bme680_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[9][:1]):
+            new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_enviro = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
             new_installed_sensors.has_lumen = 1
             new_installed_sensors.has_red = 1
             new_installed_sensors.has_green = 1
@@ -244,39 +247,116 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
             new_installed_sensors.has_acc = 1
             new_installed_sensors.has_mag = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_enviro_name)
-        bad_load = True
-
-    try:
-        if int(installed_sensor_lines[9][:1]):
-            new_installed_sensors.no_sensors = False
-            new_installed_sensors.pimoroni_lsm303d = 1
-            new_installed_sensors.has_acc = 1
-            new_installed_sensors.has_mag = 1
-    except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_lsm303d_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #9: " + new_installed_sensors.pimoroni_enviro_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[10][:1]):
             new_installed_sensors.no_sensors = False
-            new_installed_sensors.pimoroni_vl53l1x = 1
+            new_installed_sensors.pimoroni_enviroplus = 1
+            new_installed_sensors.has_display = 1
+            new_installed_sensors.has_env_temperature = 1
+            new_installed_sensors.has_pressure = 1
+            new_installed_sensors.has_humidity = 1
+            new_installed_sensors.has_distance = 1
+            new_installed_sensors.has_lumen = 1
+            new_installed_sensors.has_gas = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_vl53l1x_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #10: " + new_installed_sensors.pimoroni_enviroplus_name)
         bad_load = True
 
     try:
         if int(installed_sensor_lines[11][:1]):
             new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_pms5003 = 1
+            new_installed_sensors.has_particulate_matter = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #11: " + new_installed_sensors.pimoroni_pms5003_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[12][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_lsm303d = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #12: " + new_installed_sensors.pimoroni_lsm303d_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[13][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_icm20948 = 1
+            new_installed_sensors.has_acc = 1
+            new_installed_sensors.has_mag = 1
+            new_installed_sensors.has_gyro = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #13: " + new_installed_sensors.pimoroni_icm20948_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[14][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_vl53l1x = 1
+            new_installed_sensors.has_distance = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #14: " + new_installed_sensors.pimoroni_vl53l1x_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[15][:1]):
+            new_installed_sensors.no_sensors = False
             new_installed_sensors.pimoroni_ltr_559 = 1
             new_installed_sensors.has_lumen = 1
+            new_installed_sensors.has_distance = 1
     except IndexError:
-        logger.primary_logger.error("Invalid Sensor: " + new_installed_sensors.pimoroni_ltr_559_name)
+        logger.primary_logger.error("Invalid Installed Sensors Entry #15: " + new_installed_sensors.pimoroni_ltr_559_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[16][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_veml6075 = 1
+            new_installed_sensors.has_ultra_violet = 1
+            new_installed_sensors.has_ultra_violet_comparator = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #16: " + new_installed_sensors.pimoroni_veml6075_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[17][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_matrix_11x7 = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_matrix_11x7_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[18][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_st7735 = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_st7735_name)
+        bad_load = True
+
+    try:
+        if int(installed_sensor_lines[19][:1]):
+            new_installed_sensors.no_sensors = False
+            new_installed_sensors.pimoroni_mono_oled_luma = 1
+            new_installed_sensors.has_display = 1
+    except IndexError:
+        logger.primary_logger.error("Invalid Installed Sensors Entry #17: " +
+                                    new_installed_sensors.pimoroni_mono_oled_luma_name)
         bad_load = True
 
     if bad_load:
         logger.primary_logger.warning("One or more bad options in Installed Sensors configuration file.  " +
-                                      "Using defaults for bad entries and saving.")
+                                      "Disabling bad entries. Please review the Installed Sensors Configuration file.")
         write_installed_sensors_to_file(new_installed_sensors)
 
     return new_installed_sensors
@@ -285,14 +365,11 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
 def write_installed_sensors_to_file(installed_sensors):
     """ Writes provided 'installed sensors' to local disk. The provided sensors can be string or object. """
     try:
-        if type(installed_sensors) is str:
+        if type(installed_sensors) == str:
             new_installed_sensors = installed_sensors
         else:
             new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
 
-        installed_sensors_config_file = open(file_locations.sensors_installed_file_location, 'w')
-        installed_sensors_config_file.write(new_installed_sensors)
-        installed_sensors_config_file.close()
-
+        app_generic_functions.write_file_to_disk(file_locations.sensors_installed_file_location, new_installed_sensors)
     except Exception as error:
-        logger.primary_logger.error("Unable to open config file: " + str(error))
+        logger.primary_logger.error("Unable to open installed sensors config file: " + str(error))

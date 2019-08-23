@@ -16,6 +16,7 @@ pip3 install as7262
 @author: OO-Dragon
 """
 from operations_modules import logger
+from operations_modules import configuration_main
 
 round_decimal_to = 5
 
@@ -24,15 +25,19 @@ class CreateAS7262:
     """ Creates Function access to the Pimoroni AS7262. """
 
     def __init__(self):
-        self.as7262_import = __import__('as7262')
-        self.as7262_import.soft_reset()
-        self.as7262_import.set_gain(64)
-        self.as7262_import.set_integration_time(21)
-        self.as7262_import.set_measurement_mode(2)
-        self.as7262_import.set_illumination_led(0)
+        try:
+            self.as7262_import = __import__('as7262')
+            self.as7262_import.soft_reset()
+            self.as7262_import.set_gain(64)
+            self.as7262_import.set_integration_time(21)
+            self.as7262_import.set_measurement_mode(2)
+            self.as7262_import.set_illumination_led(0)
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni AS7262 Initialization Failed - " + str(error))
+            configuration_main.installed_sensors.pimoroni_as7262 = 0
 
     def spectral_six_channel(self):
-        """ Returns Red, Orange, Yellow, Green, Blue and Violet. """
+        """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
         try:
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_import.get_calibrated_values()
             logger.sensors_logger.debug("Pimoroni AS7262 6 channel spectrum - OK")
@@ -40,6 +45,6 @@ class CreateAS7262:
             logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed - " + str(error))
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
 
-        return [round(red_650, round_decimal_to), round(orange_600, round_decimal_to),
-                round(yellow_570, round_decimal_to), round(green_550, round_decimal_to),
-                round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)]
+        return round(red_650, round_decimal_to), round(orange_600, round_decimal_to), \
+               round(yellow_570, round_decimal_to), round(green_550, round_decimal_to), \
+               round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)

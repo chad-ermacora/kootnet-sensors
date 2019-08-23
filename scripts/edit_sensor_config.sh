@@ -6,17 +6,27 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
+# Change HTTP Authentication User & Password
+read -p "Do you want to Change the HTTP Authentication? (Y/N) " -n 1 -r AUTH
+echo
+if [[ ${AUTH} =~ ^[Yy]$ ]]
+then
+  bash /opt/kootnet-sensors/scripts/change_http_authentication.sh
+fi
 # Open Config Files if installed
 if [[ -f ${CONFIG_DIR}"/installed_datetime.txt" ]]
 then
   printf "\nPrevious install detected, opening configuration files\n"
   nano ${CONFIG_DIR}/installed_sensors.conf
   nano ${CONFIG_DIR}/sql_recording.conf
-  nano /etc/network/interfaces
+  nano /etc/dhcpcd.conf
   nano /etc/wpa_supplicant/wpa_supplicant.conf
-  printf "\nPrinting config & testing sensors\n\n"
-  killall python3 2>/dev/null
-  python3 /opt/kootnet-sensors/test_sensors.py
+  printf "\nRestarting Services, please wait ...\n\n"
+  systemctl daemon-reload
+  systemctl restart KootnetSensors
+  sleep 15
+  printf "Printing config & testing sensors\n\n"
+  /home/kootnet_data/python-env/bin/python3 /opt/kootnet-sensors/test_sensors.py
 fi
 printf "\nPress enter to exit ..."
-read nothing
+read -r nothing

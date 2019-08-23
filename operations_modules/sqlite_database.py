@@ -19,8 +19,6 @@
 import sqlite3
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import sensors
-from operations_modules import configuration_main
 
 
 class CreateIntervalDatabaseData:
@@ -34,65 +32,6 @@ class CreateIntervalDatabaseData:
 
         self.sensor_types = ""
         self.sensor_readings = ""
-
-
-class CreateTriggerDatabaseData:
-    """ Creates a object, holding required data for making a Trigger SQL execute string. """
-
-    def __init__(self):
-        self.variance = 99999.99
-
-        if configuration_main.installed_sensors.linux_system:
-            self.sql_columns_str = "DateTime,SensorName,IP,"
-        else:
-            self.sql_columns_str = "DateTime,"
-
-        self.sql_sensor_name = ""
-        self.sql_ip = ""
-
-        self.sql_query_start = "INSERT OR IGNORE INTO TriggerData ("
-        self.sql_query_values_start = ") VALUES ("
-        self.sql_query_values_end = ")"
-
-        self.sql_readings1 = []
-        self.sql_readings1_datetime = []
-
-        self.sql_readings2 = []
-        self.sql_readings2_datetime = []
-
-    def get_sql_write_str(self):
-        self._update_sql_name_and_ip()
-        sql_execute_commands_list = []
-
-        for reading1, reading2, datetime1, datetime2 in zip(self.sql_readings1,
-                                                            self.sql_readings2,
-                                                            self.sql_readings1_datetime,
-                                                            self.sql_readings2_datetime):
-            if configuration_main.installed_sensors.linux_system:
-                sql_execute_readings1 = "'" + datetime1 + "','" + self.sql_sensor_name + "','" + self.sql_ip + "',"
-                sql_execute_readings2 = "'" + datetime2 + "','" + self.sql_sensor_name + "','" + self.sql_ip + "',"
-            else:
-                sql_execute_readings1 = "'" + datetime1 + "',"
-                sql_execute_readings2 = "'" + datetime2 + "',"
-
-            sql_execute_readings1 += "'" + str(reading1) + "'"
-            sql_execute_readings2 += "'" + str(reading2) + "'"
-
-            sql_execute1 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
-                            sql_execute_readings1 + self.sql_query_values_end)
-
-            sql_execute2 = (self.sql_query_start + self.sql_columns_str + self.sql_query_values_start +
-                            sql_execute_readings2 + self.sql_query_values_end)
-
-            sql_execute_commands_list.append(sql_execute1)
-            sql_execute_commands_list.append(sql_execute2)
-
-        return sql_execute_commands_list
-
-    def _update_sql_name_and_ip(self):
-        if configuration_main.installed_sensors.linux_system:
-            self.sql_sensor_name = sensors.os_sensor_access.get_hostname()
-            self.sql_ip = sensors.os_sensor_access.get_ip()
 
 
 class CreateOtherDataEntry:
