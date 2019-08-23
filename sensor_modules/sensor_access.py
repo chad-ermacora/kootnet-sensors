@@ -55,7 +55,7 @@ def get_system_information():
     ip_address = get_ip()
     try:
         str_sensor_data = get_hostname() + \
-                          ",<a href='http://" + ip_address + ":10065/Quick' target='_blank'>" + ip_address + "</a>" + \
+                          ",<a href='https://" + ip_address + ":10065/Quick' target='_blank'>" + ip_address + "</a>" + \
                           "," + str(get_system_datetime()) + \
                           "," + str(get_system_uptime()) + \
                           "," + str(software_version.version) + \
