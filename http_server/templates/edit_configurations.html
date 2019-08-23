@@ -140,16 +140,18 @@
                 <div class="mui-checkbox" style="display: inline-block;">
                     <label>
                         <input type="checkbox" name="raspberry_pi_zero_w" value="" {{ RPIZeroW }}>
-                        Zero W
+                        Zero or Zero W
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
                     <label>
                         <input type="checkbox" name="raspberry_pi_3b_plus" value="" {{ RPI3BPlus }}>
-                        3BPlus
+                        All Other Raspberry Pi Models (2/3/4)
                     </label>
                 </div>
+
+                <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
                     <label>
@@ -414,6 +416,11 @@
               action="/EditTriggerVariances">
             <fieldset style="text-align: center">
                 <h2><u><a style="color: black" href="{{ PageURL }}">Trigger Variances</a></u></h2>
+                <h5 style="color: red">
+                    ** Warning Trigger Variances are still under active development **
+                    <br>
+                    It is recommended to check the logs periodically
+                </h5>
 
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="window.location.href = '/ResetTriggerVariances';">
@@ -453,7 +460,7 @@
                             <label style="color: black">
                                 Trigger variance
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="trigger_cpu_temperature"
+                                <input style="width: 75px" type="number" step="0.01" name="trigger_cpu_temperature"
                                        value="{{ TriggerCPUTemperature }}">
                             </label>
                         </div>
@@ -461,7 +468,7 @@
                             <label style="color: black">
                                 Seconds between readings
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="seconds_cpu_temperature"
+                                <input style="width: 75px" type="number" step="0.01" name="seconds_cpu_temperature"
                                        value="{{ SecondsCPUTemperature }}">
                             </label>
                         </div>
@@ -536,7 +543,7 @@
                             <label style="color: black">
                                 Oxidising Trigger variance
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="trigger_gas_oxidising"
+                                <input style="width: 75px" type="number" step="0.01" name="trigger_gas_oxidising"
                                        value="{{ TriggerGasOxidising }}">
                             </label>
                         </div>
@@ -544,7 +551,7 @@
                             <label style="color: black">
                                 Reducing Trigger variance
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="trigger_gas_reducing"
+                                <input style="width: 75px" type="number" step="0.01" name="trigger_gas_reducing"
                                        value="{{ TriggerGasReducing }}">
                             </label>
                         </div>
@@ -642,7 +649,7 @@
                             <label style="color: black">
                                 Seconds between readings
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="seconds_accelerometer"
+                                <input style="width: 75px" type="number" step="0.01" name="seconds_accelerometer"
                                        value="{{ SecondsAccelerometer }}">
                             </label>
                         </div>
@@ -683,7 +690,7 @@
                             <label style="color: black">
                                 Seconds between readings
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="seconds_magnetometer"
+                                <input style="width: 75px" type="number" step="0.01" name="seconds_magnetometer"
                                        value="{{ SecondsMagnetometer }}">
                             </label>
                         </div>
@@ -700,7 +707,7 @@
                             <label style="color: black">
                                 Trigger variance
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="trigger_env_temperature"
+                                <input style="width: 75px" type="number" step="0.01" name="trigger_env_temperature"
                                        value="{{ TriggerEnvTemperature }}">
                             </label>
                         </div>
@@ -708,7 +715,7 @@
                             <label style="color: black">
                                 Seconds between readings
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="seconds_env_temperature"
+                                <input style="width: 75px" type="number" step="0.01" name="seconds_env_temperature"
                                        value="{{ SecondsEnvTemperature }}">
                             </label>
                         </div>
@@ -881,7 +888,7 @@
                             <label style="color: black">
                                 Seconds between readings
                                 <br>
-                                <input style="width: 75px" type="number" step="0.01"                                        name="seconds_ultra_violet"
+                                <input style="width: 75px" type="number" step="0.01" name="seconds_ultra_violet"
                                        value="{{ SecondsUltraViolet }}">
                             </label>
                         </div>

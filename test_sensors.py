@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import requests
+import urllib3
 from operations_modules import configuration_main
 from operations_modules import variance_checks
 
@@ -42,6 +43,7 @@ def display_text_on_sensor(text_message):
     requests.put(url=url, data={'command_data': text_message}, verify=False)
 
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 sensor_commands = variance_checks.CreateSensorCommands()
 
 interval_data = get_interval_sensor_data()
@@ -72,8 +74,8 @@ while count < len(sensor_types):
 
 count = 0
 
-if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-    print("\nShowing SenseHAT Temperature on LED's, Please Wait ...")
+if configuration_main.installed_sensors.has_display:
+    print("\nShowing Temperature on Installed Display, Please Wait ...")
     cpu_temp = float(get_sensor_reading(sensor_commands.environmental_temp))
     display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
 
