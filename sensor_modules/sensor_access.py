@@ -18,6 +18,8 @@
 """
 import os
 import psutil
+import math
+from time import sleep
 from datetime import datetime
 from threading import Thread
 from operations_modules import logger
@@ -476,6 +478,24 @@ def get_humidity():
         return "NoSensor"
 
 
+def get_dew_point():
+    """ Returns estimated dew point based on Temperature and Humidity. """
+    variable_a = 17.27
+    variable_b = 237.7
+
+    env_temp = get_sensor_temperature()
+    humidity = get_humidity()
+    if env_temp == "NoSensor" or humidity == "NoSensor":
+        return "NoSensor"
+    else:
+        try:
+            alpha = ((variable_a * env_temp) / (variable_b + env_temp)) + math.log(humidity / 100.0)
+            return (variable_b * alpha) / (variable_a - alpha)
+        except Exception as error:
+            logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
+            return 0.0
+
+
 def get_distance():
     """ Returns sensors distance. """
     if configuration_main.installed_sensors.pimoroni_enviroplus:
@@ -590,6 +610,15 @@ def get_ems():
         return "NoSensor"
 
 
+def get_ultra_violet_index():
+    """ Returns Ultra Violet Index. """
+    if configuration_main.installed_sensors.pimoroni_veml6075:
+        uv_index_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet_index()
+        return uv_index_reading
+    else:
+        return "NoSensor"
+
+
 def get_ultra_violet_a():
     """ Returns Ultra Violet A (UVA). """
     if configuration_main.installed_sensors.pimoroni_veml6075:
@@ -656,8 +685,60 @@ def get_gyroscope_xyz():
         return "NoSensor"
 
 
+def get_weather_underground_readings(outdoor_sensor):
+    return_readings_str = ""
+
+    dailyrainin = ""
+
+    temp_c = get_sensor_temperature()
+    if temp_c != "NoSensor":
+        try:
+            temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
+            if outdoor_sensor:
+                return_readings_str += "&tempf=" + str(temperature_f)
+            else:
+                return_readings_str += "&indoortempf=" + str(temperature_f)
+        except Exception as error:
+            logger.sensors_logger.error("Unable to calculate temperature for Weather Underground: " + str(error))
+
+    humidity = get_humidity()
+    if humidity != "NoSensor":
+        if outdoor_sensor:
+            return_readings_str += "&humidity=" + str(humidity)
+        else:
+            return_readings_str += "&indoorhumidity=" + str(humidity)
+
+    out_door_dew_point = get_dew_point()
+    if out_door_dew_point != "NoSensor" and outdoor_sensor:
+        dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
+        return_readings_str += "&dewptf=" + str(dew_point_f)
+
+    pressure_hpa = get_pressure()
+    if pressure_hpa != "NoSensor":
+        try:
+            baromin = float(pressure_hpa) * 0.029529983071445
+            return_readings_str += "&baromin=" + str(baromin)
+        except Exception as error:
+            logger.sensors_logger.error("Unable to calculate Pressure inhg for Weather Underground: " + str(error))
+
+    ultra_violet_index = get_ultra_violet_index()
+    if ultra_violet_index != "NoSensor":
+        return_readings_str += "&UV=" + str(ultra_violet_index)
+
+    pm_2_5 = get_particulate_matter_2_5()
+    if pm_2_5 != "NoSensor":
+        return_readings_str += "&AqPM2.5=" + str(pm_2_5)
+
+    pm_10 = get_particulate_matter_10()
+    if pm_10 != "NoSensor":
+        return_readings_str += "&AqPM10=" + str(pm_10)
+
+    return return_readings_str
+
+
 def _empty_thread():
-    return "stuff"
+    while True:
+        sleep(600)
 
 
 def display_message(text_message):

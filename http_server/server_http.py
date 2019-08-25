@@ -36,6 +36,7 @@ try:
     from operations_modules import app_variables
     from operations_modules import app_validation_checks
     from operations_modules import configuration_files
+    from operations_modules.add_on_modules import online_services
     from http_server import server_http_flask_render_templates
     from http_server import server_http_flask_post_checks as http_post_checks
     from http_server import server_http_auth
@@ -60,6 +61,10 @@ class CreateSensorHTTP:
         http_auth.set_http_auth_from_file()
         app_generic_functions.update_cached_variables(sensor_access)
         render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
+        online_services_config = online_services.CreateOnlineServicesConfig(sensor_access)
+
+        if online_services_config.weather_underground_enabled:
+            app_generic_functions.thread_function(online_services_config.start_weather_underground)
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -70,6 +75,10 @@ class CreateSensorHTTP:
         @self.app.route("/MenuScript.js")
         def menu_script():
             return send_file(file_locations.menu_script)
+
+        @self.app.route("/online_services.js")
+        def online_services_script():
+            return send_file(file_locations.online_services_script)
 
         @self.app.route("/EditConfigurations.js")
         def config_script():
@@ -132,6 +141,35 @@ class CreateSensorHTTP:
             logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
             return render_templates.system_management()
 
+        @self.app.route("/OnlineServices")
+        def html_online_services():
+            logger.network_logger.debug("** Online Services accessed from " + str(request.remote_addr))
+            return render_templates.sensor_online_services(online_services_config)
+
+        @self.app.route("/EditOnlineServices", methods=["POST"])
+        @self.auth.login_required
+        def html_edit_online_services():
+            logger.network_logger.debug("** Edit Online Services accessed from " + str(request.remote_addr))
+            if request.method == "POST":
+                online_services_config.update_weather_underground_html(request)
+                if configuration_main.wu_thread_running:
+                    main_message = "Online Services Updated - Restarting Sensor Software"
+                    message2 = "New Weather Underground settings will take effect after the sensor software restarts"
+                    services_restart()
+                else:
+                    app_generic_functions.thread_function(online_services_config.start_weather_underground)
+                    main_message = "Online Services Updated"
+                    message2 = ""
+                    if request.form.get("enable_weather_underground") is not None:
+                        main_message += " - Weather Underground Started"
+                return render_templates.message_and_return(main_message,
+                                                           text_message2=message2,
+                                                           url="/OnlineServices")
+            else:
+                logger.primary_logger.error("HTML Edit Online Services set Error")
+                return render_templates.message_and_return("Bad Configuration POST Request",
+                                                           url="/OnlineServices")
+
         @self.app.route("/ConfigurationsHTML")
         @self.auth.login_required
         def html_edit_configurations():
@@ -145,7 +183,7 @@ class CreateSensorHTTP:
             if request.method == "POST" and "interval_delay_seconds" in request.form:
                 try:
                     http_post_checks.check_html_config_main(request)
-                    thread_function(sensor_access.restart_services)
+                    app_generic_functions.thread_function(sensor_access.restart_services)
                     return render_templates.message_and_return("Restarting Service, Please Wait ...",
                                                                url="/ConfigurationsHTML")
 
@@ -161,7 +199,7 @@ class CreateSensorHTTP:
             if request.method == "POST":
                 try:
                     http_post_checks.check_html_installed_sensors(request)
-                    thread_function(sensor_access.restart_services)
+                    app_generic_functions.thread_function(sensor_access.restart_services)
                     return render_templates.message_and_return("Restarting Service, Please Wait ...",
                                                                url="/ConfigurationsHTML")
                 except Exception as error:
@@ -469,7 +507,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http():
             logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["UpgradeOnline"])
             return render_templates.message_and_return("HTTP Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -478,7 +516,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_clean_http():
             logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["CleanOnline"])
             return render_templates.message_and_return("HTTP Clean Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -487,7 +525,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_http_dev():
             logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["UpgradeOnlineDEV"])
             return render_templates.message_and_return("HTTP Developer Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -496,7 +534,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_smb():
             logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["UpgradeSMB"])
             return render_templates.message_and_return("SMB Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -505,7 +543,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_clean_smb():
             logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["CleanSMB"])
             return render_templates.message_and_return("SMB Clean Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -514,7 +552,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_smb_dev():
             logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["UpgradeSMBDEV"])
             return render_templates.message_and_return("SMB Developer Upgrade Started",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -523,7 +561,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def upgrade_rp_controller():
             logger.network_logger.info("* Upgrade - E-Ink Mobile Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["inkupg"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["inkupg"])
             return "OK"
 
         @self.app.route("/ReInstallRequirements")
@@ -531,7 +569,7 @@ class CreateSensorHTTP:
         def reinstall_program_requirements():
             logger.network_logger.info("** Program Dependency Install Initiated by " + str(request.remote_addr))
             message2 = "Once complete, the sensor programs will be restarted. " + app_variables.text_message_may_take_minutes
-            thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["ReInstallRequirements"])
             return render_templates.message_and_return("Dependency Install Started",
                                                        text_message2=message2,
                                                        url="/SensorInformation")
@@ -547,7 +585,7 @@ class CreateSensorHTTP:
             if configuration_main.linux_os_upgrade_ready:
                 message = "Operating System Upgrade Started"
                 configuration_main.linux_os_upgrade_ready = False
-                thread_function(sensor_access.upgrade_linux_os)
+                app_generic_functions.thread_function(sensor_access.upgrade_linux_os)
             else:
                 logger.network_logger.warning("* Operating System Upgrade Already Running")
             return render_templates.message_and_return(message,
@@ -558,7 +596,7 @@ class CreateSensorHTTP:
         @self.auth.login_required
         def system_reboot():
             logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
-            thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["RebootSystem"])
             return render_templates.message_and_return("Sensor Rebooting",
                                                        text_message2=app_variables.text_message_may_take_minutes,
                                                        url="/SensorInformation")
@@ -568,7 +606,7 @@ class CreateSensorHTTP:
         def system_shutdown():
             logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
             message2 = "You will be unable to access it until some one turns it back on."
-            thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
+            app_generic_functions.thread_function(os.system, args=app_variables.bash_commands["ShutdownSystem"])
             return render_templates.message_and_return("Sensor Shutting Down",
                                                        text_message2=message2,
                                                        url="/")
@@ -576,7 +614,7 @@ class CreateSensorHTTP:
         @self.app.route("/RestartServices")
         def services_restart():
             logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
-            thread_function(sensor_access.restart_services)
+            app_generic_functions.thread_function(sensor_access.restart_services)
             return render_templates.message_and_return("Restarting Sensor Service",
                                                        text_message2="This should only take 5 to 30 seconds.",
                                                        url="/SensorInformation")
@@ -801,7 +839,8 @@ class CreateSensorHTTP:
                             return render_templates.message_and_return("Please Select at least One Sensor",
                                                                        url="/PlotlyGraph")
                         else:
-                            thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
+                            app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph,
+                                                                  args=new_graph_data)
                     except Exception as error:
                         logger.primary_logger.warning("Plotly Graph: " + str(error))
 
@@ -842,15 +881,9 @@ class CreateSensorHTTP:
                 message = "Unable to Display Text: Sensor Display disabled or not installed"
                 logger.network_logger.warning("* " + message)
 
-        def thread_function(function, args=None):
-            if args:
-                system_thread = Thread(target=function, args=[args])
-                system_thread.daemon = True
-                system_thread.start()
-            else:
-                system_thread = Thread(target=function)
-                system_thread.daemon = True
-                system_thread.start()
+        @self.app.route("/SensorHelp")
+        def view_help_file():
+            return render_templates.help_file()
 
         logger.network_logger.info("** starting up on port " + str(app_variables.flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((app_variables.flask_http_ip, app_variables.flask_http_port),
