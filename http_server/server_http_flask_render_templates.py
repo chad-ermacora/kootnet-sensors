@@ -51,6 +51,35 @@ class CreateRenderTemplates:
         return render_template("system_commands.html")
 
     @staticmethod
+    def sensor_online_services(online_services_config):
+        wu_enabled = get_html_checkbox_state(online_services_config.weather_underground_enabled)
+        wu_interval_seconds_disabled = "disabled"
+        wu_outdoor_disabled = "disabled"
+        wu_station_id_disabled = "disabled"
+        wu_station_key_disabled = "disabled"
+        if online_services_config.weather_underground_enabled:
+            wu_interval_seconds_disabled = ""
+            wu_outdoor_disabled = ""
+            wu_station_id_disabled = ""
+            wu_station_key_disabled = ""
+
+        wu_interval_seconds = online_services_config.interval_seconds
+        wu_outdoor = get_html_checkbox_state(online_services_config.outdoor_sensor)
+        wu_station_id = online_services_config.station_id
+        wu_station_key = online_services_config.station_key
+
+        return render_template("sensor_online_services.html",
+                               CheckedWUEnabled=wu_enabled,
+                               WUIntervalSeconds=wu_interval_seconds,
+                               DisabledWUInterval=wu_interval_seconds_disabled,
+                               CheckedWUOutdoor=wu_outdoor,
+                               DisabledWUOutdoor=wu_outdoor_disabled,
+                               DisabledStationID=wu_station_id_disabled,
+                               WUStationID=wu_station_id,
+                               DisabledStationKey=wu_station_key_disabled,
+                               WUStationKey="")
+
+    @staticmethod
     def logout():
         return render_template("message_return.html",
                                TextMessage="Logout OK.  Returning to Home.",
@@ -354,3 +383,7 @@ class CreateRenderTemplates:
         return render_template("plotly_graph.html",
                                IntervalPlotlyCreationDate=interval_creation_date,
                                TriggerPlotlyCreationDate=triggers_creation_date)
+
+    @staticmethod
+    def help_file():
+        return render_template("sensor_helpfile.html")

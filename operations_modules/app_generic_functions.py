@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import network_ip
@@ -49,6 +50,16 @@ def write_file_to_disk(file_location, file_content):
         write_file.close()
     except Exception as error:
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
+
+
+def thread_function(function, args=None):
+    if args:
+        system_thread = Thread(target=function, args=[args])
+    else:
+        system_thread = Thread(target=function)
+
+    system_thread.daemon = True
+    system_thread.start()
 
 
 def update_cached_variables(sensor_access):

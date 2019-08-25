@@ -154,6 +154,14 @@ class CreateConfig:
         self.temperature_offset = 0.0
 
 
+# Weather Underground URL Variables
+wu_main_url_start = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
+wu_id = "ID="
+wu_key = "&PASSWORD="
+wu_utc_datetime = "&dateutc=now"
+wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
+wu_action = "&action=updateraw"
+
 # IP and Port for Flask to start up on
 flask_http_ip = ""
 flask_http_port = 10065

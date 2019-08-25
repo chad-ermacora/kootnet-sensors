@@ -20,18 +20,21 @@
 """
 
 
-debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
 sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
+debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
 config_file_location = "/etc/kootnet/sql_recording.conf"
+online_services_config = "/etc/kootnet/online_services.conf"
+sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
+trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 http_auth_file_location = "/home/kootnet_data/auth.conf"
+
 http_ssl_key = "/opt/kootnet-sensors/http_server/ssl_files/kootnet_default.key"
 http_ssl_csr = "/opt/kootnet-sensors/http_server/ssl_files/kootnet_default.csr"
 http_ssl_crt = "/opt/kootnet-sensors/http_server/ssl_files/kootnet_default.crt"
+
 save_plotly_html_to = "/home/kootnet_data/"
 interval_plotly_html_filename = "IntervalPlotlySensorGraph.html"
 triggers_plotly_html_filename = "TriggersPlotlySensorGraph.html"
-sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
-trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
 
 dhcpcd_config_file_template = "/opt/kootnet-sensors/extras/dhcpcd_template.conf"
 dhcpcd_config_file = "/etc/dhcpcd.conf"
@@ -46,6 +49,7 @@ mui_min_js = "/opt/kootnet-sensors/http_server/extras/mui.min-ver-0.9.43.js"
 menu_script = "/opt/kootnet-sensors/http_server/extras/menu.js"
 menu_css_style = "/opt/kootnet-sensors/http_server/extras/style.css"
 configuration_script = "/opt/kootnet-sensors/http_server/extras/sensor_configurations_ui.js"
+online_services_script = "/opt/kootnet-sensors/http_server/extras/online_services_ui.js"
 graph_script = "/opt/kootnet-sensors/http_server/extras/graph_ui.js"
 
 old_version_file_location = "/etc/kootnet/installed_version.txt"

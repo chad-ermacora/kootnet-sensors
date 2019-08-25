@@ -38,6 +38,19 @@ class CreateVEML6075:
             logger.sensors_logger.error("Pimoroni VEML6075 Initialization Failed: " + str(error))
             configuration_main.installed_sensors.pimoroni_veml6075 = 0
 
+    def ultra_violet_index(self):
+        """ Returns Ultra Violet Index. """
+        try:
+            uva, uvb = self.uv_sensor.get_measurements()
+            uv_comp1, uv_comp2 = self.uv_sensor.get_comparitor_readings()
+            uv_index = self.uv_sensor.convert_to_index(uva, uvb, uv_comp1, uv_comp2)
+            logger.sensors_logger.debug("Pimoroni VEML6075 UV Index Reading - OK")
+        except Exception as error:
+            uv_index = [0.0, 0.0, 0.0]
+            logger.sensors_logger.error("Pimoroni VEML6075 UV Index Reading - Failed - " + str(error))
+
+        return uv_index[2]
+
     def ultra_violet(self):
         """ Returns Ultra Violet (A,B) as a list. """
         try:
