@@ -278,7 +278,7 @@ class CreateSensorHTTP:
 
         @self.app.route("/DownloadSQLDatabase")
         def download_sensors_sql_database():
-            route_functions.download_sensors_sql_database(request)
+            return route_functions.download_sensors_sql_database(request)
 
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
         @self.auth.login_required

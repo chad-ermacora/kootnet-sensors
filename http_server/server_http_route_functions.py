@@ -77,7 +77,7 @@ class CreateRouteFunctions:
             if app_config_access.wu_thread_running:
                 main_message = "Online Services Updated - Restarting Sensor Software"
                 message2 = "New Weather Underground settings will take effect after the sensor software restarts"
-                self.sensor_access.restart_services()
+                app_generic_functions.thread_function(self.sensor_access.restart_services)
             else:
                 app_generic_functions.thread_function(self.online_services_config.start_weather_underground)
                 main_message = "Online Services Updated"
