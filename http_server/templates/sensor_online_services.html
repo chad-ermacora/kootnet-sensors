@@ -22,8 +22,19 @@
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label>
-                    <input type="checkbox" id="wu_enabled" name="enable_weather_underground" value="" {{ CheckedWUEnabled }}>
+                    <input type="checkbox" id="wu_enabled" name="enable_weather_underground"
+                           value="" {{ CheckedWUEnabled }}>
                     Enable Weather UnderGround
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label>
+                    <input type="checkbox" id="wu_rapid_fire_enabled" name="enable_wu_rapid_fire"
+                           value="" {{ CheckedWURapidFire }} {{ DisabledWURapidFire }}>
+                    Enable RapidFire Updates (Sending updates every 3-10 seconds)
                 </label>
             </div>
 

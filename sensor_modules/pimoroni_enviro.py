@@ -15,7 +15,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -29,7 +29,7 @@ class CreateEnviro:
             self.enviro_import.weather.temperature()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_enviro = 0
+            app_config_access.installed_sensors.pimoroni_enviro = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

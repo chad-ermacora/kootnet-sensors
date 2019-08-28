@@ -17,7 +17,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -32,7 +32,7 @@ class CreateVL53L1X:
             self.time_of_flight = self.vl53l1x_import.VL53L1X(i2c_bus=1, i2c_address=0x29)
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VL53L1X Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_vl53l1x = 0
+            app_config_access.installed_sensors.pimoroni_vl53l1x = 0
 
     def distance(self):
         """ Returns distance in mm. """

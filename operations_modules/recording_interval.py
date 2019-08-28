@@ -18,7 +18,7 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import sqlite_database
 
 
@@ -35,7 +35,7 @@ class CreateIntervalRecording:
         while True:
             try:
                 new_sensor_data = self.sensor_access.get_interval_sensor_readings().split(
-                    configuration_main.command_data_separator)
+                    app_config_access.command_data_separator)
 
                 logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
                                             str(new_sensor_data[1]))
@@ -46,4 +46,4 @@ class CreateIntervalRecording:
             except Exception as error:
                 logger.primary_logger.error("Interval Failure: " + str(error))
 
-            sleep(configuration_main.current_config.sleep_duration_interval)
+            sleep(app_config_access.current_config.sleep_duration_interval)

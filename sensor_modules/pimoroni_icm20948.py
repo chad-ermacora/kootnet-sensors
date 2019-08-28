@@ -17,7 +17,7 @@ Created on Tue June 27 18:43:56 2019
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -31,7 +31,7 @@ class CreateICM20948:
             logger.sensors_logger.debug("Pimoroni ICM20948 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni ICM20948 Initialization Failed: " + str(error))
-            configuration_main.installed_sensors.pimoroni_icm20948 = 0
+            app_config_access.installed_sensors.pimoroni_icm20948 = 0
 
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """

@@ -20,18 +20,30 @@ import requests
 import os
 from time import sleep
 from operations_modules import logger
-from operations_modules import app_variables
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import software_version
-from operations_modules import configuration_main
+from operations_modules import app_config_access
+
+# Weather Underground URL Variables
+wu_main_url_start = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
+wu_rapid_fire_url_start = "https://rtupdate.wunderground.com/weatherstation/updateweatherstation.php?"
+wu_rapid_fire_url_end = "&realtime=1&rtfreq="
+
+wu_id = "ID="
+wu_key = "&PASSWORD="
+wu_utc_datetime = "&dateutc=now"
+wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
+wu_action = "&action=updateraw"
 
 
 class CreateOnlineServicesConfig:
+    """ Creates a Online Services object to interact with all Online Service related items. """
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
 
         self.weather_underground_enabled = 0
+        self.wu_rapid_fire_enabled = 0
         self.interval_seconds = 295
         self.outdoor_sensor = 0
         self.station_id = "NA"
@@ -39,20 +51,25 @@ class CreateOnlineServicesConfig:
         self._update_settings_from_file()
 
     def get_configuration_str(self):
-        """ Returns Online Services settings ready to be written to file. """
+        """ Returns Online Services settings ready to be written to the configuration file. """
         online_services_config_str = "Enable = 1 & Disable = 0\n" + \
                                      str(self.weather_underground_enabled) + " = Enable Weather Underground\n" + \
-                                     str(self.interval_seconds) + " = Weather Underground Send to Server in Seconds\n" + \
+                                     str(self.interval_seconds) + " = Send to Server in Seconds\n" + \
                                      str(self.outdoor_sensor) + " = Sensor is Outdoors\n" + \
                                      str(self.station_id) + " = Weather Underground Station ID\n" + \
-                                     str(self.station_key) + " = Weather Underground Station Key"
+                                     str(self.station_key) + " = Weather Underground Station Key\n" + \
+                                     str(self.wu_rapid_fire_enabled) + " = Enable Rapid Fire Updates"
 
         return online_services_config_str
 
     def update_weather_underground_html(self, html_request):
-        """ Updates Weather Underground settings based on HTML request update. """
+        """ Updates & Writes Weather Underground settings based on provided HTML request. """
         if html_request.form.get("enable_weather_underground") is not None:
             self.weather_underground_enabled = 1
+            if html_request.form.get("enable_wu_rapid_fire") is not None:
+                self.wu_rapid_fire_enabled = 1
+            else:
+                self.wu_rapid_fire_enabled = 0
             if html_request.form.get("weather_underground_outdoor") is not None:
                 self.outdoor_sensor = 1
             else:
@@ -61,7 +78,7 @@ class CreateOnlineServicesConfig:
             self.weather_underground_enabled = 0
 
         if html_request.form.get("weather_underground_interval") is not None:
-            self.interval_seconds = int(html_request.form.get("weather_underground_interval"))
+            self.interval_seconds = float(html_request.form.get("weather_underground_interval"))
         if html_request.form.get("station_id") is not None:
             self.station_id = html_request.form.get("station_id").strip()
         if html_request.form.get("station_key") is not None and html_request.form.get("station_key") is not "":
@@ -70,7 +87,9 @@ class CreateOnlineServicesConfig:
         self.write_config_to_file()
 
     def _update_settings_from_file(self):
-        """ Updates Weather Underground settings based on Configuration File (if any). """
+        """
+        Updates Weather Underground settings based on saved configuration file.  Creates Default file if missing.
+        """
         if os.path.isfile(file_locations.online_services_config):
             loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.online_services_config)
             configuration_lines = loaded_configuration_raw.split("\n")
@@ -85,13 +104,18 @@ class CreateOnlineServicesConfig:
                 else:
                     self.outdoor_sensor = 0
                 try:
-                    self.interval_seconds = int(configuration_lines[2].split("=")[0].strip())
+                    self.interval_seconds = float(configuration_lines[2].split("=")[0].strip())
                 except Exception as error:
                     logger.primary_logger.warning("Weather Underground Interval Error from file - " + str(error))
                     self.interval_seconds = 300
 
                 self.station_id = configuration_lines[4].split("=")[0].strip()
                 self.station_key = configuration_lines[5].split("=")[0].strip()
+
+                if int(configuration_lines[6][0]):
+                    self.wu_rapid_fire_enabled = 1
+                else:
+                    self.wu_rapid_fire_enabled = 0
             except Exception as error:
                 logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
                                               "Using 1 or more Defaults: " + str(error))
@@ -100,27 +124,36 @@ class CreateOnlineServicesConfig:
             self.write_config_to_file()
 
     def write_config_to_file(self):
+        """ Writes current Online Service settings to file. """
         config_str = self.get_configuration_str()
         app_generic_functions.write_file_to_disk(file_locations.online_services_config, config_str)
 
     def start_weather_underground(self):
-        if not configuration_main.wu_thread_running:
-            configuration_main.wu_thread_running = True
+        """ Sends compatible sensor readings to Weather Underground every X seconds based on set Interval. """
+        if not app_config_access.wu_thread_running:
+            app_config_access.wu_thread_running = True
             # Sleep 5 seconds before starting
             # So it doesn't try to access the sensors at the same time as the recording services on boot
             sleep(5)
             while True:
                 sensor_readings = self.sensor_access.get_weather_underground_readings(self.outdoor_sensor)
+                sw_version_text_list = software_version.version.split(".")
+                sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
                 if sensor_readings:
+                    if self.wu_rapid_fire_enabled:
+                        url = wu_rapid_fire_url_start
+                    else:
+                        url = wu_main_url_start
                     try:
-                        station_sensors = sensor_readings
-                        url = app_variables.wu_main_url_start + \
-                              app_variables.wu_id + self.station_id + \
-                              app_variables.wu_key + self.station_key + \
-                              app_variables.wu_utc_datetime + \
-                              station_sensors + \
-                              app_variables.wu_software_version + software_version.version + \
-                              app_variables.wu_action
+                        url += wu_id + self.station_id + \
+                               wu_key + self.station_key + \
+                               wu_utc_datetime + \
+                               sensor_readings + \
+                               wu_software_version + sw_version_text + \
+                               wu_action
+
+                        if self.wu_rapid_fire_enabled:
+                            url += wu_rapid_fire_url_end + str(self.interval_seconds)
 
                         logger.network_logger.debug("New Underground: " + url)
 
@@ -138,5 +171,8 @@ class CreateOnlineServicesConfig:
                     except Exception as error:
                         logger.network_logger.error("Error sending data to Weather Underground: " + str(error))
                 else:
-                    logger.network_logger.error("No Supported Sensors Installed")
+                    logger.network_logger.warning("Weather Underground not Updated - " +
+                                                  "No Compatible Sensors Selected in Installed Sensors Configuration")
+                    while True:
+                        sleep(3600)
                 sleep(self.interval_seconds)

@@ -19,7 +19,7 @@ Created on Sat Aug 25 08:53:56 2018
 """
 from os import system
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from sensor_modules import linux_os
 
 round_decimal_to = 5
@@ -36,7 +36,7 @@ class CreateRPSenseHAT:
             self.linux_os_access = linux_os.CreateLinuxSystem()
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.raspberry_pi_sense_hat = 0
+            app_config_access.installed_sensors.raspberry_pi_sense_hat = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

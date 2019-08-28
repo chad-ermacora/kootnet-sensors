@@ -19,7 +19,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import file_locations
 
 
@@ -42,7 +42,7 @@ class CreateST7735:
             self.display.begin()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 10.96 SPI Colour LCD (160x80) Initialization- Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_st7735 = 0
+            app_config_access.installed_sensors.pimoroni_st7735 = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """

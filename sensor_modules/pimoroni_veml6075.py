@@ -16,7 +16,7 @@ Created on Tue June 25 10:53:56 2019
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -36,7 +36,7 @@ class CreateVEML6075:
             logger.sensors_logger.debug("Pimoroni VEML6075 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VEML6075 Initialization Failed: " + str(error))
-            configuration_main.installed_sensors.pimoroni_veml6075 = 0
+            app_config_access.installed_sensors.pimoroni_veml6075 = 0
 
     def ultra_violet_index(self):
         """ Returns Ultra Violet Index. """

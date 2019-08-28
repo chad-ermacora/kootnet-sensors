@@ -18,7 +18,7 @@ Created on Sat Aug 25 08:53:56 2018
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 lsm303d_address = 0x1d
 round_decimal_to = 5
@@ -34,7 +34,7 @@ class CreateLSM303D:
             self.lsm.accelerometer()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LSM303D Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_lsm303d = 0
+            app_config_access.installed_sensors.pimoroni_lsm303d = 0
 
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """

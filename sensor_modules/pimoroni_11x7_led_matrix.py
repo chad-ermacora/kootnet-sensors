@@ -18,7 +18,7 @@ Created on Tue July 9 15:53:56 2019
 """
 import time
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 
 class CreateMatrix11x7:
@@ -33,7 +33,7 @@ class CreateMatrix11x7:
             self.matrix11x7.set_brightness(0.15)
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 11x7 LED Matrix Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_matrix_11x7 = 0
+            app_config_access.installed_sensors.pimoroni_matrix_11x7 = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """

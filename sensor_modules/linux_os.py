@@ -14,7 +14,7 @@ from time import strftime
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import sqlite_database
-from operations_modules.app_variables import CreateDatabaseVariables
+from operations_modules.sqlite_database import CreateDatabaseVariables
 
 round_decimal_to = 2
 
@@ -77,7 +77,7 @@ class CreateLinuxSystem:
         return uptime_min
 
     @staticmethod
-    def get_sys_datetime():
+    def get_sys_datetime_str():
         """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
         logger.sensors_logger.debug("Linux System Sensor Date Time - OK")
         return strftime("%Y-%m-%d %H:%M")

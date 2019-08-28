@@ -24,7 +24,7 @@ from PIL import ImageDraw
 from PIL import ImageFont
 from smbus2 import SMBus
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 
@@ -79,10 +79,10 @@ class CreateEnviroPlus:
             self.thread_display_power_saving.start()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_enviroplus = 0
-            configuration_main.installed_sensors.pimoroni_pms5003 = 0
+            app_config_access.installed_sensors.pimoroni_enviroplus = 0
+            app_config_access.installed_sensors.pimoroni_pms5003 = 0
 
-        if configuration_main.installed_sensors.has_particulate_matter:
+        if app_config_access.installed_sensors.has_particulate_matter:
             try:
                 self._enable_psm5003_serial()
                 self.enviro_plus_pm_access = self.pms5003_import.PMS5003()

@@ -102,12 +102,12 @@
                     <label>
                         <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset"
                                value="" {{ CheckedCustomTempOffset }}>
-                        Enable custom Temperature Offset
+                        Enable Environmental Temperature Offset
                     </label>
                 </div>
 
                 <div class="mui-textfield">
-                    <label style="color: black">Current / Custom Temperature Offset
+                    <label style="color: black">Current Environmental Temperature Offset
                         <br>
                         <input style="width: 75px" type="number" step="0.01" min="-100" max="100"
                                name="custom_temperature_offset"
@@ -139,15 +139,8 @@
 
                 <div class="mui-checkbox" style="display: inline-block;">
                     <label>
-                        <input type="checkbox" name="raspberry_pi_zero_w" value="" {{ RPIZeroW }}>
-                        Zero or Zero W
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
-                        <input type="checkbox" name="raspberry_pi_3b_plus" value="" {{ RPI3BPlus }}>
-                        All Other Raspberry Pi Models (2/3/4)
+                        <input type="checkbox" name="raspberry_pi" value="" {{ RaspberryPi }}>
+                        Raspberry Pi - Any Model
                     </label>
                 </div>
 

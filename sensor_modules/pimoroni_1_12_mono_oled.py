@@ -18,7 +18,7 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 turn_off_display = 30
 
@@ -41,7 +41,7 @@ class CreateLumaOLED:
             self.thread_display_power_saving.start()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_mono_oled_luma = 0
+            app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
 
     def _display_timed_off(self):
         while True:

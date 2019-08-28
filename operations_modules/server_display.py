@@ -18,7 +18,7 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 
 class CreateSensorDisplay:
@@ -34,4 +34,4 @@ class CreateSensorDisplay:
             message = "CPU: " + str(int(self.sensor_access.get_cpu_temperature())) + "°C "
             message += "ENV: " + str(int(self.sensor_access.get_sensor_temperature())) + "°C "
             self.sensor_access.display_message(message)
-            sleep(configuration_main.current_config.sleep_duration_interval)
+            sleep(app_config_access.current_config.sleep_duration_interval)

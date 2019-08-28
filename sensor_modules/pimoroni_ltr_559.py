@@ -18,7 +18,7 @@ pip3 install ltr559
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -32,7 +32,7 @@ class CreateLTR559:
             self.ltr_559.get_lux()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_ltr_559 = 0
+            app_config_access.installed_sensors.pimoroni_ltr_559 = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """

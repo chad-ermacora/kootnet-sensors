@@ -9,6 +9,6 @@ fi
 # Start Script
 printf '\n\nDoing "Clean" upgrade\nLeaves database & config\nDeletes everything else\nThen re-downloads and installs\n'
 cp -f /opt/kootnet-sensors/scripts/remove_services_and_files.sh /root
-cp -f /opt/kootnet-sensors/scripts/update_programs_online.sh /root
+cp -f /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_http.sh /root
 bash /root/remove_services_and_files.sh
-bash /root/update_programs_online.sh
+bash /root/install_update_kootnet-sensors_http.sh

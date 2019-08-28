@@ -16,7 +16,7 @@ pip3 install as7262
 @author: OO-Dragon
 """
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -34,7 +34,7 @@ class CreateAS7262:
             self.as7262_import.set_illumination_led(0)
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 Initialization Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_as7262 = 0
+            app_config_access.installed_sensors.pimoroni_as7262 = 0
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """

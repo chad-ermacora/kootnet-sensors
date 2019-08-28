@@ -18,11 +18,12 @@
 """
 import os
 import sqlite3
+from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
-from operations_modules import logger
+from operations_modules import sqlite_database
 from operations_modules import program_upgrade_functions
-from operations_modules import app_variables
+from operations_modules import os_cli_commands
 
 
 class CreateRefinedVersion:
@@ -72,7 +73,7 @@ def check_ssl_files():
 def check_database_structure():
     """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = app_variables.CreateDatabaseVariables()
+    database_variables = sqlite_database.CreateDatabaseVariables()
 
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database_location)
@@ -129,38 +130,19 @@ def run_upgrade_checks():
         logger.primary_logger.info("New Install Detected")
 
     elif previous_version.major_version == "Alpha":
-        if previous_version.feature_version < 24:
+        if previous_version.feature_version < 26:
             no_changes = False
             logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                        " || New: " + software_version.version)
             program_upgrade_functions.reset_installed_sensors()
             program_upgrade_functions.reset_config()
             program_upgrade_functions.reset_variance_config()
-        elif previous_version.feature_version == 24:
+        elif previous_version.feature_version == 26:
             no_changes = False
             program_upgrade_functions.reset_installed_sensors()
-            if previous_version.minor_version < 24:
-                program_upgrade_functions.reset_config()
-                program_upgrade_functions.reset_variance_config()
+        elif previous_version.feature_version == 27:
+            if previous_version.minor_version < 8:
                 program_upgrade_functions.reset_installed_sensors()
-            logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                       " || New: " + software_version.version)
-        elif previous_version.feature_version == 25:
-            if previous_version.minor_version < 7:
-                no_changes = False
-                program_upgrade_functions.reset_installed_sensors()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
-            if previous_version.minor_version < 27:
-                no_changes = False
-                program_upgrade_functions.reset_variance_config()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
-            if previous_version.minor_version < 98:
-                no_changes = False
-                program_upgrade_functions.reset_config()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
     else:
         no_changes = False
         logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
@@ -177,9 +159,9 @@ def run_upgrade_checks():
 
 def restart_services():
     """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(app_variables.restart_sensor_services_command)
+    os.system(os_cli_commands.restart_sensor_services_command)
 
 
 def set_file_permissions():
     """ Re-sets program file permissions. """
-    os.system(app_variables.bash_commands["SetPermissions"])
+    os.system(os_cli_commands.bash_commands["SetPermissions"])

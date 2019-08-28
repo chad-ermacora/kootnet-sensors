@@ -22,7 +22,7 @@ from threading import Thread
 from http_server import server_http
 from operations_modules import logger
 from operations_modules import program_start_checks
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
@@ -49,16 +49,16 @@ sensor_http_server_thread.daemon = True
 sensor_http_server_thread.start()
 
 # If installed, start up SenseHAT Joystick program
-if configuration_main.installed_sensors.raspberry_pi_sense_hat:
+if app_config_access.installed_sensors.raspberry_pi_sense_hat:
     sense_joy_stick_thread = Thread(
         target=sensor_access.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
     sense_joy_stick_thread.daemon = True
     sense_joy_stick_thread.start()
 
-if configuration_main.installed_sensors.no_sensors is False:
+if app_config_access.installed_sensors.no_sensors is False:
     # If there is a display installed, start up the display server
-    if configuration_main.current_config.enable_display:
-        if configuration_main.installed_sensors.has_display:
+    if app_config_access.current_config.enable_display:
+        if app_config_access.installed_sensors.has_display:
             pass
             # This currently only displays sensor readings every interval recording. Disabled for now.
             # display_thread = Thread(target=server_display.CreateSensorDisplay, args=[sensor_access])
@@ -67,14 +67,14 @@ if configuration_main.installed_sensors.no_sensors is False:
         else:
             logger.primary_logger.warning("No Compatible Displays Installed")
 
-    if configuration_main.current_config.enable_interval_recording:
+    if app_config_access.current_config.enable_interval_recording:
         interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording, args=[sensor_access])
         interval_recording_thread.daemon = True
         interval_recording_thread.start()
     else:
         logger.primary_logger.debug("Interval Recording Disabled in Config")
 
-    if configuration_main.current_config.enable_trigger_recording:
+    if app_config_access.current_config.enable_trigger_recording:
         recording_triggers.start_trigger_recording(sensor_access)
     else:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")

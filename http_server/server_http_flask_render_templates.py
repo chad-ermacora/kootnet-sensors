@@ -23,10 +23,9 @@ from flask import render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import network_ip
-from http_server import server_plotly_graph
 from http_server.server_http_flask_post_checks import get_html_checkbox_state
 
 
@@ -52,12 +51,15 @@ class CreateRenderTemplates:
 
     @staticmethod
     def sensor_online_services(online_services_config):
-        wu_enabled = get_html_checkbox_state(online_services_config.weather_underground_enabled)
+        wu_checked = get_html_checkbox_state(online_services_config.weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(online_services_config.wu_rapid_fire_enabled)
+        wu_rapid_fire_disabled = "disabled"
         wu_interval_seconds_disabled = "disabled"
         wu_outdoor_disabled = "disabled"
         wu_station_id_disabled = "disabled"
         wu_station_key_disabled = "disabled"
         if online_services_config.weather_underground_enabled:
+            wu_rapid_fire_disabled = ""
             wu_interval_seconds_disabled = ""
             wu_outdoor_disabled = ""
             wu_station_id_disabled = ""
@@ -66,10 +68,11 @@ class CreateRenderTemplates:
         wu_interval_seconds = online_services_config.interval_seconds
         wu_outdoor = get_html_checkbox_state(online_services_config.outdoor_sensor)
         wu_station_id = online_services_config.station_id
-        wu_station_key = online_services_config.station_key
 
         return render_template("sensor_online_services.html",
-                               CheckedWUEnabled=wu_enabled,
+                               CheckedWUEnabled=wu_checked,
+                               CheckedWURapidFire=wu_rapid_fire_checked,
+                               DisabledWURapidFire=wu_rapid_fire_disabled,
                                WUIntervalSeconds=wu_interval_seconds,
                                DisabledWUInterval=wu_interval_seconds_disabled,
                                CheckedWUOutdoor=wu_outdoor,
@@ -86,27 +89,27 @@ class CreateRenderTemplates:
                                URL="/"), 401
 
     def system_information(self):
-        if configuration_main.current_config.enable_debug_logging:
+        if app_config_access.current_config.enable_debug_logging:
             debug_logging = True
         else:
             debug_logging = False
 
-        if configuration_main.current_config.enable_display:
+        if app_config_access.current_config.enable_display:
             display_enabled = True
         else:
             display_enabled = False
 
-        if configuration_main.current_config.enable_interval_recording:
+        if app_config_access.current_config.enable_interval_recording:
             interval_recording = True
         else:
             interval_recording = False
 
-        if configuration_main.current_config.enable_trigger_recording:
+        if app_config_access.current_config.enable_trigger_recording:
             trigger_recording = True
         else:
             trigger_recording = False
 
-        if configuration_main.current_config.enable_custom_temp:
+        if app_config_access.current_config.enable_custom_temp:
             custom_temp_enabled = True
         else:
             custom_temp_enabled = False
@@ -114,7 +117,7 @@ class CreateRenderTemplates:
         return render_template("sensor_information.html",
                                HostName=app_cached_variables.hostname,
                                IPAddress=app_cached_variables.ip,
-                               KootnetVersion=configuration_main.software_version.version,
+                               KootnetVersion=app_config_access.software_version.version,
                                LastUpdated=app_cached_variables.program_last_updated,
                                DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                SystemUptime=self.sensor_access.get_uptime_str(),
@@ -125,19 +128,18 @@ class CreateRenderTemplates:
                                DebugLogging=debug_logging,
                                SupportedDisplay=display_enabled,
                                IntervalRecording=interval_recording,
-                               IntervalDelay=configuration_main.current_config.sleep_duration_interval,
+                               IntervalDelay=app_config_access.current_config.sleep_duration_interval,
                                TriggerRecording=trigger_recording,
                                ManualTemperatureEnabled=custom_temp_enabled,
-                               CurrentTemperatureOffset=configuration_main.current_config.temperature_offset,
-                               InstalledSensors=configuration_main.installed_sensors.get_installed_names_str(),
+                               CurrentTemperatureOffset=app_config_access.current_config.temperature_offset,
+                               InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
                                SQLDatabaseLocation=file_locations.sensor_database_location,
                                SQLDatabaseDateRange=self.sensor_access.get_db_first_last_date(),
                                SQLDatabaseSize=self.sensor_access.get_db_size(),
                                NumberNotes=self.sensor_access.get_db_notes_count())
 
     def sensors_readings(self):
-        red, orange, yellow, green, blue, violet = server_plotly_graph.get_ems_for_render_template(
-            self.sensor_access.get_ems())
+        red, orange, yellow, green, blue, violet = self._get_ems_for_render_template()
 
         return render_template("sensor_readings.html",
                                HostName=app_cached_variables.hostname,
@@ -146,7 +148,7 @@ class CreateRenderTemplates:
                                SystemUptime=self.sensor_access.get_uptime_str(),
                                CPUTemperature=self.sensor_access.get_cpu_temperature(),
                                EnvTemperature=self.sensor_access.get_sensor_temperature(),
-                               EnvTemperatureOffset=configuration_main.current_config.temperature_offset,
+                               EnvTemperatureOffset=app_config_access.current_config.temperature_offset,
                                Pressure=self.sensor_access.get_pressure(),
                                Altitude=self.sensor_access.get_altitude(),
                                Humidity=self.sensor_access.get_humidity(),
@@ -171,19 +173,45 @@ class CreateRenderTemplates:
                                Mag=self.sensor_access.get_magnetometer_xyz(),
                                Gyro=self.sensor_access.get_gyroscope_xyz())
 
+    def _get_ems_for_render_template(self):
+        ems = self.sensor_access.get_ems()
+        if ems == "NoSensor":
+            red = "NoSensor"
+            orange = "NoSensor"
+            yellow = "NoSensor"
+            green = "NoSensor"
+            blue = "NoSensor"
+            violet = "NoSensor"
+        else:
+            if len(ems) > 3:
+                red = ems[0]
+                orange = ems[1]
+                yellow = ems[2]
+                green = ems[3]
+                blue = ems[4]
+                violet = ems[5]
+            else:
+                red = ems[0]
+                orange = "NoSensor"
+                yellow = "NoSensor"
+                green = ems[1]
+                blue = ems[2]
+                violet = "NoSensor"
+        return [red, orange, yellow, green, blue, violet]
+
     @staticmethod
     def edit_configurations():
         try:
-            variances = configuration_main.trigger_variances
+            variances = app_config_access.trigger_variances
 
-            debug_logging = get_html_checkbox_state(configuration_main.current_config.enable_debug_logging)
-            display = get_html_checkbox_state(configuration_main.current_config.enable_display)
-            interval_recording = get_html_checkbox_state(configuration_main.current_config.enable_interval_recording)
+            debug_logging = get_html_checkbox_state(app_config_access.current_config.enable_debug_logging)
+            display = get_html_checkbox_state(app_config_access.current_config.enable_display)
+            interval_recording = get_html_checkbox_state(app_config_access.current_config.enable_interval_recording)
             interval_recording_disabled = "disabled"
             if interval_recording:
                 interval_recording_disabled = ""
-            trigger_recording = get_html_checkbox_state(configuration_main.current_config.enable_trigger_recording)
-            custom_temp_offset = get_html_checkbox_state(configuration_main.current_config.enable_custom_temp)
+            trigger_recording = get_html_checkbox_state(app_config_access.current_config.enable_trigger_recording)
+            custom_temp_offset = get_html_checkbox_state(app_config_access.current_config.enable_custom_temp)
             custom_temp_offset_disabled = "disabled"
             if custom_temp_offset:
                 custom_temp_offset_disabled = ""
@@ -216,48 +244,46 @@ class CreateRenderTemplates:
                                    CheckedDisplay=display,
                                    CheckedInterval=interval_recording,
                                    DisabledIntervalDelay=interval_recording_disabled,
-                                   IntervalDelay=float(configuration_main.current_config.sleep_duration_interval),
+                                   IntervalDelay=float(app_config_access.current_config.sleep_duration_interval),
                                    CheckedTrigger=trigger_recording,
                                    CheckedCustomTempOffset=custom_temp_offset,
                                    DisabledCustomTempOffset=custom_temp_offset_disabled,
-                                   temperature_offset=float(configuration_main.current_config.temperature_offset),
-                                   GnuLinux=get_html_checkbox_state(configuration_main.installed_sensors.linux_system),
-                                   RPIZeroW=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.raspberry_pi_zero_w),
-                                   RPI3BPlus=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.raspberry_pi_3b_plus),
+                                   temperature_offset=float(app_config_access.current_config.temperature_offset),
+                                   GnuLinux=get_html_checkbox_state(app_config_access.installed_sensors.linux_system),
+                                   RaspberryPi=get_html_checkbox_state(
+                                       app_config_access.installed_sensors.raspberry_pi),
                                    SenseHAT=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.raspberry_pi_sense_hat),
+                                       app_config_access.installed_sensors.raspberry_pi_sense_hat),
                                    PimoroniBH1745=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_bh1745),
+                                       app_config_access.installed_sensors.pimoroni_bh1745),
                                    PimoroniAS7262=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_as7262),
+                                       app_config_access.installed_sensors.pimoroni_as7262),
                                    PimoroniBMP280=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_bmp280),
+                                       app_config_access.installed_sensors.pimoroni_bmp280),
                                    PimoroniBME680=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_bme680),
+                                       app_config_access.installed_sensors.pimoroni_bme680),
                                    PimoroniEnviroPHAT=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_enviro),
+                                       app_config_access.installed_sensors.pimoroni_enviro),
                                    PimoroniEnviroPlus=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_enviroplus),
+                                       app_config_access.installed_sensors.pimoroni_enviroplus),
                                    PimoroniPMS5003=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_pms5003),
+                                       app_config_access.installed_sensors.pimoroni_pms5003),
                                    PimoroniLSM303D=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_lsm303d),
+                                       app_config_access.installed_sensors.pimoroni_lsm303d),
                                    PimoroniICM20948=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_icm20948),
+                                       app_config_access.installed_sensors.pimoroni_icm20948),
                                    PimoroniVL53L1X=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_vl53l1x),
+                                       app_config_access.installed_sensors.pimoroni_vl53l1x),
                                    PimoroniLTR559=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_ltr_559),
+                                       app_config_access.installed_sensors.pimoroni_ltr_559),
                                    PimoroniVEML6075=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_veml6075),
+                                       app_config_access.installed_sensors.pimoroni_veml6075),
                                    Pimoroni11x7LEDMatrix=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_matrix_11x7),
+                                       app_config_access.installed_sensors.pimoroni_matrix_11x7),
                                    PimoroniSPILCD10_96=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_st7735),
+                                       app_config_access.installed_sensors.pimoroni_st7735),
                                    PimoroniMonoOLED128x128BW=get_html_checkbox_state(
-                                       configuration_main.installed_sensors.pimoroni_mono_oled_luma),
+                                       app_config_access.installed_sensors.pimoroni_mono_oled_luma),
                                    CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
                                    DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
                                    CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
@@ -336,7 +362,9 @@ class CreateRenderTemplates:
                                    IPDNS2=app_cached_variables.dns2,
                                    IPDNS2Disabled=dns2_disabled)
         except Exception as error:
-            logger.network_logger.error("Stuff broke!: " + str(error))
+            logger.network_logger.error("HTML unable to display Configurations: " + str(error))
+            return render_template("message_return.html",
+                                   message2="Unable to Display Configurations...")
 
     def get_log_view(self):
         primary_log_lines = logger.get_number_of_log_entries(file_locations.primary_log)

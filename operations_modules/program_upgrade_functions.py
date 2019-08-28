@@ -19,10 +19,9 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_variables
-from operations_modules import configuration_files
-from operations_modules import trigger_variances
-from sensor_modules import sensor_variables
+from operations_modules import config_primary
+from operations_modules import config_installed_sensors
+from operations_modules import config_trigger_variances
 
 
 def get_installed_sensors_raw():
@@ -67,16 +66,16 @@ def get_installed_config_raw():
 def reset_installed_sensors():
     """ Writes a default installed sensor configuration file. """
     logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
-    configuration_files.write_installed_sensors_to_file(sensor_variables.CreateInstalledSensors())
+    config_installed_sensors.write_installed_sensors_to_file(config_installed_sensors.CreateInstalledSensors())
 
 
 def reset_config():
     """ Writes a default configuration file. """
     logger.primary_logger.warning(" **** Primary Configuration Reset ****")
-    configuration_files.write_config_to_file(app_variables.CreateConfig())
+    config_primary.write_config_to_file(config_primary.CreateConfig())
 
 
 def reset_variance_config():
     """ Writes a default Trigger Variance configuration file. """
     logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
-    trigger_variances.write_triggers_to_file(trigger_variances.CreateTriggerVariances())
+    config_trigger_variances.write_triggers_to_file(config_trigger_variances.CreateTriggerVariances())
