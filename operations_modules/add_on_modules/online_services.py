@@ -44,8 +44,8 @@ class CreateOnlineServicesConfig:
 
         self.weather_underground_enabled = 0
         self.wu_rapid_fire_enabled = 0
-        self.interval_seconds = 295
-        self.outdoor_sensor = 0
+        self.interval_seconds = 900
+        self.outdoor_sensor = 1
         self.station_id = "NA"
         self.station_key = "NA"
         self._update_settings_from_file()

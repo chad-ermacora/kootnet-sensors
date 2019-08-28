@@ -26,10 +26,13 @@ rm -f /usr/share/applications/KootNet-Sensor-Web-Config.desktop
 rm -f ${CONFIG_DIR}/installed_datetime.txt 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_sensors.conf 2>/dev/null
 rm -f ${CONFIG_DIR}/sql_recording.conf 2>/dev/null
+# Remove special scripts
+rm -f ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
+rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_http.sh 2>/dev/null
+rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_smb.sh 2>/dev/null
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload
 printf '\n\nUninstall Complete.\nPress enter to exit\n'
 read nothing2
-rm -f ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
 rm -f ${SPECIAL_SCRIPTS_DIR}/uninstall_kootnet-sensors.sh

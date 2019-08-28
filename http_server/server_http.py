@@ -59,11 +59,12 @@ class CreateSensorHTTP:
         self.auth = HTTPBasicAuth()
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
-        app_generic_functions.update_cached_variables(sensor_access)
         route_functions = server_http_route_functions.CreateRouteFunctions(sensor_access)
-
         if route_functions.online_services_config.weather_underground_enabled:
             app_generic_functions.thread_function(route_functions.online_services_config.start_weather_underground)
+
+        app_generic_functions.update_cached_variables(sensor_access)
+        app_generic_functions.thread_function(_delayed_cache_update, args=sensor_access)
 
         @self.app.route("/")
         @self.app.route("/index")
@@ -510,3 +511,8 @@ class CreateSensorHTTP:
                                         certfile=file_locations.http_ssl_crt)
         logger.primary_logger.info("HTTPS Server Started")
         http_server.serve_forever()
+
+
+def _delayed_cache_update(sensor_access):
+    sleep(5)
+    app_generic_functions.update_cached_variables(sensor_access)

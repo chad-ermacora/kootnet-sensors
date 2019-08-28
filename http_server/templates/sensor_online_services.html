@@ -34,13 +34,13 @@
                 <label>
                     <input type="checkbox" id="wu_rapid_fire_enabled" name="enable_wu_rapid_fire"
                            value="" {{ CheckedWURapidFire }} {{ DisabledWURapidFire }}>
-                    Enable RapidFire Updates (Sending updates every 3-10 seconds)
+                    Enable RapidFire Updates (Updating every 2-10 seconds)
                 </label>
             </div>
 
             <div class="mui-textfield">
                 <label style="color: black">
-                    Send Sensor Readings every X Seconds
+                    Seconds between Updates
                     <br>
                     <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
                            value="{{ WUIntervalSeconds }}" {{ DisabledWUInterval }}>
