@@ -66,12 +66,6 @@ class CreateSensorHTTP:
         app_generic_functions.update_cached_variables(sensor_access)
         app_generic_functions.thread_function(_delayed_cache_update, args=sensor_access)
 
-        @self.app.route("/")
-        @self.app.route("/index")
-        @self.app.route("/index.html")
-        def index():
-            return route_functions.index()
-
         @self.app.route("/MenuScript.js")
         def menu_script():
             return send_file(file_locations.menu_script)
@@ -119,6 +113,16 @@ class CreateSensorHTTP:
         def auth_error():
             return route_functions.auth_error(request)
 
+        @self.app.route("/")
+        @self.app.route("/index")
+        @self.app.route("/index.html")
+        def index():
+            return route_functions.index()
+
+        @self.app.route("/DownloadSQLDatabase")
+        def download_sensors_sql_database():
+            return route_functions.download_sensors_sql_database(request)
+
         @self.app.route('/logout')
         def logout():
             return route_functions.logout()
@@ -133,10 +137,22 @@ class CreateSensorHTTP:
         def html_sensors_readings():
             return route_functions.html_sensors_readings(request)
 
-        @self.app.route("/Quick")
-        @self.app.route("/SystemCommands")
-        def html_system_management():
-            return route_functions.html_system_management(request)
+        @self.app.route("/PlotlyGraph")
+        def html_plotly_graph():
+            return route_functions.html_plotly_graph(request)
+
+        @self.app.route("/CreatePlotlyGraph", methods=["POST"])
+        @self.auth.login_required
+        def html_create_plotly_graph():
+            return route_functions.html_create_plotly_graph(request)
+
+        @self.app.route("/ViewIntervalPlotlyGraph")
+        def html_view_interval_graph_plotly():
+            return route_functions.html_view_interval_graph_plotly(request)
+
+        @self.app.route("/ViewTriggerPlotlyGraph")
+        def html_view_triggers_graph_plotly():
+            return route_functions.html_view_triggers_graph_plotly(request)
 
         @self.app.route("/OnlineServices")
         def html_online_services():
@@ -147,24 +163,10 @@ class CreateSensorHTTP:
         def html_edit_online_services():
             return route_functions.html_edit_online_services(request)
 
-        @self.app.route("/GetLogsHTML")
-        def html_get_log_view():
-            return route_functions.html_get_log_view(request)
-
-        @self.app.route("/DeletePrimaryLog")
-        @self.auth.login_required
-        def delete_primary_log():
-            return route_functions.delete_primary_log(request)
-
-        @self.app.route("/DeleteNetworkLog")
-        @self.auth.login_required
-        def delete_network_log():
-            return route_functions.delete_network_log(request)
-
-        @self.app.route("/DeleteSensorsLog")
-        @self.auth.login_required
-        def delete_sensors_log():
-            return route_functions.delete_sensors_log(request)
+        @self.app.route("/Quick")
+        @self.app.route("/SystemCommands")
+        def html_system_management():
+            return route_functions.html_system_management(request)
 
         @self.app.route("/ConfigurationsHTML")
         @self.auth.login_required
@@ -181,6 +183,16 @@ class CreateSensorHTTP:
         def html_set_installed_sensors():
             return route_functions.html_set_installed_sensors(request)
 
+        @self.app.route("/EditConfigIPv4", methods=["POST"])
+        @self.auth.login_required
+        def html_set_ipv4_config():
+            return route_functions.html_set_ipv4_config(request)
+
+        @self.app.route("/EditConfigWifi", methods=["POST"])
+        @self.auth.login_required
+        def html_set_wifi_config():
+            return route_functions.html_set_wifi_config(request)
+
         @self.app.route("/EditTriggerVariances", methods=["POST"])
         @self.auth.login_required
         def html_set_trigger_variances():
@@ -191,19 +203,104 @@ class CreateSensorHTTP:
         def html_reset_trigger_variances():
             return route_functions.html_reset_trigger_variances(request)
 
-        @self.app.route("/EditConfigWifi", methods=["POST"])
-        @self.auth.login_required
-        def html_set_wifi_config():
-            return route_functions.html_set_wifi_config(request)
+        @self.app.route("/GetLogsHTML")
+        def html_get_log_view():
+            return route_functions.html_get_log_view(request)
 
-        @self.app.route("/EditConfigIPv4", methods=["POST"])
+        @self.app.route("/DownloadZippedLogs")
+        def download_zipped_logs():
+            return route_functions.download_zipped_logs(request)
+
+        @self.app.route("/DeletePrimaryLog")
         @self.auth.login_required
-        def html_set_ipv4_config():
-            return route_functions.html_set_ipv4_config(request)
+        def delete_primary_log():
+            return route_functions.delete_primary_log(request)
+
+        @self.app.route("/DeleteNetworkLog")
+        @self.auth.login_required
+        def delete_network_log():
+            return route_functions.delete_network_log(request)
+
+        @self.app.route("/DeleteSensorsLog")
+        @self.auth.login_required
+        def delete_sensors_log():
+            return route_functions.delete_sensors_log(request)
+
+        @self.app.route("/UpgradeOnline")
+        @self.auth.login_required
+        def upgrade_http():
+            return route_functions.upgrade_http(request)
+
+        @self.app.route("/CleanOnline")
+        @self.auth.login_required
+        def upgrade_clean_http():
+            return route_functions.upgrade_clean_http(request)
+
+        @self.app.route("/UpgradeOnlineDev")
+        @self.auth.login_required
+        def upgrade_http_dev():
+            return route_functions.upgrade_http_dev(request)
+
+        @self.app.route("/UpgradeSMB")
+        @self.auth.login_required
+        def upgrade_smb():
+            return route_functions.upgrade_smb(request)
+
+        @self.app.route("/CleanSMB")
+        @self.auth.login_required
+        def upgrade_clean_smb():
+            return route_functions.upgrade_clean_smb(request)
+
+        @self.app.route("/UpgradeSMBDev")
+        @self.auth.login_required
+        def upgrade_smb_dev():
+            return route_functions.upgrade_smb_dev(request)
+
+        @self.app.route("/inkupg")
+        @self.auth.login_required
+        def upgrade_rp_controller():
+            return route_functions.upgrade_rp_controller(request)
+
+        @self.app.route("/RestartServices")
+        def services_restart():
+            return route_functions.services_restart(request)
+
+        @self.app.route("/RebootSystem")
+        @self.auth.login_required
+        def system_reboot():
+            return route_functions.system_reboot(request)
+
+        @self.app.route("/ShutdownSystem")
+        @self.auth.login_required
+        def system_shutdown():
+            return route_functions.system_shutdown(request)
+
+        @self.app.route("/UpgradeSystemOS")
+        @self.auth.login_required
+        def upgrade_system_os():
+            return route_functions.upgrade_system_os(request)
+
+        @self.app.route("/ReInstallRequirements")
+        @self.auth.login_required
+        def reinstall_program_requirements():
+            return route_functions.reinstall_program_requirements(request)
+
+        @self.app.route("/HTMLRawConfigurations")
+        @self.auth.login_required
+        def view_https_config_diagnostics():
+            return route_functions.html_view_https_config_diagnostics(request)
+
+        @self.app.route("/SensorHelp")
+        def view_help_file():
+            return route_functions.view_help_file(request)
 
         @self.app.route("/CheckOnlineStatus")
         def check_online():
             return route_functions.check_online(request)
+
+        @self.app.route("/GetIntervalSensorReadings")
+        def cc_get_interval_readings():
+            return route_functions.cc_get_interval_readings(request)
 
         @self.app.route("/GetSensorReadings")
         def cc_get_sensor_readings():
@@ -273,82 +370,15 @@ class CreateSensorHTTP:
         def cc_del_db_note():
             route_functions.cc_del_db_note(request)
 
-        @self.app.route("/DownloadZippedLogs")
-        def download_zipped_logs():
-            return route_functions.download_zipped_logs(request)
-
-        @self.app.route("/DownloadSQLDatabase")
-        def download_sensors_sql_database():
-            return route_functions.download_sensors_sql_database(request)
-
         @self.app.route("/PutDatabaseNote", methods=["PUT"])
         @self.auth.login_required
-        def put_sql_note():
+        def cc_put_sql_note():
             return route_functions.put_sql_note(request)
 
         @self.app.route("/UpdateDatabaseNote", methods=["PUT"])
         @self.auth.login_required
-        def update_sql_note():
+        def cc_update_sql_note():
             return route_functions.update_sql_note(request)
-
-        @self.app.route("/UpgradeOnline")
-        @self.auth.login_required
-        def upgrade_http():
-            return route_functions.upgrade_http(request)
-
-        @self.app.route("/CleanOnline")
-        @self.auth.login_required
-        def upgrade_clean_http():
-            return route_functions.upgrade_clean_http(request)
-
-        @self.app.route("/UpgradeOnlineDev")
-        @self.auth.login_required
-        def upgrade_http_dev():
-            return route_functions.upgrade_http_dev(request)
-
-        @self.app.route("/UpgradeSMB")
-        @self.auth.login_required
-        def upgrade_smb():
-            return route_functions.upgrade_smb(request)
-
-        @self.app.route("/CleanSMB")
-        @self.auth.login_required
-        def upgrade_clean_smb():
-            return route_functions.upgrade_clean_smb(request)
-
-        @self.app.route("/UpgradeSMBDev")
-        @self.auth.login_required
-        def upgrade_smb_dev():
-            return route_functions.upgrade_smb_dev(request)
-
-        @self.app.route("/inkupg")
-        @self.auth.login_required
-        def upgrade_rp_controller():
-            return route_functions.upgrade_rp_controller(request)
-
-        @self.app.route("/ReInstallRequirements")
-        @self.auth.login_required
-        def reinstall_program_requirements():
-            return route_functions.reinstall_program_requirements(request)
-
-        @self.app.route("/UpgradeSystemOS")
-        @self.auth.login_required
-        def upgrade_system_os():
-            return route_functions.upgrade_system_os(request)
-
-        @self.app.route("/RebootSystem")
-        @self.auth.login_required
-        def system_reboot():
-            return route_functions.system_reboot(request)
-
-        @self.app.route("/ShutdownSystem")
-        @self.auth.login_required
-        def system_shutdown():
-            return route_functions.system_shutdown(request)
-
-        @self.app.route("/RestartServices")
-        def services_restart():
-            return route_functions.services_restart(request)
 
         @self.app.route("/SetHostName", methods=["PUT"])
         @self.auth.login_required
@@ -474,35 +504,10 @@ class CreateSensorHTTP:
         def get_gyro_xyz():
             return route_functions.get_gyro_xyz(request)
 
-        @self.app.route("/GetIntervalSensorReadings")
-        def cc_get_interval_readings():
-            return route_functions.cc_get_interval_readings(request)
-
-        @self.app.route("/PlotlyGraph")
-        def html_plotly_graph():
-            return route_functions.html_plotly_graph(request)
-
-        @self.app.route("/CreatePlotlyGraph", methods=["POST"])
-        @self.auth.login_required
-        def html_create_plotly_graph():
-            return route_functions.html_create_plotly_graph(request)
-
-        @self.app.route("/ViewIntervalPlotlyGraph")
-        def html_view_interval_graph_plotly():
-            return route_functions.html_view_interval_graph_plotly(request)
-
-        @self.app.route("/ViewTriggerPlotlyGraph")
-        def html_view_triggers_graph_plotly():
-            return route_functions.html_view_triggers_graph_plotly(request)
-
         @self.app.route("/DisplayText", methods=["PUT"])
         @self.auth.login_required
         def display_text():
             route_functions.display_text(request)
-
-        @self.app.route("/SensorHelp")
-        def view_help_file():
-            return route_functions.view_help_file(request)
 
         logger.network_logger.info("** starting up on port " + str(flask_http_port) + " **")
         http_server = pywsgi.WSGIServer((flask_http_ip, flask_http_port),

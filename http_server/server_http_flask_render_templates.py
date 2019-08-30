@@ -50,6 +50,21 @@ class CreateRenderTemplates:
         return render_template("system_commands.html")
 
     @staticmethod
+    def view_https_config_diagnostics():
+        main_config = app_generic_functions.get_file_content(file_locations.config_file_location)
+        installed_sensors = app_generic_functions.get_file_content(file_locations.sensors_installed_file_location)
+        networking = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file)
+        wifi = app_generic_functions.get_file_content(file_locations.wifi_config_file)
+        trigger_variances = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location)
+
+        return render_template("http_diagnostics_configurations.html",
+                               MainConfiguration=main_config,
+                               InstalledSensorsConfiguration=installed_sensors,
+                               NetworkConfiguration=networking,
+                               WiFiConfiguration=wifi,
+                               TriggerConfiguration=trigger_variances)
+
+    @staticmethod
     def sensor_online_services(online_services_config):
         wu_checked = get_html_checkbox_state(online_services_config.weather_underground_enabled)
         wu_rapid_fire_checked = get_html_checkbox_state(online_services_config.wu_rapid_fire_enabled)

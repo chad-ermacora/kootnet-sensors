@@ -66,6 +66,10 @@ class CreateRouteFunctions:
         logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
         return self.render_templates.system_management()
 
+    def html_view_https_config_diagnostics(self, request):
+        logger.network_logger.debug("** HTTPS Configuration Diagnostics accessed from " + str(request.remote_addr))
+        return self.render_templates.view_https_config_diagnostics()
+
     def html_online_services(self, request):
         logger.network_logger.debug("** Online Services accessed from " + str(request.remote_addr))
         return self.render_templates.sensor_online_services(self.online_services_config)
