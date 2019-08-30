@@ -747,6 +747,7 @@ def _empty_thread():
 
 def display_message(text_message):
     """ If a Supported Display is installed, shows provided text message on it. """
+    text_message = str(text_message)
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
     if app_config_access.installed_sensors.has_display and app_config_access.current_config.enable_display:
         message_length = len(text_message)

@@ -16,10 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import logging
 import requests
-import urllib3
 from operations_modules import app_config_access
 from operations_modules import variance_checks
+
+logging.captureWarnings(True)
 
 
 def get_sensor_reading(command):
@@ -43,7 +45,6 @@ def display_text_on_sensor(text_message):
     requests.put(url=url, data={'command_data': text_message}, verify=False)
 
 
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 sensor_commands = variance_checks.CreateSensorCommands()
 
 interval_data = get_interval_sensor_data()
