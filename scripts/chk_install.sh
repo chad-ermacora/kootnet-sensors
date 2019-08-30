@@ -24,7 +24,10 @@ else
   # Set HTTP Authentication
   clear
   printf 'Dependencies Installed\n\n'
-  bash /opt/kootnet-sensors/scripts/change_http_authentication.sh
+  if [[ ! -f ${DATA_DIR}"/auth.conf" ]]
+  then
+    bash /opt/kootnet-sensors/scripts/change_http_authentication.sh
+  fi
   cat > ${CONFIG_DIR}/installed_version.txt << "EOF"
 New_Install.99.999
 EOF

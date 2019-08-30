@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 CONFIG_DIR="/etc/kootnet"
+DATA_DIR="/home/kootnet_data"
 SPECIAL_SCRIPTS_DIR="/home/kootnet_data/scripts"
 # This script will remove all Sensor and Control Center program files off the Sensor, leaving configuration and data
 if [[ $EUID != 0 ]]; then
@@ -26,10 +27,13 @@ rm -f /usr/share/applications/KootNet-Sensor-Web-Config.desktop
 rm -f ${CONFIG_DIR}/installed_datetime.txt 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_sensors.conf 2>/dev/null
 rm -f ${CONFIG_DIR}/sql_recording.conf 2>/dev/null
+rm -f ${DATA_DIR}/auth.conf 2>/dev/null
 # Remove special scripts
 rm -f ${SPECIAL_SCRIPTS_DIR}/remove_services_and_files.sh
 rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_http.sh 2>/dev/null
 rm -f ${SPECIAL_SCRIPTS_DIR}/clean_upgrade_smb.sh 2>/dev/null
+# Remove Pythong Virtual Environment
+rm -R -f /home/kootnet_data/python-env 2>/dev/null
 # Remove Misc. other
 crontab -r
 systemctl daemon-reload

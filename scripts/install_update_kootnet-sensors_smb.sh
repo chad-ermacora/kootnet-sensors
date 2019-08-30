@@ -3,8 +3,9 @@ clear
 if [[ "$1" == "dev" ]]
 then
   SMB_SHARE="/KootNetSMB/dev"
-  printf '\n-- DEVELOPMENT UPGRADE OR INSTALL --\n'
+  printf '\n-- DEVELOPMENT SMB UPGRADE OR INSTALL --\n'
 else
+  printf '\n-- SMB UPGRADE OR INSTALL --\n'
   SMB_SHARE="/KootNetSMB"
 fi
 # Upgrade from SMB server (Windows Share)
@@ -36,26 +37,23 @@ mkdir /opt/kootnet-sensors/scripts 2>/dev/null
 rm -f /tmp/KootNetSensors.zip 2>/dev/null
 rm -R /tmp/SensorSMBUpgrade 2>/dev/null
 mkdir /tmp/SensorSMBUpgrade 2>/dev/null
-# Start Script
-if [[ -f /opt/kootnet-control-center/requirements.txt ]]
+# Offer Control Center Install on first Installation only
+if [[ ! -f /opt/kootnet-control-center/requirements.txt ]]
 then
-  echo
-else
-  if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+  if [[ ! -f ${DATA_DIR}/auth.conf ]]
   then
     echo
-  else
     read -p "Do you want to Install Control Center as well? (Y/N) " -n 1 -r CONTROL_INSTALL
     echo
     if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
     then
-      read -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
+      read -r -p "Enter the username you want to create a desktop shortcut on (Default is pi): " USER_NAME
     fi
   fi
 fi
 # Make sure cifs is installed for SMB mount
-apt-get install cifs-utils
-printf '\nConnecting to SMB\n'
+printf '\nMaking sure cifs-utils is installed & Connecting to SMB\n'
+apt-get install -qq cifs-utils
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
 printf '\n\nDownload Started\n'
@@ -63,12 +61,10 @@ cp /mnt/supernas${SMB_FILE} /tmp
 unzip -q /tmp/KootNetSensors.zip -d /tmp/SensorSMBUpgrade
 printf 'Download Complete\n\nUnzipping & Installing Files\n'
 cp -f -R /tmp/SensorSMBUpgrade/sensor-rp/* /opt/kootnet-sensors
-printf 'Files Installed\n\n'
+printf 'Files Installed\n'
 # Add easy Configuration editing to users home directory
-if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+if [[ ! -f ${CONFIG_DIR}/installed_datetime.txt ]]
 then
-  echo
-else
   bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh "${USER_NAME}"
 fi
 bash /opt/kootnet-sensors/scripts/chk_install.sh

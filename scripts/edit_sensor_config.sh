@@ -24,7 +24,10 @@ then
   printf "\nRestarting Services, please wait ...\n\n"
   systemctl daemon-reload
   systemctl restart KootnetSensors
-  sleep 15
+  while [ "$(wget --no-check-certificate -q -O - "https://localhost:10065/CheckOnlineStatus")" != "OK" ]
+  do
+    sleep 2
+  done
   printf "Printing config & testing sensors\n\n"
   /home/kootnet_data/python-env/bin/python3 /opt/kootnet-sensors/test_sensors.py
 fi
