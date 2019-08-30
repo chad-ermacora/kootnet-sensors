@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="main-config-tab">
+            Main Configuration
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="installed-sensors-tab">
+            Installed Sensors
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
+            Networking
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="wifi-tab">
+            WiFi
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="trigger-variances-tab">
+            Trigger Variances
+        </a></li>
+    </ul>
+    <div class="mui-tabs__pane mui--is-active" id="main-config-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Main Configuration</u>
+            </a></h2>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ MainConfiguration }}</span>
+        </div>
+    </div>
+    <div class="mui-tabs__pane" id="installed-sensors-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Installed Sensors</u>
+            </a></h2>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ InstalledSensorsConfiguration }}</span>
+        </div>
+    </div>
+    <div class="mui-tabs__pane" id="networking-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Networking Configuration</u>
+            </a></h2>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ NetworkConfiguration }}</span>
+        </div>
+    </div>
+    <div class="mui-tabs__pane" id="wifi-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Wireless Configuration</u>
+            </a></h2>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ WiFiConfiguration }}</span>
+        </div>
+    </div>
+    <div class="mui-tabs__pane" id="trigger-variances-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Trigger Variances</u>
+            </a></h2>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ TriggerConfiguration }}</span>
+        </div>
+    </div>
+
+{% endblock %}
