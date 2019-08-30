@@ -67,11 +67,11 @@ class CreateEnviroPlus:
 
             # First readings seem to return an error.  Getting them over with before needing readings
             self.bme280.get_temperature()
-            time.sleep(0.5)
+            time.sleep(0.1)
             self.bme280.get_humidity()
-            time.sleep(0.5)
+            time.sleep(0.1)
             self.bme280.get_pressure()
-            time.sleep(0.5)
+            time.sleep(0.1)
             self.ltr559_import.get_lux()
 
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
@@ -136,7 +136,7 @@ class CreateEnviroPlus:
                     draw.rectangle((0, 0, 160, 80), (0, 0, 0))
                     draw.text((int(text_x - x), text_y), message, font=self.font, fill=(255, 255, 255))
                     self.st7735.display(message_img)
-                    time.sleep(.1)
+                    time.sleep(0.1)
                 self.st7735.display(blank_img)
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed - " + str(error))
