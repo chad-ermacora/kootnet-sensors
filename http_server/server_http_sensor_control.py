@@ -16,29 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from os import path
-from operations_modules import file_locations
+from operations_modules import logger
+from operations_modules import app_generic_functions
+
+sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
+                        "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
+                        "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
+                        "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
 
-def _get_old_version():
-    """ Loads the previously written program version and returns it as a string. """
-    if path.isfile(file_locations.old_version_file):
-        old_version_file = open(file_locations.old_version_file, 'r')
-        old_version_content = old_version_file.read()
-        old_version_file.close()
-        return old_version_content.strip()
+def check_online_status(ip_address):
+    sensor_return = app_generic_functions.get_http_sensor_reading(ip_address)
+    if sensor_return == "OK":
+        return "green"
     else:
-        write_program_version_to_file()
-        return "0.0.0"
-
-
-def write_program_version_to_file():
-    """ Writes the current program version to previous program version file. """
-    current_version_file = open(file_locations.old_version_file, 'w')
-    current_version_file.write(version)
-    current_version_file.close()
-
-
-# Current Version of the program
-version = "Alpha.27.87"
-old_version = _get_old_version()
+        return "red"

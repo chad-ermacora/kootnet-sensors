@@ -2,7 +2,8 @@
 
 {% block content %}
 
-    <h2><u><strong><a style="text-decoration: underline; color: red" href="/PlotlyGraph">KootNet Sensors Plotly Graphing</a></strong></u></h2>
+    <h2><u><strong><a style="text-decoration: underline; color: red" href="/PlotlyGraph">KootNet Sensors Plotly
+        Graphing</a></strong></u></h2>
 
     <h3>
         <u><a style="color: #cc00ff" href="/ViewIntervalPlotlyGraph" target="_blank">
@@ -225,6 +226,14 @@
         </fieldset>
     </form>
 
-    <script src="/GraphScript.js"></script>
+    <script>
+        jQuery('#SelectAllCheckboxes').change(function () {
+            if (jQuery(this).prop('checked')) {
+                jQuery("form input:checkbox").prop('checked', true);
+            } else {
+                jQuery("form input:checkbox").prop('checked', false);
+            }
+        });
+    </script>
 
 {% endblock %}

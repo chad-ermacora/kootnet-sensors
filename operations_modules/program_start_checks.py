@@ -76,7 +76,7 @@ def check_database_structure():
     database_variables = sqlite_database.CreateDatabaseVariables()
 
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database_location)
+        db_connection = sqlite3.connect(file_locations.sensor_database)
         db_cursor = db_connection.cursor()
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)

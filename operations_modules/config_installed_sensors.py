@@ -197,9 +197,9 @@ class CreateInstalledSensors:
 
 def get_installed_sensors_from_file():
     """ Loads installed sensors from file and returns it as an object. """
-    if os.path.isfile(file_locations.sensors_installed_file_location):
+    if os.path.isfile(file_locations.installed_sensors_config):
         installed_sensor_lines = app_generic_functions.get_file_content(
-            file_locations.sensors_installed_file_location).strip().split("\n")
+            file_locations.installed_sensors_config).strip().split("\n")
         installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
     else:
         logger.primary_logger.warning("Installed Sensors file not found, using and saving default")
@@ -338,4 +338,4 @@ def write_installed_sensors_to_file(installed_sensors):
     else:
         new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
 
-    app_generic_functions.write_file_to_disk(file_locations.sensors_installed_file_location, new_installed_sensors)
+    app_generic_functions.write_file_to_disk(file_locations.installed_sensors_config, new_installed_sensors)

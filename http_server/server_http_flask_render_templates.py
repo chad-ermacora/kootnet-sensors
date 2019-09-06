@@ -26,12 +26,17 @@ from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import network_ip
+from http_server import server_http_sensor_control
 from http_server.server_http_flask_post_checks import get_html_checkbox_state
 
 
 class CreateRenderTemplates:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
+
+    @staticmethod
+    def index_page():
+        return render_template("index.html", HostName=app_cached_variables.hostname)
 
     @staticmethod
     def message_and_return(return_message, text_message2="", url="/", special_command=""):
@@ -42,8 +47,80 @@ class CreateRenderTemplates:
                                URL=url)
 
     @staticmethod
-    def index_page():
-        return render_template("index.html", HostName=app_cached_variables.hostname)
+    def multi_sensor_management(request_type="normal_get", address_list=None):
+        radio_checked_online_status = ""
+        radio_checked_systems_report = ""
+        radio_checked_config_report = ""
+        if app_config_access.sensor_control_config.default_action == "online_status":
+            radio_checked_online_status = "checked"
+        if app_config_access.sensor_control_config.default_action == "systems_report":
+            radio_checked_systems_report = "checked"
+        if app_config_access.sensor_control_config.default_action == "config_report":
+            radio_checked_config_report = "checked"
+
+        sensors_bg_colour_list = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+
+        if request_type == "online_status":
+            new_sensors_bg_colour_list = []
+            for address in address_list:
+                if address == "Invalid":
+                    new_sensors_bg_colour_list.append("")
+                else:
+                    new_sensors_bg_colour_list.append(server_http_sensor_control.check_online_status(address))
+
+            count = 0
+            for new_colour in new_sensors_bg_colour_list:
+                sensors_bg_colour_list[count] = new_colour
+                count += 1
+        elif request_type == "systems_report":
+            pass
+        elif request_type == "config_report":
+            pass
+
+        return render_template("multi_manage_sensors.html",
+                               CheckedOnlineStatus=radio_checked_online_status,
+                               CheckedSystemReports=radio_checked_systems_report,
+                               CheckedConfigReports=radio_checked_config_report,
+                               SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
+                               SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
+                               SensorIP3=app_config_access.sensor_control_config.sensor_ip_dns3,
+                               SensorIP4=app_config_access.sensor_control_config.sensor_ip_dns4,
+                               SensorIP5=app_config_access.sensor_control_config.sensor_ip_dns5,
+                               SensorIP6=app_config_access.sensor_control_config.sensor_ip_dns6,
+                               SensorIP7=app_config_access.sensor_control_config.sensor_ip_dns7,
+                               SensorIP8=app_config_access.sensor_control_config.sensor_ip_dns8,
+                               SensorIP9=app_config_access.sensor_control_config.sensor_ip_dns9,
+                               SensorIP10=app_config_access.sensor_control_config.sensor_ip_dns10,
+                               SensorIP11=app_config_access.sensor_control_config.sensor_ip_dns11,
+                               SensorIP12=app_config_access.sensor_control_config.sensor_ip_dns12,
+                               SensorIP13=app_config_access.sensor_control_config.sensor_ip_dns13,
+                               SensorIP14=app_config_access.sensor_control_config.sensor_ip_dns14,
+                               SensorIP15=app_config_access.sensor_control_config.sensor_ip_dns15,
+                               SensorIP16=app_config_access.sensor_control_config.sensor_ip_dns16,
+                               SensorIP17=app_config_access.sensor_control_config.sensor_ip_dns17,
+                               SensorIP18=app_config_access.sensor_control_config.sensor_ip_dns18,
+                               SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
+                               SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
+                               SensorIP1BGColour=sensors_bg_colour_list[0],
+                               SensorIP2BGColour=sensors_bg_colour_list[1],
+                               SensorIP3BGColour=sensors_bg_colour_list[2],
+                               SensorIP4BGColour=sensors_bg_colour_list[3],
+                               SensorIP5BGColour=sensors_bg_colour_list[4],
+                               SensorIP6BGColour=sensors_bg_colour_list[5],
+                               SensorIP7BGColour=sensors_bg_colour_list[6],
+                               SensorIP8BGColour=sensors_bg_colour_list[7],
+                               SensorIP9BGColour=sensors_bg_colour_list[8],
+                               SensorIP10BGColour=sensors_bg_colour_list[9],
+                               SensorIP11BGColour=sensors_bg_colour_list[10],
+                               SensorIP12BGColour=sensors_bg_colour_list[11],
+                               SensorIP13BGColour=sensors_bg_colour_list[12],
+                               SensorIP14BGColour=sensors_bg_colour_list[13],
+                               SensorIP15BGColour=sensors_bg_colour_list[14],
+                               SensorIP16BGColour=sensors_bg_colour_list[15],
+                               SensorIP17BGColour=sensors_bg_colour_list[16],
+                               SensorIP18BGColour=sensors_bg_colour_list[17],
+                               SensorIP19BGColour=sensors_bg_colour_list[18],
+                               SensorIP20BGColour=sensors_bg_colour_list[19])
 
     @staticmethod
     def system_management():
@@ -51,38 +128,54 @@ class CreateRenderTemplates:
 
     @staticmethod
     def view_https_config_diagnostics():
-        main_config = app_generic_functions.get_file_content(file_locations.config_file_location)
-        installed_sensors = app_generic_functions.get_file_content(file_locations.sensors_installed_file_location)
+        main_config = app_generic_functions.get_file_content(file_locations.main_config)
+        installed_sensors = app_generic_functions.get_file_content(file_locations.installed_sensors_config)
         networking = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file)
         wifi = app_generic_functions.get_file_content(file_locations.wifi_config_file)
-        trigger_variances = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location)
+        trigger_variances = app_generic_functions.get_file_content(file_locations.trigger_variances_config)
+        sensor_control_config = app_generic_functions.get_file_content(file_locations.html_sensor_control_config)
+        weather_underground_config = app_generic_functions.get_file_content(file_locations.weather_underground_config)
+        luftdaten_config = app_generic_functions.get_file_content(file_locations.luftdaten_config)
+        open_sense_map_config = app_generic_functions.get_file_content(file_locations.osm_config)
 
         return render_template("http_diagnostics_configurations.html",
                                MainConfiguration=main_config,
                                InstalledSensorsConfiguration=installed_sensors,
                                NetworkConfiguration=networking,
                                WiFiConfiguration=wifi,
-                               TriggerConfiguration=trigger_variances)
+                               TriggerConfiguration=trigger_variances,
+                               SensorControlConfiguration=sensor_control_config,
+                               WeatherUndergroundConfiguration=weather_underground_config,
+                               LuftdatenConfiguration=luftdaten_config,
+                               OpenSenseMapConfiguration=open_sense_map_config)
 
     @staticmethod
-    def sensor_online_services(online_services_config):
-        wu_checked = get_html_checkbox_state(online_services_config.weather_underground_enabled)
-        wu_rapid_fire_checked = get_html_checkbox_state(online_services_config.wu_rapid_fire_enabled)
+    def sensor_online_services(weather_underground_config, luftdaten_config):
+        wu_checked = get_html_checkbox_state(weather_underground_config.weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(weather_underground_config.wu_rapid_fire_enabled)
         wu_rapid_fire_disabled = "disabled"
         wu_interval_seconds_disabled = "disabled"
         wu_outdoor_disabled = "disabled"
         wu_station_id_disabled = "disabled"
         wu_station_key_disabled = "disabled"
-        if online_services_config.weather_underground_enabled:
+        if weather_underground_config.weather_underground_enabled:
             wu_rapid_fire_disabled = ""
             wu_interval_seconds_disabled = ""
             wu_outdoor_disabled = ""
             wu_station_id_disabled = ""
             wu_station_key_disabled = ""
 
-        wu_interval_seconds = online_services_config.interval_seconds
-        wu_outdoor = get_html_checkbox_state(online_services_config.outdoor_sensor)
-        wu_station_id = online_services_config.station_id
+        wu_interval_seconds = weather_underground_config.interval_seconds
+        wu_outdoor = get_html_checkbox_state(weather_underground_config.outdoor_sensor)
+        wu_station_id = weather_underground_config.station_id
+
+        luftdaten_checked = get_html_checkbox_state(luftdaten_config.luftdaten_enabled)
+        luftdaten_interval_seconds_disabled = "disabled"
+        if luftdaten_config.luftdaten_enabled:
+            luftdaten_interval_seconds_disabled = ""
+
+        luftdaten_interval_seconds = luftdaten_config.interval_seconds
+        luftdaten_station_id = luftdaten_config.station_id
 
         return render_template("sensor_online_services.html",
                                CheckedWUEnabled=wu_checked,
@@ -95,7 +188,10 @@ class CreateRenderTemplates:
                                DisabledStationID=wu_station_id_disabled,
                                WUStationID=wu_station_id,
                                DisabledStationKey=wu_station_key_disabled,
-                               WUStationKey="")
+                               CheckedLuftdatenEnabled=luftdaten_checked,
+                               LuftdatenIntervalSeconds=luftdaten_interval_seconds,
+                               DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
+                               LuftdatenStationID=luftdaten_station_id)
 
     @staticmethod
     def logout():
@@ -148,12 +244,19 @@ class CreateRenderTemplates:
                                ManualTemperatureEnabled=custom_temp_enabled,
                                CurrentTemperatureOffset=app_config_access.current_config.temperature_offset,
                                InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
-                               SQLDatabaseLocation=file_locations.sensor_database_location,
+                               SQLDatabaseLocation=file_locations.sensor_database,
                                SQLDatabaseDateRange=self.sensor_access.get_db_first_last_date(),
                                SQLDatabaseSize=self.sensor_access.get_db_size(),
                                NumberNotes=self.sensor_access.get_db_notes_count())
 
     def sensors_readings(self):
+        raw_temp = self.sensor_access.get_sensor_temperature()
+        temp_offset = app_config_access.current_config.temperature_offset
+        try:
+            adjusted_temp = round(raw_temp + temp_offset, 2)
+        except Exception as error:
+            logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
+            adjusted_temp = "Calc Error"
         red, orange, yellow, green, blue, violet = self._get_ems_for_render_template()
 
         return render_template("sensor_readings.html",
@@ -162,8 +265,9 @@ class CreateRenderTemplates:
                                DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                                SystemUptime=self.sensor_access.get_uptime_str(),
                                CPUTemperature=self.sensor_access.get_cpu_temperature(),
-                               EnvTemperature=self.sensor_access.get_sensor_temperature(),
-                               EnvTemperatureOffset=app_config_access.current_config.temperature_offset,
+                               RAWEnvTemperature=raw_temp,
+                               AdjustedEnvTemperature=adjusted_temp,
+                               EnvTemperatureOffset=temp_offset,
                                Pressure=self.sensor_access.get_pressure(),
                                Altitude=self.sensor_access.get_altitude(),
                                Humidity=self.sensor_access.get_humidity(),

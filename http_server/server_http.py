@@ -60,8 +60,11 @@ class CreateSensorHTTP:
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
         route_functions = server_http_route_functions.CreateRouteFunctions(sensor_access)
-        if route_functions.online_services_config.weather_underground_enabled:
-            app_generic_functions.thread_function(route_functions.online_services_config.start_weather_underground)
+        if route_functions.weather_underground_config.weather_underground_enabled:
+            app_generic_functions.thread_function(route_functions.weather_underground_config.start_weather_underground)
+
+        if route_functions.luftdaten_config.luftdaten_enabled:
+            app_generic_functions.thread_function(route_functions.luftdaten_config.start_luftdaten)
 
         app_generic_functions.update_cached_variables(sensor_access)
         app_generic_functions.thread_function(_delayed_cache_update, args=sensor_access)
@@ -69,18 +72,6 @@ class CreateSensorHTTP:
         @self.app.route("/MenuScript.js")
         def menu_script():
             return send_file(file_locations.menu_script)
-
-        @self.app.route("/online_services.js")
-        def online_services_script():
-            return send_file(file_locations.online_services_script)
-
-        @self.app.route("/EditConfigurations.js")
-        def config_script():
-            return send_file(file_locations.configuration_script)
-
-        @self.app.route("/GraphScript.js")
-        def graph_script():
-            return send_file(file_locations.graph_script)
 
         @self.app.route("/MenuStyle.css")
         def menu_style_css():
@@ -127,6 +118,15 @@ class CreateSensorHTTP:
         def logout():
             return route_functions.logout()
 
+        @self.app.route("/MultiManageSensors", methods=["GET", "POST"])
+        def html_multi_sensor_management():
+            return route_functions.html_multi_sensor_management(request)
+
+        @self.app.route("/MultiSCSaveSettings", methods=["POST"])
+        @self.auth.login_required
+        def html_multi_sensor_control_save_settings():
+            return route_functions.html_multi_sensor_control_save_settings(request)
+
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
         def html_system_information():
@@ -158,10 +158,15 @@ class CreateSensorHTTP:
         def html_online_services():
             return route_functions.html_online_services(request)
 
-        @self.app.route("/EditOnlineServices", methods=["POST"])
+        @self.app.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])
         @self.auth.login_required
-        def html_edit_online_services():
-            return route_functions.html_edit_online_services(request)
+        def html_edit_online_services_wu():
+            return route_functions.html_edit_online_services_wu(request)
+
+        @self.app.route("/EditOnlineServicesLuftdaten", methods=["POST"])
+        @self.auth.login_required
+        def html_edit_online_services_luftdaten():
+            return route_functions.html_edit_online_services_luftdaten(request)
 
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
@@ -505,7 +510,6 @@ class CreateSensorHTTP:
             return route_functions.get_gyro_xyz(request)
 
         @self.app.route("/DisplayText", methods=["PUT"])
-        @self.auth.login_required
         def display_text():
             route_functions.display_text(request)
 

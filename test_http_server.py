@@ -18,6 +18,7 @@
 """
 import unittest
 from http_server import server_http_self_diagnostics
+from operations_modules.app_generic_functions import http_display_text_on_sensor
 
 
 class TestApp(unittest.TestCase):
@@ -91,7 +92,7 @@ class TestApp(unittest.TestCase):
         self.assertTrue(server_http_self_diagnostics.test_html_get_gyroscope())
 
     def test_html_display_text(self):
-        server_http_self_diagnostics._display_text_on_sensor("This is a Test Message")
+        http_display_text_on_sensor("This is a Test Message", "localhost")
         self.assertTrue(True)
 
 

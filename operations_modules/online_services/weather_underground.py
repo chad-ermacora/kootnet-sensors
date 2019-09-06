@@ -37,8 +37,8 @@ wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
 wu_action = "&action=updateraw"
 
 
-class CreateOnlineServicesConfig:
-    """ Creates a Online Services object to interact with all Online Service related items. """
+class CreateWeatherUndergroundConfig:
+    """ Creates a Weather Underground Configuration object. """
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
 
@@ -51,7 +51,7 @@ class CreateOnlineServicesConfig:
         self._update_settings_from_file()
 
     def get_configuration_str(self):
-        """ Returns Online Services settings ready to be written to the configuration file. """
+        """ Returns Weather Underground settings ready to be written to the configuration file. """
         online_services_config_str = "Enable = 1 & Disable = 0\n" + \
                                      str(self.weather_underground_enabled) + " = Enable Weather Underground\n" + \
                                      str(self.interval_seconds) + " = Send to Server in Seconds\n" + \
@@ -90,8 +90,8 @@ class CreateOnlineServicesConfig:
         """
         Updates Weather Underground settings based on saved configuration file.  Creates Default file if missing.
         """
-        if os.path.isfile(file_locations.online_services_config):
-            loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.online_services_config)
+        if os.path.isfile(file_locations.weather_underground_config):
+            loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.weather_underground_config)
             configuration_lines = loaded_configuration_raw.split("\n")
             try:
                 if int(configuration_lines[1][0]):
@@ -117,6 +117,7 @@ class CreateOnlineServicesConfig:
                 else:
                     self.wu_rapid_fire_enabled = 0
             except Exception as error:
+                self.write_config_to_file()
                 logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
                                               "Using 1 or more Defaults: " + str(error))
         else:
@@ -124,9 +125,9 @@ class CreateOnlineServicesConfig:
             self.write_config_to_file()
 
     def write_config_to_file(self):
-        """ Writes current Online Service settings to file. """
+        """ Writes current Weather Underground settings to file. """
         config_str = self.get_configuration_str()
-        app_generic_functions.write_file_to_disk(file_locations.online_services_config, config_str)
+        app_generic_functions.write_file_to_disk(file_locations.weather_underground_config, config_str)
 
     def start_weather_underground(self):
         """ Sends compatible sensor readings to Weather Underground every X seconds based on set Interval. """
@@ -155,9 +156,9 @@ class CreateOnlineServicesConfig:
                         if self.wu_rapid_fire_enabled:
                             url += wu_rapid_fire_url_end + str(self.interval_seconds)
 
-                        logger.network_logger.debug("New Underground: " + url)
-
+                        # logger.network_logger.debug("New Underground URL: " + url)
                         html_get_response = requests.get(url=url)
+
                         if html_get_response.status_code == 200:
                             logger.network_logger.debug("Sensors sent to Weather Underground OK")
                         elif html_get_response.status_code == 401:

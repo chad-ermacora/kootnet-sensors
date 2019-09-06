@@ -28,9 +28,9 @@ def get_installed_sensors_raw():
     """ Loads RAW sensors from file and returns it. """
     logger.primary_logger.debug("Loading Installed Sensors and Returning")
 
-    if os.path.isfile(file_locations.sensors_installed_file_location):
+    if os.path.isfile(file_locations.installed_sensors_config):
         try:
-            sensor_list_file = open(file_locations.sensors_installed_file_location, 'r')
+            sensor_list_file = open(file_locations.installed_sensors_config, 'r')
             raw_installed_sensor_file = sensor_list_file.readlines()
             sensor_list_file.close()
         except Exception as error:
@@ -47,9 +47,9 @@ def get_installed_config_raw():
     """ Loads configuration from file and returns it as a configuration object. """
     logger.primary_logger.debug("Loading Configuration File")
 
-    if os.path.isfile(file_locations.config_file_location):
+    if os.path.isfile(file_locations.main_config):
         try:
-            config_file = open(file_locations.config_file_location, "r")
+            config_file = open(file_locations.main_config, "r")
             config_file_content = config_file.readlines()
             config_file.close()
         except Exception as error:

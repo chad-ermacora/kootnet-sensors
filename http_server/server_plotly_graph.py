@@ -246,7 +246,7 @@ def _get_sql_data(graph_interval_data, sql_command):
     return_data = []
 
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_database_location)
+        database_connection = sqlite3.connect(file_locations.sensor_database)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_command)
         sql_column_data = sqlite_database.fetchall()

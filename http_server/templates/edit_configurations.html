@@ -49,12 +49,6 @@
         </li>
     </ul>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/HTMLRawConfigurations';">
-        View Raw Configuration Files
-    </button>
-
-    <br>
     <br>
 
     <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
@@ -940,6 +934,30 @@
         </form>
     </div>
 
-    <script src="/EditConfigurations.js"></script>
+    <script>
+        jQuery('#enable_interval_recording').change(function () {
+            document.getElementsByName("interval_delay_seconds")[0].disabled = !jQuery(this).prop('checked');
+        });
+
+        jQuery('#enable_custom_temp_offset').change(function () {
+            document.getElementsByName("custom_temperature_offset")[0].disabled = !jQuery(this).prop('checked');
+        });
+
+        jQuery('#IP_DHCP').change(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementsByName("ip_address")[0].disabled = true;
+                document.getElementsByName("ip_subnet")[0].disabled = true;
+                document.getElementsByName("ip_gateway")[0].disabled = true;
+                document.getElementsByName("ip_dns1")[0].disabled = true;
+                document.getElementsByName("ip_dns2")[0].disabled = true;
+            } else {
+                document.getElementsByName("ip_address")[0].disabled = false;
+                document.getElementsByName("ip_subnet")[0].disabled = false;
+                document.getElementsByName("ip_gateway")[0].disabled = false;
+                document.getElementsByName("ip_dns1")[0].disabled = false;
+                document.getElementsByName("ip_dns2")[0].disabled = false;
+            }
+        });
+    </script>
 
 {% endblock %}

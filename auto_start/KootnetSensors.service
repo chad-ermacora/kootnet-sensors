@@ -1,5 +1,5 @@
 [Unit]
-Description=KootNet Sensors - SQLite Recording & HTTP Server Access
+Description=KootNet Sensors - SQLite Recording & HTTPS Server Access
 After=network.target
 StartLimitIntervalSec=0
 

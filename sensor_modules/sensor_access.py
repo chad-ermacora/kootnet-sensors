@@ -140,16 +140,16 @@ def get_interval_sensor_readings():
         gas_reduced = get_gas_reduced()
         gas_nh3 = get_gas_nh3()
 
-        if _valid_sensor_reading(gas_index):
+        if valid_sensor_reading(gas_index):
             sensor_types.append(app_config_access.database_variables.gas_resistance_index)
             sensor_readings.append(gas_index)
-        if _valid_sensor_reading(gas_oxidised):
+        if valid_sensor_reading(gas_oxidised):
             sensor_types.append(app_config_access.database_variables.gas_oxidising)
             sensor_readings.append(gas_oxidised)
-        if _valid_sensor_reading(gas_reduced):
+        if valid_sensor_reading(gas_reduced):
             sensor_types.append(app_config_access.database_variables.gas_reducing)
             sensor_readings.append(gas_reduced)
-        if _valid_sensor_reading(gas_nh3):
+        if valid_sensor_reading(gas_nh3):
             sensor_types.append(app_config_access.database_variables.gas_nh3)
             sensor_readings.append(gas_nh3)
     if app_config_access.installed_sensors.has_particulate_matter:
@@ -157,13 +157,13 @@ def get_interval_sensor_readings():
         pm2_5_reading = get_particulate_matter_2_5()
         pm10_reading = get_particulate_matter_10()
 
-        if _valid_sensor_reading(pm1_reading):
+        if valid_sensor_reading(pm1_reading):
             sensor_types.append(app_config_access.database_variables.particulate_matter_1)
             sensor_readings.append(pm1_reading)
-        if _valid_sensor_reading(pm2_5_reading):
+        if valid_sensor_reading(pm2_5_reading):
             sensor_types.append(app_config_access.database_variables.particulate_matter_2_5)
             sensor_readings.append(pm2_5_reading)
-        if _valid_sensor_reading(pm10_reading):
+        if valid_sensor_reading(pm10_reading):
             sensor_types.append(app_config_access.database_variables.particulate_matter_10)
             sensor_readings.append(pm10_reading)
     if app_config_access.installed_sensors.has_lumen:
@@ -196,10 +196,10 @@ def get_interval_sensor_readings():
         uva_reading = get_ultra_violet_a()
         uvb_reading = get_ultra_violet_b()
 
-        if _valid_sensor_reading(uva_reading):
+        if valid_sensor_reading(uva_reading):
             sensor_types.append(app_config_access.database_variables.ultra_violet_a)
             sensor_readings.append(get_ultra_violet_a())
-        if _valid_sensor_reading(uvb_reading):
+        if valid_sensor_reading(uvb_reading):
             sensor_types.append(app_config_access.database_variables.ultra_violet_b)
             sensor_readings.append(get_ultra_violet_b())
     if app_config_access.installed_sensors.has_acc:
@@ -236,7 +236,7 @@ def get_interval_sensor_readings():
     return return_interval_data
 
 
-def _valid_sensor_reading(reading):
+def valid_sensor_reading(reading):
     if reading == no_sensor_present:
         return False
     return True
@@ -382,7 +382,7 @@ def get_db_first_last_date():
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
-    last_updated_file = app_generic_functions.get_file_content(file_locations.last_updated_file_location)
+    last_updated_file = app_generic_functions.get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
         last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
@@ -687,7 +687,7 @@ def get_weather_underground_readings(outdoor_sensor):
     if app_config_access.current_config.enable_custom_temp:
         temp_c = temp_c + app_config_access.current_config.temperature_offset
 
-    if _valid_sensor_reading(temp_c):
+    if valid_sensor_reading(temp_c):
         try:
             temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
             if outdoor_sensor:
@@ -699,14 +699,14 @@ def get_weather_underground_readings(outdoor_sensor):
                                         str(error))
 
     humidity = get_humidity()
-    if _valid_sensor_reading(humidity):
+    if valid_sensor_reading(humidity):
         if outdoor_sensor:
             return_readings_str += "&humidity=" + str(round(humidity, round_decimal_to))
         else:
             return_readings_str += "&indoorhumidity=" + str(round(humidity, round_decimal_to))
 
     out_door_dew_point = get_dew_point()
-    if _valid_sensor_reading(out_door_dew_point) and outdoor_sensor:
+    if valid_sensor_reading(out_door_dew_point) and outdoor_sensor:
         try:
             dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
             return_readings_str += "&dewptf=" + str(round(dew_point_f, round_decimal_to))
@@ -715,7 +715,7 @@ def get_weather_underground_readings(outdoor_sensor):
                                         str(error))
 
     pressure_hpa = get_pressure()
-    if _valid_sensor_reading(pressure_hpa):
+    if valid_sensor_reading(pressure_hpa):
         try:
             baromin = float(pressure_hpa) * 0.029529983071445
             return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
@@ -723,15 +723,15 @@ def get_weather_underground_readings(outdoor_sensor):
             logger.sensors_logger.error("Unable to calculate Pressure inhg for Weather Underground: " + str(error))
 
     ultra_violet_index = get_ultra_violet_index()
-    if _valid_sensor_reading(ultra_violet_index):
+    if valid_sensor_reading(ultra_violet_index):
         return_readings_str += "&UV=" + str(round(ultra_violet_index, round_decimal_to))
 
     pm_2_5 = get_particulate_matter_2_5()
-    if _valid_sensor_reading(pm_2_5):
+    if valid_sensor_reading(pm_2_5):
         return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
 
     pm_10 = get_particulate_matter_10()
-    if _valid_sensor_reading(pm_10):
+    if valid_sensor_reading(pm_10):
         return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
 
     return return_readings_str

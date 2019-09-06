@@ -55,6 +55,7 @@ class CreateLumaOLED:
 
     @staticmethod
     def _format_message(message):
+        """ Formats text message to fit on Display. """
         message_length = len(message)
 
         return_message = ""
@@ -70,7 +71,7 @@ class CreateLumaOLED:
         return return_message
 
     def display_text(self, message):
-        """ Scrolls Provided Text on LED Display. """
+        """ Shows Provided Text on LED Display. """
         self.device.show()
         self.display_off_count = 0
         self.display_is_on = True

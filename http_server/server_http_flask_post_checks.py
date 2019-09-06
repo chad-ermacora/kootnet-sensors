@@ -18,7 +18,6 @@
 """
 import os
 import shutil
-
 import operations_modules.config_installed_sensors
 from operations_modules import logger
 from operations_modules import app_cached_variables
@@ -29,6 +28,32 @@ from operations_modules import app_generic_functions
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules import config_trigger_variances
+
+
+def multi_sensor_control_save_settings(html_request):
+    try:
+        app_config_access.sensor_control_config.set_from_html_post(html_request)
+        app_config_access.sensor_control_config.write_current_config_to_file()
+    except Exception as error:
+        logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
+
+
+def multi_sensor_control_system_report(html_request):
+    ip_list = []
+    for html_entries in app_config_access.sensor_control_config.html_post_settings:
+        pass
+
+    try:
+        return "It's all good!"
+    except Exception as error:
+        logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
+
+
+def multi_sensor_control_config_report(html_request):
+    try:
+        return "It's all good too!"
+    except Exception as error:
+        logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
 
 
 def check_html_config_main(html_request):

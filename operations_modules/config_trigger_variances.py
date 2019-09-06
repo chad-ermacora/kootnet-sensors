@@ -477,8 +477,8 @@ def convert_triggers_lines_to_obj(trigger_text_file):
 
 def get_triggers_variances_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
-    if os.path.isfile(file_locations.trigger_variances_file_location):
-        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location).split("\n")
+    if os.path.isfile(file_locations.trigger_variances_config):
+        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_config).split("\n")
         installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
     else:
         logger.primary_logger.warning("Trigger Variance Configuration file not found, using and saving default")
@@ -496,6 +496,6 @@ def write_triggers_to_file(triggers):
         else:
             new_triggers = convert_triggers_to_str(triggers)
 
-        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_file_location, new_triggers)
+        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_config, new_triggers)
     except Exception as error:
         logger.primary_logger.error("Unable to write trigger file: " + str(error))

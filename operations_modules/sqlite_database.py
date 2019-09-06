@@ -25,7 +25,7 @@ class CreateIntervalDatabaseData:
     """ Creates a object, holding required data for making a Interval SQL execute string. """
 
     def __init__(self):
-        self.database_location = file_locations.sensor_database_location
+        self.database_location = file_locations.sensor_database
         self.sql_query_start = "INSERT OR IGNORE INTO IntervalData ("
         self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
@@ -38,7 +38,7 @@ class CreateOtherDataEntry:
     """ Creates a object, holding required data for making a OtherData SQL execute string. """
 
     def __init__(self):
-        self.database_location = file_locations.sensor_database_location
+        self.database_location = file_locations.sensor_database
         self.sql_query_start = "INSERT OR IGNORE INTO OtherData ("
         self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
@@ -52,19 +52,19 @@ def write_to_sql_database(sql_query):
     logger.primary_logger.debug("SQL String to execute: " + str(sql_query))
 
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database_location)
+        db_connection = sqlite3.connect(file_locations.sensor_database)
         db_cursor = db_connection.cursor()
         db_cursor.execute(sql_query)
         db_connection.commit()
         db_connection.close()
-        logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database_location)
+        logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
 
 
 def sql_execute_get_data(sql_query):
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_database_location)
+        database_connection = sqlite3.connect(file_locations.sensor_database)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
@@ -79,7 +79,7 @@ def sql_execute_get_data(sql_query):
 
 def sql_execute(sql_query):
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_database_location)
+        database_connection = sqlite3.connect(file_locations.sensor_database)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         database_connection.commit()

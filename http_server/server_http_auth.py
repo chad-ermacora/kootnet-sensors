@@ -34,9 +34,9 @@ class CreateHTTPAuth:
         """ Loads configuration from file and returns it as a configuration object. """
         logger.primary_logger.debug("Loading HTTP Authentication File")
 
-        if os.path.isfile(file_locations.config_file_location):
+        if os.path.isfile(file_locations.main_config):
             try:
-                auth_file = open(file_locations.http_auth_file_location, "r")
+                auth_file = open(file_locations.http_auth, "r")
                 auth_file_lines = auth_file.readlines()
                 auth_file.close()
                 self.http_flask_user = auth_file_lines[0].strip()
@@ -63,6 +63,6 @@ class CreateHTTPAuth:
         self.http_flask_user = verified_user
         self.http_flask_password = generate_password_hash(verified_password)
         save_data = self.http_flask_user + "\n" + self.http_flask_password
-        auth_file = open(file_locations.http_auth_file_location, "w")
+        auth_file = open(file_locations.http_auth, "w")
         auth_file.write(save_data)
         auth_file.close()

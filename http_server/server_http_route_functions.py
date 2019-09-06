@@ -29,11 +29,13 @@ from operations_modules import config_trigger_variances
 from operations_modules import app_generic_functions
 from operations_modules import os_cli_commands
 from operations_modules import app_validation_checks
-from operations_modules.add_on_modules.online_services import CreateOnlineServicesConfig
+from operations_modules.online_services.weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.online_services.luftdaten import CreateLuftdatenConfig
 from http_server import server_http_flask_render_templates
 from http_server import server_http_flask_post_checks as http_post_checks
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
+from http_server import server_http_sensor_control
 
 text_message_may_take_minutes = "This may take a few minutes ..."
 
@@ -41,18 +43,40 @@ text_message_may_take_minutes = "This may take a few minutes ..."
 class CreateRouteFunctions:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
-        self.online_services_config = CreateOnlineServicesConfig(sensor_access)
+        self.weather_underground_config = CreateWeatherUndergroundConfig(sensor_access)
+        self.luftdaten_config = CreateLuftdatenConfig(sensor_access)
         self.render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
-
-    def index(self):
-        return self.render_templates.index_page()
-
-    def logout(self):
-        return self.render_templates.logout()
 
     def auth_error(self, request):
         logger.network_logger.info(" *** First or Failed Login from " + str(request.remote_addr))
         return self.render_templates.message_and_return("Unauthorized Access")
+
+    def logout(self):
+        return self.render_templates.logout()
+
+    def index(self):
+        return self.render_templates.index_page()
+
+    def html_multi_sensor_management(self, request):
+        logger.network_logger.debug("* HTML Multi Sensor Control accessed by " + str(request.remote_addr))
+        if request.method == "POST":
+            sc_action = request.form.get("selected_action")
+            if sc_action == app_config_access.sensor_control_config.radio_check_status:
+                app_config_access.sensor_control_config.set_from_html_post(request)
+                ip_list = []
+                for sensor in server_http_sensor_control.sensor_bg_names_list:
+                    sensor_address = request.form.get(sensor)
+                    if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
+                        ip_list.append(sensor_address)
+                    else:
+                        ip_list.append("Invalid")
+                return self.render_templates.multi_sensor_management(request_type=sc_action, address_list=ip_list)
+        return self.render_templates.multi_sensor_management()
+
+    def html_multi_sensor_control_save_settings(self, request):
+        logger.network_logger.debug("* HTML Multi Sensor Control Settings saved by " + str(request.remote_addr))
+        http_post_checks.multi_sensor_control_save_settings(request)
+        return self.render_templates.multi_sensor_management(request)
 
     def html_system_information(self, request):
         logger.network_logger.debug("* Sensor Information accessed from " + str(request.remote_addr))
@@ -72,19 +96,20 @@ class CreateRouteFunctions:
 
     def html_online_services(self, request):
         logger.network_logger.debug("** Online Services accessed from " + str(request.remote_addr))
-        return self.render_templates.sensor_online_services(self.online_services_config)
+        return self.render_templates.sensor_online_services(self.weather_underground_config, self.luftdaten_config)
 
-    def html_edit_online_services(self, request):
-        logger.network_logger.debug("** Edit Online Services accessed from " + str(request.remote_addr))
+    def html_edit_online_services_wu(self, request):
+        logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " +
+                                    str(request.remote_addr))
         if request.method == "POST":
-            self.online_services_config.update_weather_underground_html(request)
+            self.weather_underground_config.update_weather_underground_html(request)
             if app_config_access.wu_thread_running:
-                main_message = "Online Services Updated - Restarting Sensor Software"
+                main_message = "Weather Underground Updated - Restarting Sensor Software"
                 message2 = "New Weather Underground settings will take effect after the sensor software restarts"
                 app_generic_functions.thread_function(self.sensor_access.restart_services)
             else:
-                app_generic_functions.thread_function(self.online_services_config.start_weather_underground)
-                main_message = "Online Services Updated"
+                app_generic_functions.thread_function(self.weather_underground_config.start_weather_underground)
+                main_message = "Weather Underground Updated"
                 message2 = ""
                 if request.form.get("enable_weather_underground") is not None:
                     main_message += " - Weather Underground Started"
@@ -92,7 +117,29 @@ class CreateRouteFunctions:
                                                             text_message2=message2,
                                                             url="/OnlineServices")
         else:
-            logger.primary_logger.error("HTML Edit Online Services set Error")
+            logger.primary_logger.error("HTML Edit Weather Underground set Error")
+            return self.render_templates.message_and_return("Bad Configuration POST Request",
+                                                            url="/OnlineServices")
+
+    def html_edit_online_services_luftdaten(self, request):
+        logger.network_logger.debug("** Edit Online Services Luftdaten accessed from " + str(request.remote_addr))
+        if request.method == "POST":
+            self.luftdaten_config.update_luftdaten_html(request)
+            if app_config_access.luftdaten_thread_running:
+                main_message = "Luftdaten Updated - Restarting Sensor Software"
+                message2 = "New Luftdaten settings will take effect after the sensor software restarts"
+                app_generic_functions.thread_function(self.sensor_access.restart_services)
+            else:
+                app_generic_functions.thread_function(self.luftdaten_config.start_luftdaten)
+                main_message = "Luftdaten Updated"
+                message2 = ""
+                if request.form.get("enable_weather_underground") is not None:
+                    main_message += " - Luftdaten Started"
+            return self.render_templates.message_and_return(main_message,
+                                                            text_message2=message2,
+                                                            url="/OnlineServices")
+        else:
+            logger.primary_logger.error("HTML Edit Luftdaten set Error")
             return self.render_templates.message_and_return("Bad Configuration POST Request",
                                                             url="/OnlineServices")
 
@@ -299,7 +346,7 @@ class CreateRouteFunctions:
     @staticmethod
     def cc_get_variance_config(request):
         logger.network_logger.debug("* CC Variance Configuration Sent to " + str(request.remote_addr))
-        return send_file(file_locations.trigger_variances_file_location)
+        return send_file(file_locations.trigger_variances_config)
 
     def cc_set_variance_config(self, request):
         logger.network_logger.debug("* CC set Wifi Accessed by " + str(request.remote_addr))
@@ -385,7 +432,7 @@ class CreateRouteFunctions:
                            self.sensor_access.get_hostname() + \
                            "SensorDatabase.sqlite"
             logger.network_logger.info("* Sensor SQL Database Sent to " + str(request.remote_addr))
-            return send_file(file_locations.sensor_database_location, as_attachment=True,
+            return send_file(file_locations.sensor_database, as_attachment=True,
                              attachment_filename=sql_filename)
         except Exception as error:
             logger.primary_logger.error("* Unable to Send Database to " + str(request.remote_addr) + ": " + str(error))

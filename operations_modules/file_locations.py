@@ -20,13 +20,16 @@
 """
 
 
-sensor_database_location = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
-debug_file_location = "/etc/kootnet/enable_debug_logging.conf"
-config_file_location = "/etc/kootnet/sql_recording.conf"
-online_services_config = "/etc/kootnet/online_services.conf"
-sensors_installed_file_location = "/etc/kootnet/installed_sensors.conf"
-trigger_variances_file_location = "/etc/kootnet/trigger_variances.conf"
-http_auth_file_location = "/home/kootnet_data/auth.conf"
+sensor_database = "/home/kootnet_data/SensorRecordingDatabase.sqlite"
+debug_logging_config = "/etc/kootnet/enable_debug_logging.conf"
+main_config = "/etc/kootnet/sql_recording.conf"
+html_sensor_control_config = "/etc/kootnet/html_sensor_control.conf"
+weather_underground_config = "/etc/kootnet/online_services_weather_underground.conf"
+luftdaten_config = "/etc/kootnet/online_services_luftdaten.conf"
+osm_config = "/etc/kootnet/online_services_open_sense_map.conf"
+installed_sensors_config = "/etc/kootnet/installed_sensors.conf"
+trigger_variances_config = "/etc/kootnet/trigger_variances.conf"
+http_auth = "/home/kootnet_data/auth.conf"
 
 http_ssl_key = "/opt/kootnet-sensors/http_server/ssl_files/kootnet_default.key"
 http_ssl_csr = "/opt/kootnet-sensors/http_server/ssl_files/kootnet_default.csr"
@@ -48,12 +51,9 @@ mui_colors_min_css = "/opt/kootnet-sensors/http_server/extras/mui-colors.min-ver
 mui_min_js = "/opt/kootnet-sensors/http_server/extras/mui.min-ver-0.9.43.js"
 menu_script = "/opt/kootnet-sensors/http_server/extras/menu.js"
 menu_css_style = "/opt/kootnet-sensors/http_server/extras/style.css"
-configuration_script = "/opt/kootnet-sensors/http_server/extras/sensor_configurations_ui.js"
-online_services_script = "/opt/kootnet-sensors/http_server/extras/online_services_ui.js"
-graph_script = "/opt/kootnet-sensors/http_server/extras/graph_ui.js"
 
-old_version_file_location = "/etc/kootnet/installed_version.txt"
-last_updated_file_location = "/etc/kootnet/last_updated.txt"
+old_version_file = "/etc/kootnet/installed_version.txt"
+program_last_updated = "/etc/kootnet/last_updated.txt"
 
 log_directory = "/home/kootnet_data/logs/"
 log_zip_file = log_directory + "all_logs.zip"

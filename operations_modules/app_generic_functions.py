@@ -16,12 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import logging
 import os
+import requests
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import network_ip
 from operations_modules import network_wifi
+
+logging.captureWarnings(True)
 
 
 def get_file_content(load_file):
@@ -94,3 +98,26 @@ def update_cached_variables(sensor_access):
     app_cached_variables.wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
     app_cached_variables.wifi_security_type = network_wifi.get_wifi_security_type(wifi_config_lines)
     app_cached_variables.wifi_psk = network_wifi.get_wifi_psk(wifi_config_lines)
+
+
+def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus",
+                            http_username="", http_password=""):
+    """ Returns requested sensor data (based on the provided command data). """
+    try:
+        url = "https://" + http_ip + ":" + http_port + "/" + command
+        tmp_return_data = requests.get(url=url, timeout=2, auth=(http_username, http_password), verify=False)
+        return tmp_return_data.text
+    except Exception as error:
+        logger.network_logger.warning("Error getting remote sensor data - Enable Debug logging for more Info")
+        logger.network_logger.debug(str(error))
+        return "Error"
+
+
+def http_display_text_on_sensor(text_message, http_ip, http_port="10065", http_username="", http_password=""):
+    """ Returns requested sensor data (based on the provided command data). """
+    try:
+        url = "https://" + http_ip + ":" + http_port + "/DisplayText"
+        requests.put(url=url, timeout=2, auth=(http_username, http_password),
+                     data={'command_data': text_message}, verify=False)
+    except Exception as error:
+        logger.network_logger.error("Unable to display text on Sensor: " + str(error))
