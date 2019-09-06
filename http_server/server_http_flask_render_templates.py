@@ -228,6 +228,7 @@ class CreateRenderTemplates:
         return render_template("sensor_information.html",
                                HostName=app_cached_variables.hostname,
                                IPAddress=app_cached_variables.ip,
+                               OSVersion=app_cached_variables.operating_system_name,
                                KootnetVersion=app_config_access.software_version.version,
                                LastUpdated=app_cached_variables.program_last_updated,
                                DateTime=strftime("%Y-%m-%d %H:%M - %Z"),

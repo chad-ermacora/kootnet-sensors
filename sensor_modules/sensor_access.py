@@ -260,6 +260,14 @@ def _list_to_csv_string_quoted(list_to_add):
     return ""
 
 
+def get_operating_system_name():
+    """ Returns sensors Operating System Name and version. """
+    if app_config_access.installed_sensors.linux_system:
+        return sensor_direct_access.os_sensor_access.get_os_name_version()
+    else:
+        return no_sensor_present
+
+
 def get_hostname():
     """ Returns sensors hostname. """
     if app_config_access.installed_sensors.linux_system:

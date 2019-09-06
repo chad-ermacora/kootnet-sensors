@@ -21,6 +21,7 @@
 program_last_updated = ""
 reboot_count = ""
 
+operating_system_name = ""
 hostname = ""
 ip = ""
 ip_subnet = ""

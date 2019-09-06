@@ -13,6 +13,7 @@ import socket
 from time import strftime
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
 from operations_modules.sqlite_database import CreateDatabaseVariables
 
@@ -26,13 +27,16 @@ class CreateLinuxSystem:
         self.database_variables = CreateDatabaseVariables()
 
     @staticmethod
-    def os_version():
-        """ Returns System OS Version as a String. """
+    def get_os_name_version():
+        """ Returns sensors Operating System Name and version. """
         try:
-            system_os_information = open("/etc/os-release", "r")
-            os_version = system_os_information.readline()
-            system_os_information.close()
-            return str(os_version)[13:-2]
+            os_release_content_lines = app_generic_functions.get_file_content("/etc/os-release").split("\n")
+            os_release_name = ""
+            for line in os_release_content_lines:
+                name_and_value = line.split("=")
+                if name_and_value[0].strip() == "PRETTY_NAME":
+                    os_release_name = name_and_value[1].strip()[1:-1]
+            return os_release_name
         except Exception as error:
             logger.sensors_logger.error("Unable to get Raspberry model: " + str(error))
             return "Error retrieving OS information"
