@@ -22,13 +22,12 @@ round_decimal_to = 2
 
 class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
-
     def __init__(self):
         self.database_variables = CreateDatabaseVariables()
 
     @staticmethod
     def get_os_name_version():
-        """ Returns sensors Operating System Name and version. """
+        """ Returns sensors Operating System Name and Version. """
         try:
             os_release_content_lines = app_generic_functions.get_file_content("/etc/os-release").split("\n")
             os_release_name = ""
@@ -38,7 +37,7 @@ class CreateLinuxSystem:
                     os_release_name = name_and_value[1].strip()[1:-1]
             return os_release_name
         except Exception as error:
-            logger.sensors_logger.error("Unable to get Raspberry model: " + str(error))
+            logger.sensors_logger.error("Unable to get Raspbian OS Version: " + str(error))
             return "Error retrieving OS information"
 
     @staticmethod
@@ -98,6 +97,7 @@ class CreateLinuxSystem:
         return round(db_size_mb, round_decimal_to)
 
     def get_db_notes_count(self):
+        """ Returns the number of notes stored in the database as a str. """
         sql_query = "SELECT count(" + \
                     str(self.database_variables.other_table_column_notes) + \
                     ") FROM " + \
@@ -114,6 +114,7 @@ class CreateLinuxSystem:
         return return_notes_count
 
     def get_db_first_last_date(self):
+        """ Returns the first and last date stored in the database as a str. """
         sql_query = "SELECT Min(" + \
                     str(self.database_variables.all_tables_datetime) + \
                     ") AS First, Max(" + \
@@ -137,6 +138,10 @@ class CreateLinuxSystem:
         return textbox_db_dates
 
     def get_sensor_reboot_count(self):
+        """
+        Returns the number of times the sensor has rebooted as a str.
+        Reboot count is calculated by uptime values stored in the Database.
+        """
         sql_query = "SELECT " + \
                     str(self.database_variables.sensor_uptime) + \
                     " FROM " + \
