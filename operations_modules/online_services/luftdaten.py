@@ -98,7 +98,7 @@ class CreateLuftdatenConfig:
             app_config_access.luftdaten_thread_running = True
             # Sleep 7.4 seconds before starting
             # So it doesn't try to access the sensors at the same time as the recording services on boot
-            sleep(7.4)
+            sleep(6.5)
             while True:
                 no_sensors = True
                 try:
@@ -117,7 +117,7 @@ class CreateLuftdatenConfig:
                     logger.network_logger.error("Error processing Luftdaten Data: " + str(error))
 
                 if no_sensors:
-                    message = "Luftdaten not Updated - No Compatible or Supported Sensors Installed"
+                    message = "Luftdaten not Updated - No Compatible Sensors"
                     logger.network_logger.warning(message)
                     sleep(3600)
                 sleep(self.interval_seconds)
