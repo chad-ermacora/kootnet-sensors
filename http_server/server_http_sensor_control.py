@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
+from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 
 sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
@@ -28,6 +29,6 @@ sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", 
 def check_online_status(ip_address):
     sensor_return = app_generic_functions.get_http_sensor_reading(ip_address)
     if sensor_return == "OK":
-        return "green"
+        app_cached_variables.data_queue.put([ip_address, "green"])
     else:
-        return "red"
+        app_cached_variables.data_queue.put([ip_address, "red"])

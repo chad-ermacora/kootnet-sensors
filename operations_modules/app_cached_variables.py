@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from queue import Queue
+
 # This file is updated with variables at runtime.
 # This helps lessen disk reads by caching commonly used variables
 program_last_updated = ""
@@ -33,3 +35,6 @@ wifi_country_code = ""
 wifi_ssid = ""
 wifi_security_type = ""
 wifi_psk = ""
+
+# Used to get data from multiple remote sensors at the "same" time.
+data_queue = Queue()

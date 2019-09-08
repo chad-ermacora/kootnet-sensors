@@ -19,6 +19,7 @@
 import os
 from datetime import datetime
 from time import strftime
+from threading import Thread
 from flask import render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
@@ -61,16 +62,30 @@ class CreateRenderTemplates:
         sensors_bg_colour_list = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
         if request_type == "online_status":
-            new_sensors_bg_colour_list = []
+            new_sensors_responses = []
+            threads = []
+
             for address in address_list:
                 if address == "Invalid":
-                    new_sensors_bg_colour_list.append("")
+                    new_sensors_responses.append(["bad", "bad"])
                 else:
-                    new_sensors_bg_colour_list.append(server_http_sensor_control.check_online_status(address))
+                    threads.append(Thread(target=server_http_sensor_control.check_online_status, args=[address]))
+
+            for thread in threads:
+                thread.start()
+
+            for thread in threads:
+                thread.join()
+
+            while not app_cached_variables.data_queue.empty():
+                new_sensors_responses.append(app_cached_variables.data_queue.get())
+                app_cached_variables.data_queue.task_done()
 
             count = 0
-            for new_colour in new_sensors_bg_colour_list:
-                sensors_bg_colour_list[count] = new_colour
+            for address in address_list:
+                for response in new_sensors_responses:
+                    if address == response[0]:
+                        sensors_bg_colour_list[count] = response[1]
                 count += 1
         elif request_type == "systems_report":
             pass
