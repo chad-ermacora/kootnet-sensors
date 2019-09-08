@@ -17,10 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
+from multiprocessing import Process
 from plotly import subplots, offline, io as plotly_io
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import os_cli_commands
 from operations_modules import app_config_access
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
@@ -36,9 +36,10 @@ def create_plotly_graph(new_graph_data):
         new_graph_data.bypass_sql_skip = True
 
     logger.primary_logger.info("Plotly Graph Generation Started")
-    _start_plotly_graph(new_graph_data)
+    graph_multiprocess = Process(target=_start_plotly_graph, args=[new_graph_data])
+    graph_multiprocess.start()
+    graph_multiprocess.join()
     logger.primary_logger.info("Plotly Graph Generation Complete")
-
     server_plotly_graph_variables.graph_creation_in_progress = False
 
 

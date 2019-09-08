@@ -268,11 +268,12 @@ class CreateRenderTemplates:
     def sensors_readings(self):
         raw_temp = self.sensor_access.get_sensor_temperature()
         temp_offset = app_config_access.current_config.temperature_offset
+        adjusted_temp = raw_temp
         try:
-            adjusted_temp = round(raw_temp + temp_offset, 2)
+            if app_config_access.current_config.enable_custom_temp:
+                adjusted_temp = round(raw_temp + temp_offset, 2)
         except Exception as error:
             logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
-            adjusted_temp = "Calc Error"
         red, orange, yellow, green, blue, violet = self._get_ems_for_render_template()
 
         return render_template("sensor_readings.html",
