@@ -23,9 +23,15 @@ from operations_modules import config_installed_sensors
 from operations_modules import sqlite_database
 from operations_modules import software_version
 from operations_modules import config_trigger_variances
+from operations_modules.online_services.weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.online_services.luftdaten import CreateLuftdatenConfig
+from operations_modules.online_services.open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
 sensor_control_config = config_sensor_control.CreateSensorControlConfig()
+weather_underground_config = CreateWeatherUndergroundConfig()
+luftdaten_config = CreateLuftdatenConfig()
+open_sense_map_config = CreateOpenSenseMapConfig()
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensors()
@@ -37,6 +43,9 @@ else:
     current_config = config_primary.get_config_from_file()
     trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
     sensor_control_config.set_from_disk()
+    weather_underground_config.update_settings_from_file()
+    luftdaten_config.update_settings_from_file()
+    open_sense_map_config.update_settings_from_file()
 
 database_variables = sqlite_database.CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"

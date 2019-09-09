@@ -39,8 +39,8 @@ wu_action = "&action=updateraw"
 
 class CreateWeatherUndergroundConfig:
     """ Creates a Weather Underground Configuration object. """
-    def __init__(self, sensor_access):
-        self.sensor_access = sensor_access
+    def __init__(self):
+        self.sensor_access = None
 
         self.weather_underground_enabled = 0
         self.wu_rapid_fire_enabled = 0
@@ -48,7 +48,6 @@ class CreateWeatherUndergroundConfig:
         self.outdoor_sensor = 1
         self.station_id = "NA"
         self.station_key = "NA"
-        self._update_settings_from_file()
 
     def get_configuration_str(self):
         """ Returns Weather Underground settings ready to be written to the configuration file. """
@@ -86,7 +85,7 @@ class CreateWeatherUndergroundConfig:
 
         self.write_config_to_file()
 
-    def _update_settings_from_file(self):
+    def update_settings_from_file(self):
         """
         Updates Weather Underground settings based on saved configuration file.  Creates Default file if missing.
         """

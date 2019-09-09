@@ -172,7 +172,7 @@
 
                         <div class="mui-checkbox" style="display: inline-block;">
                             <label>
-                                <input type="checkbox" id="wu_enabled" name="enable_open_sense_map"
+                                <input type="checkbox" id="osm_enabled" name="enable_open_sense_map"
                                        value="" {{ CheckedOSMEnabled }}>
                                 Enable Open Sense Map
                             </label>
@@ -184,8 +184,8 @@
                             <label style="color: black">
                                 SenseBox ID
                                 <br>
-                                <input style="width: 200px" type="text" maxlength="64" name="station_id"
-                                       value="{{ OSMStationID }}" {{ DisabledOSMStationID }}>
+                                <input style="width: 200px" type="text" maxlength="64" name="osm_station_id"
+                                       value="{{ OSMStationID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
 
@@ -195,117 +195,121 @@
                             <label style="color: black">
                                 Seconds between Updates
                                 <br>
-                                <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
-                                       value="{{ OSMIntervalSeconds }}" {{ DisabledOSMInterval }}>
+                                <input style="width: 75px" type="number" min="1" name="osm_interval"
+                                       value="{{ OSMIntervalSeconds }}" {{ OSMDisabled }}>
                             </label>
                         </div>
 
                         <label>Location Type</label>
-                        <div class="mui-radio" {{ DisabledLocationType }}>
+                        <div class="mui-radio">
                             <label>
-                                <input type="radio" name="location_type" value="outdoor" {{ OutdoorChecked }}>
+                                <input type="radio" name="osm_location_type"
+                                       value="outdoor" {{ OutdoorChecked }} {{ OSMDisabled }}>
                                 Outdoors
                             </label>
                             <label>
-                                <input type="radio" name="location_type" value="indoor" {{ IndoorChecked }}>
+                                <input type="radio" name="osm_location_type"
+                                       value="indoor" {{ IndoorChecked }} {{ OSMDisabled }}>
                                 Indoors
                             </label>
                             <label>
-                                <input type="radio" name="location_type" value="mobile" {{ MobileChecked }}>
+                                <input type="radio" name="osm_location_type"
+                                       value="mobile" {{ MobileChecked }} {{ OSMDisabled }}>
                                 Mobile
                             </label>
                             <label>
-                                <input type="radio" name="location_type" value="unknown" {{ UnKnownChecked }}>
+                                <input type="radio" name="osm_location_type"
+                                       value="unknown" {{ UnKnownChecked }} {{ OSMDisabled }}>
                                 Other
                             </label>
                         </div>
 
                         <div class="mui-checkbox" style="display: inline-block;">
                             <label>
-                                <input type="checkbox" id="osm_manual_sensor_ids" name="enable_manual_sensor_ids"
-                                       value="" {{ CheckedOSMManualSensorIDs }}>
+                                <input type="checkbox" id="osm_manual_sensor_ids" name="enable_osm_manual_sensor_ids"
+                                       value="" {{ CheckedOSMManualSensorIDs }} {{ OSMDisabled }}>
                                 Manually Set Sensor IDs
                             </label>
                         </div>
 
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Temperature Sensor ID
+                                Temperature ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="env_temp_id"
-                                       value="{{ OSMSEnvTempID }}" {{ DisabledOSMSEnvTempID }}>
+                                       value="{{ OSMSEnvTempID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Pressure Sensor ID
+                                Pressure ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="pressure_id"
-                                       value="{{ OSMPressureID }}" {{ DisabledOSMPressureID }}>
+                                       value="{{ OSMPressureID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Altitude Sensor ID
+                                Altitude ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="altitude_id"
-                                       value="{{ OSMAltitudeID }}" {{ DisabledOSMAltitudeID }}>
+                                       value="{{ OSMAltitudeID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Humidity Sensor ID
+                                Humidity ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="humidity_id"
-                                       value="{{ OSMHumidityID }}" {{ DisabledOSMHumidityID }}>
+                                       value="{{ OSMHumidityID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Oxidising Sensor ID
+                                Oxidising ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="oxidising_id"
-                                       value="{{ OSMOxidisingID }}" {{ DisabledOSMOxidisingID }}>
+                                       value="{{ OSMOxidisingID }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                Reducing Sensor ID
+                                Reducing ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="reducing_id"
-                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                                       value="{{ ReplaceMe }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                NH3 Sensor ID
+                                NH3 ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="nh3_id"
-                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                                       value="{{ ReplaceMe }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                PM1.0 Sensor ID
+                                PM1.0 ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="pm1_id"
-                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                                       value="{{ ReplaceMe }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                PM2.5 Sensor ID
+                                PM2.5 ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="pm2_5_id"
-                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                                       value="{{ ReplaceMe }}" {{ OSMDisabled }}>
                             </label>
                         </div>
                         <div class="mui-textfield">
                             <label style="color: black">
-                                PM10 Sensor ID
+                                PM10 ID
                                 <br>
                                 <input style="width: 200px" type="text" maxlength="64" name="pm10_id"
-                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                                       value="{{ ReplaceMe }}" {{ OSMDisabled }}>
                             </label>
                         </div>
 
@@ -317,8 +321,44 @@
             </div>
         </div>
         <div class="mui-tabs__pane" id="osm-register-tab">
+            <br>
             <div class="mui-container-fluid">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/RegisterSensorOSM">
+                    <fieldset style="text-align: center">
+                        <h3><u><strong><a style="color: black" href="https://opensensemap.org/account" target="_blank">
+                            Open Sense Map Sensor Registration
+                        </a></strong></u></h3>
 
+                        <h5><b>
+                            This will automatically setup the sensor on your Open Sense Map account.
+                            <br>
+                            It will also get all necessary IDs and enable Open Sense Map on the Sensor.
+                        </b></h5>
+
+                        <br>
+
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                User Name
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="osm_account_username"
+                                       value="{{ OSMAccountUserName }}" {{ DisabledOSMAccountUserName }} required>
+                            </label>
+                        </div>
+                        <br>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Password
+                                <br>
+                                <input style="width: 200px" type="password" maxlength="64" name="osm_account_password"
+                                       value="{{ OSMAccountPassword }}" {{ DisabledOSMAccountPassword }} required>
+                            </label>
+                        </div>
+                        <br>
+                        <button type="submit" class="mui-btn mui-btn--raised">Register Sensor</button>
+                    </fieldset>
+                </form>
             </div>
         </div>
     </div>
@@ -343,10 +383,75 @@
 
     <script>
         jQuery('#luftdaten_enabled').change(function () {
+            document.getElementsByName("station_interval")[0].disabled = !jQuery(this).prop('checked');
+        });
+    </script>
+
+    <script>
+        jQuery('#osm_enabled').change(function () {
             if (jQuery(this).prop('checked')) {
-                document.getElementsByName("station_interval")[0].disabled = false;
+                document.getElementsByName("osm_station_id")[0].disabled = false;
+                document.getElementsByName("osm_interval")[0].disabled = false;
+                document.getElementsByName("osm_location_type")[0].disabled = false;
+                document.getElementsByName("osm_location_type")[1].disabled = false;
+                document.getElementsByName("osm_location_type")[2].disabled = false;
+                document.getElementsByName("osm_location_type")[3].disabled = false;
+                document.getElementsByName("enable_osm_manual_sensor_ids")[0].disabled = false;
+                if (jQuery('#osm_manual_sensor_ids').prop('checked')) {
+                    document.getElementsByName("env_temp_id")[0].disabled = false;
+                    document.getElementsByName("pressure_id")[0].disabled = false;
+                    document.getElementsByName("altitude_id")[0].disabled = false;
+                    document.getElementsByName("humidity_id")[0].disabled = false;
+                    document.getElementsByName("oxidising_id")[0].disabled = false;
+                    document.getElementsByName("reducing_id")[0].disabled = false;
+                    document.getElementsByName("nh3_id")[0].disabled = false;
+                    document.getElementsByName("pm1_id")[0].disabled = false;
+                    document.getElementsByName("pm2_5_id")[0].disabled = false;
+                    document.getElementsByName("pm10_id")[0].disabled = false;
+                }
             } else {
-                document.getElementsByName("station_interval")[0].disabled = true;
+                document.getElementsByName("osm_station_id")[0].disabled = true;
+                document.getElementsByName("osm_interval")[0].disabled = true;
+                document.getElementsByName("osm_location_type")[0].disabled = true;
+                document.getElementsByName("osm_location_type")[1].disabled = true;
+                document.getElementsByName("osm_location_type")[2].disabled = true;
+                document.getElementsByName("osm_location_type")[3].disabled = true;
+                document.getElementsByName("enable_osm_manual_sensor_ids")[0].disabled = true;
+                document.getElementsByName("env_temp_id")[0].disabled = true;
+                document.getElementsByName("pressure_id")[0].disabled = true;
+                document.getElementsByName("altitude_id")[0].disabled = true;
+                document.getElementsByName("humidity_id")[0].disabled = true;
+                document.getElementsByName("oxidising_id")[0].disabled = true;
+                document.getElementsByName("reducing_id")[0].disabled = true;
+                document.getElementsByName("nh3_id")[0].disabled = true;
+                document.getElementsByName("pm1_id")[0].disabled = true;
+                document.getElementsByName("pm2_5_id")[0].disabled = true;
+                document.getElementsByName("pm10_id")[0].disabled = true;
+            }
+        });
+        jQuery('#osm_manual_sensor_ids').change(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementsByName("env_temp_id")[0].disabled = false;
+                document.getElementsByName("pressure_id")[0].disabled = false;
+                document.getElementsByName("altitude_id")[0].disabled = false;
+                document.getElementsByName("humidity_id")[0].disabled = false;
+                document.getElementsByName("oxidising_id")[0].disabled = false;
+                document.getElementsByName("reducing_id")[0].disabled = false;
+                document.getElementsByName("nh3_id")[0].disabled = false;
+                document.getElementsByName("pm1_id")[0].disabled = false;
+                document.getElementsByName("pm2_5_id")[0].disabled = false;
+                document.getElementsByName("pm10_id")[0].disabled = false;
+            } else {
+                document.getElementsByName("env_temp_id")[0].disabled = true;
+                document.getElementsByName("pressure_id")[0].disabled = true;
+                document.getElementsByName("altitude_id")[0].disabled = true;
+                document.getElementsByName("humidity_id")[0].disabled = true;
+                document.getElementsByName("oxidising_id")[0].disabled = true;
+                document.getElementsByName("reducing_id")[0].disabled = true;
+                document.getElementsByName("nh3_id")[0].disabled = true;
+                document.getElementsByName("pm1_id")[0].disabled = true;
+                document.getElementsByName("pm2_5_id")[0].disabled = true;
+                document.getElementsByName("pm10_id")[0].disabled = true;
             }
         });
     </script>

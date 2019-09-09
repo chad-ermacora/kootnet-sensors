@@ -29,8 +29,6 @@ from operations_modules import config_trigger_variances
 from operations_modules import app_generic_functions
 from operations_modules import os_cli_commands
 from operations_modules import app_validation_checks
-from operations_modules.online_services.weather_underground import CreateWeatherUndergroundConfig
-from operations_modules.online_services.luftdaten import CreateLuftdatenConfig
 from http_server import server_http_flask_render_templates
 from http_server import server_http_flask_post_checks as http_post_checks
 from http_server import server_plotly_graph
@@ -43,8 +41,19 @@ text_message_may_take_minutes = "This may take a few minutes ..."
 class CreateRouteFunctions:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
-        self.weather_underground_config = CreateWeatherUndergroundConfig(sensor_access)
-        self.luftdaten_config = CreateLuftdatenConfig(sensor_access)
+
+        app_config_access.open_sense_map_config.open_sense_map_enabled = 1
+        app_config_access.open_sense_map_config.account_email = "chad.ermacora@gmail.com"
+        app_config_access.open_sense_map_config.account_password = "zmB93jFUFcRh"
+        app_config_access.open_sense_map_config.sense_box_id = "5d718b39953683001a2167d7"
+        app_config_access.open_sense_map_config.temperature_id = "5d718b39953683001a2167de"
+        app_config_access.open_sense_map_config.pressure_id = "5d718b39953683001a2167dc"
+        app_config_access.open_sense_map_config.humidity_id = "5d718b39953683001a2167db"
+        app_config_access.open_sense_map_config.lumen_id = "5d718b39953683001a2167dd"
+        app_config_access.open_sense_map_config.pm1_id = "5d718b39953683001a2167d8"
+        app_config_access.open_sense_map_config.pm2_5_id = "5d718b39953683001a2167da"
+        app_config_access.open_sense_map_config.pm10_id = "5d718b39953683001a2167d9"
+
         self.render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
 
     def auth_error(self, request):
@@ -96,19 +105,20 @@ class CreateRouteFunctions:
 
     def html_online_services(self, request):
         logger.network_logger.debug("** Online Services accessed from " + str(request.remote_addr))
-        return self.render_templates.sensor_online_services(self.weather_underground_config, self.luftdaten_config)
+        return self.render_templates.sensor_online_services()
 
     def html_edit_online_services_wu(self, request):
         logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " +
                                     str(request.remote_addr))
         if request.method == "POST":
-            self.weather_underground_config.update_weather_underground_html(request)
+            app_config_access.weather_underground_config.update_weather_underground_html(request)
             if app_config_access.wu_thread_running:
                 main_message = "Weather Underground Updated - Restarting Sensor Software"
                 message2 = "New Weather Underground settings will take effect after the sensor software restarts"
                 app_generic_functions.thread_function(self.sensor_access.restart_services)
             else:
-                app_generic_functions.thread_function(self.weather_underground_config.start_weather_underground)
+                app_generic_functions.thread_function(
+                    app_config_access.weather_underground_config.start_weather_underground)
                 main_message = "Weather Underground Updated"
                 message2 = ""
                 if request.form.get("enable_weather_underground") is not None:
@@ -124,13 +134,13 @@ class CreateRouteFunctions:
     def html_edit_online_services_luftdaten(self, request):
         logger.network_logger.debug("** Edit Online Services Luftdaten accessed from " + str(request.remote_addr))
         if request.method == "POST":
-            self.luftdaten_config.update_luftdaten_html(request)
+            app_config_access.luftdaten_config.update_luftdaten_html(request)
             if app_config_access.luftdaten_thread_running:
                 main_message = "Luftdaten Updated - Restarting Sensor Software"
                 message2 = "New Luftdaten settings will take effect after the sensor software restarts"
                 app_generic_functions.thread_function(self.sensor_access.restart_services)
             else:
-                app_generic_functions.thread_function(self.luftdaten_config.start_luftdaten)
+                app_generic_functions.thread_function(app_config_access.luftdaten_config.start_luftdaten)
                 main_message = "Luftdaten Updated"
                 message2 = ""
                 if request.form.get("enable_weather_underground") is not None:
@@ -414,7 +424,8 @@ class CreateRouteFunctions:
 
     def download_zipped_logs(self, request):
         logger.network_logger.debug("* Download Zip of all Logs Accessed by " + str(request.remote_addr))
-        log_name = "Logs_" + self.sensor_access.get_ip()[-3:].replace(".", "_") + self.sensor_access.get_hostname() + ".zip"
+        log_name = "Logs_" + self.sensor_access.get_ip()[-3:].replace(".",
+                                                                      "_") + self.sensor_access.get_hostname() + ".zip"
         try:
             with ZipFile(file_locations.log_zip_file, "w", ZIP_DEFLATED) as zip_file:
                 zip_file.write(file_locations.primary_log, os.path.basename(file_locations.primary_log))

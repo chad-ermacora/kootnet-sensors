@@ -33,8 +33,8 @@ madavi_url = "https://api-rrd.madavi.de/data.php"
 class CreateLuftdatenConfig:
     """ Creates a Luftdaten Configuration object. """
 
-    def __init__(self, sensor_access):
-        self.sensor_access = sensor_access
+    def __init__(self):
+        self.sensor_access = None
 
         sw_version_text_list = software_version.version.split(".")
         sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
@@ -43,7 +43,6 @@ class CreateLuftdatenConfig:
         self.luftdaten_enabled = 0
         self.interval_seconds = 180
         self.station_id = self._get_cpu_serial()
-        self._update_settings_from_file()
 
     def get_configuration_str(self):
         """ Returns Luftdaten settings ready to be written to the configuration file. """
@@ -62,7 +61,7 @@ class CreateLuftdatenConfig:
             self.interval_seconds = float(html_request.form.get("station_interval"))
         self.write_config_to_file()
 
-    def _update_settings_from_file(self):
+    def update_settings_from_file(self):
         """
         Updates Luftdaten settings based on saved configuration file.  Creates Default file if missing.
         """

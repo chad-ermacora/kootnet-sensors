@@ -165,32 +165,56 @@ class CreateRenderTemplates:
                                OpenSenseMapConfiguration=open_sense_map_config)
 
     @staticmethod
-    def sensor_online_services(weather_underground_config, luftdaten_config):
-        wu_checked = get_html_checkbox_state(weather_underground_config.weather_underground_enabled)
-        wu_rapid_fire_checked = get_html_checkbox_state(weather_underground_config.wu_rapid_fire_enabled)
+    def sensor_online_services():
+        wu_checked = get_html_checkbox_state(app_config_access.weather_underground_config.weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(
+            app_config_access.weather_underground_config.wu_rapid_fire_enabled)
         wu_rapid_fire_disabled = "disabled"
         wu_interval_seconds_disabled = "disabled"
         wu_outdoor_disabled = "disabled"
         wu_station_id_disabled = "disabled"
         wu_station_key_disabled = "disabled"
-        if weather_underground_config.weather_underground_enabled:
+        if app_config_access.weather_underground_config.weather_underground_enabled:
             wu_rapid_fire_disabled = ""
             wu_interval_seconds_disabled = ""
             wu_outdoor_disabled = ""
             wu_station_id_disabled = ""
             wu_station_key_disabled = ""
 
-        wu_interval_seconds = weather_underground_config.interval_seconds
-        wu_outdoor = get_html_checkbox_state(weather_underground_config.outdoor_sensor)
-        wu_station_id = weather_underground_config.station_id
+        wu_interval_seconds = app_config_access.weather_underground_config.interval_seconds
+        wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
+        wu_station_id = app_config_access.weather_underground_config.station_id
 
-        luftdaten_checked = get_html_checkbox_state(luftdaten_config.luftdaten_enabled)
+        luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
         luftdaten_interval_seconds_disabled = "disabled"
-        if luftdaten_config.luftdaten_enabled:
+        if app_config_access.luftdaten_config.luftdaten_enabled:
             luftdaten_interval_seconds_disabled = ""
 
-        luftdaten_interval_seconds = luftdaten_config.interval_seconds
-        luftdaten_station_id = luftdaten_config.station_id
+        luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
+        luftdaten_station_id = app_config_access.luftdaten_config.station_id
+
+        osm_disabled = "disabled"
+        osm_enable_checked = ""
+        if app_config_access.open_sense_map_config.open_sense_map_enabled:
+            osm_enable_checked = "checked"
+            osm_disabled = ""
+
+        osm_outdoor_sensor = ""
+        osm_indoor_sensor = ""
+        osm_mobile_sensor = ""
+        osm_unknown_sensor = ""
+        if app_config_access.open_sense_map_config.sensor_location_type == "outdoor":
+            osm_outdoor_sensor = "checked"
+        elif app_config_access.open_sense_map_config.sensor_location_type == "indoor":
+            osm_indoor_sensor = "checked"
+        elif app_config_access.open_sense_map_config.sensor_location_type == "mobile":
+            osm_mobile_sensor = "checked"
+        elif app_config_access.open_sense_map_config.sensor_location_type == "unknown":
+            osm_unknown_sensor = "checked"
+
+        manual_sensor_editing = ""
+        if app_config_access.open_sense_map_config.manual_sensor_ids_enabled:
+            manual_sensor_editing = "checked"
 
         return render_template("sensor_online_services.html",
                                CheckedWUEnabled=wu_checked,
@@ -206,7 +230,22 @@ class CreateRenderTemplates:
                                CheckedLuftdatenEnabled=luftdaten_checked,
                                LuftdatenIntervalSeconds=luftdaten_interval_seconds,
                                DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
-                               LuftdatenStationID=luftdaten_station_id)
+                               LuftdatenStationID=luftdaten_station_id,
+                               CheckedOSMEnabled=osm_enable_checked,
+                               OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
+                               OSMDisabled=osm_disabled,
+                               OSMIntervalSeconds=app_config_access.open_sense_map_config.interval_seconds,
+                               OutdoorChecked=osm_outdoor_sensor,
+                               IndoorChecked=osm_indoor_sensor,
+                               MobileChecked=osm_mobile_sensor,
+                               UnKnownChecked=osm_unknown_sensor,
+                               CheckedOSMManualSensorIDs=manual_sensor_editing,
+                               OSMSEnvTempID=app_config_access.open_sense_map_config.temperature_id,
+                               OSMPressureID=app_config_access.open_sense_map_config.pressure_id,
+                               OSMAltitudeID=app_config_access.open_sense_map_config.altitude_id,
+                               OSMHumidityID=app_config_access.open_sense_map_config.humidity_id,
+                               OSMOxidisingID=app_config_access.open_sense_map_config.gas_oxidised_id,
+                               ChangeMe="")
 
     @staticmethod
     def logout():
