@@ -146,66 +146,180 @@
     </div>
 
     <div class="mui-tabs__pane" id="open-sense-map-tab">
-        <div class="mui-container-fluid">
+        <br>
+        <ul class="mui-tabs__bar">
+            <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                                          data-mui-controls="osm-settings-tab">
+                Settings
+            </a></li>
+            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="osm-register-tab">
+                Registration
+            </a></li>
+        </ul>
+        <br>
+        <div class="mui-tabs__pane mui--is-active" id="osm-settings-tab">
             <br>
-            <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                  action="/EditOnlineServicesOSM">
-                <fieldset style="text-align: center">
-                    <h3><u><strong><a style="color: black" href="https://opensensemap.org" target="_blank">
-                        Open Sense Map
-                    </a></strong></u></h3>
+            <div class="mui-container-fluid">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/EditOnlineServicesOSM">
+                    <fieldset style="text-align: center">
+                        <h3><u><strong><a style="color: black" href="https://opensensemap.org" target="_blank">
+                            Open Sense Map
+                        </a></strong></u></h3>
 
-                    <h5><b>This will upload all compatible sensor readings to Open Sense Map</b></h5>
+                        <h5><b>This will upload all compatible sensor readings to Open Sense Map</b></h5>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
-                            <input type="checkbox" id="wu_enabled" name="enable_weather_underground"
-                                   value="" {{ CheckedWUEnabled }} disabled>
-                            Enable Open Sense Map
-                        </label>
-                    </div>
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" id="wu_enabled" name="enable_open_sense_map"
+                                       value="" {{ CheckedOSMEnabled }}>
+                                Enable Open Sense Map
+                            </label>
+                        </div>
 
-                    <br>
+                        <br>
 
-                    <div class="mui-textfield">
-                        <label style="color: black">
-                            Seconds between Updates
-                            <br>
-                            <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
-                                   value="{{ WUIntervalSeconds }}" {{ DisabledWUInterval }}>
-                        </label>
-                    </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                SenseBox ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="station_id"
+                                       value="{{ OSMStationID }}" {{ DisabledOSMStationID }}>
+                            </label>
+                        </div>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
-                            <input type="checkbox" name="weather_underground_outdoor"
-                                   value="" {{ CheckedWUOutdoor }} {{ DisabledWUOutdoor }}>
-                            Outdoor Sensor
-                        </label>
-                    </div>
+                        <br>
 
-                    <div class="mui-textfield">
-                        <label style="color: black">
-                            Station ID
-                            <br>
-                            <input style="width: 125px" type="text" maxlength="15" name="station_id"
-                                   value="{{ WUStationID }}" {{ DisabledStationID }}>
-                        </label>
-                    </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Seconds between Updates
+                                <br>
+                                <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
+                                       value="{{ OSMIntervalSeconds }}" {{ DisabledOSMInterval }}>
+                            </label>
+                        </div>
 
-                    <div class="mui-textfield">
-                        <label style="color: black">
-                            Station Key
-                            <br>
-                            <input style="width: 175px" type="password" maxlength="15" name="station_key"
-                                   placeholder="Leave blank to use previous Key"
-                                   value="{{ WUStationKey }}" {{ DisabledStationKey }}>
-                        </label>
-                    </div>
-                    <br>
-                    <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-                </fieldset>
-            </form>
+                        <label>Location Type</label>
+                        <div class="mui-radio" {{ DisabledLocationType }}>
+                            <label>
+                                <input type="radio" name="location_type" value="outdoor" {{ OutdoorChecked }}>
+                                Outdoors
+                            </label>
+                            <label>
+                                <input type="radio" name="location_type" value="indoor" {{ IndoorChecked }}>
+                                Indoors
+                            </label>
+                            <label>
+                                <input type="radio" name="location_type" value="mobile" {{ MobileChecked }}>
+                                Mobile
+                            </label>
+                            <label>
+                                <input type="radio" name="location_type" value="unknown" {{ UnKnownChecked }}>
+                                Other
+                            </label>
+                        </div>
+
+                        <div class="mui-checkbox" style="display: inline-block;">
+                            <label>
+                                <input type="checkbox" id="osm_manual_sensor_ids" name="enable_manual_sensor_ids"
+                                       value="" {{ CheckedOSMManualSensorIDs }}>
+                                Manually Set Sensor IDs
+                            </label>
+                        </div>
+
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Temperature Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="env_temp_id"
+                                       value="{{ OSMSEnvTempID }}" {{ DisabledOSMSEnvTempID }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Pressure Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="pressure_id"
+                                       value="{{ OSMPressureID }}" {{ DisabledOSMPressureID }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Altitude Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="altitude_id"
+                                       value="{{ OSMAltitudeID }}" {{ DisabledOSMAltitudeID }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Humidity Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="humidity_id"
+                                       value="{{ OSMHumidityID }}" {{ DisabledOSMHumidityID }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Oxidising Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="oxidising_id"
+                                       value="{{ OSMOxidisingID }}" {{ DisabledOSMOxidisingID }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                Reducing Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="reducing_id"
+                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                NH3 Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="nh3_id"
+                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM1.0 Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="pm1_id"
+                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM2.5 Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="pm2_5_id"
+                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                            </label>
+                        </div>
+                        <div class="mui-textfield">
+                            <label style="color: black">
+                                PM10 Sensor ID
+                                <br>
+                                <input style="width: 200px" type="text" maxlength="64" name="pm10_id"
+                                       value="{{ ReplaceMe }}" {{ ReplaceMe }}>
+                            </label>
+                        </div>
+
+
+                        <br>
+                        <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="mui-tabs__pane" id="osm-register-tab">
+            <div class="mui-container-fluid">
+
+            </div>
         </div>
     </div>
 

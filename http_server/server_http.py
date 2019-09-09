@@ -66,6 +66,9 @@ class CreateSensorHTTP:
         if route_functions.luftdaten_config.luftdaten_enabled:
             app_generic_functions.thread_function(route_functions.luftdaten_config.start_luftdaten)
 
+        if route_functions.open_sense_map_config.open_sense_map_enabled:
+            app_generic_functions.thread_function(route_functions.open_sense_map_config.start_open_sense_map)
+
         app_generic_functions.update_cached_variables(sensor_access)
         app_generic_functions.thread_function(_delayed_cache_update, args=sensor_access)
 

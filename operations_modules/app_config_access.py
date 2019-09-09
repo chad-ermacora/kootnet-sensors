@@ -25,18 +25,17 @@ from operations_modules import software_version
 from operations_modules import config_trigger_variances
 
 # Creates and loads primary configurations and variables used throughout the program.
+sensor_control_config = config_sensor_control.CreateSensorControlConfig()
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensors()
     current_config = config_primary.CreateConfig()
     trigger_variances = config_trigger_variances.CreateTriggerVariances()
-    sensor_control_config = config_sensor_control.CreateSensorControlConfig()
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = config_installed_sensors.get_installed_sensors_from_file()
     current_config = config_primary.get_config_from_file()
     trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
-    sensor_control_config = config_sensor_control.CreateSensorControlConfig()
     sensor_control_config.set_from_disk()
 
 database_variables = sqlite_database.CreateDatabaseVariables()
