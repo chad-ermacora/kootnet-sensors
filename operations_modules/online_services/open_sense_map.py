@@ -664,6 +664,6 @@ class CreateOpenSenseMapConfig:
             except Exception as error:
                 logger.network_logger.warning("Open Sense Map: Token get Failed - " + str(error))
         elif response.status_code == 403:
-            logger.network_logger.warning("Open Sense Map: Login failed")
+            logger.network_logger.warning("Open Sense Map - Get Token: Login Failed")
         else:
-            logger.network_logger.warning("Open Sense Map: Login went wrong somehow... ")
+            logger.network_logger.warning("Open Sense Map - Get Token: Login went wrong somehow... ")
