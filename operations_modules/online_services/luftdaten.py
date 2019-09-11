@@ -95,7 +95,7 @@ class CreateLuftdatenConfig:
         """ Sends compatible sensor readings to Luftdaten every X seconds based on set Interval. """
         if not app_config_access.luftdaten_thread_running:
             app_config_access.luftdaten_thread_running = True
-            # Sleep 7.4 seconds before starting
+            # Sleep 6.5 seconds before starting
             # So it doesn't try to access the sensors at the same time as the recording services on boot
             sleep(6.5)
             while True:

@@ -199,23 +199,6 @@ class CreateRenderTemplates:
             osm_enable_checked = "checked"
             osm_disabled = ""
 
-        osm_outdoor_sensor = ""
-        osm_indoor_sensor = ""
-        osm_mobile_sensor = ""
-        osm_unknown_sensor = ""
-        if app_config_access.open_sense_map_config.sensor_location_type == "outdoor":
-            osm_outdoor_sensor = "checked"
-        elif app_config_access.open_sense_map_config.sensor_location_type == "indoor":
-            osm_indoor_sensor = "checked"
-        elif app_config_access.open_sense_map_config.sensor_location_type == "mobile":
-            osm_mobile_sensor = "checked"
-        elif app_config_access.open_sense_map_config.sensor_location_type == "unknown":
-            osm_unknown_sensor = "checked"
-
-        manual_sensor_editing = ""
-        if app_config_access.open_sense_map_config.manual_sensor_ids_enabled:
-            manual_sensor_editing = "checked"
-
         return render_template("sensor_online_services.html",
                                CheckedWUEnabled=wu_checked,
                                CheckedWURapidFire=wu_rapid_fire_checked,
@@ -232,20 +215,30 @@ class CreateRenderTemplates:
                                DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
                                LuftdatenStationID=luftdaten_station_id,
                                CheckedOSMEnabled=osm_enable_checked,
-                               OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
                                OSMDisabled=osm_disabled,
+                               OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
                                OSMIntervalSeconds=app_config_access.open_sense_map_config.interval_seconds,
-                               OutdoorChecked=osm_outdoor_sensor,
-                               IndoorChecked=osm_indoor_sensor,
-                               MobileChecked=osm_mobile_sensor,
-                               UnKnownChecked=osm_unknown_sensor,
-                               CheckedOSMManualSensorIDs=manual_sensor_editing,
                                OSMSEnvTempID=app_config_access.open_sense_map_config.temperature_id,
                                OSMPressureID=app_config_access.open_sense_map_config.pressure_id,
                                OSMAltitudeID=app_config_access.open_sense_map_config.altitude_id,
                                OSMHumidityID=app_config_access.open_sense_map_config.humidity_id,
+                               OSMGasIndexID=app_config_access.open_sense_map_config.gas_voc_id,
+                               OSMGasNH3ID=app_config_access.open_sense_map_config.gas_nh3_id,
                                OSMOxidisingID=app_config_access.open_sense_map_config.gas_oxidised_id,
-                               ChangeMe="")
+                               OSMGasReducingID=app_config_access.open_sense_map_config.gas_reduced_id,
+                               OSMPM1ID=app_config_access.open_sense_map_config.pm1_id,
+                               OSMPM25ID=app_config_access.open_sense_map_config.pm2_5_id,
+                               OSMPM10ID=app_config_access.open_sense_map_config.pm10_id,
+                               OSMLumenID=app_config_access.open_sense_map_config.lumen_id,
+                               OSMRedID=app_config_access.open_sense_map_config.red_id,
+                               OSMOrangeID=app_config_access.open_sense_map_config.orange_id,
+                               OSMYellowID=app_config_access.open_sense_map_config.yellow_id,
+                               OSMGreenID=app_config_access.open_sense_map_config.green_id,
+                               OSMBlueID=app_config_access.open_sense_map_config.blue_id,
+                               OSMVioletID=app_config_access.open_sense_map_config.violet_id,
+                               OSMUVIndexID=app_config_access.open_sense_map_config.ultra_violet_index_id,
+                               OSMUVAID=app_config_access.open_sense_map_config.ultra_violet_a_id,
+                               OSMUVBID=app_config_access.open_sense_map_config.ultra_violet_b_id)
 
     @staticmethod
     def logout():

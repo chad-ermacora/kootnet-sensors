@@ -109,7 +109,7 @@ def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStat
         tmp_return_data = requests.get(url=url, timeout=2, auth=(http_username, http_password), verify=False)
         return tmp_return_data.text
     except Exception as error:
-        logger.network_logger.warning("Error getting remote sensor data - Enable Debug logging for more Info")
+        logger.network_logger.info("Remote Sensor Data Request - HTTPS GET Error for " + http_ip)
         logger.network_logger.debug(str(error))
         return "Error"
 

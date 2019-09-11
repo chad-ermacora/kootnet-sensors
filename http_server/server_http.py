@@ -177,6 +177,16 @@ class CreateSensorHTTP:
         def html_edit_online_services_luftdaten():
             return route_functions.html_edit_online_services_luftdaten(request)
 
+        @self.app.route("/EditOnlineServicesOSM", methods=["POST"])
+        @self.auth.login_required
+        def html_edit_online_services_open_sense_map():
+            return route_functions.html_edit_online_services_open_sense_map(request)
+
+        @self.app.route("/OnlineServicesRegisterSensorOSM", methods=["POST"])
+        @self.auth.login_required
+        def html_online_services_register_sensor_osm():
+            return route_functions.html_online_services_register_sensor_osm(request)
+
         @self.app.route("/Quick")
         @self.app.route("/SystemCommands")
         def html_system_management():

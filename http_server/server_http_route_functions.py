@@ -41,19 +41,6 @@ text_message_may_take_minutes = "This may take a few minutes ..."
 class CreateRouteFunctions:
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
-
-        app_config_access.open_sense_map_config.open_sense_map_enabled = 1
-        app_config_access.open_sense_map_config.account_email = "chad.ermacora@gmail.com"
-        app_config_access.open_sense_map_config.account_password = "zmB93jFUFcRh"
-        app_config_access.open_sense_map_config.sense_box_id = "5d718b39953683001a2167d7"
-        app_config_access.open_sense_map_config.temperature_id = "5d718b39953683001a2167de"
-        app_config_access.open_sense_map_config.pressure_id = "5d718b39953683001a2167dc"
-        app_config_access.open_sense_map_config.humidity_id = "5d718b39953683001a2167db"
-        app_config_access.open_sense_map_config.lumen_id = "5d718b39953683001a2167dd"
-        app_config_access.open_sense_map_config.pm1_id = "5d718b39953683001a2167d8"
-        app_config_access.open_sense_map_config.pm2_5_id = "5d718b39953683001a2167da"
-        app_config_access.open_sense_map_config.pm10_id = "5d718b39953683001a2167d9"
-
         self.render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
 
     def auth_error(self, request):
@@ -143,13 +130,57 @@ class CreateRouteFunctions:
                 app_generic_functions.thread_function(app_config_access.luftdaten_config.start_luftdaten)
                 main_message = "Luftdaten Updated"
                 message2 = ""
-                if request.form.get("enable_weather_underground") is not None:
+                if request.form.get("enable_luftdaten") is not None:
                     main_message += " - Luftdaten Started"
             return self.render_templates.message_and_return(main_message,
                                                             text_message2=message2,
                                                             url="/OnlineServices")
         else:
             logger.primary_logger.error("HTML Edit Luftdaten set Error")
+            return self.render_templates.message_and_return("Bad Configuration POST Request",
+                                                            url="/OnlineServices")
+
+    def html_edit_online_services_open_sense_map(self, request):
+        logger.network_logger.debug("** Edit Online Services Open Sense Map accessed from " + str(request.remote_addr))
+        if request.method == "POST":
+            app_config_access.open_sense_map_config.update_open_sense_map_html(request)
+            if app_config_access.open_sense_map_thread_running:
+                main_message = "Open Sense Map Updated - Restarting Sensor Software"
+                message2 = "New Open Sense Map settings will take effect after the sensor software restarts"
+                app_generic_functions.thread_function(self.sensor_access.restart_services)
+            else:
+                app_generic_functions.thread_function(app_config_access.open_sense_map_config.start_open_sense_map)
+                main_message = "Open Sense Map Updated"
+                message2 = ""
+                if request.form.get("enable_open_sense_map") is not None:
+                    main_message += " - Open Sense Map Started"
+            return self.render_templates.message_and_return(main_message,
+                                                            text_message2=message2,
+                                                            url="/OnlineServices")
+        else:
+            logger.primary_logger.error("HTML Edit Open Sense Map set Error")
+            return self.render_templates.message_and_return("Bad Configuration POST Request",
+                                                            url="/OnlineServices")
+
+    def html_online_services_register_sensor_osm(self, request):
+        logger.network_logger.debug("** Register Sensor with Open Sense Map accessed from " + str(request.remote_addr))
+        if request.method == "POST":
+            status = app_config_access.open_sense_map_config.add_sensor_to_account(request)
+            message1 = "OSM Sensor Registration Failed"
+            if status == 201:
+                message1 = "Sensor Registered OK"
+                message2 = "Sensor Registered to Open Sense Map."
+            elif status == 415:
+                message2 = "Invalid or Missing content type"
+            elif status == "FailedLogin":
+                message2 = "Login Failed - Bad UserName or Password"
+            else:
+                message2 = "Unknown Error: " + status
+            return self.render_templates.message_and_return(message1,
+                                                            text_message2=message2,
+                                                            url="/OnlineServices")
+        else:
+            logger.primary_logger.error("HTML Register Sensor with Open Sense Map Error")
             return self.render_templates.message_and_return("Bad Configuration POST Request",
                                                             url="/OnlineServices")
 
