@@ -172,6 +172,8 @@ class CreateRouteFunctions:
                 message2 = "Sensor Registered to Open Sense Map."
             elif status == 415:
                 message2 = "Invalid or Missing content type"
+            elif status == 422:
+                message2 = "Invalid Location Setting"
             elif status == "FailedLogin":
                 message2 = "Login Failed - Bad UserName or Password"
             else:

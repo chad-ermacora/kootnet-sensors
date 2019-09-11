@@ -366,6 +366,7 @@ class CreateOpenSenseMapConfig:
 
     def add_sensor_to_account(self, html_request):
         url = open_sense_map_main_url_start
+        bad_location_message = "Open Sense Map: Sensor Registration - Invalid Location Setting"
         try:
             username = html_request.form.get("osm_account_username").strip()
             password = html_request.form.get("osm_account_password").strip()
@@ -392,6 +393,9 @@ class CreateOpenSenseMapConfig:
                 elif html_get_response.status_code == 415:
                     logger.network_logger.error("Open Sense Map: - Invalid or Missing content type")
                     return 415
+                elif html_get_response.status_code == 422:
+                    logger.network_logger.error(bad_location_message)
+                    return 422
                 else:
                     logger.network_logger.error("Open Sense Map Sensor Registration Error: " +
                                                 str(html_get_response.status_code) + " - " +
@@ -400,6 +404,12 @@ class CreateOpenSenseMapConfig:
             else:
                 logger.network_logger.error("Error Adding Sensor to Open Sense Map Account: Login Failed")
                 return "FailedLogin"
+        except IndexError:
+            logger.network_logger.error(bad_location_message)
+            return 422
+        except ValueError:
+            logger.network_logger.error(bad_location_message)
+            return 422
         except Exception as error:
             logger.network_logger.error("Error Adding Sensor to Open Sense Map Account: " + str(error))
             return str(error)
@@ -660,10 +670,11 @@ class CreateOpenSenseMapConfig:
                                  json={"email": account_email, "password": account_password})
         if response.status_code == 200:
             try:
+                logger.network_logger.debug("Open Sense Map - Get Token: OK")
                 return response.json()["token"]
             except Exception as error:
-                logger.network_logger.warning("Open Sense Map: Token get Failed - " + str(error))
+                logger.network_logger.warning("Open Sense Map - Get Token: Failed - " + str(error))
         elif response.status_code == 403:
-            logger.network_logger.warning("Open Sense Map - Get Token: Login Failed")
+            logger.network_logger.debug("Open Sense Map - Get Token: Login Failed")
         else:
-            logger.network_logger.warning("Open Sense Map - Get Token: Login went wrong somehow... ")
+            logger.network_logger.warning("Open Sense Map - Get Token: Login went wrong somehow...")
