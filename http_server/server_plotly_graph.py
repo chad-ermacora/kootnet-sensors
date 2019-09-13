@@ -18,12 +18,17 @@
 """
 import sqlite3
 from multiprocessing import Process
-from plotly import subplots, offline, io as plotly_io
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_config_access
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
+try:
+    from plotly import subplots, offline, io as plotly_io
+except ImportError as import_error:
+    logger.primary_logger.error("**** Missing Plotly Graph Dependencies - " +
+                                "There may be unintended side effects as a result: " +
+                                str(import_error))
 
 plotly_io.templates.default = app_config_access.plotly_theme
 

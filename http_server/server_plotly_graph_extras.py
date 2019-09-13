@@ -17,9 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-from plotly import graph_objs as go
 from operations_modules import logger
 from http_server import server_plotly_graph_variables
+try:
+    from plotly import graph_objs as go
+except ImportError as import_error:
+    logger.primary_logger.debug("Graph Extra, bad Plotly Import")
 
 
 def adjust_datetime(var_datetime, datetime_offset):
