@@ -327,8 +327,8 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
                                       "Should be 18 but seeing " + str(len(installed_sensor_lines)) + ": " +
                                       "Disabling bad entries. Please review the Installed Sensors Configuration file.")
         write_installed_sensors_to_file(new_installed_sensors)
-
-    new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
+    if new_installed_sensors.raspberry_pi:
+        new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
     return new_installed_sensors
 
 

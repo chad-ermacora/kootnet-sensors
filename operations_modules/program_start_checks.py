@@ -154,11 +154,6 @@ def run_upgrade_checks():
         logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                    software_version.old_version + " New: " + software_version.version)
     software_version.write_program_version_to_file()
-    restart_services()
-
-
-def restart_services():
-    """ Reloads systemd service files & restarts all sensor program services. """
     os.system(os_cli_commands.restart_sensor_services_command)
 
 
