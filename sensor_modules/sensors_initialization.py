@@ -53,7 +53,7 @@ if software_version.old_version == software_version.version:
         pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
     if app_config_access.installed_sensors.pimoroni_bme680:
         if app_config_access.installed_sensors.pimoroni_bmp280:
-            logger.primary_logger.warning("Pimoroni BME680 cannot be installed if the BMP280 is installed. " +
+            logger.sensors_logger.warning("Pimoroni BME680 cannot be installed if the BMP280 is installed. " +
                                           "Skipping BME680 & BMP280 - Please Remove the BMP280 OR the BME680 " +
                                           "physically and from the Installed Sensors configuration")
             app_config_access.installed_sensors.pimoroni_bme680 = 0

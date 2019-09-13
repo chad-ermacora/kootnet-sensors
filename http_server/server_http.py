@@ -16,9 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules import logger
 from time import sleep
-
+from operations_modules import logger
+from operations_modules import file_locations
+from operations_modules import app_generic_functions
+from operations_modules import app_config_access
+from http_server import server_http_route_functions
+from http_server import server_http_auth
 try:
     # noinspection PyUnresolvedReferences
     from flask import Flask, request, send_file
@@ -31,20 +35,10 @@ try:
     # noinspection PyUnresolvedReferences
     from gevent import pywsgi
     # noinspection PyUnresolvedReferences
-    from operations_modules import file_locations
-    # noinspection PyUnresolvedReferences
-    from operations_modules import app_generic_functions
-    # noinspection PyUnresolvedReferences
-    from operations_modules import app_config_access
-    # noinspection PyUnresolvedReferences
-    from http_server import server_http_route_functions
-    # noinspection PyUnresolvedReferences
-    from http_server import server_http_auth
     import_errors = False
 except ImportError as import_error:
-    logger.primary_logger.critical("**** Missing Dependencies: " + str(import_error))
+    logger.primary_logger.critical("**** Missing Required HTTPS Dependencies: " + str(import_error))
     import_errors = True
-
 
 flask_http_ip = ""
 flask_http_port = 10065
@@ -53,7 +47,7 @@ flask_http_port = 10065
 class CreateSensorHTTP:
     def __init__(self, sensor_access):
         if import_errors:
-            logger.network_logger.critical("**** Unable to load HTTP Server, missing Python Modules")
+            logger.network_logger.critical("**** Unable to load HTTPS Server, missing Python Modules")
             while True:
                 sleep(600)
         self.app = Flask(__name__)

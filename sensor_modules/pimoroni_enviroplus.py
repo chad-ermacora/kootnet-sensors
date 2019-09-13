@@ -19,14 +19,19 @@ Created on Tue June 25 10:53:56 2019
 import os
 import time
 from threading import Thread
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-from smbus2 import SMBus
 from operations_modules import logger
 from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+try:
+    from PIL import Image
+    from PIL import ImageDraw
+    from PIL import ImageFont
+    from smbus2 import SMBus
+except ImportError as import_error:
+    logger.primary_logger.error("**** Missing EnviroPlus Dependencies - " +
+                                "There may be unintended side effects as a result: " +
+                                str(import_error))
 
 round_decimal_to = 5
 turn_off_display_seconds = 25
@@ -91,6 +96,7 @@ class CreateEnviroPlus:
                 self.thread_pm_keep_alive.start()
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni Enviro+ PMS5003 Initialization Failed - " + str(error))
+                app_config_access.installed_sensors.pimoroni_pms5003 = 0
 
     def _display_timed_off(self):
         while True:
