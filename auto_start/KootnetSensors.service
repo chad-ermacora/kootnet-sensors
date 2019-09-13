@@ -9,7 +9,7 @@ Restart=always
 WorkingDirectory=/opt/kootnet-sensors
 RestartSec=5
 User=root
-Group=pi
+Group=root
 ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/start_sensor_services.py
 
 [Install]

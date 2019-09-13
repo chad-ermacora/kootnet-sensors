@@ -37,10 +37,11 @@ from sensor_modules import pimoroni_11x7_led_matrix
 from sensor_modules import pimoroni_0_96_spi_colour_lcd
 from sensor_modules import pimoroni_1_12_mono_oled
 
+
 if software_version.old_version == software_version.version:
     logger.primary_logger.info(" -- Initializing Sensors ...")
     # Initialize sensor access, based on installed sensors file
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         os_sensor_access = linux_os.CreateLinuxSystem()
     if app_config_access.installed_sensors.raspberry_pi:
         system_sensor_access = raspberry_pi_system.CreateRPSystem()

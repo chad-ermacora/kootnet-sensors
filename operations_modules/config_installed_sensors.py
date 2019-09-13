@@ -74,8 +74,8 @@ class CreateInstalledSensors:
         self.has_mag = 0
         self.has_gyro = 0
 
-        self.linux_system_name = "Gnu/Linux - Raspbian"
-        self.raspberry_pi_name = self._get_raspberry_pi_name_from_model()
+        self.linux_system_name = "Gnu/Linux"
+        self.raspberry_pi_name = ""
 
         self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
@@ -177,22 +177,22 @@ class CreateInstalledSensors:
 
         return new_installed_sensors_str
 
-    @staticmethod
-    def _get_raspberry_pi_name_from_model():
-        try:
-            pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
-            logger.primary_logger.debug("Pi Version: " + str(pi_version))
-            if str(pi_version)[:17] == "Raspberry Pi Zero":
-                return "Raspberry Pi Zero"
-            elif str(pi_version)[:27] == "Raspberry Pi 3 Model B Plus":
-                return "Raspberry Pi 3 Model B Plus"
-            elif str(pi_version)[:22] == "Raspberry Pi 4 Model B":
-                return "Raspberry Pi 4 Model B"
-            else:
+    def get_raspberry_pi_model(self):
+        if self.raspberry_pi:
+            try:
+                pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
+                logger.primary_logger.debug("Pi Version: " + str(pi_version))
+                if str(pi_version)[:17] == "Raspberry Pi Zero":
+                    return "Raspberry Pi Zero"
+                elif str(pi_version)[:27] == "Raspberry Pi 3 Model B Plus":
+                    return "Raspberry Pi 3 Model B Plus"
+                elif str(pi_version)[:22] == "Raspberry Pi 4 Model B":
+                    return "Raspberry Pi 4 Model B"
+                else:
+                    return "Raspberry Pi"
+            except Exception as error:
+                logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
                 return "Raspberry Pi"
-        except Exception as error:
-            logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
-            return "Raspberry Pi"
 
 
 def get_installed_sensors_from_file():
@@ -328,6 +328,7 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
                                       "Disabling bad entries. Please review the Installed Sensors Configuration file.")
         write_installed_sensors_to_file(new_installed_sensors)
 
+    new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
     return new_installed_sensors
 
 

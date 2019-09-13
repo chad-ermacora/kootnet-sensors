@@ -5,7 +5,7 @@ Description=KootNet Sensors - Clean Upgrade Process Online
 Type=simple
 Restart=no
 User=root
-Group=pi
+Group=root
 ExecStart=/bin/bash /home/kootnet_data/scripts/clean_upgrade_http.sh
 
 [Install]

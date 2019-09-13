@@ -262,7 +262,7 @@ def _list_to_csv_string_quoted(list_to_add):
 
 def get_operating_system_name():
     """ Returns sensors Operating System Name and version. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_os_name_version()
     else:
         return no_sensor_present
@@ -270,7 +270,7 @@ def get_operating_system_name():
 
 def get_hostname():
     """ Returns sensors hostname. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_hostname()
     else:
         return no_sensor_present
@@ -278,7 +278,7 @@ def get_hostname():
 
 def get_ip():
     """ Returns sensor IP Address as a String. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_ip()
     else:
         return no_sensor_present
@@ -308,7 +308,7 @@ def get_memory_usage_percent():
 
 def get_system_datetime():
     """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_sys_datetime_str()
     else:
         return no_sensor_present
@@ -316,7 +316,7 @@ def get_system_datetime():
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_uptime()
     else:
         return no_sensor_present
@@ -324,7 +324,7 @@ def get_uptime_minutes():
 
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         var_minutes = sensor_direct_access.os_sensor_access.get_uptime()
         str_day_hour_min = ""
 
@@ -356,7 +356,7 @@ def get_uptime_str():
 
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         reboot_count = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
         return reboot_count
     else:
@@ -365,7 +365,7 @@ def get_system_reboot_count():
 
 def get_db_size():
     """ Returns SQL Database size in MB. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_sql_db_size()
     else:
         return no_sensor_present
@@ -373,7 +373,7 @@ def get_db_size():
 
 def get_db_notes_count():
     """ Returns Number of Notes in the SQL Database. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_db_notes_count()
     else:
         return no_sensor_present
@@ -381,7 +381,7 @@ def get_db_notes_count():
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    if app_config_access.installed_sensors.linux_system:
+    if app_config_access.current_platform == "Linux":
         return sensor_direct_access.os_sensor_access.get_db_first_last_date()
     else:
         return no_sensor_present

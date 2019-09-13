@@ -5,7 +5,7 @@ Description=KootNet Sensors - Upgrade Checks
 Type=simple
 Restart=no
 User=root
-Group=pi
+Group=root
 ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/run_upgrade_checks.py
 
 [Install]

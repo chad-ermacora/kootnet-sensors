@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from platform import system
 from operations_modules import logger
 from operations_modules import config_sensor_control
 from operations_modules import config_primary
@@ -47,6 +48,7 @@ else:
     luftdaten_config.update_settings_from_file()
     open_sense_map_config.update_settings_from_file()
 
+current_platform = system()
 database_variables = sqlite_database.CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"
 linux_os_upgrade_ready = True

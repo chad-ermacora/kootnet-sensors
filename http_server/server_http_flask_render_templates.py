@@ -390,21 +390,21 @@ class CreateRenderTemplates:
             gateway_disabled = ""
             dns1_disabled = ""
             dns2_disabled = ""
-            dhcpcd_lines = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file).split("\n")
-            if network_ip.check_for_dhcp(dhcpcd_lines):
-                dhcp_checkbox = "checked"
-                ip_disabled = "disabled"
-                subnet_disabled = "disabled"
-                gateway_disabled = "disabled"
-                dns1_disabled = "disabled"
-                dns2_disabled = "disabled"
-
-            if app_cached_variables.wifi_security_type is None or app_cached_variables.wifi_security_type == "WPA-PSK":
-                wifi_security_type_wpa1 = "checked"
-                wifi_security_type_none1 = ""
-            else:
-                wifi_security_type_wpa1 = ""
-                wifi_security_type_none1 = "checked"
+            wifi_security_type_none1 = ""
+            wifi_security_type_wpa1 = ""
+            if app_config_access.installed_sensors.raspberry_pi:
+                dhcpcd_lines = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file).split("\n")
+                if network_ip.check_for_dhcp(dhcpcd_lines):
+                    dhcp_checkbox = "checked"
+                    ip_disabled = "disabled"
+                    subnet_disabled = "disabled"
+                    gateway_disabled = "disabled"
+                    dns1_disabled = "disabled"
+                    dns2_disabled = "disabled"
+                if app_cached_variables.wifi_security_type is None or app_cached_variables.wifi_security_type == "WPA-PSK":
+                    wifi_security_type_wpa1 = "checked"
+                else:
+                    wifi_security_type_none1 = "checked"
 
             return render_template("edit_configurations.html",
                                    PageURL="/ConfigurationsHTML",
