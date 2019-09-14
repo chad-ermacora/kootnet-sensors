@@ -153,8 +153,9 @@ class CreateRenderTemplates:
             sensor_reports.append(app_cached_variables.data_queue.get())
             app_cached_variables.data_queue.task_done()
 
+        sensor_reports.sort()
         for report in sensor_reports:
-            new_report += str(report)
+            new_report += str(report[1])
 
         new_report += server_http_sensor_control.html_sensor_entry_end
         return new_report

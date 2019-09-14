@@ -79,8 +79,7 @@ class CreateNetworkGetCommands:
 
     @staticmethod
     def get_command_and_replacement_text_list():
-        report_variables = [["GetHostName", "{{ SensorName }}"],
-                            ["GetOSVersion", "{{ OSVersion }}"],
+        report_variables = [["GetOSVersion", "{{ OSVersion }}"],
                             ["GetSensorVersion", "{{ ProgramVersion }}"],
                             ["GetProgramLastUpdated", "{{ LastUpdated }}"],
                             ["GetSystemDateTime", "{{ SensorDateTime }}"],
@@ -109,10 +108,12 @@ def get_online_system_report(ip_address):
         sensor_check = get_http_sensor_reading(ip_address)
         task_end_time = str(round(time.time() - task_start_time, 3))
         if sensor_check == "OK":
+            sensor_name = get_http_sensor_reading(ip_address, command="GetHostName")
+            sensor_report = sensor_report.replace("{{ SensorName }}", sensor_name)
             for command_and_replacement in network_commands.get_command_and_replacement_text_list():
                 replacement_value = str(get_http_sensor_reading(ip_address, command=command_and_replacement[0]))
                 sensor_report = sensor_report.replace(command_and_replacement[1], replacement_value)
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
-            app_cached_variables.data_queue.put(sensor_report)
+            app_cached_variables.data_queue.put([sensor_name, sensor_report])
     except Exception as error:
         logger.network_logger.warning("Remote Sensor Report Generation Failed: " + str(error))
