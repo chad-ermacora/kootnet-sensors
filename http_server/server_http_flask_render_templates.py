@@ -48,7 +48,7 @@ class CreateRenderTemplates:
                                URL=url)
 
     @staticmethod
-    def multi_sensor_management(request_type="normal_get", address_list=None):
+    def sensor_control_management(request_type="normal_get", address_list=None):
         radio_checked_online_status = ""
         radio_checked_systems_report = ""
         radio_checked_config_report = ""
@@ -87,10 +87,6 @@ class CreateRenderTemplates:
                     if address == response[0]:
                         sensors_bg_colour_list[count] = response[1]
                 count += 1
-        elif request_type == "systems_report":
-            pass
-        elif request_type == "config_report":
-            pass
 
         return render_template("multi_manage_sensors.html",
                                CheckedOnlineStatus=radio_checked_online_status,
@@ -136,6 +132,39 @@ class CreateRenderTemplates:
                                SensorIP18BGColour=sensors_bg_colour_list[17],
                                SensorIP19BGColour=sensors_bg_colour_list[18],
                                SensorIP20BGColour=sensors_bg_colour_list[19])
+
+    @staticmethod
+    def sensor_control_system_report(address_list):
+        new_report = server_http_sensor_control.html_sensor_entry_start
+        sensor_reports = []
+        threads = []
+
+        for address in address_list:
+            if address != "Invalid":
+                threads.append(Thread(target=server_http_sensor_control.get_online_system_report, args=[address]))
+
+        for thread in threads:
+            thread.start()
+
+        for thread in threads:
+            thread.join()
+
+        while not app_cached_variables.data_queue.empty():
+            sensor_reports.append(app_cached_variables.data_queue.get())
+            app_cached_variables.data_queue.task_done()
+
+        for report in sensor_reports:
+            new_report += str(report)
+
+        new_report += server_http_sensor_control.html_sensor_entry_end
+        return new_report
+
+    @staticmethod
+    def sensor_control_config_report(html_request):
+        try:
+            return "It's all good too!"
+        except Exception as error:
+            logger.network_logger.error("Unable to process HTML Sensor Control Configuration Report: " + str(error))
 
     @staticmethod
     def system_management():

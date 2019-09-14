@@ -284,15 +284,20 @@ def get_ip():
         return no_sensor_present
 
 
+def get_disk_usage_gb():
+    """ Returns sensor root disk usage as GB's. """
+    if app_config_access.current_platform == "Linux":
+        return sensor_direct_access.os_sensor_access.get_disk_usage_gb()
+    else:
+        return no_sensor_present
+
+
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
-    try:
-        drive_information = psutil.disk_usage("/")
-        return_disk_usage = drive_information[3]
-    except Exception as error:
-        logger.sensors_logger.error("Get Memory Usage Error: " + str(error))
-        return_disk_usage = "Error"
-    return return_disk_usage
+    if app_config_access.current_platform == "Linux":
+        return sensor_direct_access.os_sensor_access.get_disk_usage_percent()
+    else:
+        return no_sensor_present
 
 
 def get_memory_usage_percent():

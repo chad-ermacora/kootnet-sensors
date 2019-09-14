@@ -53,12 +53,12 @@ class CreateRouteFunctions:
     def index(self):
         return self.render_templates.index_page()
 
-    def html_multi_sensor_management(self, request):
-        logger.network_logger.debug("* HTML Multi Sensor Control accessed by " + str(request.remote_addr))
+    def html_sensor_control_management(self, request):
+        logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
         if request.method == "POST":
             sc_action = request.form.get("selected_action")
+            app_config_access.sensor_control_config.set_from_html_post(request)
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
-                app_config_access.sensor_control_config.set_from_html_post(request)
                 ip_list = []
                 for sensor in server_http_sensor_control.sensor_bg_names_list:
                     sensor_address = request.form.get(sensor)
@@ -66,13 +66,22 @@ class CreateRouteFunctions:
                         ip_list.append(sensor_address)
                     else:
                         ip_list.append("Invalid")
-                return self.render_templates.multi_sensor_management(request_type=sc_action, address_list=ip_list)
-        return self.render_templates.multi_sensor_management()
+                return self.render_templates.sensor_control_management(request_type=sc_action, address_list=ip_list)
+            elif sc_action == app_config_access.sensor_control_config.radio_system_report:
+                ip_list = []
+                for sensor in server_http_sensor_control.sensor_bg_names_list:
+                    sensor_address = request.form.get(sensor)
+                    if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
+                        ip_list.append(sensor_address)
+                    else:
+                        ip_list.append("Invalid")
+                return self.render_templates.sensor_control_system_report(ip_list)
+        return self.render_templates.sensor_control_management()
 
-    def html_multi_sensor_control_save_settings(self, request):
-        logger.network_logger.debug("* HTML Multi Sensor Control Settings saved by " + str(request.remote_addr))
-        http_post_checks.multi_sensor_control_save_settings(request)
-        return self.render_templates.multi_sensor_management(request)
+    def html_sensor_control_save_settings(self, request):
+        logger.network_logger.debug("* HTML Sensor Control Settings saved by " + str(request.remote_addr))
+        http_post_checks.sensor_control_save_settings(request)
+        return self.render_templates.sensor_control_management(request)
 
     def html_system_information(self, request):
         logger.network_logger.debug("* Sensor Information accessed from " + str(request.remote_addr))
@@ -627,9 +636,42 @@ class CreateRouteFunctions:
         logger.network_logger.debug("* CC Sensor's HostName sent to " + str(request.remote_addr))
         return str(self.sensor_access.get_hostname())
 
+    def get_operating_system_version(self, request):
+        logger.network_logger.debug("* Sensor's Operating System Version sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_operating_system_name())
+
+    @staticmethod
+    def get_sensor_program_version(request):
+        logger.network_logger.debug("* Sensor's Version sent to " + str(request.remote_addr))
+        return str(app_config_access.software_version.version)
+
+    def get_sql_db_size(self, request):
+        logger.network_logger.debug("* Sensor's Database Size sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_db_size())
+
+    def get_disk_usage_gb(self, request):
+        logger.network_logger.debug("* Sensor's Used Disk Space as GBs sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_disk_usage_gb())
+
+    def get_disk_usage_percent(self, request):
+        logger.network_logger.debug("* Sensor's Used Disk Space as a % sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_disk_usage_percent())
+
+    def get_ram_usage_percent(self, request):
+        logger.network_logger.debug("* Sensor's RAM % used sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_memory_usage_percent())
+
+    def get_sensor_program_last_updated(self, request):
+        logger.network_logger.debug("* Sensor's Program Last Updated sent to " + str(request.remote_addr))
+        return self.sensor_access.get_last_updated()
+
     def get_system_uptime(self, request):
         logger.network_logger.debug("* Sensor's Uptime sent to " + str(request.remote_addr))
-        return str(self.sensor_access.get_uptime_minutes())
+        return str(self.sensor_access.get_uptime_str())
+
+    def get_system_date_time(self, request):
+        logger.network_logger.debug("* Sensor's Date & Time sent to " + str(request.remote_addr))
+        return str(self.sensor_access.get_system_datetime())
 
     def get_cpu_temperature(self, request):
         logger.network_logger.debug("* Sensor's CPU Temperature sent to " + str(request.remote_addr))

@@ -10,6 +10,7 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import os
 import socket
+import psutil
 from time import strftime
 from operations_modules import logger
 from operations_modules import file_locations
@@ -84,6 +85,27 @@ class CreateLinuxSystem:
         """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
         logger.sensors_logger.debug("Linux System Sensor Date Time - OK")
         return strftime("%Y-%m-%d %H:%M")
+
+    @staticmethod
+    def get_disk_usage_gb():
+        """ Returns sensor root disk usage as GB's. """
+        try:
+            used_disk_space = psutil.disk_usage("/")[2]
+            return str(round(used_disk_space / (2 ** 30), 2))
+        except Exception as error:
+            logger.sensors_logger.error("Get Disk Usage in GB Error: " + str(error))
+            return "Error"
+
+    @staticmethod
+    def get_disk_usage_percent():
+        """ Returns sensor root disk usage as a %. """
+        try:
+            drive_information = psutil.disk_usage("/")
+            return_disk_usage = drive_information[3]
+        except Exception as error:
+            logger.sensors_logger.error("Get Disk Usage % Error: " + str(error))
+            return_disk_usage = "Error"
+        return return_disk_usage
 
     @staticmethod
     def get_sql_db_size():

@@ -121,14 +121,14 @@ class CreateSensorHTTP:
         def logout():
             return route_functions.logout()
 
-        @self.app.route("/MultiManageSensors", methods=["GET", "POST"])
+        @self.app.route("/SensorControlManage", methods=["GET", "POST"])
         def html_multi_sensor_management():
-            return route_functions.html_multi_sensor_management(request)
+            return route_functions.html_sensor_control_management(request)
 
         @self.app.route("/MultiSCSaveSettings", methods=["POST"])
         @self.auth.login_required
         def html_multi_sensor_control_save_settings():
-            return route_functions.html_multi_sensor_control_save_settings(request)
+            return route_functions.html_sensor_control_save_settings(request)
 
         @self.app.route("/About")
         @self.app.route("/SensorInformation")
@@ -422,9 +422,37 @@ class CreateSensorHTTP:
         def get_hostname():
             return route_functions.cc_get_hostname(request)
 
+        @self.app.route("/GetSystemDateTime")
+        def get_system_date_time():
+            return route_functions.get_system_date_time(request)
+
         @self.app.route("/GetSystemUptime")
         def get_system_uptime():
             return route_functions.get_system_uptime(request)
+
+        @self.app.route("/GetOSVersion")
+        def get_operating_system_version():
+            return route_functions.get_operating_system_version(request)
+
+        @self.app.route("/GetSensorVersion")
+        def get_sensor_program_version():
+            return route_functions.get_sensor_program_version(request)
+
+        @self.app.route("/GetSQLDBSize")
+        def get_sql_db_size():
+            return route_functions.get_sql_db_size(request)
+
+        @self.app.route("/GetRAMUsed")
+        def get_ram_usage_percent():
+            return route_functions.get_ram_usage_percent(request)
+
+        @self.app.route("/GetUsedDiskSpace")
+        def get_disk_usage_percent():
+            return route_functions.get_disk_usage_gb(request)
+
+        @self.app.route("/GetProgramLastUpdated")
+        def get_sensor_program_last_updated():
+            return route_functions.get_sensor_program_last_updated(request)
 
         @self.app.route("/GetCPUTemperature")
         def get_cpu_temperature():
