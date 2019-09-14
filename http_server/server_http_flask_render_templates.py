@@ -88,7 +88,7 @@ class CreateRenderTemplates:
                         sensors_bg_colour_list[count] = response[1]
                 count += 1
 
-        return render_template("multi_manage_sensors.html",
+        return render_template("sensor_control.html",
                                CheckedOnlineStatus=radio_checked_online_status,
                                CheckedSystemReports=radio_checked_systems_report,
                                CheckedConfigReports=radio_checked_config_report,

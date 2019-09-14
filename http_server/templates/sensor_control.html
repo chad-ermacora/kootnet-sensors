@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-container-fluid {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .mui-col-md-3 {
+            width: 275px;
+        }
+    </style>
+
+    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red"><u>
+        Sensor Control
+    </u></a></strong></h2>
+    <h4 style="color: red">
+        Use this to Check & Manage Multiple Kootnet Sensors.  ** This is a work in progress **
+    </h4>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                                      data-mui-controls="main-tab">
+            Main
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="edit-config-tab">
+            Edit Configurations
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="other-tab">
+            Other
+        </a></li>
+    </ul>
+    <div class="mui-tabs__pane mui--is-active" id="main-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/SensorControlManage">
+            <button type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings"
+                    class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                Save Settings
+            </button>
+            <fieldset style="text-align: center">
+                <div class="mui-container-fluid" style="background-color: #00B0FF">
+                    <label>Choose Action</label>
+                    <div class="mui-radio">
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedOnlineStatus }}
+                                   value="online_status">
+                            Check Online Status
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedSystemReports }}
+                                   value="systems_report">
+                            Create Systems Report
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedConfigReports }}
+                                   value="config_report" disabled>
+                            Create Config Report
+                        </label>
+                    </div>
+                    <div class="mui-row">
+                        <div class="mui-col-md-3">
+                            <div class="mui-textfield">
+                                <label>
+                                    IP or DNS Address
+                                </label>
+                                <input style="background-color: {{ SensorIP1BGColour }}" type="text"
+                                       name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
+                                <input style="background-color: {{ SensorIP3BGColour }}" type="text"
+                                       name="senor_ip_3" value="{{ SensorIP3 }}">
+                                <input style="background-color: {{ SensorIP5BGColour }}" type="text"
+                                       name="senor_ip_5" value="{{ SensorIP5 }}">
+                                <input style="background-color: {{ SensorIP7BGColour }}" type="text"
+                                       name="senor_ip_7" value="{{ SensorIP7 }}">
+                                <input style="background-color: {{ SensorIP9BGColour }}" type="text"
+                                       name="senor_ip_9" value="{{ SensorIP9 }}">
+                                <input style="background-color: {{ SensorIP11BGColour }}" type="text"
+                                       name="senor_ip_11" value="{{ SensorIP11 }}">
+                                <input style="background-color: {{ SensorIP13BGColour }}" type="text"
+                                       name="senor_ip_13" value="{{ SensorIP13 }}">
+                                <input style="background-color: {{ SensorIP15BGColour }}" type="text"
+                                       name="senor_ip_15" value="{{ SensorIP15 }}">
+                                <input style="background-color: {{ SensorIP17BGColour }}" type="text"
+                                       name="senor_ip_17" value="{{ SensorIP17 }}">
+                                <input style="background-color: {{ SensorIP19BGColour }}" type="text"
+                                       name="senor_ip_19" value="{{ SensorIP19 }}">
+                            </div>
+                        </div>
+                        <div class="mui-col-md-3">
+                            <div class="mui-textfield">
+                                <label>
+                                    IP or DNS Address
+                                </label>
+                                <input style="background-color: {{ SensorIP2BGColour }}" type="text"
+                                       name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
+                                <input style="background-color: {{ SensorIP4BGColour }}" type="text"
+                                       name="senor_ip_4" value="{{ SensorIP4 }}">
+                                <input style="background-color: {{ SensorIP6BGColour }}" type="text"
+                                       name="senor_ip_6" value="{{ SensorIP6 }}">
+                                <input style="background-color: {{ SensorIP8BGColour }}" type="text"
+                                       name="senor_ip_8" value="{{ SensorIP8 }}">
+                                <input style="background-color: {{ SensorIP10BGColour }}" type="text"
+                                       name="senor_ip_10" value="{{ SensorIP10 }}">
+                                <input style="background-color: {{ SensorIP12BGColour }}" type="text"
+                                       name="senor_ip_12" value="{{ SensorIP12 }}">
+                                <input style="background-color: {{ SensorIP14BGColour }}" type="text"
+                                       name="senor_ip_14" value="{{ SensorIP14 }}">
+                                <input style="background-color: {{ SensorIP16BGColour }}" type="text"
+                                       name="senor_ip_16" value="{{ SensorIP16 }}">
+                                <input style="background-color: {{ SensorIP18BGColour }}" type="text"
+                                       name="senor_ip_18" value="{{ SensorIP18 }}">
+                                <input style="background-color: {{ SensorIP20BGColour }}" type="text"
+                                       name="senor_ip_20" value="{{ SensorIP20 }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <button type="submit" name="button_action" value="run_action"
+                        class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                    Run Action
+                </button>
+            </fieldset>
+        </form>
+    </div>
+    <div class="mui-tabs__pane" id="edit-config-tab">
+        <div class="mui-container-fluid">
+        </div>
+    </div>
+    <div class="mui-tabs__pane" id="other-tab">
+        <div class="mui-container-fluid">
+        </div>
+    </div>
+
+{% endblock %}
