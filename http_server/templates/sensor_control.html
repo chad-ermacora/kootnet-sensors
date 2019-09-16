@@ -52,10 +52,22 @@
                                    value="systems_report">
                             Create Systems Report
                         </label>
+                        <br>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    value="config_report">
                             Create Config Report
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
+                                   value="sensors_test_report">
+                            Create Sensors Test Report
+                        </label>
+                        <br>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
+                                   value="sensors_download_databases" disabled>
+                            Download Sensor Databases
                         </label>
                     </div>
                     <h4 style="color: purple">

@@ -52,12 +52,15 @@ class CreateRenderTemplates:
         radio_checked_online_status = ""
         radio_checked_systems_report = ""
         radio_checked_config_report = ""
+        radio_checked_sensors_test_report = ""
         if app_config_access.sensor_control_config.default_action == "online_status":
             radio_checked_online_status = "checked"
         if app_config_access.sensor_control_config.default_action == "systems_report":
             radio_checked_systems_report = "checked"
         if app_config_access.sensor_control_config.default_action == "config_report":
             radio_checked_config_report = "checked"
+        if app_config_access.sensor_control_config.default_action == "sensors_test_report":
+            radio_checked_sensors_test_report = "checked"
 
         sensors_bg_colour_list = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
@@ -92,6 +95,7 @@ class CreateRenderTemplates:
                                CheckedOnlineStatus=radio_checked_online_status,
                                CheckedSystemReports=radio_checked_systems_report,
                                CheckedConfigReports=radio_checked_config_report,
+                               CheckedSensorsTestReports=radio_checked_sensors_test_report,
                                SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
                                SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
                                SensorIP3=app_config_access.sensor_control_config.sensor_ip_dns3,
@@ -144,8 +148,8 @@ class CreateRenderTemplates:
             new_report = server_http_sensor_control.html_report_config_start
             html_sensor_report_end = server_http_sensor_control.html_report_config_end
         elif report_type == sensors_report:
-            new_report = server_http_sensor_control.html_report_system_start
-            html_sensor_report_end = ""
+            new_report = server_http_sensor_control.html_report_sensors_test_start
+            html_sensor_report_end = server_http_sensor_control.html_report_sensors_test_end
 
         sensor_reports = []
         threads = []

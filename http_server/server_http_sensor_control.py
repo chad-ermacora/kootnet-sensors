@@ -20,23 +20,28 @@ import time
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_config_access
-from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
-from operations_modules.app_generic_functions import get_http_sensor_reading
+from operations_modules.app_generic_functions import get_http_sensor_reading, get_file_content
 
 sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
                         "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
                         "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
                         "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+try:
+    html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
+    html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
+    html_report_system_sensor = get_file_content(file_locations.html_report_system2_sensor).strip()
 
-html_report_system_start = app_generic_functions.get_file_content(file_locations.html_report_system1_start).strip()
-html_report_system_end = app_generic_functions.get_file_content(file_locations.html_report_system3_end).strip()
-html_report_system_sensor = app_generic_functions.get_file_content(file_locations.html_report_system2_sensor).strip()
+    html_report_config_start = get_file_content(file_locations.html_report_config1_start).strip()
+    html_report_config_end = get_file_content(file_locations.html_report_config3_end).strip()
+    html_report_config_sensor = get_file_content(file_locations.html_report_config2_sensor).strip()
 
-html_report_config_start = app_generic_functions.get_file_content(file_locations.html_report_config1_start).strip()
-html_report_config_end = app_generic_functions.get_file_content(file_locations.html_report_config3_end).strip()
-html_report_config_sensor = app_generic_functions.get_file_content(file_locations.html_report_config2_sensor).strip()
+    html_report_sensors_test_start = get_file_content(file_locations.html_report_sensors_test1_start).strip()
+    html_report_sensors_test_end = get_file_content(file_locations.html_report_sensors_test3_end).strip()
+    html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
+except Exception as init_error:
+    logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
 
 class CreateNetworkGetCommands:
@@ -57,7 +62,7 @@ class CreateNetworkGetCommands:
         self.network_log = "GetNetworkLog"
         self.sensors_log = "GetSensorsLog"
         self.download_zipped_logs = "DownloadZippedLogs"
-        self.sensor_readings = "GetSensorReadings"
+        self.sensor_readings = "GetIntervalSensorReadings"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
@@ -89,6 +94,10 @@ class CreateNetworkGetCommands:
 
 
 class CreateReplacementVariables:
+
+    def __init__(self):
+        self.remote_sensor_commands = CreateNetworkGetCommands()
+
     @staticmethod
     def report_system():
         return [["GetOSVersion", "{{ OSVersion }}"],
@@ -103,17 +112,16 @@ class CreateReplacementVariables:
 
     def report_config(self, ip_address):
         try:
-            remote_sensor_commands = CreateNetworkGetCommands()
-            get_config_command = remote_sensor_commands.sensor_configuration_file
-            command_installed_sensors = remote_sensor_commands.installed_sensors_file
-            command_config_os_wu = remote_sensor_commands.weather_underground_config_file
-            command_config_os_luftdaten = remote_sensor_commands.luftdaten_config_file
-            command_config_os_osm = remote_sensor_commands.open_sense_map_config_file
+            get_config_command = self.remote_sensor_commands.sensor_configuration_file
+            command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
+            command_config_os_wu = self.remote_sensor_commands.weather_underground_config_file
+            command_config_os_luftdaten = self.remote_sensor_commands.luftdaten_config_file
+            command_config_os_osm = self.remote_sensor_commands.open_sense_map_config_file
 
-            sensor_date_time = get_http_sensor_reading(ip_address, command=remote_sensor_commands.system_date_time)
+            sensor_date_time = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.system_date_time)
             sensor_config_lines = get_http_sensor_reading(ip_address, command=get_config_command)
             installed_sensors_lines = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            wifi_config = get_http_sensor_reading(ip_address, command=remote_sensor_commands.wifi_config_file)
+            wifi_config = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.wifi_config_file)
             weather_underground_config = get_http_sensor_reading(ip_address, command=command_config_os_wu)
             luftdaten_config = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             open_sense_map_config = get_http_sensor_reading(ip_address, command=command_config_os_osm)
@@ -143,7 +151,8 @@ class CreateReplacementVariables:
             if len(open_sense_map_config) > 2:
                 open_sense_map_enabled = self.get_enabled_disabled_text(open_sense_map_config[1].strip()[0])
 
-            sensors_config = app_config_access.config_primary.convert_config_lines_to_obj(sensor_config_lines, skip_write=True)
+            sensors_config = app_config_access.config_primary.convert_config_lines_to_obj(sensor_config_lines,
+                                                                                          skip_write=True)
             installed_sensors_config = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj(
                 installed_sensors_lines, skip_write=True)
             installed_sensors_config.raspberry_pi_name = rpi_model_name
@@ -174,17 +183,26 @@ class CreateReplacementVariables:
                                           " Config Report Failed: " + str(error))
             return []
 
-    @staticmethod
-    def report_test_sensors():
-        return [["GetOSVersion", "{{ OSVersion }}"],
-                ["GetSensorVersion", "{{ ProgramVersion }}"],
-                ["GetProgramLastUpdated", "{{ LastUpdated }}"],
-                ["GetSystemDateTime", "{{ SensorDateTime }}"],
-                ["GetSystemUptime", "{{ SystemUpTime }}"],
-                ["GetSQLDBSize", "{{ SQLDBSize }}"],
-                ["GetCPUTemperature", "{{ CPUTemp }}"],
-                ["GetRAMUsed", "{{ RAMUsed }}"],
-                ["GetUsedDiskSpace", "{{ FreeDiskSpace }}"]]
+    def report_test_sensors(self, ip_address):
+        try:
+            sensor_readings_raw = get_http_sensor_reading(ip_address,
+                                                          command=self.remote_sensor_commands.sensor_readings)
+            sensor_types = sensor_readings_raw.split(app_config_access.command_data_separator)[0].split(",")
+            sensor_readings = sensor_readings_raw.split(app_config_access.command_data_separator)[1].split(",")
+
+            return_types = ""
+            return_readings = ""
+            for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
+                return_types += '<th><span style="background-color: #00ffff;">' + str(sensor_type) + "</span></th>\n"
+                return_readings += '<th><span style="background-color: #0BB10D;">' + str(
+                    sensor_reading) + "</span></th>\n"
+
+            return [[return_types, "{{ SensorTypes }}"],
+                    [return_readings, "{{ SensorReadings }}"]]
+        except Exception as error:
+            logger.network_logger.warning("Sensor Control - Get Remote Sensor " + ip_address +
+                                          " Sensors Test Report Failed: " + str(error))
+            return []
 
     @staticmethod
     def get_enabled_disabled_text(setting):
@@ -215,8 +233,8 @@ def get_online_report(ip_address, report_type="systems_report"):
         sensor_report = html_report_config_sensor
         command_and_replacements = CreateReplacementVariables().report_config(ip_address)
     elif report_type == report_type_test_sensors:
-        sensor_report = html_report_config_sensor
-        command_and_replacements = CreateReplacementVariables().report_test_sensors()
+        sensor_report = html_report_sensors_test_sensor
+        command_and_replacements = CreateReplacementVariables().report_test_sensors(ip_address)
 
     try:
         sensor_report = sensor_report.replace("{{ IPAddress }}", ip_address)
