@@ -37,6 +37,7 @@ class CreateSensorControlConfig:
         self.radio_report_config = "config_report"
         self.radio_report_test_sensors = "sensors_test_report"
         self.radio_download_databases = "sensors_download_databases"
+        self.radio_download_logs = "sensors_download_logs"
 
         self.default_action = self.radio_check_status
         self.sensor_ip_dns1 = ""

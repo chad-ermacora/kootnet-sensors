@@ -23,20 +23,25 @@
     <ul class="mui-tabs__bar">
         <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                                       data-mui-controls="main-tab">
-            Main
+            Checks & Downloads
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="edit-config-tab">
-            Edit Configurations
+            Configurations
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="other-tab">
-            Other
+            Online Services
         </a></li>
     </ul>
     <div class="mui-tabs__pane mui--is-active" id="main-tab">
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/SensorControlManage">
-            <button type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings"
-                    class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings"
+                    style="float: left">
                 Save Settings
+            </button>
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="submit" name="button_action" value="run_action" style="float: right">
+                Run Action
             </button>
             <fieldset style="text-align: center">
                 <div class="mui-container-fluid" style="background-color: #00B0FF">
@@ -68,6 +73,11 @@
                             <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
                                    value="sensors_download_databases" disabled>
                             Download Sensor Databases
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedDownloadLogs }}
+                                   value="sensors_download_logs" disabled>
+                            Download Logs
                         </label>
                     </div>
                     <h4 style="color: purple">
@@ -141,20 +151,122 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <button type="submit" name="button_action" value="run_action"
-                        class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
-                    Run Action
-                </button>
             </fieldset>
         </form>
     </div>
     <div class="mui-tabs__pane" id="edit-config-tab">
+        <ul class="mui-tabs__bar">
+            <li class="mui--is-active">
+                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="primary-config-tab">
+                    Main
+                </a>
+            </li>
+
+            <li>
+                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="installed-sensors-tab">
+                    Installed Sensors
+                </a>
+            </li>
+
+            <li>
+                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="network-config-tab">
+                    Networking
+                </a>
+            </li>
+
+            <li>
+                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="wifi-config-tab">
+                    WiFi
+                </a>
+            </li>
+
+            <li>
+                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="trigger-variances-tab">
+                    Trigger Variances
+                </a>
+            </li>
+        </ul>
+        <br>
         <div class="mui-container-fluid">
+            <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/Replace">
+                    <p style="color: red">Work In Progress</p>
+                </form>
+            </div>
+            <div class="mui-tabs__pane" id="installed-sensors-tab">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/EditInstalledSensors">
+                    <p style="color: red">Work In Progress</p>
+                </form>
+            </div>
+            <div class="mui-tabs__pane" id="network-config-tab">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/EditConfigIPv4">
+                    <p style="color: red">Work In Progress</p>
+                </form>
+            </div>
+            <div class="mui-tabs__pane" id="wifi-config-tab">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/EditConfigWifi">
+                    <p style="color: red">Work In Progress</p>
+                </form>
+            </div>
+            <div class="mui-tabs__pane" id="trigger-variances-tab">
+                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                      action="/EditTriggerVariances">
+                    <p style="color: red">Work In Progress</p>
+                </form>
+            </div>
         </div>
     </div>
     <div class="mui-tabs__pane" id="other-tab">
+        <ul class="mui-tabs__bar">
+            <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                                          data-mui-controls="weather-underground-tab">
+                Weather Underground
+            </a></li>
+            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="luftdaten-tab">
+                Luftdaten
+            </a></li>
+            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="open-sense-map-tab">
+                Open Sense Map
+            </a></li>
+        </ul>
         <div class="mui-container-fluid">
+            <div class="mui-tabs__pane mui--is-active" id="weather-underground-tab">
+                <br>
+                <div class="mui-container-fluid">
+                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                          action="/EditOnlineServicesWeatherUnderground">
+                        <p style="color: red">Work In Progress</p>
+                    </form>
+                </div>
+            </div>
+            <div class="mui-tabs__pane" id="luftdaten-tab">
+                <div class="mui-container-fluid">
+                    <br>
+                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                          action="/EditOnlineServicesLuftdaten">
+                        <p style="color: red">Work In Progress</p>
+                    </form>
+                </div>
+            </div>
+            <div class="mui-tabs__pane" id="open-sense-map-tab">
+                <div class="mui-container-fluid">
+                    <br>
+                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+                          action="/EditOnlineServicesLuftdaten">
+                    <p style="color: red">Work In Progress</p>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 
