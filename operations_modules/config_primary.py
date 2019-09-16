@@ -63,7 +63,7 @@ def convert_config_to_str(config):
     return config_file_str
 
 
-def convert_config_lines_to_obj(config_lines):
+def convert_config_lines_to_obj(config_lines, skip_write=False):
     """ Converts provided configuration text as a list of lines into a object and returns it. """
     new_config = CreateConfig()
     bad_load = False
@@ -113,10 +113,12 @@ def convert_config_lines_to_obj(config_lines):
                 new_config.temperature_offset = value
         count += 1
 
-    if bad_load:
-        logger.primary_logger.warning("One or more bad options in main configuration file.  " +
-                                      "Using defaults for bad entries and saving. Please review the Configuration file.")
-        write_config_to_file(new_config)
+    if not skip_write:
+        if bad_load:
+            logger.primary_logger.warning("One or more bad options in main configuration file.  " +
+                                          "Using defaults for bad entries and saving. " +
+                                          "Please review the Configuration file.")
+            write_config_to_file(new_config)
 
     return new_config
 

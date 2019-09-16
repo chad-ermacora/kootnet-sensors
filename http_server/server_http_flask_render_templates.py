@@ -134,18 +134,26 @@ class CreateRenderTemplates:
                                SensorIP20BGColour=sensors_bg_colour_list[19])
 
     @staticmethod
-    def sensor_control_system_report(address_list):
-        new_report = server_http_sensor_control.html_sensor_entry_start
+    def get_sensor_control_report(address_list, report_type="systems_report"):
+        config_report = app_config_access.sensor_control_config.radio_report_config
+        sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+        html_sensor_report_end = server_http_sensor_control.html_report_system_end
+
+        new_report = server_http_sensor_control.html_report_system_start
+        if report_type == config_report:
+            new_report = server_http_sensor_control.html_report_config_start
+            html_sensor_report_end = server_http_sensor_control.html_report_config_end
+        elif report_type == sensors_report:
+            new_report = server_http_sensor_control.html_report_system_start
+            html_sensor_report_end = ""
+
         sensor_reports = []
         threads = []
-
         for address in address_list:
             if address != "Invalid":
-                threads.append(Thread(target=server_http_sensor_control.get_online_system_report, args=[address]))
-
+                threads.append(Thread(target=server_http_sensor_control.get_online_report, args=[address, report_type]))
         for thread in threads:
             thread.start()
-
         for thread in threads:
             thread.join()
 
@@ -157,15 +165,8 @@ class CreateRenderTemplates:
         for report in sensor_reports:
             new_report += str(report[1])
 
-        new_report += server_http_sensor_control.html_sensor_entry_end
+        new_report += html_sensor_report_end
         return new_report
-
-    @staticmethod
-    def sensor_control_config_report(html_request):
-        try:
-            return "It's all good too!"
-        except Exception as error:
-            logger.network_logger.error("Unable to process HTML Sensor Control Configuration Report: " + str(error))
 
     @staticmethod
     def system_management():

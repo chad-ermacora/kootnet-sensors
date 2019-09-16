@@ -41,6 +41,7 @@ if software_version.old_version != software_version.version:
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = config_installed_sensors.get_installed_sensors_from_file()
+    installed_sensors.raspberry_pi_name = installed_sensors.get_raspberry_pi_model()
     current_config = config_primary.get_config_from_file()
     trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
     sensor_control_config.set_from_disk()

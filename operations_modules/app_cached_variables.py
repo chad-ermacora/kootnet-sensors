@@ -36,5 +36,9 @@ wifi_ssid = ""
 wifi_security_type = ""
 wifi_psk = ""
 
+# Login to remote sensors (Used primarily in Sensor Control
+http_login = ""
+http_password = ""
+
 # Used to get data from multiple remote sensors at the "same" time.
 data_queue = Queue()

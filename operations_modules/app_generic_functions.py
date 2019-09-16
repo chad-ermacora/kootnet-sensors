@@ -100,12 +100,14 @@ def update_cached_variables(sensor_access):
     app_cached_variables.hostname = sensor_access.get_hostname()
 
 
-def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus",
-                            http_username="", http_password=""):
+def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus"):
     """ Returns requested sensor data (based on the provided command data). """
     try:
         url = "https://" + http_ip + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url, timeout=2, auth=(http_username, http_password), verify=False)
+        tmp_return_data = requests.get(url=url,
+                                       timeout=2,
+                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
+                                       verify=False)
         return tmp_return_data.text
     except Exception as error:
         logger.network_logger.info("Remote Sensor Data Request - HTTPS GET Error for " + http_ip)
@@ -113,11 +115,14 @@ def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStat
         return "Error"
 
 
-def http_display_text_on_sensor(text_message, http_ip, http_port="10065", http_username="", http_password=""):
+def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
     """ Returns requested sensor data (based on the provided command data). """
     try:
         url = "https://" + http_ip + ":" + http_port + "/DisplayText"
-        requests.put(url=url, timeout=2, auth=(http_username, http_password),
-                     data={'command_data': text_message}, verify=False)
+        requests.put(url=url,
+                     timeout=2,
+                     auth=(app_cached_variables.http_login, app_cached_variables.http_password),
+                     data={'command_data': text_message},
+                     verify=False)
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))

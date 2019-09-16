@@ -17,7 +17,7 @@
         Sensor Control
     </u></a></strong></h2>
     <h4 style="color: red">
-        Use this to Check & Manage Multiple Kootnet Sensors.  ** This is a work in progress **
+        Use this to Check & Manage Multiple Kootnet Sensors. ** This is a work in progress **
     </h4>
 
     <ul class="mui-tabs__bar">
@@ -54,10 +54,24 @@
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
-                                   value="config_report" disabled>
+                                   value="config_report">
                             Create Config Report
                         </label>
                     </div>
+                    <h4 style="color: purple">
+                        Sensor Login (Optional)
+                    </h4>
+                    <label style="font-size: small">
+                        Username<br>
+                        <input type="text" name="sensor_username" placeholder="Eg. Jim">
+                        <br>
+                    </label>
+                    <label style="font-size: small">
+                        Password<br>
+                        <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
+                        <br>
+                    </label>
+
                     <div class="mui-row">
                         <div class="mui-col-md-3">
                             <div class="mui-textfield">

@@ -209,7 +209,7 @@ def get_installed_sensors_from_file():
     return installed_sensors
 
 
-def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
+def convert_installed_sensors_lines_to_obj(installed_sensor_lines, skip_write=False):
     """ Converts provided installed sensors text as a list of lines into a object and returns it. """
     new_installed_sensors = CreateInstalledSensors()
 
@@ -322,13 +322,15 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines):
         if line:
             new_installed_sensors.no_sensors = False
 
-    if len(installed_sensor_lines) != 19:
-        logger.primary_logger.warning("Invalid number of Installed Sensors in the configuration file - " +
-                                      "Should be 18 but seeing " + str(len(installed_sensor_lines)) + ": " +
-                                      "Disabling bad entries. Please review the Installed Sensors Configuration file.")
-        write_installed_sensors_to_file(new_installed_sensors)
-    if new_installed_sensors.raspberry_pi:
-        new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
+    if not skip_write:
+        if len(installed_sensor_lines) != 19:
+            logger.primary_logger.warning("Invalid number of Installed Sensors in the configuration file - " +
+                                          "Should be 18 but seeing " + str(len(installed_sensor_lines)) + ": " +
+                                          "Disabling bad entries. " +
+                                          "Please review the Installed Sensors Configuration file.")
+            write_installed_sensors_to_file(new_installed_sensors)
+        if new_installed_sensors.raspberry_pi:
+            new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
     return new_installed_sensors
 
 

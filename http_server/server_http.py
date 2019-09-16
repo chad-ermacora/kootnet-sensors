@@ -161,6 +161,20 @@ class CreateSensorHTTP:
         def html_online_services():
             return route_functions.html_online_services(request)
 
+        @self.app.route("/GetOnlineServicesWeatherUnderground")
+        @self.auth.login_required
+        def html_get_online_services_config_wu():
+            return route_functions.html_get_online_services_config_wu(request)
+
+        @self.app.route("/GetOnlineServicesLuftdaten")
+        def html_get_online_services_config_luftdaten():
+            return route_functions.html_get_online_services_config_luftdaten(request)
+
+        @self.app.route("/GetOnlineServicesOpenSenseMap")
+        @self.auth.login_required
+        def html_get_online_services_config_open_sense_map():
+            return route_functions.html_get_online_services_config_open_sense_map(request)
+
         @self.app.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])
         @self.auth.login_required
         def html_edit_online_services_wu():

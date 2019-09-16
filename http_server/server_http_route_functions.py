@@ -21,6 +21,7 @@ from flask import send_file
 from zipfile import ZipFile, ZIP_DEFLATED
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import config_primary
 from operations_modules import config_installed_sensors
@@ -58,24 +59,29 @@ class CreateRouteFunctions:
         if request.method == "POST":
             sc_action = request.form.get("selected_action")
             app_config_access.sensor_control_config.set_from_html_post(request)
-            if sc_action == app_config_access.sensor_control_config.radio_check_status:
-                ip_list = []
-                for sensor in server_http_sensor_control.sensor_bg_names_list:
-                    sensor_address = request.form.get(sensor)
-                    if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
-                        ip_list.append(sensor_address)
-                    else:
-                        ip_list.append("Invalid")
+            ip_list = []
+            for sensor in server_http_sensor_control.sensor_bg_names_list:
+                sensor_address = request.form.get(sensor)
+                if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
+                    ip_list.append(sensor_address)
+                else:
+                    ip_list.append("Invalid")
+            check_status = app_config_access.sensor_control_config.radio_check_status
+            system_report = app_config_access.sensor_control_config.radio_report_system
+            config_report = app_config_access.sensor_control_config.radio_report_config
+            sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+            if sc_action == check_status:
                 return self.render_templates.sensor_control_management(request_type=sc_action, address_list=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_system_report:
-                ip_list = []
-                for sensor in server_http_sensor_control.sensor_bg_names_list:
-                    sensor_address = request.form.get(sensor)
-                    if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
-                        ip_list.append(sensor_address)
-                    else:
-                        ip_list.append("Invalid")
-                return self.render_templates.sensor_control_system_report(ip_list)
+            elif sc_action == system_report:
+                return self.render_templates.get_sensor_control_report(ip_list, report_type=system_report)
+            elif sc_action == config_report:
+                if request.form.get("sensor_username").strip() != "":
+                    app_cached_variables.http_login = request.form.get("sensor_username").strip()
+                if request.form.get("sensor_password").strip() != "":
+                    app_cached_variables.http_password = request.form.get("sensor_password").strip()
+                return self.render_templates.get_sensor_control_report(ip_list, report_type=config_report)
+            elif sc_action == sensors_report:
+                return self.render_templates.get_sensor_control_report(ip_list, report_type=sensors_report)
         return self.render_templates.sensor_control_management()
 
     def html_sensor_control_save_settings(self, request):
@@ -102,6 +108,22 @@ class CreateRouteFunctions:
     def html_online_services(self, request):
         logger.network_logger.debug("** Online Services accessed from " + str(request.remote_addr))
         return self.render_templates.sensor_online_services()
+
+    @staticmethod
+    def html_get_online_services_config_wu(request):
+        logger.network_logger.debug(
+            "** Get Online Services - Weather Underground accessed from " + str(request.remote_addr))
+        return send_file(file_locations.weather_underground_config)
+
+    @staticmethod
+    def html_get_online_services_config_luftdaten(request):
+        logger.network_logger.debug("** Get Online Services - Luftdaten accessed from " + str(request.remote_addr))
+        return send_file(file_locations.luftdaten_config)
+
+    @staticmethod
+    def html_get_online_services_config_open_sense_map(request):
+        logger.network_logger.debug("** Get Online Services - Open Sense Map accessed from " + str(request.remote_addr))
+        return send_file(file_locations.osm_config)
 
     def html_edit_online_services_wu(self, request):
         logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " +
