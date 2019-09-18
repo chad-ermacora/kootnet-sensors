@@ -39,6 +39,7 @@ wu_action = "&action=updateraw"
 
 class CreateWeatherUndergroundConfig:
     """ Creates a Weather Underground Configuration object. """
+
     def __init__(self):
         self.sensor_access = None
 
@@ -61,7 +62,7 @@ class CreateWeatherUndergroundConfig:
 
         return online_services_config_str
 
-    def update_weather_underground_html(self, html_request):
+    def update_weather_underground_html(self, html_request, skip_write=True):
         """ Updates & Writes Weather Underground settings based on provided HTML request. """
         if html_request.form.get("enable_weather_underground") is not None:
             self.weather_underground_enabled = 1
@@ -83,14 +84,19 @@ class CreateWeatherUndergroundConfig:
         if html_request.form.get("station_key") is not None and html_request.form.get("station_key") is not "":
             self.station_key = html_request.form.get("station_key").strip()
 
-        self.write_config_to_file()
+        if not skip_write:
+            self.write_config_to_file()
 
-    def update_settings_from_file(self):
+    def update_settings_from_file(self, file_content=None, skip_write=False):
         """
         Updates Weather Underground settings based on saved configuration file.  Creates Default file if missing.
         """
-        if os.path.isfile(file_locations.weather_underground_config):
-            loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.weather_underground_config)
+        if os.path.isfile(file_locations.weather_underground_config) or skip_write:
+            if file_content is None:
+                loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.weather_underground_config)
+            else:
+                loaded_configuration_raw = file_content
+
             configuration_lines = loaded_configuration_raw.split("\n")
             try:
                 if int(configuration_lines[1][0]):
@@ -116,12 +122,14 @@ class CreateWeatherUndergroundConfig:
                 else:
                     self.wu_rapid_fire_enabled = 0
             except Exception as error:
-                self.write_config_to_file()
-                logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
-                                              "Using 1 or more Defaults: " + str(error))
+                if not skip_write:
+                    self.write_config_to_file()
+                    logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
+                                                  "Using 1 or more Defaults: " + str(error))
         else:
-            logger.primary_logger.warning("No Online Service configuration file found - Saving Default")
-            self.write_config_to_file()
+            if not skip_write:
+                logger.primary_logger.warning("No Online Service configuration file found - Saving Default")
+                self.write_config_to_file()
 
     def write_config_to_file(self):
         """ Writes current Weather Underground settings to file. """
@@ -195,8 +203,9 @@ class CreateWeatherUndergroundConfig:
                 else:
                     return_readings_str += "&indoortempf=" + str(round(temperature_f, round_decimal_to))
             except Exception as error:
-                logger.sensors_logger.error("Unable to calculate Temperature into fahrenheit for Weather Underground: " +
-                                            str(error))
+                logger.sensors_logger.error(
+                    "Unable to calculate Temperature into fahrenheit for Weather Underground: " +
+                    str(error))
 
         humidity = self.sensor_access.get_humidity()
         if self.sensor_access.valid_sensor_reading(humidity):

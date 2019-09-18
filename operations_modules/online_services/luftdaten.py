@@ -61,13 +61,17 @@ class CreateLuftdatenConfig:
             self.interval_seconds = float(html_request.form.get("station_interval"))
         self.write_config_to_file()
 
-    def update_settings_from_file(self):
+    def update_settings_from_file(self, file_content=None, skip_write=False):
         """
         Updates Luftdaten settings based on saved configuration file.  Creates Default file if missing.
         """
-        if os.path.isfile(file_locations.luftdaten_config):
-            loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.luftdaten_config)
+        if os.path.isfile(file_locations.luftdaten_config) or skip_write:
+            if file_content is None:
+                loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.luftdaten_config)
+            else:
+                loaded_configuration_raw = file_content
             configuration_lines = loaded_configuration_raw.split("\n")
+
             try:
                 if int(configuration_lines[1][0]):
                     self.luftdaten_enabled = 1
@@ -79,12 +83,14 @@ class CreateLuftdatenConfig:
                     logger.primary_logger.warning("Luftdaten Interval Error from file - " + str(error))
                     self.interval_seconds = 300
             except Exception as error:
-                self.write_config_to_file()
-                logger.primary_logger.warning("Problem loading Luftdaten Configuration file - " +
-                                              "Using 1 or more Defaults: " + str(error))
+                if not skip_write:
+                    self.write_config_to_file()
+                    logger.primary_logger.warning("Problem loading Luftdaten Configuration file - " +
+                                                  "Using 1 or more Defaults: " + str(error))
         else:
-            logger.primary_logger.warning("No Luftdaten configuration file found - Saving Default")
-            self.write_config_to_file()
+            if not skip_write:
+                logger.primary_logger.warning("No Luftdaten configuration file found - Saving Default")
+                self.write_config_to_file()
 
     def write_config_to_file(self):
         """ Writes current Luftdaten settings to file. """
@@ -192,7 +198,11 @@ class CreateLuftdatenConfig:
             logger.network_logger.warning("Luftdaten - PMS5003 - Status Code: " + str(post_reply.status_code))
 
     def _get_temperature(self):
-        temp_c = self.sensor_access.get_sensor_temperature()
-        if self.sensor_access.valid_sensor_reading(temp_c) and app_config_access.current_config.enable_custom_temp:
-            temp_c = temp_c + app_config_access.current_config.temperature_offset
-        return temp_c
+        try:
+            temp_c = self.sensor_access.get_sensor_temperature()
+            if self.sensor_access.valid_sensor_reading(temp_c) and app_config_access.current_config.enable_custom_temp:
+                temp_c = temp_c + app_config_access.current_config.temperature_offset
+            return temp_c
+        except Exception as error:
+            logger.network_logger.warning("Luftdaten - Get Temperature Failed, returning 0.0: " + str(error))
+            return 0.0

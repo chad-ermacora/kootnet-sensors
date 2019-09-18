@@ -201,12 +201,15 @@ class CreateOpenSenseMapConfig:
             self.ultra_violet_b_id = ""
         self.write_config_to_file()
 
-    def update_settings_from_file(self):
+    def update_settings_from_file(self, file_content=None, skip_write=False):
         """
         Updates Open Sense Map settings based on saved configuration file.  Creates Default file if missing.
         """
-        if os.path.isfile(file_locations.osm_config):
-            loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.osm_config)
+        if os.path.isfile(file_locations.osm_config) or skip_write:
+            if file_content is None:
+                loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.osm_config)
+            else:
+                loaded_configuration_raw = file_content
             configuration_lines = loaded_configuration_raw.split("\n")
             try:
                 if int(configuration_lines[1][0]):
@@ -244,12 +247,14 @@ class CreateOpenSenseMapConfig:
                 self.ultra_violet_a_id = configuration_lines[23].split("=")[0].strip()
                 self.ultra_violet_b_id = configuration_lines[24].split("=")[0].strip()
             except Exception as error:
-                logger.primary_logger.warning("Problem loading Open Sense Map Configuration file - " +
-                                              "Using 1 or more Defaults: " + str(error))
-                self.write_config_to_file()
+                if not skip_write:
+                    logger.primary_logger.warning("Problem loading Open Sense Map Configuration file - " +
+                                                  "Using 1 or more Defaults: " + str(error))
+                    self.write_config_to_file()
         else:
-            logger.primary_logger.warning("No Open Sense Map configuration file found - Saving Default")
-            self.write_config_to_file()
+            if not skip_write:
+                logger.primary_logger.warning("No Open Sense Map configuration file found - Saving Default")
+                self.write_config_to_file()
 
     def write_config_to_file(self):
         """ Writes current Open Sense Map settings to file. """
@@ -273,14 +278,15 @@ class CreateOpenSenseMapConfig:
                 try:
                     if app_config_access.installed_sensors.has_env_temperature:
                         if self.temperature_id != "":
-                            env_temperature = self.sensor_access.get_sensor_temperature()
                             try:
+                                env_temperature = self.sensor_access.get_sensor_temperature()
                                 if app_config_access.current_config.enable_custom_temp:
                                     env_temperature = round(env_temperature +
                                                             app_config_access.current_config.temperature_offset,
                                                             round_decimal_to)
                             except Exception as error:
-                                logger.network_logger.warning("Open Sense Map: Env Offset Error - " + str(error))
+                                logger.network_logger.warning("Open Sense Map: Env Temperature Error - " + str(error))
+                                env_temperature = 0.0
                             body_json[self.temperature_id] = str(env_temperature)
 
                     if app_config_access.installed_sensors.has_pressure:

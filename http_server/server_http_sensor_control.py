@@ -22,6 +22,9 @@ from operations_modules import file_locations
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
+from operations_modules.online_services import weather_underground
+from operations_modules.online_services import luftdaten
+from operations_modules.online_services import open_sense_map
 from operations_modules.app_generic_functions import get_http_sensor_reading, get_file_content
 
 sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
@@ -111,6 +114,8 @@ class CreateReplacementVariables:
                 ["GetUsedDiskSpace", "{{ FreeDiskSpace }}"]]
 
     def report_config(self, ip_address):
+        convert_installed_sensors_lines_to_obj = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj
+        convert_config_lines_to_obj = app_config_access.config_primary.convert_config_lines_to_obj
         try:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
             command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
@@ -119,43 +124,41 @@ class CreateReplacementVariables:
             command_config_os_osm = self.remote_sensor_commands.open_sense_map_config_file
 
             sensor_date_time = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.system_date_time)
-            sensor_config_lines = get_http_sensor_reading(ip_address, command=get_config_command)
-            installed_sensors_lines = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            wifi_config = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.wifi_config_file)
-            weather_underground_config = get_http_sensor_reading(ip_address, command=command_config_os_wu)
-            luftdaten_config = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
-            open_sense_map_config = get_http_sensor_reading(ip_address, command=command_config_os_osm)
+            sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
+            installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
+            wifi_config_raw = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.wifi_config_file)
+            weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
+            luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
+            open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
 
-            sensor_config_lines = sensor_config_lines.strip().split("\n")
-            installed_sensors_lines = installed_sensors_lines.strip().split("\n")
+            sensor_config_lines = sensor_config_raw.strip().split("\n")
+            installed_sensors_lines = installed_sensors_raw.strip().split("\n")
             try:
                 rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
             except Exception as error:
                 logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
                 rpi_model_name = "Raspberry Pi"
-            wifi_config = wifi_config.strip().split("\n")
-            weather_underground_config = weather_underground_config.strip().split("\n")
-            luftdaten_config = luftdaten_config.strip().split("\n")
-            open_sense_map_config = open_sense_map_config.strip().split("\n")
+            wifi_config_lines = wifi_config_raw.strip().split("\n")
+
+            wu_config = weather_underground.CreateWeatherUndergroundConfig()
+            wu_config.update_settings_from_file(file_content=weather_underground_config_raw, skip_write=True)
+
+            luftdaten_config = luftdaten.CreateLuftdatenConfig()
+            luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)
+
+            osm_config = open_sense_map.CreateOpenSenseMapConfig()
+            osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
+
+            sensors_config = convert_config_lines_to_obj(sensor_config_lines, skip_write=True)
+            installed_sensors_config = convert_installed_sensors_lines_to_obj(installed_sensors_lines, skip_write=True)
+            installed_sensors_config.raspberry_pi_name = rpi_model_name
+            weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
+            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
+            open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
 
             wifi_ssid = ""
-            weather_underground_enabled = ""
-            luftdaten_enabled = ""
-            open_sense_map_enabled = ""
-            if len(wifi_config) > 2:
-                wifi_ssid = network_wifi.get_wifi_ssid(wifi_config)
-            if len(weather_underground_config) > 2:
-                weather_underground_enabled = self.get_enabled_disabled_text(weather_underground_config[1].strip()[0])
-            if len(luftdaten_config) > 2:
-                luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config[1].strip()[0])
-            if len(open_sense_map_config) > 2:
-                open_sense_map_enabled = self.get_enabled_disabled_text(open_sense_map_config[1].strip()[0])
-
-            sensors_config = app_config_access.config_primary.convert_config_lines_to_obj(sensor_config_lines,
-                                                                                          skip_write=True)
-            installed_sensors_config = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj(
-                installed_sensors_lines, skip_write=True)
-            installed_sensors_config.raspberry_pi_name = rpi_model_name
+            if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
+                wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
             text_display = str(self.get_enabled_disabled_text(sensors_config.enable_display))
@@ -163,6 +166,34 @@ class CreateReplacementVariables:
             text_interval_seconds = str(sensors_config.sleep_duration_interval)
             text_trigger_recording = str(self.get_enabled_disabled_text(sensors_config.enable_trigger_recording))
             text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
+
+            wifi_network_colour = "#F4A460"
+            debug_colour = "#F4A460"
+            display_colour = "#F4A460"
+            interval_recording_colour = "#F4A460"
+            trigger_recording_colour = "#F4A460"
+            temp_offset_colour = "#F4A460"
+            weather_underground_colour = "#F4A460"
+            luftdaten_colour = "#F4A460"
+            open_sense_map_colour = "#F4A460"
+            if len(wifi_ssid) > 0:
+                wifi_network_colour = "#0099ff"
+            if sensors_config.enable_debug_logging:
+                debug_colour = "lightgreen"
+            if sensors_config.enable_display:
+                display_colour = "lightgreen"
+            if sensors_config.enable_interval_recording:
+                interval_recording_colour = "lightgreen"
+            if sensors_config.enable_trigger_recording:
+                trigger_recording_colour = "lightgreen"
+            if sensors_config.enable_custom_temp:
+                temp_offset_colour = "lightgreen"
+            if wu_config.weather_underground_enabled:
+                weather_underground_colour = "lightgreen"
+            if luftdaten_config.luftdaten_enabled:
+                luftdaten_colour = "lightgreen"
+            if osm_config.open_sense_map_enabled:
+                open_sense_map_colour = "lightgreen"
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
@@ -176,6 +207,15 @@ class CreateReplacementVariables:
                              [weather_underground_enabled, "{{ WeatherUnderground }}"],
                              [luftdaten_enabled, "{{ Luftdaten }}"],
                              [open_sense_map_enabled, "{{ OpenSenseMap }}"],
+                             [wifi_network_colour, "{{ WifiNetworkColour }}"],
+                             [debug_colour, "{{ DebugLoggingColour }}"],
+                             [display_colour, "{{ DisplayColour }}"],
+                             [interval_recording_colour, "{{ IntervalRecordingColour }}"],
+                             [trigger_recording_colour, "{{ TriggerRecordingColour }}"],
+                             [temp_offset_colour, "{{ EnableTemperatureOffsetColour }}"],
+                             [weather_underground_colour, "{{ WeatherUndergroundColour }}"],
+                             [luftdaten_colour, "{{ LuftdatenColour }}"],
+                             [open_sense_map_colour, "{{ OpenSenseMapColour }}"],
                              [installed_sensors_config.get_installed_names_str(), "{{ InstalledSensors }}"]]
             return value_replace
         except Exception as error:
