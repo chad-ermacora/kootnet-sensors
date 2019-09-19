@@ -50,6 +50,8 @@ class CreateWeatherUndergroundConfig:
         self.station_id = "NA"
         self.station_key = "NA"
 
+        self.bad_config_load = False
+
     def get_configuration_str(self):
         """ Returns Weather Underground settings ready to be written to the configuration file. """
         online_services_config_str = "Enable = 1 & Disable = 0\n" + \
@@ -126,6 +128,8 @@ class CreateWeatherUndergroundConfig:
                     self.write_config_to_file()
                     logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
                                                   "Using 1 or more Defaults: " + str(error))
+                else:
+                    self.bad_config_load = True
         else:
             if not skip_write:
                 logger.primary_logger.warning("No Online Service configuration file found - Saving Default")

@@ -53,14 +53,21 @@ class CreateRenderTemplates:
         radio_checked_systems_report = ""
         radio_checked_config_report = ""
         radio_checked_sensors_test_report = ""
-        if app_config_access.sensor_control_config.default_action == "online_status":
+        radio_checked_download_database = ""
+        radio_checked_download_logs = ""
+        default_action = app_config_access.sensor_control_config.default_action
+        if default_action == app_config_access.sensor_control_config.radio_check_status:
             radio_checked_online_status = "checked"
-        if app_config_access.sensor_control_config.default_action == "systems_report":
+        if default_action == app_config_access.sensor_control_config.radio_report_system:
             radio_checked_systems_report = "checked"
-        if app_config_access.sensor_control_config.default_action == "config_report":
+        if default_action == app_config_access.sensor_control_config.radio_report_config:
             radio_checked_config_report = "checked"
-        if app_config_access.sensor_control_config.default_action == "sensors_test_report":
+        if default_action == app_config_access.sensor_control_config.radio_report_test_sensors:
             radio_checked_sensors_test_report = "checked"
+        if default_action == app_config_access.sensor_control_config.radio_download_databases:
+            radio_checked_download_database = "checked"
+        if default_action == app_config_access.sensor_control_config.radio_download_logs:
+            radio_checked_download_logs = "checked"
 
         sensors_bg_colour_list = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
 
@@ -96,6 +103,8 @@ class CreateRenderTemplates:
                                CheckedSystemReports=radio_checked_systems_report,
                                CheckedConfigReports=radio_checked_config_report,
                                CheckedSensorsTestReports=radio_checked_sensors_test_report,
+                               CheckedDownloadDatabases=radio_checked_download_database,
+                               CheckedDownloadLogs=radio_checked_download_logs,
                                SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
                                SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
                                SensorIP3=app_config_access.sensor_control_config.sensor_ip_dns3,
@@ -171,6 +180,27 @@ class CreateRenderTemplates:
 
         new_report += html_sensor_report_end
         return new_report
+
+    @staticmethod
+    def downloads_sensor_control(address_list, download_type="sensors_download_databases"):
+        network_commands = server_http_sensor_control.CreateNetworkGetCommands()
+        download_command = network_commands.sensor_sql_database
+        download_type_message = "SQLite3 Database"
+        if download_type == app_config_access.sensor_control_config.radio_download_logs:
+            download_command = network_commands.download_zipped_logs
+            download_type_message = "Full Logs"
+        sensor_download_url = "window.open('https://{{ IPAddress }}:10065/" + download_command + "');"
+        sensor_download_sql_list = ""
+        text_ip_addresses = ""
+        for address in address_list:
+            if address != "Invalid":
+                new_download = sensor_download_url.replace("{{ IPAddress }}", address)
+                sensor_download_sql_list += new_download + "\n            "
+                text_ip_addresses += address + "<br>"
+        return render_template("sensor_control_downloads.html",
+                               DownloadTypeMessage=download_type_message,
+                               DownloadURLs=sensor_download_sql_list.strip(),
+                               SensorAddresses=text_ip_addresses)
 
     @staticmethod
     def system_management():

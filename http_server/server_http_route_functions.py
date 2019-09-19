@@ -45,7 +45,7 @@ class CreateRouteFunctions:
         self.render_templates = server_http_flask_render_templates.CreateRenderTemplates(sensor_access)
 
     def auth_error(self, request):
-        logger.network_logger.info(" *** First or Failed Login from " + str(request.remote_addr))
+        logger.network_logger.debug(" *** First or Failed Login from " + str(request.remote_addr))
         return self.render_templates.message_and_return("Unauthorized Access")
 
     def logout(self):
@@ -70,6 +70,8 @@ class CreateRouteFunctions:
             system_report = app_config_access.sensor_control_config.radio_report_system
             config_report = app_config_access.sensor_control_config.radio_report_config
             sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+            download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
+            download_logs = app_config_access.sensor_control_config.radio_download_logs
             if sc_action == check_status:
                 return self.render_templates.sensor_control_management(request_type=sc_action, address_list=ip_list)
             elif sc_action == system_report:
@@ -82,6 +84,10 @@ class CreateRouteFunctions:
                 return self.render_templates.get_sensor_control_report(ip_list, report_type=config_report)
             elif sc_action == sensors_report:
                 return self.render_templates.get_sensor_control_report(ip_list, report_type=sensors_report)
+            elif sc_action == download_sql_databases:
+                return self.render_templates.downloads_sensor_control(ip_list, download_type=download_sql_databases)
+            elif sc_action == download_logs:
+                return self.render_templates.downloads_sensor_control(ip_list, download_type=download_logs)
         return self.render_templates.sensor_control_management()
 
     def html_sensor_control_save_settings(self, request):

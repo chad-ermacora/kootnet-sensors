@@ -114,7 +114,7 @@ class CreateReplacementVariables:
                 ["GetUsedDiskSpace", "{{ FreeDiskSpace }}"]]
 
     def report_config(self, ip_address):
-        convert_installed_sensors_lines_to_obj = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj
+        isc_lines_to_obj = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj
         convert_config_lines_to_obj = app_config_access.config_primary.convert_config_lines_to_obj
         try:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
@@ -150,11 +150,19 @@ class CreateReplacementVariables:
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
             sensors_config = convert_config_lines_to_obj(sensor_config_lines, skip_write=True)
-            installed_sensors_config = convert_installed_sensors_lines_to_obj(installed_sensors_lines, skip_write=True)
+            installed_sensors_config = isc_lines_to_obj(installed_sensors_lines, skip_write=True)
             installed_sensors_config.raspberry_pi_name = rpi_model_name
+
             weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
             luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
             open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
+
+            if wu_config.bad_config_load:
+                weather_underground_enabled = ""
+            if luftdaten_config.bad_load:
+                luftdaten_enabled = ""
+            if osm_config.bad_load:
+                open_sense_map_enabled = ""
 
             wifi_ssid = ""
             if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
@@ -225,17 +233,20 @@ class CreateReplacementVariables:
 
     def report_test_sensors(self, ip_address):
         try:
-            sensor_readings_raw = get_http_sensor_reading(ip_address,
-                                                          command=self.remote_sensor_commands.sensor_readings)
+            get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
+            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command)
             sensor_types = sensor_readings_raw.split(app_config_access.command_data_separator)[0].split(",")
             sensor_readings = sensor_readings_raw.split(app_config_access.command_data_separator)[1].split(",")
 
             return_types = ""
             return_readings = ""
             for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
-                return_types += '<th><span style="background-color: #00ffff;">' + str(sensor_type) + "</span></th>\n"
-                return_readings += '<th><span style="background-color: #0BB10D;">' + str(
-                    sensor_reading) + "</span></th>\n"
+                return_types += '<th><span style="background-color: #00ffff;">' + \
+                                str(sensor_type) + \
+                                "</span></th>\n"
+                return_readings += '<th><span style="background-color: #0BB10D;">' + \
+                                   str(sensor_reading) + \
+                                   "</span></th>\n"
 
             return [[return_types, "{{ SensorTypes }}"],
                     [return_readings, "{{ SensorReadings }}"]]

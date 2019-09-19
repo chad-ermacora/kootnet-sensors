@@ -64,6 +64,8 @@ class CreateOpenSenseMapConfig:
         self.ultra_violet_a_id = ""
         self.ultra_violet_b_id = ""
 
+        self.bad_load = False
+
     def get_configuration_str(self):
         """ Returns Open Sense Map settings ready to be written to the configuration file. """
         config_str = "Enable = 1 & Disable = 0\n" + \
@@ -251,6 +253,8 @@ class CreateOpenSenseMapConfig:
                     logger.primary_logger.warning("Problem loading Open Sense Map Configuration file - " +
                                                   "Using 1 or more Defaults: " + str(error))
                     self.write_config_to_file()
+                else:
+                    self.bad_load = True
         else:
             if not skip_write:
                 logger.primary_logger.warning("No Open Sense Map configuration file found - Saving Default")

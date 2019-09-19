@@ -122,12 +122,12 @@ class CreateSensorHTTP:
             return route_functions.logout()
 
         @self.app.route("/SensorControlManage", methods=["GET", "POST"])
-        def html_multi_sensor_management():
+        def html_sensor_control_management():
             return route_functions.html_sensor_control_management(request)
 
         @self.app.route("/MultiSCSaveSettings", methods=["POST"])
         @self.auth.login_required
-        def html_multi_sensor_control_save_settings():
+        def html_sensor_control_save_settings():
             return route_functions.html_sensor_control_save_settings(request)
 
         @self.app.route("/About")

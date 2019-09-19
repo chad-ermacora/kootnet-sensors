@@ -13,248 +13,269 @@
         }
     </style>
 
-    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red"><u>
+    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red">
         Sensor Control
-    </u></a></strong></h2>
+    </a></strong></h2>
+
     <h4 style="color: red">
         Use this to Check & Manage Multiple Kootnet Sensors. ** This is a work in progress **
     </h4>
 
-    <ul class="mui-tabs__bar">
-        <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                                      data-mui-controls="main-tab">
-            Checks & Downloads
-        </a></li>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="edit-config-tab">
-            Configurations
-        </a></li>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="other-tab">
-            Online Services
-        </a></li>
-    </ul>
-    <div class="mui-tabs__pane mui--is-active" id="main-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/SensorControlManage">
-            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                    type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings"
-                    style="float: left">
-                Save Settings
-            </button>
-            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                    type="submit" name="button_action" value="run_action" style="float: right">
-                Run Action
-            </button>
+    <form class="mui-form" method="POST" style="max-width: 600px;" action="/SensorControlManage">
+        <fieldset style="text-align: center">
+            <div class="mui-container-fluid" style="background-color: #00B0FF;">
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings">
+                    Save
+                </button>
+                <br>
+                <h4 style="text-decoration: underline; color: purple;">
+                    Sensor Login (Optional)
+                </h4>
+
+                <label style="font-size: small">
+                    Username<br>
+                    <input type="text" name="sensor_username" placeholder="Eg. Jim">
+                    <br>
+                </label>
+
+                <label style="font-size: small">
+                    Password<br>
+                    <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
+                    <br>
+                </label>
+
+                <div class="mui-row">
+                    <div class="mui-col-md-3">
+                        <div class="mui-textfield">
+                            <label>
+                                IP or DNS Address
+                            </label>
+                            <input style="background-color: {{ SensorIP1BGColour }}" type="text"
+                                   name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
+                            <input style="background-color: {{ SensorIP3BGColour }}" type="text"
+                                   name="senor_ip_3" value="{{ SensorIP3 }}">
+                            <input style="background-color: {{ SensorIP5BGColour }}" type="text"
+                                   name="senor_ip_5" value="{{ SensorIP5 }}">
+                            <input style="background-color: {{ SensorIP7BGColour }}" type="text"
+                                   name="senor_ip_7" value="{{ SensorIP7 }}">
+                            <input style="background-color: {{ SensorIP9BGColour }}" type="text"
+                                   name="senor_ip_9" value="{{ SensorIP9 }}">
+                            <input style="background-color: {{ SensorIP11BGColour }}" type="text"
+                                   name="senor_ip_11" value="{{ SensorIP11 }}">
+                            <input style="background-color: {{ SensorIP13BGColour }}" type="text"
+                                   name="senor_ip_13" value="{{ SensorIP13 }}">
+                            <input style="background-color: {{ SensorIP15BGColour }}" type="text"
+                                   name="senor_ip_15" value="{{ SensorIP15 }}">
+                            <input style="background-color: {{ SensorIP17BGColour }}" type="text"
+                                   name="senor_ip_17" value="{{ SensorIP17 }}">
+                            <input style="background-color: {{ SensorIP19BGColour }}" type="text"
+                                   name="senor_ip_19" value="{{ SensorIP19 }}">
+                        </div>
+                    </div>
+                    <div class="mui-col-md-3">
+                        <div class="mui-textfield">
+                            <label>
+                                IP or DNS Address
+                            </label>
+                            <input style="background-color: {{ SensorIP2BGColour }}" type="text"
+                                   name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
+                            <input style="background-color: {{ SensorIP4BGColour }}" type="text"
+                                   name="senor_ip_4" value="{{ SensorIP4 }}">
+                            <input style="background-color: {{ SensorIP6BGColour }}" type="text"
+                                   name="senor_ip_6" value="{{ SensorIP6 }}">
+                            <input style="background-color: {{ SensorIP8BGColour }}" type="text"
+                                   name="senor_ip_8" value="{{ SensorIP8 }}">
+                            <input style="background-color: {{ SensorIP10BGColour }}" type="text"
+                                   name="senor_ip_10" value="{{ SensorIP10 }}">
+                            <input style="background-color: {{ SensorIP12BGColour }}" type="text"
+                                   name="senor_ip_12" value="{{ SensorIP12 }}">
+                            <input style="background-color: {{ SensorIP14BGColour }}" type="text"
+                                   name="senor_ip_14" value="{{ SensorIP14 }}">
+                            <input style="background-color: {{ SensorIP16BGColour }}" type="text"
+                                   name="senor_ip_16" value="{{ SensorIP16 }}">
+                            <input style="background-color: {{ SensorIP18BGColour }}" type="text"
+                                   name="senor_ip_18" value="{{ SensorIP18 }}">
+                            <input style="background-color: {{ SensorIP20BGColour }}" type="text"
+                                   name="senor_ip_20" value="{{ SensorIP20 }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+
+        <ul class="mui-tabs__bar">
+            <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                                          data-mui-controls="main-tab">
+                Checks & Downloads
+            </a></li>
+            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="edit-config-tab">
+                Configurations
+            </a></li>
+            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                   data-mui-controls="online-services-tab">
+                Online Services
+            </a></li>
+        </ul>
+
+        <div class="mui-tabs__pane mui--is-active" id="main-tab">
+            <br>
             <fieldset style="text-align: center">
-                <div class="mui-container-fluid" style="background-color: #00B0FF">
+                <div class="mui-container-fluid" style="background-color: #00B0FF;">
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            type="submit" name="button_action" value="run_action">
+                        Run Action
+                    </button>
+
+                    <br>
+
                     <label>Choose Action</label>
                     <div class="mui-radio">
+                        <h4 style="text-decoration: underline; color: purple;">
+                            Check
+                        </h4>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedOnlineStatus }}
                                    value="online_status">
-                            Check Online Status
+                            Online Status
                         </label>
+                        <br>
+                        <h4 style="text-decoration: underline; color: purple;">
+                            Create Report
+                        </h4>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSystemReports }}
                                    value="systems_report">
-                            Create Systems Report
+                            Systems
                         </label>
-                        <br>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    value="config_report">
-                            Create Config Report
+                            Configuration
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
                                    value="sensors_test_report">
-                            Create Sensors Test Report
+                            Sensors Test
                         </label>
                         <br>
+                        <h4 style="text-decoration: underline; color: purple;">
+                            Download
+                        </h4>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
-                                   value="sensors_download_databases" disabled>
-                            Download Sensor Databases
+                                   value="sensors_download_databases">
+                            Sensor Databases
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadLogs }}
-                                   value="sensors_download_logs" disabled>
-                            Download Logs
+                                   value="sensors_download_logs">
+                            Logs
                         </label>
-                    </div>
-                    <h4 style="color: purple">
-                        Sensor Login (Optional)
-                    </h4>
-                    <label style="font-size: small">
-                        Username<br>
-                        <input type="text" name="sensor_username" placeholder="Eg. Jim">
-                        <br>
-                    </label>
-                    <label style="font-size: small">
-                        Password<br>
-                        <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
-                        <br>
-                    </label>
-
-                    <div class="mui-row">
-                        <div class="mui-col-md-3">
-                            <div class="mui-textfield">
-                                <label>
-                                    IP or DNS Address
-                                </label>
-                                <input style="background-color: {{ SensorIP1BGColour }}" type="text"
-                                       name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
-                                <input style="background-color: {{ SensorIP3BGColour }}" type="text"
-                                       name="senor_ip_3" value="{{ SensorIP3 }}">
-                                <input style="background-color: {{ SensorIP5BGColour }}" type="text"
-                                       name="senor_ip_5" value="{{ SensorIP5 }}">
-                                <input style="background-color: {{ SensorIP7BGColour }}" type="text"
-                                       name="senor_ip_7" value="{{ SensorIP7 }}">
-                                <input style="background-color: {{ SensorIP9BGColour }}" type="text"
-                                       name="senor_ip_9" value="{{ SensorIP9 }}">
-                                <input style="background-color: {{ SensorIP11BGColour }}" type="text"
-                                       name="senor_ip_11" value="{{ SensorIP11 }}">
-                                <input style="background-color: {{ SensorIP13BGColour }}" type="text"
-                                       name="senor_ip_13" value="{{ SensorIP13 }}">
-                                <input style="background-color: {{ SensorIP15BGColour }}" type="text"
-                                       name="senor_ip_15" value="{{ SensorIP15 }}">
-                                <input style="background-color: {{ SensorIP17BGColour }}" type="text"
-                                       name="senor_ip_17" value="{{ SensorIP17 }}">
-                                <input style="background-color: {{ SensorIP19BGColour }}" type="text"
-                                       name="senor_ip_19" value="{{ SensorIP19 }}">
-                            </div>
-                        </div>
-                        <div class="mui-col-md-3">
-                            <div class="mui-textfield">
-                                <label>
-                                    IP or DNS Address
-                                </label>
-                                <input style="background-color: {{ SensorIP2BGColour }}" type="text"
-                                       name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
-                                <input style="background-color: {{ SensorIP4BGColour }}" type="text"
-                                       name="senor_ip_4" value="{{ SensorIP4 }}">
-                                <input style="background-color: {{ SensorIP6BGColour }}" type="text"
-                                       name="senor_ip_6" value="{{ SensorIP6 }}">
-                                <input style="background-color: {{ SensorIP8BGColour }}" type="text"
-                                       name="senor_ip_8" value="{{ SensorIP8 }}">
-                                <input style="background-color: {{ SensorIP10BGColour }}" type="text"
-                                       name="senor_ip_10" value="{{ SensorIP10 }}">
-                                <input style="background-color: {{ SensorIP12BGColour }}" type="text"
-                                       name="senor_ip_12" value="{{ SensorIP12 }}">
-                                <input style="background-color: {{ SensorIP14BGColour }}" type="text"
-                                       name="senor_ip_14" value="{{ SensorIP14 }}">
-                                <input style="background-color: {{ SensorIP16BGColour }}" type="text"
-                                       name="senor_ip_16" value="{{ SensorIP16 }}">
-                                <input style="background-color: {{ SensorIP18BGColour }}" type="text"
-                                       name="senor_ip_18" value="{{ SensorIP18 }}">
-                                <input style="background-color: {{ SensorIP20BGColour }}" type="text"
-                                       name="senor_ip_20" value="{{ SensorIP20 }}">
-                            </div>
-                        </div>
                     </div>
                 </div>
             </fieldset>
-        </form>
-    </div>
-    <div class="mui-tabs__pane" id="edit-config-tab">
-        <ul class="mui-tabs__bar">
-            <li class="mui--is-active">
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="primary-config-tab">
-                    Main
-                </a>
-            </li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="installed-sensors-tab">
-                    Installed Sensors
-                </a>
-            </li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="wifi-config-tab">
-                    WiFi
-                </a>
-            </li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="trigger-variances-tab">
-                    Trigger Variances
-                </a>
-            </li>
-        </ul>
-        <br>
-        <div class="mui-container-fluid">
-            <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
-                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/Replace">
-                    <p style="color: red">Work In Progress</p>
-                </form>
-            </div>
-            <div class="mui-tabs__pane" id="installed-sensors-tab">
-                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                      action="/EditInstalledSensors">
-                    <p style="color: red">Work In Progress</p>
-                </form>
-            </div>
-            <div class="mui-tabs__pane" id="wifi-config-tab">
-                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                      action="/EditConfigWifi">
-                    <p style="color: red">Work In Progress</p>
-                </form>
-            </div>
-            <div class="mui-tabs__pane" id="trigger-variances-tab">
-                <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                      action="/EditTriggerVariances">
-                    <p style="color: red">Work In Progress</p>
-                </form>
-            </div>
         </div>
-    </div>
-    <div class="mui-tabs__pane" id="other-tab">
-        <ul class="mui-tabs__bar">
-            <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                                          data-mui-controls="weather-underground-tab">
-                Weather Underground
-            </a></li>
-            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="luftdaten-tab">
-                Luftdaten
-            </a></li>
-            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="open-sense-map-tab">
-                Open Sense Map
-            </a></li>
-        </ul>
-        <div class="mui-container-fluid">
-            <div class="mui-tabs__pane mui--is-active" id="weather-underground-tab">
-                <br>
-                <div class="mui-container-fluid">
-                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                          action="/EditOnlineServicesWeatherUnderground">
-                        <p style="color: red">Work In Progress</p>
-                    </form>
-                </div>
-            </div>
-            <div class="mui-tabs__pane" id="luftdaten-tab">
-                <div class="mui-container-fluid">
-                    <br>
-                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                          action="/EditOnlineServicesLuftdaten">
-                        <p style="color: red">Work In Progress</p>
-                    </form>
-                </div>
-            </div>
-            <div class="mui-tabs__pane" id="open-sense-map-tab">
-                <div class="mui-container-fluid">
-                    <br>
-                    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-                          action="/EditOnlineServicesLuftdaten">
+
+        <div class="mui-tabs__pane" id="edit-config-tab">
+            <br>
+            <ul class="mui-tabs__bar">
+                <li class="mui--is-active">
+                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                       data-mui-controls="primary-config-tab">
+                        Main
+                    </a>
+                </li>
+
+                <li>
+                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                       data-mui-controls="installed-sensors-tab">
+                        Installed Sensors
+                    </a>
+                </li>
+
+                <li>
+                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                       data-mui-controls="wifi-config-tab">
+                        WiFi
+                    </a>
+                </li>
+
+                <li>
+                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                       data-mui-controls="trigger-variances-tab">
+                        Trigger Variances
+                    </a>
+                </li>
+            </ul>
+            <br>
+            <div class="mui-container-fluid">
+                <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
                     <p style="color: red">Work In Progress</p>
-                    </form>
+                </div>
+                <div class="mui-tabs__pane" id="installed-sensors-tab">
+                    <p style="color: red">Work In Progress</p>
+                </div>
+                <div class="mui-tabs__pane" id="wifi-config-tab">
+                    <p style="color: red">Work In Progress</p>
+                </div>
+                <div class="mui-tabs__pane" id="trigger-variances-tab">
+                    <p style="color: red">Work In Progress</p>
                 </div>
             </div>
         </div>
-    </div>
+        <div class="mui-tabs__pane" id="online-services-tab">
+            <br>
+            <fieldset style="text-align: center">
+                <div class="mui-container-fluid" style="background-color: #00B0FF;">
+                    <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    formaction="/japan" disabled>
+                        Send Update
+                    </button>
+                    <h5><b>
+                        This will update Configurations on ALL listed Sensors for the selected Online Service
+                    </b></h5>
+
+                    <label>Choose Online Service to Update</label>
+                    <div class="mui-radio">
+                        <label style="font-size: small">
+                            <input type="radio" name="online_service_selected_action" checked
+                                   value="weather_underground">
+                            Weather Underground
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="online_service_selected_action" value="luftdaten">
+                            Luftdaten
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="online_service_selected_action" value="open_sense_map">
+                            Open Sense Map
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block;">
+                        <label>
+                            <input type="checkbox" name="enable_online_service"
+                                   value="">
+                            Enable Selected Online Service
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-textfield">
+                        <label style="color: black">
+                            Seconds between Updates
+                            <br>
+                            <input style="width: 75px" type="number" min="1" name="online_service_interval"
+                                   value="900.0">
+                        </label>
+                    </div>
+                    <br>
+                </div>
+            </fieldset>
+        </div>
+    </form>
 
 {% endblock %}

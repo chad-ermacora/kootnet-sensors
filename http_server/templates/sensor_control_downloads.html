@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2><a href="/SensorControlManage" style="color: red; text-decoration: underline;">
+        Back to Sensor Control
+    </a></h2>
+
+    <h4 style="color: red;">
+        ** Warning: Most browsers will block more then one download at a time. **
+        <br>
+        ** Check the top and bottom bars after clicking the button for a pop up warning and allow this site. **
+    </h4>
+
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200 download_databases">
+        Start Downloads
+    </button>
+
+    <h3 style="color: red;">
+        This will download the {{ DownloadTypeMessage }} from the following Sensors.
+    </h3>
+
+    <h4 style="color: red;">
+        {{ SensorAddresses|safe }}
+    </h4>
+
+    <script>
+        $('button.download_databases').click(function (e) {
+            e.preventDefault();
+            {{ DownloadURLs|safe }}
+        });
+    </script>
+
+{% endblock %}

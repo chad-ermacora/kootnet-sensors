@@ -44,6 +44,8 @@ class CreateLuftdatenConfig:
         self.interval_seconds = 180
         self.station_id = self._get_cpu_serial()
 
+        self.bad_load = False
+
     def get_configuration_str(self):
         """ Returns Luftdaten settings ready to be written to the configuration file. """
         config_str = "Enable = 1 & Disable = 0\n" + \
@@ -87,6 +89,8 @@ class CreateLuftdatenConfig:
                     self.write_config_to_file()
                     logger.primary_logger.warning("Problem loading Luftdaten Configuration file - " +
                                                   "Using 1 or more Defaults: " + str(error))
+                else:
+                    self.bad_load = True
         else:
             if not skip_write:
                 logger.primary_logger.warning("No Luftdaten configuration file found - Saving Default")
