@@ -17,12 +17,17 @@
     </button>
 
     <h3 style="color: red;">
-        This will download the {{ DownloadTypeMessage }} from the following Sensors.
+        This will download {{ DownloadTypeMessage }} from the following Sensors.
     </h3>
+    <table>
+        <tr>
+            <th><span style='background-color: #00ffff;'>Address</span></th>
+            <th><span style='background-color: #00ffff;'>Response Time</span></th>
+        </tr>
 
-    <h4 style="color: red;">
-        {{ SensorAddresses|safe }}
-    </h4>
+        {{ SensorResponse|safe }}
+
+    </table>
 
     <script>
         $('button.download_databases').click(function (e) {

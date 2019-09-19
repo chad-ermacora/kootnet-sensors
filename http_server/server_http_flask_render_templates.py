@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import time
 from datetime import datetime
 from time import strftime
 from threading import Thread
@@ -181,26 +182,54 @@ class CreateRenderTemplates:
         new_report += html_sensor_report_end
         return new_report
 
-    @staticmethod
-    def downloads_sensor_control(address_list, download_type="sensors_download_databases"):
+    def downloads_sensor_control(self, address_list, download_type="sensors_download_databases"):
         network_commands = server_http_sensor_control.CreateNetworkGetCommands()
         download_command = network_commands.sensor_sql_database
-        download_type_message = "SQLite3 Database"
+        download_type_message = "the SQLite3 Database"
         if download_type == app_config_access.sensor_control_config.radio_download_logs:
             download_command = network_commands.download_zipped_logs
             download_type_message = "Full Logs"
         sensor_download_url = "window.open('https://{{ IPAddress }}:10065/" + download_command + "');"
         sensor_download_sql_list = ""
-        text_ip_addresses = ""
+        text_ip_and_response = ""
+
+        threads = []
         for address in address_list:
             if address != "Invalid":
-                new_download = sensor_download_url.replace("{{ IPAddress }}", address)
+                threads.append(Thread(target=self._get_remote_sensor_check_and_delay, args=[address]))
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        address_responses = []
+        while not app_cached_variables.data_queue.empty():
+            address_responses.append(app_cached_variables.data_queue.get())
+            app_cached_variables.data_queue.task_done()
+
+        for response in address_responses:
+            if response["status"] == "OK":
+                new_download = sensor_download_url.replace("{{ IPAddress }}", response["address"])
                 sensor_download_sql_list += new_download + "\n            "
-                text_ip_addresses += address + "<br>"
+                text_ip_and_response += "<tr><th><span style='background-color: #f2f2f2;'>" + \
+                                     response["address"] + "</span></th>" + \
+                                     "<th><span style='background-color: #ccffcc;'>" + \
+                                     response["delay"] + " Seconds</span></th></tr>"
+
         return render_template("sensor_control_downloads.html",
                                DownloadTypeMessage=download_type_message,
                                DownloadURLs=sensor_download_sql_list.strip(),
-                               SensorAddresses=text_ip_addresses)
+                               SensorResponse=text_ip_and_response)
+
+    @staticmethod
+    def _get_remote_sensor_check_and_delay(address):
+        task_start_time = time.time()
+        sensor_status = app_generic_functions.get_http_sensor_reading(address)
+        task_end_time = round(time.time() - task_start_time, 3)
+        app_cached_variables.data_queue.put({"address": address,
+                                             "status": str(sensor_status),
+                                             "delay": str(task_end_time)})
 
     @staticmethod
     def system_management():
