@@ -75,7 +75,7 @@ class CreateInstalledSensors:
         self.has_gyro = 0
 
         self.linux_system_name = "Gnu/Linux"
-        self.raspberry_pi_name = ""
+        self.raspberry_pi_name = "NA"
 
         self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
@@ -133,8 +133,9 @@ class CreateInstalledSensors:
             str_installed_sensors += self.pimoroni_st7735_name + " || "
         if self.pimoroni_mono_oled_luma:
             str_installed_sensors += self.pimoroni_mono_oled_luma_name + " || "
-
-        return str_installed_sensors[:-4]
+        if len(str_installed_sensors) > 4:
+            return str_installed_sensors[:-4]
+        return "N/A"
 
     def get_installed_sensors_config_as_str(self):
         new_installed_sensors_str = "Change the number in front of each line. Enable = 1 & Disable = 0\n" + \
@@ -200,16 +201,16 @@ def get_installed_sensors_from_file():
     if os.path.isfile(file_locations.installed_sensors_config):
         installed_sensor_lines = app_generic_functions.get_file_content(
             file_locations.installed_sensors_config).strip().split("\n")
-        installed_sensors = convert_installed_sensors_lines_to_obj(installed_sensor_lines)
+        installed_sensors = convert_lines_to_obj(installed_sensor_lines)
     else:
         logger.primary_logger.warning("Installed Sensors file not found, using and saving default")
         installed_sensors = CreateInstalledSensors()
-        write_installed_sensors_to_file(installed_sensors)
+        write_to_file(installed_sensors)
 
     return installed_sensors
 
 
-def convert_installed_sensors_lines_to_obj(installed_sensor_lines, skip_write=False):
+def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
     """ Converts provided installed sensors text as a list of lines into a object and returns it. """
     new_installed_sensors = CreateInstalledSensors()
 
@@ -328,17 +329,20 @@ def convert_installed_sensors_lines_to_obj(installed_sensor_lines, skip_write=Fa
                                           "Should be 18 but seeing " + str(len(installed_sensor_lines)) + ": " +
                                           "Disabling bad entries. " +
                                           "Please review the Installed Sensors Configuration file.")
-            write_installed_sensors_to_file(new_installed_sensors)
+            write_to_file(new_installed_sensors)
         if new_installed_sensors.raspberry_pi:
             new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
     return new_installed_sensors
 
 
-def write_installed_sensors_to_file(installed_sensors):
+def write_to_file(installed_sensors):
     """ Writes provided 'installed sensors' to local disk. The provided sensors can be string or object. """
-    if type(installed_sensors) == str:
-        new_installed_sensors = installed_sensors
-    else:
-        new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
+    try:
+        if type(installed_sensors) == str:
+            new_installed_sensors = installed_sensors
+        else:
+            new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
 
-    app_generic_functions.write_file_to_disk(file_locations.installed_sensors_config, new_installed_sensors)
+        app_generic_functions.write_file_to_disk(file_locations.installed_sensors_config, new_installed_sensors)
+    except Exception as error:
+        logger.primary_logger.error("Failed to write Installed Sensor Config: " + str(error))

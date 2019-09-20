@@ -87,7 +87,7 @@ def update_cached_variables(sensor_access):
             logger.primary_logger.error("Error checking dhcpcd.conf: " + str(error))
             dhcpcd_config_lines = []
 
-        if network_ip.check_for_dhcp(dhcpcd_config_lines):
+        if not network_ip.check_for_dhcp(dhcpcd_config_lines):
             app_cached_variables.ip = network_ip.get_dhcpcd_ip(dhcpcd_config_lines)
             app_cached_variables.ip_subnet = network_ip.get_subnet(dhcpcd_config_lines)
             app_cached_variables.gateway = network_ip.get_gateway(dhcpcd_config_lines)

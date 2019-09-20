@@ -212,15 +212,15 @@ class CreateRenderTemplates:
             if response["status"] == "OK":
                 new_download = sensor_download_url.replace("{{ IPAddress }}", response["address"])
                 sensor_download_sql_list += new_download + "\n            "
-                text_ip_and_response += "<tr><th><span style='background-color: #f2f2f2;'>" + \
-                                     response["address"] + "</span></th>" + \
-                                     "<th><span style='background-color: #ccffcc;'>" + \
-                                     response["delay"] + " Seconds</span></th></tr>"
+                text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
+                                     response["address"] + "</span></th>\n" + \
+                                     "        <th><span style='background-color: #ccffcc;'>" + \
+                                     response["delay"] + " Seconds</span></th></tr>\n"
 
         return render_template("sensor_control_downloads.html",
                                DownloadTypeMessage=download_type_message,
                                DownloadURLs=sensor_download_sql_list.strip(),
-                               SensorResponse=text_ip_and_response)
+                               SensorResponse=text_ip_and_response.strip())
 
     @staticmethod
     def _get_remote_sensor_check_and_delay(address):

@@ -66,7 +66,7 @@ def get_installed_config_raw():
 def reset_installed_sensors():
     """ Writes a default installed sensor configuration file. """
     logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
-    config_installed_sensors.write_installed_sensors_to_file(config_installed_sensors.CreateInstalledSensors())
+    config_installed_sensors.write_to_file(config_installed_sensors.CreateInstalledSensors())
 
 
 def reset_config():

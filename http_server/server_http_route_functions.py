@@ -656,8 +656,8 @@ class CreateRouteFunctions:
     def cc_set_installed_sensors(self, request):
         logger.network_logger.info("** CC Installed Sensors set by " + str(request.remote_addr))
         raw_installed_sensors = request.form['command_data'].splitlines()
-        new_installed_sensors = config_installed_sensors.convert_installed_sensors_lines_to_obj(raw_installed_sensors)
-        config_installed_sensors.write_installed_sensors_to_file(new_installed_sensors)
+        new_installed_sensors = config_installed_sensors.convert_lines_to_obj(raw_installed_sensors)
+        config_installed_sensors.write_to_file(new_installed_sensors)
         self.sensor_access.restart_services()
 
     def cc_get_hostname(self, request):

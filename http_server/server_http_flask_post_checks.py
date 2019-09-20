@@ -18,12 +18,10 @@
 """
 import os
 import shutil
-import operations_modules.config_installed_sensors
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import file_locations
 from operations_modules import app_config_access
-from operations_modules import config_primary
 from operations_modules import app_generic_functions
 from operations_modules import network_ip
 from operations_modules import network_wifi
@@ -70,106 +68,72 @@ def check_html_config_main(html_request):
     else:
         app_config_access.current_config.enable_custom_temp = 0
 
-    config_primary.write_config_to_file(app_config_access.current_config)
+    app_config_access.config_primary.write_config_to_file(app_config_access.current_config)
 
 
 def check_html_installed_sensors(html_request):
     logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
+    new_installed_sensors = app_config_access.config_installed_sensors.CreateInstalledSensors()
+
     try:
         if html_request.form.get("linux_system") is not None:
-            app_config_access.installed_sensors.linux_system = 1
-        else:
-            app_config_access.installed_sensors.linux_system = 0
+            new_installed_sensors.linux_system = 1
 
         if html_request.form.get("raspberry_pi") is not None:
-            app_config_access.installed_sensors.raspberry_pi = 1
-        else:
-            app_config_access.installed_sensors.raspberry_pi = 0
+            new_installed_sensors.raspberry_pi = 1
 
         if html_request.form.get("raspberry_pi_sense_hat") is not None:
-            app_config_access.installed_sensors.raspberry_pi_sense_hat = 1
-        else:
-            app_config_access.installed_sensors.raspberry_pi_sense_hat = 0
+            new_installed_sensors.raspberry_pi_sense_hat = 1
 
         if html_request.form.get("pimoroni_bh1745") is not None:
-            app_config_access.installed_sensors.pimoroni_bh1745 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_bh1745 = 0
+            new_installed_sensors.pimoroni_bh1745 = 1
 
         if html_request.form.get("pimoroni_as7262") is not None:
-            app_config_access.installed_sensors.pimoroni_as7262 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_as7262 = 0
+            new_installed_sensors.pimoroni_as7262 = 1
 
         if html_request.form.get("pimoroni_bmp280") is not None:
-            app_config_access.installed_sensors.pimoroni_bmp280 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_bmp280 = 0
+            new_installed_sensors.pimoroni_bmp280 = 1
 
         if html_request.form.get("pimoroni_bme680") is not None:
-            app_config_access.installed_sensors.pimoroni_bme680 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_bme680 = 0
+            new_installed_sensors.pimoroni_bme680 = 1
 
         if html_request.form.get("pimoroni_enviro") is not None:
-            app_config_access.installed_sensors.pimoroni_enviro = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_enviro = 0
+            new_installed_sensors.pimoroni_enviro = 1
 
         if html_request.form.get("pimoroni_enviroplus") is not None:
-            app_config_access.installed_sensors.pimoroni_enviroplus = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_enviroplus = 0
+            new_installed_sensors.pimoroni_enviroplus = 1
 
         if html_request.form.get("pimoroni_pms5003") is not None:
-            app_config_access.installed_sensors.pimoroni_pms5003 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_pms5003 = 0
+            new_installed_sensors.pimoroni_pms5003 = 1
 
         if html_request.form.get("pimoroni_lsm303d") is not None:
-            app_config_access.installed_sensors.pimoroni_lsm303d = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_lsm303d = 0
+            new_installed_sensors.pimoroni_lsm303d = 1
 
         if html_request.form.get("pimoroni_icm20948") is not None:
-            app_config_access.installed_sensors.pimoroni_icm20948 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_icm20948 = 0
+            new_installed_sensors.pimoroni_icm20948 = 1
 
         if html_request.form.get("pimoroni_vl53l1x") is not None:
-            app_config_access.installed_sensors.pimoroni_vl53l1x = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_vl53l1x = 0
+            new_installed_sensors.pimoroni_vl53l1x = 1
 
         if html_request.form.get("pimoroni_ltr_559") is not None:
-            app_config_access.installed_sensors.pimoroni_ltr_559 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_ltr_559 = 0
+            new_installed_sensors.pimoroni_ltr_559 = 1
 
         if html_request.form.get("pimoroni_veml6075") is not None:
-            app_config_access.installed_sensors.pimoroni_veml6075 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_veml6075 = 0
+            new_installed_sensors.pimoroni_veml6075 = 1
 
         if html_request.form.get("pimoroni_matrix_11x7") is not None:
-            app_config_access.installed_sensors.pimoroni_matrix_11x7 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_matrix_11x7 = 0
+            new_installed_sensors.pimoroni_matrix_11x7 = 1
 
         if html_request.form.get("pimoroni_st7735") is not None:
-            app_config_access.installed_sensors.pimoroni_st7735 = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_st7735 = 0
+            new_installed_sensors.pimoroni_st7735 = 1
 
         if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-            app_config_access.installed_sensors.pimoroni_mono_oled_luma = 1
-        else:
-            app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
-
-        installed_sensors = app_config_access.installed_sensors.get_installed_sensors_config_as_str()
-        operations_modules.config_installed_sensors.write_installed_sensors_to_file(installed_sensors)
+            new_installed_sensors.pimoroni_mono_oled_luma = 1
     except Exception as error:
-        logger.network_logger.debug("Trigger Error: " + str(error))
+        logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+
+    installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
+    app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
 
 
 def check_html_variance_triggers(html_request):

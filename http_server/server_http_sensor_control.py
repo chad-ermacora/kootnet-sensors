@@ -114,8 +114,6 @@ class CreateReplacementVariables:
                 ["GetUsedDiskSpace", "{{ FreeDiskSpace }}"]]
 
     def report_config(self, ip_address):
-        isc_lines_to_obj = app_config_access.config_installed_sensors.convert_installed_sensors_lines_to_obj
-        convert_config_lines_to_obj = app_config_access.config_primary.convert_config_lines_to_obj
         try:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
             command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
@@ -149,8 +147,11 @@ class CreateReplacementVariables:
             osm_config = open_sense_map.CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
-            sensors_config = convert_config_lines_to_obj(sensor_config_lines, skip_write=True)
-            installed_sensors_config = isc_lines_to_obj(installed_sensors_lines, skip_write=True)
+            sensors_config = app_config_access.config_primary.convert_config_lines_to_obj(sensor_config_lines,
+                                                                                          skip_write=True)
+            installed_sensors_config = app_config_access.config_installed_sensors.convert_lines_to_obj(
+                installed_sensors_lines, skip_write=True)
+
             installed_sensors_config.raspberry_pi_name = rpi_model_name
 
             weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)

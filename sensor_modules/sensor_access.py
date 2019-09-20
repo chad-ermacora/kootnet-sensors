@@ -730,6 +730,7 @@ def display_message(text_message):
 
 def restart_services():
     """ Reloads systemd service files & restarts KootnetSensors service. """
+    sleep(2)
     os.system(os_cli_commands.restart_sensor_services_command)
 
 
