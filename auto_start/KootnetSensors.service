@@ -1,15 +1,15 @@
 [Unit]
 Description=KootNet Sensors - SQLite Recording & HTTPS Server Access
-After=network.target
+Wants=network.target
 StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 Restart=always
-WorkingDirectory=/opt/kootnet-sensors
 RestartSec=5
 User=root
 Group=root
+WorkingDirectory=/opt/kootnet-sensors
 ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/start_sensor_services.py
 
 [Install]
