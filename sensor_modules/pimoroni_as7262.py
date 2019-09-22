@@ -26,7 +26,7 @@ class CreateAS7262:
 
     def __init__(self):
         try:
-            self.as7262_import = __import__('as7262')
+            self.as7262_import = __import__('as7262').AS7262()
             self.as7262_import.soft_reset()
             self.as7262_import.set_gain(64)
             self.as7262_import.set_integration_time(21)
