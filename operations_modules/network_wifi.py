@@ -41,6 +41,7 @@ def get_wifi_security_type(wifi_config_lines):
         line_stripped = line.strip()
         if line_stripped[:9] == "key_mgmt=":
             return line_stripped[9:]
+    return ""
 
 
 def get_wifi_psk(wifi_config_lines):

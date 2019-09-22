@@ -495,10 +495,10 @@ class CreateRenderTemplates:
                     gateway_disabled = "disabled"
                     dns1_disabled = "disabled"
                     dns2_disabled = "disabled"
-                if app_cached_variables.wifi_security_type is None or app_cached_variables.wifi_security_type == "WPA-PSK":
-                    wifi_security_type_wpa1 = "checked"
-                else:
-                    wifi_security_type_none1 = "checked"
+            if app_cached_variables.wifi_security_type == "" or app_cached_variables.wifi_security_type == "WPA-PSK":
+                wifi_security_type_wpa1 = "checked"
+            else:
+                wifi_security_type_none1 = "checked"
 
             return render_template("edit_configurations.html",
                                    PageURL="/ConfigurationsHTML",
