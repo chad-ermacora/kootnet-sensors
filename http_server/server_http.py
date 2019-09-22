@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
+from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
@@ -33,8 +34,7 @@ try:
     # noinspection PyUnresolvedReferences
     from werkzeug.security import check_password_hash
     # noinspection PyUnresolvedReferences
-    from gevent import pywsgi
-    # noinspection PyUnresolvedReferences
+    from gevent.pywsgi import WSGIServer
     import_errors = False
 except ImportError as import_error:
     logger.primary_logger.critical("**** Missing Required HTTPS Dependencies: " + str(import_error))
@@ -569,14 +569,31 @@ class CreateSensorHTTP:
             route_functions.display_text(request)
 
         logger.network_logger.info("** starting up on port " + str(flask_http_port) + " **")
-        http_server = pywsgi.WSGIServer((flask_http_ip, flask_http_port),
-                                        self.app,
-                                        keyfile=file_locations.http_ssl_key,
-                                        certfile=file_locations.http_ssl_crt)
-        logger.primary_logger.info("HTTPS Server Started")
+        http_server = WSGIServer((flask_http_ip, flask_http_port),
+                                 self.app,
+                                 keyfile=file_locations.http_ssl_key,
+                                 certfile=file_locations.http_ssl_crt)
         http_server.serve_forever()
 
 
 def _delayed_cache_update(sensor_access):
     sleep(5)
     app_generic_functions.update_cached_variables(sensor_access)
+
+
+def https_start_and_watch(sensor_access):
+    # Start the HTTP Server for remote access
+    # Sleep before start due SSL not loading properly on first system boot
+    sleep(10)
+    sensor_http_server_thread = Thread(target=CreateSensorHTTP, args=[sensor_access])
+    sensor_http_server_thread.daemon = True
+    sensor_http_server_thread.start()
+    logger.primary_logger.info("HTTPS Server Started")
+
+    while True:
+        sleep(30)
+        if not sensor_http_server_thread.is_alive():
+            logger.primary_logger.error("HTTPS Server Stopped Unexpectedly - Restarting...")
+            sensor_http_server_thread = Thread(target=CreateSensorHTTP, args=[sensor_access])
+            sensor_http_server_thread.daemon = True
+            sensor_http_server_thread.start()

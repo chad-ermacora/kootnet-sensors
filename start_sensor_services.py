@@ -39,14 +39,14 @@ if software_version.old_version != software_version.version:
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done
     while True:
-        sleep(10)
+        sleep(30)
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 
 # Start the HTTP Server for remote access
-sensor_http_server_thread = Thread(target=server_http.CreateSensorHTTP, args=[sensor_access])
-sensor_http_server_thread.daemon = True
-sensor_http_server_thread.start()
+https_server_and_check_thread = Thread(target=server_http.https_start_and_watch, args=[sensor_access])
+https_server_and_check_thread.daemon = True
+https_server_and_check_thread.start()
 
 # If installed, start up SenseHAT Joystick program
 if app_config_access.installed_sensors.raspberry_pi_sense_hat:
