@@ -17,8 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import time
 from flask import send_file
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_DEFLATED, ZipInfo
+from io import BytesIO
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -56,6 +58,7 @@ class CreateRouteFunctions:
 
     def html_sensor_control_management(self, request):
         logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
+        g_s_c = self.render_templates.get_sensor_control_report
         if request.method == "POST":
             sc_action = request.form.get("selected_action")
             app_config_access.sensor_control_config.set_from_html_post(request)
@@ -66,24 +69,56 @@ class CreateRouteFunctions:
                     ip_list.append(sensor_address)
                 else:
                     ip_list.append("Invalid")
+
             check_status = app_config_access.sensor_control_config.radio_check_status
             system_report = app_config_access.sensor_control_config.radio_report_system
             config_report = app_config_access.sensor_control_config.radio_report_config
             sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+            download_reports = app_config_access.sensor_control_config.radio_download_reports
             download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
             download_logs = app_config_access.sensor_control_config.radio_download_logs
+
             if sc_action == check_status:
                 return self.render_templates.sensor_control_management(request_type=sc_action, address_list=ip_list)
             elif sc_action == system_report:
-                return self.render_templates.get_sensor_control_report(ip_list, report_type=system_report)
+                return g_s_c(ip_list, report_type=system_report)
             elif sc_action == config_report:
-                if request.form.get("sensor_username").strip() != "":
-                    app_cached_variables.http_login = request.form.get("sensor_username").strip()
-                if request.form.get("sensor_password").strip() != "":
-                    app_cached_variables.http_password = request.form.get("sensor_password").strip()
-                return self.render_templates.get_sensor_control_report(ip_list, report_type=config_report)
+                return g_s_c(ip_list, report_type=config_report)
             elif sc_action == sensors_report:
-                return self.render_templates.get_sensor_control_report(ip_list, report_type=sensors_report)
+                return g_s_c(ip_list, report_type=sensors_report)
+            elif sc_action == download_reports:
+                reports_zip_name = "Reports_from_" + self.sensor_access.get_hostname() + "_" + \
+                                   str(time.time())[:-8] + ".zip"
+                try:
+                    html_system_report = g_s_c(ip_list, report_type=system_report)
+                    html_system_report = html_system_report.replace("/SensorControlManage",
+                                                                    "https://github.com/chad-ermacora/sensor-rp")
+                    html_config_report = g_s_c(ip_list, report_type=config_report)
+                    html_config_report = html_config_report.replace("/SensorControlManage",
+                                                                    "https://github.com/chad-ermacora/sensor-rp")
+                    html_sensors_test_report = g_s_c(ip_list, report_type=sensors_report)
+                    html_sensors_test_report = html_sensors_test_report.replace("/SensorControlManage",
+                                                                                "https://github.com/chad-ermacora/sensor-rp")
+                    return_zip_file = BytesIO()
+                    with ZipFile(return_zip_file, "w") as zip_file:
+                        r_system_file_data = ZipInfo("ReportSystem.html")
+                        r_config_file_data = ZipInfo("ReportConfiguration.html")
+                        r_s_tests_file_data = ZipInfo("ReportSensorsTests.html")
+
+                        date_time = time.localtime(time.time())[:6]
+                        for file_data in [r_system_file_data, r_config_file_data, r_s_tests_file_data]:
+                            file_data.date_time = date_time
+                            file_data.compress_type = ZIP_DEFLATED
+
+                        zip_file.writestr(r_system_file_data, html_system_report)
+                        zip_file.writestr(r_config_file_data, html_config_report)
+                        zip_file.writestr(r_s_tests_file_data, html_sensors_test_report)
+                    return_zip_file.seek(0)
+                    return send_file(return_zip_file, attachment_filename=reports_zip_name, as_attachment=True)
+                except Exception as error:
+                    logger.primary_logger.error("* Unable to Zip Reports: " + str(error))
+                    return self.render_templates.message_and_return("Unable to zip Reports for Download",
+                                                                    url="/SensorControlManage")
             elif sc_action == download_sql_databases:
                 return self.render_templates.downloads_sensor_control(ip_list, download_type=download_sql_databases)
             elif sc_action == download_logs:

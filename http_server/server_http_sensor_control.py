@@ -235,7 +235,7 @@ class CreateReplacementVariables:
     def report_test_sensors(self, ip_address):
         try:
             get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
-            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command)
+            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command).strip()
             sensor_types = sensor_readings_raw.split(app_config_access.command_data_separator)[0].split(",")
             sensor_readings = sensor_readings_raw.split(app_config_access.command_data_separator)[1].split(",")
 
@@ -303,7 +303,12 @@ def get_online_report(ip_address, report_type="systems_report"):
                 else:
                     sensor_report = sensor_report.replace(command_and_replacement[1], command_and_replacement[0])
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
-            app_cached_variables.data_queue.put([sensor_name, sensor_report])
+            if report_type == report_type_config:
+                app_cached_variables.data_queue2.put([sensor_name, sensor_report])
+            elif report_type == report_type_test_sensors:
+                app_cached_variables.data_queue3.put([sensor_name, sensor_report])
+            else:
+                app_cached_variables.data_queue.put([sensor_name, sensor_report])
     except Exception as error:
         logger.network_logger.warning("Remote Sensor " + ip_address +
                                       " Failed providing " + str(report_type) +

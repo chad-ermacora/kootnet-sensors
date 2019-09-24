@@ -19,6 +19,7 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 
 
@@ -36,6 +37,7 @@ class CreateSensorControlConfig:
         self.radio_report_system = "systems_report"
         self.radio_report_config = "config_report"
         self.radio_report_test_sensors = "sensors_test_report"
+        self.radio_download_reports = "sensors_download_reports"
         self.radio_download_databases = "sensors_download_databases"
         self.radio_download_logs = "sensors_download_logs"
 
@@ -92,6 +94,12 @@ class CreateSensorControlConfig:
         for html_request_setting in self.html_post_settings:
             new_settings_list.append(html_request.form.get(html_request_setting))
         self._update_settings_with_list(new_settings_list)
+        http_login = html_request.form.get("sensor_username")
+        http_password = html_request.form.get("sensor_password")
+        if http_login != "":
+            app_cached_variables.http_login = http_login
+        if http_password != "":
+            app_cached_variables.http_password = http_password
 
     def set_from_disk(self):
         """ Loads Sensor Control configuration from file and returns it as a configuration object. """

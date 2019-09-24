@@ -164,6 +164,11 @@
                             Download
                         </h4>
                         <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
+                                   value="sensors_download_reports">
+                            Zip of all 3 Reports
+                        </label>
+                        <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
                                    value="sensors_download_databases">
                             Sensor Databases

@@ -42,3 +42,5 @@ http_password = ""
 
 # Used to get data from multiple remote sensors at the "same" time.
 data_queue = Queue()
+data_queue2 = Queue()
+data_queue3 = Queue()

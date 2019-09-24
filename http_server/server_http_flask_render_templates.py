@@ -54,6 +54,7 @@ class CreateRenderTemplates:
         radio_checked_systems_report = ""
         radio_checked_config_report = ""
         radio_checked_sensors_test_report = ""
+        radio_checked_download_reports = ""
         radio_checked_download_database = ""
         radio_checked_download_logs = ""
         default_action = app_config_access.sensor_control_config.default_action
@@ -65,6 +66,8 @@ class CreateRenderTemplates:
             radio_checked_config_report = "checked"
         if default_action == app_config_access.sensor_control_config.radio_report_test_sensors:
             radio_checked_sensors_test_report = "checked"
+        if default_action == app_config_access.sensor_control_config.radio_download_reports:
+            radio_checked_download_reports = "checked"
         if default_action == app_config_access.sensor_control_config.radio_download_databases:
             radio_checked_download_database = "checked"
         if default_action == app_config_access.sensor_control_config.radio_download_logs:
@@ -104,6 +107,7 @@ class CreateRenderTemplates:
                                CheckedSystemReports=radio_checked_systems_report,
                                CheckedConfigReports=radio_checked_config_report,
                                CheckedSensorsTestReports=radio_checked_sensors_test_report,
+                               CheckedDownloadReports=radio_checked_download_reports,
                                CheckedDownloadDatabases=radio_checked_download_database,
                                CheckedDownloadLogs=radio_checked_download_logs,
                                SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
@@ -171,9 +175,14 @@ class CreateRenderTemplates:
         for thread in threads:
             thread.join()
 
-        while not app_cached_variables.data_queue.empty():
-            sensor_reports.append(app_cached_variables.data_queue.get())
-            app_cached_variables.data_queue.task_done()
+        data_queue = app_cached_variables.data_queue
+        if report_type == config_report:
+            data_queue = app_cached_variables.data_queue2
+        if report_type == sensors_report:
+            data_queue = app_cached_variables.data_queue3
+        while not data_queue.empty():
+            sensor_reports.append(data_queue.get())
+            data_queue.task_done()
 
         sensor_reports.sort()
         for report in sensor_reports:
