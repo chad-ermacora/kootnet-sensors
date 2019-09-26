@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
+from operations_modules import app_validation_checks
 from operations_modules import network_wifi
 from operations_modules.online_services import weather_underground
 from operations_modules.online_services import luftdaten
@@ -65,6 +66,7 @@ class CreateNetworkGetCommands:
         self.network_log = "GetNetworkLog"
         self.sensors_log = "GetSensorsLog"
         self.download_zipped_logs = "DownloadZippedLogs"
+        self.download_zipped_everything = "DownloadZippedEverything"
         self.sensor_readings = "GetIntervalSensorReadings"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
@@ -313,3 +315,17 @@ def get_online_report(ip_address, report_type="systems_report"):
         logger.network_logger.warning("Remote Sensor " + ip_address +
                                       " Failed providing " + str(report_type) +
                                       " Data: " + str(error))
+
+
+def get_clean_address_list(http_request):
+    ip_list = []
+    try:
+        for sensor in sensor_bg_names_list:
+            sensor_address = http_request.form.get(sensor)
+            if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
+                ip_list.append(sensor_address)
+            else:
+                ip_list.append("Invalid")
+    except Exception as error:
+        logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
+    return ip_list

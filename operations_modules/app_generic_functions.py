@@ -18,7 +18,10 @@
 """
 import logging
 import os
+import time
 import requests
+from io import BytesIO
+from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
@@ -28,13 +31,13 @@ from operations_modules import network_wifi
 logging.captureWarnings(True)
 
 
-def get_file_content(load_file):
+def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
 
     if os.path.isfile(load_file):
         try:
-            loaded_file = open(load_file, "r")
+            loaded_file = open(load_file, open_type)
             file_content = loaded_file.read()
             loaded_file.close()
         except Exception as error:
@@ -45,11 +48,11 @@ def get_file_content(load_file):
         logger.primary_logger.error(load_file + " not found")
 
 
-def write_file_to_disk(file_location, file_content):
+def write_file_to_disk(file_location, file_content, open_type="w"):
     """ Writes provided file and content to local disk. """
     logger.primary_logger.debug("Writing content to " + str(file_location))
     try:
-        write_file = open(file_location, 'w')
+        write_file = open(file_location, open_type)
         write_file.write(file_content)
         write_file.close()
     except Exception as error:
@@ -114,6 +117,20 @@ def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStat
         return "Error"
 
 
+def get_http_sensor_file(http_ip, command, http_port="10065"):
+    """ Returns requested sensor file (based on the provided command data). """
+    try:
+        url = "https://" + http_ip + ":" + http_port + "/" + command
+        tmp_return_data = requests.get(url=url,
+                                       timeout=(2, 120),
+                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
+                                       verify=False)
+        return tmp_return_data.content
+    except Exception as error:
+        logger.network_logger.debug("Remote Sensor File Request - HTTPS GET Error for " + http_ip + ": " + str(error))
+        return "Error"
+
+
 def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
     """ Returns requested sensor data (based on the provided command data). """
     try:
@@ -125,3 +142,39 @@ def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
                      verify=False)
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
+
+
+def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
+    if save_type == "get_bytes_io":
+        return_zip_file = BytesIO()
+    else:
+        return_zip_file = file_location
+    date_time = time.localtime(time.time())[:6]
+
+    file_meta_data_list = []
+    for name in file_names_list:
+        name_data = ZipInfo(name)
+        name_data.date_time = date_time
+        name_data.compress_type = ZIP_DEFLATED
+        file_meta_data_list.append(name_data)
+    with ZipFile(return_zip_file, "w") as zip_file:
+        for file_meta_data, file_content in zip(file_meta_data_list, files_content_list):
+            zip_file.writestr(file_meta_data, file_content)
+    if save_type == "get_bytes_io":
+        return_zip_file.seek(0)
+        return return_zip_file
+    return "Saved to disk"
+
+
+def get_data_queue_items():
+    que_data = []
+    while not app_cached_variables.data_queue.empty():
+        que_data.append(app_cached_variables.data_queue.get())
+        app_cached_variables.data_queue.task_done()
+    return que_data
+
+
+def replace_text_lists(text_file, old_list, new_list):
+    for old_text, new_text in zip(old_list, new_list):
+        text_file = text_file.replace(old_text, new_text)
+    return text_file

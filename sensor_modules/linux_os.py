@@ -84,7 +84,7 @@ class CreateLinuxSystem:
     def get_sys_datetime_str():
         """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
         logger.sensors_logger.debug("Linux System Sensor Date Time - OK")
-        return strftime("%Y-%m-%d %H:%M")
+        return strftime("%Y-%m-%d %H:%M - %Z")
 
     @staticmethod
     def get_disk_usage_gb():
