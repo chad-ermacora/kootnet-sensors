@@ -123,7 +123,8 @@ class CreateLuftdatenConfig:
                         no_sensors = False
                         self._pms5003()
                 except Exception as error:
-                    logger.network_logger.error("Error processing Luftdaten Data: " + str(error))
+                    logger.network_logger.error("Error processing Luftdaten Data")
+                    logger.network_logger.debug("Luftdaten Error: " + str(error))
 
                 if no_sensors:
                     message = "Luftdaten not Updated - No Compatible Sensors"

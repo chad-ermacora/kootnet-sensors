@@ -371,7 +371,8 @@ class CreateOpenSenseMapConfig:
                         while True:
                             sleep(3600)
                 except Exception as error:
-                    logger.network_logger.error("Error sending data to Open Sense Map: " + str(error))
+                    logger.network_logger.error("Error sending data to Open Sense Map")
+                    logger.network_logger.debug("Open Sense Map Error: " + str(error))
                 sleep(self.interval_seconds)
 
     def add_sensor_to_account(self, html_request):

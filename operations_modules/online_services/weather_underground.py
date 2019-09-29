@@ -180,7 +180,8 @@ class CreateWeatherUndergroundConfig:
                             logger.network_logger.error("Weather Underground: Unknown Error " +
                                                         str(html_get_response.status_code))
                     except Exception as error:
-                        logger.network_logger.error("Error sending data to Weather Underground: " + str(error))
+                        logger.network_logger.error("Error sending data to Weather Underground")
+                        logger.network_logger.debug("Weather Underground Error: " + str(error))
                 else:
                     logger.network_logger.warning("Weather Underground not Updated - No Compatible Sensors")
                     while True:
