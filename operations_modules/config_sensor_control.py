@@ -72,7 +72,7 @@ class CreateSensorControlConfig:
         """ Takes Sensor Control configuration Object and returns it as a string. """
         config_file_str = "This contains saved values for HTML Sensor Control.\n" + \
                           str(self.selected_action) + " = Default Choice for Action\n" + \
-                          str(self.selected_send_type) + " = Default Choice for Download Type (Relayed orDirect)\n" + \
+                          str(self.selected_send_type) + " = Default Choice for Download Type (Relayed or Direct)\n" + \
                           str(self.sensor_ip_dns1) + " = Sensor IP / DNS Entry 1\n" + \
                           str(self.sensor_ip_dns2) + " = Sensor IP / DNS Entry 2\n" + \
                           str(self.sensor_ip_dns3) + " = Sensor IP / DNS Entry 3\n" + \
