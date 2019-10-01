@@ -728,6 +728,13 @@ def display_message(text_message):
         logger.primary_logger.debug("* Display Text: Sensor Display Disabled or not installed")
 
 
+def start_special_sensor_interactive_services():
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        sense_hat_joy_stick_thread = Thread(sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
+        sense_hat_joy_stick_thread.daemon = True
+        sense_hat_joy_stick_thread.start()
+
+
 def restart_services():
     """ Reloads systemd service files & restarts KootnetSensors service. """
     sleep(2)

@@ -43,12 +43,8 @@ if software_version.old_version != software_version.version:
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 
 if app_config_access.installed_sensors.no_sensors is False:
-    # If installed, start up SenseHAT Joystick program
-    start_joy_stick_program = sensor_access.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands
-    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        sense_joy_stick_thread = Thread(target=start_joy_stick_program)
-        sense_joy_stick_thread.daemon = True
-        sense_joy_stick_thread.start()
+    # Start up special Sensor Access Service like SenseHat Joystick
+    sensor_access.start_special_sensor_interactive_services()
 
     # If there is a display installed, start up the display server
     if app_config_access.current_config.enable_display:
