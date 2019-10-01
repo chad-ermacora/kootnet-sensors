@@ -57,6 +57,7 @@ if app_config_access.installed_sensors.no_sensors is False:
         else:
             logger.primary_logger.warning("No Compatible Displays Installed")
 
+    # Start up Interval Sensor Recording
     if app_config_access.current_config.enable_interval_recording:
         interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording, args=[sensor_access])
         interval_recording_thread.daemon = True
@@ -64,11 +65,28 @@ if app_config_access.installed_sensors.no_sensors is False:
     else:
         logger.primary_logger.debug("Interval Recording Disabled in Config")
 
+    # Start up Trigger Sensor Recording
     if app_config_access.current_config.enable_trigger_recording:
         recording_triggers.start_trigger_recording(sensor_access)
     else:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")
 
+    # Start up all enabled Online Services
+    if app_config_access.weather_underground_config.weather_underground_enabled:
+        app_config_access.weather_underground_config.sensor_access = sensor_access
+        wu_thread = Thread(target=app_config_access.weather_underground_config.start_weather_underground)
+        wu_thread.daemon = True
+        wu_thread.start()
+    if app_config_access.luftdaten_config.luftdaten_enabled:
+        app_config_access.luftdaten_config.sensor_access = sensor_access
+        luftdaten_thread = Thread(target=app_config_access.luftdaten_config.start_luftdaten)
+        luftdaten_thread.daemon = True
+        luftdaten_thread.start()
+    if app_config_access.open_sense_map_config.open_sense_map_enabled:
+        app_config_access.open_sense_map_config.sensor_access = sensor_access
+        open_sense_map_thread = Thread(target=app_config_access.open_sense_map_config.start_open_sense_map)
+        open_sense_map_thread.daemon = True
+        open_sense_map_thread.start()
 else:
     logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 

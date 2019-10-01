@@ -21,7 +21,6 @@ from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
 from http_server import server_http_route_functions
 from http_server import server_http_auth
 try:
@@ -55,21 +54,9 @@ class CreateSensorHTTP:
         self.auth = HTTPBasicAuth()
         http_auth = server_http_auth.CreateHTTPAuth()
         http_auth.set_http_auth_from_file()
+
         route_functions = server_http_route_functions.CreateRouteFunctions(sensor_access)
 
-        if app_config_access.weather_underground_config.weather_underground_enabled:
-            app_config_access.weather_underground_config.sensor_access = sensor_access
-            app_generic_functions.thread_function(app_config_access.weather_underground_config.start_weather_underground)
-
-        if app_config_access.luftdaten_config.luftdaten_enabled:
-            app_config_access.luftdaten_config.sensor_access = sensor_access
-            app_generic_functions.thread_function(app_config_access.luftdaten_config.start_luftdaten)
-
-        if app_config_access.open_sense_map_config.open_sense_map_enabled:
-            app_config_access.open_sense_map_config.sensor_access = sensor_access
-            app_generic_functions.thread_function(app_config_access.open_sense_map_config.start_open_sense_map)
-
-        app_generic_functions.update_cached_variables(sensor_access)
         app_generic_functions.thread_function(_delayed_cache_update, args=sensor_access)
 
         @self.app.route("/MenuScript.js")
