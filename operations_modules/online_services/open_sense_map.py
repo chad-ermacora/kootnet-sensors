@@ -257,7 +257,7 @@ class CreateOpenSenseMapConfig:
                     self.bad_load = True
         else:
             if not skip_write:
-                logger.primary_logger.warning("No Open Sense Map configuration file found - Saving Default")
+                logger.primary_logger.info("Open Sense Map Configuration file not found - Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):

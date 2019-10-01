@@ -31,7 +31,7 @@ class CreateIntervalRecording:
 
     def start_interval_recording(self):
         """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
-        logger.primary_logger.info("Interval Recoding Started")
+        logger.primary_logger.info(" -- Interval Recording Started")
         while True:
             try:
                 new_sensor_data = self.sensor_access.get_interval_sensor_readings().split(

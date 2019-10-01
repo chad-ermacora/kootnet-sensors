@@ -53,6 +53,7 @@ class CreateNetworkGetCommands:
 
     def __init__(self):
         self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
@@ -113,6 +114,8 @@ class CreateReplacementVariables:
                 ["GetSQLDBSize", "{{ SQLDBSize }}"],
                 ["GetCPUTemperature", "{{ CPUTemp }}"],
                 ["GetRAMUsed", "{{ RAMUsed }}"],
+                ["GetRAMTotal", "{{ TotalRAM }}"],
+                ["GetRAMTotalSizeType", "{{ TotalRAMSizeType }}"],
                 ["GetUsedDiskSpace", "{{ FreeDiskSpace }}"]]
 
     def report_config(self, ip_address):
@@ -269,14 +272,6 @@ class CreateReplacementVariables:
             return ""
 
 
-def check_online_status(ip_address):
-    sensor_return = get_http_sensor_reading(ip_address)
-    if sensor_return == "OK":
-        app_cached_variables.data_queue.put([ip_address, "green"])
-    else:
-        app_cached_variables.data_queue.put([ip_address, "red"])
-
-
 def get_online_report(ip_address, report_type="systems_report"):
     report_type_config = app_config_access.sensor_control_config.radio_report_config
     report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
@@ -324,8 +319,6 @@ def get_clean_address_list(http_request):
             sensor_address = http_request.form.get(sensor)
             if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
                 ip_list.append(sensor_address)
-            else:
-                ip_list.append("Invalid")
     except Exception as error:
         logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
     return ip_list

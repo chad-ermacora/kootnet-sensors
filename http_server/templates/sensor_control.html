@@ -11,93 +11,84 @@
         .mui-col-md-3 {
             width: 275px;
         }
+
+        .ip_selection_content {
+            display: none;
+            overflow: hidden;
+        }
     </style>
 
-    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red">
+    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red;">
         Sensor Control
     </a></strong></h2>
-
-    <h4 style="color: red">
-        Use this to Check & Manage Multiple Kootnet Sensors. ** This is a work in progress **
-    </h4>
+    <fieldset style="text-align: center; max-width: 565px;">
+        <h4 style="color: red;">Use this to Check & Manage Multiple Kootnet Sensors.
+            <br>
+            ** This is a work in progress **
+        </h4>
+        _<b id="blink_shadow">{{ ExtraTextMessage|safe }}</b>_
+    </fieldset>
 
     <form class="mui-form" method="POST" style="max-width: 600px;" action="/SensorControlManage">
-        <fieldset style="text-align: center">
-            <div class="mui-container-fluid" style="background-color: #00B0FF;">
-                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                        type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings">
-                    Save
-                </button>
-                <br>
-                <h4 style="text-decoration: underline; color: purple;">
-                    Sensor Login (Optional)
-                </h4>
+        <fieldset style="text-align: center;">
+            <button type="button" id="ip_show_hide"
+                    class="mui-btn mui-btn--raised">
+                Show/Hide IP List
+            </button>
+            <div class="ip_selection_content">
+                <div class="mui-container-fluid" style="background-color: #00B0FF;">
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings">
+                        Save Settings
+                    </button>
+                    <h4 style="text-decoration: underline; color: purple;">
+                        Sensor Login (Optional)
+                    </h4>
+                    <label style="font-size: small">
+                        Username<br>
+                        <input type="text" name="sensor_username" placeholder="Eg. Jim">
+                        <br>
+                    </label>
+                    <label style="font-size: small">
+                        Password<br>
+                        <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
+                        <br>
+                    </label>
 
-                <label style="font-size: small">
-                    Username<br>
-                    <input type="text" name="sensor_username" placeholder="Eg. Jim">
-                    <br>
-                </label>
-
-                <label style="font-size: small">
-                    Password<br>
-                    <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
-                    <br>
-                </label>
-
-                <div class="mui-row">
-                    <div class="mui-col-md-3">
-                        <div class="mui-textfield">
-                            <label>
-                                IP or DNS Address
-                            </label>
-                            <input style="background-color: {{ SensorIP1BGColour }}" type="text"
-                                   name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
-                            <input style="background-color: {{ SensorIP3BGColour }}" type="text"
-                                   name="senor_ip_3" value="{{ SensorIP3 }}">
-                            <input style="background-color: {{ SensorIP5BGColour }}" type="text"
-                                   name="senor_ip_5" value="{{ SensorIP5 }}">
-                            <input style="background-color: {{ SensorIP7BGColour }}" type="text"
-                                   name="senor_ip_7" value="{{ SensorIP7 }}">
-                            <input style="background-color: {{ SensorIP9BGColour }}" type="text"
-                                   name="senor_ip_9" value="{{ SensorIP9 }}">
-                            <input style="background-color: {{ SensorIP11BGColour }}" type="text"
-                                   name="senor_ip_11" value="{{ SensorIP11 }}">
-                            <input style="background-color: {{ SensorIP13BGColour }}" type="text"
-                                   name="senor_ip_13" value="{{ SensorIP13 }}">
-                            <input style="background-color: {{ SensorIP15BGColour }}" type="text"
-                                   name="senor_ip_15" value="{{ SensorIP15 }}">
-                            <input style="background-color: {{ SensorIP17BGColour }}" type="text"
-                                   name="senor_ip_17" value="{{ SensorIP17 }}">
-                            <input style="background-color: {{ SensorIP19BGColour }}" type="text"
-                                   name="senor_ip_19" value="{{ SensorIP19 }}">
+                    <div class="mui-row">
+                        <div class="mui-col-md-3">
+                            <div class="mui-textfield">
+                                <label>
+                                    IP or DNS Address
+                                </label>
+                                <input type="text" name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
+                                <input type="text" name="senor_ip_3" value="{{ SensorIP3 }}">
+                                <input type="text" name="senor_ip_5" value="{{ SensorIP5 }}">
+                                <input type="text" name="senor_ip_7" value="{{ SensorIP7 }}">
+                                <input type="text" name="senor_ip_9" value="{{ SensorIP9 }}">
+                                <input type="text" name="senor_ip_11" value="{{ SensorIP11 }}">
+                                <input type="text" name="senor_ip_13" value="{{ SensorIP13 }}">
+                                <input type="text" name="senor_ip_15" value="{{ SensorIP15 }}">
+                                <input type="text" name="senor_ip_17" value="{{ SensorIP17 }}">
+                                <input type="text" name="senor_ip_19" value="{{ SensorIP19 }}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="mui-col-md-3">
-                        <div class="mui-textfield">
-                            <label>
-                                IP or DNS Address
-                            </label>
-                            <input style="background-color: {{ SensorIP2BGColour }}" type="text"
-                                   name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
-                            <input style="background-color: {{ SensorIP4BGColour }}" type="text"
-                                   name="senor_ip_4" value="{{ SensorIP4 }}">
-                            <input style="background-color: {{ SensorIP6BGColour }}" type="text"
-                                   name="senor_ip_6" value="{{ SensorIP6 }}">
-                            <input style="background-color: {{ SensorIP8BGColour }}" type="text"
-                                   name="senor_ip_8" value="{{ SensorIP8 }}">
-                            <input style="background-color: {{ SensorIP10BGColour }}" type="text"
-                                   name="senor_ip_10" value="{{ SensorIP10 }}">
-                            <input style="background-color: {{ SensorIP12BGColour }}" type="text"
-                                   name="senor_ip_12" value="{{ SensorIP12 }}">
-                            <input style="background-color: {{ SensorIP14BGColour }}" type="text"
-                                   name="senor_ip_14" value="{{ SensorIP14 }}">
-                            <input style="background-color: {{ SensorIP16BGColour }}" type="text"
-                                   name="senor_ip_16" value="{{ SensorIP16 }}">
-                            <input style="background-color: {{ SensorIP18BGColour }}" type="text"
-                                   name="senor_ip_18" value="{{ SensorIP18 }}">
-                            <input style="background-color: {{ SensorIP20BGColour }}" type="text"
-                                   name="senor_ip_20" value="{{ SensorIP20 }}">
+                        <div class="mui-col-md-3">
+                            <div class="mui-textfield">
+                                <label>
+                                    IP or DNS Address
+                                </label>
+                                <input type="text" name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
+                                <input type="text" name="senor_ip_4" value="{{ SensorIP4 }}">
+                                <input type="text" name="senor_ip_6" value="{{ SensorIP6 }}">
+                                <input type="text" name="senor_ip_8" value="{{ SensorIP8 }}">
+                                <input type="text" name="senor_ip_10" value="{{ SensorIP10 }}">
+                                <input type="text" name="senor_ip_12" value="{{ SensorIP12 }}">
+                                <input type="text" name="senor_ip_14" value="{{ SensorIP14 }}">
+                                <input type="text" name="senor_ip_16" value="{{ SensorIP16 }}">
+                                <input type="text" name="senor_ip_18" value="{{ SensorIP18 }}">
+                                <input type="text" name="senor_ip_20" value="{{ SensorIP20 }}">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -121,43 +112,64 @@
 
         <div class="mui-tabs__pane mui--is-active" id="main-tab">
             <br>
-            <fieldset style="text-align: center">
+            <label style="color: red; display: inline-block; text-align: center; width: 600px">
+                Available Zip Downloads
+                <br>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="this.disabled=true; location.href='/DownloadSCReportsZip';"
+                        type="submit" {{ DownloadReportsZipDisabled }}>
+                    Reports
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="this.disabled=true; location.href='/DownloadSCDatabasesZip';"
+                        type="submit" {{ DownloadDatabasesDisabled }}>
+                    Databases
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="this.disabled=true; location.href='/DownloadSCLogsZip';"
+                        type="submit" {{ DownloadLogsDisabled }}>
+                    Logs
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="this.disabled=true; location.href='/DownloadSCBigZip';"
+                        type="submit" {{ DownloadBigZipDisabled }}>
+                    The Big Zip
+                </button>
+            </label>
+            <br>
+            <br>
+            <fieldset style="text-align: center;">
                 <div class="mui-container-fluid" style="background-color: #00B0FF;">
-                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                            type="submit" name="button_action" value="run_action">
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" type="submit"
+                            id="run_action_button" name="button_action" value="run_action" {{ RunActionDisabled }}>
                         Run Action
                     </button>
-
                     <br>
-
                     <label>Choose Action</label>
                     <div class="mui-radio">
                         <h4 style="text-decoration: underline; color: purple;">
-                            Check
+                            View
                         </h4>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedOnlineStatus }}
-                                   value="online_status">
+                                   id="RadioOnlineStatus" value="online_status">
                             Online Status
-                        </label>
-                        <br>
-                        <h4 style="text-decoration: underline; color: purple;">
-                            Create Report
-                        </h4>
-                        <label style="font-size: small">
-                            <input type="radio" name="selected_action" {{ CheckedSystemReports }}
-                                   value="systems_report">
-                            Systems
-                        </label>
-                        <label style="font-size: small">
-                            <input type="radio" name="selected_action" {{ CheckedConfigReports }}
-                                   value="config_report">
-                            Configuration
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
-                                   value="sensors_test_report">
-                            Sensors Test
+                                   id="RadioSensorsTests" value="sensors_test_report">
+                            Sensors Tests
+                        </label>
+                        <br>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedSystemReports }}
+                                   id="RadioSystemReports" value="systems_report">
+                            Systems Report
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedConfigReports }}
+                                   id="RadioConfigReports" value="config_report">
+                            Configurations Report
                         </label>
                         <br>
                         <h4 style="text-decoration: underline; color: purple;">
@@ -165,19 +177,41 @@
                         </h4>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
-                                   value="sensors_download_reports">
+                                   id="RadioDownloadReports"
+                                   value="sensors_download_reports" {{ DisabledDownloadReports }}>
                             Zip of all 3 Reports
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
-                                   value="sensors_download_databases">
+                                   id="RadioDownloadDatabases" value="sensors_download_databases">
                             Sensor Databases
                         </label>
                         <label style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadLogs }}
-                                   value="sensors_download_logs">
+                                   id="RadioDownloadLogs" value="sensors_download_logs">
                             Logs
                         </label>
+                        <br>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedDownloadBig }}
+                                   id="RadioDownloadBigZip"
+                                   value="sensors_download_everything" {{ DownloadBigDisabled }}>
+                            Create "The Big Zip" (Reports, Logs & Databases)
+                        </label>
+                        <h5 style="color: purple;">
+                            Download Options
+                        </h5>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_send_type" {{ CheckedRelayedDownload }}
+                                   id="SelectedRelayedDownloads" value="relayed_download" {{ DisabledRelayedDownload }}>
+                            Relayed Download
+                        </label>
+                        <label style="font-size: small">
+                            <input type="radio" name="selected_send_type" {{ CheckedDirectDownload }}
+                                   id="SelectedDirectDownloads" value="direct_download" {{ DisabledDirectDownload }}>
+                            Direct Download
+                        </label>
+                        <br>
                     </div>
                 </div>
             </fieldset>
@@ -192,21 +226,18 @@
                         Main
                     </a>
                 </li>
-
                 <li>
                     <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                        data-mui-controls="installed-sensors-tab">
                         Installed Sensors
                     </a>
                 </li>
-
                 <li>
                     <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                        data-mui-controls="wifi-config-tab">
                         WiFi
                     </a>
                 </li>
-
                 <li>
                     <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                        data-mui-controls="trigger-variances-tab">
@@ -230,18 +261,19 @@
                 </div>
             </div>
         </div>
+
         <div class="mui-tabs__pane" id="online-services-tab">
             <br>
             <fieldset style="text-align: center">
                 <div class="mui-container-fluid" style="background-color: #00B0FF;">
-                    <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                    formaction="/japan" disabled>
+                    <button type="submit"
+                            class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            formaction="/japan" disabled>
                         Send Update
                     </button>
                     <h5><b>
                         This will update Configurations on ALL listed Sensors for the selected Online Service
                     </b></h5>
-
                     <label>Choose Online Service to Update</label>
                     <div class="mui-radio">
                         <label style="font-size: small">
@@ -258,7 +290,6 @@
                             Open Sense Map
                         </label>
                     </div>
-
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label>
                             <input type="checkbox" name="enable_online_service"
@@ -266,9 +297,7 @@
                             Enable Selected Online Service
                         </label>
                     </div>
-
                     <br>
-
                     <div class="mui-textfield">
                         <label style="color: black">
                             Seconds between Updates
@@ -282,5 +311,99 @@
             </fieldset>
         </div>
     </form>
+
+    <script>
+        document.getElementById("ip_show_hide").addEventListener("click", function () {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "inline-block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "inline-block";
+            }
+        });
+    </script>
+
+    <script>
+        jQuery('#RadioOnlineStatus').click(function () {
+            if (jQuery(this).prop('checked')) {
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioSensorsTests').click(function () {
+            if (jQuery(this).prop('checked')) {
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioSystemReports').click(function () {
+            if (jQuery(this).prop('checked')) {
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioConfigReports').click(function () {
+            if (jQuery(this).prop('checked')) {
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioDownloadReports').click(function () {
+            if (jQuery(this).prop('checked')) {
+                enable_all_selected();
+                document.getElementById("SelectedRelayedDownloads").click();
+                document.getElementById("SelectedDirectDownloads").disabled = true;
+            }
+        });
+
+        jQuery('#RadioDownloadDatabases').click(function () {
+            if (jQuery(this).prop('checked')) {
+                enable_all_selected();
+            }
+        });
+
+        jQuery('#RadioDownloadLogs').click(function () {
+            if (jQuery(this).prop('checked')) {
+                enable_all_selected();
+            }
+        });
+
+        jQuery('#RadioDownloadBigZip').click(function () {
+            if (jQuery(this).prop('checked')) {
+                enable_all_selected();
+                document.getElementById("SelectedRelayedDownloads").click();
+                document.getElementById("SelectedDirectDownloads").disabled = true;
+            }
+        });
+
+        function enable_all_selected() {
+            document.getElementById("SelectedRelayedDownloads").disabled = false;
+            document.getElementById("SelectedDirectDownloads").disabled = false;
+        }
+
+        function disable_all_selected() {
+            document.getElementById("SelectedRelayedDownloads").disabled = true;
+            document.getElementById("SelectedDirectDownloads").disabled = true;
+        }
+    </script>
+
+    <script type="text/javascript">
+        (function () {
+            if (document.getElementById("blink_shadow").textContent.length > 0) {
+                var blinks = document.getElementById("blink_shadow");
+                var shadow_colour = "green";
+                window.setTimeout(refresh_page_timed, 10000);
+                window.setInterval(function () {
+                    blinks.style.color = shadow_colour;
+                    shadow_colour = (shadow_colour === "green") ? "red" : "green";
+                }, 1000);
+            }
+        })();
+
+        function refresh_page_timed() {
+            window.location = "/SensorControlManage";
+        }
+    </script>
 
 {% endblock %}

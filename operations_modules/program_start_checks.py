@@ -49,20 +49,20 @@ def check_ssl_files():
     if os.path.isfile(file_locations.http_ssl_key):
         logger.primary_logger.debug("SSL Key Found")
     else:
-        logger.primary_logger.warning("SSL Key not Found - Generating Key")
+        logger.primary_logger.info("SSL Key not Found - Generating Key")
         os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
 
     if os.path.isfile(file_locations.http_ssl_csr):
         logger.primary_logger.debug("SSL CSR Found")
     else:
-        logger.primary_logger.warning("SSL CSR not Found - Generating CSR")
+        logger.primary_logger.info("SSL CSR not Found - Generating CSR")
         os.system("openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr +
                   " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'")
 
     if os.path.isfile(file_locations.http_ssl_crt):
         logger.primary_logger.debug("SSL Certificate Found")
     else:
-        logger.primary_logger.warning("SSL Certificate not Found - Generating Certificate")
+        logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
         os.system("openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr +
                   " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt)
 

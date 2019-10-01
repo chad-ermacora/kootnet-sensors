@@ -42,7 +42,7 @@ def get_config_from_file():
             file_locations.main_config).strip().split("\n")
         installed_config = convert_config_lines_to_obj(config_file_content)
     else:
-        logger.primary_logger.warning("Configuration file not found, using and saving default")
+        logger.primary_logger.info("Primary Configuration file not found - Saving Default")
         installed_config = CreateConfig()
         write_config_to_file(installed_config)
 

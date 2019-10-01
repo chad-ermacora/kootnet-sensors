@@ -26,11 +26,10 @@ from operations_modules import app_config_access
 from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
-from operations_modules import server_display
+# from operations_modules import server_display
 from sensor_modules import sensor_access
 
 # Ensure files, database & configurations are OK
-program_start_checks.check_ssl_files()
 program_start_checks.set_file_permissions()
 program_start_checks.check_database_structure()
 
@@ -43,19 +42,14 @@ if software_version.old_version != software_version.version:
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 
-# Start the HTTP Server for remote access
-https_server_and_check_thread = Thread(target=server_http.https_start_and_watch, args=[sensor_access])
-https_server_and_check_thread.daemon = True
-https_server_and_check_thread.start()
-
-# If installed, start up SenseHAT Joystick program
-if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-    sense_joy_stick_thread = Thread(
-        target=sensor_access.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
-    sense_joy_stick_thread.daemon = True
-    sense_joy_stick_thread.start()
-
 if app_config_access.installed_sensors.no_sensors is False:
+    # If installed, start up SenseHAT Joystick program
+    start_joy_stick_program = sensor_access.sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        sense_joy_stick_thread = Thread(target=start_joy_stick_program)
+        sense_joy_stick_thread.daemon = True
+        sense_joy_stick_thread.start()
+
     # If there is a display installed, start up the display server
     if app_config_access.current_config.enable_display:
         if app_config_access.installed_sensors.has_display:
@@ -80,9 +74,16 @@ if app_config_access.installed_sensors.no_sensors is False:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")
 
 else:
-    logger.primary_logger.warning("No sensors set in Installed Sensors")
+    logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
-logger.primary_logger.debug("All Kootnet Sensor Programs Initiated")
-sensor_access.display_message("Kootnet Sensors Started")
+# Make sure SSL Files are there before starting HTTPS Server
+program_start_checks.check_ssl_files()
+# Start the HTTP Server for remote access
+https_server_and_check_thread = Thread(target=server_http.https_start_and_watch, args=[sensor_access])
+https_server_and_check_thread.daemon = True
+https_server_and_check_thread.start()
+
+logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
+sensor_access.display_message("KS-Sensors")
 while True:
     sleep(600)

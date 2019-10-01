@@ -27,11 +27,11 @@ class CreateSensorControlConfig:
     """ Creates object with default HTML Sensor Control configuration settings. """
 
     def __init__(self):
-        self.html_post_settings = ["selected_action", "senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4",
-                                   "senor_ip_5", "senor_ip_6", "senor_ip_7", "senor_ip_8", "senor_ip_9",
-                                   "senor_ip_10", "senor_ip_11", "senor_ip_12", "senor_ip_13", "senor_ip_14",
-                                   "senor_ip_15", "senor_ip_16", "senor_ip_17", "senor_ip_18", "senor_ip_19",
-                                   "senor_ip_20"]
+        self.html_post_settings = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
+                                   "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6", "senor_ip_7",
+                                   "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
+                                   "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
+                                   "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
         self.radio_check_status = "online_status"
         self.radio_report_system = "systems_report"
@@ -40,8 +40,13 @@ class CreateSensorControlConfig:
         self.radio_download_reports = "sensors_download_reports"
         self.radio_download_databases = "sensors_download_databases"
         self.radio_download_logs = "sensors_download_logs"
+        self.radio_create_the_big_zip = "sensors_download_everything"
 
-        self.default_action = self.radio_check_status
+        self.radio_send_type_relayed = "relayed_download"
+        self.radio_send_type_direct = "direct_download"
+
+        self.selected_action = self.radio_check_status
+        self.selected_send_type = self.radio_send_type_relayed
         self.sensor_ip_dns1 = ""
         self.sensor_ip_dns2 = ""
         self.sensor_ip_dns3 = ""
@@ -66,7 +71,8 @@ class CreateSensorControlConfig:
     def get_settings_as_str(self):
         """ Takes Sensor Control configuration Object and returns it as a string. """
         config_file_str = "This contains saved values for HTML Sensor Control.\n" + \
-                          str(self.default_action) + " = Default Choice for Action\n" + \
+                          str(self.selected_action) + " = Default Choice for Action\n" + \
+                          str(self.selected_send_type) + " = Default Choice for Download Type (Relayed orDirect)\n" + \
                           str(self.sensor_ip_dns1) + " = Sensor IP / DNS Entry 1\n" + \
                           str(self.sensor_ip_dns2) + " = Sensor IP / DNS Entry 2\n" + \
                           str(self.sensor_ip_dns3) + " = Sensor IP / DNS Entry 3\n" + \
@@ -107,7 +113,7 @@ class CreateSensorControlConfig:
             config_content = app_generic_functions.get_file_content(file_locations.html_sensor_control_config).strip()
             self.set_from_raw_config_content(config_content)
         else:
-            logger.primary_logger.warning("Sensor Control Configuration file not found, using and saving default")
+            logger.primary_logger.info("Sensor Control Configuration file not found - Saving Default")
             self.write_current_config_to_file()
 
     def set_from_raw_config_content(self, sensor_control_config_text):
@@ -123,46 +129,48 @@ class CreateSensorControlConfig:
         count = 0
         for new_setting in settings_list:
             if count == 0:
-                self.default_action = new_setting
+                self.selected_action = new_setting
             if count == 1:
-                self.sensor_ip_dns1 = new_setting
+                self.selected_send_type = new_setting
             if count == 2:
-                self.sensor_ip_dns2 = new_setting
+                self.sensor_ip_dns1 = new_setting
             if count == 3:
-                self.sensor_ip_dns3 = new_setting
+                self.sensor_ip_dns2 = new_setting
             if count == 4:
-                self.sensor_ip_dns4 = new_setting
+                self.sensor_ip_dns3 = new_setting
             if count == 5:
-                self.sensor_ip_dns5 = new_setting
+                self.sensor_ip_dns4 = new_setting
             if count == 6:
-                self.sensor_ip_dns6 = new_setting
+                self.sensor_ip_dns5 = new_setting
             if count == 7:
-                self.sensor_ip_dns7 = new_setting
+                self.sensor_ip_dns6 = new_setting
             if count == 8:
-                self.sensor_ip_dns8 = new_setting
+                self.sensor_ip_dns7 = new_setting
             if count == 9:
-                self.sensor_ip_dns9 = new_setting
+                self.sensor_ip_dns8 = new_setting
             if count == 10:
-                self.sensor_ip_dns10 = new_setting
+                self.sensor_ip_dns9 = new_setting
             if count == 11:
-                self.sensor_ip_dns11 = new_setting
+                self.sensor_ip_dns10 = new_setting
             if count == 12:
-                self.sensor_ip_dns12 = new_setting
+                self.sensor_ip_dns11 = new_setting
             if count == 13:
-                self.sensor_ip_dns13 = new_setting
+                self.sensor_ip_dns12 = new_setting
             if count == 14:
-                self.sensor_ip_dns14 = new_setting
+                self.sensor_ip_dns13 = new_setting
             if count == 15:
-                self.sensor_ip_dns15 = new_setting
+                self.sensor_ip_dns14 = new_setting
             if count == 16:
-                self.sensor_ip_dns16 = new_setting
+                self.sensor_ip_dns15 = new_setting
             if count == 17:
-                self.sensor_ip_dns17 = new_setting
+                self.sensor_ip_dns16 = new_setting
             if count == 18:
-                self.sensor_ip_dns18 = new_setting
+                self.sensor_ip_dns17 = new_setting
             if count == 19:
-                self.sensor_ip_dns19 = new_setting
+                self.sensor_ip_dns18 = new_setting
             if count == 20:
+                self.sensor_ip_dns19 = new_setting
+            if count == 21:
                 self.sensor_ip_dns20 = new_setting
             count += 1
 

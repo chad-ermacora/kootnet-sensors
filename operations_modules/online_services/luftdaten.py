@@ -93,7 +93,7 @@ class CreateLuftdatenConfig:
                     self.bad_load = True
         else:
             if not skip_write:
-                logger.primary_logger.warning("No Luftdaten configuration file found - Saving Default")
+                logger.primary_logger.info("Luftdaten Configuration file not found - Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):

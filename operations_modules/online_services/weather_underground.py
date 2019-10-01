@@ -132,7 +132,7 @@ class CreateWeatherUndergroundConfig:
                     self.bad_config_load = True
         else:
             if not skip_write:
-                logger.primary_logger.warning("No Online Service configuration file found - Saving Default")
+                logger.primary_logger.info("Weather Underground Configuration file not found - Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):

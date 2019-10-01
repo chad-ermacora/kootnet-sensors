@@ -114,14 +114,19 @@ class CreateSensorHTTP:
             return route_functions.index()
 
         @self.app.route("/DownloadSQLDatabase")
-        def download_sensors_sql_database():
-            return route_functions.download_sensors_sql_database(request)
+        def download_sensors_sql_database_zipped():
+            return route_functions.download_sensors_sql_database_zipped(request)
+
+        @self.app.route("/GetZippedSQLDatabaseSize")
+        def get_zipped_sql_database_size():
+            return route_functions.get_zipped_sql_database_size(request)
 
         @self.app.route('/logout')
         def logout():
             return route_functions.logout()
 
         @self.app.route("/SensorControlManage", methods=["GET", "POST"])
+        # @self.auth.login_required
         def html_sensor_control_management():
             return route_functions.html_sensor_control_management(request)
 
@@ -242,6 +247,30 @@ class CreateSensorHTTP:
         @self.app.route("/DownloadZippedLogs")
         def download_zipped_logs():
             return route_functions.download_zipped_logs(request)
+
+        @self.app.route("/DownloadZippedEverything")
+        def download_zipped_everything():
+            return route_functions.download_zipped_everything(request)
+
+        @self.app.route("/DownloadSCReportsZip")
+        @self.auth.login_required
+        def download_sc_reports_zip():
+            return route_functions.download_sc_reports_zip(request)
+
+        @self.app.route("/DownloadSCDatabasesZip")
+        @self.auth.login_required
+        def download_sc_databases_zip():
+            return route_functions.download_sc_databases_zip(request)
+
+        @self.app.route("/DownloadSCLogsZip")
+        @self.auth.login_required
+        def download_sc_logs_zip():
+            return route_functions.download_sc_logs_zip(request)
+
+        @self.app.route("/DownloadSCBigZip")
+        @self.auth.login_required
+        def download_sc_big_zip():
+            return route_functions.download_sc_big_zip(request)
 
         @self.app.route("/DeletePrimaryLog")
         @self.auth.login_required
@@ -460,6 +489,14 @@ class CreateSensorHTTP:
         def get_ram_usage_percent():
             return route_functions.get_ram_usage_percent(request)
 
+        @self.app.route("/GetRAMTotal")
+        def get_ram_total():
+            return route_functions.get_ram_total(request)
+
+        @self.app.route("/GetRAMTotalSizeType")
+        def get_ram_total_size_type():
+            return route_functions.get_ram_total_size_type(request)
+
         @self.app.route("/GetUsedDiskSpace")
         def get_disk_usage_percent():
             return route_functions.get_disk_usage_gb(request)
@@ -568,12 +605,15 @@ class CreateSensorHTTP:
         def display_text():
             route_functions.display_text(request)
 
-        logger.network_logger.info("** starting up on port " + str(flask_http_port) + " **")
-        http_server = WSGIServer((flask_http_ip, flask_http_port),
-                                 self.app,
-                                 keyfile=file_locations.http_ssl_key,
-                                 certfile=file_locations.http_ssl_crt)
-        http_server.serve_forever()
+        try:
+            http_server = WSGIServer((flask_http_ip, flask_http_port),
+                                     self.app,
+                                     keyfile=file_locations.http_ssl_key,
+                                     certfile=file_locations.http_ssl_crt)
+            logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_http_port))
+            http_server.serve_forever()
+        except Exception as error:
+            logger.primary_logger.critical(" -- HTTPS Server Failed to Start: " + str(error))
 
 
 def _delayed_cache_update(sensor_access):
@@ -583,12 +623,10 @@ def _delayed_cache_update(sensor_access):
 
 def https_start_and_watch(sensor_access):
     # Start the HTTP Server for remote access
-    # Sleep before start due SSL not loading properly on first system boot
-    sleep(10)
     sensor_http_server_thread = Thread(target=CreateSensorHTTP, args=[sensor_access])
     sensor_http_server_thread.daemon = True
     sensor_http_server_thread.start()
-    logger.primary_logger.info("HTTPS Server Started")
+    logger.primary_logger.debug("HTTPS Server Thread Started")
 
     while True:
         sleep(30)

@@ -39,7 +39,6 @@ from sensor_modules import pimoroni_1_12_mono_oled
 
 
 if software_version.old_version == software_version.version:
-    logger.primary_logger.info(" -- Initializing Sensors ...")
     # Initialize sensor access, based on installed sensors file
     if app_config_access.current_platform == "Linux":
         os_sensor_access = linux_os.CreateLinuxSystem()
@@ -82,6 +81,7 @@ if software_version.old_version == software_version.version:
         pimoroni_st7735_sensor_access = pimoroni_0_96_spi_colour_lcd.CreateST7735()
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
         pimoroni_mono_oled_luma_sensor_access = pimoroni_1_12_mono_oled.CreateLumaOLED()
+    logger.primary_logger.info(" -- Sensors Initialized")
 else:
     # Sleep before loading anything due to needed updates
     # The update service will automatically restart this app when it's done

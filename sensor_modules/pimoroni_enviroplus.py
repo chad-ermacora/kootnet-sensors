@@ -24,9 +24,13 @@ from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 try:
+    # noinspection PyUnresolvedReferences
     from PIL import Image
+    # noinspection PyUnresolvedReferences
     from PIL import ImageDraw
+    # noinspection PyUnresolvedReferences
     from PIL import ImageFont
+    # noinspection PyUnresolvedReferences
     from smbus2 import SMBus
 except ImportError as import_error:
     logger.primary_logger.error("**** Missing EnviroPlus Dependencies - " +

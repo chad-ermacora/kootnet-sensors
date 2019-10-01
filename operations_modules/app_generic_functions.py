@@ -18,6 +18,7 @@
 """
 import logging
 import os
+import psutil
 import time
 import requests
 from io import BytesIO
@@ -71,6 +72,14 @@ def thread_function(function, args=None):
 
 def update_cached_variables(sensor_access):
     app_cached_variables.ip = sensor_access.get_ip()
+    app_cached_variables.total_ram_memory = psutil.virtual_memory().total / 1000000
+    if app_cached_variables.total_ram_memory > 1000:
+        app_cached_variables.total_ram_memory = app_cached_variables.total_ram_memory / 1000
+        app_cached_variables.total_ram_memory_size_type = " GB"
+        if app_cached_variables.total_ram_memory > 1000:
+            app_cached_variables.total_ram_memory = app_cached_variables.total_ram_memory / 1000
+            app_cached_variables.total_ram_memory_size_type = " TB"
+    app_cached_variables.total_ram_memory = round(app_cached_variables.total_ram_memory, 2)
 
     if sensor_access.get_operating_system_name()[:8] == "Raspbian":
         try:
@@ -178,3 +187,18 @@ def replace_text_lists(text_file, old_list, new_list):
     for old_text, new_text in zip(old_list, new_list):
         text_file = text_file.replace(old_text, new_text)
     return text_file
+
+
+def clear_zip_names():
+    app_cached_variables.sc_reports_zip_name = ""
+    app_cached_variables.sc_logs_zip_name = ""
+    if app_cached_variables.sc_databases_zip_in_memory:
+        app_cached_variables.sc_databases_zip_name = ""
+    if app_cached_variables.sc_big_zip_in_memory:
+        app_cached_variables.sc_big_zip_name = ""
+
+
+def save_to_memory_ok(write_size):
+    if psutil.virtual_memory().available > (write_size + 25000):
+        return True
+    return False

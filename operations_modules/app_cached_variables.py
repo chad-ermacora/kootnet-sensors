@@ -22,6 +22,8 @@ from queue import Queue
 # This helps lessen disk reads by caching commonly used variables
 program_last_updated = ""
 reboot_count = ""
+total_ram_memory = 0.0
+total_ram_memory_size_type = " MB"
 
 operating_system_name = ""
 hostname = ""
@@ -41,6 +43,19 @@ http_login = ""
 http_password = ""
 
 # Used to get data from multiple remote sensors at the "same" time.
+flask_return_data_queue = Queue()
 data_queue = Queue()
 data_queue2 = Queue()
 data_queue3 = Queue()
+
+# Download Sensor SQL Database in a zip placeholder
+sensor_database_zipped = b''
+
+# Sensor Control Download placeholders
+sc_reports_zip_name = ""
+sc_logs_zip_name = ""
+sc_databases_zip_name = ""
+sc_big_zip_name = ""
+sc_databases_zip_in_memory = False
+sc_big_zip_in_memory = False
+sc_in_memory_zip = b''

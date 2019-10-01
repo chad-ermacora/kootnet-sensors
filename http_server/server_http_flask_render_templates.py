@@ -49,7 +49,7 @@ class CreateRenderTemplates:
                                URL=url)
 
     @staticmethod
-    def sensor_control_management(request_type="normal_get", address_list=None):
+    def sensor_control_management():
         radio_checked_online_status = ""
         radio_checked_systems_report = ""
         radio_checked_config_report = ""
@@ -57,59 +57,100 @@ class CreateRenderTemplates:
         radio_checked_download_reports = ""
         radio_checked_download_database = ""
         radio_checked_download_logs = ""
-        default_action = app_config_access.sensor_control_config.default_action
-        if default_action == app_config_access.sensor_control_config.radio_check_status:
+        radio_checked_download_big_zip = ""
+
+        radio_checked_send_relayed = ""
+        radio_checked_send_direct = ""
+
+        disabled_download_relayed = ""
+        disabled_download_direct = ""
+        selected_action = app_config_access.sensor_control_config.selected_action
+        if selected_action == app_config_access.sensor_control_config.radio_check_status:
             radio_checked_online_status = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_report_system:
+            disabled_download_relayed = "disabled"
+            disabled_download_direct = "disabled"
+        elif selected_action == app_config_access.sensor_control_config.radio_report_system:
             radio_checked_systems_report = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_report_config:
+            disabled_download_relayed = "disabled"
+            disabled_download_direct = "disabled"
+        elif selected_action == app_config_access.sensor_control_config.radio_report_config:
             radio_checked_config_report = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_report_test_sensors:
+            disabled_download_relayed = "disabled"
+            disabled_download_direct = "disabled"
+        elif selected_action == app_config_access.sensor_control_config.radio_report_test_sensors:
             radio_checked_sensors_test_report = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_download_reports:
+            disabled_download_relayed = "disabled"
+            disabled_download_direct = "disabled"
+        elif selected_action == app_config_access.sensor_control_config.radio_download_reports:
             radio_checked_download_reports = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_download_databases:
+            radio_checked_send_relayed = "checked"
+            disabled_download_direct = "disabled"
+        elif selected_action == app_config_access.sensor_control_config.radio_download_databases:
             radio_checked_download_database = "checked"
-        if default_action == app_config_access.sensor_control_config.radio_download_logs:
+        elif selected_action == app_config_access.sensor_control_config.radio_download_logs:
             radio_checked_download_logs = "checked"
+        elif selected_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
+            radio_checked_download_big_zip = "checked"
+            radio_checked_send_relayed = "checked"
+            disabled_download_direct = "disabled"
 
-        sensors_bg_colour_list = ["", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]
+        if radio_checked_send_relayed == "" and radio_checked_send_direct == "":
+            radio_checked_send_relayed = "checked"
 
-        if request_type == "online_status":
-            new_sensors_responses = []
-            threads = []
+        download_big_zip = "disabled"
+        if not app_config_access.creating_the_big_zip and app_cached_variables.sc_big_zip_name != "":
+            download_big_zip = ""
 
-            for address in address_list:
-                if address == "Invalid":
-                    new_sensors_responses.append(["bad", "bad"])
-                else:
-                    threads.append(Thread(target=server_http_sensor_control.check_online_status, args=[address]))
+        download_reports_zip = "disabled"
+        if not app_config_access.creating_the_reports_zip and app_cached_variables.sc_reports_zip_name != "":
+            download_reports_zip = ""
 
-            for thread in threads:
-                thread.start()
+        download_databases_zip = "disabled"
+        if not app_config_access.creating_databases_zip and app_cached_variables.sc_databases_zip_name != "":
+            download_databases_zip = ""
 
-            for thread in threads:
-                thread.join()
+        download_logs_zip = "disabled"
+        if not app_config_access.creating_logs_zip and app_cached_variables.sc_logs_zip_name != "":
+            download_logs_zip = ""
 
-            while not app_cached_variables.data_queue.empty():
-                new_sensors_responses.append(app_cached_variables.data_queue.get())
-                app_cached_variables.data_queue.task_done()
-
-            count = 0
-            for address in address_list:
-                for response in new_sensors_responses:
-                    if address == response[0]:
-                        sensors_bg_colour_list[count] = response[1]
-                count += 1
+        extra_message = ""
+        disabled_reports_zip = ""
+        disabled_big_zip = ""
+        disable_run_action_button = ""
+        if app_config_access.creating_the_big_zip:
+            extra_message = "Creating Big Zip"
+            disable_run_action_button = "disabled"
+        elif app_config_access.creating_the_reports_zip:
+            extra_message = "Creating Reports Zip"
+            disable_run_action_button = "disabled"
+        elif app_config_access.creating_databases_zip:
+            extra_message = "Creating Databases Zip"
+            disable_run_action_button = "disabled"
+        elif app_config_access.creating_logs_zip:
+            extra_message = "Creating Logs Zip"
+            disable_run_action_button = "disabled"
 
         return render_template("sensor_control.html",
+                               ExtraTextMessage=extra_message,
+                               DownloadReportsZipDisabled=download_reports_zip,
+                               DownloadDatabasesDisabled=download_databases_zip,
+                               DownloadLogsDisabled=download_logs_zip,
+                               DownloadBigZipDisabled=download_big_zip,
+                               RunActionDisabled=disable_run_action_button,
                                CheckedOnlineStatus=radio_checked_online_status,
                                CheckedSystemReports=radio_checked_systems_report,
                                CheckedConfigReports=radio_checked_config_report,
                                CheckedSensorsTestReports=radio_checked_sensors_test_report,
+                               CheckedRelayedDownload=radio_checked_send_relayed,
+                               CheckedDirectDownload=radio_checked_send_direct,
                                CheckedDownloadReports=radio_checked_download_reports,
                                CheckedDownloadDatabases=radio_checked_download_database,
                                CheckedDownloadLogs=radio_checked_download_logs,
+                               CheckedDownloadBig=radio_checked_download_big_zip,
+                               DownloadBigDisabled=disabled_big_zip,
+                               DisabledDownloadReports=disabled_reports_zip,
+                               DisabledRelayedDownload=disabled_download_relayed,
+                               DisabledDirectDownload=disabled_download_direct,
                                SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
                                SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
                                SensorIP3=app_config_access.sensor_control_config.sensor_ip_dns3,
@@ -129,30 +170,9 @@ class CreateRenderTemplates:
                                SensorIP17=app_config_access.sensor_control_config.sensor_ip_dns17,
                                SensorIP18=app_config_access.sensor_control_config.sensor_ip_dns18,
                                SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
-                               SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
-                               SensorIP1BGColour=sensors_bg_colour_list[0],
-                               SensorIP2BGColour=sensors_bg_colour_list[1],
-                               SensorIP3BGColour=sensors_bg_colour_list[2],
-                               SensorIP4BGColour=sensors_bg_colour_list[3],
-                               SensorIP5BGColour=sensors_bg_colour_list[4],
-                               SensorIP6BGColour=sensors_bg_colour_list[5],
-                               SensorIP7BGColour=sensors_bg_colour_list[6],
-                               SensorIP8BGColour=sensors_bg_colour_list[7],
-                               SensorIP9BGColour=sensors_bg_colour_list[8],
-                               SensorIP10BGColour=sensors_bg_colour_list[9],
-                               SensorIP11BGColour=sensors_bg_colour_list[10],
-                               SensorIP12BGColour=sensors_bg_colour_list[11],
-                               SensorIP13BGColour=sensors_bg_colour_list[12],
-                               SensorIP14BGColour=sensors_bg_colour_list[13],
-                               SensorIP15BGColour=sensors_bg_colour_list[14],
-                               SensorIP16BGColour=sensors_bg_colour_list[15],
-                               SensorIP17BGColour=sensors_bg_colour_list[16],
-                               SensorIP18BGColour=sensors_bg_colour_list[17],
-                               SensorIP19BGColour=sensors_bg_colour_list[18],
-                               SensorIP20BGColour=sensors_bg_colour_list[19])
+                               SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20)
 
-    @staticmethod
-    def get_sensor_control_report(address_list, report_type="systems_report"):
+    def get_sensor_control_report(self, address_list, report_type="systems_report"):
         config_report = app_config_access.sensor_control_config.radio_report_config
         sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
         html_sensor_report_end = server_http_sensor_control.html_report_system_end
@@ -164,6 +184,7 @@ class CreateRenderTemplates:
         elif report_type == sensors_report:
             new_report = server_http_sensor_control.html_report_sensors_test_start
             html_sensor_report_end = server_http_sensor_control.html_report_sensors_test_end
+        new_report = new_report.replace("{{ DateTime }}", self.sensor_access.get_system_datetime())
 
         sensor_reports = []
         threads = []
@@ -191,6 +212,38 @@ class CreateRenderTemplates:
         new_report += html_sensor_report_end
         return new_report
 
+    def check_sensor_status_sensor_control(self, address_list):
+        text_ip_and_response = ""
+
+        threads = []
+        for address in address_list:
+            threads.append(Thread(target=self._get_remote_sensor_check_and_delay, args=[address, True]))
+
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        address_responses = []
+        while not app_cached_variables.data_queue.empty():
+            address_responses.append(app_cached_variables.data_queue.get())
+            app_cached_variables.data_queue.task_done()
+
+        address_responses = sorted(address_responses, key=lambda i: i['address'])
+        for response in address_responses:
+            if response["status"] == "OK":
+                response_time = response["response_time"]
+                background_colour = self._get_background_colour(response_time)
+
+                text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
+                                        response["address"] + "</span></th>\n" + \
+                                        "        <th><span style='background-color: " + background_colour + ";'>" + \
+                                        response_time + " Seconds</span></th>\n" + \
+                                        "        <th><span style='background-color: #f2f2f2;'>" + \
+                                        response["sensor_hostname"] + "</span></th></tr>\n"
+
+        return render_template("sensor_control_online_status.html", SensorResponse=text_ip_and_response.strip())
+
     def downloads_sensor_control(self, address_list, download_type="sensors_download_databases"):
         network_commands = server_http_sensor_control.CreateNetworkGetCommands()
         download_command = network_commands.sensor_sql_database
@@ -217,14 +270,17 @@ class CreateRenderTemplates:
             address_responses.append(app_cached_variables.data_queue.get())
             app_cached_variables.data_queue.task_done()
 
+        address_responses = sorted(address_responses, key=lambda i: i['address'])
         for response in address_responses:
             if response["status"] == "OK":
+                response_time = response["response_time"]
+                background_colour = self._get_background_colour(response_time)
                 new_download = sensor_download_url.replace("{{ IPAddress }}", response["address"])
                 sensor_download_sql_list += new_download + "\n            "
                 text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
-                                     response["address"] + "</span></th>\n" + \
-                                     "        <th><span style='background-color: #ccffcc;'>" + \
-                                     response["delay"] + " Seconds</span></th></tr>\n"
+                                        response["address"] + "</span></th>\n" + \
+                                        "        <th><span style='background-color: " + background_colour + ";'>" + \
+                                        response_time + " Seconds</span></th></tr>\n"
 
         return render_template("sensor_control_downloads.html",
                                DownloadTypeMessage=download_type_message,
@@ -232,13 +288,36 @@ class CreateRenderTemplates:
                                SensorResponse=text_ip_and_response.strip())
 
     @staticmethod
-    def _get_remote_sensor_check_and_delay(address):
+    def _get_background_colour(response_time):
+        try:
+            delay_float = float(response_time)
+            background_colour = "green"
+            if 0.0 <= delay_float < 0.3:
+                pass
+            elif 0.3 < delay_float < 0.5:
+                background_colour = "yellow"
+            elif 0.5 < delay_float < 1.0:
+                background_colour = "orange"
+            elif 1.0 < delay_float:
+                background_colour = "red"
+        except Exception as error:
+            logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
+            logger.network_logger.debug("Check Online Status Error: " + str(error))
+            background_colour = "purple"
+        return background_colour
+
+    @staticmethod
+    def _get_remote_sensor_check_and_delay(address, add_hostname=False):
         task_start_time = time.time()
         sensor_status = app_generic_functions.get_http_sensor_reading(address)
         task_end_time = round(time.time() - task_start_time, 3)
+        sensor_hostname = ""
+        if add_hostname:
+            sensor_hostname = app_generic_functions.get_http_sensor_reading(address, command="GetHostName").strip()
         app_cached_variables.data_queue.put({"address": address,
                                              "status": str(sensor_status),
-                                             "delay": str(task_end_time)})
+                                             "response_time": str(task_end_time),
+                                             "sensor_hostname": str(sensor_hostname)})
 
     @staticmethod
     def system_management():
@@ -375,6 +454,7 @@ class CreateRenderTemplates:
         else:
             custom_temp_enabled = False
 
+        total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
         return render_template("sensor_information.html",
                                HostName=app_cached_variables.hostname,
                                IPAddress=app_cached_variables.ip,
@@ -386,6 +466,7 @@ class CreateRenderTemplates:
                                SensorReboots=app_cached_variables.reboot_count,
                                CPUTemperature=self.sensor_access.get_cpu_temperature(),
                                RAMUsage=self.sensor_access.get_memory_usage_percent(),
+                               TotalRAM=total_ram_entry,
                                DiskUsage=self.sensor_access.get_disk_usage_percent(),
                                DebugLogging=debug_logging,
                                SupportedDisplay=display_enabled,

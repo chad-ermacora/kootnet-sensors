@@ -203,7 +203,7 @@ def get_installed_sensors_from_file():
             file_locations.installed_sensors_config).strip().split("\n")
         installed_sensors = convert_lines_to_obj(installed_sensor_lines)
     else:
-        logger.primary_logger.warning("Installed Sensors file not found, using and saving default")
+        logger.primary_logger.info("Installed Sensors Configuration file not found - Saving Default")
         installed_sensors = CreateInstalledSensors()
         write_to_file(installed_sensors)
 

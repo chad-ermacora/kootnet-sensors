@@ -42,4 +42,4 @@ def start_trigger_recording(sensor_access):
     for thread in threads:
         thread.daemon = True
         thread.start()
-    logger.primary_logger.info("Trigger Recoding Started")
+    logger.primary_logger.info(" -- Trigger Recording Started")
