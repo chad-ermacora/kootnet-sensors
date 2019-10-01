@@ -19,6 +19,7 @@
 import time
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules.app_generic_functions import get_response_bg_colour
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
@@ -247,10 +248,10 @@ class CreateReplacementVariables:
             return_types = ""
             return_readings = ""
             for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
-                return_types += '<th><span style="background-color: #00ffff;">' + \
+                return_types += '<th><span style="color: #00ffff;">' + \
                                 str(sensor_type) + \
                                 "</span></th>\n"
-                return_readings += '<th><span style="background-color: #0BB10D;">' + \
+                return_readings += '<th><span style="color: #ccffcc;">' + \
                                    str(sensor_reading) + \
                                    "</span></th>\n"
 
@@ -293,6 +294,7 @@ def get_online_report(ip_address, report_type="systems_report"):
         if sensor_check == "OK":
             sensor_name = get_http_sensor_reading(ip_address, command="GetHostName")
             sensor_report = sensor_report.replace("{{ SensorName }}", sensor_name)
+            sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_response_bg_colour(task_end_time))
             for command_and_replacement in command_and_replacements:
                 if report_type == "systems_report":
                     replacement_value = str(get_http_sensor_reading(ip_address, command=command_and_replacement[0]))

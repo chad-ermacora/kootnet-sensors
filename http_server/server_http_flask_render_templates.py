@@ -233,7 +233,7 @@ class CreateRenderTemplates:
         for response in address_responses:
             if response["status"] == "OK":
                 response_time = response["response_time"]
-                background_colour = self._get_background_colour(response_time)
+                background_colour = app_generic_functions.get_response_bg_colour(response_time)
 
                 text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
                                         response["address"] + "</span></th>\n" + \
@@ -274,7 +274,7 @@ class CreateRenderTemplates:
         for response in address_responses:
             if response["status"] == "OK":
                 response_time = response["response_time"]
-                background_colour = self._get_background_colour(response_time)
+                background_colour = app_generic_functions.get_response_bg_colour(response_time)
                 new_download = sensor_download_url.replace("{{ IPAddress }}", response["address"])
                 sensor_download_sql_list += new_download + "\n            "
                 text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
@@ -286,25 +286,6 @@ class CreateRenderTemplates:
                                DownloadTypeMessage=download_type_message,
                                DownloadURLs=sensor_download_sql_list.strip(),
                                SensorResponse=text_ip_and_response.strip())
-
-    @staticmethod
-    def _get_background_colour(response_time):
-        try:
-            delay_float = float(response_time)
-            background_colour = "green"
-            if 0.0 <= delay_float < 0.3:
-                pass
-            elif 0.3 < delay_float < 0.5:
-                background_colour = "yellow"
-            elif 0.5 < delay_float < 1.0:
-                background_colour = "orange"
-            elif 1.0 < delay_float:
-                background_colour = "red"
-        except Exception as error:
-            logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
-            logger.network_logger.debug("Check Online Status Error: " + str(error))
-            background_colour = "purple"
-        return background_colour
 
     @staticmethod
     def _get_remote_sensor_check_and_delay(address, add_hostname=False):

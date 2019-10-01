@@ -202,3 +202,22 @@ def save_to_memory_ok(write_size):
     if psutil.virtual_memory().available > (write_size + 25000):
         return True
     return False
+
+
+def get_response_bg_colour(response_time):
+    try:
+        delay_float = float(response_time)
+        background_colour = "green"
+        if 0.0 <= delay_float < 0.3:
+            pass
+        elif 0.3 < delay_float < 0.5:
+            background_colour = "yellow"
+        elif 0.5 < delay_float < 1.0:
+            background_colour = "orange"
+        elif 1.0 < delay_float:
+            background_colour = "red"
+    except Exception as error:
+        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
+        logger.network_logger.debug("Check Online Status Error: " + str(error))
+        background_colour = "purple"
+    return background_colour
