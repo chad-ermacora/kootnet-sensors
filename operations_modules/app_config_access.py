@@ -67,3 +67,7 @@ creating_the_reports_zip = False
 creating_the_big_zip = False
 creating_databases_zip = False
 creating_logs_zip = False
+
+# Flask Login Variables
+http_flask_user = "Kootnet"
+http_flask_password = "sensors"

@@ -93,7 +93,7 @@ else:
 # Make sure SSL Files are there before starting HTTPS Server
 program_start_checks.check_ssl_files()
 # Start the HTTP Server for remote access
-https_server_and_check_thread = Thread(target=server_http.https_start_and_watch, args=[sensor_access])
+https_server_and_check_thread = Thread(target=server_http.https_start_and_watch)
 https_server_and_check_thread.daemon = True
 https_server_and_check_thread.start()
 

@@ -18,7 +18,9 @@
 """
 import os
 from subprocess import check_output
-from operations_modules import file_locations, app_generic_functions, logger
+from operations_modules import logger
+from operations_modules import file_locations
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 
 
 class CreateInstalledSensors:
@@ -199,8 +201,8 @@ class CreateInstalledSensors:
 def get_installed_sensors_from_file():
     """ Loads installed sensors from file and returns it as an object. """
     if os.path.isfile(file_locations.installed_sensors_config):
-        installed_sensor_lines = app_generic_functions.get_file_content(
-            file_locations.installed_sensors_config).strip().split("\n")
+        installed_sensor_lines = get_file_content(file_locations.installed_sensors_config)
+        installed_sensor_lines = installed_sensor_lines.strip().split("\n")
         installed_sensors = convert_lines_to_obj(installed_sensor_lines)
     else:
         logger.primary_logger.info("Installed Sensors Configuration file not found - Saving Default")
@@ -343,6 +345,6 @@ def write_to_file(installed_sensors):
         else:
             new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
 
-        app_generic_functions.write_file_to_disk(file_locations.installed_sensors_config, new_installed_sensors)
+        write_file_to_disk(file_locations.installed_sensors_config, new_installed_sensors)
     except Exception as error:
         logger.primary_logger.error("Failed to write Installed Sensor Config: " + str(error))
