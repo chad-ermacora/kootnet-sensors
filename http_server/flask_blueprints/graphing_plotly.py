@@ -1,18 +1,13 @@
 import os
 from datetime import datetime
-from threading import Thread
 from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server import server_http_generic_functions
-from http_server import server_http_sensor_control
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
-from http_server import server_plotly_graph_extras
 
 html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
 
