@@ -20,7 +20,7 @@ Created on Sat Aug 25 08:53:56 2018
 from os import system
 from operations_modules import logger
 from operations_modules import app_config_access
-from sensor_modules import linux_os
+from operations_modules import app_cached_variables
 
 round_decimal_to = 5
 
@@ -33,7 +33,6 @@ class CreateRPSenseHAT:
             self.display_ready = True
             self.sense_hat_import = __import__("sense_hat")
             self.sense = self.sense_hat_import.SenseHat()
-            self.linux_os_access = linux_os.CreateLinuxSystem()
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization Failed - " + str(error))
             app_config_access.installed_sensors.raspberry_pi_sense_hat = 0
@@ -161,7 +160,7 @@ class CreateRPSenseHAT:
 
                 if event.direction == "up":
                     shutdown_confirm = False
-                    self.display_text(self.linux_os_access.get_ip())
+                    self.display_text(app_cached_variables.ip)
                 elif event.direction == "down":
                     self.sense.set_pixels(steve)
                     if shutdown_confirm:

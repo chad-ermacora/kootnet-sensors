@@ -730,9 +730,9 @@ def display_message(text_message):
 
 def start_special_sensor_interactive_services():
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        sense_hat_joy_stick_thread = Thread(sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
-        sense_hat_joy_stick_thread.daemon = True
-        sense_hat_joy_stick_thread.start()
+        sh_joy_stick_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
+        sh_joy_stick_thread.daemon = True
+        sh_joy_stick_thread.start()
 
 
 def restart_services():
