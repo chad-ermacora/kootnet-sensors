@@ -6,10 +6,10 @@ from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from http_server import server_http_generic_functions
 
-html_download_routes = Blueprint("html_downloads", __name__)
+html_local_download_routes = Blueprint("html_local_download_routes", __name__)
 
 
-@html_download_routes.route("/DownloadSQLDatabase")
+@html_local_download_routes.route("/DownloadSQLDatabase")
 def download_sensors_sql_database_zipped():
     logger.network_logger.debug("* Download SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -29,7 +29,7 @@ def download_sensors_sql_database_zipped():
         return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
 
 
-@html_download_routes.route("/DownloadZippedLogs")
+@html_local_download_routes.route("/DownloadZippedLogs")
 def download_zipped_logs():
     logger.network_logger.debug("* Download Zip of all Logs Accessed by " + str(request.remote_addr))
     zip_name = "Logs_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
@@ -49,7 +49,7 @@ def download_zipped_logs():
         return server_http_generic_functions.message_and_return("Unable to zip logs for Download", url="/GetLogsHTML")
 
 
-@html_download_routes.route("/DownloadZippedEverything")
+@html_local_download_routes.route("/DownloadZippedEverything")
 def download_zipped_everything():
     logger.network_logger.debug("* Download Zip of Everything Accessed by " + str(request.remote_addr))
     zip_name = "Everything_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
@@ -69,20 +69,3 @@ def download_zipped_everything():
     except Exception as error:
         logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
         return server_http_generic_functions.message_and_return("Unable to zip logs for Download", url="/GetLogsHTML")
-
-
-@html_download_routes.route("/GetZippedSQLDatabaseSize")
-def get_zipped_sql_database_size():
-    logger.network_logger.debug("* Zipped SQL Database Size Sent to " + str(request.remote_addr))
-    try:
-        if not os.path.isfile(file_locations.database_zipped):
-            database_name = app_cached_variables.hostname + "SensorDatabase.sqlite"
-            sql_database = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
-            app_generic_functions.zip_files([database_name], [sql_database], save_type="save_to_disk",
-                                            file_location=file_locations.database_zipped)
-        sql_database_size = os.path.getsize(file_locations.database_zipped)
-        return str(sql_database_size)
-    except Exception as error:
-        logger.primary_logger.error(
-            "* Unable to Send Database Size to " + str(request.remote_addr) + ": " + str(error))
-        return "Error"

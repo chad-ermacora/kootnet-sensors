@@ -1,15 +1,12 @@
+import os
 from flask import Blueprint, request
 from operations_modules import logger
+from operations_modules import app_cached_variables_update
+from http_server.server_http_generic_functions import message_and_return
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
 
 html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
-
-
-@html_legacy_cc_routes.route("/GetIntervalSensorReadings")
-def cc_get_interval_readings():
-    logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    return str(sensor_access.get_interval_sensor_readings())
 
 
 @html_legacy_cc_routes.route("/GetSensorReadings")
@@ -24,6 +21,36 @@ def cc_get_sensor_readings():
 def cc_get_system_data():
     logger.network_logger.debug("* CC Sensor System Data Sent to " + str(request.remote_addr))
     return sensor_access.get_system_information()
+
+
+@html_legacy_cc_routes.route("/SetHostName", methods=["PUT"])
+@auth.login_required
+def cc_set_hostname():
+    logger.network_logger.debug("** CC Set Hostname Initiated by " + str(request.remote_addr))
+    try:
+        new_host = request.form['command_data']
+        os.system("hostnamectl set-hostname " + new_host)
+        message = "Hostname Changed to " + new_host
+        app_cached_variables_update.update_cached_variables()
+    except Exception as error:
+        logger.network_logger.error(
+            "** Hostname Change Failed from " + str(request.remote_addr) + " - " + str(error))
+        message = "Failed to change Hostname"
+    return message_and_return(message, url="/SensorInformation")
+
+
+@html_legacy_cc_routes.route("/SetDateTime", methods=["PUT"])
+@auth.login_required
+def cc_set_date_time():
+    logger.network_logger.debug("** CC Set DateTime Initiated by " + str(request.remote_addr))
+    try:
+        new_datetime = request.form['command_data']
+        os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
+        logger.network_logger.info(
+            "** CC System DateTime Set by " + str(request.remote_addr) + " to " + new_datetime)
+    except Exception as error:
+        logger.network_logger.error(
+            "** DateTime Change Failed from " + str(request.remote_addr) + ": " + str(error))
 
 
 @html_legacy_cc_routes.route("/GetConfigurationReport")

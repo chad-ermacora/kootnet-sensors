@@ -1,10 +1,7 @@
 import os
 from flask import Blueprint, request
-
-import operations_modules.app_cached_variables
-import operations_modules.app_cached_variables_update
-import operations_modules.app_generic_functions
 from operations_modules import logger
+from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
@@ -21,44 +18,14 @@ message_few_min = "This may take a few minutes ..."
 
 @html_system_commands_routes.route("/CheckOnlineStatus")
 def check_online():
-    logger.network_logger.debug("CC Sensor Status Checked by " + str(request.remote_addr))
+    logger.network_logger.debug("Sensor Status Checked by " + str(request.remote_addr))
     return "OK"
 
 
 @html_system_commands_routes.route("/GetHostName")
 def get_hostname():
-    logger.network_logger.debug("* CC Sensor's HostName sent to " + str(request.remote_addr))
+    logger.network_logger.debug("* Sensor's HostName sent to " + str(request.remote_addr))
     return app_cached_variables.hostname
-
-
-@html_system_commands_routes.route("/SetHostName", methods=["PUT"])
-@auth.login_required
-def cc_set_hostname():
-    logger.network_logger.debug("** CC Set Hostname Initiated by " + str(request.remote_addr))
-    try:
-        new_host = request.form['command_data']
-        os.system("hostnamectl set-hostname " + new_host)
-        message = "Hostname Changed to " + new_host
-        operations_modules.app_cached_variables_update.update_cached_variables()
-    except Exception as error:
-        logger.network_logger.error(
-            "** Hostname Change Failed from " + str(request.remote_addr) + " - " + str(error))
-        message = "Failed to change Hostname"
-    return message_and_return(message, url="/SensorInformation")
-
-
-@html_system_commands_routes.route("/SetDateTime", methods=["PUT"])
-@auth.login_required
-def cc_set_date_time():
-    logger.network_logger.debug("** CC Set DateTime Initiated by " + str(request.remote_addr))
-    try:
-        new_datetime = request.form['command_data']
-        os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-        logger.network_logger.info(
-            "** CC System DateTime Set by " + str(request.remote_addr) + " to " + new_datetime)
-    except Exception as error:
-        logger.network_logger.error(
-            "** DateTime Change Failed from " + str(request.remote_addr) + ": " + str(error))
 
 
 @html_system_commands_routes.route("/GetSystemDateTime")
@@ -89,6 +56,23 @@ def get_sensor_program_version():
 def get_sql_db_size():
     logger.network_logger.debug("* Sensor's Database Size sent to " + str(request.remote_addr))
     return str(sensor_access.get_db_size())
+
+
+@html_system_commands_routes.route("/GetZippedSQLDatabaseSize")
+def get_zipped_sql_database_size():
+    logger.network_logger.debug("* Zipped SQL Database Size Sent to " + str(request.remote_addr))
+    try:
+        if not os.path.isfile(file_locations.database_zipped):
+            database_name = app_cached_variables.hostname + "SensorDatabase.sqlite"
+            sql_database = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
+            app_generic_functions.zip_files([database_name], [sql_database], save_type="save_to_disk",
+                                            file_location=file_locations.database_zipped)
+        sql_database_size = os.path.getsize(file_locations.database_zipped)
+        return str(sql_database_size)
+    except Exception as error:
+        logger.primary_logger.error(
+            "* Unable to Send Database Size to " + str(request.remote_addr) + ": " + str(error))
+        return "Error"
 
 
 @html_system_commands_routes.route("/GetRAMUsed")

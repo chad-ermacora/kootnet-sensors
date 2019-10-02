@@ -89,21 +89,20 @@ def html_online_services():
 
 @html_online_services_routes.route("/GetOnlineServicesWeatherUnderground")
 @auth.login_required
-def html_get_online_services_config_wu():
-    logger.network_logger.debug("** Get Online Services - Weather Underground accessed from " +
-                                str(request.remote_addr))
+def html_get_raw_online_services_config_wu():
+    logger.network_logger.debug("** Get Online Services - Weather Underground accessed from " + str(request.remote_addr))
     return send_file(file_locations.weather_underground_config)
 
 
 @html_online_services_routes.route("/GetOnlineServicesLuftdaten")
-def html_get_online_services_config_luftdaten():
+def html_get_raw_online_services_config_luftdaten():
     logger.network_logger.debug("** Get Online Services - Luftdaten accessed from " + str(request.remote_addr))
     return send_file(file_locations.luftdaten_config)
 
 
 @html_online_services_routes.route("/GetOnlineServicesOpenSenseMap")
 @auth.login_required
-def html_get_online_services_config_open_sense_map():
+def html_get_raw_online_services_config_open_sense_map():
     logger.network_logger.debug("** Get Online Services - Open Sense Map accessed from " + str(request.remote_addr))
     return send_file(file_locations.osm_config)
 

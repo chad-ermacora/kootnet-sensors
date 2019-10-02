@@ -27,16 +27,17 @@ try:
     from http_server import server_http_auth
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
-    from http_server.flask_blueprints.downloads import html_download_routes
+    from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control import html_sensor_control_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
     from http_server.flask_blueprints.system_commands import html_system_commands_routes
     from http_server.flask_blueprints.online_services import html_online_services_routes
     from http_server.flask_blueprints.logs import html_logs_routes
-    from http_server.flask_blueprints.sensor_configurations import html_sensor_config_routes
+    from http_server.flask_blueprints.html_sensor_configurations import html_sensor_config_routes
     from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
-    from http_server.flask_blueprints.get_configurations import html_get_config_routes
+    from http_server.flask_blueprints.get_set_raw_configurations import html_get_config_routes
     from http_server.flask_blueprints.legacy_control_center import html_legacy_cc_routes
+    from http_server.flask_blueprints.sensor_info_and_readings import html_sensor_info_readings_routes
     from flask import Flask
     from flask_compress import Compress
     from gevent.pywsgi import WSGIServer
@@ -48,7 +49,7 @@ except ImportError as import_error:
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
-    html_legacy_cc_routes, Flask, Compress, WSGIServer = None, None, None, None
+    html_legacy_cc_routes, html_sensor_info_readings_routes, Flask, Compress, WSGIServer = None, None, None, None, None
     import_errors = True
 
 flask_http_ip = ""
@@ -68,7 +69,7 @@ class CreateSensorHTTP:
 
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_basic_routes)
-        app.register_blueprint(html_download_routes)
+        app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)
         app.register_blueprint(html_plotly_graphing_routes)
         app.register_blueprint(html_system_commands_routes)
@@ -78,6 +79,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_sensor_readings_routes)
         app.register_blueprint(html_get_config_routes)
         app.register_blueprint(html_legacy_cc_routes)
+        app.register_blueprint(html_sensor_info_readings_routes)
 
         app_generic_functions.thread_function(delayed_cache_update)
 

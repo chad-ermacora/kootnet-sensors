@@ -34,6 +34,24 @@ def _get_log_view_message(log_lines_length):
     return text_log_entries_return
 
 
+@html_logs_routes.route("/GetPrimaryLog")
+def get_raw_primary_log():
+    logger.network_logger.debug("* Raw Primary Log Sent to " + str(request.remote_addr))
+    return logger.get_sensor_log(file_locations.primary_log)
+
+
+@html_logs_routes.route("/GetNetworkLog")
+def get_raw_network_log():
+    logger.network_logger.debug("* Raw Network Log Sent to " + str(request.remote_addr))
+    return logger.get_sensor_log(file_locations.network_log)
+
+
+@html_logs_routes.route("/GetSensorsLog")
+def get_raw_sensors_log():
+    logger.network_logger.debug("* Raw Sensors Log Sent to " + str(request.remote_addr))
+    return logger.get_sensor_log(file_locations.sensors_log)
+
+
 @html_logs_routes.route("/DeletePrimaryLog")
 @auth.login_required
 def delete_primary_log():
@@ -56,21 +74,3 @@ def delete_sensors_log():
     logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
     logger.clear_sensor_log()
     return server_http_generic_functions.message_and_return("Sensors Log Deleted", url="/GetLogsHTML")
-
-
-@html_logs_routes.route("/GetPrimaryLog")
-def cc_get_primary_log():
-    logger.network_logger.debug("* CC Primary Log Sent to " + str(request.remote_addr))
-    return logger.get_sensor_log(file_locations.primary_log)
-
-
-@html_logs_routes.route("/GetNetworkLog")
-def cc_get_network_log():
-    logger.network_logger.debug("* CC Network Log Sent to " + str(request.remote_addr))
-    return logger.get_sensor_log(file_locations.network_log)
-
-
-@html_logs_routes.route("/GetSensorsLog")
-def cc_get_sensors_log():
-    logger.network_logger.debug("* CC Sensor Log Sent to " + str(request.remote_addr))
-    return logger.get_sensor_log(file_locations.sensors_log)

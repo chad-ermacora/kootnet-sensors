@@ -13,7 +13,7 @@ html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
 
 
 @html_plotly_graphing_routes.route("/PlotlyGraph")
-def html_plotly_graph():
+def html_plotly_graphing():
     logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
     generating_message = "Generating Plotly Graph. This may take awhile."
     generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
@@ -87,7 +87,7 @@ def html_create_plotly_graph():
         return server_http_generic_functions.message_and_return(generating_message,
                                                                 text_message2=generating_message2,
                                                                 url="/PlotlyGraph")
-    return html_plotly_graph()
+    return html_plotly_graphing()
 
 
 @html_plotly_graphing_routes.route("/ViewIntervalPlotlyGraph")
