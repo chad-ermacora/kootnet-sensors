@@ -1,6 +1,6 @@
 import time
 from threading import Thread
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -494,3 +494,92 @@ def _get_sum_db_sizes(ip_list):
         get_error_count = 0
     return databases_size
 
+
+@html_sensor_control_routes.route("/DownloadSCDatabasesZip")
+def download_sc_databases_zip():
+    logger.network_logger.debug("* Download Zip of Multiple Sensor DBs Accessed by " + str(request.remote_addr))
+    if not app_config_access.creating_databases_zip:
+        if app_cached_variables.sc_databases_zip_name != "":
+            try:
+                if app_cached_variables.sc_databases_zip_in_memory:
+                    zip_file = app_cached_variables.sc_in_memory_zip
+                else:
+                    zip_file = file_locations.html_sensor_control_databases_zip
+
+                zip_filename = app_cached_variables.sc_databases_zip_name
+                app_cached_variables.sc_databases_zip_name = ""
+                app_cached_variables.sc_databases_zip_in_memory = False
+                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+            except Exception as error:
+                logger.network_logger.error("Send Databases Zip Error: " + str(error))
+                app_cached_variables.sc_databases_zip_name = ""
+                app_cached_variables.sc_databases_zip_in_memory = False
+                return server_http_generic_functions.message_and_return("Problem loading Zip",
+                                                                        url="/SensorControlManage")
+    else:
+        return server_http_generic_functions.message_and_return("Zipped Databases Creation in Progress",
+                                                                url="/SensorControlManage")
+
+
+@html_sensor_control_routes.route("/DownloadSCReportsZip")
+def download_sc_reports_zip():
+    logger.network_logger.debug("* Download SC Reports Zipped Accessed by " + str(request.remote_addr))
+    try:
+        if not app_config_access.creating_the_reports_zip:
+            if app_cached_variables.sc_reports_zip_name != "":
+                zip_file = app_cached_variables.sc_in_memory_zip
+                zip_filename = app_cached_variables.sc_reports_zip_name
+                app_cached_variables.sc_reports_zip_name = ""
+                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+        else:
+            return server_http_generic_functions.message_and_return("Zipped Reports Creation in Progress",
+                                                                    url="/SensorControlManage")
+    except Exception as error:
+        logger.network_logger.error("Send Reports Zip Error: " + str(error))
+
+    app_cached_variables.sc_reports_zip_name = ""
+    return server_http_generic_functions.message_and_return("Problem loading Zip", url="/SensorControlManage")
+
+
+@html_sensor_control_routes.route("/DownloadSCLogsZip")
+def download_sc_logs_zip():
+    logger.network_logger.debug("* Download SC Logs Zipped Accessed by " + str(request.remote_addr))
+    try:
+        if not app_config_access.creating_logs_zip:
+            if app_cached_variables.sc_logs_zip_name != "":
+                zip_file = app_cached_variables.sc_in_memory_zip
+                zip_filename = app_cached_variables.sc_logs_zip_name
+                app_cached_variables.sc_logs_zip_name = ""
+                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+        else:
+            return server_http_generic_functions.message_and_return("Zipped Multiple Sensors Logs Creation in Progress",
+                                                                    url="/SensorControlManage")
+    except Exception as error:
+        logger.network_logger.error("Send SC Logs Zip Error: " + str(error))
+
+    app_cached_variables.sc_logs_zip_name = ""
+    return server_http_generic_functions.message_and_return("Problem loading Zip", url="/SensorControlManage")
+
+
+@html_sensor_control_routes.route("/DownloadSCBigZip")
+def download_sc_big_zip():
+    logger.network_logger.debug("* Download 'The Big Zip' Accessed by " + str(request.remote_addr))
+    try:
+        if not app_config_access.creating_the_big_zip:
+            if app_cached_variables.sc_big_zip_name != "":
+                if app_cached_variables.sc_big_zip_in_memory:
+                    zip_file = app_cached_variables.sc_in_memory_zip
+                else:
+                    zip_file = file_locations.html_sensor_control_big_zip
+
+                zip_filename = app_cached_variables.sc_big_zip_name
+                app_cached_variables.sc_big_zip_name = ""
+                app_cached_variables.sc_big_zip_in_memory = False
+                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
+        else:
+            return server_http_generic_functions.message_and_return("Big Zip Creation in Progress",
+                                                                    url="/SensorControlManage")
+    except Exception as error:
+        logger.network_logger.error("Send Big Zip Error: " + str(error))
+    app_cached_variables.sc_big_zip_in_memory = False
+    return server_http_generic_functions.message_and_return("Problem loading Zip", url="/SensorControlManage")

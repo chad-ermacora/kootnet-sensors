@@ -21,30 +21,34 @@ from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules.app_cached_variables_update import delayed_cache_update
-from http_server import server_http_auth
-from http_server.flask_blueprints.html_functional import html_functional_routes
-from http_server.flask_blueprints.basic_html_pages import html_basic_routes
-from http_server.flask_blueprints.downloads import html_download_routes
-from http_server.flask_blueprints.sensor_control import html_sensor_control_routes
-from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
-from http_server.flask_blueprints.system_commands import html_system_commands_routes
-from http_server.flask_blueprints.online_services import html_online_services_routes
-from http_server.flask_blueprints.logs import html_logs_routes
-from http_server.flask_blueprints.sensor_configurations import html_sensor_config_routes
-from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
-from http_server.flask_blueprints.get_configurations import html_get_config_routes
-from http_server.flask_blueprints.legacy_control_center import html_legacy_cc_routes
+
 try:
-    # noinspection PyUnresolvedReferences
+    from operations_modules.app_cached_variables_update import delayed_cache_update
+    from http_server import server_http_auth
+    from http_server.flask_blueprints.html_functional import html_functional_routes
+    from http_server.flask_blueprints.basic_html_pages import html_basic_routes
+    from http_server.flask_blueprints.downloads import html_download_routes
+    from http_server.flask_blueprints.sensor_control import html_sensor_control_routes
+    from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
+    from http_server.flask_blueprints.system_commands import html_system_commands_routes
+    from http_server.flask_blueprints.online_services import html_online_services_routes
+    from http_server.flask_blueprints.logs import html_logs_routes
+    from http_server.flask_blueprints.sensor_configurations import html_sensor_config_routes
+    from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
+    from http_server.flask_blueprints.get_configurations import html_get_config_routes
+    from http_server.flask_blueprints.legacy_control_center import html_legacy_cc_routes
     from flask import Flask
-    # noinspection PyUnresolvedReferences
     from flask_compress import Compress
-    # noinspection PyUnresolvedReferences
     from gevent.pywsgi import WSGIServer
+
     import_errors = False
 except ImportError as import_error:
     logger.primary_logger.critical("**** Missing Required HTTPS Dependencies: " + str(import_error))
+    delayed_cache_update, server_http_auth, html_functional_routes, html_basic_routes, = None, None, None, None
+    html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
+    html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
+    html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
+    html_legacy_cc_routes, Flask, Compress, WSGIServer = None, None, None, None
     import_errors = True
 
 flask_http_ip = ""
