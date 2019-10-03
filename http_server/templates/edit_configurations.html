@@ -405,8 +405,7 @@
     </div>
 
     <div class="mui-tabs__pane" id="trigger-variances-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-              action="/EditTriggerVariances">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
             <fieldset style="text-align: center">
                 <h2><u><a style="color: black" href="{{ PageURL }}">Trigger Variances</a></u></h2>
                 <h5 style="color: #930a09"><b>
@@ -416,7 +415,7 @@
                 </b></h5>
 
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                        onclick="window.location.href = '/ResetTriggerVariances';">
+                        type="button" onclick="window.location.href = '/ResetTriggerVariances';">
                     Reset Trigger Variances
                 </button>
 
@@ -929,7 +928,7 @@
                     </div>
                 </div>
                 <br>
-                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+                <button type="submit" class="mui-btn mui-btn--raised" formaction="/EditTriggerVariances">Update</button>
             </fieldset>
         </form>
     </div>

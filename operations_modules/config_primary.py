@@ -51,12 +51,12 @@ def get_config_from_file():
 
 def convert_config_to_str(config):
     """ Takes configuration Object and returns it as a string. """
-    config_file_str = "Enable = 1 & Disable = 0 (Recommended: Do not change if you are unsure)\n" + \
+    config_file_str = "Enable = 1 & Disable = 0\n" + \
                       str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
-                      str(config.enable_display) + " = Enable Display (If present)\n" + \
-                      str(config.enable_interval_recording) + " = Record Interval Sensors to SQL Database\n" + \
-                      str(config.enable_trigger_recording) + " = Record Trigger Sensors to SQL Database\n" + \
-                      str(config.sleep_duration_interval) + " = Seconds between Interval recordings\n" + \
+                      str(config.enable_display) + " = Enable Mini Display\n" + \
+                      str(config.enable_interval_recording) + " = Interval Recording to SQL Database\n" + \
+                      str(config.enable_trigger_recording) + " = Trigger Recording to SQL Database\n" + \
+                      str(config.sleep_duration_interval) + " = Recording Interval in Seconds ** Caution **\n" + \
                       str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n" + \
                       str(config.temperature_offset) + " = Current Temperature Offset"
 
@@ -72,22 +72,20 @@ def convert_config_lines_to_obj(config_lines, skip_write=False):
     count = 0
     for config_line in config_lines:
         if count > 0:
-            if count == 5 or count == 7:
-                try:
+            try:
+                if count == 5 or count == 7:
                     primary_config.append(float(config_line.split("=")[0].strip()))
-                except Exception as error:
-                    logger.primary_logger.error("Error in Primary Configuration line " + str(count) + ": " + str(error))
-                    bad_load = True
-                    primary_config.append(35505.0)
-            else:
-                try:
+                else:
                     if config_line.strip()[0] == "1":
                         primary_config.append(1)
                     else:
                         primary_config.append(0)
-                except Exception as error:
-                    logger.primary_logger.error("Error in Primary Configuration line " + str(count) + ": " + str(error))
-                    bad_load = True
+            except Exception as error:
+                logger.primary_logger.error("Primary Config Error on line #" + str(count) + ": " + str(error))
+                bad_load = True
+                if count == 5 or count == 7:
+                    primary_config.append(35505.0)
+                else:
                     primary_config.append(0)
         count += 1
 
@@ -115,9 +113,8 @@ def convert_config_lines_to_obj(config_lines, skip_write=False):
 
     if not skip_write:
         if bad_load:
-            logger.primary_logger.warning("One or more bad options in main configuration file.  " +
-                                          "Using defaults for bad entries and saving. " +
-                                          "Please review the Configuration file.")
+            message = "Primary Configuration Load Error: Using one or more defaults.  Please review the Configuration."
+            logger.primary_logger.warning(message)
             write_config_to_file(new_config)
 
     return new_config
