@@ -5,7 +5,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from http_server.server_http_auth import auth
-from http_server import server_http_generic_functions
+from http_server.server_http_generic_functions import message_and_return
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 
@@ -20,7 +20,7 @@ def html_plotly_graphing():
 
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
         logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-        return server_http_generic_functions.message_and_return(generating_message,
+        return message_and_return(generating_message,
                                                                 text_message2=generating_message2,
                                                                 url="/PlotlyGraph")
 
@@ -28,16 +28,14 @@ def html_plotly_graphing():
         interval_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
                                                                    file_locations.interval_plotly_html_filename)
         interval_creation_date = str(datetime.fromtimestamp(interval_plotly_file_creation_date_unix))[:-7]
-    except Exception as error:
-        logger.primary_logger.debug("No Interval Plotly file created: " + str(error))
+    except FileNotFoundError:
         interval_creation_date = "No Plotly Graph Found"
 
     try:
         triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
                                                                    file_locations.triggers_plotly_html_filename)
         triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
-    except Exception as error:
-        logger.primary_logger.debug("No Triggers Plotly file: " + str(error))
+    except FileNotFoundError:
         triggers_creation_date = "No Plotly Graph Found"
 
     return render_template("plotly_graph.html",
@@ -53,11 +51,8 @@ def html_create_plotly_graph():
 
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
         logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-        return server_http_generic_functions.message_and_return(generating_message,
-                                                                text_message2=generating_message2,
-                                                                url="/PlotlyGraph")
-
-    if request.method == "POST" and "SQLRecordingType" in request.form:
+        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
+    elif request.method == "POST" and "SQLRecordingType" in request.form:
         logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
         try:
             new_graph_data = server_plotly_graph_variables.CreateGraphData()
@@ -76,17 +71,12 @@ def html_create_plotly_graph():
             new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
 
             if len(new_graph_data.graph_columns) < 4:
-                return server_http_generic_functions.message_and_return("Please Select at least One Sensor",
-                                                                        url="/PlotlyGraph")
+                return message_and_return("Please Select at least One Sensor", url="/PlotlyGraph")
             else:
-                app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph,
-                                                      args=new_graph_data)
+                server_plotly_graph.create_plotly_graph(new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
-
-        return server_http_generic_functions.message_and_return(generating_message,
-                                                                text_message2=generating_message2,
-                                                                url="/PlotlyGraph")
+        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
     return html_plotly_graphing()
 
 
@@ -96,10 +86,8 @@ def html_view_interval_graph_plotly():
     if os.path.isfile(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename):
         return send_file(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename)
     else:
-        return server_http_generic_functions.message_and_return(
-            "No Interval Plotly Graph Generated - Click to Close Tab",
-            special_command="JavaScript:window.close()",
-            url="")
+        message_title = "No Interval Plotly Graph Generated - Click to Close Tab"
+        return message_and_return(message_title, special_command="JavaScript:window.close()", url="")
 
 
 @html_plotly_graphing_routes.route("/ViewTriggerPlotlyGraph")
@@ -110,4 +98,4 @@ def html_view_triggers_graph_plotly():
     else:
         message1 = "No Triggers Plotly Graph Generated - Click to Close Tab"
         special_command = "JavaScript:window.close()"
-        return server_http_generic_functions.message_and_return(message1, special_command=special_command, url="")
+        return message_and_return(message1, special_command=special_command, url="")

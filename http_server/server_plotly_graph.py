@@ -88,7 +88,6 @@ def _start_plotly_graph(graph_data):
 
         # Get accompanying DateTime based on sensor data actually being present
         sql_column_date_time = _get_sql_data(graph_data, var_time_sql_query)
-        logger.primary_logger.debug("SQL DateTime before conversion: " + graph_data.graph_end)
         apply_sql_date_time_hour_offset(sql_column_date_time, graph_data.datetime_offset)
 
         if var_column == sql_column_names.all_tables_datetime:
@@ -134,21 +133,20 @@ def _start_plotly_graph(graph_data):
                 sql_temp_offset_data = _get_sql_data(graph_data, var_sql_query)
 
                 warn_message = False
+                error_message = ""
                 count = 0
                 for data in sql_column_data:
                     try:
                         sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
                         count = count + 1
                     except Exception as error:
-                        if not warn_message:
-                            logger.primary_logger.debug("At least one bad SQL entry from Column " +
-                                                        "'EnvironmentTemp' or 'EnvironmentTempOffset' - " + str(error))
-                        count = count + 1
+                        if error_message == "":
+                            error_message = str(error)
                         warn_message = True
+                        count = count + 1
 
                 if warn_message:
-                    logger.primary_logger.warning("Plotly Graph: " +
-                                                  "One or more missing entries in 'EnvironmentTemp' or 'EnvTempOffset'")
+                    logger.primary_logger.warning("Plotly Graph - Bad Env temperature or offset: " + error_message)
 
             graph_data.sql_hat_temp = sql_column_data
             graph_data.sql_hat_temp_date_time = sql_column_date_time
@@ -274,8 +272,6 @@ def _get_sql_data(graph_interval_data, sql_command):
 
         skip_count += 1
         count += 1
-
-    logger.primary_logger.debug("SQL execute Command: " + str(sql_command))
     logger.primary_logger.debug("SQL Column Data Length: " + str(len(return_data)))
     if null_data_entries:
         logger.primary_logger.warning("NULL SQL Entries found using: " + str(sql_command))
@@ -293,70 +289,26 @@ def _plotly_graph(graph_data):
     graph_data.graph_collection = []
 
     if len(graph_data.sql_time) > 1:
-        if len(graph_data.sql_host_name) > 1:
-            server_plotly_graph_extras.graph_host_name(graph_data)
-
-        if len(graph_data.sql_up_time) > 1:
-            server_plotly_graph_extras.graph_sql_uptime(graph_data)
-
-        if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
-            server_plotly_graph_extras.graph_sql_cpu_env_temperature(graph_data)
-
-        if len(graph_data.sql_pressure) > 2:
-            server_plotly_graph_extras.graph_sql_pressure(graph_data)
-
-        if len(graph_data.sql_altitude) > 2:
-            server_plotly_graph_extras.graph_sql_altitude(graph_data)
-
-        if len(graph_data.sql_humidity) > 2:
-            server_plotly_graph_extras.graph_sql_humidity(graph_data)
-
-        if len(graph_data.sql_distance) > 2:
-            server_plotly_graph_extras.graph_sql_distance(graph_data)
-
-        if len(graph_data.sql_gas_resistance) > 2 or len(graph_data.sql_gas_oxidising) > 2 \
-                or len(graph_data.sql_gas_reducing) > 2 or len(graph_data.sql_gas_nh3) > 2:
-            server_plotly_graph_extras.graph_sql_gas(graph_data)
-
-        if len(graph_data.sql_pm_1) > 2 or len(graph_data.sql_pm_2_5) > 2 or len(graph_data.sql_pm_10) > 2:
-            server_plotly_graph_extras.graph_sql_particulate_matter(graph_data)
-
-        if len(graph_data.sql_lumen) > 2:
-            server_plotly_graph_extras.graph_sql_lumen(graph_data)
-
-        if len(graph_data.sql_red) > 2:
-            server_plotly_graph_extras.graph_sql_ems_colours(graph_data)
-
-        if len(graph_data.sql_uv_index) > 2 or len(graph_data.sql_uv_a) > 2 or len(graph_data.sql_uv_b) > 2:
-            server_plotly_graph_extras.graph_sql_ultra_violet(graph_data)
-
-        if len(graph_data.sql_acc_x) > 2:
-            server_plotly_graph_extras.graph_sql_accelerometer(graph_data)
-
-        if len(graph_data.sql_mg_x) > 2:
-            server_plotly_graph_extras.graph_sql_magnetometer(graph_data)
-
-        if len(graph_data.sql_gyro_x) > 2:
-            server_plotly_graph_extras.graph_sql_gyroscope(graph_data)
-
-        fig = subplots.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
-
-        for graph in graph_data.graph_collection:
-            fig.add_trace(graph[0], graph[1], graph[2])
-        if len(graph_data.sql_ip) > 1:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
-
-        if graph_data.row_count > 4:
-            fig['layout'].update(height=2048)
-
         try:
+            server_plotly_graph_extras.add_plots(graph_data)
+
+            fig = subplots.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
+
+            for graph in graph_data.graph_collection:
+                fig.add_trace(graph[0], graph[1], graph[2])
+            if len(graph_data.sql_ip) > 1:
+                fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
+
+            if graph_data.row_count > 4:
+                fig['layout'].update(height=2048)
+
             if graph_data.graph_table == app_config_access.database_variables.table_interval:
                 offline.plot(fig, filename=graph_data.save_to + file_locations.interval_plotly_html_filename)
             else:
                 offline.plot(fig, filename=graph_data.save_to + file_locations.triggers_plotly_html_filename)
             logger.primary_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
-            logger.primary_logger.error("Plotly Graph Creation - Failed - " + str(error))
+            logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))
     else:
         logger.primary_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
 

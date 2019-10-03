@@ -49,7 +49,8 @@ except ImportError as import_error:
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
-    html_legacy_cc_routes, html_sensor_info_readings_routes, Flask, Compress, WSGIServer = None, None, None, None, None
+    html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
+    Flask, Compress, WSGIServer = None, None, None
     import_errors = True
 
 flask_http_ip = ""

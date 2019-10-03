@@ -22,7 +22,23 @@ from http_server import server_plotly_graph_variables
 try:
     from plotly import graph_objs as go
 except ImportError as import_error:
-    logger.primary_logger.debug("Graph Extra, bad Plotly Import")
+    logger.primary_logger.debug("Plotly Graph - Failed Import")
+    go = None
+
+interval_table = "IntervalData"
+trigger_table = "TriggerData"
+
+
+class CreateGraphScatterData:
+    def __init__(self, webgl, sql_table, set_marker):
+        self.enable_plotly_webgl = webgl
+        self.text_graph_table = sql_table
+        self.text_sensor_name = ""
+
+        self.sql_time_list = []
+        self.sql_data_list = []
+
+        self.set_marker = set_marker
 
 
 def adjust_datetime(var_datetime, datetime_offset):
@@ -34,575 +50,282 @@ def adjust_datetime(var_datetime, datetime_offset):
     try:
         tmp_ms = ""
         if len(var_datetime) > 19:
-            try:
-                tmp_ms = str(var_datetime)[-4:]
-                var_datetime = datetime.strptime(str(var_datetime)[:-4], "%Y-%m-%d %H:%M:%S")
-            except Exception as error:
-                logger.primary_logger.error("Unable to Convert Trigger datetime string to datetime format - " + str(error))
+            tmp_ms = str(var_datetime)[-4:]
+            var_datetime = datetime.strptime(str(var_datetime)[:-4], "%Y-%m-%d %H:%M:%S")
         else:
-            try:
-                var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
-            except Exception as error:
-                logger.primary_logger.error("Unable to Convert Interval datetime string to datetime format - " + str(error))
-
-        try:
-            new_time = var_datetime + timedelta(hours=datetime_offset)
-        except Exception as error:
-            logger.primary_logger.error("Unable to convert Hour Offset to int - " + str(error))
-            new_time = var_datetime
-
+            var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
+        new_time = var_datetime + timedelta(hours=datetime_offset)
         return str(new_time) + tmp_ms
     except Exception as error:
-        logger.primary_logger.error("Date Conversion Error - " + str(error))
+        logger.primary_logger.error("Plotly Graph - Date Conversion Error - " + str(error))
 
 
-def graph_host_name(graph_data):
-    """ Add Host Name to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_host_name_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-    first_hostname = graph_data.sql_host_name[0]
-    last_hostname = graph_data.sql_host_name[-1]
-    tmp_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
-
-    graph_data.temp_text_name = "Sensor Name"
-    graph_data.temp_sql = graph_data.sql_host_name
-
+def add_plots(graph_data):
     if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
+        set_marker = server_plotly_graph_variables.mark_generic_line
     else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_sensor_name = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_sensor_name, graph_data.row_count, 1])
-    graph_data.sub_plots.append(tmp_sensor_name)
-    logger.primary_logger.debug("Graph Sensor Sensor Name Added")
-
-
-def graph_sql_uptime(graph_data):
-    """ Add Sensor Uptime to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_up_time_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Sensor Uptime"
-    graph_data.temp_sql = graph_data.sql_up_time
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_uptime = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_uptime, graph_data.row_count, 1])
-    graph_data.sub_plots.append("Sensor Uptime")
-    logger.primary_logger.debug("Graph Sensor Uptime Added")
-
-
-def graph_sql_cpu_env_temperature(graph_data):
-    """ Add CPU Temperature to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_cpu_temp_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "CPU Temp"
-    graph_data.temp_sql = graph_data.sql_cpu_temp
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_dot
-
-    trace_cpu_temp = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_hat_temp_date_time
-    graph_data.temp_text_name = "Environmental Temp"
-    graph_data.temp_sql = graph_data.sql_hat_temp
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_dot
-
-    trace_hat_temp = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_cpu_temp, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_hat_temp, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Temperature °C')
-    logger.primary_logger.debug("Graph CPU / Environmental Temperature Added")
-
-
-def graph_sql_pressure(graph_data):
-    """ Add Pressure to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_pressure_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Pressure hPa"
-    graph_data.temp_sql = graph_data.sql_pressure
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_pressure = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_pressure, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Pressure hPa')
-    logger.primary_logger.debug("Graph Pressure hPa Added")
-
-
-def graph_sql_altitude(graph_data):
-    """ Add Altitude to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_altitude_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Altitude meters"
-    graph_data.temp_sql = graph_data.sql_altitude
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_altitude = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_altitude, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Altitude meters')
-    logger.primary_logger.debug("Graph Altitude meters Added")
-
-
-def graph_sql_humidity(graph_data):
-    """ Add Humidity to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_humidity_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Humidity %"
-    graph_data.temp_sql = graph_data.sql_humidity
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_humidity = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_humidity, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Humidity')
-    logger.primary_logger.debug("Graph Humidity Added")
-
-
-def graph_sql_distance(graph_data):
-    """ Add Distance to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_distance_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Distance meters?"
-    graph_data.temp_sql = graph_data.sql_distance
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_generic_dot
-
-    trace_distance = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_distance, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Distance meters?')
-    logger.primary_logger.debug("Graph Distance Added")
-
-
-def graph_sql_gas(graph_data):
-    """ Add Gas resistance to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_gas_resistance_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Gas Resistance"
-    graph_data.temp_sql = graph_data.sql_gas_resistance
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_dot
-
-    trace_gas_resistance = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_gas_oxidising_date_time
-    graph_data.temp_text_name = "Gas Oxidising"
-    graph_data.temp_sql = graph_data.sql_gas_oxidising
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_dot
-
-    trace_gas_oxidising = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_gas_reducing_date_time
-    graph_data.temp_text_name = "Gas Reducing"
-    graph_data.temp_sql = graph_data.sql_gas_reducing
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-
-    trace_gas_reducing = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_gas_nh3_date_time
-    graph_data.temp_text_name = "Gas NH3"
-    graph_data.temp_sql = graph_data.sql_gas_nh3
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_dot
-
-    trace_gas_nh3 = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_gas_resistance, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_gas_oxidising, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_gas_reducing, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_gas_nh3, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Gas Resistance')
-    logger.primary_logger.debug("Graph Gas Resistance Added")
-
-
-def graph_sql_particulate_matter(graph_data):
-    """ Add Particulate Matter to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_pm_1_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "PM1"
-    graph_data.temp_sql = graph_data.sql_pm_1
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_dot
-
-    trace_pm_1 = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_pm_2_5_date_time
-    graph_data.temp_text_name = "PM2.5"
-    graph_data.temp_sql = graph_data.sql_pm_2_5
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_dot
-
-    trace_pm_2_5 = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_pm_10_date_time
-    graph_data.temp_text_name = "PM10"
-    graph_data.temp_sql = graph_data.sql_pm_10
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-
-    trace_pm_10 = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_pm_1, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_pm_2_5, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_pm_10, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Particulate Matter')
-    logger.primary_logger.debug("Graph Particulate Matter Added")
-
-
-def graph_sql_lumen(graph_data):
-    """ Add Lumen to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_lumen_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Lumen"
-    graph_data.temp_sql = graph_data.sql_lumen
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-
-    trace_lumen = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_lumen, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Lumen')
-    logger.primary_logger.debug("Graph Lumen Added")
-
-
-def graph_sql_ems_colours(graph_data):
-    """ Add Electromagnetic Spectrum (usually the visible spectrum) to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_red_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Red"
-    graph_data.temp_sql = graph_data.sql_red
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_dot
-
-    trace_red = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_orange_date_time
-    graph_data.temp_text_name = "Orange"
-    graph_data.temp_sql = graph_data.sql_orange
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_dot
-
-    trace_orange = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_yellow_date_time
-    graph_data.temp_text_name = "Yellow"
-    graph_data.temp_sql = graph_data.sql_yellow
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-
-    trace_yellow = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_green_date_time
-    graph_data.temp_text_name = "Green"
-    graph_data.temp_sql = graph_data.sql_green
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_green_dot
-
-    trace_green = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_blue_date_time
-    graph_data.temp_text_name = "Blue"
-    graph_data.temp_sql = graph_data.sql_blue
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_blue_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_blue_dot
-
-    trace_blue = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_violet_date_time
-    graph_data.temp_text_name = "Violet"
-    graph_data.temp_sql = graph_data.sql_violet
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_violet_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_violet_dot
-
-    trace_violet = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_red, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_orange, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_yellow, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_green, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_blue, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_violet, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Electromagnetic Spectrum')
-    logger.primary_logger.debug("Graph Electromagnetic Spectrum Added")
-
-
-def graph_sql_ultra_violet(graph_data):
-    """ Add Ultra Violet to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_uv_index_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "UV Index"
-    graph_data.temp_sql = graph_data.sql_uv_index
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_red_dot
-
-    trace_uv_index = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_uv_a_date_time
-    graph_data.temp_text_name = "UVA"
-    graph_data.temp_sql = graph_data.sql_uv_a
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_orange_dot
-
-    trace_uva = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_uv_b_date_time
-    graph_data.temp_text_name = "UVB"
-    graph_data.temp_sql = graph_data.sql_uv_b
-
-    if graph_data.graph_table is "IntervalData":
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_line
-    else:
-        graph_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-
-    trace_uvb = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_uv_index, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_uva, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_uvb, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Ultra Violet')
-    logger.primary_logger.debug("Graph Ultra Violet Added")
-
-
-def graph_sql_accelerometer(graph_data):
-    """ Add Accelerometer to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_acc_x_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Accelerometer X"
-    graph_data.temp_sql = graph_data.sql_acc_x
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_x_dot
-
-    trace_acc_x = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_acc_y_date_time
-    graph_data.temp_text_name = "Accelerometer Y"
-    graph_data.temp_sql = graph_data.sql_acc_y
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_y_dot
-
-    trace_acc_y = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_acc_z_date_time
-    graph_data.temp_text_name = "Accelerometer Z"
-    graph_data.temp_sql = graph_data.sql_acc_z
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_z_dot
-
-    trace_acc_z = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_acc_x, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_acc_y, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_acc_z, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Accelerometer XYZ')
-    logger.primary_logger.debug("Graph Accelerometer XYZ Added")
-
-
-def graph_sql_magnetometer(graph_data):
-    """ Add Magnetometer to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_mg_x_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Magnetic X"
-    graph_data.temp_sql = graph_data.sql_mg_x
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_x_dot
-
-    trace_mag_x = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_mg_y_date_time
-    graph_data.temp_text_name = "Magnetic Y"
-    graph_data.temp_sql = graph_data.sql_mg_y
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_y_dot
-
-    trace_mag_y = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_mg_z_date_time
-    graph_data.temp_text_name = "Magnetic Z"
-    graph_data.temp_sql = graph_data.sql_mg_z
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_z_dot
-
-    trace_mag_z = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_mag_x, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_mag_y, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_mag_z, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Magnetic XYZ')
-    logger.primary_logger.debug("Graph Magnetic XYZ Added")
-
-
-def graph_sql_gyroscope(graph_data):
-    """ Add Gyroscope to the plotly graph. """
-    graph_data.sql_time = graph_data.sql_gyro_x_date_time
-
-    graph_data.row_count = graph_data.row_count + 1
-
-    graph_data.temp_text_name = "Gyroscopic X"
-    graph_data.temp_sql = graph_data.sql_gyro_x
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_x_dot
-
-    trace_gyro_x = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_gyro_y_date_time
-    graph_data.temp_text_name = "Gyroscopic Y"
-    graph_data.temp_sql = graph_data.sql_gyro_y
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_y_dot
-
-    trace_gyro_y = _add_scatter(graph_data)
-
-    graph_data.sql_time = graph_data.sql_gyro_z_date_time
-    graph_data.temp_text_name = "Gyroscopic Z"
-    graph_data.temp_sql = graph_data.sql_gyro_z
-
-    graph_data.set_marker = server_plotly_graph_variables.mark_z_dot
-
-    trace_gyro_z = _add_scatter(graph_data)
-
-    graph_data.graph_collection.append([trace_gyro_x, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_gyro_y, graph_data.row_count, 1])
-    graph_data.graph_collection.append([trace_gyro_z, graph_data.row_count, 1])
-    graph_data.sub_plots.append('Gyroscopic XYZ')
-    logger.primary_logger.debug("Graph Gyroscopic XYZ Added")
-
-
-def _add_scatter(graph_data):
+        set_marker = server_plotly_graph_variables.mark_generic_dot
+    scatter_data = CreateGraphScatterData(graph_data.enable_plotly_webgl, graph_data.graph_table, set_marker)
+
+    if len(graph_data.sql_host_name) > 1:
+        first_hostname = graph_data.sql_host_name[0]
+        last_hostname = graph_data.sql_host_name[-1]
+        subplot_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
+
+        put_sensor_trace(graph_data, scatter_data, "Sensor Name", graph_data.sql_host_name_date_time,
+                         graph_data.sql_host_name, subplot_sensor_name)
+    if len(graph_data.sql_up_time) > 1:
+        name_and_subplot = "Sensor Uptime"
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_up_time_date_time,
+                         graph_data.sql_up_time, name_and_subplot)
+
+    if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
+        put_sensor_trace(graph_data, scatter_data, "CPU Temp", graph_data.sql_cpu_temp_date_time,
+                         graph_data.sql_cpu_temp, "Temperature °C")
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_dot
+        put_sensor_trace(graph_data, scatter_data, "Environmental Temp", graph_data.sql_hat_temp_date_time,
+                         graph_data.sql_hat_temp, "Temperature °C", skip_row_count=True)
+
+    if len(graph_data.sql_pressure) > 2:
+        name_and_subplot = "Pressure hPa"
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_pressure_date_time,
+                         graph_data.sql_pressure, name_and_subplot)
+
+    if len(graph_data.sql_altitude) > 2:
+        name_and_subplot = "Altitude meters"
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_altitude_date_time,
+                         graph_data.sql_altitude, name_and_subplot)
+
+    if len(graph_data.sql_humidity) > 2:
+        put_sensor_trace(graph_data, scatter_data, "Humidity", graph_data.sql_humidity_date_time,
+                         graph_data.sql_humidity, "% RH")
+
+    if len(graph_data.sql_distance) > 2:
+        name_and_subplot = "Distance meters?"
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_distance_date_time,
+                         graph_data.sql_distance, name_and_subplot)
+
+    if len(graph_data.sql_gas_resistance) > 2 or len(graph_data.sql_gas_oxidising) > 2 \
+            or len(graph_data.sql_gas_reducing) > 2 or len(graph_data.sql_gas_nh3) > 2:
+        name_and_subplot = "Gas Resistance"
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_gas_resistance_date_time,
+                         graph_data.sql_gas_resistance, name_and_subplot)
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_dot
+        put_sensor_trace(graph_data, scatter_data, "Gas Oxidising", graph_data.sql_gas_oxidising_date_time,
+                         graph_data.sql_gas_oxidising, name_and_subplot, skip_row_count=True)
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
+        put_sensor_trace(graph_data, scatter_data, "Gas Reducing", graph_data.sql_gas_reducing_date_time,
+                         graph_data.sql_gas_reducing, name_and_subplot, skip_row_count=True)
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_dot
+        put_sensor_trace(graph_data, scatter_data, "Gas NH3", graph_data.sql_gas_nh3_date_time,
+                         graph_data.sql_gas_nh3, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_pm_1) > 2 or len(graph_data.sql_pm_2_5) > 2 or len(graph_data.sql_pm_10) > 2:
+        name_and_subplot = "Particulate Matter"
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
+        put_sensor_trace(graph_data, scatter_data, "PM1", graph_data.sql_pm_1_date_time,
+                         graph_data.sql_pm_1, name_and_subplot)
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_dot
+        put_sensor_trace(graph_data, scatter_data, "PM2.5", graph_data.sql_pm_2_5_date_time,
+                         graph_data.sql_pm_2_5, name_and_subplot, skip_row_count=True)
+
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
+        put_sensor_trace(graph_data, scatter_data, "PM10", graph_data.sql_pm_10_date_time,
+                         graph_data.sql_pm_10, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_lumen) > 2:
+        name_and_subplot = "Lumen"
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
+        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_lumen_date_time,
+                         graph_data.sql_lumen, name_and_subplot)
+
+    if len(graph_data.sql_red) > 2:
+        name_and_subplot = "Electromagnetic Spectrum"
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
+        put_sensor_trace(graph_data, scatter_data, "Red", graph_data.sql_red_date_time,
+                         graph_data.sql_red, name_and_subplot)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_dot
+        put_sensor_trace(graph_data, scatter_data, "Orange", graph_data.sql_orange_date_time,
+                         graph_data.sql_orange, name_and_subplot, skip_row_count=True)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
+        put_sensor_trace(graph_data, scatter_data, "Yellow", graph_data.sql_yellow_date_time,
+                         graph_data.sql_yellow, name_and_subplot, skip_row_count=True)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_green_dot
+        put_sensor_trace(graph_data, scatter_data, "Green", graph_data.sql_green_date_time,
+                         graph_data.sql_green, name_and_subplot, skip_row_count=True)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_blue_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_blue_dot
+        put_sensor_trace(graph_data, scatter_data, "Blue", graph_data.sql_blue_date_time,
+                         graph_data.sql_blue, name_and_subplot, skip_row_count=True)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_violet_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_violet_dot
+        put_sensor_trace(graph_data, scatter_data, "Violet", graph_data.sql_violet_date_time,
+                         graph_data.sql_violet, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_uv_index) > 2 or len(graph_data.sql_uv_a) > 2 or len(graph_data.sql_uv_b) > 2:
+        name_and_subplot = "Ultra Violet"
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
+        put_sensor_trace(graph_data, scatter_data, "Index", graph_data.sql_uv_index_date_time,
+                         graph_data.sql_uv_index, name_and_subplot)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_orange_dot
+        put_sensor_trace(graph_data, scatter_data, "UVA", graph_data.sql_uv_a_date_time,
+                         graph_data.sql_uv_a, name_and_subplot, skip_row_count=True)
+        if graph_data.graph_table is "IntervalData":
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
+        else:
+            scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
+        put_sensor_trace(graph_data, scatter_data, "UVB", graph_data.sql_uv_b_date_time,
+                         graph_data.sql_uv_b, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_acc_x) > 2:
+        name_and_subplot = "Accelerometer XYZ"
+        scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
+        put_sensor_trace(graph_data, scatter_data, "Accelerometer X", graph_data.sql_acc_x_date_time,
+                         graph_data.sql_acc_x, name_and_subplot)
+        scatter_data.set_marker = server_plotly_graph_variables.mark_y_dot
+        put_sensor_trace(graph_data, scatter_data, "Accelerometer Y", graph_data.sql_acc_y_date_time,
+                         graph_data.sql_acc_y, name_and_subplot, skip_row_count=True)
+        scatter_data.set_marker = server_plotly_graph_variables.mark_z_dot
+        put_sensor_trace(graph_data, scatter_data, "Accelerometer Z", graph_data.sql_acc_z_date_time,
+                         graph_data.sql_acc_z, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_mg_x) > 2:
+        name_and_subplot = "Magnetometer XYZ"
+        scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
+        put_sensor_trace(graph_data, scatter_data, "Magnetometer X", graph_data.sql_mg_x_date_time,
+                         graph_data.sql_mg_x, name_and_subplot)
+
+        scatter_data.set_marker = server_plotly_graph_variables.mark_y_dot
+        put_sensor_trace(graph_data, scatter_data, "Magnetometer Y", graph_data.sql_mg_y_date_time,
+                         graph_data.sql_mg_y, name_and_subplot, skip_row_count=True)
+
+        scatter_data.set_marker = server_plotly_graph_variables.mark_z_dot
+        put_sensor_trace(graph_data, scatter_data, "Magnetometer Z", graph_data.sql_mg_z_date_time,
+                         graph_data.sql_mg_z, name_and_subplot, skip_row_count=True)
+
+    if len(graph_data.sql_gyro_x) > 2:
+        name_and_subplot = "Gyroscopic XYZ"
+        scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
+        put_sensor_trace(graph_data, scatter_data, "Gyroscopic X", graph_data.sql_gyro_x_date_time,
+                         graph_data.sql_gyro_x, name_and_subplot)
+
+        scatter_data.set_marker = server_plotly_graph_variables.mark_y_dot
+        put_sensor_trace(graph_data, scatter_data, "Gyroscopic Y", graph_data.sql_gyro_y_date_time,
+                         graph_data.sql_gyro_y, name_and_subplot, skip_row_count=True)
+
+        scatter_data.set_marker = server_plotly_graph_variables.mark_z_dot
+        put_sensor_trace(graph_data, scatter_data, "Gyroscopic Z", graph_data.sql_gyro_z_date_time,
+                         graph_data.sql_gyro_z, name_and_subplot, skip_row_count=True)
+
+
+def put_sensor_trace(graph_data, scatter_data, sensor_name_text, sql_time_data,
+                     sql_data, sub_plot_name_text, skip_row_count=False):
+    try:
+        if not skip_row_count:
+            graph_data.row_count += 1
+            graph_data.sub_plots.append(sub_plot_name_text)
+
+        scatter_data.text_sensor_name = sensor_name_text
+        scatter_data.sql_time_list = sql_time_data
+        scatter_data.sql_data_list = sql_data
+        trace_sensor_name = _add_scatter(scatter_data)
+
+        graph_data.graph_collection.append([trace_sensor_name, graph_data.row_count, 1])
+        logger.primary_logger.debug("Graph " + sensor_name_text + " Name Added")
+    except Exception as error:
+        logger.primary_logger.error("Plotly Graph - Put Trace Error on " + sensor_name_text + ": " + str(error))
+
+
+def _add_scatter(scatter_data):
     """
     Returns a OpenGL or CPU rendered trace based on configuration settings.
 
     Uses line graph for Interval data and dot markers for Trigger data.
     """
-    if graph_data.enable_plotly_webgl:
-        if graph_data.graph_table == "IntervalData":
-            trace = go.Scattergl(x=graph_data.sql_time,
-                                 y=graph_data.temp_sql,
-                                 name=graph_data.temp_text_name,
-                                 marker=graph_data.set_marker)
+    try:
+        if scatter_data.enable_plotly_webgl:
+            if scatter_data.text_graph_table == "IntervalData":
+                trace = go.Scattergl(x=scatter_data.sql_time_list,
+                                     y=scatter_data.sql_data_list,
+                                     name=scatter_data.text_sensor_name,
+                                     marker=scatter_data.set_marker)
+            else:
+                trace = go.Scattergl(x=scatter_data.sql_time_list,
+                                     y=scatter_data.sql_data_list,
+                                     name=scatter_data.text_sensor_name,
+                                     mode="markers",
+                                     marker=scatter_data.set_marker)
         else:
-            trace = go.Scattergl(x=graph_data.sql_time,
-                                 y=graph_data.temp_sql,
-                                 name=graph_data.temp_text_name,
-                                 mode="markers",
-                                 marker=graph_data.set_marker)
-    else:
-        if graph_data.graph_table == "IntervalData":
-            trace = go.Scatter(x=graph_data.sql_time,
-                               y=graph_data.temp_sql,
-                               name=graph_data.temp_text_name,
-                               marker=graph_data.set_marker)
-        else:
-            trace = go.Scatter(x=graph_data.sql_time,
-                               y=graph_data.temp_sql,
-                               name=graph_data.temp_text_name,
-                               mode="markers",
-                               marker=graph_data.set_marker)
-    return trace
+            if scatter_data.graph_table == "IntervalData":
+                trace = go.Scatter(x=scatter_data.sql_time_list,
+                                   y=scatter_data.sql_data_list,
+                                   name=scatter_data.text_sensor_name,
+                                   marker=scatter_data.set_marker)
+            else:
+                trace = go.Scatter(x=scatter_data.sql_time_list,
+                                   y=scatter_data.sql_data_list,
+                                   name=scatter_data.text_sensor_name,
+                                   mode="markers",
+                                   marker=scatter_data.set_marker)
+        return trace
+    except Exception as error:
+        logger.primary_logger.error("Plotly Scatter Failed on " + scatter_data.text_sensor_name + ": " + str(error))
