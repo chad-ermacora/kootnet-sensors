@@ -73,7 +73,7 @@ def html_create_plotly_graph():
             if len(new_graph_data.graph_columns) < 4:
                 return message_and_return("Please Select at least One Sensor", url="/PlotlyGraph")
             else:
-                server_plotly_graph.create_plotly_graph(new_graph_data)
+                app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
         return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")

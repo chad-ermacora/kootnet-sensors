@@ -70,78 +70,79 @@ def add_plots(graph_data):
     if len(graph_data.sql_host_name) > 1:
         first_hostname = graph_data.sql_host_name[0]
         last_hostname = graph_data.sql_host_name[-1]
-        subplot_sensor_name = "First & Last Sensor Name: " + str(first_hostname) + " <---> " + str(last_hostname)
+        subplot_sensor_name = "Sensor Names over Time - First Name: " + str(first_hostname) + " <---> Last Name: " + str(last_hostname)
 
         put_sensor_trace(graph_data, scatter_data, "Sensor Name", graph_data.sql_host_name_date_time,
                          graph_data.sql_host_name, subplot_sensor_name)
     if len(graph_data.sql_up_time) > 1:
-        name_and_subplot = "Sensor Uptime"
+        name_and_subplot = "Sensor Uptime in Minutes"
         put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_up_time_date_time,
                          graph_data.sql_up_time, name_and_subplot)
 
     if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
+        name_and_subplot = "Temperature in °C (Celsius)"
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
-        put_sensor_trace(graph_data, scatter_data, "CPU Temp", graph_data.sql_cpu_temp_date_time,
-                         graph_data.sql_cpu_temp, "Temperature °C")
+        put_sensor_trace(graph_data, scatter_data, "CPU", graph_data.sql_cpu_temp_date_time,
+                         graph_data.sql_cpu_temp, name_and_subplot)
 
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_green_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_green_dot
-        put_sensor_trace(graph_data, scatter_data, "Environmental Temp", graph_data.sql_hat_temp_date_time,
-                         graph_data.sql_hat_temp, "Temperature °C", skip_row_count=True)
+        put_sensor_trace(graph_data, scatter_data, "Environmental", graph_data.sql_hat_temp_date_time,
+                         graph_data.sql_hat_temp, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_pressure) > 2:
-        name_and_subplot = "Pressure hPa"
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_pressure_date_time,
+        name_and_subplot = "Pressure in hPa (Hectopascals)"
+        put_sensor_trace(graph_data, scatter_data, "Pressure", graph_data.sql_pressure_date_time,
                          graph_data.sql_pressure, name_and_subplot)
 
     if len(graph_data.sql_altitude) > 2:
-        name_and_subplot = "Altitude meters"
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_altitude_date_time,
+        name_and_subplot = "Altitude in m (Meters)"
+        put_sensor_trace(graph_data, scatter_data, "Altitude", graph_data.sql_altitude_date_time,
                          graph_data.sql_altitude, name_and_subplot)
 
     if len(graph_data.sql_humidity) > 2:
         put_sensor_trace(graph_data, scatter_data, "Humidity", graph_data.sql_humidity_date_time,
-                         graph_data.sql_humidity, "% RH")
+                         graph_data.sql_humidity, "% Relative Humidity")
 
     if len(graph_data.sql_distance) > 2:
-        name_and_subplot = "Distance meters?"
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_distance_date_time,
+        name_and_subplot = "Distance in Meters?"
+        put_sensor_trace(graph_data, scatter_data, "Distance", graph_data.sql_distance_date_time,
                          graph_data.sql_distance, name_and_subplot)
 
     if len(graph_data.sql_gas_resistance) > 2 or len(graph_data.sql_gas_oxidising) > 2 \
             or len(graph_data.sql_gas_reducing) > 2 or len(graph_data.sql_gas_nh3) > 2:
-        name_and_subplot = "Gas Resistance"
+        name_and_subplot = "Gas Resistance in Ω (ohms)"
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_red_dot
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_gas_resistance_date_time,
+        put_sensor_trace(graph_data, scatter_data, "VOC", graph_data.sql_gas_resistance_date_time,
                          graph_data.sql_gas_resistance, name_and_subplot)
 
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_orange_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_orange_dot
-        put_sensor_trace(graph_data, scatter_data, "Gas Oxidising", graph_data.sql_gas_oxidising_date_time,
+        put_sensor_trace(graph_data, scatter_data, "Oxidising", graph_data.sql_gas_oxidising_date_time,
                          graph_data.sql_gas_oxidising, name_and_subplot, skip_row_count=True)
 
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-        put_sensor_trace(graph_data, scatter_data, "Gas Reducing", graph_data.sql_gas_reducing_date_time,
+        put_sensor_trace(graph_data, scatter_data, "Reducing", graph_data.sql_gas_reducing_date_time,
                          graph_data.sql_gas_reducing, name_and_subplot, skip_row_count=True)
 
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_green_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_green_dot
-        put_sensor_trace(graph_data, scatter_data, "Gas NH3", graph_data.sql_gas_nh3_date_time,
+        put_sensor_trace(graph_data, scatter_data, "NH3", graph_data.sql_gas_nh3_date_time,
                          graph_data.sql_gas_nh3, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_pm_1) > 2 or len(graph_data.sql_pm_2_5) > 2 or len(graph_data.sql_pm_10) > 2:
@@ -168,7 +169,7 @@ def add_plots(graph_data):
                          graph_data.sql_pm_10, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_lumen) > 2:
-        name_and_subplot = "Lumen"
+        name_and_subplot = "Lumen in lm"
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
         else:
@@ -177,7 +178,7 @@ def add_plots(graph_data):
                          graph_data.sql_lumen, name_and_subplot)
 
     if len(graph_data.sql_red) > 2:
-        name_and_subplot = "Electromagnetic Spectrum"
+        name_and_subplot = "Visible Electromagnetic Spectrum in lm? (Lumen)"
         if graph_data.graph_table is "IntervalData":
             scatter_data.set_marker = server_plotly_graph_variables.mark_red_line
         else:
@@ -237,7 +238,7 @@ def add_plots(graph_data):
                          graph_data.sql_uv_b, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_acc_x) > 2:
-        name_and_subplot = "Accelerometer XYZ"
+        name_and_subplot = "Accelerometer in g (G-forces)"
         scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
         put_sensor_trace(graph_data, scatter_data, "Accelerometer X", graph_data.sql_acc_x_date_time,
                          graph_data.sql_acc_x, name_and_subplot)
@@ -249,7 +250,7 @@ def add_plots(graph_data):
                          graph_data.sql_acc_z, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_mg_x) > 2:
-        name_and_subplot = "Magnetometer XYZ"
+        name_and_subplot = "Magnetometer in μT (microtesla)"
         scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
         put_sensor_trace(graph_data, scatter_data, "Magnetometer X", graph_data.sql_mg_x_date_time,
                          graph_data.sql_mg_x, name_and_subplot)
@@ -263,7 +264,7 @@ def add_plots(graph_data):
                          graph_data.sql_mg_z, name_and_subplot, skip_row_count=True)
 
     if len(graph_data.sql_gyro_x) > 2:
-        name_and_subplot = "Gyroscopic XYZ"
+        name_and_subplot = "Gyroscopic in °/s (degrees per second)"
         scatter_data.set_marker = server_plotly_graph_variables.mark_x_dot
         put_sensor_trace(graph_data, scatter_data, "Gyroscopic X", graph_data.sql_gyro_x_date_time,
                          graph_data.sql_gyro_x, name_and_subplot)

@@ -297,7 +297,8 @@ def _plotly_graph(graph_data):
             for graph in graph_data.graph_collection:
                 fig.add_trace(graph[0], graph[1], graph[2])
             if len(graph_data.sql_ip) > 1:
-                fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
+                start_text = "Plotly Graph for Sensor IP: "
+                fig['layout'].update(title=start_text + str(graph_data.sql_ip[0]), title_font_size=25)
 
             if graph_data.row_count > 4:
                 fig['layout'].update(height=2048)
