@@ -26,9 +26,9 @@ from http_server import server_plotly_graph_variables
 try:
     from plotly import subplots, offline, io as plotly_io
 except ImportError as import_error:
-    logger.primary_logger.error("**** Missing Plotly Graph Dependencies - " +
-                                "There may be unintended side effects as a result: " +
-                                str(import_error))
+    subplots, offline, plotly_io = None, None, None
+    log_message = "**** Missing Plotly Graph Dependencies - There may be unintended side effects as a result: "
+    logger.primary_logger.error(log_message + str(import_error))
 
 plotly_io.templates.default = app_config_access.plotly_theme
 
