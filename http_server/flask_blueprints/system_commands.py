@@ -1,4 +1,5 @@
 import os
+import time
 from flask import Blueprint, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -62,16 +63,19 @@ def get_sql_db_size():
 def get_zipped_sql_database_size():
     logger.network_logger.debug("* Zipped SQL Database Size Sent to " + str(request.remote_addr))
     try:
-        if not os.path.isfile(file_locations.database_zipped):
-            database_name = app_cached_variables.hostname + "SensorDatabase.sqlite"
-            sql_database = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
-            app_generic_functions.zip_files([database_name], [sql_database], save_type="save_to_disk",
-                                            file_location=file_locations.database_zipped)
-        sql_database_size = os.path.getsize(file_locations.database_zipped)
+        database_name = app_cached_variables.hostname + "SensorDatabase.sqlite"
+        start_time = time.time()
+        sql_database = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
+        zip_file = app_generic_functions.zip_files([database_name], [sql_database])
+        sql_database_size = round(app_generic_functions.get_zip_size(zip_file) / 1000000, 2)
+        end_time = time.time()
+        run_time = str(round(end_time - start_time, 2)) + " Seconds"
+        log_message = "Database Zip Creation and Size Retrieval Took: " + run_time
+        logger.network_logger.debug(log_message)
         return str(sql_database_size)
     except Exception as error:
-        logger.primary_logger.error(
-            "* Unable to Send Database Size to " + str(request.remote_addr) + ": " + str(error))
+        log_message = "* Unable to Send Database Size to " + str(request.remote_addr) + ": " + str(error)
+        logger.primary_logger.error(log_message)
         return "Error"
 
 

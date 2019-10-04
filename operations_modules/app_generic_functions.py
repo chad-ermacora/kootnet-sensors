@@ -73,7 +73,7 @@ def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStat
     try:
         url = "https://" + http_ip + ":" + http_port + "/" + command
         tmp_return_data = requests.get(url=url,
-                                       timeout=2,
+                                       timeout=10,
                                        auth=(app_cached_variables.http_login, app_cached_variables.http_password),
                                        verify=False)
         return tmp_return_data.text
@@ -101,7 +101,7 @@ def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
     try:
         url = "https://" + http_ip + ":" + http_port + "/DisplayText"
         requests.put(url=url,
-                     timeout=2,
+                     timeout=4,
                      auth=(app_cached_variables.http_login, app_cached_variables.http_password),
                      data={'command_data': text_message},
                      verify=False)
@@ -110,25 +110,40 @@ def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
 
 
 def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
-    if save_type == "get_bytes_io":
-        return_zip_file = BytesIO()
-    else:
-        return_zip_file = file_location
-    date_time = time.localtime(time.time())[:6]
+    try:
+        if save_type == "get_bytes_io":
+            return_zip_file = BytesIO()
+        else:
+            return_zip_file = file_location
+        date_time = time.localtime(time.time())[:6]
 
-    file_meta_data_list = []
-    for name in file_names_list:
-        name_data = ZipInfo(name)
-        name_data.date_time = date_time
-        name_data.compress_type = ZIP_DEFLATED
-        file_meta_data_list.append(name_data)
-    with ZipFile(return_zip_file, "w") as zip_file:
-        for file_meta_data, file_content in zip(file_meta_data_list, files_content_list):
-            zip_file.writestr(file_meta_data, file_content)
-    if save_type == "get_bytes_io":
-        return_zip_file.seek(0)
-        return return_zip_file
-    return "Saved to disk"
+        file_meta_data_list = []
+        for name in file_names_list:
+            name_data = ZipInfo(name)
+            name_data.date_time = date_time
+            name_data.compress_type = ZIP_DEFLATED
+            file_meta_data_list.append(name_data)
+        with ZipFile(return_zip_file, "w") as zip_file:
+            for file_meta_data, file_content in zip(file_meta_data_list, files_content_list):
+                zip_file.writestr(file_meta_data, file_content)
+        if save_type == "get_bytes_io":
+            return_zip_file.seek(0)
+            return return_zip_file
+        return "Saved to disk"
+    except Exception as error:
+        logger.primary_logger.error("Zip Files Failed: " + str(error))
+        return "error"
+
+
+def get_zip_size(zip_file):
+    files_size = 0.0
+    try:
+        with ZipFile(zip_file, 'r') as zip_file_access:
+            for info in zip_file_access.infolist():
+                files_size += info.compress_size
+    except Exception as error:
+        logger.primary_logger.error("Error during get zip size: " + str(error))
+    return files_size
 
 
 def get_data_queue_items():

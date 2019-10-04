@@ -179,17 +179,24 @@ def _create_multiple_sensor_logs_zipped(ip_list):
     logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Complete")
 
 
-def _get_remote_sensor_check_and_delay(address, add_hostname=False):
+def _get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
+    get_sensor_reading = app_generic_functions.get_http_sensor_reading
     task_start_time = time.time()
-    sensor_status = app_generic_functions.get_http_sensor_reading(address)
+    sensor_status = get_sensor_reading(address)
     task_end_time = round(time.time() - task_start_time, 3)
     sensor_hostname = ""
+    download_size = "NA"
     if add_hostname:
-        sensor_hostname = app_generic_functions.get_http_sensor_reading(address, command="GetHostName").strip()
+        sensor_hostname = get_sensor_reading(address, command="GetHostName").strip()
+    if add_db_size:
+        download_size = get_sensor_reading(address, command="GetSQLDBSize").strip()
+    if add_logs_size:
+        download_size = get_sensor_reading(address, command="GetZippedLogsSize").strip()
     app_cached_variables.data_queue.put({"address": address,
                                          "status": str(sensor_status),
                                          "response_time": str(task_end_time),
-                                         "sensor_hostname": str(sensor_hostname)})
+                                         "sensor_hostname": str(sensor_hostname),
+                                         "download_size": str(download_size)})
 
 
 def _put_all_reports_zipped_to_cache(ip_list):
@@ -208,10 +215,21 @@ def _put_all_reports_zipped_to_cache(ip_list):
 def downloads_sensor_control(address_list, download_type="sensors_download_databases"):
     network_commands = server_http_sensor_control.CreateNetworkGetCommands()
     download_command = network_commands.sensor_sql_database
-    download_type_message = "the SQLite3 Database"
+    download_type_message = "the SQLite3 Database Zipped"
+    add_zipped_database_size = True
+    add_zipped_logs_size = False
+    size_type = "MB"
+    column_download_message = "Uncompressed DB Size"
+    extra_message = "Due to the CPU demands of zipping on the fly, raw Database size is shown here.<br>" + \
+                    "Actual download size will be much smaller."
     if download_type == app_config_access.sensor_control_config.radio_download_logs:
+        extra_message = ""
+        column_download_message = "Zipped Logs Size"
+        size_type = "KB"
+        add_zipped_database_size = False
+        add_zipped_logs_size = True
         download_command = network_commands.download_zipped_logs
-        download_type_message = "Full Logs"
+        download_type_message = "Full Logs Zipped"
     sensor_download_url = "window.open('https://{{ IPAddress }}:10065/" + download_command + "');"
     sensor_download_sql_list = ""
     text_ip_and_response = ""
@@ -219,7 +237,10 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
     threads = []
     for address in address_list:
         if address != "Invalid":
-            threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address]))
+            threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address,
+                                                                                   False,
+                                                                                   add_zipped_database_size,
+                                                                                   add_zipped_logs_size]))
 
     for thread in threads:
         thread.start()
@@ -241,12 +262,16 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
             text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
                                     response["address"] + "</span></th>\n" + \
                                     "        <th><span style='background-color: " + background_colour + ";'>" + \
-                                    response_time + " Seconds</span></th></tr>\n"
+                                    response_time + " Seconds</span></th>\n" + \
+                                    "        <th><span style='background-color: #f2f2f2;'>" + \
+                                    response["download_size"] + " " + size_type + "</span></th></tr>\n"
 
     return render_template("sensor_control_downloads.html",
                            DownloadTypeMessage=download_type_message,
                            DownloadURLs=sensor_download_sql_list.strip(),
-                           SensorResponse=text_ip_and_response.strip())
+                           SensorResponse=text_ip_and_response.strip(),
+                           ColumnDownloadMessage=column_download_message,
+                           ExtraMessage=extra_message)
 
 
 def _get_all_html_reports(ip_list):
