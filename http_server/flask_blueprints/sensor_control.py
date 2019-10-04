@@ -89,7 +89,7 @@ def html_sensor_control_save_settings():
 
 
 def check_sensor_status_sensor_control(address_list):
-    text_ip_and_response = ""
+    text_insert = ""
 
     threads = []
     for address in address_list:
@@ -110,15 +110,16 @@ def check_sensor_status_sensor_control(address_list):
         if response["status"] == "OK":
             response_time = response["response_time"]
             background_colour = app_generic_functions.get_response_bg_colour(response_time)
+            sensor_url_link = "'https://" + response["address"] + ":10065/SensorInformation'"
 
-            text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
-                                    response["address"] + "</span></th>\n" + \
-                                    "        <th><span style='background-color: " + background_colour + ";'>" + \
-                                    response_time + " Seconds</span></th>\n" + \
-                                    "        <th><span style='background-color: #f2f2f2;'>" + \
-                                    response["sensor_hostname"] + "</span></th></tr>\n"
+            text_insert += "        <tr><th><span style='background-color: #f2f2f2;'><a target='_blank' href=" + \
+                           sensor_url_link + ">" + response["address"] + "</a></span></th>\n" + \
+                           "        <th><span style='background-color: " + background_colour + ";'>" + \
+                           response_time + " Seconds</span></th>\n" + \
+                           "        <th><span style='background-color: #f2f2f2;'>" + \
+                           response["sensor_hostname"] + "</span></th></tr>\n"
 
-    return render_template("sensor_control_online_status.html", SensorResponse=text_ip_and_response.strip())
+    return render_template("sensor_control_online_status.html", SensorResponse=text_insert.strip())
 
 
 def _create_all_databases_zipped(ip_list):
