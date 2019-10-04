@@ -29,14 +29,14 @@ http_port = "10065"
 
 def test_html_get_hostname():
     sensor_reading = get_http_sensor_reading("GetHostName")
-    if type(sensor_reading) == str:
+    if isinstance(sensor_reading, str):
         return True
     return False
 
 
 def test_html_system_uptime():
     sensor_reading = get_http_sensor_reading("GetSystemUptime")
-    if type(sensor_reading) == str:
+    if isinstance(sensor_reading, str):
         return True
     return False
 

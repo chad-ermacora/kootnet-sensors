@@ -77,7 +77,7 @@ class CreateInstalledSensors:
         self.has_gyro = 0
 
         self.linux_system_name = "Gnu/Linux"
-        self.raspberry_pi_name = "NA"
+        self.raspberry_pi_name = "Raspberry Pi"
 
         self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
@@ -156,11 +156,9 @@ class CreateInstalledSensors:
                     return "Raspberry Pi 3 Model B Plus"
                 elif str(pi_version)[:22] == "Raspberry Pi 4 Model B":
                     return "Raspberry Pi 4 Model B"
-                else:
-                    return "Raspberry Pi"
             except Exception as error:
                 logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
-                return "Raspberry Pi"
+        return "Raspberry Pi"
 
 
 def get_installed_sensors_from_file():
@@ -300,7 +298,7 @@ def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
 def write_to_file(installed_sensors):
     """ Writes provided 'installed sensors' to local disk. The provided sensors can be string or object. """
     try:
-        if type(installed_sensors) == str:
+        if isinstance(installed_sensors, str):
             new_installed_sensors = installed_sensors
         else:
             new_installed_sensors = installed_sensors.get_installed_sensors_config_as_str()
