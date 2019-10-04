@@ -23,27 +23,25 @@ from operations_modules import sqlite_database
 
 
 class CreateIntervalRecording:
-    logger.primary_logger.debug("Created Interval Recording Server")
+    logger.primary_logger.debug("Created Interval Recording Server Object")
 
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
         self.start_interval_recording()
 
     def start_interval_recording(self):
-        """ Starts recording all Interval sensor readings to the SQL database every X amount of time (set in config). """
+        """ Starts recording all Interval sensor readings to the SQL database every X Seconds (set in config). """
         logger.primary_logger.info(" -- Interval Recording Started")
         while True:
             try:
-                new_sensor_data = self.sensor_access.get_interval_sensor_readings().split(
-                    app_config_access.command_data_separator)
-
-                logger.primary_logger.debug(" *** Interval Data: " + str(new_sensor_data[0]) + "\n" +
-                                            str(new_sensor_data[1]))
-                interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + str(
-                    new_sensor_data[0]) + ") VALUES (" + str(new_sensor_data[1]) + ")"
+                new_sensor_data = self.sensor_access.get_interval_sensor_readings()
+                new_sensor_data = new_sensor_data.split(app_config_access.command_data_separator)
+                interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + \
+                                       str(new_sensor_data[0]) + \
+                                       ") VALUES (" + \
+                                       str(new_sensor_data[1]) + ")"
 
                 sqlite_database.write_to_sql_database(interval_sql_execute)
             except Exception as error:
-                logger.primary_logger.error("Interval Failure: " + str(error))
-
+                logger.primary_logger.error("Interval Recording Failure: " + str(error))
             sleep(app_config_access.current_config.sleep_duration_interval)

@@ -111,19 +111,20 @@ class CreateSensorControlConfig:
         """ Loads Sensor Control configuration from file and returns it as a configuration object. """
         if os.path.isfile(file_locations.html_sensor_control_config):
             config_content = app_generic_functions.get_file_content(file_locations.html_sensor_control_config).strip()
-            self.set_from_raw_config_content(config_content)
+            self.set_from_raw_config_content(config_content, skip_write=True)
         else:
             logger.primary_logger.info("Sensor Control Configuration file not found - Saving Default")
             self.write_current_config_to_file()
 
-    def set_from_raw_config_content(self, sensor_control_config_text):
+    def set_from_raw_config_content(self, sensor_control_config_text, skip_write=False):
         """ Converts provided Sensor Control configuration text as a list of lines into a object and returns it. """
         sensor_control_config_text_lines_list = sensor_control_config_text.split("\n")
         new_config_settings_list = []
         for line in sensor_control_config_text_lines_list:
             new_config_settings_list.append(line.split("=")[0].strip())
         self._update_settings_with_list(new_config_settings_list[1:])
-        self.write_current_config_to_file()
+        if not skip_write:
+            self.write_current_config_to_file()
 
     def _update_settings_with_list(self, settings_list):
         count = 0

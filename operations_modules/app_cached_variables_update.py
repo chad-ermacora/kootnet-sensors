@@ -15,7 +15,8 @@ def update_cached_variables():
             app_cached_variables.total_ram_memory_size_type = " TB"
     app_cached_variables.total_ram_memory = round(app_cached_variables.total_ram_memory, 2)
 
-    if sensor_access.get_operating_system_name()[:8] == "Raspbian":
+    os_name = sensor_access.get_operating_system_name()
+    if os_name[:8] == "Raspbian":
         try:
             wifi_config_lines = network_wifi.get_wifi_config_from_file().split("\n")
         except Exception as error:
@@ -42,7 +43,7 @@ def update_cached_variables():
 
     app_cached_variables.program_last_updated = sensor_access.get_last_updated()
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
-    app_cached_variables.operating_system_name = sensor_access.get_operating_system_name()
+    app_cached_variables.operating_system_name = os_name
     app_cached_variables.hostname = sensor_access.get_hostname()
 
 

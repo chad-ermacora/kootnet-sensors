@@ -72,6 +72,9 @@ def check_database_structure():
     logger.primary_logger.debug("Running DB Checks")
     database_variables = sqlite_database.CreateDatabaseVariables()
 
+    columns_created = 0
+    columns_already_made = 0
+
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database)
         db_cursor = db_connection.cursor()
@@ -80,15 +83,31 @@ def check_database_structure():
         _create_table_and_datetime(database_variables.table_trigger, db_cursor)
         for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
                                                     database_variables.get_sensor_columns_list()):
-            _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
-            _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            interval_response = _check_sql_table_and_column(database_variables.table_interval, column_intervals,
+                                                            db_cursor)
+            trigger_response = _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            if interval_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
+            if trigger_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
 
         _create_table_and_datetime(database_variables.table_other, db_cursor)
         for column_other in database_variables.get_other_columns_list():
-            _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+            other_response = _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+            if other_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
 
         db_connection.commit()
         db_connection.close()
+        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, " + \
+                            str(columns_created) + " Created"
+        logger.primary_logger.debug(debug_log_message)
     except Exception as error:
         logger.primary_logger.error("DB Connection Failed: " + str(error))
 
@@ -107,9 +126,9 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
     """ Add's or verifies provided table and column in the SQLite Database. """
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
-        logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
-    except Exception as error:
-        logger.primary_logger.debug("COLUMN '" + column_name + "' - " + str(error))
+        return True
+    except Exception:
+        return False
 
 
 def run_upgrade_checks():

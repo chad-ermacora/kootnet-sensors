@@ -21,19 +21,6 @@ from operations_modules import file_locations
 from operations_modules import logger
 
 
-class CreateIntervalDatabaseData:
-    """ Creates a object, holding required data for making a Interval SQL execute string. """
-
-    def __init__(self):
-        self.database_location = file_locations.sensor_database
-        self.sql_query_start = "INSERT OR IGNORE INTO IntervalData ("
-        self.sql_query_values_start = ") VALUES ("
-        self.sql_query_values_end = ")"
-
-        self.sensor_types = ""
-        self.sensor_readings = ""
-
-
 class CreateOtherDataEntry:
     """ Creates a object, holding required data for making a OtherData SQL execute string. """
 
@@ -49,8 +36,6 @@ class CreateOtherDataEntry:
 
 def write_to_sql_database(sql_query):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
-    logger.primary_logger.debug("SQL String to execute: " + str(sql_query))
-
     try:
         db_connection = sqlite3.connect(file_locations.sensor_database)
         db_cursor = db_connection.cursor()
@@ -60,6 +45,7 @@ def write_to_sql_database(sql_query):
         logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
+        logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
 
 
 def sql_execute_get_data(sql_query):

@@ -22,14 +22,14 @@ from operations_modules import app_config_access
 
 
 class CreateSensorDisplay:
-    logger.primary_logger.debug("Starting Display Server")
+    logger.primary_logger.debug("Created Sensor Display Server Object")
 
     def __init__(self, sensor_access):
         self.sensor_access = sensor_access
         self.scroll_interval_readings_on_display()
 
     def scroll_interval_readings_on_display(self):
-        logger.primary_logger.info("Display Server Started")
+        logger.primary_logger.info(" -- Sensor Display Server Started")
         while True:
             message = "CPU: " + str(int(self.sensor_access.get_cpu_temperature())) + "°C "
             message += "ENV: " + str(int(self.sensor_access.get_sensor_temperature())) + "°C "
