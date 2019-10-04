@@ -87,7 +87,7 @@ def get_http_sensor_file(http_ip, command, http_port="10065"):
     try:
         url = "https://" + http_ip + ":" + http_port + "/" + command
         tmp_return_data = requests.get(url=url,
-                                       timeout=(2, 120),
+                                       timeout=(4, 120),
                                        auth=(app_cached_variables.http_login, app_cached_variables.http_password),
                                        verify=False)
         return tmp_return_data.content
