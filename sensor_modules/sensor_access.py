@@ -483,30 +483,26 @@ def get_gyroscope_xyz():
     return xyz
 
 
-def display_message(text_message):
+def display_message(text_msg):
     """ If a Supported Display is installed, shows provided text message on it. """
-    text_message = str(text_message)
-    logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
+    text_msg = str(text_msg)
+    logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_msg)
     if app_config_access.installed_sensors.has_display and app_config_access.current_config.enable_display:
-        message_length = len(text_message)
+        message_length = len(text_msg)
 
         thread_ready = True
         if message_length > 0:
-            text_message = "-- " + text_message
+            text_msg = "-- " + text_msg
             if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_message])
+                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_msg])
             elif app_config_access.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text,
-                                        args=[text_message])
+                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text, args=[text_msg])
             elif app_config_access.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text,
-                                        args=[text_message])
+                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text, args=[text_msg])
             elif app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text,
-                                        args=[text_message])
+                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
             elif app_config_access.installed_sensors.pimoroni_enviroplus:
-                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text,
-                                        args=[text_message])
+                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
             else:
                 display_thread = None
                 thread_ready = False
@@ -532,30 +528,24 @@ def restart_services():
 
 def get_db_notes():
     """ Returns a comma separated string of Notes from the SQL Database. """
-    sql_query = "SELECT " + \
-                app_config_access.database_variables.other_table_column_notes + \
-                " FROM " + \
-                app_config_access.database_variables.table_other
+    sql_query = "SELECT " + app_config_access.database_variables.other_table_column_notes + \
+                " FROM " + app_config_access.database_variables.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
     """ Returns a comma separated string of Note Dates from the SQL Database. """
-    sql_query_notes = "SELECT " + \
-                      app_config_access.database_variables.all_tables_datetime + \
-                      " FROM " + \
-                      app_config_access.database_variables.table_other
+    sql_query_notes = "SELECT " + app_config_access.database_variables.all_tables_datetime + \
+                      " FROM " + app_config_access.database_variables.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
     """ Returns a comma separated string of User Note Dates from the SQL Database. """
-    sql_query_user_datetime = "SELECT " + \
-                              app_config_access.database_variables.other_table_column_user_date_time + \
-                              " FROM " + \
-                              app_config_access.database_variables.table_other
+    sql_query_user_datetime = "SELECT " + app_config_access.database_variables.other_table_column_user_date_time + \
+                              " FROM " + app_config_access.database_variables.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
     return _create_str_from_list(sql_data_user_datetime)
 
@@ -596,9 +586,8 @@ def add_note_to_database(datetime_note):
                                 app_config_access.database_variables.other_table_column_notes
         sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
-        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
-                       sql_data.sql_query_values_start + sql_data.sensor_readings +
-                       sql_data.sql_query_values_end)
+        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
+                       sql_data.sensor_readings + sql_data.sql_query_values_end)
 
         sqlite_database.sql_execute(sql_execute)
     else:
@@ -614,10 +603,8 @@ def update_note_in_database(datetime_note):
         user_datetime = "'" + data_list[1] + "'"
         note = "'" + data_list[2] + "'"
 
-        sql_execute = "UPDATE OtherData SET " + \
-                      "Notes = " + note + \
-                      ",UserDateTime = " + user_datetime + \
-                      " WHERE DateTime = " + current_datetime
+        sql_execute = "UPDATE OtherData SET " + "Notes = " + note + \
+                      ",UserDateTime = " + user_datetime + " WHERE DateTime = " + current_datetime
         sqlite_database.sql_execute(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
@@ -625,10 +612,8 @@ def update_note_in_database(datetime_note):
 
 def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
-    sql_query = "DELETE FROM " + \
-                str(app_config_access.database_variables.table_other) + \
-                " WHERE " + \
-                str(app_config_access.database_variables.all_tables_datetime) + \
+    sql_query = "DELETE FROM " + str(app_config_access.database_variables.table_other) + \
+                " WHERE " + str(app_config_access.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
     sqlite_database.sql_execute(sql_query)
 
