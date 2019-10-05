@@ -33,6 +33,7 @@ sensor_control_config = config_sensor_control.CreateSensorControlConfig()
 weather_underground_config = CreateWeatherUndergroundConfig()
 luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
+
 if software_version.old_version != software_version.version:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensors()
@@ -51,7 +52,6 @@ else:
 
 current_platform = system()
 database_variables = sqlite_database.CreateDatabaseVariables()
-command_data_separator = "[new_data_section]"
 linux_os_upgrade_ready = True
 
 # Online Service Variables

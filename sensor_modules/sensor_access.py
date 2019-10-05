@@ -27,11 +27,10 @@ from operations_modules import os_cli_commands
 from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
+from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
 from sensor_modules import sensor_ready_checks
 from sensor_modules import sensors_initialization as sensors_direct
 
-command_data_separator = app_config_access.command_data_separator
-no_sensor_present = "NoSensor"
 sensor_in_use_delay = 0.1
 
 

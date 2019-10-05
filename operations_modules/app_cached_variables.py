@@ -18,6 +18,10 @@
 """
 from queue import Queue
 
+# Static variables
+command_data_separator = "[new_data_section]"
+no_sensor_present = "NoSensor"
+
 # This file is updated with variables at runtime.
 # This helps lessen disk reads by caching commonly used variables
 program_last_updated = ""

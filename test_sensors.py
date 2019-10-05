@@ -18,6 +18,7 @@
 """
 import logging
 import requests
+from operations_modules.app_cached_variables import command_data_separator
 from operations_modules import app_config_access
 from operations_modules import variance_checks
 
@@ -35,7 +36,7 @@ def get_interval_sensor_data():
     """ Returns requested sensor data (based on the provided command data). """
     url = "https://127.0.0.1:10065/GetIntervalSensorReadings"
     tmp_return_data = requests.get(url=url, verify=False)
-    return_data = tmp_return_data.text.split(app_config_access.command_data_separator)
+    return_data = tmp_return_data.text.split(command_data_separator)
     return [str(return_data[0]), str(return_data[1])]
 
 

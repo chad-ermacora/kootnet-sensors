@@ -252,8 +252,8 @@ class CreateReplacementVariables:
         try:
             get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
             sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command).strip()
-            sensor_types = sensor_readings_raw.split(app_config_access.command_data_separator)[0].split(",")
-            sensor_readings = sensor_readings_raw.split(app_config_access.command_data_separator)[1].split(",")
+            sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
+            sensor_readings = sensor_readings_raw.split(app_cached_variables.command_data_separator)[1].split(",")
 
             return_types = ""
             return_readings = ""

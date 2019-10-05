@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules.app_generic_functions import get_http_sensor_reading
-from sensor_modules.sensor_access import no_sensor_present
+from operations_modules.app_cached_variables import no_sensor_present
 
 http_username = "Kootnet"
 http_password = "sensors"

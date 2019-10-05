@@ -19,7 +19,7 @@
 import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
-from sensor_modules.sensor_access import no_sensor_present
+from operations_modules.app_cached_variables import no_sensor_present
 
 
 def text_is_alphanumeric(text_string):

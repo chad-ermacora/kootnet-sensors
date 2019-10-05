@@ -18,6 +18,7 @@
 """
 import datetime
 from time import sleep
+from operations_modules.app_cached_variables import command_data_separator
 from operations_modules import logger
 from operations_modules import app_config_access
 from operations_modules.app_validation_checks import valid_sensor_reading
@@ -38,7 +39,7 @@ class CreateIntervalRecording:
         while True:
             try:
                 new_sensor_data = get_interval_sensor_readings()
-                new_sensor_data = new_sensor_data.split(app_config_access.command_data_separator)
+                new_sensor_data = new_sensor_data.split(command_data_separator)
                 interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + \
                                        str(new_sensor_data[0]) + \
                                        ") VALUES (" + \
@@ -185,7 +186,7 @@ def get_interval_sensor_readings():
                             gyroscope_readings[2]]
 
     return_interval_data = _list_to_csv_string(sensor_types) + \
-                           sensor_access.command_data_separator + \
+                           command_data_separator + \
                            _list_to_csv_string_quoted(sensor_readings)
     return return_interval_data
 

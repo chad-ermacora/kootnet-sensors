@@ -17,7 +17,7 @@ html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
 def cc_get_sensor_readings():
     logger.network_logger.debug("* CC Sensor Readings sent to " + str(request.remote_addr))
 
-    interval_readings = get_interval_sensor_readings().split(app_config_access.command_data_separator)
+    interval_readings = get_interval_sensor_readings().split(app_cached_variables.command_data_separator)
 
     str_interval_types = interval_readings[0].split(",")
     str_interval_types_data = interval_readings[1].split(",")
