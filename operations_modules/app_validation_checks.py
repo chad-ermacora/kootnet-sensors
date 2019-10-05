@@ -34,11 +34,12 @@ def text_is_alphanumeric(text_string):
 
 
 def ip_address_is_valid(ip_address):
-    try:
-        if _check_ip_address(ip_address):
-            return True
-    except Exception as error:
-        logger.network_logger.debug("Validating Address Failed: " + str(error))
+    if ip_address != "":
+        try:
+            if _check_ip_address(ip_address):
+                return True
+        except Exception as error:
+            logger.network_logger.debug("Validating Address Failed: " + str(error))
     return False
 
 
