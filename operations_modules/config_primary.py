@@ -34,6 +34,13 @@ class CreateConfig:
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
 
+    def get_config_as_csv(self):
+        return str(self.enable_interval_recording) + "," + \
+               str(self.enable_trigger_recording) + "," + \
+               str(self.sleep_duration_interval) + "," + \
+               str(self.enable_custom_temp) + "," + \
+               str(self.temperature_offset)
+
 
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """

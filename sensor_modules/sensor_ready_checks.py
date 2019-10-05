@@ -16,29 +16,26 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from os import path
-from operations_modules import file_locations
 
 
-def _get_old_version():
-    """ Loads the previously written program version and returns it as a string. """
-    if path.isfile(file_locations.old_version_file):
-        old_version_file = open(file_locations.old_version_file, 'r')
-        old_version_content = old_version_file.read()
-        old_version_file.close()
-        return old_version_content.strip()
-    else:
-        write_program_version_to_file()
-        return "0.0.0"
-
-
-def write_program_version_to_file():
-    """ Writes the current program version to previous program version file. """
-    current_version_file = open(file_locations.old_version_file, 'w')
-    current_version_file.write(version)
-    current_version_file.close()
-
-
-# Current Version of the program
-version = "Alpha.27.318"
-old_version = _get_old_version()
+cpu_temperature_ready = True
+env_temperature_ready = True
+pressure_ready = True
+altitude_ready = True
+humidity_ready = True
+distance_ready = True
+gas_resistance_index_ready = True
+gas_oxidised_ready = True
+gas_reduced_ready = True
+gas_nh3_ready = True
+particulate_matter1_ready = True
+particulate_matter2_5_ready = True
+particulate_matter10_ready = True
+lumen_ready = True
+ems_colours_ready = True
+ultra_violet_index_ready = True
+ultra_violet_a_ready = True
+ultra_violet_b_ready = True
+accelerometer_ready = True
+magnetometer_ready = True
+gyroscope_ready = True

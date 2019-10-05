@@ -290,8 +290,6 @@ def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
                       str(len(installed_sensor_lines)) + ". Installed Sensors Configuration Review Recommended."
             logger.primary_logger.warning(message)
             write_to_file(new_installed_sensors)
-        if new_installed_sensors.raspberry_pi:
-            new_installed_sensors.raspberry_pi_name = new_installed_sensors.get_raspberry_pi_model()
     return new_installed_sensors
 
 

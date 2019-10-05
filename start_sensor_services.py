@@ -59,7 +59,7 @@ if app_config_access.installed_sensors.no_sensors is False:
 
     # Start up Interval Sensor Recording
     if app_config_access.current_config.enable_interval_recording:
-        interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording, args=[sensor_access])
+        interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording)
         interval_recording_thread.daemon = True
         interval_recording_thread.start()
     else:

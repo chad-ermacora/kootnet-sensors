@@ -1,7 +1,11 @@
 import os
 from flask import Blueprint, request
 from operations_modules import logger
+from operations_modules import app_config_access
+from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
+from operations_modules import software_version
+from operations_modules.recording_interval import get_interval_sensor_readings
 from http_server.server_http_generic_functions import message_and_return
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
@@ -12,15 +16,33 @@ html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
 @html_legacy_cc_routes.route("/GetSensorReadings")
 def cc_get_sensor_readings():
     logger.network_logger.debug("* CC Sensor Readings sent to " + str(request.remote_addr))
-    sensor_readings = sensor_access.get_sensor_readings()
-    return_str = str(sensor_readings[0]) + "," + str(sensor_readings[1])
-    return return_str
+
+    interval_readings = get_interval_sensor_readings().split(app_config_access.command_data_separator)
+
+    str_interval_types = interval_readings[0].split(",")
+    str_interval_types_data = interval_readings[1].split(",")
+
+    return_data = ""
+    return_types = ""
+    for interval_type, interval_data in zip(str_interval_types, str_interval_types_data):
+        return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
+        return_data += "<th><span style='background-color: #0BB10D;'>" + interval_data + "</span></th>"
+
+    return return_types + "," + return_data
 
 
 @html_legacy_cc_routes.route("/GetSystemData")
 def cc_get_system_data():
     logger.network_logger.debug("* CC Sensor System Data Sent to " + str(request.remote_addr))
-    return sensor_access.get_system_information()
+    return app_cached_variables.hostname + ",<a href='https://" + app_cached_variables.ip + \
+           ":10065/Quick' target='_blank'>" + app_cached_variables.ip + "</a>" + \
+           "," + str(sensor_access.get_system_datetime()) + \
+           "," + str(sensor_access.get_uptime_minutes()) + \
+           "," + str(software_version.version) + \
+           "," + str(round(float(sensor_access.get_cpu_temperature()), 2)) + \
+           "," + str(sensor_access.get_disk_usage_gb()) + \
+           "," + str(sensor_access.get_db_size()) + \
+           "," + str(sensor_access.get_last_updated())
 
 
 @html_legacy_cc_routes.route("/SetHostName", methods=["PUT"])
@@ -56,7 +78,9 @@ def cc_set_date_time():
 @html_legacy_cc_routes.route("/GetConfigurationReport")
 def cc_get_configuration_report():
     logger.network_logger.debug("* CC Sensor Configuration Data Sent to " + str(request.remote_addr))
-    return sensor_access.get_config_information()
+    cvs_config_and_installed_sensors = app_config_access.current_config.get_config_as_csv() + ","
+    cvs_config_and_installed_sensors += app_config_access.installed_sensors.get_installed_names_str()
+    return cvs_config_and_installed_sensors.strip()
 
 
 @html_legacy_cc_routes.route("/GetDatabaseNotes")

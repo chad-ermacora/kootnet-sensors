@@ -15,6 +15,7 @@ from time import strftime
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+from operations_modules import app_config_access
 from operations_modules import sqlite_database
 from operations_modules.sqlite_database import CreateDatabaseVariables
 
@@ -23,6 +24,7 @@ round_decimal_to = 2
 
 class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
+
     def __init__(self):
         self.database_variables = CreateDatabaseVariables()
 
@@ -38,7 +40,7 @@ class CreateLinuxSystem:
                     os_release_name = name_and_value[1].strip()[1:-1]
             return os_release_name
         except Exception as error:
-            logger.sensors_logger.error("Unable to get Raspbian OS Version: " + str(error))
+            logger.sensors_logger.error("Linux System - Unable to get Raspbian OS Version: " + str(error))
             return "Error retrieving OS information"
 
     @staticmethod
@@ -46,9 +48,9 @@ class CreateLinuxSystem:
         """ Returns System HostName as a String. """
         try:
             hostname = str(socket.gethostname())
-            logger.sensors_logger.debug("Linux System Sensor Name - OK")
+            logger.sensors_logger.debug("Linux System -  Sensor Name - OK")
         except Exception as error:
-            logger.sensors_logger.error("Linux System Sensor Name - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System -  Sensor Name - Failed - " + str(error))
             hostname = "HostFailed"
         return hostname
 
@@ -60,31 +62,67 @@ class CreateLinuxSystem:
             s.connect(("8.8.8.8", 80))
             ip_address = (s.getsockname()[0])
             s.close()
-            logger.sensors_logger.debug("Linux System Sensor IP - OK")
+            logger.sensors_logger.debug("Linux System - Sensor IP - OK")
         except Exception as error:
-            logger.sensors_logger.warning("Linux System Sensor IP - Failed - " + str(error))
+            logger.sensors_logger.warning("Linux System - Sensor IP - Failed - " + str(error))
             ip_address = "0.0.0.0"
         return ip_address
 
     @staticmethod
-    def get_uptime():
+    def get_uptime_raw():
         """ Returns System Uptime in minutes as a Integer. """
         try:
             with open('/proc/uptime', 'r') as f:
                 uptime_seconds = float(f.readline().split()[0])
                 uptime_min = int(uptime_seconds / 60)
-            logger.sensors_logger.debug("Linux System Sensor Up Time - OK")
+            logger.sensors_logger.debug("Linux System - Sensor Up Time - OK")
         except Exception as error:
-            logger.sensors_logger.error("Linux System Sensor Up Time - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System - Sensor Up Time - Failed - " + str(error))
             uptime_min = 0
 
         return uptime_min
 
+    def get_uptime_str(self):
+        """ Returns System UpTime as a human readable String. """
+        if app_config_access.current_platform == "Linux":
+            var_minutes = self.get_uptime_raw()
+            str_day_hour_min = ""
+            try:
+                uptime_days = int(float(var_minutes) // 1440)
+                uptime_hours = int((float(var_minutes) % 1440) // 60)
+                uptime_min = int(float(var_minutes) % 60)
+                if uptime_days:
+                    if uptime_days > 1:
+                        str_day_hour_min = str(uptime_days) + " Days, "
+                    else:
+                        str_day_hour_min = str(uptime_days) + " Day, "
+                if uptime_hours:
+                    if uptime_hours > 1:
+                        str_day_hour_min += str(uptime_hours) + " Hours & "
+                    else:
+                        str_day_hour_min += str(uptime_hours) + " Hour & "
+                str_day_hour_min += str(uptime_min) + " Min"
+
+            except Exception as error:
+                logger.sensors_logger.error("Linux System - Unable to convert DateTime to String: " + str(error))
+                str_day_hour_min = var_minutes
+            return str_day_hour_min
+
     @staticmethod
     def get_sys_datetime_str():
         """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-        logger.sensors_logger.debug("Linux System Sensor Date Time - OK")
         return strftime("%Y-%m-%d %H:%M - %Z")
+
+    @staticmethod
+    def get_memory_usage_percent():
+        """ Returns sensor RAM usage as a %. """
+        try:
+            mem = psutil.virtual_memory()
+            return_mem = mem[2]
+        except Exception as error:
+            logger.sensors_logger.error("Linux System - Get Memory Usage Error: " + str(error))
+            return_mem = "Error"
+        return return_mem
 
     @staticmethod
     def get_disk_usage_gb():
@@ -93,7 +131,7 @@ class CreateLinuxSystem:
             used_disk_space = psutil.disk_usage("/")[2]
             return str(round(used_disk_space / (2 ** 30), 2))
         except Exception as error:
-            logger.sensors_logger.error("Get Disk Usage in GB Error: " + str(error))
+            logger.sensors_logger.error("Linux System - Get Disk Usage in GB Error: " + str(error))
             return "Error"
 
     @staticmethod
@@ -103,7 +141,7 @@ class CreateLinuxSystem:
             drive_information = psutil.disk_usage("/")
             return_disk_usage = drive_information[3]
         except Exception as error:
-            logger.sensors_logger.error("Get Disk Usage % Error: " + str(error))
+            logger.sensors_logger.error("Linux System - Get Disk Usage % Error: " + str(error))
             return_disk_usage = "Error"
         return return_disk_usage
 
@@ -114,7 +152,7 @@ class CreateLinuxSystem:
             db_size_mb = os.path.getsize(file_locations.sensor_database) / 1024000
             logger.sensors_logger.debug("Linux System Interval Database Size - OK")
         except Exception as error:
-            logger.sensors_logger.error("Linux System Interval Database Size - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
             db_size_mb = 0.0
         return round(db_size_mb, round_decimal_to)
 
@@ -130,7 +168,7 @@ class CreateLinuxSystem:
         if len(number_of_notes) > 5:
             return_notes_count = number_of_notes[2:-3]
         else:
-            logger.sensors_logger.error("Unable to get SQLite Database Notes count")
+            logger.sensors_logger.error("Linux System - Unable to get SQLite Database Notes count")
             return_notes_count = "Error"
 
         return return_notes_count
@@ -149,14 +187,13 @@ class CreateLinuxSystem:
         try:
             db_datetime_column_list = db_datetime_column.split(",")
         except Exception as error:
-            logger.sensors_logger.error("Database get First & Last DateTime - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System - Database get First & Last DateTime Failed: " + str(error))
             db_datetime_column_list = ["---Error--", "--Error----"]
 
         if len(db_datetime_column_list) == 2:
             textbox_db_dates = db_datetime_column_list[0][3:-5] + " || " + db_datetime_column_list[1][2:-7]
         else:
             textbox_db_dates = "DataBase Error"
-
         return textbox_db_dates
 
     def get_sensor_reboot_count(self):
@@ -193,6 +230,6 @@ class CreateLinuxSystem:
 
         if bad_entries:
             logger.sensors_logger.warning(str(bad_entries) + " bad entries in DB reboot column")
-
-        logger.sensors_logger.debug(str(len(sql_column_data)) + " entries in DB reboot column retrieved")
+        debug_message = "Linux System - " + str(len(sql_column_data)) + " entries in DB reboot column retrieved"
+        logger.sensors_logger.debug(debug_message)
         return str(reboot_count)

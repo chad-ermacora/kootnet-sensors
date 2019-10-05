@@ -24,29 +24,32 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
 from operations_modules import network_wifi
+from operations_modules import software_version
 from operations_modules.online_services import weather_underground
 from operations_modules.online_services import luftdaten
 from operations_modules.online_services import open_sense_map
 from operations_modules.app_generic_functions import get_http_sensor_reading, get_file_content
 
-sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
-                        "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                        "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                        "senor_ip_18", "senor_ip_19", "senor_ip_20"]
-try:
-    html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
-    html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
-    html_report_system_sensor = get_file_content(file_locations.html_report_system2_sensor).strip()
+if software_version.old_version == software_version.version:
+    sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
+                            "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
+                            "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
+                            "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
-    html_report_config_start = get_file_content(file_locations.html_report_config1_start).strip()
-    html_report_config_end = get_file_content(file_locations.html_report_config3_end).strip()
-    html_report_config_sensor = get_file_content(file_locations.html_report_config2_sensor).strip()
+    try:
+        html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
+        html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
+        html_report_system_sensor = get_file_content(file_locations.html_report_system2_sensor).strip()
 
-    html_report_sensors_test_start = get_file_content(file_locations.html_report_sensors_test1_start).strip()
-    html_report_sensors_test_end = get_file_content(file_locations.html_report_sensors_test3_end).strip()
-    html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
-except Exception as init_error:
-    logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
+        html_report_config_start = get_file_content(file_locations.html_report_config1_start).strip()
+        html_report_config_end = get_file_content(file_locations.html_report_config3_end).strip()
+        html_report_config_sensor = get_file_content(file_locations.html_report_config2_sensor).strip()
+
+        html_report_sensors_test_start = get_file_content(file_locations.html_report_sensors_test1_start).strip()
+        html_report_sensors_test_end = get_file_content(file_locations.html_report_sensors_test3_end).strip()
+        html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
+    except Exception as init_error:
+        logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
 
 class CreateNetworkGetCommands:

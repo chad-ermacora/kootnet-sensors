@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 from operations_modules import logger
 from operations_modules import app_config_access
+from operations_modules.recording_interval import get_interval_sensor_readings
 from sensor_modules import sensor_access
 
 html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
@@ -10,7 +11,7 @@ html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 @html_sensor_readings_routes.route("/GetIntervalSensorReadings")
 def get_interval_readings():
     logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    return str(sensor_access.get_interval_sensor_readings())
+    return str(get_interval_sensor_readings())
 
 
 @html_sensor_readings_routes.route("/GetCPUTemperature")
