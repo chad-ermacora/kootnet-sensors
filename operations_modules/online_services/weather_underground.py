@@ -22,6 +22,7 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+from operations_modules.app_validation_checks import valid_sensor_reading
 from operations_modules import software_version
 from operations_modules import app_config_access
 
@@ -200,7 +201,7 @@ class CreateWeatherUndergroundConfig:
         if app_config_access.current_config.enable_custom_temp:
             temp_c = temp_c + app_config_access.current_config.temperature_offset
 
-        if self.sensor_access.valid_sensor_reading(temp_c):
+        if valid_sensor_reading(temp_c):
             try:
                 temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
                 if self.outdoor_sensor:
@@ -213,14 +214,14 @@ class CreateWeatherUndergroundConfig:
                     str(error))
 
         humidity = self.sensor_access.get_humidity()
-        if self.sensor_access.valid_sensor_reading(humidity):
+        if valid_sensor_reading(humidity):
             if self.outdoor_sensor:
                 return_readings_str += "&humidity=" + str(round(humidity, round_decimal_to))
             else:
                 return_readings_str += "&indoorhumidity=" + str(round(humidity, round_decimal_to))
 
         out_door_dew_point = self.sensor_access.get_dew_point()
-        if self.sensor_access.valid_sensor_reading(out_door_dew_point) and self.outdoor_sensor:
+        if valid_sensor_reading(out_door_dew_point) and self.outdoor_sensor:
             try:
                 dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
                 return_readings_str += "&dewptf=" + str(round(dew_point_f, round_decimal_to))
@@ -229,7 +230,7 @@ class CreateWeatherUndergroundConfig:
                                             str(error))
 
         pressure_hpa = self.sensor_access.get_pressure()
-        if self.sensor_access.valid_sensor_reading(pressure_hpa):
+        if valid_sensor_reading(pressure_hpa):
             try:
                 baromin = float(pressure_hpa) * 0.029529983071445
                 return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
@@ -237,15 +238,15 @@ class CreateWeatherUndergroundConfig:
                 logger.sensors_logger.error("Unable to calculate Pressure inhg for Weather Underground: " + str(error))
 
         ultra_violet_index = self.sensor_access.get_ultra_violet_index()
-        if self.sensor_access.valid_sensor_reading(ultra_violet_index):
+        if valid_sensor_reading(ultra_violet_index):
             return_readings_str += "&UV=" + str(round(ultra_violet_index, round_decimal_to))
 
         pm_2_5 = self.sensor_access.get_particulate_matter_2_5()
-        if self.sensor_access.valid_sensor_reading(pm_2_5):
+        if valid_sensor_reading(pm_2_5):
             return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
 
         pm_10 = self.sensor_access.get_particulate_matter_10()
-        if self.sensor_access.valid_sensor_reading(pm_10):
+        if valid_sensor_reading(pm_10):
             return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
 
         return return_readings_str

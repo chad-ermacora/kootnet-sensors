@@ -19,6 +19,7 @@
 import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
+from sensor_modules.sensor_access import no_sensor_present
 
 
 def text_is_alphanumeric(text_string):
@@ -75,3 +76,9 @@ def hostname_is_valid(text_hostname):
     if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
         return True
     return False
+
+
+def valid_sensor_reading(reading):
+    if reading == no_sensor_present:
+        return False
+    return True

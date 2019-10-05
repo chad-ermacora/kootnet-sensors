@@ -24,6 +24,7 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
+from operations_modules.app_validation_checks import valid_sensor_reading
 
 # Weather Underground URL Variables
 open_sense_map_main_url_start = "https://api.opensensemap.org/boxes"
@@ -307,13 +308,13 @@ class CreateOpenSenseMapConfig:
                         gas_oxidised = self.sensor_access.get_gas_oxidised()
                         gas_reduced = self.sensor_access.get_gas_reduced()
                         gas_nh3 = self.sensor_access.get_gas_nh3()
-                        if self.gas_voc_id != "" and self.sensor_access.valid_sensor_reading(gas_voc):
+                        if self.gas_voc_id != "" and valid_sensor_reading(gas_voc):
                             body_json[self.gas_voc_id] = str(gas_voc)
-                        if self.gas_oxidised_id != "" and self.sensor_access.valid_sensor_reading(gas_oxidised):
+                        if self.gas_oxidised_id != "" and valid_sensor_reading(gas_oxidised):
                             body_json[self.gas_oxidised_id] = str(gas_oxidised)
-                        if self.gas_reduced_id != "" and self.sensor_access.valid_sensor_reading(gas_reduced):
+                        if self.gas_reduced_id != "" and valid_sensor_reading(gas_reduced):
                             body_json[self.gas_reduced_id] = str(gas_reduced)
-                        if self.gas_nh3_id != "" and self.sensor_access.valid_sensor_reading(gas_nh3):
+                        if self.gas_nh3_id != "" and valid_sensor_reading(gas_nh3):
                             body_json[self.gas_nh3_id] = str(gas_nh3)
                     if app_config_access.installed_sensors.has_lumen:
                         if self.lumen_id != "":
@@ -322,11 +323,11 @@ class CreateOpenSenseMapConfig:
                         pm1 = self.sensor_access.get_particulate_matter_1()
                         pm2_5 = self.sensor_access.get_particulate_matter_2_5()
                         pm10 = self.sensor_access.get_particulate_matter_10()
-                        if self.pm1_id != "" and self.sensor_access.valid_sensor_reading(pm1):
+                        if self.pm1_id != "" and valid_sensor_reading(pm1):
                             body_json[self.pm1_id] = str(pm1)
-                        if self.pm2_5_id != "" and self.sensor_access.valid_sensor_reading(pm2_5):
+                        if self.pm2_5_id != "" and valid_sensor_reading(pm2_5):
                             body_json[self.pm2_5_id] = str(pm2_5)
-                        if self.pm10_id != "" and self.sensor_access.valid_sensor_reading(pm10):
+                        if self.pm10_id != "" and valid_sensor_reading(pm10):
                             body_json[self.pm10_id] = str(pm10)
                     colours = self.sensor_access.get_ems()
                     if app_config_access.installed_sensors.has_red:

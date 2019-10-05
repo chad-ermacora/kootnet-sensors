@@ -20,6 +20,7 @@ import datetime
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_config_access
+from operations_modules.app_validation_checks import valid_sensor_reading
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
@@ -187,12 +188,6 @@ def get_interval_sensor_readings():
                            sensor_access.command_data_separator + \
                            _list_to_csv_string_quoted(sensor_readings)
     return return_interval_data
-
-
-def valid_sensor_reading(reading):
-    if reading == sensor_access.no_sensor_present:
-        return False
-    return True
 
 
 def _list_to_csv_string(list_to_add):

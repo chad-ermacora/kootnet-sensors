@@ -24,6 +24,7 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import software_version
 from operations_modules import app_config_access
+from operations_modules.app_validation_checks import valid_sensor_reading
 
 # Luftdaten URL
 luftdaten_url = "https://api.luftdaten.info/v1/push-sensor-data/"
@@ -205,7 +206,7 @@ class CreateLuftdatenConfig:
     def _get_temperature(self):
         try:
             temp_c = self.sensor_access.get_sensor_temperature()
-            if self.sensor_access.valid_sensor_reading(temp_c) and app_config_access.current_config.enable_custom_temp:
+            if valid_sensor_reading(temp_c) and app_config_access.current_config.enable_custom_temp:
                 temp_c = temp_c + app_config_access.current_config.temperature_offset
             return temp_c
         except Exception as error:

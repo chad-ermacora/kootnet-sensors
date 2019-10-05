@@ -115,13 +115,13 @@ def html_sensors_readings():
 
 def _get_ems_for_render_template():
     ems = sensor_access.get_ems()
-    if ems == "NoSensor":
-        red = "NoSensor"
-        orange = "NoSensor"
-        yellow = "NoSensor"
-        green = "NoSensor"
-        blue = "NoSensor"
-        violet = "NoSensor"
+    if ems == sensor_access.no_sensor_present:
+        red = sensor_access.no_sensor_present
+        orange = sensor_access.no_sensor_present
+        yellow = sensor_access.no_sensor_present
+        green = sensor_access.no_sensor_present
+        blue = sensor_access.no_sensor_present
+        violet = sensor_access.no_sensor_present
     else:
         if len(ems) > 3:
             red = ems[0]
@@ -132,9 +132,9 @@ def _get_ems_for_render_template():
             violet = ems[5]
         else:
             red = ems[0]
-            orange = "NoSensor"
-            yellow = "NoSensor"
+            orange = sensor_access.no_sensor_present
+            yellow = sensor_access.no_sensor_present
             green = ems[1]
             blue = ems[2]
-            violet = "NoSensor"
+            violet = sensor_access.no_sensor_present
     return [red, orange, yellow, green, blue, violet]

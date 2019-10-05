@@ -31,7 +31,7 @@ from operations_modules.online_services import open_sense_map
 from operations_modules.app_generic_functions import get_http_sensor_reading, get_file_content
 
 if software_version.old_version == software_version.version:
-    sensor_bg_names_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
+    html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
                             "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
                             "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
                             "senor_ip_18", "senor_ip_19", "senor_ip_20"]
@@ -186,15 +186,15 @@ class CreateReplacementVariables:
             text_trigger_recording = str(self.get_enabled_disabled_text(sensors_config.enable_trigger_recording))
             text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
 
-            wifi_network_colour = "#F4A460"
+            wifi_network_colour = "orangered"
             debug_colour = "#F4A460"
             display_colour = "#F4A460"
             interval_recording_colour = "#F4A460"
             trigger_recording_colour = "#F4A460"
             temp_offset_colour = "#F4A460"
-            weather_underground_colour = "#F4A460"
+            weather_underground_colour = "orangered"
             luftdaten_colour = "#F4A460"
-            open_sense_map_colour = "#F4A460"
+            open_sense_map_colour = "orangered"
             if len(wifi_ssid) > 0:
                 wifi_network_colour = "#0099ff"
             if sensors_config.enable_debug_logging:
@@ -209,10 +209,16 @@ class CreateReplacementVariables:
                 temp_offset_colour = "lightgreen"
             if wu_config.weather_underground_enabled:
                 weather_underground_colour = "lightgreen"
+            else:
+                if not wu_config.bad_config_load:
+                    weather_underground_colour = "#F4A460"
             if luftdaten_config.luftdaten_enabled:
                 luftdaten_colour = "lightgreen"
             if osm_config.open_sense_map_enabled:
                 open_sense_map_colour = "lightgreen"
+            else:
+                if not wu_config.bad_config_load:
+                    open_sense_map_colour = "#F4A460"
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
@@ -321,7 +327,7 @@ def get_online_report(ip_address, report_type="systems_report"):
 def get_clean_address_list(http_request):
     ip_list = []
     try:
-        for sensor in sensor_bg_names_list:
+        for sensor in html_address_list:
             sensor_address = http_request.form.get(sensor)
             if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
                 ip_list.append(sensor_address)
