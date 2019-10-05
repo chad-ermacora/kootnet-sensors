@@ -41,15 +41,15 @@ from sensor_modules import pimoroni_1_12_mono_oled
 if software_version.old_version == software_version.version:
     # Initialize sensor access, based on installed sensors file
     if app_config_access.current_platform == "Linux":
-        os_sensor_access = linux_os.CreateLinuxSystem()
+        operating_system_a = linux_os.CreateLinuxSystem()
     if app_config_access.installed_sensors.raspberry_pi:
-        system_sensor_access = raspberry_pi_system.CreateRPSystem()
+        raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        rp_sense_hat_sensor_access = raspberry_pi_sensehat.CreateRPSenseHAT()
+        rp_sense_hat_a = raspberry_pi_sensehat.CreateRPSenseHAT()
     if app_config_access.installed_sensors.pimoroni_bh1745:
-        pimoroni_bh1745_sensor_access = pimoroni_bh1745.CreateBH1745()
+        pimoroni_bh1745_a = pimoroni_bh1745.CreateBH1745()
     if app_config_access.installed_sensors.pimoroni_as7262:
-        pimoroni_as7262_sensor_access = pimoroni_as7262.CreateAS7262()
+        pimoroni_as7262_a = pimoroni_as7262.CreateAS7262()
     if app_config_access.installed_sensors.pimoroni_bme680:
         if app_config_access.installed_sensors.pimoroni_bmp280:
             message = "Pimoroni BME680 cannot be installed if the BMP280 is installed. " + \
@@ -59,29 +59,29 @@ if software_version.old_version == software_version.version:
             app_config_access.installed_sensors.pimoroni_bme680 = 0
             app_config_access.installed_sensors.pimoroni_bmp280 = 0
         else:
-            pimoroni_bme680_sensor_access = pimoroni_bme680.CreateBME680()
+            pimoroni_bme680_a = pimoroni_bme680.CreateBME680()
     if app_config_access.installed_sensors.pimoroni_bmp280:
-        pimoroni_bmp280_sensor_access = pimoroni_bmp280.CreateBMP280()
+        pimoroni_bmp280_a = pimoroni_bmp280.CreateBMP280()
     if app_config_access.installed_sensors.pimoroni_enviro:
-        pimoroni_enviro_sensor_access = pimoroni_enviro.CreateEnviro()
+        pimoroni_enviro_a = pimoroni_enviro.CreateEnviro()
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        pimoroni_enviroplus_sensor_access = pimoroni_enviroplus.CreateEnviroPlus()
+        pimoroni_enviroplus_a = pimoroni_enviroplus.CreateEnviroPlus()
     if app_config_access.installed_sensors.pimoroni_lsm303d:
-        pimoroni_lsm303d_sensor_access = pimoroni_lsm303d.CreateLSM303D()
+        pimoroni_lsm303d_a = pimoroni_lsm303d.CreateLSM303D()
     if app_config_access.installed_sensors.pimoroni_icm20948:
-        pimoroni_icm20948_sensor_access = pimoroni_icm20948.CreateICM20948()
+        pimoroni_icm20948_a = pimoroni_icm20948.CreateICM20948()
     if app_config_access.installed_sensors.pimoroni_ltr_559:
-        pimoroni_ltr_559_sensor_access = pimoroni_ltr_559.CreateLTR559()
+        pimoroni_ltr_559_a = pimoroni_ltr_559.CreateLTR559()
     if app_config_access.installed_sensors.pimoroni_vl53l1x:
-        pimoroni_vl53l1x_sensor_access = pimoroni_vl53l1x.CreateVL53L1X()
+        pimoroni_vl53l1x_a = pimoroni_vl53l1x.CreateVL53L1X()
     if app_config_access.installed_sensors.pimoroni_veml6075:
-        pimoroni_veml6075_sensor_access = pimoroni_veml6075.CreateVEML6075()
+        pimoroni_veml6075_a = pimoroni_veml6075.CreateVEML6075()
     if app_config_access.installed_sensors.pimoroni_matrix_11x7:
-        pimoroni_matrix_11x7_sensor_access = pimoroni_11x7_led_matrix.CreateMatrix11x7()
+        pimoroni_matrix_11x7_a = pimoroni_11x7_led_matrix.CreateMatrix11x7()
     if app_config_access.installed_sensors.pimoroni_st7735:
-        pimoroni_st7735_sensor_access = pimoroni_0_96_spi_colour_lcd.CreateST7735()
+        pimoroni_st7735_a = pimoroni_0_96_spi_colour_lcd.CreateST7735()
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-        pimoroni_mono_oled_luma_sensor_access = pimoroni_1_12_mono_oled.CreateLumaOLED()
+        pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
     logger.primary_logger.info(" -- Sensors Initialized")
 else:
     # Sleep before loading anything due to needed updates

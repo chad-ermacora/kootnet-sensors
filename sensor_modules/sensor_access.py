@@ -28,7 +28,7 @@ from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
 from sensor_modules import sensor_ready_checks
-from sensor_modules import sensors_initialization as sensor_direct_access
+from sensor_modules import sensors_initialization as sensors_direct
 
 command_data_separator = app_config_access.command_data_separator
 no_sensor_present = "NoSensor"
@@ -38,70 +38,70 @@ sensor_in_use_delay = 0.1
 def get_operating_system_name():
     """ Returns sensors Operating System Name and version. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_os_name_version()
+        return sensors_direct.operating_system_a.get_os_name_version()
     return no_sensor_present
 
 
 def get_hostname():
     """ Returns sensors hostname. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_hostname()
+        return sensors_direct.operating_system_a.get_hostname()
     return no_sensor_present
 
 
 def get_ip():
     """ Returns sensor IP Address as a String. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_ip()
+        return sensors_direct.operating_system_a.get_ip()
     return no_sensor_present
 
 
 def get_disk_usage_gb():
     """ Returns sensor root disk usage as GB's. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_disk_usage_gb()
+        return sensors_direct.operating_system_a.get_disk_usage_gb()
     return no_sensor_present
 
 
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_disk_usage_percent()
+        return sensors_direct.operating_system_a.get_disk_usage_percent()
     return no_sensor_present
 
 
 def get_memory_usage_percent():
     """ Returns sensor RAM usage as a %. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_memory_usage_percent()
+        return sensors_direct.operating_system_a.get_memory_usage_percent()
     return no_sensor_present
 
 
 def get_system_datetime():
     """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_sys_datetime_str()
+        return sensors_direct.operating_system_a.get_sys_datetime_str()
     return no_sensor_present
 
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_uptime_raw()
+        return sensors_direct.operating_system_a.get_uptime_raw()
     return no_sensor_present
 
 
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_uptime_str()
+        return sensors_direct.operating_system_a.get_uptime_str()
     return no_sensor_present
 
 
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
     if app_config_access.current_platform == "Linux":
-        reboot_count = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
+        reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
     return no_sensor_present
 
@@ -109,21 +109,21 @@ def get_system_reboot_count():
 def get_db_size():
     """ Returns SQL Database size in MB. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_sql_db_size()
+        return sensors_direct.operating_system_a.get_sql_db_size()
     return no_sensor_present
 
 
 def get_db_notes_count():
     """ Returns Number of Notes in the SQL Database. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_db_notes_count()
+        return sensors_direct.operating_system_a.get_db_notes_count()
     return no_sensor_present
 
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
     if app_config_access.current_platform == "Linux":
-        return sensor_direct_access.os_sensor_access.get_db_first_last_date()
+        return sensors_direct.operating_system_a.get_db_first_last_date()
     return no_sensor_present
 
 
@@ -145,7 +145,7 @@ def get_cpu_temperature():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.cpu_temperature_ready = False
     if app_config_access.installed_sensors.raspberry_pi:
-        temperature = sensor_direct_access.system_sensor_access.cpu_temperature()
+        temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
     else:
         temperature = no_sensor_present
     sensor_ready_checks.cpu_temperature_ready = True
@@ -158,15 +158,15 @@ def get_sensor_temperature():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.env_temperature_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
-        temperature = sensor_direct_access.pimoroni_enviro_sensor_access.temperature()
+        temperature = sensors_direct.pimoroni_enviro_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
-        temperature = sensor_direct_access.pimoroni_enviroplus_sensor_access.temperature()
+        temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
-        temperature = sensor_direct_access.pimoroni_bmp280_sensor_access.temperature()
+        temperature = sensors_direct.pimoroni_bmp280_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bme680:
-        temperature = sensor_direct_access.pimoroni_bme680_sensor_access.temperature()
+        temperature = sensors_direct.pimoroni_bme680_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        temperature = sensor_direct_access.rp_sense_hat_sensor_access.temperature()
+        temperature = sensors_direct.rp_sense_hat_a.temperature()
     else:
         temperature = no_sensor_present
     sensor_ready_checks.env_temperature_ready = True
@@ -179,15 +179,15 @@ def get_pressure():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.pressure_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
-        pressure = sensor_direct_access.pimoroni_enviro_sensor_access.pressure()
+        pressure = sensors_direct.pimoroni_enviro_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
-        pressure = sensor_direct_access.pimoroni_enviroplus_sensor_access.pressure()
+        pressure = sensors_direct.pimoroni_enviroplus_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
-        pressure = sensor_direct_access.pimoroni_bmp280_sensor_access.pressure()
+        pressure = sensors_direct.pimoroni_bmp280_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_bme680:
-        pressure = sensor_direct_access.pimoroni_bme680_sensor_access.pressure()
+        pressure = sensors_direct.pimoroni_bme680_a.pressure()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        pressure = sensor_direct_access.rp_sense_hat_sensor_access.pressure()
+        pressure = sensors_direct.rp_sense_hat_a.pressure()
     else:
         pressure = no_sensor_present
     sensor_ready_checks.pressure_ready = True
@@ -200,7 +200,7 @@ def get_altitude():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.altitude_ready = False
     if app_config_access.installed_sensors.pimoroni_bmp280:
-        altitude = sensor_direct_access.pimoroni_bmp280_sensor_access.altitude()
+        altitude = sensors_direct.pimoroni_bmp280_a.altitude()
     else:
         altitude = no_sensor_present
     sensor_ready_checks.altitude_ready = True
@@ -213,11 +213,11 @@ def get_humidity():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.humidity_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        humidity = sensor_direct_access.pimoroni_enviroplus_sensor_access.humidity()
+        humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_bme680:
-        humidity = sensor_direct_access.pimoroni_bme680_sensor_access.humidity()
+        humidity = sensors_direct.pimoroni_bme680_a.humidity()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        humidity = sensor_direct_access.rp_sense_hat_sensor_access.humidity()
+        humidity = sensors_direct.rp_sense_hat_a.humidity()
     else:
         humidity = no_sensor_present
     sensor_ready_checks.humidity_ready = True
@@ -250,11 +250,11 @@ def get_distance():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.distance_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        distance = sensor_direct_access.pimoroni_enviroplus_sensor_access.distance()
+        distance = sensors_direct.pimoroni_enviroplus_a.distance()
     elif app_config_access.installed_sensors.pimoroni_vl53l1x:
-        distance = sensor_direct_access.pimoroni_vl53l1x_sensor_access.distance()
+        distance = sensors_direct.pimoroni_vl53l1x_a.distance()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
-        distance = sensor_direct_access.pimoroni_ltr_559_sensor_access.distance()
+        distance = sensors_direct.pimoroni_ltr_559_a.distance()
     else:
         distance = no_sensor_present
     sensor_ready_checks.distance_ready = True
@@ -267,7 +267,7 @@ def get_gas_resistance_index():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.gas_resistance_index_ready = False
     if app_config_access.installed_sensors.pimoroni_bme680:
-        index = sensor_direct_access.pimoroni_bme680_sensor_access.gas_resistance_index()
+        index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
     else:
         index = no_sensor_present
     sensor_ready_checks.gas_resistance_index_ready = True
@@ -280,7 +280,7 @@ def get_gas_oxidised():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.gas_oxidised_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        oxidising = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[0]
+        oxidising = sensors_direct.pimoroni_enviroplus_a.gas_data()[0]
     else:
         oxidising = no_sensor_present
     sensor_ready_checks.gas_oxidised_ready = True
@@ -293,7 +293,7 @@ def get_gas_reduced():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.gas_reduced_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        reducing = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[1]
+        reducing = sensors_direct.pimoroni_enviroplus_a.gas_data()[1]
     else:
         reducing = no_sensor_present
     sensor_ready_checks.gas_reduced_ready = True
@@ -306,7 +306,7 @@ def get_gas_nh3():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.gas_nh3_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
-        nh3_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[2]
+        nh3_reading = sensors_direct.pimoroni_enviroplus_a.gas_data()[2]
     else:
         nh3_reading = no_sensor_present
     sensor_ready_checks.gas_nh3_ready = True
@@ -320,7 +320,7 @@ def get_particulate_matter_1():
     sensor_ready_checks.particulate_matter1_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
-        pm1_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[0]
+        pm1_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[0]
     else:
         pm1_reading = no_sensor_present
     sensor_ready_checks.particulate_matter1_ready = True
@@ -334,7 +334,7 @@ def get_particulate_matter_2_5():
     sensor_ready_checks.particulate_matter2_5_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
-        pm2_5_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[1]
+        pm2_5_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[1]
     else:
         pm2_5_reading = no_sensor_present
     sensor_ready_checks.particulate_matter2_5_ready = True
@@ -348,7 +348,7 @@ def get_particulate_matter_10():
     sensor_ready_checks.particulate_matter10_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
-        pm10_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[2]
+        pm10_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[2]
     else:
         pm10_reading = no_sensor_present
     sensor_ready_checks.particulate_matter10_ready = True
@@ -361,13 +361,13 @@ def get_lumen():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.lumen_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
-        lumen = sensor_direct_access.pimoroni_enviro_sensor_access.lumen()
+        lumen = sensors_direct.pimoroni_enviro_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
-        lumen = sensor_direct_access.pimoroni_enviroplus_sensor_access.lumen()
+        lumen = sensors_direct.pimoroni_enviroplus_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_bh1745:
-        lumen = sensor_direct_access.pimoroni_bh1745_sensor_access.lumen()
+        lumen = sensors_direct.pimoroni_bh1745_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
-        lumen = sensor_direct_access.pimoroni_ltr_559_sensor_access.lumen()
+        lumen = sensors_direct.pimoroni_ltr_559_a.lumen()
     else:
         lumen = no_sensor_present
     sensor_ready_checks.lumen_ready = True
@@ -380,11 +380,11 @@ def get_ems():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.ems_colours_ready = False
     if app_config_access.installed_sensors.pimoroni_as7262:
-        colours = sensor_direct_access.pimoroni_as7262_sensor_access.spectral_six_channel()
+        colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
     elif app_config_access.installed_sensors.pimoroni_enviro:
-        colours = sensor_direct_access.pimoroni_enviro_sensor_access.ems()
+        colours = sensors_direct.pimoroni_enviro_a.ems()
     elif app_config_access.installed_sensors.pimoroni_bh1745:
-        colours = sensor_direct_access.pimoroni_bh1745_sensor_access.ems()
+        colours = sensors_direct.pimoroni_bh1745_a.ems()
     else:
         colours = no_sensor_present
     sensor_ready_checks.ems_colours_ready = True
@@ -397,7 +397,7 @@ def get_ultra_violet_index():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.ultra_violet_index_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
-        uv_index_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet_index()
+        uv_index_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
     else:
         uv_index_reading = no_sensor_present
     sensor_ready_checks.ultra_violet_index_ready = True
@@ -410,7 +410,7 @@ def get_ultra_violet_a():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.ultra_violet_a_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
-        uva_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[0]
+        uva_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[0]
     else:
         uva_reading = no_sensor_present
     sensor_ready_checks.ultra_violet_a_ready = True
@@ -423,7 +423,7 @@ def get_ultra_violet_b():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.ultra_violet_b_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
-        uvb_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[1]
+        uvb_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[1]
     else:
         uvb_reading = no_sensor_present
     sensor_ready_checks.ultra_violet_b_ready = True
@@ -436,13 +436,13 @@ def get_accelerometer_xyz():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.accelerometer_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.accelerometer_xyz()
+        xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
-        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.accelerometer_xyz()
+        xyz = sensors_direct.pimoroni_enviro_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_lsm303d:
-        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.accelerometer_xyz()
+        xyz = sensors_direct.pimoroni_lsm303d_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.accelerometer_xyz()
+        xyz = sensors_direct.pimoroni_icm20948_a.accelerometer_xyz()
     else:
         xyz = no_sensor_present
     sensor_ready_checks.accelerometer_ready = True
@@ -455,13 +455,13 @@ def get_magnetometer_xyz():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.magnetometer_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.magnetometer_xyz()
+        xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
-        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.magnetometer_xyz()
+        xyz = sensors_direct.pimoroni_enviro_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_lsm303d:
-        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.magnetometer_xyz()
+        xyz = sensors_direct.pimoroni_lsm303d_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.magnetometer_xyz()
+        xyz = sensors_direct.pimoroni_icm20948_a.magnetometer_xyz()
     else:
         xyz = no_sensor_present
     sensor_ready_checks.magnetometer_ready = True
@@ -474,9 +474,9 @@ def get_gyroscope_xyz():
         sleep(sensor_in_use_delay)
     sensor_ready_checks.gyroscope_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.gyroscope_xyz()
+        xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.gyroscope_xyz()
+        xyz = sensors_direct.pimoroni_icm20948_a.gyroscope_xyz()
     else:
         xyz = no_sensor_present
     sensor_ready_checks.gyroscope_ready = True
@@ -494,19 +494,18 @@ def display_message(text_message):
         if message_length > 0:
             text_message = "-- " + text_message
             if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_text,
-                                        args=[text_message])
+                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_message])
             elif app_config_access.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_text,
+                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text,
                                         args=[text_message])
             elif app_config_access.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_text,
+                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text,
                                         args=[text_message])
             elif app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_text,
+                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text,
                                         args=[text_message])
             elif app_config_access.installed_sensors.pimoroni_enviroplus:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_enviroplus_sensor_access.display_text,
+                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text,
                                         args=[text_message])
             else:
                 display_thread = None
@@ -520,7 +519,7 @@ def display_message(text_message):
 
 def start_special_sensor_interactive_services():
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        sh_joy_stick_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.start_joy_stick_commands)
+        sh_joy_stick_thread = Thread(target=sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
         sh_joy_stick_thread.daemon = True
         sh_joy_stick_thread.start()
 
