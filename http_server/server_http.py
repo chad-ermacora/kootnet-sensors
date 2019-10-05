@@ -41,17 +41,17 @@ try:
     from flask import Flask
     from flask_compress import Compress
     from gevent.pywsgi import WSGIServer
-
-    import_errors = False
 except ImportError as import_error:
-    logger.primary_logger.critical("**** Missing Required HTTPS Dependencies: " + str(import_error))
+    log_message = "**** Missing Required HTTPS Dependencies - Try Upgrading or Reinstall Kootnet Sensors: "
+    logger.primary_logger.critical(log_message + str(import_error))
     delayed_cache_update, server_http_auth, html_functional_routes, html_basic_routes, = None, None, None, None
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     Flask, Compress, WSGIServer = None, None, None
-    import_errors = True
+    while True:
+        sleep(600)
 
 flask_http_ip = ""
 flask_http_port = 10065
@@ -59,11 +59,6 @@ flask_http_port = 10065
 
 class CreateSensorHTTP:
     def __init__(self):
-        if import_errors:
-            logger.network_logger.critical("**** Unable to load HTTPS Server, missing Python Modules")
-            while True:
-                sleep(600)
-
         app = Flask(__name__)
         Compress(app)
         server_http_auth.set_http_auth_from_file()
