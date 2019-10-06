@@ -21,7 +21,8 @@ from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-
+https_import_error_msg = ""
+https_import_errors = True
 try:
     from operations_modules.app_cached_variables_update import delayed_cache_update
     from http_server import server_http_auth
@@ -41,17 +42,16 @@ try:
     from flask import Flask
     from flask_compress import Compress
     from gevent.pywsgi import WSGIServer
-except ImportError as import_error:
-    log_message = "**** Missing Required HTTPS Dependencies - Try Upgrading or Reinstall Kootnet Sensors: "
-    logger.primary_logger.critical(log_message + str(import_error))
+
+    https_import_errors = False
+except ImportError as https_import_error_msg_raw:
+    https_import_error_msg = str(https_import_error_msg_raw)
     delayed_cache_update, server_http_auth, html_functional_routes, html_basic_routes, = None, None, None, None
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     Flask, Compress, WSGIServer = None, None, None
-    while True:
-        sleep(600)
 
 flask_http_ip = ""
 flask_http_port = 10065
@@ -91,6 +91,11 @@ class CreateSensorHTTP:
 
 def https_start_and_watch():
     # Start the HTTP Server for remote access
+    if https_import_errors:
+        log_message = "**** Unable to Start HTTPS Server - Missing Required Dependencies: "
+        logger.primary_logger.critical(log_message + str(https_import_error_msg))
+        while True:
+            sleep(600)
     sensor_http_server_thread = Thread(target=CreateSensorHTTP)
     sensor_http_server_thread.daemon = True
     sensor_http_server_thread.start()
