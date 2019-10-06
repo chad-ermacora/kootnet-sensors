@@ -86,13 +86,13 @@ class CreateSensorHTTP:
             logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_http_port))
             http_server.serve_forever()
         except Exception as error:
-            logger.primary_logger.critical(" -- HTTPS Server Failed to Start: " + str(error))
+            logger.primary_logger.critical("--- Failed to Start HTTPS Server: " + str(error))
 
 
 def https_start_and_watch():
     # Start the HTTP Server for remote access
     if https_import_errors:
-        log_message = "**** Unable to Start HTTPS Server - Missing Required Dependencies: "
+        log_message = "--- Failed to Start HTTPS Server - Missing Required Dependencies: "
         logger.primary_logger.critical(log_message + str(https_import_error_msg))
         while True:
             sleep(600)
