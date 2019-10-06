@@ -23,19 +23,11 @@ from operations_modules import logger
 from operations_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-try:
-    # noinspection PyUnresolvedReferences
-    from PIL import Image
-    # noinspection PyUnresolvedReferences
-    from PIL import ImageDraw
-    # noinspection PyUnresolvedReferences
-    from PIL import ImageFont
-    # noinspection PyUnresolvedReferences
-    from smbus2 import SMBus
-except ImportError as import_error:
-    logger.primary_logger.error("**** Missing EnviroPlus Dependencies - " +
-                                "There may be unintended side effects as a result: " +
-                                str(import_error))
+from PIL import Image
+from PIL import ImageDraw
+from PIL import ImageFont
+from smbus2 import SMBus
+
 
 round_decimal_to = 5
 turn_off_display_seconds = 25

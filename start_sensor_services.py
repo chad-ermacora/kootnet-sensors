@@ -18,16 +18,29 @@
 """
 import os
 from time import sleep
+from operations_modules import logger
+if os.geteuid() != 0:
+    log_message = "**** Unable to Start Kootnet Sensors - root permissions required for Sensor Hardware Access"
+    logger.primary_logger.critical(log_message)
+    while True:
+        sleep(600)
+try:
+    from sensor_modules import sensor_access
+except Exception as import_error_raw:
+    import_error_msg = str(import_error_raw)
+    log_message = "**** Unable to Start Kootnet Sensors - Problem Loading Sensor Access: "
+    logger.primary_logger.critical(log_message + import_error_msg)
+    while True:
+        sleep(600)
 from threading import Thread
 from http_server import server_http
-from operations_modules import logger
 from operations_modules import program_start_checks
 from operations_modules import app_config_access
 from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
 # from operations_modules import server_display
-from sensor_modules import sensor_access
+
 
 # Ensure files, database & configurations are OK
 program_start_checks.set_file_permissions()
