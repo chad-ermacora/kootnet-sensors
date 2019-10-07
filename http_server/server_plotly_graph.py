@@ -62,29 +62,19 @@ def _start_plotly_graph(graph_data):
     get_sql_graph_end = server_plotly_graph_extras.adjust_datetime(graph_data.graph_end, new_time_offset)
 
     for var_column in graph_data.graph_columns:
-        var_sql_query = "SELECT " + \
-                        var_column + \
-                        " FROM " + \
-                        graph_data.graph_table + \
-                        " WHERE " + var_column + " IS NOT NULL AND " + \
-                        "DateTime BETWEEN datetime('" + \
-                        get_sql_graph_start + \
-                        "') AND datetime('" + \
-                        get_sql_graph_end + \
-                        "') LIMIT " + \
-                        str(graph_data.max_sql_queries)
+        var_sql_query = "SELECT " + var_column + \
+                        " FROM " + graph_data.graph_table + \
+                        " WHERE " + var_column + \
+                        " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                        "') AND datetime('" + get_sql_graph_end + \
+                        "') LIMIT " + str(graph_data.max_sql_queries)
 
-        var_time_sql_query = "SELECT " + \
-                             sql_column_names.all_tables_datetime + \
-                             " FROM " + \
-                             graph_data.graph_table + \
-                             " WHERE " + var_column + " IS NOT NULL AND " + \
-                             "DateTime BETWEEN datetime('" + \
-                             get_sql_graph_start + \
-                             "') AND datetime('" + \
-                             get_sql_graph_end + \
-                             "') LIMIT " + \
-                             str(graph_data.max_sql_queries)
+        var_time_sql_query = "SELECT " + sql_column_names.all_tables_datetime + \
+                             " FROM " + graph_data.graph_table + \
+                             " WHERE " + var_column + \
+                             " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                             "') AND datetime('" + get_sql_graph_end + \
+                             "') LIMIT " + str(graph_data.max_sql_queries)
 
         # Get accompanying DateTime based on sensor data actually being present
         sql_column_date_time = _get_sql_data(graph_data, var_time_sql_query)
@@ -119,16 +109,11 @@ def _start_plotly_graph(graph_data):
                         count = count + 1
                         logger.primary_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
             else:
-                var_sql_query = "SELECT " + \
-                                sql_column_names.env_temperature_offset + \
-                                " FROM " + \
-                                graph_data.graph_table + \
-                                " WHERE DateTime BETWEEN datetime('" + \
-                                get_sql_graph_start + \
-                                "') AND datetime('" + \
-                                get_sql_graph_end + \
-                                "') LIMIT " + \
-                                str(graph_data.max_sql_queries)
+                var_sql_query = "SELECT " + sql_column_names.env_temperature_offset + \
+                                " FROM " + graph_data.graph_table + \
+                                " WHERE DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                                "') AND datetime('" + get_sql_graph_end + \
+                                "') LIMIT " + str(graph_data.max_sql_queries)
 
                 sql_temp_offset_data = _get_sql_data(graph_data, var_sql_query)
 
@@ -304,9 +289,9 @@ def _plotly_graph(graph_data):
                 fig['layout'].update(height=2048)
 
             if graph_data.graph_table == app_config_access.database_variables.table_interval:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.interval_plotly_html_filename)
+                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_interval)
             else:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.triggers_plotly_html_filename)
+                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_triggers)
             logger.primary_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import config_primary
 from operations_modules import config_installed_sensors
@@ -25,7 +26,8 @@ def set_configuration():
     raw_config = request.form['command_data'].splitlines()
     new_config = config_primary.convert_config_lines_to_obj(raw_config)
     config_primary.write_config_to_file(new_config)
-    sensor_access.restart_services()
+    app_generic_functions.thread_function(sensor_access.restart_services)
+    return "OK"
 
 
 @html_get_config_routes.route("/GetInstalledSensors")
@@ -41,7 +43,8 @@ def set_installed_sensors():
     raw_installed_sensors = request.form['command_data'].splitlines()
     new_installed_sensors = config_installed_sensors.convert_lines_to_obj(raw_installed_sensors)
     config_installed_sensors.write_to_file(new_installed_sensors)
-    sensor_access.restart_services()
+    app_generic_functions.thread_function(sensor_access.restart_services)
+    return "OK"
 
 
 @html_get_config_routes.route("/GetWifiConfiguration")
@@ -79,5 +82,5 @@ def set_variance_config():
     except Exception as error:
         logger.network_logger.info("* Variance Configuration Set from " + str(request.remote_addr) +
                                    " Failed: " + str(error))
-    sensor_access.restart_services()
+    app_generic_functions.thread_function(sensor_access.restart_services)
     return "OK"

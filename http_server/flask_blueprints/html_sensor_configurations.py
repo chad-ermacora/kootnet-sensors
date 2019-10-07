@@ -217,7 +217,6 @@ def check_html_config_main(html_request):
         app_config_access.current_config.temperature_offset = new_temp
     else:
         app_config_access.current_config.enable_custom_temp = 0
-
     app_config_access.config_primary.write_config_to_file(app_config_access.current_config)
 
 
@@ -481,7 +480,6 @@ def check_html_variance_triggers(html_request):
         app_config_access.trigger_variances.gyroscope_wait_seconds = new_seconds_delay
     else:
         app_config_access.trigger_variances.gyroscope_enabled = 0
-
     config_trigger_variances.write_triggers_to_file(app_config_access.trigger_variances)
 
 
@@ -647,7 +645,6 @@ def html_raw_configurations_view():
     weather_underground_config = app_generic_functions.get_file_content(file_locations.weather_underground_config)
     luftdaten_config = app_generic_functions.get_file_content(file_locations.luftdaten_config)
     open_sense_map_config = app_generic_functions.get_file_content(file_locations.osm_config)
-
     return render_template("view_raw_configurations.html",
                            MainConfiguration=main_config,
                            InstalledSensorsConfiguration=installed_sensors,

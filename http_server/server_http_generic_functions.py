@@ -50,7 +50,6 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
     sensor_reports.sort()
     for report in sensor_reports:
         new_report += str(report[1])
-
     new_report += html_sensor_report_end
     return new_report
 
@@ -58,5 +57,4 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
 def get_html_checkbox_state(config_setting):
     if config_setting:
         return "checked"
-    else:
-        return ""
+    return ""

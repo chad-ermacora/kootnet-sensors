@@ -17,30 +17,29 @@ def html_plotly_graphing():
     logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
     generating_message = "Generating Plotly Graph. This may take awhile."
     generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
+    save_to_folder = file_locations.plotly_save_folder
 
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
         logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-        return message_and_return(generating_message,
-                                                                text_message2=generating_message2,
-                                                                url="/PlotlyGraph")
+        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
 
     try:
-        interval_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                   file_locations.interval_plotly_html_filename)
-        interval_creation_date = str(datetime.fromtimestamp(interval_plotly_file_creation_date_unix))[:-7]
+        plotly_filename_interval = file_locations.plotly_filename_interval
+        unix_creation_date = os.path.getmtime(save_to_folder + plotly_filename_interval)
+        interval_creation_date = str(datetime.fromtimestamp(unix_creation_date))[:-7]
     except FileNotFoundError:
         interval_creation_date = "No Plotly Graph Found"
 
     try:
-        triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.save_plotly_html_to +
-                                                                   file_locations.triggers_plotly_html_filename)
+        plotly_filename_triggers = file_locations.plotly_filename_triggers
+        triggers_plotly_file_creation_date_unix = os.path.getmtime(save_to_folder + plotly_filename_triggers)
         triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
     except FileNotFoundError:
         triggers_creation_date = "No Plotly Graph Found"
 
     return render_template("plotly_graph.html",
-                           IntervalPlotlyCreationDate=interval_creation_date,
-                           TriggerPlotlyCreationDate=triggers_creation_date)
+                           IntervalPlotlyDate=interval_creation_date,
+                           TriggerPlotlyDate=triggers_creation_date)
 
 
 @html_plotly_graphing_routes.route("/CreatePlotlyGraph", methods=["POST"])
@@ -83,8 +82,8 @@ def html_create_plotly_graph():
 @html_plotly_graphing_routes.route("/ViewIntervalPlotlyGraph")
 def html_view_interval_graph_plotly():
     logger.network_logger.info("* Interval Plotly Graph Viewed from " + str(request.remote_addr))
-    if os.path.isfile(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename):
-        return send_file(file_locations.save_plotly_html_to + file_locations.interval_plotly_html_filename)
+    if os.path.isfile(file_locations.plotly_save_folder + file_locations.plotly_filename_interval):
+        return send_file(file_locations.plotly_save_folder + file_locations.plotly_filename_interval)
     else:
         message_title = "No Interval Plotly Graph Generated - Click to Close Tab"
         return message_and_return(message_title, special_command="JavaScript:window.close()", url="")
@@ -93,8 +92,8 @@ def html_view_interval_graph_plotly():
 @html_plotly_graphing_routes.route("/ViewTriggerPlotlyGraph")
 def html_view_triggers_graph_plotly():
     logger.network_logger.info("* Triggers Plotly Graph Viewed from " + str(request.remote_addr))
-    if os.path.isfile(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename):
-        return send_file(file_locations.save_plotly_html_to + file_locations.triggers_plotly_html_filename)
+    if os.path.isfile(file_locations.plotly_save_folder + file_locations.plotly_filename_triggers):
+        return send_file(file_locations.plotly_save_folder + file_locations.plotly_filename_triggers)
     else:
         message1 = "No Triggers Plotly Graph Generated - Click to Close Tab"
         special_command = "JavaScript:window.close()"

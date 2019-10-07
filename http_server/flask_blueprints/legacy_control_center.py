@@ -16,9 +16,7 @@ html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
 @html_legacy_cc_routes.route("/GetSensorReadings")
 def cc_get_sensor_readings():
     logger.network_logger.debug("* CC Sensor Readings sent to " + str(request.remote_addr))
-
     interval_readings = get_interval_sensor_readings().split(app_cached_variables.command_data_separator)
-
     str_interval_types = interval_readings[0].split(",")
     str_interval_types_data = interval_readings[1].split(",")
 
@@ -27,7 +25,6 @@ def cc_get_sensor_readings():
     for interval_type, interval_data in zip(str_interval_types, str_interval_types_data):
         return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
         return_data += "<th><span style='background-color: #0BB10D;'>" + interval_data + "</span></th>"
-
     return return_types + "," + return_data
 
 
@@ -55,8 +52,8 @@ def cc_set_hostname():
         message = "Hostname Changed to " + new_host
         app_cached_variables_update.update_cached_variables()
     except Exception as error:
-        logger.network_logger.error(
-            "** Hostname Change Failed from " + str(request.remote_addr) + " - " + str(error))
+        log_msg = "** Hostname Change Failed from " + str(request.remote_addr) + " - " + str(error)
+        logger.network_logger.error(log_msg)
         message = "Failed to change Hostname"
     return message_and_return(message, url="/SensorInformation")
 
@@ -68,11 +65,11 @@ def cc_set_date_time():
     try:
         new_datetime = request.form['command_data']
         os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
-        logger.network_logger.info(
-            "** CC System DateTime Set by " + str(request.remote_addr) + " to " + new_datetime)
+        log_msg = "** CC System DateTime Set by " + str(request.remote_addr) + " to " + new_datetime
+        logger.network_logger.info(log_msg)
     except Exception as error:
-        logger.network_logger.error(
-            "** DateTime Change Failed from " + str(request.remote_addr) + ": " + str(error))
+        log_msg = "** DateTime Change Failed from " + str(request.remote_addr) + ": " + str(error)
+        logger.network_logger.error(log_msg)
 
 
 @html_legacy_cc_routes.route("/GetConfigurationReport")

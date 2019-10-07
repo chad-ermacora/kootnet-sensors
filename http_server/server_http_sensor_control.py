@@ -157,10 +157,10 @@ class CreateReplacementVariables:
             osm_config = open_sense_map.CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
-            sensors_config = app_config_access.config_primary.convert_config_lines_to_obj(sensor_config_lines,
-                                                                                          skip_write=True)
-            installed_sensors_config = app_config_access.config_installed_sensors.convert_lines_to_obj(
-                installed_sensors_lines, skip_write=True)
+            convert_config = app_config_access.config_primary.convert_config_lines_to_obj
+            convert_installed_sensors = app_config_access.config_installed_sensors.convert_lines_to_obj
+            sensors_config = convert_config(sensor_config_lines, skip_write=True)
+            installed_sensors_config = convert_installed_sensors(installed_sensors_lines, skip_write=True)
 
             installed_sensors_config.raspberry_pi_name = rpi_model_name
 
@@ -244,8 +244,8 @@ class CreateReplacementVariables:
                              [installed_sensors_config.get_installed_names_str(), "{{ InstalledSensors }}"]]
             return value_replace
         except Exception as error:
-            logger.network_logger.warning("Sensor Control - Get Remote Sensor " + ip_address +
-                                          " Config Report Failed: " + str(error))
+            log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Config Report Failed: " + str(error)
+            logger.network_logger.warning(log_msg)
             return []
 
     def report_test_sensors(self, ip_address):
@@ -268,8 +268,8 @@ class CreateReplacementVariables:
             return [[return_types, "{{ SensorTypes }}"],
                     [return_readings, "{{ SensorReadings }}"]]
         except Exception as error:
-            logger.network_logger.warning("Sensor Control - Get Remote Sensor " + ip_address +
-                                          " Sensors Test Report Failed: " + str(error))
+            log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Sensors Test Report Failed: " + str(error)
+            logger.network_logger.warning(log_msg)
             return []
 
     @staticmethod
@@ -319,9 +319,8 @@ def get_online_report(ip_address, report_type="systems_report"):
             else:
                 app_cached_variables.data_queue.put([sensor_name, sensor_report])
     except Exception as error:
-        logger.network_logger.warning("Remote Sensor " + ip_address +
-                                      " Failed providing " + str(report_type) +
-                                      " Data: " + str(error))
+        log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
+        logger.network_logger.warning(log_msg)
 
 
 def get_clean_address_list(http_request):

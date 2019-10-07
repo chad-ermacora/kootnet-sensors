@@ -68,9 +68,8 @@ def add_plots(graph_data):
     scatter_data = CreateGraphScatterData(graph_data.enable_plotly_webgl, graph_data.graph_table, set_marker)
 
     if len(graph_data.sql_host_name) > 1:
-        first_hostname = graph_data.sql_host_name[0]
-        last_hostname = graph_data.sql_host_name[-1]
-        subplot_sensor_name = "Sensor Names over Time - First Name: " + str(first_hostname) + " <---> Last Name: " + str(last_hostname)
+        subplot_sensor_name = "Sensor Names over Time - First Name: " + str(graph_data.sql_host_name[0]) + \
+                              " <---> Last Name: " + str(graph_data.sql_host_name[-1])
 
         put_sensor_trace(graph_data, scatter_data, "Sensor Name", graph_data.sql_host_name_date_time,
                          graph_data.sql_host_name, subplot_sensor_name)

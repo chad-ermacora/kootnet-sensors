@@ -88,8 +88,8 @@ class CreateLuftdatenConfig:
             except Exception as error:
                 if not skip_write:
                     self.write_config_to_file()
-                    logger.primary_logger.warning("Problem loading Luftdaten Configuration file - " +
-                                                  "Using 1 or more Defaults: " + str(error))
+                    log_msg = "Problem loading Luftdaten Configuration file - Using 1 or more Defaults: " + str(error)
+                    logger.primary_logger.warning(log_msg)
                 else:
                     self.bad_load = True
         else:
@@ -182,8 +182,8 @@ class CreateLuftdatenConfig:
         if post_reply.ok:
             logger.network_logger.debug("Luftdaten - BME280 - Status Code: " + str(post_reply.status_code))
         else:
-            logger.network_logger.warning("Luftdaten - BME280 - Status Code: " + str(post_reply.status_code) + " : " +
-                                          str(post_reply.text))
+            log_msg = "Luftdaten - BME280 - Status Code: " + str(post_reply.status_code) + " : " + str(post_reply.text)
+            logger.network_logger.warning(log_msg)
 
     def _pms5003(self):
         pm10_reading = str(self.sensor_access.get_particulate_matter_10())

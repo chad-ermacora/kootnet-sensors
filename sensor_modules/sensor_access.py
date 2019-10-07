@@ -519,9 +519,9 @@ def start_special_sensor_interactive_services():
         sh_joy_stick_thread.start()
 
 
-def restart_services():
+def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
-    sleep(1)
+    sleep(sleep_before_restart)
     os.system(os_cli_commands.restart_sensor_services_command)
 
 

@@ -251,8 +251,9 @@ class CreateOpenSenseMapConfig:
                 self.ultra_violet_b_id = configuration_lines[24].split("=")[0].strip()
             except Exception as error:
                 if not skip_write:
-                    logger.primary_logger.warning("Problem loading Open Sense Map Configuration file - " +
-                                                  "Using 1 or more Defaults: " + str(error))
+                    log_msg_start = "Problem loading Open Sense Map Configuration file - "
+                    log_msg = log_msg_start + "Using 1 or more Defaults: " + str(error)
+                    logger.primary_logger.warning(log_msg)
                     self.write_config_to_file()
                 else:
                     self.bad_load = True
@@ -361,14 +362,14 @@ class CreateOpenSenseMapConfig:
                         if html_get_response.status_code == 201:
                             logger.network_logger.debug("Sensors sent to Open Sense Map OK")
                         elif html_get_response.status_code == 415:
-                            logger.network_logger.error("Open Sense Map: - Invalid or Missing content type")
+                            logger.network_logger.error("Open Sense Map error: Invalid or Missing content type")
                         else:
-                            logger.network_logger.error("Open Sense Map: Error " +
-                                                        str(html_get_response.status_code) + " - " +
-                                                        str(html_get_response.text))
+                            status_code = str(html_get_response.status_code)
+                            response_text = str(html_get_response.text)
+                            logger.network_logger.error("Open Sense Map error " + status_code + ": " + response_text)
                     else:
-                        logger.network_logger.warning("Open Sense Map not Updated - " +
-                                                      "No Compatible Sensors or Missing Sensor IDs")
+                        log_msg = "Open Sense Map not Updated - No Compatible Sensors or Missing Sensor IDs"
+                        logger.network_logger.warning(log_msg)
                         while True:
                             sleep(3600)
                 except Exception as error:
@@ -378,7 +379,7 @@ class CreateOpenSenseMapConfig:
 
     def add_sensor_to_account(self, html_request):
         url = open_sense_map_main_url_start
-        bad_location_message = "Open Sense Map: Sensor Registration - Invalid Location Setting"
+        bad_location_message = "Open Sense Map - Sensor Registration: Invalid Location Setting"
         try:
             username = html_request.form.get("osm_account_username").strip()
             password = html_request.form.get("osm_account_password").strip()
@@ -403,15 +404,16 @@ class CreateOpenSenseMapConfig:
                     logger.network_logger.info("Registered Sensor on Open Sense Map OK")
                     return 201
                 elif html_get_response.status_code == 415:
-                    logger.network_logger.error("Open Sense Map: - Invalid or Missing content type")
+                    logger.network_logger.error("Open Sense Map error: Invalid or Missing content type")
                     return 415
                 elif html_get_response.status_code == 422:
                     logger.network_logger.error(bad_location_message)
                     return 422
                 else:
-                    logger.network_logger.error("Open Sense Map Sensor Registration Error: " +
-                                                str(html_get_response.status_code) + " - " +
-                                                str(html_get_response.text))
+                    status_code = str(html_get_response.status_code)
+                    response_text = str(html_get_response.text)
+                    log_msg = "Open Sense Map Sensor Registration Unknown Error " + status_code + ": " + response_text
+                    logger.network_logger.error(log_msg)
                     return "UnknownError"
             else:
                 logger.network_logger.error("Error Adding Sensor to Open Sense Map Account: Login Failed")

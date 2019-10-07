@@ -110,8 +110,7 @@ def html_get_raw_online_services_config_open_sense_map():
 @html_online_services_routes.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])
 @auth.login_required
 def html_edit_online_services_wu():
-    logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " +
-                                str(request.remote_addr))
+    logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " + str(request.remote_addr))
     if request.method == "POST":
         app_config_access.weather_underground_config.update_weather_underground_html(request)
         if app_config_access.wu_thread_running:

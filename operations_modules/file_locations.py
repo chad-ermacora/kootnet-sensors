@@ -65,9 +65,9 @@ weather_underground_config = "/etc/kootnet/online_services_weather_underground.c
 luftdaten_config = "/etc/kootnet/online_services_luftdaten.conf"
 osm_config = "/etc/kootnet/online_services_open_sense_map.conf"
 
-save_plotly_html_to = "/home/kootnet_data/"
-interval_plotly_html_filename = "IntervalPlotlySensorGraph.html"
-triggers_plotly_html_filename = "TriggersPlotlySensorGraph.html"
+plotly_save_folder = "/home/kootnet_data/"
+plotly_filename_interval = "IntervalPlotlySensorGraph.html"
+plotly_filename_triggers = "TriggersPlotlySensorGraph.html"
 
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"

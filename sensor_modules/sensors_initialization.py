@@ -84,6 +84,6 @@ if software_version.old_version == software_version.version:
         pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
     logger.primary_logger.info(" -- Sensors Initialized")
 else:
-    # Sleep before loading anything due to needed updates
-    # The update service will automatically restart this app when it's done
+    # Skip Sensor Initializations on upgrade
+    # They won't be used & program will be restarted when the upgrade is done.
     pass

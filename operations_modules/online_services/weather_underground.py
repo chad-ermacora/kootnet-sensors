@@ -21,7 +21,7 @@ import os
 from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 from operations_modules.app_validation_checks import valid_sensor_reading
 from operations_modules import software_version
 from operations_modules import app_config_access
@@ -96,7 +96,7 @@ class CreateWeatherUndergroundConfig:
         """
         if os.path.isfile(file_locations.weather_underground_config) or skip_write:
             if file_content is None:
-                loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.weather_underground_config)
+                loaded_configuration_raw = get_file_content(file_locations.weather_underground_config)
             else:
                 loaded_configuration_raw = file_content
 
@@ -139,7 +139,7 @@ class CreateWeatherUndergroundConfig:
     def write_config_to_file(self):
         """ Writes current Weather Underground settings to file. """
         config_str = self.get_configuration_str()
-        app_generic_functions.write_file_to_disk(file_locations.weather_underground_config, config_str)
+        write_file_to_disk(file_locations.weather_underground_config, config_str)
 
     def start_weather_underground(self):
         """ Sends compatible sensor readings to Weather Underground every X seconds based on set Interval. """
@@ -178,8 +178,11 @@ class CreateWeatherUndergroundConfig:
                         elif html_get_response.status_code == 400:
                             logger.network_logger.error("Weather Underground: Invalid Options")
                         else:
-                            logger.network_logger.error("Weather Underground: Unknown Error " +
-                                                        str(html_get_response.status_code))
+                            status_code = str(html_get_response.status_code)
+                            response_text = str(html_get_response.text)
+                            log_msg = "Weather Underground Unknown Error " + status_code + ": " + response_text
+                            logger.network_logger.error(log_msg)
+
                     except Exception as error:
                         logger.network_logger.error("Error sending data to Weather Underground")
                         logger.network_logger.debug("Weather Underground Error: " + str(error))
@@ -209,9 +212,8 @@ class CreateWeatherUndergroundConfig:
                 else:
                     return_readings_str += "&indoortempf=" + str(round(temperature_f, round_decimal_to))
             except Exception as error:
-                logger.sensors_logger.error(
-                    "Unable to calculate Temperature into fahrenheit for Weather Underground: " +
-                    str(error))
+                log_msg = "Unable to calculate Temperature into fahrenheit for Weather Underground: " + str(error)
+                logger.sensors_logger.error(log_msg)
 
         humidity = self.sensor_access.get_humidity()
         if valid_sensor_reading(humidity):
@@ -226,8 +228,8 @@ class CreateWeatherUndergroundConfig:
                 dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
                 return_readings_str += "&dewptf=" + str(round(dew_point_f, round_decimal_to))
             except Exception as error:
-                logger.sensors_logger.error("Unable to calculate Dew Point into fahrenheit for Weather Underground: " +
-                                            str(error))
+                log_msg = "Unable to calculate Dew Point into fahrenheit for Weather Underground: " + str(error)
+                logger.sensors_logger.error(log_msg)
 
         pressure_hpa = self.sensor_access.get_pressure()
         if valid_sensor_reading(pressure_hpa):
@@ -248,5 +250,4 @@ class CreateWeatherUndergroundConfig:
         pm_10 = self.sensor_access.get_particulate_matter_10()
         if valid_sensor_reading(pm_10):
             return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
-
         return return_readings_str
