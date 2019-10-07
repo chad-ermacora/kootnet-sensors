@@ -25,6 +25,7 @@ from operations_modules.app_generic_functions import get_file_content, write_fil
 from operations_modules.app_validation_checks import valid_sensor_reading
 from operations_modules import software_version
 from operations_modules import app_config_access
+from sensor_modules import sensor_access
 
 # Weather Underground URL Variables
 wu_main_url_start = "https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php?"
@@ -42,8 +43,6 @@ class CreateWeatherUndergroundConfig:
     """ Creates a Weather Underground Configuration object. """
 
     def __init__(self):
-        self.sensor_access = None
-
         self.weather_underground_enabled = 0
         self.wu_rapid_fire_enabled = 0
         self.interval_seconds = 900
@@ -114,7 +113,7 @@ class CreateWeatherUndergroundConfig:
                 try:
                     self.interval_seconds = float(configuration_lines[2].split("=")[0].strip())
                 except Exception as error:
-                    logger.primary_logger.warning("Weather Underground Interval Error from file - " + str(error))
+                    logger.primary_logger.warning("Weather Underground - Interval Error from file: " + str(error))
                     self.interval_seconds = 300
 
                 self.station_id = configuration_lines[4].split("=")[0].strip()
@@ -127,13 +126,13 @@ class CreateWeatherUndergroundConfig:
             except Exception as error:
                 if not skip_write:
                     self.write_config_to_file()
-                    logger.primary_logger.warning("Problem loading Online Services Configuration file - " +
-                                                  "Using 1 or more Defaults: " + str(error))
+                    log_msg = "Weather Underground - Problem loading Configuration file, using 1 or more Defaults: "
+                    logger.primary_logger.warning(log_msg + str(error))
                 else:
                     self.bad_config_load = True
         else:
             if not skip_write:
-                logger.primary_logger.info("Weather Underground Configuration file not found - Saving Default")
+                logger.primary_logger.info("Weather Underground - Configuration file not found: Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):
@@ -180,14 +179,14 @@ class CreateWeatherUndergroundConfig:
                         else:
                             status_code = str(html_get_response.status_code)
                             response_text = str(html_get_response.text)
-                            log_msg = "Weather Underground Unknown Error " + status_code + ": " + response_text
+                            log_msg = "Weather Underground - Unknown Error " + status_code + ": " + response_text
                             logger.network_logger.error(log_msg)
 
                     except Exception as error:
-                        logger.network_logger.error("Error sending data to Weather Underground")
-                        logger.network_logger.debug("Weather Underground Error: " + str(error))
+                        logger.network_logger.error("Weather Underground - Error sending data")
+                        logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
                 else:
-                    logger.network_logger.warning("Weather Underground not Updated - No Compatible Sensors")
+                    logger.network_logger.warning("Weather Underground - Not Updated: No Compatible Sensors")
                     while True:
                         sleep(3600)
                 sleep(self.interval_seconds)
@@ -200,7 +199,7 @@ class CreateWeatherUndergroundConfig:
         round_decimal_to = 5
         return_readings_str = ""
 
-        temp_c = self.sensor_access.get_sensor_temperature()
+        temp_c = sensor_access.get_sensor_temperature()
         if app_config_access.current_config.enable_custom_temp:
             temp_c = temp_c + app_config_access.current_config.temperature_offset
 
@@ -212,42 +211,42 @@ class CreateWeatherUndergroundConfig:
                 else:
                     return_readings_str += "&indoortempf=" + str(round(temperature_f, round_decimal_to))
             except Exception as error:
-                log_msg = "Unable to calculate Temperature into fahrenheit for Weather Underground: " + str(error)
+                log_msg = "Weather Underground - Unable to calculate Temperature into fahrenheit: " + str(error)
                 logger.sensors_logger.error(log_msg)
 
-        humidity = self.sensor_access.get_humidity()
+        humidity = sensor_access.get_humidity()
         if valid_sensor_reading(humidity):
             if self.outdoor_sensor:
                 return_readings_str += "&humidity=" + str(round(humidity, round_decimal_to))
             else:
                 return_readings_str += "&indoorhumidity=" + str(round(humidity, round_decimal_to))
 
-        out_door_dew_point = self.sensor_access.get_dew_point()
+        out_door_dew_point = sensor_access.get_dew_point()
         if valid_sensor_reading(out_door_dew_point) and self.outdoor_sensor:
             try:
                 dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
                 return_readings_str += "&dewptf=" + str(round(dew_point_f, round_decimal_to))
             except Exception as error:
-                log_msg = "Unable to calculate Dew Point into fahrenheit for Weather Underground: " + str(error)
+                log_msg = "Weather Underground - Unable to calculate Dew Point into fahrenheit: " + str(error)
                 logger.sensors_logger.error(log_msg)
 
-        pressure_hpa = self.sensor_access.get_pressure()
+        pressure_hpa = sensor_access.get_pressure()
         if valid_sensor_reading(pressure_hpa):
             try:
                 baromin = float(pressure_hpa) * 0.029529983071445
                 return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
             except Exception as error:
-                logger.sensors_logger.error("Unable to calculate Pressure inhg for Weather Underground: " + str(error))
+                logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure inhg: " + str(error))
 
-        ultra_violet_index = self.sensor_access.get_ultra_violet_index()
+        ultra_violet_index = sensor_access.get_ultra_violet_index()
         if valid_sensor_reading(ultra_violet_index):
             return_readings_str += "&UV=" + str(round(ultra_violet_index, round_decimal_to))
 
-        pm_2_5 = self.sensor_access.get_particulate_matter_2_5()
+        pm_2_5 = sensor_access.get_particulate_matter_2_5()
         if valid_sensor_reading(pm_2_5):
             return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
 
-        pm_10 = self.sensor_access.get_particulate_matter_10()
+        pm_10 = sensor_access.get_particulate_matter_10()
         if valid_sensor_reading(pm_10):
             return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
         return return_readings_str

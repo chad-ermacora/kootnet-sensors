@@ -25,6 +25,7 @@ from operations_modules import app_generic_functions
 from operations_modules import software_version
 from operations_modules import app_config_access
 from operations_modules.app_validation_checks import valid_sensor_reading
+from sensor_modules import sensor_access
 
 # Luftdaten URL
 luftdaten_url = "https://api.luftdaten.info/v1/push-sensor-data/"
@@ -35,8 +36,6 @@ class CreateLuftdatenConfig:
     """ Creates a Luftdaten Configuration object. """
 
     def __init__(self):
-        self.sensor_access = None
-
         sw_version_text_list = software_version.version.split(".")
         sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
         self.return_software_version = "Kootnet Sensors " + sw_version_text
@@ -83,18 +82,18 @@ class CreateLuftdatenConfig:
                 try:
                     self.interval_seconds = float(configuration_lines[2].split("=")[0].strip())
                 except Exception as error:
-                    logger.primary_logger.warning("Luftdaten Interval Error from file - " + str(error))
+                    logger.primary_logger.warning("Luftdaten - Interval Error from file - " + str(error))
                     self.interval_seconds = 300
             except Exception as error:
                 if not skip_write:
                     self.write_config_to_file()
-                    log_msg = "Problem loading Luftdaten Configuration file - Using 1 or more Defaults: " + str(error)
+                    log_msg = "Luftdaten - Problem loading Configuration file, using 1 or more Defaults: " + str(error)
                     logger.primary_logger.warning(log_msg)
                 else:
                     self.bad_load = True
         else:
             if not skip_write:
-                logger.primary_logger.info("Luftdaten Configuration file not found - Saving Default")
+                logger.primary_logger.info("Luftdaten - Configuration file not found - Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):
@@ -124,11 +123,11 @@ class CreateLuftdatenConfig:
                         no_sensors = False
                         self._pms5003()
                 except Exception as error:
-                    logger.network_logger.error("Error processing Luftdaten Data")
-                    logger.network_logger.debug("Luftdaten Error: " + str(error))
+                    logger.network_logger.error("Luftdaten - Error Processing Data")
+                    logger.network_logger.debug("Luftdaten - Detailed Error: " + str(error))
 
                 if no_sensors:
-                    message = "Luftdaten not Updated - No Compatible Sensors"
+                    message = "Luftdaten - Not Updated - No Compatible Sensors"
                     logger.network_logger.warning(message)
                     sleep(3600)
                 sleep(self.interval_seconds)
@@ -142,12 +141,12 @@ class CreateLuftdatenConfig:
                     if line[0:6] == 'Serial':
                         return line.split(":")[1].strip()
         except Exception as error:
-            logger.primary_logger.error("Unable to get CPU Serial for Luftdaten: " + str(error))
+            logger.primary_logger.error("Luftdaten - Unable to get CPU Serial: " + str(error))
             return "35505FFFF"
 
     def _bmp280(self):
-        temperature = self._get_temperature()
-        pressure = self.sensor_access.get_pressure() * 100
+        temperature = float(self._get_temperature())
+        pressure = float(sensor_access.get_pressure()) * 100.0
 
         headers = {"X-PIN": "3",
                    "X-Sensor": "raspi-" + self.station_id,
@@ -166,7 +165,7 @@ class CreateLuftdatenConfig:
 
     def _bme280(self):
         temperature = self._get_temperature()
-        pressure = self.sensor_access.get_pressure() * 100
+        pressure = sensor_access.get_pressure() * 100
 
         headers = {"X-PIN": "11",
                    "X-Sensor": "raspi-" + self.station_id,
@@ -177,7 +176,7 @@ class CreateLuftdatenConfig:
                                    json={"software_version": self.return_software_version, "sensordatavalues": [
                                        {"value_type": "temperature", "value": str(temperature)},
                                        {"value_type": "pressure", "value": str(pressure)},
-                                       {"value_type": "humidity", "value": str(self.sensor_access.get_humidity())}]},
+                                       {"value_type": "humidity", "value": str(sensor_access.get_humidity())}]},
                                    headers=headers)
         if post_reply.ok:
             logger.network_logger.debug("Luftdaten - BME280 - Status Code: " + str(post_reply.status_code))
@@ -186,8 +185,8 @@ class CreateLuftdatenConfig:
             logger.network_logger.warning(log_msg)
 
     def _pms5003(self):
-        pm10_reading = str(self.sensor_access.get_particulate_matter_10())
-        pm25_reading = str(self.sensor_access.get_particulate_matter_2_5())
+        pm10_reading = str(sensor_access.get_particulate_matter_10())
+        pm25_reading = str(sensor_access.get_particulate_matter_2_5())
         headers = {"X-PIN": "1",
                    "X-Sensor": "raspi-" + self.station_id,
                    "Content-Type": "application/json",
@@ -203,9 +202,10 @@ class CreateLuftdatenConfig:
         else:
             logger.network_logger.warning("Luftdaten - PMS5003 - Status Code: " + str(post_reply.status_code))
 
-    def _get_temperature(self):
+    @staticmethod
+    def _get_temperature():
         try:
-            temp_c = self.sensor_access.get_sensor_temperature()
+            temp_c = sensor_access.get_sensor_temperature()
             if valid_sensor_reading(temp_c) and app_config_access.current_config.enable_custom_temp:
                 temp_c = temp_c + app_config_access.current_config.temperature_offset
             return temp_c

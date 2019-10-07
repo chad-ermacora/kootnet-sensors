@@ -25,6 +25,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules.app_validation_checks import valid_sensor_reading
+from sensor_modules import sensor_access
 
 # Weather Underground URL Variables
 open_sense_map_main_url_start = "https://api.opensensemap.org/boxes"
@@ -35,8 +36,6 @@ class CreateOpenSenseMapConfig:
     """ Creates a Open Sense Map Configuration object. """
 
     def __init__(self):
-        self.sensor_access = None
-
         self.open_sense_map_enabled = 0
         self.sense_box_id = ""
         self.interval_seconds = 900.0
@@ -113,7 +112,7 @@ class CreateOpenSenseMapConfig:
             try:
                 self.interval_seconds = float(html_request.form.get("osm_interval").strip())
             except Exception as error:
-                logger.primary_logger.warning("Open Sense Map Invalid Interval: " + str(error))
+                logger.primary_logger.warning("Open Sense Map - Invalid Interval: " + str(error))
                 self.interval_seconds = 900.0
         else:
             self.interval_seconds = 900.0
@@ -225,7 +224,7 @@ class CreateOpenSenseMapConfig:
                 try:
                     self.interval_seconds = float(configuration_lines[3].split("=")[0].strip())
                 except Exception as error:
-                    logger.primary_logger.warning("Open Sense Map Interval Error from file - " + str(error))
+                    logger.primary_logger.warning("Open Sense Map - Interval Error from file: " + str(error))
                     self.interval_seconds = 900.0
 
                 self.temperature_id = configuration_lines[4].split("=")[0].strip()
@@ -251,15 +250,14 @@ class CreateOpenSenseMapConfig:
                 self.ultra_violet_b_id = configuration_lines[24].split("=")[0].strip()
             except Exception as error:
                 if not skip_write:
-                    log_msg_start = "Problem loading Open Sense Map Configuration file - "
-                    log_msg = log_msg_start + "Using 1 or more Defaults: " + str(error)
-                    logger.primary_logger.warning(log_msg)
+                    log_msg = "Open Sense Map - Problem loading Configuration file, using 1 or more Defaults: "
+                    logger.primary_logger.warning(log_msg + str(error))
                     self.write_config_to_file()
                 else:
                     self.bad_load = True
         else:
             if not skip_write:
-                logger.primary_logger.info("Open Sense Map Configuration file not found - Saving Default")
+                logger.primary_logger.info("Open Sense Map - Configuration file not found: Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):
@@ -285,30 +283,30 @@ class CreateOpenSenseMapConfig:
                     if app_config_access.installed_sensors.has_env_temperature:
                         if self.temperature_id != "":
                             try:
-                                env_temperature = self.sensor_access.get_sensor_temperature()
+                                env_temperature = sensor_access.get_sensor_temperature()
                                 if app_config_access.current_config.enable_custom_temp:
                                     env_temperature = round(env_temperature +
                                                             app_config_access.current_config.temperature_offset,
                                                             round_decimal_to)
                             except Exception as error:
-                                logger.network_logger.warning("Open Sense Map: Env Temperature Error - " + str(error))
+                                logger.network_logger.warning("Open Sense Map - Env Temperature Error: " + str(error))
                                 env_temperature = 0.0
                             body_json[self.temperature_id] = str(env_temperature)
 
                     if app_config_access.installed_sensors.has_pressure:
                         if self.pressure_id != "":
-                            body_json[self.pressure_id] = str(self.sensor_access.get_pressure())
+                            body_json[self.pressure_id] = str(sensor_access.get_pressure())
                     if app_config_access.installed_sensors.has_altitude:
                         if self.altitude_id != "":
-                            body_json[self.altitude_id] = str(self.sensor_access.get_altitude())
+                            body_json[self.altitude_id] = str(sensor_access.get_altitude())
                     if app_config_access.installed_sensors.has_humidity:
                         if self.humidity_id != "":
-                            body_json[self.humidity_id] = str(self.sensor_access.get_humidity())
+                            body_json[self.humidity_id] = str(sensor_access.get_humidity())
                     if app_config_access.installed_sensors.has_gas:
-                        gas_voc = self.sensor_access.get_gas_resistance_index()
-                        gas_oxidised = self.sensor_access.get_gas_oxidised()
-                        gas_reduced = self.sensor_access.get_gas_reduced()
-                        gas_nh3 = self.sensor_access.get_gas_nh3()
+                        gas_voc = sensor_access.get_gas_resistance_index()
+                        gas_oxidised = sensor_access.get_gas_oxidised()
+                        gas_reduced = sensor_access.get_gas_reduced()
+                        gas_nh3 = sensor_access.get_gas_nh3()
                         if self.gas_voc_id != "" and valid_sensor_reading(gas_voc):
                             body_json[self.gas_voc_id] = str(gas_voc)
                         if self.gas_oxidised_id != "" and valid_sensor_reading(gas_oxidised):
@@ -319,18 +317,18 @@ class CreateOpenSenseMapConfig:
                             body_json[self.gas_nh3_id] = str(gas_nh3)
                     if app_config_access.installed_sensors.has_lumen:
                         if self.lumen_id != "":
-                            body_json[self.lumen_id] = str(self.sensor_access.get_lumen())
+                            body_json[self.lumen_id] = str(sensor_access.get_lumen())
                     if app_config_access.installed_sensors.has_particulate_matter:
-                        pm1 = self.sensor_access.get_particulate_matter_1()
-                        pm2_5 = self.sensor_access.get_particulate_matter_2_5()
-                        pm10 = self.sensor_access.get_particulate_matter_10()
+                        pm1 = sensor_access.get_particulate_matter_1()
+                        pm2_5 = sensor_access.get_particulate_matter_2_5()
+                        pm10 = sensor_access.get_particulate_matter_10()
                         if self.pm1_id != "" and valid_sensor_reading(pm1):
                             body_json[self.pm1_id] = str(pm1)
                         if self.pm2_5_id != "" and valid_sensor_reading(pm2_5):
                             body_json[self.pm2_5_id] = str(pm2_5)
                         if self.pm10_id != "" and valid_sensor_reading(pm10):
                             body_json[self.pm10_id] = str(pm10)
-                    colours = self.sensor_access.get_ems()
+                    colours = sensor_access.get_ems()
                     if app_config_access.installed_sensors.has_red:
                         if self.red_id != "":
                             body_json[self.red_id] = str(colours[0])
@@ -351,11 +349,11 @@ class CreateOpenSenseMapConfig:
                             body_json[self.violet_id] = str(colours[5])
                     if app_config_access.installed_sensors.has_ultra_violet:
                         if self.ultra_violet_index_id != "":
-                            body_json[self.ultra_violet_index_id] = str(self.sensor_access.get_ultra_violet_index())
+                            body_json[self.ultra_violet_index_id] = str(sensor_access.get_ultra_violet_index())
                         if self.ultra_violet_a_id != "":
-                            body_json[self.ultra_violet_a_id] = str(self.sensor_access.get_ultra_violet_a())
+                            body_json[self.ultra_violet_a_id] = str(sensor_access.get_ultra_violet_a())
                         if self.ultra_violet_b_id != "":
-                            body_json[self.ultra_violet_b_id] = str(self.sensor_access.get_ultra_violet_b())
+                            body_json[self.ultra_violet_b_id] = str(sensor_access.get_ultra_violet_b())
 
                     if len(body_json) > 0:
                         html_get_response = requests.post(url=url, headers=url_header, json=body_json)
@@ -366,15 +364,16 @@ class CreateOpenSenseMapConfig:
                         else:
                             status_code = str(html_get_response.status_code)
                             response_text = str(html_get_response.text)
-                            logger.network_logger.error("Open Sense Map error " + status_code + ": " + response_text)
+                            log_msg = "Open Sense Map - Unknown Error " + status_code + ": " + response_text
+                            logger.network_logger.error(log_msg)
                     else:
-                        log_msg = "Open Sense Map not Updated - No Compatible Sensors or Missing Sensor IDs"
+                        log_msg = "Open Sense Map - Not Updated: No Compatible Sensors or Missing Sensor IDs"
                         logger.network_logger.warning(log_msg)
                         while True:
                             sleep(3600)
                 except Exception as error:
-                    logger.network_logger.error("Error sending data to Open Sense Map")
-                    logger.network_logger.debug("Open Sense Map Error: " + str(error))
+                    logger.network_logger.error("Open Sense Map - Error sending data")
+                    logger.network_logger.debug("Open Sense Map - Detailed Error: " + str(error))
                 sleep(self.interval_seconds)
 
     def add_sensor_to_account(self, html_request):
@@ -412,11 +411,11 @@ class CreateOpenSenseMapConfig:
                 else:
                     status_code = str(html_get_response.status_code)
                     response_text = str(html_get_response.text)
-                    log_msg = "Open Sense Map Sensor Registration Unknown Error " + status_code + ": " + response_text
+                    log_msg = "Open Sense Map - Sensor Registration Unknown Error " + status_code + ": " + response_text
                     logger.network_logger.error(log_msg)
                     return "UnknownError"
             else:
-                logger.network_logger.error("Error Adding Sensor to Open Sense Map Account: Login Failed")
+                logger.network_logger.error("Open Sense Map - Error Adding Sensor to Account: Login Failed")
                 return "FailedLogin"
         except IndexError:
             logger.network_logger.error(bad_location_message)
@@ -425,7 +424,7 @@ class CreateOpenSenseMapConfig:
             logger.network_logger.error(bad_location_message)
             return 422
         except Exception as error:
-            logger.network_logger.error("Error Adding Sensor to Open Sense Map Account: " + str(error))
+            logger.network_logger.error("Open Sense Map - Error Adding Sensor to Account: " + str(error))
             return str(error)
 
     @staticmethod
@@ -687,7 +686,7 @@ class CreateOpenSenseMapConfig:
                 logger.network_logger.debug("Open Sense Map - Get Token: OK")
                 return response.json()["token"]
             except Exception as error:
-                logger.network_logger.warning("Open Sense Map - Get Token: Failed - " + str(error))
+                logger.network_logger.warning("Open Sense Map - Get Token Failed: " + str(error))
         elif response.status_code == 403:
             logger.network_logger.debug("Open Sense Map - Get Token: Login Failed")
         else:
