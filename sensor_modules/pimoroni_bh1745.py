@@ -34,28 +34,25 @@ class CreateBH1745:
             bh1745_import = __import__('bh1745')
             self.bh1745 = bh1745_import.BH1745()
             self.bh1745.setup()
+            logger.sensors_logger.debug("Pimoroni BH1745 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BH1745 Initialization Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BH1745 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_bh1745 = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """
         try:
             var_lumen = self.bh1745.get_rgbc_raw()[3]
-            logger.sensors_logger.debug("Pimoroni BH1745 Lumen - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BH1745 Lumen - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BH1745 Lumen - Failed: " + str(error))
             var_lumen = 0
-
         return round(var_lumen, round_decimal_to)
 
     def ems(self):
         """ Returns Electromagnetic Spectrum of Red, Green, Blue as a list of Floats. """
         try:
             rgb_red, rgb_green, rgb_blue, var_lumen = self.bh1745.get_rgbc_raw()
-            logger.sensors_logger.debug("Pimoroni BH1745 RGB - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed: " + str(error))
             rgb_red, rgb_green, rgb_blue = 0, 0, 0
-
         return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)

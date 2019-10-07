@@ -31,28 +31,25 @@ class CreateLTR559:
             self.ltr_559_import = __import__('ltr559')
             self.ltr_559 = self.ltr_559_import.LTR559()
             self.ltr_559.get_lux()
+            logger.sensors_logger.debug("Pimoroni LTR-559 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni LTR-559 Initialization Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni LTR-559 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_ltr_559 = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """
         try:
             lumen = float(self.ltr_559.get_lux())
-            logger.sensors_logger.debug("Pimoroni LTR-559 Lumen - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni LTR-559 Lumen - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni LTR-559 Lumen - Failed: " + str(error))
             lumen = 0.0
-
         return round(lumen, round_decimal_to)
 
     def distance(self):
         """ Returns distance in cm?. """
         try:
             distance = float(self.ltr_559.get_proximity())
-            logger.sensors_logger.debug("Pimoroni LTR-559 Proximity - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni LTR-559 Proximity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni LTR-559 Proximity - Failed: " + str(error))
             distance = 0.0
-
         return round(distance, round_decimal_to)

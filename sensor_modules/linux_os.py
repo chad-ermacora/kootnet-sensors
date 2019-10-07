@@ -27,6 +27,7 @@ class CreateLinuxSystem:
 
     def __init__(self):
         self.database_variables = CreateDatabaseVariables()
+        logger.sensors_logger.debug("Linux System Module Initialization - OK")
 
     @staticmethod
     def get_os_name_version():
@@ -48,9 +49,8 @@ class CreateLinuxSystem:
         """ Returns System HostName as a String. """
         try:
             hostname = str(socket.gethostname())
-            logger.sensors_logger.debug("Linux System -  Sensor Name - OK")
         except Exception as error:
-            logger.sensors_logger.error("Linux System -  Sensor Name - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System -  Sensor Name - Failed: " + str(error))
             hostname = "HostFailed"
         return hostname
 
@@ -62,9 +62,8 @@ class CreateLinuxSystem:
             s.connect(("8.8.8.8", 80))
             ip_address = (s.getsockname()[0])
             s.close()
-            logger.sensors_logger.debug("Linux System - Sensor IP - OK")
         except Exception as error:
-            logger.sensors_logger.warning("Linux System - Sensor IP - Failed - " + str(error))
+            logger.sensors_logger.warning("Linux System - Sensor IP - Failed: " + str(error))
             ip_address = "0.0.0.0"
         return ip_address
 
@@ -75,11 +74,9 @@ class CreateLinuxSystem:
             with open('/proc/uptime', 'r') as f:
                 uptime_seconds = float(f.readline().split()[0])
                 uptime_min = int(uptime_seconds / 60)
-            logger.sensors_logger.debug("Linux System - Sensor Up Time - OK")
         except Exception as error:
-            logger.sensors_logger.error("Linux System - Sensor Up Time - Failed - " + str(error))
+            logger.sensors_logger.error("Linux System - Sensor Up Time - Failed: " + str(error))
             uptime_min = 0
-
         return uptime_min
 
     def get_uptime_str(self):
@@ -126,7 +123,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_disk_usage_gb():
-        """ Returns sensor root disk usage as GB's. """
+        """ Returns sensor root disk usage as GB's as a string. """
         try:
             used_disk_space = psutil.disk_usage("/")[2]
             return str(round(used_disk_space / (2 ** 30), 2))
@@ -136,10 +133,10 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_disk_usage_percent():
-        """ Returns sensor root disk usage as a %. """
+        """ Returns sensor root disk usage as a % as a string. """
         try:
             drive_information = psutil.disk_usage("/")
-            return_disk_usage = drive_information[3]
+            return_disk_usage = str(drive_information[3])
         except Exception as error:
             logger.sensors_logger.error("Linux System - Get Disk Usage % Error: " + str(error))
             return_disk_usage = "Error"
@@ -150,7 +147,6 @@ class CreateLinuxSystem:
         """ Returns Sensor SQLite DB Size in MB as a Float. """
         try:
             db_size_mb = os.path.getsize(file_locations.sensor_database) / 1024000
-            logger.sensors_logger.debug("Linux System Interval Database Size - OK")
         except Exception as error:
             logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
             db_size_mb = 0.0
@@ -170,11 +166,10 @@ class CreateLinuxSystem:
         else:
             logger.sensors_logger.error("Linux System - Unable to get SQLite Database Notes count")
             return_notes_count = "Error"
-
         return return_notes_count
 
     def get_db_first_last_date(self):
-        """ Returns the first and last date stored in the database as a str. """
+        """ Returns the first and last date stored in the database as a string. """
         sql_query = "SELECT Min(" + \
                     str(self.database_variables.all_tables_datetime) + \
                     ") AS First, Max(" + \
@@ -201,12 +196,9 @@ class CreateLinuxSystem:
         Returns the number of times the sensor has rebooted as a str.
         Reboot count is calculated by uptime values stored in the Database.
         """
-        sql_query = "SELECT " + \
-                    str(self.database_variables.sensor_uptime) + \
-                    " FROM " + \
-                    str(self.database_variables.table_interval) + \
-                    " WHERE length(" + \
-                    str(self.database_variables.sensor_uptime) + \
+        sql_query = "SELECT " + str(self.database_variables.sensor_uptime) + \
+                    " FROM " + str(self.database_variables.table_interval) + \
+                    " WHERE length(" + str(self.database_variables.sensor_uptime) + \
                     ") < 2"
 
         sql_column_data = sqlite_database.sql_execute_get_data(sql_query)

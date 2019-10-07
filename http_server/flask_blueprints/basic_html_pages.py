@@ -23,4 +23,4 @@ def html_system_management():
 @html_basic_routes.route("/SensorHelp")
 def view_help_file():
     logger.network_logger.debug("* Sensor Help Viewed from " + str(request.remote_addr))
-    return render_template("sensor_helpfile.html")
+    return render_template("sensor_help_page.html")

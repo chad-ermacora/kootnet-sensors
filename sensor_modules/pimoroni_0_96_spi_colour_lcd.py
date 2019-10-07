@@ -40,8 +40,10 @@ class CreateST7735:
             )
             # Initialize display.
             self.display.begin()
+            logger.sensors_logger.debug("Pimoroni 10.96 SPI Colour LCD (160x80) Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni 10.96 SPI Colour LCD (160x80) Initialization- Failed - " + str(error))
+            log_message = "Pimoroni 10.96 SPI Colour LCD (160x80) Initialization - Failed: "
+            logger.sensors_logger.error(log_message + str(error))
             app_config_access.installed_sensors.pimoroni_st7735 = 0
 
     def display_text(self, message):
@@ -63,4 +65,4 @@ class CreateST7735:
                 draw.text((int(text_x - x), text_y), message, font=font, fill=(255, 255, 255))
                 self.display.display(img)
         except Exception as error:
-            logger.sensors_logger.error("Scroll Message on 10.96 SPI Colour LCD Failed - " + str(error))
+            logger.sensors_logger.error("Scroll Message on 10.96 SPI Colour LCD - Failed: " + str(error))

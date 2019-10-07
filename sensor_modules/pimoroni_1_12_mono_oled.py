@@ -24,7 +24,7 @@ turn_off_display = 30
 
 
 class CreateLumaOLED:
-    """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128, white/black). """
+    """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128). """
 
     def __init__(self):
         try:
@@ -39,8 +39,9 @@ class CreateLumaOLED:
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
+            logger.sensors_logger.debug("Pimoroni 1.12 Mono OLED (128x128) Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128) Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
 
     def _display_timed_off(self):
@@ -82,4 +83,4 @@ class CreateLumaOLED:
                 draw.rectangle(self.device.bounding_box, outline="white", fill="black")
                 draw.text((5, 5), clean_message, fill="white")
         except Exception as error:
-            logger.sensors_logger.error("Message on 1.12 Mono OLED Failed - " + str(error))
+            logger.sensors_logger.error("Message on 1.12 Mono OLED - Failed: " + str(error))

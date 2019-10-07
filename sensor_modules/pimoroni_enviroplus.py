@@ -78,8 +78,9 @@ class CreateEnviroPlus:
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
+            logger.sensors_logger.debug("Pimoroni Enviro+ Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Initialization Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_enviroplus = 0
             app_config_access.installed_sensors.pimoroni_pms5003 = 0
 
@@ -90,8 +91,9 @@ class CreateEnviroPlus:
                 self.thread_pm_keep_alive = Thread(target=self._readings_keep_alive)
                 self.thread_pm_keep_alive.daemon = True
                 self.thread_pm_keep_alive.start()
+                logger.sensors_logger.debug("Pimoroni Enviro+ PMS5003 Initialization - OK")
             except Exception as error:
-                logger.sensors_logger.error("Pimoroni Enviro+ PMS5003 Initialization Failed - " + str(error))
+                logger.sensors_logger.error("Pimoroni Enviro+ PMS5003 Initialization - Failed: " + str(error))
                 app_config_access.installed_sensors.pimoroni_pms5003 = 0
 
     def _display_timed_off(self):
@@ -141,7 +143,7 @@ class CreateEnviroPlus:
                     time.sleep(0.1)
                 self.st7735.display(blank_img)
             except Exception as error:
-                logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed - " + str(error))
+                logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed: " + str(error))
 
             self.display_ready = True
         else:
@@ -151,39 +153,35 @@ class CreateEnviroPlus:
         """ Returns Temperature as a Float. """
         try:
             temp_var = float(self.bme280.get_temperature())
-            logger.sensors_logger.debug("Pimoroni Enviro+ Temperature - OK")
         except Exception as error:
             temp_var = 0.0
-            logger.sensors_logger.error("Pimoroni Enviro+ Temperature - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Temperature - Failed: " + str(error))
         return round(temp_var, round_decimal_to)
 
     def pressure(self):
         """ Returns Pressure as a Integer. """
         try:
             pressure_hpa = self.bme280.get_pressure()
-            logger.sensors_logger.debug("Pimoroni Enviro+ Pressure - OK")
         except Exception as error:
             pressure_hpa = 0.0
-            logger.sensors_logger.error("Pimoroni Enviro+ Pressure - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Pressure - Failed: " + str(error))
         return int(pressure_hpa)
 
     def humidity(self):
         """ Returns Humidity as a Float. """
         try:
             var_humidity = self.bme280.get_humidity()
-            logger.sensors_logger.debug("Pimoroni Enviro+ Humidity - OK")
         except Exception as error:
             var_humidity = 0.0
-            logger.sensors_logger.error("Pimoroni Enviro+ Humidity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Humidity - Failed: " + str(error))
         return round(var_humidity, round_decimal_to)
 
     def lumen(self):
         """ Returns Lumen as a Float. """
         try:
             lumen = float(self.ltr559_import.get_lux())
-            logger.sensors_logger.debug("Pimoroni Enviro+ Lumen - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Lumen - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Lumen - Failed: " + str(error))
             lumen = 0.0
         return round(lumen, round_decimal_to)
 
@@ -191,9 +189,8 @@ class CreateEnviroPlus:
         """ Returns distance in cm?. """
         try:
             distance = float(self.ltr559_import.get_proximity())
-            logger.sensors_logger.debug("Pimoroni Enviro+ Proximity - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Proximity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Proximity - Failed: " + str(error))
             distance = 0.0
         return round(distance, round_decimal_to)
 
@@ -209,9 +206,8 @@ class CreateEnviroPlus:
                                              round(reduced, round_decimal_to),
                                              round(nh3, round_decimal_to)]
 
-            logger.sensors_logger.debug("Pimoroni Enviro+ GAS - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ GAS - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ GAS - Failed: " + str(error))
             gas_list_oxidised_reduced_nh3 = [0.0, 0.0, 0.0]
         return gas_list_oxidised_reduced_nh3
 
@@ -229,9 +225,8 @@ class CreateEnviroPlus:
                                      round(pm25, round_decimal_to),
                                      round(pm10, round_decimal_to)]
 
-            logger.sensors_logger.debug("Pimoroni Enviro+ Particulate Matter - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter - Failed: " + str(error))
             pm_list_pm1_pm25_pm10 = [0.0, 0.0, 0.0]
 
         self.pause_particle_matter_keep_alive = False
@@ -260,4 +255,4 @@ class CreateEnviroPlus:
                 new_config += "\n\n# Kootnet Sensors Addition\ndtoverlay=pi3-miniuart-bt\n"
                 app_generic_functions.write_file_to_disk("/boot/config.txt", new_config)
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ PSM5003 Enable Serial - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro+ PSM5003 Enable Serial - Failed: " + str(error))

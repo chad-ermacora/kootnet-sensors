@@ -37,9 +37,7 @@ max_log_lines_return = 150
 
 
 def initialize_logger(logger, log_location, formatter):
-    file_handler_main = RotatingFileHandler(log_location,
-                                            maxBytes=256000,
-                                            backupCount=5)
+    file_handler_main = RotatingFileHandler(log_location, maxBytes=256000, backupCount=5)
     file_handler_main.setFormatter(formatter)
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
