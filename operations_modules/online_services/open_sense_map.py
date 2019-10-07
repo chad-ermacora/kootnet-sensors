@@ -357,13 +357,13 @@ class CreateOpenSenseMapConfig:
 
                     if len(body_json) > 0:
                         html_get_response = requests.post(url=url, headers=url_header, json=body_json)
+                        status_code = str(html_get_response.status_code)
+                        response_text = str(html_get_response.text)
                         if html_get_response.status_code == 201:
-                            logger.network_logger.debug("Sensors sent to Open Sense Map OK")
+                            logger.network_logger.debug("Open Sense Map - Sent OK - Status Code: " + status_code)
                         elif html_get_response.status_code == 415:
-                            logger.network_logger.error("Open Sense Map error: Invalid or Missing content type")
+                            logger.network_logger.error("Open Sense Map: Invalid or Missing content type")
                         else:
-                            status_code = str(html_get_response.status_code)
-                            response_text = str(html_get_response.text)
                             log_msg = "Open Sense Map - Unknown Error " + status_code + ": " + response_text
                             logger.network_logger.error(log_msg)
                     else:

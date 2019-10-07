@@ -82,7 +82,7 @@ class CreateLuftdatenConfig:
                 try:
                     self.interval_seconds = float(configuration_lines[2].split("=")[0].strip())
                 except Exception as error:
-                    logger.primary_logger.warning("Luftdaten - Interval Error from file - " + str(error))
+                    logger.primary_logger.warning("Luftdaten - Interval Error from file: " + str(error))
                     self.interval_seconds = 300
             except Exception as error:
                 if not skip_write:
@@ -93,7 +93,7 @@ class CreateLuftdatenConfig:
                     self.bad_load = True
         else:
             if not skip_write:
-                logger.primary_logger.info("Luftdaten - Configuration file not found - Saving Default")
+                logger.primary_logger.info("Luftdaten - Configuration file not found: Saving Default")
                 self.write_config_to_file()
 
     def write_config_to_file(self):
@@ -127,7 +127,7 @@ class CreateLuftdatenConfig:
                     logger.network_logger.debug("Luftdaten - Detailed Error: " + str(error))
 
                 if no_sensors:
-                    message = "Luftdaten - Not Updated - No Compatible Sensors"
+                    message = "Luftdaten - Not Updated: No Compatible Sensors"
                     logger.network_logger.warning(message)
                     sleep(3600)
                 sleep(self.interval_seconds)
@@ -159,9 +159,9 @@ class CreateLuftdatenConfig:
                                        {"value_type": "pressure", "value": str(pressure)}]},
                                    headers=headers)
         if post_reply.ok:
-            logger.network_logger.debug("Luftdaten - BMP280 - Status Code: " + str(post_reply.status_code))
+            logger.network_logger.debug("Luftdaten - BMP280 OK - Status Code: " + str(post_reply.status_code))
         else:
-            logger.network_logger.warning("Luftdaten - BMP280 - Status Code: " + str(post_reply.status_code))
+            logger.network_logger.warning("Luftdaten - BMP280 Failed - Status Code: " + str(post_reply.status_code))
 
     def _bme280(self):
         temperature = self._get_temperature()
@@ -179,10 +179,10 @@ class CreateLuftdatenConfig:
                                        {"value_type": "humidity", "value": str(sensor_access.get_humidity())}]},
                                    headers=headers)
         if post_reply.ok:
-            logger.network_logger.debug("Luftdaten - BME280 - Status Code: " + str(post_reply.status_code))
+            logger.network_logger.debug("Luftdaten - BME280 OK - Status Code: " + str(post_reply.status_code))
         else:
-            log_msg = "Luftdaten - BME280 - Status Code: " + str(post_reply.status_code) + " : " + str(post_reply.text)
-            logger.network_logger.warning(log_msg)
+            log_msg = "Luftdaten - BME280 Failed - Status Code: " + str(post_reply.status_code) + " : "
+            logger.network_logger.warning(log_msg + str(post_reply.text))
 
     def _pms5003(self):
         pm10_reading = str(sensor_access.get_particulate_matter_10())
@@ -198,9 +198,9 @@ class CreateLuftdatenConfig:
                                        {"value_type": "P2", "value": pm25_reading}]},
                                    headers=headers)
         if post_reply.ok:
-            logger.network_logger.debug("Luftdaten - PMS5003 - Status Code: " + str(post_reply.status_code))
+            logger.network_logger.debug("Luftdaten - PMS5003 OK - Status Code: " + str(post_reply.status_code))
         else:
-            logger.network_logger.warning("Luftdaten - PMS5003 - Status Code: " + str(post_reply.status_code))
+            logger.network_logger.warning("Luftdaten - PMS5003 Failed - Status Code: " + str(post_reply.status_code))
 
     @staticmethod
     def _get_temperature():
