@@ -147,69 +147,73 @@
                     <br>
                     <label>Choose Action</label>
                     <div class="mui-radio">
-                        <h4 style="text-decoration: underline; color: purple;">
-                            View
-                        </h4>
-                        <label style="font-size: small">
+                        <h4 style="text-decoration: underline; color: purple;">View</h4>
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedOnlineStatus }}
                                    id="RadioOnlineStatus" value="online_status">
                             Online Status
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
                                    id="RadioSensorsTests" value="sensors_test_report">
                             Sensors Tests
+                            <span class="checkmark_radio"></span>
                         </label>
                         <br>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSystemReports }}
                                    id="RadioSystemReports" value="systems_report">
                             Systems Report
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    id="RadioConfigReports" value="config_report">
                             Configurations Report
+                            <span class="checkmark_radio"></span>
                         </label>
                         <br>
-                        <h4 style="text-decoration: underline; color: purple;">
-                            Download
-                        </h4>
-                        <label style="font-size: small">
+                        <h4 style="text-decoration: underline; color: purple;">Download</h4>
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
                                    id="RadioDownloadReports"
                                    value="sensors_download_reports" {{ DisabledDownloadReports }}>
                             Zip of all 3 Reports
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadDatabases }}
                                    id="RadioDownloadDatabases" value="sensors_download_databases">
                             Sensor Databases
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadLogs }}
                                    id="RadioDownloadLogs" value="sensors_download_logs">
                             Logs
+                            <span class="checkmark_radio"></span>
                         </label>
                         <br>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedDownloadBig }}
                                    id="RadioDownloadBigZip"
                                    value="sensors_download_everything" {{ DownloadBigDisabled }}>
                             Create "The Big Zip" (Reports, Logs & Databases)
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <h5 style="color: purple;">
-                            Download Options
-                        </h5>
-                        <label style="font-size: small">
+                        <h5 style="color: purple;">Download Options</h5>
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_send_type" {{ CheckedRelayedDownload }}
                                    id="SelectedRelayedDownloads" value="relayed_download" {{ DisabledRelayedDownload }}>
                             Relayed Download
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_send_type" {{ CheckedDirectDownload }}
                                    id="SelectedDirectDownloads" value="direct_download" {{ DisabledDirectDownload }}>
                             Direct Download
+                            <span class="checkmark_radio"></span>
                         </label>
                         <br>
                     </div>
@@ -276,25 +280,29 @@
                     </b></h5>
                     <label>Choose Online Service to Update</label>
                     <div class="mui-radio">
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="online_service_selected_action" checked
                                    value="weather_underground">
                             Weather Underground
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="online_service_selected_action" value="luftdaten">
                             Luftdaten
+                            <span class="checkmark_radio"></span>
                         </label>
-                        <label style="font-size: small">
+                        <label class="container_radio" style="font-size: small">
                             <input type="radio" name="online_service_selected_action" value="open_sense_map">
                             Open Sense Map
+                            <span class="checkmark_radio"></span>
                         </label>
                     </div>
                     <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
+                        <label class="container_checkbox">
                             <input type="checkbox" name="enable_online_service"
                                    value="">
                             Enable Selected Online Service
+                            <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
                     <br>

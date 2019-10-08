@@ -21,6 +21,151 @@
             color: red;
         }
     </style>
+
+    <style>
+        /* The container */
+        .container_checkbox {
+            display: block;
+            position: relative;
+            padding-left: 30px;
+            padding-right: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default checkbox */
+        .container_checkbox input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+
+        /* Create a custom checkbox */
+        .checkmark_checkbox {
+            position: absolute;
+            top: 0;
+            left: -10px;
+            height: 20px;
+            width: 20px;
+            background-color: #eee;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .container_checkbox:hover input ~ .checkmark_checkbox {
+            background-color: #ccc;
+        }
+
+        /* When the checkbox is checked, add a blue background */
+        .container_checkbox input:checked ~ .checkmark_checkbox {
+            background-color: #2196F3;
+        }
+
+        /* Create the checkmark/indicator (hidden when not checked) */
+        .checkmark_checkbox:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the checkmark when checked */
+        .container_checkbox input:checked ~ .checkmark_checkbox:after {
+            display: block;
+        }
+
+        /* Style the checkmark/indicator */
+        .container_checkbox .checkmark_checkbox:after {
+            left: 7px;
+            top: 3px;
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+
+        .container_checkbox input:disabled ~ .checkmark_checkbox {
+            background-color: #00B0FF;
+        }
+    </style>
+
+    <style>
+        /* The container */
+        .container_radio {
+            display: inline-block;
+            position: relative;
+            padding-left: 35px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            font-size: 12px;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* Hide the browser's default radio button */
+        .container_radio input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Create a custom radio button */
+        .checkmark_radio {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 15px;
+            width: 15px;
+            background-color: #eee;
+            border-radius: 50%;
+        }
+
+        /* On mouse-over, add a grey background color */
+        .container_radio:hover input ~ .checkmark_radio {
+            background-color: #ccc;
+        }
+
+        /* When the radio button is checked, add a blue background */
+        .container_radio input:checked ~ .checkmark_radio {
+            background-color: whitesmoke;
+        }
+
+        /* Create the indicator (the dot/circle - hidden when not checked) */
+        .checkmark_radio:after {
+            content: "";
+            position: absolute;
+            display: none;
+        }
+
+        /* Show the indicator (dot/circle) when checked */
+        .container_radio input:checked ~ .checkmark_radio:after {
+            display: block;
+        }
+
+        /* Style the indicator (dot/circle) */
+        .container_radio .checkmark_radio:after {
+            top: 4px;
+            left: 4px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: darkslategrey;
+        }
+
+        .container_radio input:disabled ~ .checkmark_radio {
+            background-color: #00B0FF;
+        }
+    </style>
 </head>
 
 <body>

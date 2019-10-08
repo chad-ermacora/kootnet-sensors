@@ -7,6 +7,9 @@
         .mui-form {
             background-color: #00B0FF;
         }
+    .mui-checkbox {
+        display: inline-block;
+    }
     </style>
 
     <h2><u><strong><a style="text-decoration: underline; color: red;" href="/OnlineServices">
@@ -38,21 +41,23 @@
 
                     <h5><b>This will upload all compatible sensor readings to Weather Underground</b></h5>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
+                    <div class="mui-checkbox">
+                        <label class="container_checkbox">
                             <input type="checkbox" id="wu_enabled" name="enable_weather_underground"
                                    value="" {{ CheckedWUEnabled }}>
                             Enable Weather UnderGround
+                            <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
 
                     <br>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
+                    <div class="mui-checkbox">
+                        <label class="container_checkbox">
                             <input type="checkbox" id="wu_rapid_fire_enabled" name="enable_wu_rapid_fire"
                                    value="" {{ CheckedWURapidFire }} {{ DisabledWURapidFire }}>
                             Enable RapidFire Updates (Updating every 2-10 seconds)
+                            <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
 
@@ -65,11 +70,12 @@
                         </label>
                     </div>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
+                    <div class="mui-checkbox">
+                        <label class="container_checkbox">
                             <input type="checkbox" name="weather_underground_outdoor"
                                    value="" {{ CheckedWUOutdoor }} {{ DisabledWUOutdoor }}>
                             Outdoor Sensor
+                            <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
 
@@ -121,11 +127,12 @@
 
                     <br>
 
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label>
+                    <div class="mui-checkbox">
+                        <label class="container_checkbox">
                             <input type="checkbox" id="luftdaten_enabled" name="enable_luftdaten"
                                    value="" {{ CheckedLuftdatenEnabled }}>
                             Enable Luftdaten
+                            <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
 
@@ -171,11 +178,12 @@
 
                         <h5><b>This will upload all compatible sensor readings to Open Sense Map</b></h5>
 
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                        <div class="mui-checkbox">
+                            <label class="container_checkbox">
                                 <input type="checkbox" id="osm_enabled" name="enable_open_sense_map"
                                        value="" {{ CheckedOSMEnabled }}>
                                 Enable Open Sense Map
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
 
@@ -202,11 +210,12 @@
                             </label>
                         </div>
 
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                        <div class="mui-checkbox">
+                            <label class="container_checkbox">
                                 <input type="checkbox" id="osm_manual_sensor_ids" name="enable_osm_manual_sensor_ids"
                                        value="" {{ OSMDisabled }}>
                                 Manually Set Sensor IDs
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-container-fluid">
@@ -525,25 +534,29 @@
                         <br>
                         <label>Location Type</label>
                         <div class="mui-radio">
-                            <label>
+                            <label class="container_radio">
                                 <input type="radio" name="osm_location_type"
                                        value="outdoor" checked>
                                 Outdoors
+                                <span class="checkmark_radio"></span>
                             </label>
-                            <label>
+                            <label class="container_radio">
                                 <input type="radio" name="osm_location_type"
                                        value="indoor">
                                 Indoors
+                                <span class="checkmark_radio"></span>
                             </label>
-                            <label>
+                            <label class="container_radio">
                                 <input type="radio" name="osm_location_type"
                                        value="mobile">
                                 Mobile
+                                <span class="checkmark_radio"></span>
                             </label>
-                            <label>
+                            <label class="container_radio">
                                 <input type="radio" name="osm_location_type"
                                        value="unknown">
                                 Other
+                                <span class="checkmark_radio"></span>
                             </label>
                         </div>
                         <br>

@@ -57,26 +57,29 @@
                 <h2><u><a style="color: black" href="{{ PageURL }}">Main Configuration</a></u></h2>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="debug_logging" value="" {{ CheckedDebug }}>
                         Enable Debug Logging
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="enable_display" value="" {{ CheckedDisplay }}>
                         Enable Display
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="enable_interval_recording" id="enable_interval_recording"
                                value="" {{ CheckedInterval }}>
                         Record sensors to SQL database based on set Interval
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
@@ -90,19 +93,21 @@
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="enable_trigger_recording" value="" {{ CheckedTrigger }}>
                         Record sensors to SQL database based on set Triggers
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset"
                                value="" {{ CheckedCustomTempOffset }}>
                         Enable Environmental Temperature Offset
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
@@ -121,7 +126,7 @@
     </div>
 
     <div class="mui-tabs__pane" id="installed-sensors-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+        <form class="mui-form" method="POST" style="width: 575px; min-height: 300px;"
               action="/EditInstalledSensors">
             <fieldset style="text-align: center">
                 <h2><u><a style="color: black" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
@@ -129,134 +134,158 @@
                 <h4><u>Raspberry Pi</u></h4>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="linux_system" value="" {{ GnuLinux }}>
                         Gnu/Linux
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="raspberry_pi" value="" {{ RaspberryPi }}>
                         Raspberry Pi - Any Model
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="raspberry_pi_sense_hat" value="" {{ SenseHAT }}>
                         Sense HAT
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <h4><u>Pimoroni</u></h4>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_bh1745" value="" {{ PimoroniBH1745 }}>
                         BH1745
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_as7262" value="" {{ PimoroniAS7262 }}>
                         AS7262
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_bmp280" value="" {{ PimoroniBMP280 }}>
                         BMP280
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_bme680" value="" {{ PimoroniBME680 }}>
                         BME680
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_enviro" value="" {{ PimoroniEnviroPHAT }}>
                         EnviroPHAT
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_enviroplus" value="" {{ PimoroniEnviroPlus }}>
                         Enviro+
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_pms5003" value="" {{ PimoroniPMS5003 }}>
                         PMS5003
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_lsm303d" value="" {{ PimoroniLSM303D }}>
                         LSM303D
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_icm20948" value="" {{ PimoroniICM20948 }}>
                         ICM20948
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_vl53l1x" value="" {{ PimoroniVL53L1X }}>
                         VL53L1X
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_ltr_559" value="" {{ PimoroniLTR559 }}>
                         LTR-559
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_veml6075" value="" {{ PimoroniVEML6075 }}>
                         VEML6075
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_matrix_11x7" value="" {{ Pimoroni11x7LEDMatrix }}>
                         11x7 LED Matrix
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_st7735" value="" {{ PimoroniSPILCD10_96 }}>
                         10.96'' SPI Colour LCD (160x80)
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="pimoroni_mono_oled_luma" value="" {{ PimoroniMonoOLED128x128BW }}>
                         1.12'' Mono OLED (128x128, white/black)
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
                 <br>
@@ -285,9 +314,10 @@
                 <h4><u>Wireless IP Settings</u></h4>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" id="IP_DHCP" name="ip_dhcp" value="" {{ CheckedDHCP }}>
                         DHCP
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
 
@@ -369,15 +399,13 @@
 
                 <label>Wireless Security</label>
                 <div class="mui-radio">
-                    <label>
-                        <input type="radio" name="wifi_security1"
-                               value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
-                        Secured (WEP/WPA/WPA2)
+                    <label class="container_radio">Secured (WEP/WPA/WPA2)
+                        <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                        <span class="checkmark_radio"></span>
                     </label>
-                    <label>
-                        <input type="radio" name="wifi_security1"
-                               value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
-                        Open (None)
+                    <label class="container_radio">Open (None)
+                        <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                        <span class="checkmark_radio"></span>
                     </label>
                 </div>
                 <div class="mui-textfield">
@@ -423,9 +451,10 @@
                 <br>
 
                 <div class="mui-checkbox" style="display: inline-block;">
-                    <label>
+                    <label class="container_checkbox">
                         <input type="checkbox" name="checkbox_sensor_uptime" value="" {{ CheckedSensorUptime }}>
                         Sensor Uptime
+                        <span class="checkmark_checkbox"></span>
                     </label>
                 </div>
                 <div class="mui-textfield">
@@ -442,10 +471,11 @@
                 <div class="mui-row" style="alignment: center">
                     <div class="mui-col-md-4">
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="checkbox_cpu_temperature"
                                        value="" {{ CheckedCPUTemperature }}>
                                 CPU Temperature
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -468,9 +498,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="pressure" value="" {{ CheckedPressure }}>
                                 Pressure
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -493,9 +524,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="humidity" value="" {{ CheckedHumidity }}>
                                 Humidity
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -518,9 +550,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="gas" value="" {{ CheckedGas }}>
                                 Gas
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -567,9 +600,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="particulate_matter" value="" {{ CheckedPM }}>
                                 Particulate Matter
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -608,9 +642,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="accelerometer" value="" {{ CheckedAccelerometer }}>
                                 Accelerometer
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -649,9 +684,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="magnetometer" value="" {{ CheckedMagnetometer }}>
                                 Magnetometer
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -690,9 +726,10 @@
 
                     <div class="mui-col-md-4">
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="env_temperature" value="" {{ CheckedEnvTemperature }}>
                                 Environmental Temperature
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -715,9 +752,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="altitude" value="" {{ CheckedAltitude }}>
                                 Altitude
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -740,9 +778,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="distance" value="" {{ CheckedDistance }}>
                                 Distance
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -765,9 +804,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="lumen" value="" {{ CheckedLumen }}>
                                 Lumen
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -790,9 +830,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="colour" value="" {{ CheckedColour }}>
                                 Colour
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -855,9 +896,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }}>
                                 Ultra Violet
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">
@@ -888,9 +930,10 @@
                         <br>
 
                         <div class="mui-checkbox" style="display: inline-block;">
-                            <label>
+                            <label class="container_checkbox">
                                 <input type="checkbox" name="gyroscope" value="" {{ CheckedGyroscope }}>
                                 Gyroscope
+                                <span class="checkmark_checkbox"></span>
                             </label>
                         </div>
                         <div class="mui-textfield">

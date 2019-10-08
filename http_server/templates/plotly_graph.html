@@ -25,22 +25,22 @@
         <span style="color: #90CAF9">Graph Created (Sensor's Time): {{ TriggerPlotlyDate }}</span>
     </h4>
 
-    <form class="mui-form"
-          method="POST"
-          style="background-color: #00B0FF; width: max-content; border: #0BB10D;"
+    <form class="mui-form" method="POST" style="background-color: #00B0FF; width: 450px; border: #0BB10D;"
           action="/CreatePlotlyGraph">
         <fieldset style="text-align: center;">
 
             <legend>Graph Options</legend>
             <label>SQL Recording Type</label>
             <div class="mui-radio">
-                <label>
+                <label class="container_radio">
                     <input type="radio" name="SQLRecordingType" value="IntervalData" checked>
                     Interval
+                    <span class="checkmark_radio"></span>
                 </label>
-                <label>
+                <label class="container_radio">
                     <input type="radio" name="SQLRecordingType" value="TriggerData">
                     Trigger
+                    <span class="checkmark_radio"></span>
                 </label>
             </div>
 
@@ -48,13 +48,15 @@
 
             <label>Render Engine</label>
             <div class="mui-radio">
-                <label>
+                <label class="container_radio">
                     <input type="radio" name="PlotlyRenderType" value="OpenGL" checked>
                     WebGL (Recommended)
+                    <span class="checkmark_radio"></span>
                 </label>
-                <label>
+                <label class="container_radio">
                     <input type="radio" name="PlotlyRenderType" value="CPU">
                     CPU
+                    <span class="checkmark_radio"></span>
                 </label>
             </div>
 
@@ -96,126 +98,142 @@
             <hr>
 
             <div class="mui-checkbox" style="display: inline-block;">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
                     Select All
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="SensorUptime" value="" checked>
                     Sensor Uptime
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="CPUTemp" value="" checked>
                     CPU Temperature
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="EnvTemp" value="" checked>
                     Environmental Temperature
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Pressure" value="" checked>
                     Pressure
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Altitude" value="" checked>
                     Altitude
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Humidity" value="" checked>
                     Humidity
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Distance" value="" checked>
                     Distance
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Gas" value="" checked>
                     Gas
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="ParticulateMatter" value="" checked>
                     Particulate Matter
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Lumen" value="" checked>
                     Lumen
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Colours" value="" checked>
                     Colours
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="UltraViolet" value="" checked>
                     Ultra Violet
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <br>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Accelerometer" value="" checked>
                     Accelerometer
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Magnetometer" value="" checked>
                     Magnetometer
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
             <div class="mui-checkbox" style="display: inline-block">
-                <label>
+                <label class="container_checkbox">
                     <input type="checkbox" name="Gyroscope" value="" checked>
                     Gyroscope
+                    <span class="checkmark_checkbox"></span>
                 </label>
             </div>
 
