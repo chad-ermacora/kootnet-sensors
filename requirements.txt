@@ -7,7 +7,7 @@ flask
 Flask-Compress
 Flask-HTTPAuth
 gevent
-plotly
+plotly >= 4.0.0
 # Sensor Hardware Modules
 envirophat
 enviroplus

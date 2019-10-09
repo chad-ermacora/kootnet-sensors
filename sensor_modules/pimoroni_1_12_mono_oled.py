@@ -18,13 +18,13 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 turn_off_display = 30
 
 
 class CreateLumaOLED:
-    """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128, white/black). """
+    """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128). """
 
     def __init__(self):
         try:
@@ -39,9 +39,10 @@ class CreateLumaOLED:
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
+            logger.sensors_logger.debug("Pimoroni 1.12 Mono OLED (128x128) Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128, white/black) Initialization- Failed - " + str(error))
-            configuration_main.installed_sensors.pimoroni_mono_oled_luma = 0
+            logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128) Initialization - Failed: " + str(error))
+            app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
 
     def _display_timed_off(self):
         while True:
@@ -55,6 +56,7 @@ class CreateLumaOLED:
 
     @staticmethod
     def _format_message(message):
+        """ Formats text message to fit on Display. """
         message_length = len(message)
 
         return_message = ""
@@ -70,7 +72,7 @@ class CreateLumaOLED:
         return return_message
 
     def display_text(self, message):
-        """ Scrolls Provided Text on LED Display. """
+        """ Shows Provided Text on LED Display. """
         self.device.show()
         self.display_off_count = 0
         self.display_is_on = True
@@ -81,4 +83,4 @@ class CreateLumaOLED:
                 draw.rectangle(self.device.bounding_box, outline="white", fill="black")
                 draw.text((5, 5), clean_message, fill="white")
         except Exception as error:
-            logger.sensors_logger.error("Message on 1.12 Mono OLED Failed - " + str(error))
+            logger.sensors_logger.error("Message on 1.12 Mono OLED - Failed: " + str(error))

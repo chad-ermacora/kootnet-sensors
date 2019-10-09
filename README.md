@@ -5,10 +5,24 @@ Python3 program to record sensor readings to a SQLite3 database and provides HTT
 [KootNet Sensors Downloads and Instructions](http://kootenay-networks.com/?page_id=236)  
 [KootNet Sensors - Control Center](https://github.com/chad-ermacora/sensor-control-center)
 
+Installing on a Raspberry Pi (Any Model)
+-------------------------
+
+See the above "Downloads & Instructions" link for more in-depth instructions.
+
+The short version of installing on a Pi is to install Raspbian and run the following command in a Terminal. 
+After the install is done and the sensor has rebooted, open the following URL on the Pi itself to configure the sensor.
+https://localhost:10065/
+
+```
+wget http://kootenay-networks.com/utils/koot_net_sensors/Installers/raspbian/install_update_kootnet-sensors_http.sh && sudo bash install_update_kootnet-sensors_http.sh && sudo reboot
+```
+
+
 Controlling the Sensor
 -------------------------
 
-**Kootnet Sensors** has a built in HTTP server to help monitor and manage the individual sensor.  
+**Kootnet Sensors** has a built in HTTPS server to help monitor and manage the individual sensor.  
 Assuming the sensor's IP is 192.168.10.11, you can access the sensor at https://192.168.10.11:10065
 
 **KootNet Sensors - Control Center** was created to interact with up to 16 sensors at a time, over a TCP/IP network.

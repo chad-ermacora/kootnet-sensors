@@ -18,11 +18,9 @@
 """
 from http_server import server_http_auth
 
-http_auth = server_http_auth.CreateHTTPAuth()
-
 print("Please enter in a Username and Password for Sensor Web Management")
 new_user = input("New Username: ")
 new_password = input("New Password: ")
 
-http_auth.save_http_auth_to_file(new_user, new_password)
+server_http_auth.save_http_auth_to_file(new_user, new_password)
 input("New Username and Password set.  Press enter to continue.")

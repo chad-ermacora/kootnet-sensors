@@ -17,7 +17,7 @@ Created on Tue June 25 10:53:56 2019
 """
 import smbus2
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -30,29 +30,28 @@ class CreateBMP280:
             self.bmp280_import = __import__('bmp280')
             bus = smbus2.SMBus(1)
             self.bmp280 = self.bmp280_import.BMP280(i2c_dev=bus)
+            self.bmp280.get_temperature()
             logger.sensors_logger.debug("Pimoroni BMP280 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BMP280 Initialization Failed: " + str(error))
-            configuration_main.installed_sensors.pimoroni_bmp280 = 0
+            logger.sensors_logger.error("Pimoroni BMP280 Initialization - Failed: " + str(error))
+            app_config_access.installed_sensors.pimoroni_bmp280 = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """
         try:
             temp_var = self.bmp280.get_temperature()
-            logger.sensors_logger.debug("Pimoroni BMP280 Temperature - OK")
         except Exception as error:
             temp_var = 0.0
-            logger.sensors_logger.error("Pimoroni BMP280 Temperature - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BMP280 Temperature - Failed: " + str(error))
         return round(temp_var, round_decimal_to)
 
     def pressure(self):
         """ Returns Pressure as a Integer. """
         try:
             pressure_hpa = self.bmp280.get_pressure()
-            logger.sensors_logger.debug("Pimoroni BMP280 Pressure - OK")
         except Exception as error:
             pressure_hpa = 0.0
-            logger.sensors_logger.error("Pimoroni BMP280 Pressure - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BMP280 Pressure - Failed: " + str(error))
 
         return int(pressure_hpa)
 
@@ -63,8 +62,7 @@ class CreateBMP280:
         # Replace "pressure" with a baseline of the sum of 100 divided by the length 100
         try:
             var_altitude = self.bmp280.get_altitude()
-            logger.sensors_logger.debug("Pimoroni BMP280 Altitude - OK")
         except Exception as error:
             var_altitude = 0.0
-            logger.sensors_logger.error("Pimoroni BMP280 Altitude - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BMP280 Altitude - Failed: " + str(error))
         return round(var_altitude, round_decimal_to)

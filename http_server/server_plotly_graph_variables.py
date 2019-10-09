@@ -20,56 +20,35 @@ from operations_modules import file_locations
 
 graph_creation_in_progress = False
 
-mark_red_line = dict(size=10,
-                     color='rgba(255, 0, 0, .9)',
-                     line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_red_line = dict(size=10, color='rgba(255, 0, 0, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_orange_line = dict(size=10,
-                        color='rgba(255, 102, 0, .9)',
-                        line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_orange_line = dict(size=10, color='rgba(255, 102, 0, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_yellow_line = dict(size=10,
-                        color='rgba(255, 170, 29, .9)',
-                        line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_yellow_line = dict(size=10, color='rgba(255, 170, 29, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_green_line = dict(size=10,
-                       color='rgba(0, 255, 0, .9)',
-                       line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_green_line = dict(size=10, color='rgba(0, 255, 0, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_blue_line = dict(size=10,
-                      color='rgba(0, 0, 255, .9)',
-                      line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_blue_line = dict(size=10, color='rgba(0, 0, 255, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_violet_line = dict(size=10,
-                        color='rgba(153, 0, 204, .9)',
-                        line=dict(width=2, color='rgb(0, 0, 0)'))
+mark_violet_line = dict(size=10, color='rgba(153, 0, 204, .9)', line=dict(width=2, color='rgb(0, 0, 0)'))
 
-mark_red_dot = dict(size=5,
-                    color='rgba(255, 0, 0, .9)')
+mark_red_dot = dict(size=5, color='rgba(255, 0, 0, .9)')
 
-mark_orange_dot = dict(size=5,
-                       color='rgba(255, 102, 0, .9)')
+mark_orange_dot = dict(size=5, color='rgba(255, 102, 0, .9)')
 
-mark_yellow_dot = dict(size=5,
-                       color='rgba(255, 170, 29, .9)')
+mark_yellow_dot = dict(size=5, color='rgba(255, 170, 29, .9)')
 
-mark_green_dot = dict(size=5,
-                      color='rgba(0, 255, 0, .9)')
+mark_green_dot = dict(size=5, color='rgba(0, 255, 0, .9)')
 
-mark_blue_dot = dict(size=5,
-                     color='rgba(0, 0, 255, .9)')
+mark_blue_dot = dict(size=5, color='rgba(0, 0, 255, .9)')
 
-mark_violet_dot = dict(size=5,
-                       color='rgba(153, 0, 204, .9)')
+mark_violet_dot = dict(size=5, color='rgba(153, 0, 204, .9)')
 
-mark_x_dot = dict(size=5,
-                  color='rgba(255, 0, 0, 1)')
+mark_x_dot = dict(size=5, color='rgba(255, 0, 0, 1)')
 
-mark_y_dot = dict(size=5,
-                  color='rgba(0, 255, 0, 1)')
+mark_y_dot = dict(size=5, color='rgba(0, 255, 0, 1)')
 
-mark_z_dot = dict(size=5,
-                  color='rgba(0, 0, 255, 1)')
+mark_z_dot = dict(size=5, color='rgba(0, 0, 255, 1)')
 
 mark_generic_dot = dict(size=2)
 
@@ -81,9 +60,9 @@ class CreateGraphData:
 
     def __init__(self):
         self.enable_plotly_webgl = False
-        self.db_location = file_locations.sensor_database_location
+        self.db_location = file_locations.sensor_database
         self.graph_table = "IntervalData"
-        self.save_to = file_locations.save_plotly_html_to
+        self.save_to = file_locations.plotly_save_folder
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
         self.datetime_offset = 7.0

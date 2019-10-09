@@ -17,7 +17,7 @@ Created on Sat Aug 25 08:53:56 2018
 from time import sleep
 from threading import Thread
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 
 round_decimal_to = 5
 
@@ -37,13 +37,15 @@ class CreateBME680:
             self.sensor.set_gas_heater_duration(150)
             self.sensor.select_gas_heater_profile(0)
 
+            self.sensor.get_sensor_data()
+
             self.thread_gas_keep_alive = Thread(target=self._gas_readings_keep_alive)
             self.thread_gas_keep_alive.daemon = True
             self.thread_gas_keep_alive.start()
             logger.sensors_logger.debug("Pimoroni BME680 Initialization - OK")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni BME680 Initialization Failed: " + str(error))
-            configuration_main.installed_sensors.pimoroni_bme680 = 0
+            logger.sensors_logger.error("Pimoroni BME680 Initialization - Failed: " + str(error))
+            app_config_access.installed_sensors.pimoroni_bme680 = 0
 
     def _gas_readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni BME680 Gas keep alive started")
@@ -60,10 +62,9 @@ class CreateBME680:
         try:
             self.sensor.get_sensor_data()
             temp_var = float(self.sensor.data.temperature)
-            logger.sensors_logger.debug("Pimoroni BME680 Temperature - OK")
         except Exception as error:
             temp_var = 0.0
-            logger.sensors_logger.error("Pimoroni BME680 Temperature - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BME680 Temperature - Failed: " + str(error))
 
         self.pause_gas_keep_alive = False
         return round(temp_var, round_decimal_to)
@@ -74,10 +75,9 @@ class CreateBME680:
         try:
             self.sensor.get_sensor_data()
             pressure_hpa = self.sensor.data.pressure
-            logger.sensors_logger.debug("Pimoroni BME680 Pressure - OK")
         except Exception as error:
             pressure_hpa = 0
-            logger.sensors_logger.error("Pimoroni BME680 Pressure - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BME680 Pressure - Failed: " + str(error))
 
         self.pause_gas_keep_alive = False
         return int(pressure_hpa)
@@ -87,10 +87,9 @@ class CreateBME680:
         self.pause_gas_keep_alive = True
         try:
             var_humidity = self.sensor.data.humidity
-            logger.sensors_logger.debug("Pimoroni BME680 Humidity - OK")
         except Exception as error:
             var_humidity = 0.0
-            logger.sensors_logger.error("Pimoroni BME680 Humidity - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BME680 Humidity - Failed: " + str(error))
 
         self.pause_gas_keep_alive = False
         return round(var_humidity, round_decimal_to)
@@ -101,10 +100,9 @@ class CreateBME680:
         try:
             self.sensor.get_sensor_data()
             gas_var = round(self.sensor.data.gas_resistance / 1000, round_decimal_to)
-            logger.sensors_logger.debug("Pimoroni BME680 GAS Resistance - OK")
         except Exception as error:
             gas_var = 0.0
-            logger.sensors_logger.error("Pimoroni BME680 GAS Resistance - Failed - " + str(error))
+            logger.sensors_logger.error("Pimoroni BME680 GAS Resistance - Failed: " + str(error))
 
         self.pause_gas_keep_alive = False
         return gas_var

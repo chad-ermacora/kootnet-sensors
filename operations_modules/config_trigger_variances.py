@@ -24,6 +24,7 @@ from operations_modules import app_generic_functions
 
 class CreateTriggerVariances:
     """ Create a Trigger Variance configuration object. These are also the default values. """
+
     def __init__(self):
         self.sensor_uptime_enabled = 1
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
@@ -129,10 +130,14 @@ class CreateTriggerVariances:
             self.magnetometer_y_variance = 0.02
             self.magnetometer_z_variance = 0.02
 
+    def reset_settings(self):
+        self.__init__()
+
 
 # Not used yet, considering high low variances
 class CreateTriggerLowHighVariances:
     """ Create a High/Low Trigger Variance configuration object. """
+
     def __init__(self):
         self.delay_between_readings = 300.0
         self.delay_before_new_write = 0.0
@@ -196,133 +201,71 @@ class CreateTriggerLowHighVariances:
 
 def convert_triggers_to_str(triggers):
     """ Returns trigger variances as text to write to the local disk trigger variances file. """
-    triggers_file_str = "Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.\n" + \
-                        str(triggers.sensor_uptime_enabled) + \
-                        " = Enable Sensor Uptime\n" + \
-                        str(triggers.sensor_uptime_wait_seconds) + \
-                        " = Seconds between SQL Writes of Sensor Uptime\n\n" + \
-                        str(triggers.cpu_temperature_enabled) + \
-                        " = Enable CPU Temperature\n" + \
-                        str(triggers.cpu_temperature_variance) + \
-                        " = CPU Temperature variance\n" + \
-                        str(triggers.cpu_temperature_wait_seconds) + \
-                        " = Seconds between 'CPU Temperature' readings\n\n" + \
-                        str(triggers.env_temperature_enabled) + \
-                        " = Enable Environmental Temperature\n" + \
-                        str(triggers.env_temperature_variance) + \
-                        " = Environmental Temperature variance\n" + \
-                        str(triggers.env_temperature_wait_seconds) + \
-                        " = Seconds between 'Environmental Temperature' readings\n\n" + \
-                        str(triggers.pressure_enabled) + \
-                        " = Enable Pressure\n" + \
-                        str(triggers.pressure_variance) + \
-                        " = Pressure variance\n" + \
-                        str(triggers.pressure_wait_seconds) + \
-                        " = Seconds between 'Pressure' readings\n\n" + \
-                        str(triggers.altitude_enabled) + \
-                        " = Enable Altitude\n" + \
-                        str(triggers.altitude_variance) + \
-                        " = Altitude variance\n" + \
-                        str(triggers.altitude_wait_seconds) + \
-                        " = Seconds between 'Altitude' readings\n\n" + \
-                        str(triggers.humidity_enabled) + \
-                        " = Enable Humidity\n" + \
-                        str(triggers.humidity_variance) + \
-                        " = Humidity variance\n" + \
-                        str(triggers.humidity_wait_seconds) + \
-                        " = Seconds between 'Humidity' readings\n\n" + \
-                        str(triggers.distance_enabled) + \
-                        " = Enable Distance\n" + \
-                        str(triggers.distance_variance) + \
-                        " = Distance variance\n" + \
-                        str(triggers.distance_wait_seconds) + \
-                        " = Seconds between 'Distance' readings\n\n" + \
-                        str(triggers.gas_enabled) + \
-                        " = Enable Gas\n" + \
-                        str(triggers.gas_resistance_index_variance) + \
-                        " = Gas Resistance Index variance\n" + \
-                        str(triggers.gas_oxidising_variance) + \
-                        " = Gas Oxidising variance\n" + \
-                        str(triggers.gas_reducing_variance) + \
-                        " = Gas Reducing variance\n" + \
-                        str(triggers.gas_nh3_variance) + \
-                        " = Gas NH3 variance\n" + \
-                        str(triggers.gas_wait_seconds) + \
-                        " = Seconds between 'Gas' readings\n\n" + \
-                        str(triggers.particulate_matter_enabled) + \
-                        " = Enable Particulate Matter (PM)\n" + \
-                        str(triggers.particulate_matter_1_variance) + \
-                        " = Particulate Matter 1 (PM1) variance\n" + \
-                        str(triggers.particulate_matter_2_5_variance) + \
-                        " = Particulate Matter 2.5 (PM2.5) variance\n" + \
-                        str(triggers.particulate_matter_10_variance) + \
-                        " = Particulate Matter 10 (PM10) variance\n" + \
-                        str(triggers.particulate_matter_wait_seconds) + \
-                        " = Seconds between 'Particulate Matter' readings\n\n" + \
-                        str(triggers.lumen_enabled) + \
-                        " = Enable Lumen\n" + \
-                        str(triggers.lumen_variance) + \
-                        " = Lumen variance\n" + \
-                        str(triggers.lumen_wait_seconds) + \
-                        " = Seconds between 'Lumen' readings\n\n" + \
-                        str(triggers.colour_enabled) + \
-                        " = Enable Colour\n" + \
-                        str(triggers.red_variance) + \
-                        " = Red variance\n" + \
-                        str(triggers.orange_variance) + \
-                        " = Orange variance\n" + \
-                        str(triggers.yellow_variance) + \
-                        " = Yellow variance\n" + \
-                        str(triggers.green_variance) + \
-                        " = Green variance\n" + \
-                        str(triggers.blue_variance) + \
-                        " = Blue variance\n" + \
-                        str(triggers.violet_variance) + \
-                        " = Violet variance\n" + \
-                        str(triggers.colour_wait_seconds) + \
-                        " = Seconds between 'Colour' readings\n\n" + \
-                        str(triggers.ultra_violet_enabled) + \
-                        " = Enable Ultra Violet\n" + \
-                        str(triggers.ultra_violet_index_variance) + \
-                        " = Ultra Violet Index variance\n" + \
-                        str(triggers.ultra_violet_a_variance) + \
-                        " = Ultra Violet A variance\n" + \
-                        str(triggers.ultra_violet_b_variance) + \
-                        " = Ultra Violet B variance\n" + \
-                        str(triggers.ultra_violet_wait_seconds) + \
-                        " = Seconds between 'Ultra Violet' readings\n\n" + \
-                        str(triggers.accelerometer_enabled) + \
-                        " = Enable Accelerometer\n" + \
-                        str(triggers.accelerometer_x_variance) + \
-                        " = Accelerometer X variance\n" + \
-                        str(triggers.accelerometer_y_variance) + \
-                        " = Accelerometer Y variance\n" + \
-                        str(triggers.accelerometer_z_variance) + \
-                        " = Accelerometer Z variance\n" + \
-                        str(triggers.accelerometer_wait_seconds) + \
-                        " = Seconds between 'Accelerometer' readings\n\n" + \
-                        str(triggers.magnetometer_enabled) + \
-                        " = Enable Magnetometer\n" + \
-                        str(triggers.magnetometer_x_variance) + \
-                        " = Magnetometer X variance\n" + \
-                        str(triggers.magnetometer_y_variance) + \
-                        " = Magnetometer Y variance\n" + \
-                        str(triggers.magnetometer_z_variance) + \
-                        " = Magnetometer Z variance\n" + \
-                        str(triggers.magnetometer_wait_seconds) + \
-                        " = Seconds between 'Magnetometer' readings\n\n" + \
-                        str(triggers.gyroscope_enabled) + \
-                        " = Enable Gyroscope\n" + \
-                        str(triggers.gyroscope_x_variance) + \
-                        " = Gyroscope X variance\n" + \
-                        str(triggers.gyroscope_y_variance) + \
-                        " = Gyroscope Y variance\n" + \
-                        str(triggers.gyroscope_z_variance) + \
-                        " = Gyroscope Z variance\n" + \
-                        str(triggers.gyroscope_wait_seconds) + \
-                        " = Seconds between 'Gyroscope' readings\n"
+    return_str = "Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.\n" + \
+                 str(triggers.sensor_uptime_enabled) + " = Enable Sensor Uptime\n" + \
+                 str(triggers.sensor_uptime_wait_seconds) + " = Seconds between SQL Writes of Sensor Uptime\n\n" + \
+                 str(triggers.cpu_temperature_enabled) + " = Enable CPU Temperature\n" + \
+                 str(triggers.cpu_temperature_variance) + " = CPU Temperature variance\n" + \
+                 str(triggers.cpu_temperature_wait_seconds) + " = Seconds between 'CPU Temperature' readings\n\n" + \
+                 str(triggers.env_temperature_enabled) + " = Enable Environmental Temperature\n" + \
+                 str(triggers.env_temperature_variance) + " = Environmental Temperature variance\n" + \
+                 str(triggers.env_temperature_wait_seconds) + " = Seconds between 'Env Temperature' readings\n\n" + \
+                 str(triggers.pressure_enabled) + " = Enable Pressure\n" + \
+                 str(triggers.pressure_variance) + " = Pressure variance\n" + \
+                 str(triggers.pressure_wait_seconds) + " = Seconds between 'Pressure' readings\n\n" + \
+                 str(triggers.altitude_enabled) + " = Enable Altitude\n" + \
+                 str(triggers.altitude_variance) + " = Altitude variance\n" + \
+                 str(triggers.altitude_wait_seconds) + " = Seconds between 'Altitude' readings\n\n" + \
+                 str(triggers.humidity_enabled) + " = Enable Humidity\n" + \
+                 str(triggers.humidity_variance) + " = Humidity variance\n" + \
+                 str(triggers.humidity_wait_seconds) + " = Seconds between 'Humidity' readings\n\n" + \
+                 str(triggers.distance_enabled) + " = Enable Distance\n" + \
+                 str(triggers.distance_variance) + " = Distance variance\n" + \
+                 str(triggers.distance_wait_seconds) + " = Seconds between 'Distance' readings\n\n" + \
+                 str(triggers.gas_enabled) + " = Enable Gas\n" + \
+                 str(triggers.gas_resistance_index_variance) + " = Gas Resistance Index variance\n" + \
+                 str(triggers.gas_oxidising_variance) + " = Gas Oxidising variance\n" + \
+                 str(triggers.gas_reducing_variance) + " = Gas Reducing variance\n" + \
+                 str(triggers.gas_nh3_variance) + " = Gas NH3 variance\n" + \
+                 str(triggers.gas_wait_seconds) + " = Seconds between 'Gas' readings\n\n" + \
+                 str(triggers.particulate_matter_enabled) + " = Enable Particulate Matter (PM)\n" + \
+                 str(triggers.particulate_matter_1_variance) + " = Particulate Matter 1 (PM1) variance\n" + \
+                 str(triggers.particulate_matter_2_5_variance) + " = Particulate Matter 2.5 (PM2.5) variance\n" + \
+                 str(triggers.particulate_matter_10_variance) + " = Particulate Matter 10 (PM10) variance\n" + \
+                 str(triggers.particulate_matter_wait_seconds) + " = Seconds between 'PM' readings\n\n" + \
+                 str(triggers.lumen_enabled) + " = Enable Lumen\n" + \
+                 str(triggers.lumen_variance) + " = Lumen variance\n" + \
+                 str(triggers.lumen_wait_seconds) + " = Seconds between 'Lumen' readings\n\n" + \
+                 str(triggers.colour_enabled) + " = Enable Colour\n" + \
+                 str(triggers.red_variance) + " = Red variance\n" + \
+                 str(triggers.orange_variance) + " = Orange variance\n" + \
+                 str(triggers.yellow_variance) + " = Yellow variance\n" + \
+                 str(triggers.green_variance) + " = Green variance\n" + \
+                 str(triggers.blue_variance) + " = Blue variance\n" + \
+                 str(triggers.violet_variance) + " = Violet variance\n" + \
+                 str(triggers.colour_wait_seconds) + " = Seconds between 'Colour' readings\n\n" + \
+                 str(triggers.ultra_violet_enabled) + " = Enable Ultra Violet\n" + \
+                 str(triggers.ultra_violet_index_variance) + " = Ultra Violet Index variance\n" + \
+                 str(triggers.ultra_violet_a_variance) + " = Ultra Violet A variance\n" + \
+                 str(triggers.ultra_violet_b_variance) + " = Ultra Violet B variance\n" + \
+                 str(triggers.ultra_violet_wait_seconds) + " = Seconds between 'Ultra Violet' readings\n\n" + \
+                 str(triggers.accelerometer_enabled) + " = Enable Accelerometer\n" + \
+                 str(triggers.accelerometer_x_variance) + " = Accelerometer X variance\n" + \
+                 str(triggers.accelerometer_y_variance) + " = Accelerometer Y variance\n" + \
+                 str(triggers.accelerometer_z_variance) + " = Accelerometer Z variance\n" + \
+                 str(triggers.accelerometer_wait_seconds) + " = Seconds between 'Accelerometer' readings\n\n" + \
+                 str(triggers.magnetometer_enabled) + " = Enable Magnetometer\n" + \
+                 str(triggers.magnetometer_x_variance) + " = Magnetometer X variance\n" + \
+                 str(triggers.magnetometer_y_variance) + " = Magnetometer Y variance\n" + \
+                 str(triggers.magnetometer_z_variance) + " = Magnetometer Z variance\n" + \
+                 str(triggers.magnetometer_wait_seconds) + " = Seconds between 'Magnetometer' readings\n\n" + \
+                 str(triggers.gyroscope_enabled) + " = Enable Gyroscope\n" + \
+                 str(triggers.gyroscope_x_variance) + " = Gyroscope X variance\n" + \
+                 str(triggers.gyroscope_y_variance) + " = Gyroscope Y variance\n" + \
+                 str(triggers.gyroscope_z_variance) + " = Gyroscope Z variance\n" + \
+                 str(triggers.gyroscope_wait_seconds) + " = Seconds between 'Gyroscope' readings\n"
 
-    return triggers_file_str
+    return return_str
 
 
 def convert_triggers_lines_to_obj(trigger_text_file):
@@ -477,11 +420,12 @@ def convert_triggers_lines_to_obj(trigger_text_file):
 
 def get_triggers_variances_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
-    if os.path.isfile(file_locations.trigger_variances_file_location):
-        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_file_location).split("\n")
+    if os.path.isfile(file_locations.trigger_variances_config):
+        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_config)
+        trigger_file_content = trigger_file_content.split("\n")
         installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
     else:
-        logger.primary_logger.warning("Trigger Variance Configuration file not found, using and saving default")
+        logger.primary_logger.info("Trigger Variance Configuration file not found - Saving Default")
         installed_trigger_variances = CreateTriggerVariances()
         write_triggers_to_file(installed_trigger_variances)
 
@@ -495,7 +439,6 @@ def write_triggers_to_file(triggers):
             new_triggers = triggers
         else:
             new_triggers = convert_triggers_to_str(triggers)
-
-        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_file_location, new_triggers)
+        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_config, new_triggers)
     except Exception as error:
         logger.primary_logger.error("Unable to write trigger file: " + str(error))

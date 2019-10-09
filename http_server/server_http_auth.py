@@ -17,52 +17,54 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
-from werkzeug.security import generate_password_hash
+from operations_modules import app_config_access
+
 
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
 
 
-class CreateHTTPAuth:
-    def __init__(self):
-        self.http_flask_user = default_http_flask_user
-        self.http_flask_password = generate_password_hash(default_http_flask_password)
+def set_http_auth_from_file():
+    """ Loads configuration from file and returns it as a configuration object. """
+    logger.primary_logger.debug("Loading HTTP Authentication File")
 
-    def set_http_auth_from_file(self):
-        """ Loads configuration from file and returns it as a configuration object. """
-        logger.primary_logger.debug("Loading HTTP Authentication File")
+    if os.path.isfile(file_locations.main_config):
+        try:
+            auth_file = open(file_locations.http_auth, "r")
+            auth_file_lines = auth_file.readlines()
+            auth_file.close()
+            app_config_access.http_flask_user = auth_file_lines[0].strip()
+            app_config_access.http_flask_password = auth_file_lines[1].strip()
+        except Exception as error:
+            save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
+            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+    else:
+        logger.primary_logger.warning("Configuration file not found, using and saving default")
+        save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
 
-        if os.path.isfile(file_locations.config_file_location):
-            try:
-                auth_file = open(file_locations.http_auth_file_location, "r")
-                auth_file_lines = auth_file.readlines()
-                auth_file.close()
-                self.http_flask_user = auth_file_lines[0].strip()
-                self.http_flask_password = auth_file_lines[1].strip()
-            except Exception as error:
-                self.save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
-                logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
-        else:
-            logger.primary_logger.warning("Configuration file not found, using and saving default")
-            self.save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
 
-    @staticmethod
-    def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
-        if len(new_http_flask_user) > 2 and len(new_http_flask_password) > 2:
-            new_http_flask_user = new_http_flask_user
-            new_http_flask_password = new_http_flask_password
-            return new_http_flask_user, new_http_flask_password
-        else:
-            logger.primary_logger.warning("HTTP Authentication User or Password are less then 4 chars.  Using default.")
-            return default_http_flask_user, default_http_flask_password
+def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
+    if len(new_http_flask_user) > 2 and len(new_http_flask_password) > 2:
+        new_http_flask_user = new_http_flask_user
+        new_http_flask_password = new_http_flask_password
+        return new_http_flask_user, new_http_flask_password
+    else:
+        logger.primary_logger.warning("HTTP Authentication User or Password are less then 4 chars.  Using default.")
+        return "Kootnet", "sensors"
 
-    def save_http_auth_to_file(self, new_http_flask_user, new_http_flask_password):
-        verified_user, verified_password = self._verify_http_credentials(new_http_flask_user, new_http_flask_password)
-        self.http_flask_user = verified_user
-        self.http_flask_password = generate_password_hash(verified_password)
-        save_data = self.http_flask_user + "\n" + self.http_flask_password
-        auth_file = open(file_locations.http_auth_file_location, "w")
-        auth_file.write(save_data)
-        auth_file.close()
+
+def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
+    verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
+    http_flask_user = verified_user
+    http_flask_password = generate_password_hash(verified_password)
+    save_data = http_flask_user + "\n" + http_flask_password
+    auth_file = open(file_locations.http_auth, "w")
+    auth_file.write(save_data)
+    auth_file.close()
+
+
+auth = HTTPBasicAuth()

@@ -55,7 +55,7 @@ td {
 #content-wrapper {
   min-height: 100%;
   overflow-x: hidden;
-  margin-left: 0px;
+  margin-left: 0;
   transition: margin-left 0.2s;
   
   /* sticky bottom */
@@ -67,7 +67,7 @@ td {
 #footer {
   box-sizing: border-box;
   height: 50px;
-  margin-left: 0px;
+  margin-left: 0;
   transition: margin-left 0.2s;
 }
 
@@ -145,7 +145,7 @@ td {
 }
 
 #sidedrawer > ul {
-  padding-left: 0px;
+  padding-left: 0;
 }
 
 #sidedrawer > ul > li:first-child {
@@ -163,7 +163,7 @@ td {
 }
 
 #sidedrawer strong + ul > li {
-  padding: 6px 0px;
+  padding: 6px 0;
 }
 
 

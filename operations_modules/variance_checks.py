@@ -20,7 +20,7 @@ import socket
 from time import sleep
 from datetime import datetime
 from operations_modules import logger
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from operations_modules import sqlite_database
 
 
@@ -30,7 +30,7 @@ class CreateTriggerDatabaseData:
     def __init__(self, sensor_database_variable):
         self.variance = 99999.99
 
-        if configuration_main.installed_sensors.linux_system:
+        if app_config_access.installed_sensors.linux_system:
             self.sql_columns_str = "DateTime,SensorName,IP," + sensor_database_variable
         else:
             self.sql_columns_str_start = "DateTime," + sensor_database_variable
@@ -69,16 +69,16 @@ class CreateSensorCommands:
 class CreateVarianceRecording:
     def __init__(self, sensor_access):
         self.sensor_types = CreateSensorCommands()
-        self.number_of_sets = 2
+        self.number_of_sets = 3
         self.sensor_access = sensor_access
 
     def check_sensor_uptime(self):
         """ If enabled, writes sensor uptime to SQL trigger database per the variance setting. """
-        if configuration_main.trigger_variances.sensor_uptime_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
+        if app_config_access.trigger_variances.sensor_uptime_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
 
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.sensor_uptime)
-            sensor_wait_seconds = configuration_main.trigger_variances.sensor_uptime_wait_seconds
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.sensor_uptime)
+            sensor_wait_seconds = app_config_access.trigger_variances.sensor_uptime_wait_seconds
             sensor_type = self.sensor_types.system_uptime
 
             while True:
@@ -91,120 +91,120 @@ class CreateVarianceRecording:
 
     def check_cpu_temperature(self):
         """ If enabled, writes CPU temperature to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_cpu_temperature and \
-                configuration_main.trigger_variances.cpu_temperature_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.system_temperature)
-            trigger_object.variance = configuration_main.trigger_variances.cpu_temperature_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.cpu_temperature_wait_seconds
+        if app_config_access.installed_sensors.has_cpu_temperature and \
+                app_config_access.trigger_variances.cpu_temperature_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.system_temperature)
+            trigger_object.variance = app_config_access.trigger_variances.cpu_temperature_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.cpu_temperature_wait_seconds
             trigger_object.sensor_type = self.sensor_types.cpu_temp
 
             self._universal_single_data_check(trigger_object)
 
     def check_env_temperature(self):
         """ If enabled, writes sensor temperature to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_env_temperature and \
-                configuration_main.trigger_variances.env_temperature_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.env_temperature)
-            trigger_object.variance = configuration_main.trigger_variances.env_temperature_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.env_temperature_wait_seconds
+        if app_config_access.installed_sensors.has_env_temperature and \
+                app_config_access.trigger_variances.env_temperature_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.env_temperature)
+            trigger_object.variance = app_config_access.trigger_variances.env_temperature_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.env_temperature_wait_seconds
             trigger_object.sensor_type = self.sensor_types.environmental_temp
 
             self._universal_single_data_check(trigger_object)
 
     def check_pressure(self):
         """ If enabled, writes pressure to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_pressure and \
-                configuration_main.trigger_variances.pressure_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.pressure)
-            trigger_object.variance = configuration_main.trigger_variances.pressure_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.pressure_wait_seconds
+        if app_config_access.installed_sensors.has_pressure and \
+                app_config_access.trigger_variances.pressure_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.pressure)
+            trigger_object.variance = app_config_access.trigger_variances.pressure_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.pressure_wait_seconds
             trigger_object.sensor_type = self.sensor_types.pressure
 
             self._universal_single_data_check(trigger_object)
 
     def check_altitude(self):
         """ If enabled, writes altitude to SQL trigger database per the variance setting. """
-        if configuration_main.current_config.enable_trigger_recording and \
-                configuration_main.trigger_variances.altitude_enabled and \
-                configuration_main.installed_sensors.has_altitude:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.altitude)
-            trigger_object.variance = configuration_main.trigger_variances.altitude_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.altitude_wait_seconds
+        if app_config_access.current_config.enable_trigger_recording and \
+                app_config_access.trigger_variances.altitude_enabled and \
+                app_config_access.installed_sensors.has_altitude:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.altitude)
+            trigger_object.variance = app_config_access.trigger_variances.altitude_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.altitude_wait_seconds
             trigger_object.sensor_type = self.sensor_types.altitude
 
             self._universal_single_data_check(trigger_object)
 
     def check_humidity(self):
         """ If enabled, writes humidity to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_humidity and \
-                configuration_main.trigger_variances.humidity_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.humidity)
-            trigger_object.variance = configuration_main.trigger_variances.humidity_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.humidity_wait_seconds
+        if app_config_access.installed_sensors.has_humidity and \
+                app_config_access.trigger_variances.humidity_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.humidity)
+            trigger_object.variance = app_config_access.trigger_variances.humidity_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.humidity_wait_seconds
             trigger_object.sensor_type = self.sensor_types.humidity
 
             self._universal_single_data_check(trigger_object)
 
     def check_distance(self):
         """ If enabled, writes distance to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_distance and \
-                configuration_main.trigger_variances.distance_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.distance)
-            trigger_object.variance = configuration_main.trigger_variances.distance_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.distance_wait_seconds
+        if app_config_access.installed_sensors.has_distance and \
+                app_config_access.trigger_variances.distance_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.distance)
+            trigger_object.variance = app_config_access.trigger_variances.distance_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.distance_wait_seconds
             trigger_object.sensor_type = self.sensor_types.distance
 
             self._universal_single_data_check(trigger_object)
 
     def check_lumen(self):
         """ If enabled, writes lumen to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_lumen and \
-                configuration_main.trigger_variances.lumen_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            trigger_object = CreateTriggerDatabaseData(configuration_main.database_variables.lumen)
-            trigger_object.variance = configuration_main.trigger_variances.lumen_variance
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.lumen_wait_seconds
+        if app_config_access.installed_sensors.has_lumen and \
+                app_config_access.trigger_variances.lumen_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.lumen)
+            trigger_object.variance = app_config_access.trigger_variances.lumen_variance
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.lumen_wait_seconds
             trigger_object.sensor_type = self.sensor_types.lumen
 
             self._universal_single_data_check(trigger_object)
 
     def check_ems(self):
         """ If enabled, writes available colours (Electromagnetic Spectrum) to SQL trigger database per the variance setting. """
-        if configuration_main.current_config.enable_trigger_recording:
-            if configuration_main.installed_sensors.has_violet:
-                database_sensor_variable = configuration_main.database_variables.red + "," + \
-                                           configuration_main.database_variables.orange + "," + \
-                                           configuration_main.database_variables.yellow + "," + \
-                                           configuration_main.database_variables.green + "," + \
-                                           configuration_main.database_variables.blue + "," + \
-                                           configuration_main.database_variables.violet
+        if app_config_access.current_config.enable_trigger_recording:
+            if app_config_access.installed_sensors.has_violet:
+                database_sensor_variable = app_config_access.database_variables.red + "," + \
+                                           app_config_access.database_variables.orange + "," + \
+                                           app_config_access.database_variables.yellow + "," + \
+                                           app_config_access.database_variables.green + "," + \
+                                           app_config_access.database_variables.blue + "," + \
+                                           app_config_access.database_variables.violet
 
                 trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-                trigger_object.variance = [configuration_main.trigger_variances.red_variance,
-                                           configuration_main.trigger_variances.orange_variance,
-                                           configuration_main.trigger_variances.yellow_variance,
-                                           configuration_main.trigger_variances.green_variance,
-                                           configuration_main.trigger_variances.blue_variance,
-                                           configuration_main.trigger_variances.violet_variance]
-                trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.colour_wait_seconds
+                trigger_object.variance = [app_config_access.trigger_variances.red_variance,
+                                           app_config_access.trigger_variances.orange_variance,
+                                           app_config_access.trigger_variances.yellow_variance,
+                                           app_config_access.trigger_variances.green_variance,
+                                           app_config_access.trigger_variances.blue_variance,
+                                           app_config_access.trigger_variances.violet_variance]
+                trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
                 trigger_object.sensor_type = self.sensor_types.electromagnetic_spectrum
 
                 self._universal_sextuple_data_check(trigger_object)
-            elif configuration_main.installed_sensors.has_red:
-                database_sensor_variable = configuration_main.database_variables.red + "," + \
-                                           configuration_main.database_variables.green + "," + \
-                                           configuration_main.database_variables.blue
+            elif app_config_access.installed_sensors.has_red:
+                database_sensor_variable = app_config_access.database_variables.red + "," + \
+                                           app_config_access.database_variables.green + "," + \
+                                           app_config_access.database_variables.blue
 
                 trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-                trigger_object.variance = [configuration_main.trigger_variances.red_variance,
-                                           configuration_main.trigger_variances.green_variance,
-                                           configuration_main.trigger_variances.blue_variance]
-                trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.colour_wait_seconds
+                trigger_object.variance = [app_config_access.trigger_variances.red_variance,
+                                           app_config_access.trigger_variances.green_variance,
+                                           app_config_access.trigger_variances.blue_variance]
+                trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
                 trigger_object.sensor_type = self.sensor_types.electromagnetic_spectrum
 
                 self._universal_triple_data_check(trigger_object)
@@ -213,54 +213,54 @@ class CreateVarianceRecording:
 
     def check_accelerometer_xyz(self):
         """ If enabled, writes Acceleration to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_acc and \
-                configuration_main.trigger_variances.accelerometer_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            database_sensor_variable = configuration_main.database_variables.acc_x + "," + \
-                                       configuration_main.database_variables.acc_y + "," + \
-                                       configuration_main.database_variables.acc_z
+        if app_config_access.installed_sensors.has_acc and \
+                app_config_access.trigger_variances.accelerometer_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            database_sensor_variable = app_config_access.database_variables.acc_x + "," + \
+                                       app_config_access.database_variables.acc_y + "," + \
+                                       app_config_access.database_variables.acc_z
 
             trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-            trigger_object.variance = [configuration_main.trigger_variances.accelerometer_x_variance,
-                                       configuration_main.trigger_variances.accelerometer_y_variance,
-                                       configuration_main.trigger_variances.accelerometer_z_variance]
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.accelerometer_wait_seconds
+            trigger_object.variance = [app_config_access.trigger_variances.accelerometer_x_variance,
+                                       app_config_access.trigger_variances.accelerometer_y_variance,
+                                       app_config_access.trigger_variances.accelerometer_z_variance]
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.accelerometer_wait_seconds
             trigger_object.sensor_type = self.sensor_types.accelerometer_xyz
 
             self._universal_triple_data_check(trigger_object)
 
     def check_magnetometer_xyz(self):
         """ If enabled, writes Magnetometer to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_mag and \
-                configuration_main.trigger_variances.magnetometer_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            database_sensor_variable = configuration_main.database_variables.mag_x + "," + \
-                                       configuration_main.database_variables.mag_y + "," + \
-                                       configuration_main.database_variables.mag_z
+        if app_config_access.installed_sensors.has_mag and \
+                app_config_access.trigger_variances.magnetometer_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            database_sensor_variable = app_config_access.database_variables.mag_x + "," + \
+                                       app_config_access.database_variables.mag_y + "," + \
+                                       app_config_access.database_variables.mag_z
 
             trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-            trigger_object.variance = [configuration_main.trigger_variances.magnetometer_x_variance,
-                                       configuration_main.trigger_variances.magnetometer_y_variance,
-                                       configuration_main.trigger_variances.magnetometer_z_variance]
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.magnetometer_wait_seconds
+            trigger_object.variance = [app_config_access.trigger_variances.magnetometer_x_variance,
+                                       app_config_access.trigger_variances.magnetometer_y_variance,
+                                       app_config_access.trigger_variances.magnetometer_z_variance]
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.magnetometer_wait_seconds
             trigger_object.sensor_type = self.sensor_types.magnetometer_xyz
 
             self._universal_triple_data_check(trigger_object)
 
     def check_gyroscope_xyz(self):
         """ If enabled, writes Gyroscope to SQL trigger database per the variance setting. """
-        if configuration_main.installed_sensors.has_gyro and \
-                configuration_main.trigger_variances.gyroscope_enabled and \
-                configuration_main.current_config.enable_trigger_recording:
-            database_sensor_variable = configuration_main.database_variables.gyro_x + "," + \
-                                       configuration_main.database_variables.gyro_y + "," + \
-                                       configuration_main.database_variables.gyro_z
+        if app_config_access.installed_sensors.has_gyro and \
+                app_config_access.trigger_variances.gyroscope_enabled and \
+                app_config_access.current_config.enable_trigger_recording:
+            database_sensor_variable = app_config_access.database_variables.gyro_x + "," + \
+                                       app_config_access.database_variables.gyro_y + "," + \
+                                       app_config_access.database_variables.gyro_z
 
             trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-            trigger_object.variance = [configuration_main.trigger_variances.gyroscope_x_variance,
-                                       configuration_main.trigger_variances.gyroscope_y_variance,
-                                       configuration_main.trigger_variances.gyroscope_z_variance]
-            trigger_object.sensor_wait_seconds = configuration_main.trigger_variances.gyroscope_wait_seconds
+            trigger_object.variance = [app_config_access.trigger_variances.gyroscope_x_variance,
+                                       app_config_access.trigger_variances.gyroscope_y_variance,
+                                       app_config_access.trigger_variances.gyroscope_z_variance]
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.gyroscope_wait_seconds
             trigger_object.sensor_type = self.sensor_types.gyroscope_xyz
 
             self._universal_triple_data_check(trigger_object)
@@ -275,7 +275,7 @@ class CreateVarianceRecording:
         elif sensor_type == self.sensor_types.environmental_temp:
             return_data = self.sensor_access.get_sensor_temperature()
         elif sensor_type == self.sensor_types.env_temp_offset:
-            return_data = configuration_main.current_config.temperature_offset
+            return_data = app_config_access.current_config.temperature_offset
         elif sensor_type == self.sensor_types.pressure:
             return_data = self.sensor_access.get_pressure()
         elif sensor_type == self.sensor_types.altitude:
@@ -493,7 +493,7 @@ class CreateVarianceRecording:
 
         count = 0
         for reading in trigger_object.reading_and_datetime_stamps[0]:
-            if configuration_main.installed_sensors.linux_system:
+            if app_config_access.installed_sensors.linux_system:
                 sql_execute_list.append(sql_query_start +
                                         trigger_object.sql_columns_str +
                                         sql_query_values_start + "'" +
@@ -527,7 +527,7 @@ class CreateVarianceRecording:
         for reading in trigger_object.reading_and_datetime_stamps[0]:
             x, y, z = reading[1:-1].split(",")
 
-            if configuration_main.installed_sensors.linux_system:
+            if app_config_access.installed_sensors.linux_system:
                 sql_execute_list.append(sql_query_start +
                                         trigger_object.sql_columns_str +
                                         sql_query_values_start + "'" +
@@ -565,7 +565,7 @@ class CreateVarianceRecording:
         for reading in trigger_object.reading_and_datetime_stamps[0]:
             data_1, data_2, data_3, data_4, data_5, data_6 = reading[1:-1].split(",")
 
-            if configuration_main.installed_sensors.linux_system:
+            if app_config_access.installed_sensors.linux_system:
                 sql_execute_list.append(sql_query_start +
                                         trigger_object.sql_columns_str +
                                         sql_query_values_start + "'" +
@@ -599,7 +599,7 @@ class CreateVarianceRecording:
 
 def _get_ip():
     ip_address = "0.0.0.0"
-    if configuration_main.installed_sensors.linux_system:
+    if app_config_access.installed_sensors.linux_system:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
@@ -612,7 +612,7 @@ def _get_ip():
 
 def _get_hostname():
     hostname = "Invalid"
-    if configuration_main.installed_sensors.linux_system:
+    if app_config_access.installed_sensors.linux_system:
         try:
             hostname = str(socket.gethostname())
             logger.sensors_logger.debug("Sensor Hostname Retrieval - OK")

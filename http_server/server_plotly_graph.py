@@ -17,15 +17,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
-from plotly import subplots, offline, io as plotly_io
+from multiprocessing import Process
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_variables
-from operations_modules import configuration_main
+from operations_modules import app_config_access
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
+try:
+    from plotly import subplots, offline, io as plotly_io
+except ImportError as import_error:
+    subplots, offline, plotly_io = None, None, None
+    log_message = "**** Missing Plotly Graph Dependencies - There may be unintended side effects as a result: "
+    logger.primary_logger.error(log_message + str(import_error))
 
-plotly_io.templates.default = configuration_main.plotly_theme
+plotly_io.templates.default = app_config_access.plotly_theme
 
 
 def create_plotly_graph(new_graph_data):
@@ -36,9 +41,10 @@ def create_plotly_graph(new_graph_data):
         new_graph_data.bypass_sql_skip = True
 
     logger.primary_logger.info("Plotly Graph Generation Started")
-    _start_plotly_graph(new_graph_data)
+    graph_multiprocess = Process(target=_start_plotly_graph, args=[new_graph_data])
+    graph_multiprocess.start()
+    graph_multiprocess.join()
     logger.primary_logger.info("Plotly Graph Generation Complete")
-
     server_plotly_graph_variables.graph_creation_in_progress = False
 
 
@@ -50,39 +56,28 @@ def _start_plotly_graph(graph_data):
     logger.primary_logger.debug("SQL End DateTime: " + graph_data.graph_end)
 
     # Adjust dates to Database timezone in UTC 0
-    sql_column_names = app_variables.CreateDatabaseVariables()
+    sql_column_names = app_config_access.database_variables
     new_time_offset = int(graph_data.datetime_offset) * -1
     get_sql_graph_start = server_plotly_graph_extras.adjust_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = server_plotly_graph_extras.adjust_datetime(graph_data.graph_end, new_time_offset)
 
     for var_column in graph_data.graph_columns:
-        var_sql_query = "SELECT " + \
-                        var_column + \
-                        " FROM " + \
-                        graph_data.graph_table + \
-                        " WHERE " + var_column + " IS NOT NULL AND " + \
-                        "DateTime BETWEEN datetime('" + \
-                        get_sql_graph_start + \
-                        "') AND datetime('" + \
-                        get_sql_graph_end + \
-                        "') LIMIT " + \
-                        str(graph_data.max_sql_queries)
+        var_sql_query = "SELECT " + var_column + \
+                        " FROM " + graph_data.graph_table + \
+                        " WHERE " + var_column + \
+                        " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                        "') AND datetime('" + get_sql_graph_end + \
+                        "') LIMIT " + str(graph_data.max_sql_queries)
 
-        var_time_sql_query = "SELECT " + \
-                             sql_column_names.all_tables_datetime + \
-                             " FROM " + \
-                             graph_data.graph_table + \
-                             " WHERE " + var_column + " IS NOT NULL AND " + \
-                             "DateTime BETWEEN datetime('" + \
-                             get_sql_graph_start + \
-                             "') AND datetime('" + \
-                             get_sql_graph_end + \
-                             "') LIMIT " + \
-                             str(graph_data.max_sql_queries)
+        var_time_sql_query = "SELECT " + sql_column_names.all_tables_datetime + \
+                             " FROM " + graph_data.graph_table + \
+                             " WHERE " + var_column + \
+                             " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                             "') AND datetime('" + get_sql_graph_end + \
+                             "') LIMIT " + str(graph_data.max_sql_queries)
 
         # Get accompanying DateTime based on sensor data actually being present
         sql_column_date_time = _get_sql_data(graph_data, var_time_sql_query)
-        logger.primary_logger.debug("SQL DateTime before conversion: " + graph_data.graph_end)
         apply_sql_date_time_hour_offset(sql_column_date_time, graph_data.datetime_offset)
 
         if var_column == sql_column_names.all_tables_datetime:
@@ -114,34 +109,29 @@ def _start_plotly_graph(graph_data):
                         count = count + 1
                         logger.primary_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
             else:
-                var_sql_query = "SELECT " + \
-                                sql_column_names.env_temperature_offset + \
-                                " FROM " + \
-                                graph_data.graph_table + \
-                                " WHERE DateTime BETWEEN datetime('" + \
-                                get_sql_graph_start + \
-                                "') AND datetime('" + \
-                                get_sql_graph_end + \
-                                "') LIMIT " + \
-                                str(graph_data.max_sql_queries)
+                var_sql_query = "SELECT " + sql_column_names.env_temperature_offset + \
+                                " FROM " + graph_data.graph_table + \
+                                " WHERE DateTime BETWEEN datetime('" + get_sql_graph_start + \
+                                "') AND datetime('" + get_sql_graph_end + \
+                                "') LIMIT " + str(graph_data.max_sql_queries)
 
                 sql_temp_offset_data = _get_sql_data(graph_data, var_sql_query)
 
                 warn_message = False
+                error_message = ""
                 count = 0
                 for data in sql_column_data:
                     try:
                         sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
                         count = count + 1
                     except Exception as error:
-                        logger.primary_logger.debug(
-                            "Bad SQL entry from Column 'EnvironmentTemp' or 'EnvironmentTempOffset' - " + str(error))
-                        count = count + 1
+                        if error_message == "":
+                            error_message = str(error)
                         warn_message = True
+                        count = count + 1
 
                 if warn_message:
-                    logger.primary_logger.warning("Plotly Graph: " +
-                                                  "One or more missing entries in 'EnvironmentTemp' or 'EnvTempOffset'")
+                    logger.primary_logger.warning("Plotly Graph - Bad Env temperature or offset: " + error_message)
 
             graph_data.sql_hat_temp = sql_column_data
             graph_data.sql_hat_temp_date_time = sql_column_date_time
@@ -245,7 +235,7 @@ def _get_sql_data(graph_interval_data, sql_command):
     return_data = []
 
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_database_location)
+        database_connection = sqlite3.connect(file_locations.sensor_database)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_command)
         sql_column_data = sqlite_database.fetchall()
@@ -267,8 +257,6 @@ def _get_sql_data(graph_interval_data, sql_command):
 
         skip_count += 1
         count += 1
-
-    logger.primary_logger.debug("SQL execute Command: " + str(sql_command))
     logger.primary_logger.debug("SQL Column Data Length: " + str(len(return_data)))
     if null_data_entries:
         logger.primary_logger.warning("NULL SQL Entries found using: " + str(sql_command))
@@ -286,168 +274,99 @@ def _plotly_graph(graph_data):
     graph_data.graph_collection = []
 
     if len(graph_data.sql_time) > 1:
-        if len(graph_data.sql_host_name) > 1:
-            server_plotly_graph_extras.graph_host_name(graph_data)
-
-        if len(graph_data.sql_up_time) > 1:
-            server_plotly_graph_extras.graph_sql_uptime(graph_data)
-
-        if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
-            server_plotly_graph_extras.graph_sql_cpu_env_temperature(graph_data)
-
-        if len(graph_data.sql_pressure) > 2:
-            server_plotly_graph_extras.graph_sql_pressure(graph_data)
-
-        if len(graph_data.sql_altitude) > 2:
-            server_plotly_graph_extras.graph_sql_altitude(graph_data)
-
-        if len(graph_data.sql_humidity) > 2:
-            server_plotly_graph_extras.graph_sql_humidity(graph_data)
-
-        if len(graph_data.sql_distance) > 2:
-            server_plotly_graph_extras.graph_sql_distance(graph_data)
-
-        if len(graph_data.sql_gas_resistance) > 2 or len(graph_data.sql_gas_oxidising) > 2 \
-                or len(graph_data.sql_gas_reducing) > 2 or len(graph_data.sql_gas_nh3) > 2:
-            server_plotly_graph_extras.graph_sql_gas(graph_data)
-
-        if len(graph_data.sql_pm_1) > 2 or len(graph_data.sql_pm_2_5) > 2 or len(graph_data.sql_pm_10) > 2:
-            server_plotly_graph_extras.graph_sql_particulate_matter(graph_data)
-
-        if len(graph_data.sql_lumen) > 2:
-            server_plotly_graph_extras.graph_sql_lumen(graph_data)
-
-        if len(graph_data.sql_red) > 2:
-            server_plotly_graph_extras.graph_sql_ems_colours(graph_data)
-
-        if len(graph_data.sql_uv_index) > 2 or len(graph_data.sql_uv_a) > 2 or len(graph_data.sql_uv_b) > 2:
-            server_plotly_graph_extras.graph_sql_ultra_violet(graph_data)
-
-        if len(graph_data.sql_acc_x) > 2:
-            server_plotly_graph_extras.graph_sql_accelerometer(graph_data)
-
-        if len(graph_data.sql_mg_x) > 2:
-            server_plotly_graph_extras.graph_sql_magnetometer(graph_data)
-
-        if len(graph_data.sql_gyro_x) > 2:
-            server_plotly_graph_extras.graph_sql_gyroscope(graph_data)
-
-        fig = subplots.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
-
-        for graph in graph_data.graph_collection:
-            fig.add_trace(graph[0], graph[1], graph[2])
-        if len(graph_data.sql_ip) > 1:
-            fig['layout'].update(title="Sensor IP: " + str(graph_data.sql_ip[0]))
-
-        if graph_data.row_count > 4:
-            fig['layout'].update(height=2048)
-
         try:
-            if graph_data.graph_table == configuration_main.database_variables.table_interval:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.interval_plotly_html_filename)
+            server_plotly_graph_extras.add_plots(graph_data)
+
+            fig = subplots.make_subplots(rows=graph_data.row_count, cols=1, subplot_titles=graph_data.sub_plots)
+
+            for graph in graph_data.graph_collection:
+                fig.add_trace(graph[0], graph[1], graph[2])
+            if len(graph_data.sql_ip) > 1:
+                start_text = "Plotly Graph for Sensor IP: "
+                fig['layout'].update(title=start_text + str(graph_data.sql_ip[0]), title_font_size=25)
+
+            if graph_data.row_count > 4:
+                fig['layout'].update(height=2048)
+
+            if graph_data.graph_table == app_config_access.database_variables.table_interval:
+                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_interval)
             else:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.triggers_plotly_html_filename)
+                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_triggers)
             logger.primary_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
-            logger.primary_logger.error("Plotly Graph Creation - Failed - " + str(error))
+            logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))
     else:
         logger.primary_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
 
 
 def check_form_columns(form_request):
-    sql_column_selection = [configuration_main.database_variables.all_tables_datetime,
-                            configuration_main.database_variables.sensor_name,
-                            configuration_main.database_variables.ip]
+    sql_column_selection = [app_config_access.database_variables.all_tables_datetime,
+                            app_config_access.database_variables.sensor_name,
+                            app_config_access.database_variables.ip]
     if form_request.get("SensorUptime") is not None:
-        sql_column_selection.append(configuration_main.database_variables.sensor_uptime)
+        sql_column_selection.append(app_config_access.database_variables.sensor_uptime)
 
     if form_request.get("CPUTemp") is not None:
-        sql_column_selection.append(configuration_main.database_variables.system_temperature)
+        sql_column_selection.append(app_config_access.database_variables.system_temperature)
 
     if form_request.get("EnvTemp") is not None:
-        sql_column_selection.append(configuration_main.database_variables.env_temperature)
+        sql_column_selection.append(app_config_access.database_variables.env_temperature)
 
     if form_request.get("Pressure") is not None:
-        sql_column_selection.append(configuration_main.database_variables.pressure)
+        sql_column_selection.append(app_config_access.database_variables.pressure)
 
     if form_request.get("Altitude") is not None:
-        sql_column_selection.append(configuration_main.database_variables.altitude)
+        sql_column_selection.append(app_config_access.database_variables.altitude)
 
     if form_request.get("Humidity") is not None:
-        sql_column_selection.append(configuration_main.database_variables.humidity)
+        sql_column_selection.append(app_config_access.database_variables.humidity)
 
     if form_request.get("Distance") is not None:
-        sql_column_selection.append(configuration_main.database_variables.distance)
+        sql_column_selection.append(app_config_access.database_variables.distance)
 
     if form_request.get("Gas") is not None:
-        sql_column_selection.append(configuration_main.database_variables.gas_resistance_index)
-        sql_column_selection.append(configuration_main.database_variables.gas_nh3)
-        sql_column_selection.append(configuration_main.database_variables.gas_oxidising)
-        sql_column_selection.append(configuration_main.database_variables.gas_reducing)
+        sql_column_selection.append(app_config_access.database_variables.gas_resistance_index)
+        sql_column_selection.append(app_config_access.database_variables.gas_nh3)
+        sql_column_selection.append(app_config_access.database_variables.gas_oxidising)
+        sql_column_selection.append(app_config_access.database_variables.gas_reducing)
 
     if form_request.get("ParticulateMatter") is not None:
-        sql_column_selection.append(configuration_main.database_variables.particulate_matter_1)
-        sql_column_selection.append(configuration_main.database_variables.particulate_matter_2_5)
-        sql_column_selection.append(configuration_main.database_variables.particulate_matter_10)
+        sql_column_selection.append(app_config_access.database_variables.particulate_matter_1)
+        sql_column_selection.append(app_config_access.database_variables.particulate_matter_2_5)
+        sql_column_selection.append(app_config_access.database_variables.particulate_matter_10)
 
     if form_request.get("Lumen") is not None:
-        sql_column_selection.append(configuration_main.database_variables.lumen)
+        sql_column_selection.append(app_config_access.database_variables.lumen)
 
     if form_request.get("Colours") is not None:
-        sql_column_selection.append(configuration_main.database_variables.red)
-        sql_column_selection.append(configuration_main.database_variables.orange)
-        sql_column_selection.append(configuration_main.database_variables.yellow)
-        sql_column_selection.append(configuration_main.database_variables.green)
-        sql_column_selection.append(configuration_main.database_variables.blue)
-        sql_column_selection.append(configuration_main.database_variables.violet)
+        sql_column_selection.append(app_config_access.database_variables.red)
+        sql_column_selection.append(app_config_access.database_variables.orange)
+        sql_column_selection.append(app_config_access.database_variables.yellow)
+        sql_column_selection.append(app_config_access.database_variables.green)
+        sql_column_selection.append(app_config_access.database_variables.blue)
+        sql_column_selection.append(app_config_access.database_variables.violet)
 
     if form_request.get("UltraViolet") is not None:
-        sql_column_selection.append(configuration_main.database_variables.ultra_violet_index)
-        sql_column_selection.append(configuration_main.database_variables.ultra_violet_a)
-        sql_column_selection.append(configuration_main.database_variables.ultra_violet_b)
+        sql_column_selection.append(app_config_access.database_variables.ultra_violet_index)
+        sql_column_selection.append(app_config_access.database_variables.ultra_violet_a)
+        sql_column_selection.append(app_config_access.database_variables.ultra_violet_b)
 
     if form_request.get("Accelerometer") is not None:
-        sql_column_selection.append(configuration_main.database_variables.acc_x)
-        sql_column_selection.append(configuration_main.database_variables.acc_y)
-        sql_column_selection.append(configuration_main.database_variables.acc_z)
+        sql_column_selection.append(app_config_access.database_variables.acc_x)
+        sql_column_selection.append(app_config_access.database_variables.acc_y)
+        sql_column_selection.append(app_config_access.database_variables.acc_z)
 
     if form_request.get("Magnetometer") is not None:
-        sql_column_selection.append(configuration_main.database_variables.mag_x)
-        sql_column_selection.append(configuration_main.database_variables.mag_y)
-        sql_column_selection.append(configuration_main.database_variables.mag_z)
+        sql_column_selection.append(app_config_access.database_variables.mag_x)
+        sql_column_selection.append(app_config_access.database_variables.mag_y)
+        sql_column_selection.append(app_config_access.database_variables.mag_z)
 
     if form_request.get("Gyroscope") is not None:
-        sql_column_selection.append(configuration_main.database_variables.gyro_x)
-        sql_column_selection.append(configuration_main.database_variables.gyro_y)
-        sql_column_selection.append(configuration_main.database_variables.gyro_z)
+        sql_column_selection.append(app_config_access.database_variables.gyro_x)
+        sql_column_selection.append(app_config_access.database_variables.gyro_y)
+        sql_column_selection.append(app_config_access.database_variables.gyro_z)
 
     return sql_column_selection
-
-
-def get_ems_for_render_template(ems):
-    if ems == "NoSensor":
-        red = "NoSensor"
-        orange = "NoSensor"
-        yellow = "NoSensor"
-        green = "NoSensor"
-        blue = "NoSensor"
-        violet = "NoSensor"
-    else:
-        if len(ems) > 3:
-            red = ems[0]
-            orange = ems[1]
-            yellow = ems[2]
-            green = ems[3]
-            blue = ems[4]
-            violet = ems[5]
-        else:
-            red = ems[0]
-            orange = "NoSensor"
-            yellow = "NoSensor"
-            green = ems[1]
-            blue = ems[2]
-            violet = "NoSensor"
-    return [red, orange, yellow, green, blue, violet]
 
 
 def apply_sql_date_time_hour_offset(datetime_list, hour_offset):

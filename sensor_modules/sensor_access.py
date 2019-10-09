@@ -17,465 +17,210 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import psutil
 import math
 from time import sleep
 from datetime import datetime
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_variables
+from operations_modules import os_cli_commands
+from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
-from operations_modules import configuration_main
-from operations_modules import software_version
-from sensor_modules import sensors_initialization as sensor_direct_access
+from operations_modules import app_config_access
+from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
+from sensor_modules import sensor_ready_checks
+from sensor_modules import sensors_initialization as sensors_direct
 
-command_data_separator = configuration_main.command_data_separator
-
-
-def get_sensor_readings():
-    """ Returns sensor types and readings for interval and trigger sensors in html table format. """
-
-    interval_readings = get_interval_sensor_readings().split(command_data_separator)
-
-    str_interval_types = interval_readings[0].split(",")
-    str_interval_types_data = interval_readings[1].split(",")
-
-    return_data = ""
-    return_types = ""
-    for interval_type, interval_data in zip(str_interval_types, str_interval_types_data):
-        return_types += "<th><span style='background-color: #00ffff;'>" + interval_type + "</span></th>"
-        return_data += "<th><span style='background-color: #0BB10D;'>" + interval_data + "</span></th>"
-
-    return [return_types, return_data]
+sensor_in_use_delay = 0.1
 
 
-def get_system_information():
-    """ Returns System Information needed for a Control Center 'System Report'. """
-    free_disk = psutil.disk_usage("/")[2]
-
-    ip_address = get_ip()
-    try:
-        str_sensor_data = get_hostname() + \
-                          ",<a href='https://" + ip_address + ":10065/Quick' target='_blank'>" + ip_address + "</a>" + \
-                          "," + str(get_system_datetime()) + \
-                          "," + str(get_system_uptime()) + \
-                          "," + str(software_version.version) + \
-                          "," + str(round(float(get_cpu_temperature()), 2)) + \
-                          "," + str(round(free_disk / (2 ** 30), 2)) + \
-                          "," + str(get_db_size()) + \
-                          "," + str(get_last_updated())
-    except Exception as error:
-        logger.network_logger.error("Sensor reading failed - " + str(error))
-        str_sensor_data = "Sensor, Data Retrieval, Failed, 0, 0, 0, 0, 0, 0, 0, 0, 0"
-
-    return str_sensor_data
-
-
-def get_config_information():
-    """ Opens configuration file and returns it as a comma separated string. """
-    str_installed_sensors = configuration_main.installed_sensors.get_installed_names_str()
-
-    try:
-        tmp_str_config = str(configuration_main.current_config.enable_interval_recording) + "," + \
-                         str(configuration_main.current_config.enable_trigger_recording) + "," + \
-                         str(configuration_main.current_config.sleep_duration_interval) + "," + \
-                         str(configuration_main.current_config.enable_custom_temp) + "," + \
-                         str(configuration_main.current_config.temperature_offset) + "," + \
-                         str(str_installed_sensors)
-
-    except Exception as error:
-        logger.network_logger.error("Getting sensor config failed - " + str(error))
-        tmp_str_config = "0, 0, 0, 0, 0, 0, 0"
-
-    return tmp_str_config
-
-
-def get_interval_sensor_readings():
-    """ Returns Interval sensor readings from installed sensors (set in installed sensors file). """
-    interval_data = sqlite_database.CreateIntervalDatabaseData()
-
-    interval_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", "
-    interval_data.sensor_readings = "'" + datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3] + "', "
-
-    if configuration_main.installed_sensors.linux_system:
-        interval_data.sensor_types += configuration_main.database_variables.sensor_name + ", " + \
-                                      configuration_main.database_variables.ip + ", " + \
-                                      configuration_main.database_variables.sensor_uptime + ", " + \
-                                      configuration_main.database_variables.system_temperature + ", "
-
-        if configuration_main.installed_sensors.raspberry_pi_3b_plus or \
-                configuration_main.installed_sensors.raspberry_pi_zero_w:
-            cpu_temp = str(get_cpu_temperature())
-        else:
-            cpu_temp = None
-
-        interval_data.sensor_readings += "'" + get_hostname() + "', " + \
-                                         "'" + get_ip() + "', " + \
-                                         "'" + str(get_uptime_minutes()) + "', " + \
-                                         "'" + str(cpu_temp) + "', "
-
-    if configuration_main.installed_sensors.has_env_temperature:
-        interval_data.sensor_types += configuration_main.database_variables.env_temperature + ", "
-        interval_data.sensor_readings += "'" + str(get_sensor_temperature()) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.env_temperature_offset + ", "
-        interval_data.sensor_readings += "'" + str(configuration_main.current_config.temperature_offset) + "', "
-
-    if configuration_main.installed_sensors.has_pressure:
-        interval_data.sensor_types += configuration_main.database_variables.pressure + ", "
-        interval_data.sensor_readings += "'" + str(get_pressure()) + "', "
-
-    if configuration_main.installed_sensors.has_altitude:
-        interval_data.sensor_types += configuration_main.database_variables.altitude + ", "
-        interval_data.sensor_readings += "'" + str(get_altitude()) + "', "
-
-    if configuration_main.installed_sensors.has_humidity:
-        interval_data.sensor_types += configuration_main.database_variables.humidity + ", "
-        interval_data.sensor_readings += "'" + str(get_humidity()) + "', "
-
-    if configuration_main.installed_sensors.has_distance:
-        interval_data.sensor_types += configuration_main.database_variables.distance + ", "
-        interval_data.sensor_readings += "'" + str(get_distance()) + "', "
-
-    if configuration_main.installed_sensors.has_gas:
-        gas_index = get_gas_resistance_index()
-        gas_oxidised = get_gas_oxidised()
-        gas_reduced = get_gas_reduced()
-        gas_nh3 = get_gas_nh3()
-
-        if gas_index != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.gas_resistance_index + ", "
-            interval_data.sensor_readings += "'" + str(get_gas_resistance_index()) + "', "
-        if gas_oxidised != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.gas_oxidising + ", "
-            interval_data.sensor_readings += "'" + str(get_gas_oxidised()) + "', "
-        if gas_reduced != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.gas_reducing + ", "
-            interval_data.sensor_readings += "'" + str(get_gas_reduced()) + "', "
-        if gas_nh3 != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.gas_nh3 + ", "
-            interval_data.sensor_readings += "'" + str(get_gas_nh3()) + "', "
-
-    if configuration_main.installed_sensors.has_particulate_matter:
-        pm1_reading = get_particulate_matter_1()
-        pm2_5_reading = get_particulate_matter_2_5()
-        pm10_reading = get_particulate_matter_10()
-
-        if pm1_reading != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_1 + ", "
-            interval_data.sensor_readings += "'" + str(get_particulate_matter_1()) + "', "
-        if pm2_5_reading != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_2_5 + ", "
-            interval_data.sensor_readings += "'" + str(get_particulate_matter_2_5()) + "', "
-        if pm10_reading != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.particulate_matter_10 + ", "
-            interval_data.sensor_readings += "'" + str(get_particulate_matter_10()) + "', "
-
-    if configuration_main.installed_sensors.has_lumen:
-        interval_data.sensor_types += configuration_main.database_variables.lumen + ", "
-        interval_data.sensor_readings += "'" + str(get_lumen()) + "', "
-
-    if configuration_main.installed_sensors.has_red:
-        ems_colours = get_ems()
-
-        if len(ems_colours) == 3:
-            interval_data.sensor_types += configuration_main.database_variables.red + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[0]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.green + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[1]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.blue + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[2]) + "', "
-
-        elif len(ems_colours) == 6:
-            interval_data.sensor_types += configuration_main.database_variables.red + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[0]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.orange + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[1]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.yellow + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[2]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.green + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[3]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.blue + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[4]) + "', "
-
-            interval_data.sensor_types += configuration_main.database_variables.violet + ", "
-            interval_data.sensor_readings += "'" + str(ems_colours[5]) + "', "
-
-    if configuration_main.installed_sensors.has_ultra_violet:
-        uva_reading = get_ultra_violet_a()
-        uvb_reading = get_ultra_violet_b()
-
-        if uva_reading != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.ultra_violet_a + ", "
-            interval_data.sensor_readings += "'" + str(get_ultra_violet_a()) + "', "
-        if uvb_reading != "NoSensor":
-            interval_data.sensor_types += configuration_main.database_variables.ultra_violet_b + ", "
-            interval_data.sensor_readings += "'" + str(get_ultra_violet_b()) + "', "
-
-    if configuration_main.installed_sensors.has_acc:
-        accelerometer_readings = get_accelerometer_xyz()
-
-        interval_data.sensor_types += configuration_main.database_variables.acc_x + ", "
-        interval_data.sensor_readings += "'" + str(accelerometer_readings[0]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.acc_y + ", "
-        interval_data.sensor_readings += "'" + str(accelerometer_readings[1]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.acc_z + ", "
-        interval_data.sensor_readings += "'" + str(accelerometer_readings[2]) + "', "
-
-    if configuration_main.installed_sensors.has_mag:
-        magnetometer_readings = get_magnetometer_xyz()
-
-        interval_data.sensor_types += configuration_main.database_variables.mag_x + ", "
-        interval_data.sensor_readings += "'" + str(magnetometer_readings[0]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.mag_y + ", "
-        interval_data.sensor_readings += "'" + str(magnetometer_readings[1]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.mag_z + ", "
-        interval_data.sensor_readings += "'" + str(magnetometer_readings[2]) + "', "
-
-    if configuration_main.installed_sensors.has_gyro:
-        gyroscope_readings = get_gyroscope_xyz()
-
-        interval_data.sensor_types += configuration_main.database_variables.gyro_x + ", "
-        interval_data.sensor_readings += "'" + str(gyroscope_readings[0]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.gyro_y + ", "
-        interval_data.sensor_readings += "'" + str(gyroscope_readings[1]) + "', "
-
-        interval_data.sensor_types += configuration_main.database_variables.gyro_z + ", "
-        interval_data.sensor_readings += "'" + str(gyroscope_readings[2]) + "', "
-
-    return_interval_data = interval_data.sensor_types[:-2] + command_data_separator + interval_data.sensor_readings[:-2]
-
-    return return_interval_data
+def get_operating_system_name():
+    """ Returns sensors Operating System Name and version. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_os_name_version()
+    return no_sensor_present
 
 
 def get_hostname():
     """ Returns sensors hostname. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_hostname()
-    else:
-        return "NoSensor"
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_hostname()
+    return no_sensor_present
 
 
 def get_ip():
-    """ Returns sensor IP Address. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_ip()
-    else:
-        return "NoSensor"
+    """ Returns sensor IP Address as a String. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_ip()
+    return no_sensor_present
+
+
+def get_disk_usage_gb():
+    """ Returns sensor root disk usage as GB's. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_disk_usage_gb()
+    return no_sensor_present
 
 
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
-    try:
-        drive_information = psutil.disk_usage("/")
-        return_disk_usage = drive_information[3]
-    except Exception as error:
-        logger.sensors_logger.error("Get Memory Usage Error: " + str(error))
-        return_disk_usage = "Error"
-    return return_disk_usage
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_disk_usage_percent()
+    return no_sensor_present
 
 
 def get_memory_usage_percent():
     """ Returns sensor RAM usage as a %. """
-    try:
-        mem = psutil.virtual_memory()
-        return_mem = mem[2]
-    except Exception as error:
-        logger.sensors_logger.error("Get Memory Usage Error: " + str(error))
-        return_mem = "Error"
-    return return_mem
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_memory_usage_percent()
+    return no_sensor_present
 
 
 def get_system_datetime():
-    """ Returns sensor current DateTime. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_sys_datetime()
-    else:
-        return "NoSensor"
+    """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_sys_datetime_str()
+    return no_sensor_present
 
 
 def get_uptime_minutes():
-    """ Converts provided minutes into a human readable string. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_uptime()
-    else:
-        return "NoSensor"
+    """ Returns System UpTime in Minutes as an Integer. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_uptime_raw()
+    return no_sensor_present
 
 
 def get_uptime_str():
-    """ Converts provided minutes into a human readable string. """
-    if configuration_main.installed_sensors.linux_system:
-        var_minutes = sensor_direct_access.os_sensor_access.get_uptime()
-        str_day_hour_min = ""
-
-        try:
-            uptime_days = int(float(var_minutes) // 1440)
-            uptime_hours = int((float(var_minutes) % 1440) // 60)
-            uptime_min = int(float(var_minutes) % 60)
-            if uptime_days:
-                if uptime_days > 1:
-                    str_day_hour_min = str(uptime_days) + " Days, "
-                else:
-                    str_day_hour_min = str(uptime_days) + " Day, "
-            if uptime_hours:
-                if uptime_hours > 1:
-                    str_day_hour_min += str(uptime_hours) + " Hours & "
-                else:
-                    str_day_hour_min += str(uptime_hours) + " Hour & "
-
-            str_day_hour_min += str(uptime_min) + " Min"
-
-        except Exception as error:
-            logger.sensors_logger.error("Unable to convert Minutes to days/hours.min: " + str(error))
-            str_day_hour_min = var_minutes
-
-        return str_day_hour_min
-    else:
-        return "NoSensor"
-
-
-def get_system_uptime():
-    """ Returns system UpTime. """
-    if configuration_main.installed_sensors.linux_system:
-        sensor_uptime = sensor_direct_access.os_sensor_access.get_uptime()
-        return sensor_uptime
-    else:
-        return "NoSensor"
+    """ Returns System UpTime as a human readable String. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_uptime_str()
+    return no_sensor_present
 
 
 def get_system_reboot_count():
-    """ Returns system reboot count from the SQLite Database. """
-    if configuration_main.installed_sensors.linux_system:
-        reboot_count = sensor_direct_access.os_sensor_access.get_sensor_reboot_count()
+    """ Returns system reboot count from the SQL Database. """
+    if app_config_access.current_platform == "Linux":
+        reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
-    else:
-        return "NoSensor"
+    return no_sensor_present
 
 
 def get_db_size():
-    """ Returns SQLite Database size in MB. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_sql_db_size()
-    else:
-        return "NoSensor"
+    """ Returns SQL Database size in MB. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_sql_db_size()
+    return no_sensor_present
 
 
 def get_db_notes_count():
-    """ Returns Number of Notes in the SQLite Database. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_db_notes_count()
-    else:
-        return "NoSensor"
+    """ Returns Number of Notes in the SQL Database. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_db_notes_count()
+    return no_sensor_present
 
 
 def get_db_first_last_date():
-    """ Returns First and Last recorded date in the SQLite Database as a str. """
-    if configuration_main.installed_sensors.linux_system:
-        return sensor_direct_access.os_sensor_access.get_db_first_last_date()
-    else:
-        return "NoSensor"
+    """ Returns First and Last recorded date in the SQL Database as a String. """
+    if app_config_access.current_platform == "Linux":
+        return sensors_direct.operating_system_a.get_db_first_last_date()
+    return no_sensor_present
 
 
 def get_last_updated():
-    """ Returns when the sensor programs were last updated and how. """
+    """ Returns when the sensor programs were last updated and how in a String. """
+    last_updated = ""
+    last_updated_file = app_generic_functions.get_file_content(file_locations.program_last_updated)
     try:
-        last_updated_file = open(file_locations.last_updated_file_location, "r")
-        tmp_last_updated = last_updated_file.readlines()
-        last_updated_file.close()
-        last_updated = str(tmp_last_updated[0]) + str(tmp_last_updated[1])
+        last_updated_lines = last_updated_file.split("\n")
+        last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
     except Exception as error:
-        logger.network_logger.error("Unable to Load Last Updated File: " + str(error))
-        last_updated = "N/A"
-
+        logger.sensors_logger.warning("Invalid Kootnet Sensor's Last Updated File: " + str(error))
     return last_updated.strip()
 
 
 def get_cpu_temperature():
     """ Returns sensors CPU temperature. """
-    if configuration_main.installed_sensors.raspberry_pi_zero_w or \
-            configuration_main.installed_sensors.raspberry_pi_3b_plus:
-        temperature = sensor_direct_access.system_sensor_access.cpu_temperature()
-        return temperature
+    while not sensor_ready_checks.cpu_temperature_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.cpu_temperature_ready = False
+    if app_config_access.installed_sensors.raspberry_pi:
+        temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
     else:
-        return "NoSensor"
+        temperature = no_sensor_present
+    sensor_ready_checks.cpu_temperature_ready = True
+    return temperature
 
 
 def get_sensor_temperature():
     """ Returns sensors Environmental temperature. """
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        temperature = sensor_direct_access.pimoroni_enviro_sensor_access.temperature()
-        return temperature
-    elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        temperature = sensor_direct_access.pimoroni_enviroplus_sensor_access.temperature()
-        return temperature
-    elif configuration_main.installed_sensors.pimoroni_bmp280:
-        temperature = sensor_direct_access.pimoroni_bmp280_sensor_access.temperature()
-        return temperature
-    elif configuration_main.installed_sensors.pimoroni_bme680:
-        temperature = sensor_direct_access.pimoroni_bme680_sensor_access.temperature()
-        return temperature
-    elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        temperature = sensor_direct_access.rp_sense_hat_sensor_access.temperature()
-        return temperature
+    while not sensor_ready_checks.env_temperature_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.env_temperature_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviro:
+        temperature = sensors_direct.pimoroni_enviro_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_bmp280:
+        temperature = sensors_direct.pimoroni_bmp280_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_bme680:
+        temperature = sensors_direct.pimoroni_bme680_a.temperature()
+    elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        temperature = sensors_direct.rp_sense_hat_a.temperature()
     else:
-        return "NoSensor"
+        temperature = no_sensor_present
+    sensor_ready_checks.env_temperature_ready = True
+    return temperature
 
 
 def get_pressure():
     """ Returns sensors pressure. """
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        pressure = sensor_direct_access.pimoroni_enviro_sensor_access.pressure()
-        return pressure
-    elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        pressure = sensor_direct_access.pimoroni_enviroplus_sensor_access.pressure()
-        return pressure
-    elif configuration_main.installed_sensors.pimoroni_bmp280:
-        pressure = sensor_direct_access.pimoroni_bmp280_sensor_access.pressure()
-        return pressure
-    elif configuration_main.installed_sensors.pimoroni_bme680:
-        pressure = sensor_direct_access.pimoroni_bme680_sensor_access.pressure()
-        return pressure
-    elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        pressure = sensor_direct_access.rp_sense_hat_sensor_access.pressure()
-        return pressure
+    while not sensor_ready_checks.pressure_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.pressure_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviro:
+        pressure = sensors_direct.pimoroni_enviro_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        pressure = sensors_direct.pimoroni_enviroplus_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_bmp280:
+        pressure = sensors_direct.pimoroni_bmp280_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_bme680:
+        pressure = sensors_direct.pimoroni_bme680_a.pressure()
+    elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        pressure = sensors_direct.rp_sense_hat_a.pressure()
     else:
-        return "NoSensor"
+        pressure = no_sensor_present
+    sensor_ready_checks.pressure_ready = True
+    return pressure
 
 
 def get_altitude():
     """ Returns sensors altitude. """
-    if configuration_main.installed_sensors.pimoroni_bmp280:
-        altitude = sensor_direct_access.pimoroni_bmp280_sensor_access.altitude()
-        return altitude
+    while not sensor_ready_checks.altitude_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.altitude_ready = False
+    if app_config_access.installed_sensors.pimoroni_bmp280:
+        altitude = sensors_direct.pimoroni_bmp280_a.altitude()
     else:
-        return "NoSensor"
+        altitude = no_sensor_present
+    sensor_ready_checks.altitude_ready = True
+    return altitude
 
 
 def get_humidity():
     """ Returns sensors humidity. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        humidity = sensor_direct_access.pimoroni_enviroplus_sensor_access.humidity()
-        return humidity
-    elif configuration_main.installed_sensors.pimoroni_bme680:
-        humidity = sensor_direct_access.pimoroni_bme680_sensor_access.humidity()
-        return humidity
-    elif configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        humidity = sensor_direct_access.rp_sense_hat_sensor_access.humidity()
-        return humidity
+    while not sensor_ready_checks.humidity_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.humidity_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus:
+        humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
+    elif app_config_access.installed_sensors.pimoroni_bme680:
+        humidity = sensors_direct.pimoroni_bme680_a.humidity()
+    elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        humidity = sensors_direct.rp_sense_hat_a.humidity()
     else:
-        return "NoSensor"
+        humidity = no_sensor_present
+    sensor_ready_checks.humidity_ready = True
+    return humidity
 
 
 def get_dew_point():
@@ -484,333 +229,332 @@ def get_dew_point():
     variable_b = 237.7
 
     env_temp = get_sensor_temperature()
+    if app_config_access.current_config.enable_custom_temp:
+        env_temp = env_temp + app_config_access.current_config.temperature_offset
     humidity = get_humidity()
-    if env_temp == "NoSensor" or humidity == "NoSensor":
-        return "NoSensor"
+    if env_temp == no_sensor_present or humidity == no_sensor_present:
+        return no_sensor_present
     else:
         try:
             alpha = ((variable_a * env_temp) / (variable_b + env_temp)) + math.log(humidity / 100.0)
             return (variable_b * alpha) / (variable_a - alpha)
         except Exception as error:
             logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
-            return 0.0
+    return 0.0
 
 
 def get_distance():
     """ Returns sensors distance. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        distance = sensor_direct_access.pimoroni_enviroplus_sensor_access.distance()
-        return distance
-    elif configuration_main.installed_sensors.pimoroni_vl53l1x:
-        distance = sensor_direct_access.pimoroni_vl53l1x_sensor_access.distance()
-        return distance
-    elif configuration_main.installed_sensors.pimoroni_ltr_559:
-        distance = sensor_direct_access.pimoroni_ltr_559_sensor_access.distance()
-        return distance
+    while not sensor_ready_checks.distance_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.distance_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus:
+        distance = sensors_direct.pimoroni_enviroplus_a.distance()
+    elif app_config_access.installed_sensors.pimoroni_vl53l1x:
+        distance = sensors_direct.pimoroni_vl53l1x_a.distance()
+    elif app_config_access.installed_sensors.pimoroni_ltr_559:
+        distance = sensors_direct.pimoroni_ltr_559_a.distance()
     else:
-        return "NoSensor"
+        distance = no_sensor_present
+    sensor_ready_checks.distance_ready = True
+    return distance
 
 
 def get_gas_resistance_index():
     """ Returns sensors gas resistance index. """
-    if configuration_main.installed_sensors.pimoroni_bme680:
-        index = sensor_direct_access.pimoroni_bme680_sensor_access.gas_resistance_index()
-        return index
+    while not sensor_ready_checks.gas_resistance_index_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.gas_resistance_index_ready = False
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
     else:
-        return "NoSensor"
+        index = no_sensor_present
+    sensor_ready_checks.gas_resistance_index_ready = True
+    return index
 
 
 def get_gas_oxidised():
     """ Returns sensors gas reading for oxidising. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        oxidising = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[0]
-        return oxidising
+    while not sensor_ready_checks.gas_oxidised_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.gas_oxidised_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus:
+        oxidising = sensors_direct.pimoroni_enviroplus_a.gas_data()[0]
     else:
-        return "NoSensor"
+        oxidising = no_sensor_present
+    sensor_ready_checks.gas_oxidised_ready = True
+    return oxidising
 
 
 def get_gas_reduced():
     """ Returns sensors gas reading for reducing. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        reducing = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[1]
-        return reducing
+    while not sensor_ready_checks.gas_reduced_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.gas_reduced_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus:
+        reducing = sensors_direct.pimoroni_enviroplus_a.gas_data()[1]
     else:
-        return "NoSensor"
+        reducing = no_sensor_present
+    sensor_ready_checks.gas_reduced_ready = True
+    return reducing
 
 
 def get_gas_nh3():
     """ Returns sensors gas reading for NH3. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus:
-        nh3_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.gas_data()[2]
-        return nh3_reading
+    while not sensor_ready_checks.gas_nh3_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.gas_nh3_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus:
+        nh3_reading = sensors_direct.pimoroni_enviroplus_a.gas_data()[2]
     else:
-        return "NoSensor"
+        nh3_reading = no_sensor_present
+    sensor_ready_checks.gas_nh3_ready = True
+    return nh3_reading
 
 
 def get_particulate_matter_1():
     """ Returns sensor reading for PM1. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus and \
-            configuration_main.installed_sensors.pimoroni_pms5003:
-        pm1_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[0]
-        return pm1_reading
+    while not sensor_ready_checks.particulate_matter1_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.particulate_matter1_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus and \
+            app_config_access.installed_sensors.pimoroni_pms5003:
+        pm1_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[0]
     else:
-        return "NoSensor"
+        pm1_reading = no_sensor_present
+    sensor_ready_checks.particulate_matter1_ready = True
+    return pm1_reading
 
 
 def get_particulate_matter_2_5():
     """ Returns sensor reading for PM2.5. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus and \
-            configuration_main.installed_sensors.pimoroni_pms5003:
-        pm2_5_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[1]
-        return pm2_5_reading
+    while not sensor_ready_checks.particulate_matter2_5_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.particulate_matter2_5_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus and \
+            app_config_access.installed_sensors.pimoroni_pms5003:
+        pm2_5_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[1]
     else:
-        return "NoSensor"
+        pm2_5_reading = no_sensor_present
+    sensor_ready_checks.particulate_matter2_5_ready = True
+    return pm2_5_reading
 
 
 def get_particulate_matter_10():
     """ Returns sensor reading for PM10. """
-    if configuration_main.installed_sensors.pimoroni_enviroplus and \
-            configuration_main.installed_sensors.pimoroni_pms5003:
-        pm10_reading = sensor_direct_access.pimoroni_enviroplus_sensor_access.particulate_matter_data()[2]
-        return pm10_reading
+    while not sensor_ready_checks.particulate_matter10_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.particulate_matter10_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviroplus and \
+            app_config_access.installed_sensors.pimoroni_pms5003:
+        pm10_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[2]
     else:
-        return "NoSensor"
+        pm10_reading = no_sensor_present
+    sensor_ready_checks.particulate_matter10_ready = True
+    return pm10_reading
 
 
 def get_lumen():
     """ Returns sensors lumen. """
-    if configuration_main.installed_sensors.pimoroni_enviro:
-        lumen = sensor_direct_access.pimoroni_enviro_sensor_access.lumen()
-        return lumen
-    elif configuration_main.installed_sensors.pimoroni_enviroplus:
-        lumen = sensor_direct_access.pimoroni_enviroplus_sensor_access.lumen()
-        return lumen
-    elif configuration_main.installed_sensors.pimoroni_bh1745:
-        lumen = sensor_direct_access.pimoroni_bh1745_sensor_access.lumen()
-        return lumen
-    elif configuration_main.installed_sensors.pimoroni_ltr_559:
-        lumen = sensor_direct_access.pimoroni_ltr_559_sensor_access.lumen()
-        return lumen
+    while not sensor_ready_checks.lumen_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.lumen_ready = False
+    if app_config_access.installed_sensors.pimoroni_enviro:
+        lumen = sensors_direct.pimoroni_enviro_a.lumen()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        lumen = sensors_direct.pimoroni_enviroplus_a.lumen()
+    elif app_config_access.installed_sensors.pimoroni_bh1745:
+        lumen = sensors_direct.pimoroni_bh1745_a.lumen()
+    elif app_config_access.installed_sensors.pimoroni_ltr_559:
+        lumen = sensors_direct.pimoroni_ltr_559_a.lumen()
     else:
-        return "NoSensor"
+        lumen = no_sensor_present
+    sensor_ready_checks.lumen_ready = True
+    return lumen
 
 
 def get_ems():
     """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
-    if configuration_main.installed_sensors.pimoroni_as7262:
-        six_chan = sensor_direct_access.pimoroni_as7262_sensor_access.spectral_six_channel()
-        return six_chan
-    elif configuration_main.installed_sensors.pimoroni_enviro:
-        rgb = sensor_direct_access.pimoroni_enviro_sensor_access.ems()
-        return rgb
-    elif configuration_main.installed_sensors.pimoroni_bh1745:
-        rgb = sensor_direct_access.pimoroni_bh1745_sensor_access.ems()
-        return rgb
+    while not sensor_ready_checks.ems_colours_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.ems_colours_ready = False
+    if app_config_access.installed_sensors.pimoroni_as7262:
+        colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
+    elif app_config_access.installed_sensors.pimoroni_enviro:
+        colours = sensors_direct.pimoroni_enviro_a.ems()
+    elif app_config_access.installed_sensors.pimoroni_bh1745:
+        colours = sensors_direct.pimoroni_bh1745_a.ems()
     else:
-        return "NoSensor"
+        colours = no_sensor_present
+    sensor_ready_checks.ems_colours_ready = True
+    return colours
 
 
 def get_ultra_violet_index():
     """ Returns Ultra Violet Index. """
-    if configuration_main.installed_sensors.pimoroni_veml6075:
-        uv_index_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet_index()
-        return uv_index_reading
+    while not sensor_ready_checks.ultra_violet_index_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.ultra_violet_index_ready = False
+    if app_config_access.installed_sensors.pimoroni_veml6075:
+        uv_index_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
     else:
-        return "NoSensor"
+        uv_index_reading = no_sensor_present
+    sensor_ready_checks.ultra_violet_index_ready = True
+    return uv_index_reading
 
 
 def get_ultra_violet_a():
     """ Returns Ultra Violet A (UVA). """
-    if configuration_main.installed_sensors.pimoroni_veml6075:
-        uva_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[0]
-        return uva_reading
+    while not sensor_ready_checks.ultra_violet_a_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.ultra_violet_a_ready = False
+    if app_config_access.installed_sensors.pimoroni_veml6075:
+        uva_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[0]
     else:
-        return "NoSensor"
+        uva_reading = no_sensor_present
+    sensor_ready_checks.ultra_violet_a_ready = True
+    return uva_reading
 
 
 def get_ultra_violet_b():
     """ Returns Ultra Violet B (UVB). """
-    if configuration_main.installed_sensors.pimoroni_veml6075:
-        uvb_reading = sensor_direct_access.pimoroni_veml6075_sensor_access.ultra_violet()[1]
-        return uvb_reading
+    while not sensor_ready_checks.ultra_violet_b_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.ultra_violet_b_ready = False
+    if app_config_access.installed_sensors.pimoroni_veml6075:
+        uvb_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[1]
     else:
-        return "NoSensor"
+        uvb_reading = no_sensor_present
+    sensor_ready_checks.ultra_violet_b_ready = True
+    return uvb_reading
 
 
 def get_accelerometer_xyz():
     """ Returns sensors Accelerometer XYZ. """
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.accelerometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_enviro:
-        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.accelerometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_lsm303d:
-        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.accelerometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.accelerometer_xyz()
-        return xyz
+    while not sensor_ready_checks.accelerometer_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.accelerometer_ready = False
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_enviro:
+        xyz = sensors_direct.pimoroni_enviro_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_lsm303d:
+        xyz = sensors_direct.pimoroni_lsm303d_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_icm20948:
+        xyz = sensors_direct.pimoroni_icm20948_a.accelerometer_xyz()
     else:
-        return "NoSensor"
+        xyz = no_sensor_present
+    sensor_ready_checks.accelerometer_ready = True
+    return xyz
 
 
 def get_magnetometer_xyz():
     """ Returns sensors Magnetometer XYZ. """
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.magnetometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_enviro:
-        xyz = sensor_direct_access.pimoroni_enviro_sensor_access.magnetometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_lsm303d:
-        xyz = sensor_direct_access.pimoroni_lsm303d_sensor_access.magnetometer_xyz()
-        return xyz
-    elif configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.magnetometer_xyz()
-        return xyz
+    while not sensor_ready_checks.magnetometer_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.magnetometer_ready = False
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_enviro:
+        xyz = sensors_direct.pimoroni_enviro_a.magnetometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_lsm303d:
+        xyz = sensors_direct.pimoroni_lsm303d_a.magnetometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_icm20948:
+        xyz = sensors_direct.pimoroni_icm20948_a.magnetometer_xyz()
     else:
-        return "NoSensor"
+        xyz = no_sensor_present
+    sensor_ready_checks.magnetometer_ready = True
+    return xyz
 
 
 def get_gyroscope_xyz():
     """ Returns sensors Gyroscope XYZ. """
-    if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-        xyz = sensor_direct_access.rp_sense_hat_sensor_access.gyroscope_xyz()
-        return xyz
-    if configuration_main.installed_sensors.pimoroni_icm20948:
-        xyz = sensor_direct_access.pimoroni_icm20948_sensor_access.gyroscope_xyz()
-        return xyz
+    while not sensor_ready_checks.gyroscope_ready:
+        sleep(sensor_in_use_delay)
+    sensor_ready_checks.gyroscope_ready = False
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
+    elif app_config_access.installed_sensors.pimoroni_icm20948:
+        xyz = sensors_direct.pimoroni_icm20948_a.gyroscope_xyz()
     else:
-        return "NoSensor"
+        xyz = no_sensor_present
+    sensor_ready_checks.gyroscope_ready = True
+    return xyz
 
 
-def get_weather_underground_readings(outdoor_sensor):
-    return_readings_str = ""
+def display_message(text_msg):
+    """ If a Supported Display is installed, shows provided text message on it. """
+    text_msg = str(text_msg)
+    logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_msg)
+    if app_config_access.installed_sensors.has_display and app_config_access.current_config.enable_display:
+        message_length = len(text_msg)
 
-    dailyrainin = ""
-
-    temp_c = get_sensor_temperature()
-    if temp_c != "NoSensor":
-        try:
-            temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
-            if outdoor_sensor:
-                return_readings_str += "&tempf=" + str(temperature_f)
-            else:
-                return_readings_str += "&indoortempf=" + str(temperature_f)
-        except Exception as error:
-            logger.sensors_logger.error("Unable to calculate temperature for Weather Underground: " + str(error))
-
-    humidity = get_humidity()
-    if humidity != "NoSensor":
-        if outdoor_sensor:
-            return_readings_str += "&humidity=" + str(humidity)
-        else:
-            return_readings_str += "&indoorhumidity=" + str(humidity)
-
-    out_door_dew_point = get_dew_point()
-    if out_door_dew_point != "NoSensor" and outdoor_sensor:
-        dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
-        return_readings_str += "&dewptf=" + str(dew_point_f)
-
-    pressure_hpa = get_pressure()
-    if pressure_hpa != "NoSensor":
-        try:
-            baromin = float(pressure_hpa) * 0.029529983071445
-            return_readings_str += "&baromin=" + str(baromin)
-        except Exception as error:
-            logger.sensors_logger.error("Unable to calculate Pressure inhg for Weather Underground: " + str(error))
-
-    ultra_violet_index = get_ultra_violet_index()
-    if ultra_violet_index != "NoSensor":
-        return_readings_str += "&UV=" + str(ultra_violet_index)
-
-    pm_2_5 = get_particulate_matter_2_5()
-    if pm_2_5 != "NoSensor":
-        return_readings_str += "&AqPM2.5=" + str(pm_2_5)
-
-    pm_10 = get_particulate_matter_10()
-    if pm_10 != "NoSensor":
-        return_readings_str += "&AqPM10=" + str(pm_10)
-
-    return return_readings_str
-
-
-def _empty_thread():
-    while True:
-        sleep(600)
-
-
-def display_message(text_message):
-    """ If a Display is installed, scroll provided text message on it. """
-    logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_message)
-    if configuration_main.installed_sensors.has_display and configuration_main.current_config.enable_display:
-        message_length = len(text_message)
-
+        thread_ready = True
         if message_length > 0:
-            text_message = "-- " + text_message
-            if configuration_main.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensor_direct_access.rp_sense_hat_sensor_access.display_text,
-                                        args=[text_message])
-            elif configuration_main.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_matrix_11x7_sensor_access.display_text,
-                                        args=[text_message])
-            elif configuration_main.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_st7735_sensor_access.display_text,
-                                        args=[text_message])
-            elif configuration_main.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_mono_oled_luma_sensor_access.display_text,
-                                        args=[text_message])
-            elif configuration_main.installed_sensors.pimoroni_enviroplus:
-                display_thread = Thread(target=sensor_direct_access.pimoroni_enviroplus_sensor_access.display_text,
-                                        args=[text_message])
+            text_msg = "-- " + text_msg
+            if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_msg])
+            elif app_config_access.installed_sensors.pimoroni_matrix_11x7:
+                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text, args=[text_msg])
+            elif app_config_access.installed_sensors.pimoroni_st7735:
+                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text, args=[text_msg])
+            elif app_config_access.installed_sensors.pimoroni_mono_oled_luma:
+                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
+            elif app_config_access.installed_sensors.pimoroni_enviroplus:
+                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
             else:
-                display_thread = Thread(target=_empty_thread)
-            display_thread.daemon = True
-            display_thread.start()
+                display_thread = None
+                thread_ready = False
+            if thread_ready:
+                display_thread.daemon = True
+                display_thread.start()
     else:
         logger.primary_logger.debug("* Display Text: Sensor Display Disabled or not installed")
 
 
-def restart_services():
-    """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(app_variables.restart_sensor_services_command)
+def start_special_sensor_interactive_services():
+    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        sh_joy_stick_thread = Thread(target=sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
+        sh_joy_stick_thread.daemon = True
+        sh_joy_stick_thread.start()
+
+
+def restart_services(sleep_before_restart=1):
+    """ Reloads systemd service files & restarts KootnetSensors service. """
+    sleep(sleep_before_restart)
+    os.system(os_cli_commands.restart_sensor_services_command)
 
 
 def get_db_notes():
-    sql_query = "SELECT " + \
-                configuration_main.database_variables.other_table_column_notes + \
-                " FROM " + \
-                configuration_main.database_variables.table_other
-
+    """ Returns a comma separated string of Notes from the SQL Database. """
+    sql_query = "SELECT " + app_config_access.database_variables.other_table_column_notes + \
+                " FROM " + app_config_access.database_variables.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
-
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
-    sql_query_notes = "SELECT " + \
-                      configuration_main.database_variables.all_tables_datetime + \
-                      " FROM " + \
-                      configuration_main.database_variables.table_other
-
+    """ Returns a comma separated string of Note Dates from the SQL Database. """
+    sql_query_notes = "SELECT " + app_config_access.database_variables.all_tables_datetime + \
+                      " FROM " + app_config_access.database_variables.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
-
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
-    sql_query_user_datetime = "SELECT " + \
-                              configuration_main.database_variables.other_table_column_user_date_time + \
-                              " FROM " + \
-                              configuration_main.database_variables.table_other
-
+    """ Returns a comma separated string of User Note Dates from the SQL Database. """
+    sql_query_user_datetime = "SELECT " + app_config_access.database_variables.other_table_column_user_date_time + \
+                              " FROM " + app_config_access.database_variables.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
-
     return _create_str_from_list(sql_data_user_datetime)
 
 
 def _create_str_from_list(sql_data_notes):
+    """
+    Takes in a list and returns a comma separated string.
+    It also converts any commas located in the values to "[replaced_comma]".
+    These converted values will later be converted back to regular commas.
+    """
     if len(sql_data_notes) > 0:
         return_data_string = ""
 
@@ -820,16 +564,14 @@ def _create_str_from_list(sql_data_notes):
             new_entry = new_entry.replace(",", "[replaced_comma]")
             return_data_string += new_entry + ","
             count += 1
-
         return_data_string = return_data_string[:-1]
     else:
         return_data_string = "No Data"
-
     return return_data_string
 
 
 def add_note_to_database(datetime_note):
-    """ Takes the provided DateTime and Note as a list and writes it to the SQLite Database. """
+    """ Takes the provided DateTime and Note as a list then writes it to the SQL Database. """
     sql_data = sqlite_database.CreateOtherDataEntry()
     user_date_and_note = datetime_note.split(command_data_separator)
 
@@ -838,14 +580,13 @@ def add_note_to_database(datetime_note):
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
 
-        sql_data.sensor_types = configuration_main.database_variables.all_tables_datetime + ", " + \
-                                configuration_main.database_variables.other_table_column_user_date_time + ", " + \
-                                configuration_main.database_variables.other_table_column_notes
+        sql_data.sensor_types = app_config_access.database_variables.all_tables_datetime + ", " + \
+                                app_config_access.database_variables.other_table_column_user_date_time + ", " + \
+                                app_config_access.database_variables.other_table_column_notes
         sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
-        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types +
-                       sql_data.sql_query_values_start + sql_data.sensor_readings +
-                       sql_data.sql_query_values_end)
+        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
+                       sql_data.sensor_readings + sql_data.sql_query_values_end)
 
         sqlite_database.sql_execute(sql_execute)
     else:
@@ -853,7 +594,7 @@ def add_note_to_database(datetime_note):
 
 
 def update_note_in_database(datetime_note):
-    """ Takes the provided DateTime and Note as a list and updates the note in the SQLite Database. """
+    """ Takes the provided DateTime and Note as a list then updates the note in the SQL Database. """
     data_list = datetime_note.split(command_data_separator)
 
     try:
@@ -861,31 +602,26 @@ def update_note_in_database(datetime_note):
         user_datetime = "'" + data_list[1] + "'"
         note = "'" + data_list[2] + "'"
 
-        sql_execute = "UPDATE OtherData SET " + \
-                      "Notes = " + note + \
-                      ",UserDateTime = " + user_datetime + \
-                      " WHERE DateTime = " + current_datetime
-
+        sql_execute = "UPDATE OtherData SET " + "Notes = " + note + \
+                      ",UserDateTime = " + user_datetime + " WHERE DateTime = " + current_datetime
         sqlite_database.sql_execute(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
 
 
 def delete_db_note(note_datetime):
-    sql_query = "DELETE FROM " + \
-                str(configuration_main.database_variables.table_other) + \
-                " WHERE " + \
-                str(configuration_main.database_variables.all_tables_datetime) + \
+    """ Deletes a Note from the SQL Database based on it's DateTime entry. """
+    sql_query = "DELETE FROM " + str(app_config_access.database_variables.table_other) + \
+                " WHERE " + str(app_config_access.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
-
     sqlite_database.sql_execute(sql_query)
 
 
 def upgrade_linux_os():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
-        os.system(app_variables.bash_commands["UpgradeSystemOS"])
-        configuration_main.linux_os_upgrade_ready = True
+        os.system(os_cli_commands.bash_commands["UpgradeSystemOS"])
+        app_config_access.linux_os_upgrade_ready = True
         logger.primary_logger.warning("Linux OS Upgrade Done")
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))

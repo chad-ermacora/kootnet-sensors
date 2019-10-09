@@ -17,7 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import re
+from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
+from operations_modules.app_cached_variables import no_sensor_present
 
 
 def text_is_alphanumeric(text_string):
@@ -32,8 +34,12 @@ def text_is_alphanumeric(text_string):
 
 
 def ip_address_is_valid(ip_address):
-    if _check_ip_address(ip_address):
-        return True
+    if ip_address != "":
+        try:
+            if _check_ip_address(ip_address):
+                return True
+        except Exception as error:
+            logger.network_logger.debug("Validating Address Failed: " + str(error))
     return False
 
 
@@ -71,3 +77,9 @@ def hostname_is_valid(text_hostname):
     if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
         return True
     return False
+
+
+def valid_sensor_reading(reading):
+    if reading == no_sensor_present:
+        return False
+    return True

@@ -18,11 +18,12 @@
 """
 import os
 import sqlite3
+from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
-from operations_modules import logger
+from operations_modules import sqlite_database
 from operations_modules import program_upgrade_functions
-from operations_modules import app_variables
+from operations_modules import os_cli_commands
 
 
 class CreateRefinedVersion:
@@ -48,49 +49,65 @@ def check_ssl_files():
     if os.path.isfile(file_locations.http_ssl_key):
         logger.primary_logger.debug("SSL Key Found")
     else:
-        logger.primary_logger.warning("SSL Key not Found - Generating Key")
-        command = "openssl genrsa -out " + file_locations.http_ssl_key + " 2048"
-        os.system(command)
+        logger.primary_logger.info("SSL Key not Found - Generating Key")
+        os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
 
     if os.path.isfile(file_locations.http_ssl_csr):
         logger.primary_logger.debug("SSL CSR Found")
     else:
-        logger.primary_logger.warning("SSL CSR not Found - Generating CSR")
-        command2 = "openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr + \
-                   " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
-        os.system(command2)
+        logger.primary_logger.info("SSL CSR not Found - Generating CSR")
+        os.system("openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr +
+                  " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'")
 
     if os.path.isfile(file_locations.http_ssl_crt):
         logger.primary_logger.debug("SSL Certificate Found")
     else:
-        logger.primary_logger.warning("SSL Certificate not Found - Generating Certificate")
-        command3 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr + \
-                   " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
-        os.system(command3)
+        logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
+        os.system("openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr +
+                  " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt)
 
 
 def check_database_structure():
     """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = app_variables.CreateDatabaseVariables()
+    database_variables = sqlite_database.CreateDatabaseVariables()
+
+    columns_created = 0
+    columns_already_made = 0
 
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database_location)
+        db_connection = sqlite3.connect(file_locations.sensor_database)
         db_cursor = db_connection.cursor()
 
         _create_table_and_datetime(database_variables.table_interval, db_cursor)
         _create_table_and_datetime(database_variables.table_trigger, db_cursor)
         for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
                                                     database_variables.get_sensor_columns_list()):
-            _check_sql_table_and_column(database_variables.table_interval, column_intervals, db_cursor)
-            _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            interval_response = _check_sql_table_and_column(database_variables.table_interval, column_intervals,
+                                                            db_cursor)
+            trigger_response = _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            if interval_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
+            if trigger_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
 
         _create_table_and_datetime(database_variables.table_other, db_cursor)
         for column_other in database_variables.get_other_columns_list():
-            _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+            other_response = _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+            if other_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
 
         db_connection.commit()
         db_connection.close()
+        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, " + \
+                            str(columns_created) + " Created"
+        logger.primary_logger.debug(debug_log_message)
     except Exception as error:
         logger.primary_logger.error("DB Connection Failed: " + str(error))
 
@@ -109,9 +126,9 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
     """ Add's or verifies provided table and column in the SQLite Database. """
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
-        logger.primary_logger.debug("COLUMN '" + column_name + "' - Created")
-    except Exception as error:
-        logger.primary_logger.debug("COLUMN '" + column_name + "' - " + str(error))
+        return True
+    except Exception:
+        return False
 
 
 def run_upgrade_checks():
@@ -129,38 +146,19 @@ def run_upgrade_checks():
         logger.primary_logger.info("New Install Detected")
 
     elif previous_version.major_version == "Alpha":
-        if previous_version.feature_version < 24:
+        if previous_version.feature_version < 26:
             no_changes = False
             logger.primary_logger.info("Upgraded: " + software_version.old_version +
                                        " || New: " + software_version.version)
             program_upgrade_functions.reset_installed_sensors()
             program_upgrade_functions.reset_config()
             program_upgrade_functions.reset_variance_config()
-        elif previous_version.feature_version == 24:
+        elif previous_version.feature_version == 26:
             no_changes = False
             program_upgrade_functions.reset_installed_sensors()
-            if previous_version.minor_version < 24:
-                program_upgrade_functions.reset_config()
-                program_upgrade_functions.reset_variance_config()
+        elif previous_version.feature_version == 27:
+            if previous_version.minor_version < 8:
                 program_upgrade_functions.reset_installed_sensors()
-            logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                       " || New: " + software_version.version)
-        elif previous_version.feature_version == 25:
-            if previous_version.minor_version < 7:
-                no_changes = False
-                program_upgrade_functions.reset_installed_sensors()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
-            if previous_version.minor_version < 27:
-                no_changes = False
-                program_upgrade_functions.reset_variance_config()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
-            if previous_version.minor_version < 98:
-                no_changes = False
-                program_upgrade_functions.reset_config()
-                logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                           " || New: " + software_version.version)
     else:
         no_changes = False
         logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
@@ -172,14 +170,9 @@ def run_upgrade_checks():
         logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
                                    software_version.old_version + " New: " + software_version.version)
     software_version.write_program_version_to_file()
-    restart_services()
-
-
-def restart_services():
-    """ Reloads systemd service files & restarts all sensor program services. """
-    os.system(app_variables.restart_sensor_services_command)
+    os.system(os_cli_commands.restart_sensor_services_command)
 
 
 def set_file_permissions():
     """ Re-sets program file permissions. """
-    os.system(app_variables.bash_commands["SetPermissions"])
+    os.system(os_cli_commands.bash_commands["SetPermissions"])

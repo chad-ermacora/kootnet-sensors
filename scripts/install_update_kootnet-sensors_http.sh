@@ -3,8 +3,9 @@ clear
 if [[ "$1" == "dev" ]]
 then
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian/dev"
-  printf '\n-- DEVELOPMENT UPGRADE OR INSTALL --\n'
+  printf '\n-- DEVELOPMENT HTTP UPGRADE OR INSTALL --\n'
 else
+  printf '\n-- HTTP UPGRADE OR INSTALL --\n'
   HTTP_FOLDER="/utils/koot_net_sensors/Installers/raspbian"
 fi
 # Upgrade from Online HTTP server
@@ -35,15 +36,11 @@ mkdir /opt/kootnet-sensors/scripts 2>/dev/null
 rm -R /tmp/SensorHTTPUpgrade 2>/dev/null
 rm -f /tmp/KootNetSensors.zip 2>/dev/null
 mkdir /tmp/SensorHTTPUpgrade 2>/dev/null
-# Download and Upgrade Sensor Programs
-if [[ -f /opt/kootnet-control-center/requirements.txt ]]
+# Offer Control Center Install on first Installation only
+if [[ ! -f /opt/kootnet-control-center/requirements.txt ]]
 then
-  echo
-else
-  if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+  if [[ ! -f ${DATA_DIR}/auth.conf ]]
   then
-    echo
-  else
     read -p "Do you want to Install Control Center as well? (Y/N) " -n 1 -r CONTROL_INSTALL
     echo
     if [[ ${CONTROL_INSTALL} =~ ^[Yy]$ ]]
@@ -52,17 +49,14 @@ else
     fi
   fi
 fi
-printf '\n\nDownload Started\n'
+printf '\nDownloading Program Zip\n'
 wget -q --show-progress ${HTTP_SERVER}${HTTP_FOLDER}${HTTP_ZIP} -P /tmp/
-printf 'Download Complete\n\nUnzipping & Installing Files\n'
+printf '\nUnzipping Files & Installing Kootnet Sensors\n'
 unzip -q /tmp/KootNetSensors.zip -d /tmp/SensorHTTPUpgrade
 cp -f -R /tmp/SensorHTTPUpgrade/sensor-rp/* /opt/kootnet-sensors
-printf 'Files Installed\n\n'
 # Add easy Configuration editing to users home directory
-if [[ -f ${CONFIG_DIR}/installed_datetime.txt ]]
+if [[ ! -f ${CONFIG_DIR}/installed_datetime.txt ]]
 then
-  echo
-else
   bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh "${USER_NAME}"
 fi
 bash /opt/kootnet-sensors/scripts/chk_install.sh

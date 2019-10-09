@@ -22,8 +22,8 @@ from operations_modules import file_locations
 
 def _get_old_version():
     """ Loads the previously written program version and returns it as a string. """
-    if path.isfile(file_locations.old_version_file_location):
-        old_version_file = open(file_locations.old_version_file_location, 'r')
+    if path.isfile(file_locations.old_version_file):
+        old_version_file = open(file_locations.old_version_file, 'r')
         old_version_content = old_version_file.read()
         old_version_file.close()
         return old_version_content.strip()
@@ -34,11 +34,11 @@ def _get_old_version():
 
 def write_program_version_to_file():
     """ Writes the current program version to previous program version file. """
-    current_version_file = open(file_locations.old_version_file_location, 'w')
+    current_version_file = open(file_locations.old_version_file, 'w')
     current_version_file.write(version)
     current_version_file.close()
 
 
 # Current Version of the program
-version = "Alpha.26.324"
+version = "Alpha.27.336"
 old_version = _get_old_version()

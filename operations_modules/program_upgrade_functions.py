@@ -19,19 +19,18 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_variables
-from operations_modules import configuration_files
-from operations_modules import trigger_variances
-from sensor_modules import sensor_variables
+from operations_modules import config_primary
+from operations_modules import config_installed_sensors
+from operations_modules import config_trigger_variances
 
 
 def get_installed_sensors_raw():
     """ Loads RAW sensors from file and returns it. """
     logger.primary_logger.debug("Loading Installed Sensors and Returning")
 
-    if os.path.isfile(file_locations.sensors_installed_file_location):
+    if os.path.isfile(file_locations.installed_sensors_config):
         try:
-            sensor_list_file = open(file_locations.sensors_installed_file_location, 'r')
+            sensor_list_file = open(file_locations.installed_sensors_config, 'r')
             raw_installed_sensor_file = sensor_list_file.readlines()
             sensor_list_file.close()
         except Exception as error:
@@ -48,9 +47,9 @@ def get_installed_config_raw():
     """ Loads configuration from file and returns it as a configuration object. """
     logger.primary_logger.debug("Loading Configuration File")
 
-    if os.path.isfile(file_locations.config_file_location):
+    if os.path.isfile(file_locations.main_config):
         try:
-            config_file = open(file_locations.config_file_location, "r")
+            config_file = open(file_locations.main_config, "r")
             config_file_content = config_file.readlines()
             config_file.close()
         except Exception as error:
@@ -67,16 +66,16 @@ def get_installed_config_raw():
 def reset_installed_sensors():
     """ Writes a default installed sensor configuration file. """
     logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
-    configuration_files.write_installed_sensors_to_file(sensor_variables.CreateInstalledSensors())
+    config_installed_sensors.write_to_file(config_installed_sensors.CreateInstalledSensors())
 
 
 def reset_config():
     """ Writes a default configuration file. """
     logger.primary_logger.warning(" **** Primary Configuration Reset ****")
-    configuration_files.write_config_to_file(app_variables.CreateConfig())
+    config_primary.write_config_to_file(config_primary.CreateConfig())
 
 
 def reset_variance_config():
     """ Writes a default Trigger Variance configuration file. """
     logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
-    trigger_variances.write_triggers_to_file(trigger_variances.CreateTriggerVariances())
+    config_trigger_variances.write_triggers_to_file(config_trigger_variances.CreateTriggerVariances())

@@ -23,7 +23,7 @@ from operations_modules import variance_checks
 
 def start_trigger_recording(sensor_access):
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
-    logger.primary_logger.debug("Trigger Threads Starting")
+    logger.primary_logger.debug("Trigger Thread(s) Starting")
     sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
 
     threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
@@ -42,4 +42,4 @@ def start_trigger_recording(sensor_access):
     for thread in threads:
         thread.daemon = True
         thread.start()
-    logger.primary_logger.info("Trigger Recoding Started")
+    logger.primary_logger.info(" -- Trigger Recording Started")

@@ -37,9 +37,7 @@ max_log_lines_return = 150
 
 
 def initialize_logger(logger, log_location, formatter):
-    file_handler_main = RotatingFileHandler(log_location,
-                                            maxBytes=256000,
-                                            backupCount=5)
+    file_handler_main = RotatingFileHandler(log_location, maxBytes=256000, backupCount=5)
     file_handler_main.setFormatter(formatter)
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(formatter)
@@ -63,8 +61,8 @@ def set_logging_level():
 
 def check_debug_logging():
     """ Check to see if debug logging is enabled and apply if necessary. """
-    if os.path.isfile(file_locations.debug_file_location):
-        debug_file = open(file_locations.debug_file_location, "r")
+    if os.path.isfile(file_locations.debug_logging_config):
+        debug_file = open(file_locations.debug_logging_config, "r")
         debug = debug_file.read().strip()
         debug_file.close()
 
@@ -73,7 +71,7 @@ def check_debug_logging():
         else:
             return 0
     else:
-        enable_debug = open(file_locations.debug_file_location, 'w')
+        enable_debug = open(file_locations.debug_logging_config, 'w')
         enable_debug.write("0")
         enable_debug.close()
         return 0
