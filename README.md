@@ -10,8 +10,8 @@ Installing on a Raspberry Pi (Any Model)
 
 See the above "Downloads & Instructions" link for more in-depth instructions.
 
-The short version of installing on a Pi is to run the following command in a Terminal 
-and open the following URL on the Pi itself to configure the sensor.
+The short version of installing on a Pi is to install Raspbian and run the following command in a Terminal. 
+After the install is done and the sensor has rebooted, open the following URL on the Pi itself to configure the sensor.
 https://localhost:10065/
 
 ```
