@@ -112,14 +112,14 @@ def html_get_raw_online_services_config_open_sense_map():
 def html_edit_online_services_wu():
     logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " + str(request.remote_addr))
     if request.method == "POST":
-        app_config_access.weather_underground_config.update_weather_underground_html(request)
+        app_config_access.weather_underground_config.update_weather_underground_html(request, skip_write=False)
         if app_config_access.wu_thread_running:
             main_message = "Weather Underground Updated - Restarting Sensor Software"
             message2 = "New Weather Underground settings will take effect after the sensor software restarts"
             app_generic_functions.thread_function(sensor_access.restart_services)
         else:
-            app_generic_functions.thread_function(
-                app_config_access.weather_underground_config.start_weather_underground)
+            start_weather_underground = app_config_access.weather_underground_config.start_weather_underground
+            app_generic_functions.thread_function(start_weather_underground)
             main_message = "Weather Underground Updated"
             message2 = ""
             if request.form.get("enable_weather_underground") is not None:
