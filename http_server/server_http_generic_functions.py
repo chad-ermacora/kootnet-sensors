@@ -31,8 +31,7 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
     sensor_reports = []
     threads = []
     for address in address_list:
-        if address != "Invalid":
-            threads.append(Thread(target=server_http_sensor_control.get_online_report, args=[address, report_type]))
+        threads.append(Thread(target=server_http_sensor_control.get_online_report, args=[address, report_type]))
     for thread in threads:
         thread.start()
     for thread in threads:

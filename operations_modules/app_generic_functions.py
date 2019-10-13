@@ -132,12 +132,12 @@ def thread_function(function, args=None):
     system_thread.start()
 
 
-def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus"):
+def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus", timeout=10):
     """ Returns requested sensor data (based on the provided command data). """
     try:
         url = "https://" + http_ip + ":" + http_port + "/" + command
         tmp_return_data = requests.get(url=url,
-                                       timeout=10,
+                                       timeout=timeout,
                                        auth=(app_cached_variables.http_login, app_cached_variables.http_password),
                                        verify=False)
         return tmp_return_data.text

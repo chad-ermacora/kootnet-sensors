@@ -17,8 +17,6 @@ sensor_network_commands = server_http_sensor_control.CreateNetworkGetCommands()
 @html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
 def html_sensor_control_management():
     logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
-    g_s_c = get_sensor_control_report
-
     if request.method == "POST":
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
@@ -38,11 +36,11 @@ def html_sensor_control_management():
             if sc_action == check_status:
                 return check_sensor_status_sensor_control(ip_list)
             elif sc_action == system_report:
-                return g_s_c(ip_list, report_type=system_report)
+                return get_sensor_control_report(ip_list, report_type=system_report)
             elif sc_action == config_report:
-                return g_s_c(ip_list, report_type=config_report)
+                return get_sensor_control_report(ip_list, report_type=config_report)
             elif sc_action == sensors_report:
-                return g_s_c(ip_list, report_type=sensors_report)
+                return get_sensor_control_report(ip_list, report_type=sensors_report)
             elif sc_action == create_zipped_reports:
                 app_config_access.creating_the_reports_zip = True
                 logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
@@ -276,14 +274,13 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
 
 def _get_all_html_reports(ip_list):
     try:
-        g_s_c = get_sensor_control_report
         system_report = app_config_access.sensor_control_config.radio_report_system
         config_report = app_config_access.sensor_control_config.radio_report_config
         sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
 
-        html_system_report = g_s_c(ip_list, report_type=system_report)
-        html_config_report = g_s_c(ip_list, report_type=config_report)
-        html_sensors_test_report = g_s_c(ip_list, report_type=sensors_report)
+        html_system_report = get_sensor_control_report(ip_list, report_type=system_report)
+        html_config_report = get_sensor_control_report(ip_list, report_type=config_report)
+        html_sensors_test_report = get_sensor_control_report(ip_list, report_type=sensors_report)
 
         html_system_report = _replace_text_in_report(html_system_report)
         html_config_report = _replace_text_in_report(html_config_report)
