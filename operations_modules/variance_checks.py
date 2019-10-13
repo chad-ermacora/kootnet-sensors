@@ -454,23 +454,23 @@ def _universal_sextuple_data_check(trigger_object):
         variance_detected = False
         while count < number_of_sets:
             try:
-                difference1 = abs(float(reading_and_datetime_stamps[0][0][0]) -
-                                  float(reading_and_datetime_stamps[0][1][0]))
+                difference1 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[0]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[0]))
 
-                difference2 = abs(float(reading_and_datetime_stamps[0][0][1]) -
-                                  float(reading_and_datetime_stamps[0][1][1]))
+                difference2 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[1]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[1]))
 
-                difference3 = abs(float(reading_and_datetime_stamps[0][0][2]) -
-                                  float(reading_and_datetime_stamps[0][1][2]))
+                difference3 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[2]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[2]))
 
-                difference4 = abs(float(reading_and_datetime_stamps[0][0][3]) -
-                                  float(reading_and_datetime_stamps[0][1][3]))
+                difference4 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[3]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[3]))
 
-                difference5 = abs(float(reading_and_datetime_stamps[0][0][4]) -
-                                  float(reading_and_datetime_stamps[0][1][4]))
+                difference5 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[4]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[4]))
 
-                difference6 = abs(float(reading_and_datetime_stamps[0][0][5]) -
-                                  float(reading_and_datetime_stamps[0][1][5]))
+                difference6 = abs(float(reading_and_datetime_stamps[0][0][1:-1].split(",")[5]) -
+                                  float(reading_and_datetime_stamps[0][1][1:-1].split(",")[5]))
             except Exception as error:
                 logger.primary_logger.warning(trigger_object.sensor_type + " Trigger: " + str(error))
                 difference1 = 0.0
