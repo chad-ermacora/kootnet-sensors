@@ -24,7 +24,8 @@ from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import os_cli_commands
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content
+from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
 from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
@@ -129,7 +130,7 @@ def get_db_first_last_date():
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
-    last_updated_file = app_generic_functions.get_file_content(file_locations.program_last_updated)
+    last_updated_file = get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
         last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
@@ -514,9 +515,9 @@ def display_message(text_msg):
 
 def start_special_sensor_interactive_services():
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        sh_joy_stick_thread = Thread(target=sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
-        sh_joy_stick_thread.daemon = True
-        sh_joy_stick_thread.start()
+        text_name = "Sensor Interactive Service"
+        function = sensors_direct.rp_sense_hat_a.start_joy_stick_commands
+        app_cached_variables.interactive_sensor_thread = CreateMonitoredThread(function, thread_name=text_name)
 
 
 def restart_services(sleep_before_restart=1):

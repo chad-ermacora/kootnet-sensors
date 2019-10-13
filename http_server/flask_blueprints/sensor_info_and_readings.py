@@ -2,6 +2,7 @@ from time import strftime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules.app_generic_functions import get_text_running_thread_state
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from sensor_modules import sensor_access
@@ -12,30 +13,31 @@ html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes",
 @html_sensor_info_readings_routes.route("/About")
 @html_sensor_info_readings_routes.route("/SensorInformation")
 def html_system_information():
+    debug_logging = "Disabled"
     if app_config_access.current_config.enable_debug_logging:
-        debug_logging = True
-    else:
-        debug_logging = False
+        debug_logging = "Enabled"
 
-    if app_config_access.current_config.enable_display:
-        display_enabled = True
-    else:
-        display_enabled = False
+    display_enabled = get_text_running_thread_state(app_config_access.current_config.enable_display,
+                                                    app_cached_variables.mini_display_thread)
 
-    if app_config_access.current_config.enable_interval_recording:
-        interval_recording = True
-    else:
-        interval_recording = False
+    interval_recording = get_text_running_thread_state(app_config_access.current_config.enable_interval_recording,
+                                                       app_cached_variables.interval_recording_thread)
 
-    if app_config_access.current_config.enable_trigger_recording:
-        trigger_recording = True
-    else:
-        trigger_recording = False
+    trigger_recording = get_text_running_thread_state(app_config_access.current_config.enable_trigger_recording,
+                                                      app_cached_variables.trigger_recording_thread)
 
+    wu_enabled = app_config_access.weather_underground_config.weather_underground_enabled
+    weather_underground = get_text_running_thread_state(wu_enabled, app_cached_variables.weather_underground_thread)
+
+    luftdaten = get_text_running_thread_state(app_config_access.luftdaten_config.luftdaten_enabled,
+                                              app_cached_variables.luftdaten_thread)
+
+    open_sense_map = get_text_running_thread_state(app_config_access.open_sense_map_config.open_sense_map_enabled,
+                                                   app_cached_variables.open_sense_map_thread)
+
+    custom_temp_enabled = "0.0"
     if app_config_access.current_config.enable_custom_temp:
-        custom_temp_enabled = True
-    else:
-        custom_temp_enabled = False
+        custom_temp_enabled = app_config_access.current_config.temperature_offset
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
     return render_template("sensor_information.html",
@@ -54,10 +56,12 @@ def html_system_information():
                            DebugLogging=debug_logging,
                            SupportedDisplay=display_enabled,
                            IntervalRecording=interval_recording,
-                           IntervalDelay=app_config_access.current_config.sleep_duration_interval,
                            TriggerRecording=trigger_recording,
-                           ManualTemperatureEnabled=custom_temp_enabled,
-                           CurrentTemperatureOffset=app_config_access.current_config.temperature_offset,
+                           WeatherUndergroundService=weather_underground,
+                           LuftdatenService=luftdaten,
+                           OpenSenseMapService=open_sense_map,
+                           IntervalDelay=app_config_access.current_config.sleep_duration_interval,
+                           CurrentTemperatureOffset=custom_temp_enabled,
                            InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
                            SQLDatabaseLocation=file_locations.sensor_database,
                            SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),

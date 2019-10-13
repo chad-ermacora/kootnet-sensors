@@ -16,30 +16,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from threading import Thread
+from time import sleep
 from operations_modules import logger
+from operations_modules import app_generic_functions
 from operations_modules import variance_checks
 
 
-def start_trigger_recording(sensor_access):
+def start_trigger_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
     logger.primary_logger.debug("Trigger Thread(s) Starting")
-    sensor_variance_checks = variance_checks.CreateVarianceRecording(sensor_access)
 
-    threads = [Thread(target=sensor_variance_checks.check_sensor_uptime),
-               Thread(target=sensor_variance_checks.check_cpu_temperature),
-               Thread(target=sensor_variance_checks.check_env_temperature),
-               Thread(target=sensor_variance_checks.check_pressure),
-               Thread(target=sensor_variance_checks.check_altitude),
-               Thread(target=sensor_variance_checks.check_humidity),
-               Thread(target=sensor_variance_checks.check_distance),
-               Thread(target=sensor_variance_checks.check_lumen),
-               Thread(target=sensor_variance_checks.check_ems),
-               Thread(target=sensor_variance_checks.check_accelerometer_xyz),
-               Thread(target=sensor_variance_checks.check_magnetometer_xyz),
-               Thread(target=sensor_variance_checks.check_gyroscope_xyz)]
+    function_and_name = [[variance_checks.check_sensor_uptime, "Trigger - Sensor Uptime"],
+                         [variance_checks.check_cpu_temperature, "Trigger - CPU Temperature"],
+                         [variance_checks.check_env_temperature, "Trigger - Env Temperature"],
+                         [variance_checks.check_pressure, "Trigger - Pressure"],
+                         [variance_checks.check_altitude, "Trigger - Altitude"],
+                         [variance_checks.check_humidity, "Trigger - Humidity"],
+                         [variance_checks.check_distance, "Trigger - Distance"],
+                         [variance_checks.check_lumen, "Trigger - Lumen"],
+                         [variance_checks.check_ems, "Trigger - Visible EMS"],
+                         [variance_checks.check_accelerometer_xyz, "Trigger - Accelerometer"],
+                         [variance_checks.check_magnetometer_xyz, "Trigger - Magnetometer"],
+                         [variance_checks.check_gyroscope_xyz, "Trigger - Gyroscope"]]
 
-    for thread in threads:
-        thread.daemon = True
-        thread.start()
+    for trigger_monitor in function_and_name:
+        app_generic_functions.CreateMonitoredThread(trigger_monitor[0], thread_name=trigger_monitor[1])
     logger.primary_logger.info(" -- Trigger Recording Started")
+    sleep(3600)

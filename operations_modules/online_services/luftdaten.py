@@ -103,34 +103,30 @@ class CreateLuftdatenConfig:
 
     def start_luftdaten(self):
         """ Sends compatible sensor readings to Luftdaten every X seconds based on set Interval. """
-        if not app_config_access.luftdaten_thread_running:
-            app_config_access.luftdaten_thread_running = True
-            # Sleep 6.5 seconds before starting
-            # So it doesn't try to access the sensors at the same time as the recording services on boot
-            sleep(6.5)
-            while True:
-                no_sensors = True
-                try:
-                    if app_config_access.installed_sensors.pimoroni_bmp280 or \
-                            app_config_access.installed_sensors.pimoroni_enviro:
-                        no_sensors = False
-                        self._bmp280()
-                    if app_config_access.installed_sensors.pimoroni_bme680 or \
-                            app_config_access.installed_sensors.pimoroni_enviroplus:
-                        no_sensors = False
-                        self._bme280()
-                    if app_config_access.installed_sensors.pimoroni_pms5003:
-                        no_sensors = False
-                        self._pms5003()
-                except Exception as error:
-                    logger.network_logger.error("Luftdaten - Error Processing Data")
-                    logger.network_logger.debug("Luftdaten - Detailed Error: " + str(error))
+        while True:
+            no_sensors = True
+            try:
+                if app_config_access.installed_sensors.pimoroni_bmp280 or \
+                        app_config_access.installed_sensors.pimoroni_enviro:
+                    no_sensors = False
+                    self._bmp280()
+                if app_config_access.installed_sensors.pimoroni_bme680 or \
+                        app_config_access.installed_sensors.pimoroni_enviroplus:
+                    no_sensors = False
+                    self._bme280()
+                if app_config_access.installed_sensors.pimoroni_pms5003:
+                    no_sensors = False
+                    self._pms5003()
+            except Exception as error:
+                logger.network_logger.error("Luftdaten - Error Processing Data")
+                logger.network_logger.debug("Luftdaten - Detailed Error: " + str(error))
 
-                if no_sensors:
-                    message = "Luftdaten - Not Updated: No Compatible Sensors"
-                    logger.network_logger.warning(message)
+            if no_sensors:
+                message = "Luftdaten - No further updates will be attempted: No Compatible Sensors"
+                logger.network_logger.warning(message)
+                while True:
                     sleep(3600)
-                sleep(self.interval_seconds)
+            sleep(self.interval_seconds)
 
     # extracts serial from cpuinfo
     @staticmethod

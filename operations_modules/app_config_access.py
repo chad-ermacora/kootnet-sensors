@@ -54,11 +54,6 @@ current_platform = system()
 database_variables = sqlite_database.CreateDatabaseVariables()
 linux_os_upgrade_ready = True
 
-# Online Service Variables
-wu_thread_running = False
-luftdaten_thread_running = False
-open_sense_map_thread_running = False
-
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"
 

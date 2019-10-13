@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
@@ -113,13 +114,14 @@ def html_edit_online_services_wu():
     logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " + str(request.remote_addr))
     if request.method == "POST":
         app_config_access.weather_underground_config.update_weather_underground_html(request, skip_write=False)
-        if app_config_access.wu_thread_running:
+        if app_cached_variables.weather_underground_thread is not None:
             main_message = "Weather Underground Updated - Restarting Sensor Software"
             message2 = "New Weather Underground settings will take effect after the sensor software restarts"
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            thread_function(sensor_access.restart_services)
         else:
-            start_weather_underground = app_config_access.weather_underground_config.start_weather_underground
-            app_generic_functions.thread_function(start_weather_underground)
+            text_name = "Weather Underground"
+            function = app_config_access.weather_underground_config.start_weather_underground
+            app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
             main_message = "Weather Underground Updated"
             message2 = ""
             if request.form.get("enable_weather_underground") is not None:
@@ -136,12 +138,14 @@ def html_edit_online_services_luftdaten():
     logger.network_logger.debug("** Edit Online Services Luftdaten accessed from " + str(request.remote_addr))
     if request.method == "POST":
         app_config_access.luftdaten_config.update_luftdaten_html(request)
-        if app_config_access.luftdaten_thread_running:
+        if app_cached_variables.luftdaten_thread is not None:
             main_message = "Luftdaten Updated - Restarting Sensor Software"
             message2 = "New Luftdaten settings will take effect after the sensor software restarts"
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            thread_function(sensor_access.restart_services)
         else:
-            app_generic_functions.thread_function(app_config_access.luftdaten_config.start_luftdaten)
+            text_name = "Luftdaten"
+            function = app_config_access.luftdaten_config.start_luftdaten
+            app_cached_variables.luftdaten_thread = CreateMonitoredThread(function, thread_name=text_name)
             main_message = "Luftdaten Updated"
             message2 = ""
             if request.form.get("enable_luftdaten") is not None:
@@ -158,12 +162,14 @@ def html_edit_online_services_open_sense_map():
     logger.network_logger.debug("** Edit Online Services Open Sense Map accessed from " + str(request.remote_addr))
     if request.method == "POST":
         app_config_access.open_sense_map_config.update_open_sense_map_html(request)
-        if app_config_access.open_sense_map_thread_running:
+        if app_cached_variables.open_sense_map_thread is not None:
             main_message = "Open Sense Map Updated - Restarting Sensor Software"
             message2 = "New Open Sense Map settings will take effect after the sensor software restarts"
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            thread_function(sensor_access.restart_services)
         else:
-            app_generic_functions.thread_function(app_config_access.open_sense_map_config.start_open_sense_map)
+            text_name = "Open Sense Map"
+            function = app_config_access.open_sense_map_config.start_open_sense_map
+            app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
             main_message = "Open Sense Map Updated"
             message2 = ""
             if request.form.get("enable_open_sense_map") is not None:

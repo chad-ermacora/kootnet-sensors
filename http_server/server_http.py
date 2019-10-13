@@ -17,10 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import delayed_cache_update
 https_import_error_msg = ""
 https_import_errors = True
@@ -77,7 +77,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_legacy_cc_routes)
         app.register_blueprint(html_sensor_info_readings_routes)
 
-        app_generic_functions.thread_function(delayed_cache_update)
+        thread_function(delayed_cache_update)
 
         try:
             http_server = WSGIServer((flask_http_ip, flask_http_port), app,
@@ -96,15 +96,4 @@ def https_start_and_watch():
         logger.primary_logger.critical(log_message + str(https_import_error_msg))
         while True:
             sleep(600)
-    sensor_http_server_thread = Thread(target=CreateSensorHTTP)
-    sensor_http_server_thread.daemon = True
-    sensor_http_server_thread.start()
-    logger.primary_logger.debug("HTTPS Server Thread Started")
-
-    while True:
-        sleep(30)
-        if not sensor_http_server_thread.is_alive():
-            logger.primary_logger.error("HTTPS Server Stopped Unexpectedly - Restarting...")
-            sensor_http_server_thread = Thread(target=CreateSensorHTTP)
-            sensor_http_server_thread.daemon = True
-            sensor_http_server_thread.start()
+    app_cached_variables.http_server_thread = CreateMonitoredThread(CreateSensorHTTP, thread_name="HTTPS Server")

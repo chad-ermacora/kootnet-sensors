@@ -142,54 +142,49 @@ class CreateWeatherUndergroundConfig:
 
     def start_weather_underground(self):
         """ Sends compatible sensor readings to Weather Underground every X seconds based on set Interval. """
-        if not app_config_access.wu_thread_running:
-            app_config_access.wu_thread_running = True
-            # Sleep 5 seconds before starting
-            # So it doesn't try to access the sensors at the same time as the recording services on boot
-            sleep(5)
-            while True:
-                sensor_readings = self.get_weather_underground_readings()
-                sw_version_text_list = software_version.version.split(".")
-                sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
-                if sensor_readings:
-                    if self.wu_rapid_fire_enabled:
-                        url = wu_rapid_fire_url_start
-                    else:
-                        url = wu_main_url_start
-                    try:
-                        url += wu_id + self.station_id + \
-                               wu_key + self.station_key + \
-                               wu_utc_datetime + \
-                               sensor_readings + \
-                               wu_software_version + sw_version_text + \
-                               wu_action
-
-                        if self.wu_rapid_fire_enabled:
-                            url += wu_rapid_fire_url_end + str(self.interval_seconds)
-
-                        # logger.network_logger.debug("New Weather Underground URL: " + url)
-                        html_get_response = requests.get(url=url)
-
-                        if html_get_response.status_code == 200:
-                            logger.network_logger.debug("Sensors sent to Weather Underground OK")
-                        elif html_get_response.status_code == 401:
-                            logger.network_logger.error("Weather Underground: Bad Station ID or Key")
-                        elif html_get_response.status_code == 400:
-                            logger.network_logger.error("Weather Underground: Invalid Options")
-                        else:
-                            status_code = str(html_get_response.status_code)
-                            response_text = str(html_get_response.text)
-                            log_msg = "Weather Underground - Unknown Error " + status_code + ": " + response_text
-                            logger.network_logger.error(log_msg)
-
-                    except Exception as error:
-                        logger.network_logger.error("Weather Underground - Error sending data")
-                        logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
+        while True:
+            sensor_readings = self.get_weather_underground_readings()
+            sw_version_text_list = software_version.version.split(".")
+            sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
+            if sensor_readings:
+                if self.wu_rapid_fire_enabled:
+                    url = wu_rapid_fire_url_start
                 else:
-                    logger.network_logger.warning("Weather Underground - Not Updated: No Compatible Sensors")
-                    while True:
-                        sleep(3600)
-                sleep(self.interval_seconds)
+                    url = wu_main_url_start
+                try:
+                    url += wu_id + self.station_id + \
+                           wu_key + self.station_key + \
+                           wu_utc_datetime + \
+                           sensor_readings + \
+                           wu_software_version + sw_version_text + \
+                           wu_action
+
+                    if self.wu_rapid_fire_enabled:
+                        url += wu_rapid_fire_url_end + str(self.interval_seconds)
+
+                    # logger.network_logger.debug("New Weather Underground URL: " + url)
+                    html_get_response = requests.get(url=url)
+
+                    if html_get_response.status_code == 200:
+                        logger.network_logger.debug("Sensors sent to Weather Underground OK")
+                    elif html_get_response.status_code == 401:
+                        logger.network_logger.error("Weather Underground: Bad Station ID or Key")
+                    elif html_get_response.status_code == 400:
+                        logger.network_logger.error("Weather Underground: Invalid Options")
+                    else:
+                        status_code = str(html_get_response.status_code)
+                        response_text = str(html_get_response.text)
+                        log_msg = "Weather Underground - Unknown Error " + status_code + ": " + response_text
+                        logger.network_logger.error(log_msg)
+
+                except Exception as error:
+                    logger.network_logger.error("Weather Underground - Error sending data")
+                    logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
+            else:
+                logger.network_logger.warning("Weather Underground - Not Updated: No Compatible Sensors")
+                while True:
+                    sleep(3600)
+            sleep(self.interval_seconds)
 
     def get_weather_underground_readings(self):
         """

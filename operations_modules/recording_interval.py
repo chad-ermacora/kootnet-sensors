@@ -26,29 +26,22 @@ from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
 
-class CreateIntervalRecording:
-    logger.primary_logger.debug("Created Interval Recording Server Object")
+def start_interval_recording():
+    """ Starts recording all Interval sensor readings to the SQL database every X Seconds (set in config). """
+    logger.primary_logger.info(" -- Interval Recording Started")
+    while True:
+        try:
+            new_sensor_data = get_interval_sensor_readings()
+            new_sensor_data = new_sensor_data.split(command_data_separator)
+            interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + \
+                                   str(new_sensor_data[0]) + \
+                                   ") VALUES (" + \
+                                   str(new_sensor_data[1]) + ")"
 
-    def __init__(self):
-        self.start_interval_recording()
-
-    @staticmethod
-    def start_interval_recording():
-        """ Starts recording all Interval sensor readings to the SQL database every X Seconds (set in config). """
-        logger.primary_logger.info(" -- Interval Recording Started")
-        while True:
-            try:
-                new_sensor_data = get_interval_sensor_readings()
-                new_sensor_data = new_sensor_data.split(command_data_separator)
-                interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + \
-                                       str(new_sensor_data[0]) + \
-                                       ") VALUES (" + \
-                                       str(new_sensor_data[1]) + ")"
-
-                sqlite_database.write_to_sql_database(interval_sql_execute)
-            except Exception as error:
-                logger.primary_logger.error("Interval Recording Failure: " + str(error))
-            sleep(app_config_access.current_config.sleep_duration_interval)
+            sqlite_database.write_to_sql_database(interval_sql_execute)
+        except Exception as error:
+            logger.primary_logger.error("Interval Recording Failure: " + str(error))
+        sleep(app_config_access.current_config.sleep_duration_interval)
 
 
 def get_interval_sensor_readings():

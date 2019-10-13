@@ -30,6 +30,70 @@ from operations_modules import app_cached_variables
 logging.captureWarnings(True)
 
 
+class CreateMonitoredThread:
+    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=5):
+        self.is_running = True
+        self.function = function
+        self.args = args
+        self.thread_name = thread_name
+
+        self.current_restart_count = 0
+        self.max_restart_count = max_restart_tries
+
+        self._thread_and_monitor()
+
+    def _thread_and_monitor(self):
+        try:
+            monitored_thread = Thread(target=self._worker_thread_and_monitor)
+            monitored_thread.daemon = True
+            monitored_thread.start()
+        except Exception as error:
+            logger.primary_logger.error("--- " + self.thread_name + " Thread Failed: " + str(error))
+
+    def _worker_thread_and_monitor(self):
+        logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
+        if self.args is not None:
+            monitored_thread = Thread(target=self.function, args=self.args)
+        else:
+            monitored_thread = Thread(target=self.function)
+        monitored_thread.daemon = True
+        monitored_thread.start()
+
+        while True:
+            time.sleep(30)
+            if not monitored_thread.is_alive():
+                logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
+                self.is_running = False
+                self.current_restart_count += 1
+                if self.current_restart_count < self.max_restart_count:
+                    if self.args is not None:
+                        monitored_thread = Thread(target=self.function, args=self.args)
+                    else:
+                        monitored_thread = Thread(target=self.function)
+                    monitored_thread.daemon = True
+                    monitored_thread.start()
+                    self.is_running = True
+                else:
+                    log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
+                    logger.primary_logger.critical(log_msg + " Times.  No further restart attempts will be made.")
+                    while True:
+                        time.sleep(600)
+
+
+def get_text_running_thread_state(service_enabled, thread_variable):
+    if service_enabled:
+        return_text = "Stopped"
+        if thread_variable is None:
+            return_text = "Error"
+        elif thread_variable.is_running:
+            return_text = "Running"
+        elif not thread_variable.is_running:
+            return_text = "Stopped"
+    else:
+        return_text = "Disabled"
+    return return_text
+
+
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))

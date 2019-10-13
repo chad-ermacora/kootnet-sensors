@@ -267,12 +267,7 @@ class CreateOpenSenseMapConfig:
 
     def start_open_sense_map(self):
         """ Sends compatible sensor readings to Open Sense Map every X seconds based on set Interval. """
-        if not app_config_access.open_sense_map_thread_running and self.sense_box_id != "":
-            app_config_access.open_sense_map_thread_running = True
-            # Sleep 8 seconds before starting
-            # So it doesn't try to access the sensors at the same time as the recording services on boot
-            sleep(8)
-
+        if self.sense_box_id != "":
             url = open_sense_map_main_url_start + "/" + self.sense_box_id + "/data"
             url_header = {"content-type": "application/json"}
 
@@ -367,7 +362,8 @@ class CreateOpenSenseMapConfig:
                             log_msg = "Open Sense Map - Unknown Error " + status_code + ": " + response_text
                             logger.network_logger.error(log_msg)
                     else:
-                        log_msg = "Open Sense Map - Not Updated: No Compatible Sensors or Missing Sensor IDs"
+                        log_msg = "Open Sense Map - No further updates will be attempted: " + \
+                                  "No Compatible Sensors or Missing Sensor IDs"
                         logger.network_logger.warning(log_msg)
                         while True:
                             sleep(3600)

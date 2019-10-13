@@ -22,6 +22,17 @@ from queue import Queue
 command_data_separator = "[new_data_section]"
 no_sensor_present = "NoSensor"
 
+# Running "Service" Threads
+http_server_thread = None
+interval_recording_thread = None
+trigger_recording_thread = None
+mini_display_thread = None
+interactive_sensor_thread = None
+weather_underground_thread = None
+luftdaten_thread = None
+open_sense_map_thread = None
+
+
 # This file is updated with variables at runtime.
 # This helps lessen disk reads by caching commonly used variables
 program_last_updated = ""
