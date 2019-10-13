@@ -56,4 +56,4 @@ class CreateMatrix11x7:
                 logger.sensors_logger.error("Scroll Message on Matrix11x7 - Failed: " + str(error))
             self.display_ready = True
         else:
-            logger.sensors_logger.warning("Unable to display message on Pimoroni 11x7 LED Matrix.  Already in use.")
+            logger.sensors_logger.info("Unable to display message on Pimoroni 11x7 LED Matrix.  Already in use.")
