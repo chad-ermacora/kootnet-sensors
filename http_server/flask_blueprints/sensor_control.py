@@ -25,6 +25,7 @@ def html_sensor_control_management():
 
         if len(ip_list) > 0:
             check_status = app_config_access.sensor_control_config.radio_check_status
+            combo_reports = app_config_access.sensor_control_config.radio_report_combo
             system_report = app_config_access.sensor_control_config.radio_report_system
             config_report = app_config_access.sensor_control_config.radio_report_config
             sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
@@ -35,6 +36,8 @@ def html_sensor_control_management():
 
             if sc_action == check_status:
                 return check_sensor_status_sensor_control(ip_list)
+            elif sc_action == combo_reports:
+                return get_html_reports_combo(ip_list, skip_rewrite_link=True)
             elif sc_action == system_report:
                 return get_sensor_control_report(ip_list, report_type=system_report)
             elif sc_action == config_report:
@@ -200,8 +203,8 @@ def _get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=
 def _put_all_reports_zipped_to_cache(ip_list):
     try:
         hostname = app_cached_variables.hostname
-        html_reports = _get_all_html_reports(ip_list)
-        html_report_names = ["ReportSystem.html", "ReportConfiguration.html", "ReportSensorsTests.html"]
+        html_reports = [get_html_reports_combo(ip_list)]
+        html_report_names = ["ReportCombo.html"]
         app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(html_report_names, html_reports)
         app_cached_variables.sc_reports_zip_name = "Reports_from_" + hostname + "_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
@@ -272,7 +275,7 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
                            ExtraMessage=extra_message)
 
 
-def _get_all_html_reports(ip_list):
+def get_html_reports_combo(ip_list, skip_rewrite_link=False):
     try:
         system_report = app_config_access.sensor_control_config.radio_report_system
         config_report = app_config_access.sensor_control_config.radio_report_config
@@ -280,24 +283,26 @@ def _get_all_html_reports(ip_list):
 
         html_system_report = get_sensor_control_report(ip_list, report_type=system_report)
         html_config_report = get_sensor_control_report(ip_list, report_type=config_report)
-        html_sensors_test_report = get_sensor_control_report(ip_list, report_type=sensors_report)
+        html_readings_report = get_sensor_control_report(ip_list, report_type=sensors_report)
 
-        html_system_report = _replace_text_in_report(html_system_report)
-        html_config_report = _replace_text_in_report(html_config_report)
-        html_sensors_test_report = _replace_text_in_report(html_sensors_test_report)
+        if not skip_rewrite_link:
+            html_system_report = _replace_text_in_report(html_system_report, "System")
+            html_config_report = _replace_text_in_report(html_config_report, "Configuration")
+            html_readings_report = _replace_text_in_report(html_readings_report, "Sensor Readings")
+
+        html_final_combo_return = app_generic_functions.get_file_content(file_locations.html_combo_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", html_config_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", html_readings_report)
     except Exception as error:
         logger.primary_logger.error("Sensor Control - Unable to Generate Reports for Download: " + str(error))
-        html_system_report = "error"
-        html_config_report = "error"
-        html_sensors_test_report = "error"
-    return [html_system_report, html_config_report, html_sensors_test_report]
+        html_final_combo_return = "Error"
+    return html_final_combo_return
 
 
-def _replace_text_in_report(report):
-    old_text_list = ["Back to Sensor Control",
-                     "/SensorControlManage"]
-    new_text_list = ["Program Home Page",
-                     "https://github.com/chad-ermacora/sensor-rp"]
+def _replace_text_in_report(report, new_text):
+    old_text_list = ["Back to Sensor Control", "/SensorControlManage"]
+    new_text_list = ["Kootnet Sensor Report - " + new_text, ""]
 
     for old_text, new_text in zip(old_text_list, new_text_list):
         report = report.replace(old_text, new_text)
@@ -311,8 +316,8 @@ def _create_the_big_zip(ip_list):
 
     if len(ip_list) > 0:
         try:
-            return_names = ["ReportSystem.html", "ReportConfiguration.html", "ReportSensorsTests.html"]
-            return_files = _get_all_html_reports(ip_list)
+            return_names = ["ReportCombo.html"]
+            return_files = [get_html_reports_combo(ip_list)]
 
             _queue_name_and_file_list(ip_list, network_commands.download_zipped_everything)
             ip_name_and_data = app_generic_functions.get_data_queue_items()
@@ -322,21 +327,7 @@ def _create_the_big_zip(ip_list):
                 return_names.append(current_file_name)
                 return_files.append(sensor[2])
 
-            get_zipped_sql_size = network_commands.sensor_zipped_sql_database_size
-            zipped_database_sizes_list = []
-            for ip in ip_list:
-                database_size = app_generic_functions.get_http_sensor_reading(ip, command=get_zipped_sql_size)
-                try:
-                    int_size = int(database_size)
-                    zipped_database_sizes_list.append(int_size)
-                except Exception as error:
-                    logger.network_logger.warning("Sensor Control - Failed getting Database size for " + str(ip))
-                    logger.network_logger.debug("SC Database Size Error: " + str(error))
-
-            total_databases_size = 0
-            for size in zipped_database_sizes_list:
-                total_databases_size += size
-
+            total_databases_size = _get_sum_db_sizes(ip_list)
             if app_generic_functions.save_to_memory_ok(total_databases_size):
                 app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(return_names, return_files)
             else:
@@ -374,6 +365,7 @@ def _worker_queue_list_ip_name_file(address, command):
 
 def sensor_control_management():
     radio_checked_online_status = ""
+    radio_checked_combo_reports = ""
     radio_checked_systems_report = ""
     radio_checked_config_report = ""
     radio_checked_sensors_test_report = ""
@@ -390,6 +382,10 @@ def sensor_control_management():
     selected_action = app_config_access.sensor_control_config.selected_action
     if selected_action == app_config_access.sensor_control_config.radio_check_status:
         radio_checked_online_status = "checked"
+        disabled_download_relayed = "disabled"
+        disabled_download_direct = "disabled"
+    elif selected_action == app_config_access.sensor_control_config.radio_report_combo:
+        radio_checked_combo_reports = "checked"
         disabled_download_relayed = "disabled"
         disabled_download_direct = "disabled"
     elif selected_action == app_config_access.sensor_control_config.radio_report_system:
@@ -461,6 +457,7 @@ def sensor_control_management():
                            DownloadBigZipDisabled=download_big_zip,
                            RunActionDisabled=disable_run_action_button,
                            CheckedOnlineStatus=radio_checked_online_status,
+                           CheckedComboReports=radio_checked_combo_reports,
                            CheckedSystemReports=radio_checked_systems_report,
                            CheckedConfigReports=radio_checked_config_report,
                            CheckedSensorsTestReports=radio_checked_sensors_test_report,
@@ -497,24 +494,47 @@ def sensor_control_management():
 
 
 def _get_sum_db_sizes(ip_list):
-    done_get = False
-    get_error_count = 0
-    get_database_size_command = sensor_network_commands.sensor_zipped_sql_database_size
-    databases_size = 0
-    for ip in ip_list:
-        while not done_get and get_error_count < 3:
+    databases_size = 0.0
+    try:
+        db_size_threads = []
+        for address in ip_list:
+            db_size_threads.append(Thread(target=_worker_get_db_size, args=[address]))
+        for thread in db_size_threads:
+            thread.start()
+        for thread in db_size_threads:
+            thread.join()
+
+        while not app_cached_variables.flask_return_data_queue.empty():
+            db_size = app_cached_variables.flask_return_data_queue.get()
+            databases_size += db_size
+            app_cached_variables.flask_return_data_queue.task_done()
+    except Exception as error:
+        logger.network_logger.error("Sensor Control - Unable to retrieve Database Sizes Sum: " + str(error))
+    logger.network_logger.debug("Total DB Sizes in MB: " + str(databases_size))
+    return databases_size
+
+
+def _worker_get_db_size(address):
+    get_http_sensor_reading = app_generic_functions.get_http_sensor_reading
+    get_database_size_command = sensor_network_commands.sensor_sql_database_size
+    try:
+        try_get = True
+        get_error_count = 0
+        while try_get and get_error_count < 3:
             try:
-                db_size = int(app_generic_functions.get_http_sensor_reading(ip, command=get_database_size_command))
-                databases_size += db_size
-                done_get = True
+                db_size = float(get_http_sensor_reading(address, command=get_database_size_command))
+                app_cached_variables.flask_return_data_queue.put(db_size)
+                try_get = False
             except Exception as error:
-                log_msg = "Sensor Control - Error adding sensor DB Size for " + ip + " attempt #" + str(get_error_count)
-                logger.network_logger.error(log_msg)
+                log_msg = "Sensor Control - Error getting sensor DB Size for "
+                logger.network_logger.error(log_msg + address + " attempt #" + str(get_error_count + 1))
                 logger.network_logger.debug("Sensor Control DB Sizes Error: " + str(error))
                 get_error_count += 1
-        done_get = False
-        get_error_count = 0
-    return databases_size
+        if get_error_count > 2:
+            app_cached_variables.flask_return_data_queue.put(0)
+    except Exception as error:
+        log_msg = "Sensor Control - Unable to retrieve Database Size for " + address + ": " + str(error)
+        logger.network_logger.error(log_msg)
 
 
 @html_sensor_control_routes.route("/DownloadSCDatabasesZip")

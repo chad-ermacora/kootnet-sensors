@@ -155,9 +155,9 @@
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: small">
-                            <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
-                                   id="RadioSensorsTests" value="sensors_test_report">
-                            Sensors Tests
+                            <input type="radio" name="selected_action" {{ CheckedComboReports }}
+                                   id="RadioComboReports" value="combo_report">
+                            3x Reports Combo
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
@@ -171,6 +171,12 @@
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    id="RadioConfigReports" value="config_report">
                             Configurations Report
+                            <span class="checkmark_radio"></span>
+                        </label>
+                        <label class="container_radio" style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
+                                   id="RadioSensorsTests" value="sensors_test_report">
+                            Sensors Tests
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
@@ -335,24 +341,35 @@
     <script>
         jQuery('#RadioOnlineStatus').click(function () {
             if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioComboReports').click(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
                 disable_all_selected();
             }
         });
 
         jQuery('#RadioSensorsTests').click(function () {
             if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
                 disable_all_selected();
             }
         });
 
         jQuery('#RadioSystemReports').click(function () {
             if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
                 disable_all_selected();
             }
         });
 
         jQuery('#RadioConfigReports').click(function () {
             if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
                 disable_all_selected();
             }
         });

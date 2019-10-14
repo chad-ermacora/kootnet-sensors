@@ -146,7 +146,7 @@ class CreateLinuxSystem:
     def get_sql_db_size():
         """ Returns Sensor SQLite DB Size in MB as a Float. """
         try:
-            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1024000
+            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1_000_000
         except Exception as error:
             logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
             db_size_mb = 0.0

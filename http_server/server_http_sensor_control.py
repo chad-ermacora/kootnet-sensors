@@ -57,6 +57,7 @@ class CreateNetworkGetCommands:
 
     def __init__(self):
         self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_sql_database_size = "GetSQLDBSize"
         self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"

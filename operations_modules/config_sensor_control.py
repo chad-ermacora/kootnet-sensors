@@ -34,6 +34,7 @@ class CreateSensorControlConfig:
                                    "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
         self.radio_check_status = "online_status"
+        self.radio_report_combo = "combo_report"
         self.radio_report_system = "systems_report"
         self.radio_report_config = "config_report"
         self.radio_report_test_sensors = "sensors_test_report"

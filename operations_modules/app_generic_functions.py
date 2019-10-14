@@ -234,7 +234,7 @@ def clear_zip_names():
 
 
 def save_to_memory_ok(write_size):
-    if psutil.virtual_memory().available > (write_size + 25000):
+    if psutil.virtual_memory().available > ((write_size * 1_000_000) + 25_000_000):
         return True
     return False
 

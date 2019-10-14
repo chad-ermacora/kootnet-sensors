@@ -49,6 +49,8 @@ html_sensor_control_databases_zip = "/home/kootnet_data/DatabasesZip.zip"
 html_sensor_control_logs_zip = "/home/kootnet_data/OtherSensorsLogsZip.zip"
 html_sensor_control_big_zip = "/home/kootnet_data/TheBigZip.zip"
 
+html_combo_report = "/opt/kootnet-sensors/http_server/templates/non-flask/report_3_combo.html"
+
 html_report_system1_start = "/opt/kootnet-sensors/http_server/templates/non-flask/report_system1_start.html"
 html_report_system2_sensor = "/opt/kootnet-sensors/http_server/templates/non-flask/report_system2_sensor.html"
 html_report_system3_end = "/opt/kootnet-sensors/http_server/templates/non-flask/report_system3_end.html"
