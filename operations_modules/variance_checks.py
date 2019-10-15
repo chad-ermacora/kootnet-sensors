@@ -85,7 +85,8 @@ def check_sensor_uptime():
             logger.primary_logger.debug("Sensor Uptime exceeded set trigger")
     else:
         logger.primary_logger.info("Triggers - Sensor Uptime Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_cpu_temperature():
@@ -99,7 +100,8 @@ def check_cpu_temperature():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - CPU Temperature Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_env_temperature():
@@ -113,7 +115,8 @@ def check_env_temperature():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Environmental Temperature Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_pressure():
@@ -127,7 +130,8 @@ def check_pressure():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Pressure Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_altitude():
@@ -141,7 +145,8 @@ def check_altitude():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Altitude Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_humidity():
@@ -155,7 +160,8 @@ def check_humidity():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Humidity Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_distance():
@@ -169,7 +175,8 @@ def check_distance():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Distance Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_lumen():
@@ -183,7 +190,8 @@ def check_lumen():
         _universal_single_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Lumen Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_ems():
@@ -222,7 +230,8 @@ def check_ems():
         _universal_triple_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - EMS Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_accelerometer_xyz():
@@ -242,7 +251,8 @@ def check_accelerometer_xyz():
         _universal_triple_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Accelerometer Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_magnetometer_xyz():
@@ -262,7 +272,8 @@ def check_magnetometer_xyz():
         _universal_triple_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Magnetometer Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def check_gyroscope_xyz():
@@ -282,7 +293,8 @@ def check_gyroscope_xyz():
         _universal_triple_data_check(trigger_object)
     else:
         logger.primary_logger.info("Triggers - Gyroscope Disabled")
-        sleep(3600)
+        while True:
+            sleep(3600)
 
 
 def get_sensor_reading(sensor_type):

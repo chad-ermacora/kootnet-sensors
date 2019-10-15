@@ -12,15 +12,16 @@
             <br>
             Click the Interval or Trigger links below.
         </h4>
-        _<b id="blink_shadow">{{ ExtraTextMessage|safe }}</b>_
+        _<b id="blink_shadow" style="font-size: medium;">{{ ExtraTextMessage|safe }}</b>_
     </fieldset>
 
     <h3 style="color: #cc00ff">
+    <div class="tooltip">?<span class="tooltiptext">Date Displayed is in Sensor's TimeZone</span></div>
         <u><a style="color: #cc00ff" href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u>:
         {{ IntervalPlotlyDate }}
     </h3>
-
     <h3 style="color: #cc00ff">
+    <div class="tooltip">?<span class="tooltiptext">Date Displayed is in Sensor's TimeZone</span></div>
         <u><a style="color: #cc00ff" href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u>:
         {{ TriggerPlotlyDate }}
     </h3>
@@ -45,7 +46,7 @@
             </div>
 
             <hr>
-
+            <div class="tooltip">?<span class="tooltiptext">Use CPU only when graphs don't render correctly</span></div>
             <label>Render Engine</label>
             <div class="mui-radio">
                 <label class="container_radio">
