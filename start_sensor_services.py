@@ -81,9 +81,7 @@ if app_config_access.installed_sensors.no_sensors is False:
 
     # Start up Trigger Sensor Recording
     if app_config_access.current_config.enable_trigger_recording:
-        text_name = "Trigger Recording Initiator"
-        function = recording_triggers.start_trigger_recording
-        app_cached_variables.trigger_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
+        app_cached_variables.trigger_recording_thread = thread_function(recording_triggers.start_trigger_recording)
     else:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")
 
@@ -111,4 +109,4 @@ thread_function(server_http.https_start_and_watch)
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 sensor_access.display_message("KS-Sensors")
 while True:
-    sleep(600)
+    sleep(3600)

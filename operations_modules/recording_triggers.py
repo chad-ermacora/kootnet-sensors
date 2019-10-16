@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
 from operations_modules import logger
 from operations_modules import app_generic_functions
 from operations_modules import variance_checks
@@ -41,5 +40,4 @@ def start_trigger_recording():
 
     for trigger_monitor in function_and_name:
         app_generic_functions.CreateMonitoredThread(trigger_monitor[0], thread_name=trigger_monitor[1])
-    logger.primary_logger.info(" -- Trigger Recording Started")
-    sleep(3600)
+    logger.primary_logger.info(" -- All Enabled Trigger Recording Threads Started")
