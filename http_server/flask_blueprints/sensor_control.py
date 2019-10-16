@@ -109,9 +109,15 @@ def check_sensor_status_sensor_control(address_list):
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
         if response["status"] == "OK":
+            new_address = response["address"]
+            port = "10065"
+            if app_generic_functions.check_for_port_in_address(response["address"]):
+                address_split = app_generic_functions.get_ip_and_port_split(response["address"])
+                new_address = address_split[0]
+                port = address_split[1]
             response_time = response["response_time"]
             background_colour = app_generic_functions.get_response_bg_colour(response_time)
-            sensor_url_link = "'https://" + response["address"] + ":10065/SensorInformation'"
+            sensor_url_link = "'https://" + new_address + ":" + port + "/SensorInformation'"
 
             text_insert += "        <tr><th><span style='background-color: #f2f2f2;'><a target='_blank' href=" + \
                            sensor_url_link + ">" + response["address"] + "</a></span></th>\n" + \
@@ -119,7 +125,6 @@ def check_sensor_status_sensor_control(address_list):
                            response_time + " Seconds</span></th>\n" + \
                            "        <th><span style='background-color: #f2f2f2;'>" + \
                            response["sensor_hostname"] + "</span></th></tr>\n"
-
     return render_template("sensor_control_online_status.html", SensorResponse=text_insert.strip())
 
 
@@ -231,17 +236,14 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
         add_zipped_logs_size = True
         download_command = network_commands.download_zipped_logs
         download_type_message = "Full Logs Zipped"
-    sensor_download_url = "window.open('https://{{ IPAddress }}:10065/" + download_command + "');"
+    sensor_download_url = "window.open('https://{{ IPAddress }}/" + download_command + "');"
     sensor_download_sql_list = ""
     text_ip_and_response = ""
 
     threads = []
     for address in address_list:
-        if address != "Invalid":
-            threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address,
-                                                                                   False,
-                                                                                   add_zipped_database_size,
-                                                                                   add_zipped_logs_size]))
+        threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address, False, add_zipped_database_size,
+                                                                               add_zipped_logs_size]))
 
     for thread in threads:
         thread.start()
@@ -256,9 +258,14 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
         if response["status"] == "OK":
+            if app_generic_functions.check_for_port_in_address(response["address"]):
+                address_split = app_generic_functions.get_ip_and_port_split(response["address"])
+                address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
+            else:
+                address_and_port = response["address"].strip() + ":10065"
             response_time = response["response_time"]
             background_colour = app_generic_functions.get_response_bg_colour(response_time)
-            new_download = sensor_download_url.replace("{{ IPAddress }}", response["address"])
+            new_download = sensor_download_url.replace("{{ IPAddress }}", address_and_port)
             sensor_download_sql_list += new_download + "\n            "
             text_ip_and_response += "        <tr><th><span style='background-color: #f2f2f2;'>" + \
                                     response["address"] + "</span></th>\n" + \
@@ -346,8 +353,7 @@ def _create_the_big_zip(ip_list):
 def _queue_name_and_file_list(ip_list, command):
     thread_list = []
     for address in ip_list:
-        if address != "Invalid":
-            thread_list.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
+        thread_list.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
     for thread in thread_list:
         thread.start()
     for thread in thread_list:

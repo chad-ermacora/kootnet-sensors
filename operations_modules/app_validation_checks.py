@@ -20,6 +20,7 @@ import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
 from operations_modules.app_cached_variables import no_sensor_present
+from operations_modules.app_generic_functions import check_for_port_in_address
 
 
 def text_is_alphanumeric(text_string):
@@ -34,12 +35,17 @@ def text_is_alphanumeric(text_string):
 
 
 def ip_address_is_valid(ip_address):
-    if ip_address != "":
-        try:
-            if _check_ip_address(ip_address):
-                return True
-        except Exception as error:
-            logger.network_logger.debug("Validating Address Failed: " + str(error))
+    ip_address_tweaked = ip_address.replace(":", "a")
+    ip_address_tweaked = ip_address_tweaked.replace(".", "a")
+    if ip_address != "" and text_is_alphanumeric(ip_address_tweaked):
+        if check_for_port_in_address(ip_address):
+            return True
+        else:
+            try:
+                if _check_ip_address(ip_address):
+                    return True
+            except Exception as error:
+                logger.network_logger.debug("Validating Address Failed: " + str(error))
     return False
 
 

@@ -20,7 +20,8 @@ import time
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, get_file_content
+from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
+    get_file_content, check_for_port_in_address, get_ip_and_port_split
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
@@ -298,7 +299,12 @@ def get_online_report(ip_address, report_type="systems_report"):
         command_and_replacements = CreateReplacementVariables().report_test_sensors(ip_address)
 
     try:
-        sensor_report = sensor_report.replace("{{ IPAddress }}", ip_address)
+        if check_for_port_in_address(ip_address):
+            address_split = get_ip_and_port_split(ip_address)
+            address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
+        else:
+            address_and_port = ip_address.strip() + ":10065"
+        sensor_report = sensor_report.replace("{{ IPAddress }}", address_and_port)
         task_start_time = time.time()
         sensor_check = get_http_sensor_reading(ip_address)
         task_end_time = str(round(time.time() - task_start_time, 3))

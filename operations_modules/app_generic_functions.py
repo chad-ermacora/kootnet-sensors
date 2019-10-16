@@ -127,50 +127,69 @@ def thread_function(function, args=None):
         system_thread = Thread(target=function, args=[args])
     else:
         system_thread = Thread(target=function)
-
     system_thread.daemon = True
     system_thread.start()
 
 
-def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus", timeout=10):
+def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
     """ Returns requested sensor data (based on the provided command data). """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url,
-                                       timeout=timeout,
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                                       verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False,
+                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password))
         return tmp_return_data.text
     except Exception as error:
-        logger.network_logger.debug("Remote Sensor Data Request - HTTPS GET Error for " + http_ip + ": " + str(error))
+        log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
         return "Error"
 
 
-def get_http_sensor_file(http_ip, command, http_port="10065"):
+def get_http_sensor_file(sensor_address, command, http_port="10065"):
     """ Returns requested sensor file (based on the provided command data). """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url,
-                                       timeout=(4, 120),
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                                       verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False,
+                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password))
         return tmp_return_data.content
     except Exception as error:
-        logger.network_logger.debug("Remote Sensor File Request - HTTPS GET Error for " + http_ip + ": " + str(error))
+        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
         return "Error"
 
 
-def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
+def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
     """ Returns requested sensor data (based on the provided command data). """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/DisplayText"
-        requests.put(url=url,
-                     timeout=4,
-                     auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                     data={'command_data': text_message},
-                     verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
+        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False,
+                     auth=(app_cached_variables.http_login, app_cached_variables.http_password))
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
+
+
+def check_for_port_in_address(address):
+    ip_split = address.strip().split(":")
+    if len(ip_split) == 2:
+        return True
+    elif len(ip_split) > 2:
+        logger.network_logger.info("IPv6 Used in Sensor Control")
+    return False
+
+
+def get_ip_and_port_split(address):
+    return address.split(":")
 
 
 def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
