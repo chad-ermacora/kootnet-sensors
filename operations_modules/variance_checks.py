@@ -338,7 +338,6 @@ def get_sensor_reading(sensor_type):
         return_data = sensor_access.get_gyroscope_xyz()
     else:
         return_data = "Unknown Sensor Request"
-
     return str(return_data)
 
 
@@ -356,7 +355,6 @@ def _get_sensor_readings_set(sensor_type, sensor_wait_seconds):
     while count < number_of_sets:
         try:
             sensor_reading.append(get_sensor_reading(sensor_type))
-            logger.primary_logger.debug("Sensor data retrieval OK for: " + sensor_type)
         except Exception as error:
             logger.primary_logger.warning("Sensor data retrieval Failed: " + str(error))
             sensor_reading.append("Failed")
@@ -364,7 +362,6 @@ def _get_sensor_readings_set(sensor_type, sensor_wait_seconds):
         datetime_stamps.append(get_datetime_stamp())
         count += 1
         sleep(sensor_wait_seconds)
-
     return [sensor_reading, datetime_stamps]
 
 
@@ -449,15 +446,14 @@ def _universal_triple_data_check(trigger_object):
                     for sql_execute in execute_str_list:
                         sqlite_database.write_to_sql_database(sql_execute)
             except Exception as error:
-                logger.primary_logger.warning(trigger_object.sensor_type +
-                                              " Trigger DB Write Failed: " +
-                                              str(error))
+                log_msg = trigger_object.sensor_type + " Trigger DB Write Failed: " + str(error)
+                logger.primary_logger.warning(log_msg)
             count += 1
 
 
 def _universal_sextuple_data_check(trigger_object):
-    logger.primary_logger.debug(trigger_object.sensor_type + " Starting Checks.  Checking every " +
-                                str(trigger_object.sensor_wait_seconds) + " Seconds")
+    log_msg = trigger_object.sensor_type + " Starting Checks.  Checking every "
+    logger.primary_logger.debug(log_msg + str(trigger_object.sensor_wait_seconds) + " Seconds")
     while True:
         reading_and_datetime_stamps = _get_sensor_readings_set(trigger_object.sensor_type,
                                                                trigger_object.sensor_wait_seconds)
@@ -545,9 +541,7 @@ def _readings_to_sql_write_str_single_data(trigger_object):
                                     trigger_object.reading_and_datetime_stamps[1][count] + "','" +
                                     reading + "'" +
                                     sql_query_values_end)
-
         count += 1
-
     return sql_execute_list
 
 
@@ -583,9 +577,7 @@ def _readings_to_sql_write_str_triple_data(trigger_object):
                                     y + "','" +
                                     z + "'" +
                                     sql_query_values_end)
-
         count += 1
-
     return sql_execute_list
 
 
@@ -627,7 +619,5 @@ def _readings_to_sql_write_str_sextuple_data(trigger_object):
                                     data_5 + "','" +
                                     data_6 + "'" +
                                     sql_query_values_end)
-
         count += 1
-
     return sql_execute_list
