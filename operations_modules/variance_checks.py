@@ -135,7 +135,7 @@ def check_pressure():
 
 def check_altitude():
     """ If enabled, writes altitude to SQL trigger database per the variance setting. """
-    if app_config_access.trigger_variances.altitude_enabled and app_config_access.installed_sensors.has_altitude:
+    if app_config_access.installed_sensors.has_altitude and app_config_access.trigger_variances.altitude_enabled:
         trigger_object = CreateTriggerDatabaseData(app_config_access.database_variables.altitude)
         trigger_object.variance = app_config_access.trigger_variances.altitude_variance
         trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.altitude_wait_seconds
@@ -195,38 +195,39 @@ def check_lumen():
 
 def check_ems():
     """ If enabled, writes available colours (Electromagnetic Spectrum) to SQL trigger database per the variance setting. """
-    if app_config_access.installed_sensors.has_violet:
-        database_sensor_variable = app_config_access.database_variables.red + "," + \
-                                   app_config_access.database_variables.orange + "," + \
-                                   app_config_access.database_variables.yellow + "," + \
-                                   app_config_access.database_variables.green + "," + \
-                                   app_config_access.database_variables.blue + "," + \
-                                   app_config_access.database_variables.violet
+    if app_config_access.trigger_variances.colour_enabled:
+        if app_config_access.installed_sensors.has_violet:
+            database_sensor_variable = app_config_access.database_variables.red + "," + \
+                                       app_config_access.database_variables.orange + "," + \
+                                       app_config_access.database_variables.yellow + "," + \
+                                       app_config_access.database_variables.green + "," + \
+                                       app_config_access.database_variables.blue + "," + \
+                                       app_config_access.database_variables.violet
 
-        trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-        trigger_object.variance = [app_config_access.trigger_variances.red_variance,
-                                   app_config_access.trigger_variances.orange_variance,
-                                   app_config_access.trigger_variances.yellow_variance,
-                                   app_config_access.trigger_variances.green_variance,
-                                   app_config_access.trigger_variances.blue_variance,
-                                   app_config_access.trigger_variances.violet_variance]
-        trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
-        trigger_object.sensor_type = sensor_types.electromagnetic_spectrum
+            trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
+            trigger_object.variance = [app_config_access.trigger_variances.red_variance,
+                                       app_config_access.trigger_variances.orange_variance,
+                                       app_config_access.trigger_variances.yellow_variance,
+                                       app_config_access.trigger_variances.green_variance,
+                                       app_config_access.trigger_variances.blue_variance,
+                                       app_config_access.trigger_variances.violet_variance]
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
+            trigger_object.sensor_type = sensor_types.electromagnetic_spectrum
 
-        _universal_sextuple_data_check(trigger_object)
-    elif app_config_access.installed_sensors.has_red:
-        database_sensor_variable = app_config_access.database_variables.red + "," + \
-                                   app_config_access.database_variables.green + "," + \
-                                   app_config_access.database_variables.blue
+            _universal_sextuple_data_check(trigger_object)
+        elif app_config_access.installed_sensors.has_red:
+            database_sensor_variable = app_config_access.database_variables.red + "," + \
+                                       app_config_access.database_variables.green + "," + \
+                                       app_config_access.database_variables.blue
 
-        trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
-        trigger_object.variance = [app_config_access.trigger_variances.red_variance,
-                                   app_config_access.trigger_variances.green_variance,
-                                   app_config_access.trigger_variances.blue_variance]
-        trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
-        trigger_object.sensor_type = sensor_types.electromagnetic_spectrum
+            trigger_object = CreateTriggerDatabaseData(database_sensor_variable)
+            trigger_object.variance = [app_config_access.trigger_variances.red_variance,
+                                       app_config_access.trigger_variances.green_variance,
+                                       app_config_access.trigger_variances.blue_variance]
+            trigger_object.sensor_wait_seconds = app_config_access.trigger_variances.colour_wait_seconds
+            trigger_object.sensor_type = sensor_types.electromagnetic_spectrum
 
-        _universal_triple_data_check(trigger_object)
+            _universal_triple_data_check(trigger_object)
     else:
         logger.primary_logger.debug("Triggers - EMS Disabled")
         while True:
