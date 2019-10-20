@@ -23,8 +23,49 @@ def html_system_information():
     interval_recording = get_text_running_thread_state(app_config_access.current_config.enable_interval_recording,
                                                        app_cached_variables.interval_recording_thread)
 
-    trigger_recording = get_text_running_thread_state(app_config_access.current_config.enable_trigger_recording,
-                                                      app_cached_variables.trigger_recording_thread)
+    trigger_recording = "Disabled"
+    enable_trigger_button = "disabled"
+    if app_config_access.current_config.enable_trigger_recording:
+        trigger_recording = "Enabled"
+        enable_trigger_button = ""
+    if app_config_access.current_config.enable_trigger_recording:
+        trigger_uptime = get_text_running_thread_state(app_config_access.trigger_variances.sensor_uptime_enabled,
+                                                       app_cached_variables.trigger_thread_sensor_uptime)
+        trigger_cpu_temp = get_text_running_thread_state(app_config_access.trigger_variances.cpu_temperature_enabled,
+                                                         app_cached_variables.trigger_thread_cpu_temp)
+        trigger_env_temp = get_text_running_thread_state(app_config_access.trigger_variances.env_temperature_enabled,
+                                                         app_cached_variables.trigger_thread_env_temp)
+        trigger_pressure = get_text_running_thread_state(app_config_access.trigger_variances.pressure_enabled,
+                                                         app_cached_variables.trigger_thread_pressure)
+        trigger_altitude = get_text_running_thread_state(app_config_access.trigger_variances.altitude_enabled,
+                                                         app_cached_variables.trigger_thread_altitude)
+        trigger_humidity = get_text_running_thread_state(app_config_access.trigger_variances.humidity_enabled,
+                                                         app_cached_variables.trigger_thread_humidity)
+        trigger_distance = get_text_running_thread_state(app_config_access.trigger_variances.distance_enabled,
+                                                         app_cached_variables.trigger_thread_distance)
+        trigger_lumen = get_text_running_thread_state(app_config_access.trigger_variances.lumen_enabled,
+                                                      app_cached_variables.trigger_thread_lumen)
+        trigger_visible_ems = get_text_running_thread_state(app_config_access.trigger_variances.colour_enabled,
+                                                            app_cached_variables.trigger_thread_visible_ems)
+        trigger_accelerometer = get_text_running_thread_state(app_config_access.trigger_variances.accelerometer_enabled,
+                                                              app_cached_variables.trigger_thread_accelerometer)
+        trigger_magnetometer = get_text_running_thread_state(app_config_access.trigger_variances.magnetometer_enabled,
+                                                             app_cached_variables.trigger_thread_magnetometer)
+        trigger_gyroscope = get_text_running_thread_state(app_config_access.trigger_variances.gyroscope_enabled,
+                                                          app_cached_variables.trigger_thread_gyroscope)
+    else:
+        trigger_uptime = get_text_running_thread_state(False, None)
+        trigger_cpu_temp = get_text_running_thread_state(False, None)
+        trigger_env_temp = get_text_running_thread_state(False, None)
+        trigger_pressure = get_text_running_thread_state(False, None)
+        trigger_altitude = get_text_running_thread_state(False, None)
+        trigger_humidity = get_text_running_thread_state(False, None)
+        trigger_distance = get_text_running_thread_state(False, None)
+        trigger_lumen = get_text_running_thread_state(False, None)
+        trigger_visible_ems = get_text_running_thread_state(False, None)
+        trigger_accelerometer = get_text_running_thread_state(False, None)
+        trigger_magnetometer = get_text_running_thread_state(False, None)
+        trigger_gyroscope = get_text_running_thread_state(False, None)
 
     wu_enabled = app_config_access.weather_underground_config.weather_underground_enabled
     weather_underground = get_text_running_thread_state(wu_enabled, app_cached_variables.weather_underground_thread)
@@ -34,10 +75,6 @@ def html_system_information():
 
     open_sense_map = get_text_running_thread_state(app_config_access.open_sense_map_config.open_sense_map_enabled,
                                                    app_cached_variables.open_sense_map_thread)
-
-    custom_temp_enabled = "0.0"
-    if app_config_access.current_config.enable_custom_temp:
-        custom_temp_enabled = app_config_access.current_config.temperature_offset
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
     return render_template("sensor_information.html",
@@ -57,11 +94,22 @@ def html_system_information():
                            SupportedDisplay=display_enabled,
                            IntervalRecording=interval_recording,
                            TriggerRecording=trigger_recording,
+                           TriggerButtonDisabled=enable_trigger_button,
+                           TriggerSensorUptime=trigger_uptime,
+                           TriggerCPUTemp=trigger_cpu_temp,
+                           TriggerEnvTemp=trigger_env_temp,
+                           TriggerPressure=trigger_pressure,
+                           TriggerAltitude=trigger_altitude,
+                           TriggerHumidity=trigger_humidity,
+                           TriggerDistance=trigger_distance,
+                           TriggerLumen=trigger_lumen,
+                           TriggerVisibleEMS=trigger_visible_ems,
+                           TriggerAccelerometer=trigger_accelerometer,
+                           TriggerMagnetometer=trigger_magnetometer,
+                           TriggerGyroscope=trigger_gyroscope,
                            WeatherUndergroundService=weather_underground,
                            LuftdatenService=luftdaten,
                            OpenSenseMapService=open_sense_map,
-                           IntervalDelay=app_config_access.current_config.sleep_duration_interval,
-                           CurrentTemperatureOffset=custom_temp_enabled,
                            InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
                            SQLDatabaseLocation=file_locations.sensor_database,
                            SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),

@@ -25,13 +25,25 @@ no_sensor_present = "NoSensor"
 # Running "Service" Threads
 http_server_thread = None
 interval_recording_thread = None
-trigger_recording_thread = None
 mini_display_thread = None
 interactive_sensor_thread = None
 weather_underground_thread = None
 luftdaten_thread = None
 open_sense_map_thread = None
 
+# Running Trigger Recording Threads
+trigger_thread_sensor_uptime = None
+trigger_thread_cpu_temp = None
+trigger_thread_env_temp = None
+trigger_thread_pressure = None
+trigger_thread_altitude = None
+trigger_thread_humidity = None
+trigger_thread_distance = None
+trigger_thread_lumen = None
+trigger_thread_visible_ems = None
+trigger_thread_accelerometer = None
+trigger_thread_magnetometer = None
+trigger_thread_gyroscope = None
 
 # This file is updated with variables at runtime.
 # This helps lessen disk reads by caching commonly used variables

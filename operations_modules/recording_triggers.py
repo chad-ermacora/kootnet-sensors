@@ -17,27 +17,28 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules import app_generic_functions
-from operations_modules import variance_checks
+from operations_modules.app_generic_functions import CreateMonitoredThread as CreateMT
+from operations_modules import app_cached_variables as app_cv
+from operations_modules.variance_checks import check_gyroscope_xyz, check_accelerometer_xyz, check_altitude, \
+    check_cpu_temperature, check_distance, check_ems, check_env_temperature, check_humidity, check_lumen, \
+    check_magnetometer_xyz, check_pressure, check_sensor_uptime
 
 
 def start_trigger_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
     logger.primary_logger.debug("Trigger Thread(s) Starting")
 
-    function_and_name = [[variance_checks.check_sensor_uptime, "Trigger - Sensor Uptime"],
-                         [variance_checks.check_cpu_temperature, "Trigger - CPU Temperature"],
-                         [variance_checks.check_env_temperature, "Trigger - Env Temperature"],
-                         [variance_checks.check_pressure, "Trigger - Pressure"],
-                         [variance_checks.check_altitude, "Trigger - Altitude"],
-                         [variance_checks.check_humidity, "Trigger - Humidity"],
-                         [variance_checks.check_distance, "Trigger - Distance"],
-                         [variance_checks.check_lumen, "Trigger - Lumen"],
-                         [variance_checks.check_ems, "Trigger - Visible EMS"],
-                         [variance_checks.check_accelerometer_xyz, "Trigger - Accelerometer"],
-                         [variance_checks.check_magnetometer_xyz, "Trigger - Magnetometer"],
-                         [variance_checks.check_gyroscope_xyz, "Trigger - Gyroscope"]]
+    app_cv.trigger_thread_sensor_uptime = CreateMT(check_sensor_uptime, thread_name="Trigger - Sensor Uptime")
+    app_cv.trigger_thread_cpu_temp = CreateMT(check_cpu_temperature, thread_name="Trigger - CPU Temperature")
+    app_cv.trigger_thread_env_temp = CreateMT(check_env_temperature, thread_name="Trigger - Env Temperature")
+    app_cv.trigger_thread_pressure = CreateMT(check_pressure, thread_name="Trigger - Pressure")
+    app_cv.trigger_thread_altitude = CreateMT(check_altitude, thread_name="Trigger - Altitude")
+    app_cv.trigger_thread_humidity = CreateMT(check_humidity, thread_name="Trigger - Humidity")
+    app_cv.trigger_thread_distance = CreateMT(check_distance, thread_name="Trigger - Distance")
+    app_cv.trigger_thread_lumen = CreateMT(check_lumen, thread_name="Trigger - Lumen")
+    app_cv.trigger_thread_visible_ems = CreateMT(check_ems, thread_name="Trigger - Visible EMS")
+    app_cv.trigger_thread_accelerometer = CreateMT(check_accelerometer_xyz, thread_name="Trigger - Accelerometer")
+    app_cv.trigger_thread_magnetometer = CreateMT(check_magnetometer_xyz, thread_name="Trigger - Magnetometer")
+    app_cv.trigger_thread_gyroscope = CreateMT(check_gyroscope_xyz, thread_name="Trigger - Gyroscope")
 
-    for trigger_monitor in function_and_name:
-        app_generic_functions.CreateMonitoredThread(trigger_monitor[0], thread_name=trigger_monitor[1])
     logger.primary_logger.info(" -- All Enabled Trigger Recording Threads Started")

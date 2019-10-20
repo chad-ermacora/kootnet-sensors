@@ -89,19 +89,19 @@ class CreateTriggerVariances:
         self.accelerometer_x_variance = 0.1
         self.accelerometer_y_variance = 0.1
         self.accelerometer_z_variance = 0.1
-        self.accelerometer_wait_seconds = 0.25
+        self.accelerometer_wait_seconds = 0.3
 
         self.magnetometer_enabled = 0
         self.magnetometer_x_variance = 25.0
         self.magnetometer_y_variance = 25.0
         self.magnetometer_z_variance = 25.0
-        self.magnetometer_wait_seconds = 0.25
+        self.magnetometer_wait_seconds = 0.3
 
         self.gyroscope_enabled = 0
         self.gyroscope_x_variance = 25.0
         self.gyroscope_y_variance = 25.0
         self.gyroscope_z_variance = 25.0
-        self.gyroscope_wait_seconds = 0.25
+        self.gyroscope_wait_seconds = 0.3
 
     def init_trigger_variances(self, installed_sensors):
         """ Sets default values for all variances in the provided configuration object. """
