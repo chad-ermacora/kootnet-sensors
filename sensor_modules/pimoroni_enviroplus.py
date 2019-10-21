@@ -83,6 +83,14 @@ class CreateEnviroPlus:
             logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_enviroplus = 0
             app_config_access.installed_sensors.pimoroni_pms5003 = 0
+            app_config_access.installed_sensors.has_display = 0
+            app_config_access.installed_sensors.has_env_temperature = 0
+            app_config_access.installed_sensors.has_pressure = 0
+            app_config_access.installed_sensors.has_humidity = 0
+            app_config_access.installed_sensors.has_lumen = 0
+            app_config_access.installed_sensors.has_distance = 0
+            app_config_access.installed_sensors.has_gas = 0
+            app_config_access.installed_sensors.has_particulate_matter = 0
 
         if app_config_access.installed_sensors.has_particulate_matter:
             try:

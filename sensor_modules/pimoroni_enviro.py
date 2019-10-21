@@ -31,6 +31,14 @@ class CreateEnviro:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_enviro = 0
+            app_config_access.installed_sensors.has_env_temperature = 0
+            app_config_access.installed_sensors.has_pressure = 0
+            app_config_access.installed_sensors.has_lumen = 0
+            app_config_access.installed_sensors.has_red = 0
+            app_config_access.installed_sensors.has_green = 0
+            app_config_access.installed_sensors.has_blue = 0
+            app_config_access.installed_sensors.has_acc = 0
+            app_config_access.installed_sensors.has_mag = 0
 
     def temperature(self):
         """ Returns Temperature as a Float in Celsius. """
@@ -68,15 +76,6 @@ class CreateEnviro:
             rgb_red, rgb_green, rgb_blue = 0.0, 0.0, 0.0
         return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)
 
-    def magnetometer_xyz(self):
-        """ Returns Magnetometer X, Y, Z as Floats. """
-        try:
-            mag_x, mag_y, mag_z = self.enviro_import.motion.magnetometer()
-        except Exception as error:
-            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
-            logger.sensors_logger.error("Pimoroni Enviro Magnetometer XYZ - Failed: " + str(error))
-        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
-
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
         try:
@@ -85,3 +84,12 @@ class CreateEnviro:
             logger.sensors_logger.error("Pimoroni Enviro Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+
+    def magnetometer_xyz(self):
+        """ Returns Magnetometer X, Y, Z as Floats. """
+        try:
+            mag_x, mag_y, mag_z = self.enviro_import.motion.magnetometer()
+        except Exception as error:
+            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
+            logger.sensors_logger.error("Pimoroni Enviro Magnetometer XYZ - Failed: " + str(error))
+        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)

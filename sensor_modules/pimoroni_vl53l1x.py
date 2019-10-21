@@ -34,6 +34,7 @@ class CreateVL53L1X:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VL53L1X Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_vl53l1x = 0
+            app_config_access.installed_sensors.has_distance = 0
 
     def distance(self):
         """ Returns distance in mm. """

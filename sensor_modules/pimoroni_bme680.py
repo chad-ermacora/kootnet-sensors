@@ -46,6 +46,10 @@ class CreateBME680:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni BME680 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_bme680 = 0
+            app_config_access.installed_sensors.has_env_temperature = 0
+            app_config_access.installed_sensors.has_pressure = 0
+            app_config_access.installed_sensors.has_humidity = 0
+            app_config_access.installed_sensors.has_gas = 0
 
     def _gas_readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni BME680 Gas keep alive started")

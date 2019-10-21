@@ -36,15 +36,8 @@ class CreateLSM303D:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LSM303D Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_lsm303d = 0
-
-    def magnetometer_xyz(self):
-        """ Returns Magnetometer X, Y, Z as Floats. """
-        try:
-            mag_x, mag_y, mag_z = self.lsm.magnetometer()
-        except Exception as error:
-            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
-            logger.sensors_logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed: " + str(error))
-        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+            app_config_access.installed_sensors.has_acc = 0
+            app_config_access.installed_sensors.has_mag = 0
 
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
@@ -54,3 +47,12 @@ class CreateLSM303D:
             logger.sensors_logger.error("Pimoroni LSM303D Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+
+    def magnetometer_xyz(self):
+        """ Returns Magnetometer X, Y, Z as Floats. """
+        try:
+            mag_x, mag_y, mag_z = self.lsm.magnetometer()
+        except Exception as error:
+            mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
+            logger.sensors_logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed: " + str(error))
+        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)

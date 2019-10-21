@@ -35,6 +35,7 @@ class CreateMatrix11x7:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 11x7 LED Matrix Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_matrix_11x7 = 0
+            app_config_access.installed_sensors.has_display = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """

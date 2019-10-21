@@ -35,6 +35,8 @@ class CreateLTR559:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_ltr_559 = 0
+            app_config_access.installed_sensors.has_lumen = 0
+            app_config_access.installed_sensors.has_distance = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """

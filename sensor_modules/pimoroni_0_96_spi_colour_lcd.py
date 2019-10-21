@@ -45,6 +45,7 @@ class CreateST7735:
             log_message = "Pimoroni 10.96 SPI Colour LCD (160x80) Initialization - Failed: "
             logger.sensors_logger.error(log_message + str(error))
             app_config_access.installed_sensors.pimoroni_st7735 = 0
+            app_config_access.installed_sensors.has_display = 0
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
