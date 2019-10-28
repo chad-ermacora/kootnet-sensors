@@ -37,70 +37,70 @@ sensor_in_use_delay = 0.1
 
 def get_operating_system_name():
     """ Returns sensors Operating System Name and version. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_os_name_version()
     return no_sensor_present
 
 
 def get_hostname():
     """ Returns sensors hostname. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_hostname()
     return no_sensor_present
 
 
 def get_ip():
     """ Returns sensor IP Address as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_ip()
     return no_sensor_present
 
 
 def get_disk_usage_gb():
     """ Returns sensor root disk usage as GB's. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_gb()
     return no_sensor_present
 
 
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_percent()
     return no_sensor_present
 
 
 def get_memory_usage_percent():
     """ Returns sensor RAM usage as a %. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_memory_usage_percent()
     return no_sensor_present
 
 
 def get_system_datetime():
     """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sys_datetime_str()
     return no_sensor_present
 
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_raw()
     return no_sensor_present
 
 
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_str()
     return no_sensor_present
 
 
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
     return no_sensor_present
@@ -108,21 +108,21 @@ def get_system_reboot_count():
 
 def get_db_size():
     """ Returns SQL Database size in MB. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sql_db_size()
     return no_sensor_present
 
 
 def get_db_notes_count():
     """ Returns Number of Notes in the SQL Database. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_notes_count()
     return no_sensor_present
 
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_first_last_date()
     return no_sensor_present
 
@@ -528,24 +528,24 @@ def restart_services(sleep_before_restart=1):
 
 def get_db_notes():
     """ Returns a comma separated string of Notes from the SQL Database. """
-    sql_query = "SELECT " + app_config_access.database_variables.other_table_column_notes + \
-                " FROM " + app_config_access.database_variables.table_other
+    sql_query = "SELECT " + app_cached_variables.database_variables.other_table_column_notes + \
+                " FROM " + app_cached_variables.database_variables.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
     """ Returns a comma separated string of Note Dates from the SQL Database. """
-    sql_query_notes = "SELECT " + app_config_access.database_variables.all_tables_datetime + \
-                      " FROM " + app_config_access.database_variables.table_other
+    sql_query_notes = "SELECT " + app_cached_variables.database_variables.all_tables_datetime + \
+                      " FROM " + app_cached_variables.database_variables.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
     """ Returns a comma separated string of User Note Dates from the SQL Database. """
-    sql_query_user_datetime = "SELECT " + app_config_access.database_variables.other_table_column_user_date_time + \
-                              " FROM " + app_config_access.database_variables.table_other
+    sql_query_user_datetime = "SELECT " + app_cached_variables.database_variables.other_table_column_user_date_time + \
+                              " FROM " + app_cached_variables.database_variables.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
     return _create_str_from_list(sql_data_user_datetime)
 
@@ -581,9 +581,9 @@ def add_note_to_database(datetime_note):
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
 
-        sql_data.sensor_types = app_config_access.database_variables.all_tables_datetime + ", " + \
-                                app_config_access.database_variables.other_table_column_user_date_time + ", " + \
-                                app_config_access.database_variables.other_table_column_notes
+        sql_data.sensor_types = app_cached_variables.database_variables.all_tables_datetime + ", " + \
+                                app_cached_variables.database_variables.other_table_column_user_date_time + ", " + \
+                                app_cached_variables.database_variables.other_table_column_notes
         sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
         sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
@@ -612,8 +612,8 @@ def update_note_in_database(datetime_note):
 
 def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
-    sql_query = "DELETE FROM " + str(app_config_access.database_variables.table_other) + \
-                " WHERE " + str(app_config_access.database_variables.all_tables_datetime) + \
+    sql_query = "DELETE FROM " + str(app_cached_variables.database_variables.table_other) + \
+                " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
     sqlite_database.sql_execute(sql_query)
 

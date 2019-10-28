@@ -16,9 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from platform import system
 from queue import Queue
+from operations_modules.sqlite_database import CreateDatabaseVariables
 
 # Static variables
+current_platform = system()
+database_variables = CreateDatabaseVariables()
 command_data_separator = "[new_data_section]"
 no_sensor_present = "NoSensor"
 
@@ -30,6 +34,24 @@ interactive_sensor_thread = None
 weather_underground_thread = None
 luftdaten_thread = None
 open_sense_map_thread = None
+
+# Possible Trigger "High / Low" States
+normal_state = "Normal"
+low_state = "Low"
+high_state = "High"
+
+state_sensor_uptime = normal_state
+state_cpu_temp = normal_state
+state_env_temp = normal_state
+state_pressure = normal_state
+state_altitude = normal_state
+state_humidity = normal_state
+state_distance = normal_state
+state_lumen = normal_state
+state_visible_ems = normal_state
+state_accelerometer = normal_state
+state_magnetometer = normal_state
+state_gyroscope = normal_state
 
 # Running Trigger Recording Threads
 trigger_thread_sensor_uptime = None

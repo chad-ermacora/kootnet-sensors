@@ -12,7 +12,7 @@ fi
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 # Make sure SMB_SHARE points to the root share holding the upgrade zip file
-SMB_SERVER="//xps-development01"
+SMB_SERVER="//USB-Development"
 SMB_FILE="/KootNetSensors.zip"
 # shellcheck disable=SC2089
 CIFS_OPTIONS="username=myself,password='123'"

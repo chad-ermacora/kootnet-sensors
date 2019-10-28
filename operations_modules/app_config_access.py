@@ -16,17 +16,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from platform import system
 from operations_modules import logger
 from operations_modules import config_sensor_control
 from operations_modules import config_primary
 from operations_modules import config_installed_sensors
-from operations_modules import sqlite_database
 from operations_modules import software_version
 from operations_modules import config_trigger_variances
-from operations_modules.online_services.weather_underground import CreateWeatherUndergroundConfig
-from operations_modules.online_services.luftdaten import CreateLuftdatenConfig
-from operations_modules.online_services.open_sense_map import CreateOpenSenseMapConfig
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
 sensor_control_config = config_sensor_control.CreateSensorControlConfig()
@@ -50,8 +48,6 @@ else:
     luftdaten_config.update_settings_from_file()
     open_sense_map_config.update_settings_from_file()
 
-current_platform = system()
-database_variables = sqlite_database.CreateDatabaseVariables()
 linux_os_upgrade_ready = True
 
 # Plotly Configuration Variables

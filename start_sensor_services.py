@@ -18,6 +18,7 @@
 """
 import os
 from time import sleep
+from operations_modules import app_cached_variables
 from operations_modules import logger
 if os.geteuid() != 0:
     log_message = "--- Failed to Start Kootnet Sensors - Elevated (root) permissions required for Hardware Access"
@@ -36,11 +37,13 @@ from http_server import server_http
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import program_start_checks
 from operations_modules import app_config_access
-from operations_modules import app_cached_variables
 from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
 from operations_modules import server_display
+from operations_modules.online_services.luftdaten import start_luftdaten
+from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
+from operations_modules.online_services.open_sense_map import start_open_sense_map
 
 
 # Ensure files, database & configurations are OK
@@ -88,16 +91,13 @@ if app_config_access.installed_sensors.no_sensors is False:
     # Start up all enabled Online Services
     if app_config_access.weather_underground_config.weather_underground_enabled:
         text_name = "Weather Underground"
-        function = app_config_access.weather_underground_config.start_weather_underground
-        app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
+        app_cached_variables.weather_underground_thread = CreateMonitoredThread(start_wu, thread_name=text_name)
     if app_config_access.luftdaten_config.luftdaten_enabled:
         text_name = "Luftdaten"
-        function = app_config_access.luftdaten_config.start_luftdaten
-        app_cached_variables.luftdaten_thread = CreateMonitoredThread(function, thread_name=text_name)
+        app_cached_variables.luftdaten_thread = CreateMonitoredThread(start_luftdaten, thread_name=text_name)
     if app_config_access.open_sense_map_config.open_sense_map_enabled:
         text_name = "Open Sense Map"
-        function = app_config_access.open_sense_map_config.start_open_sense_map
-        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
+        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
 else:
     logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 

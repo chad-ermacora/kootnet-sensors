@@ -18,11 +18,15 @@
 """
 import logging
 import requests
+from operations_modules.config_primary import get_config_from_file
+from operations_modules.config_installed_sensors import get_installed_sensors_from_file
 from operations_modules.app_cached_variables import command_data_separator
-from operations_modules import app_config_access
-from operations_modules import variance_checks
+from operations_modules.app_generic_functions import CreateSensorCommands
 
 logging.captureWarnings(True)
+current_config = get_config_from_file()
+installed_sensors = get_installed_sensors_from_file()
+sensor_commands = CreateSensorCommands()
 
 
 def get_sensor_reading(command):
@@ -46,21 +50,17 @@ def display_text_on_sensor(text_message):
     requests.put(url=url, data={'command_data': text_message}, verify=False)
 
 
-sensor_commands = variance_checks.CreateSensorCommands()
-
 interval_data = get_interval_sensor_data()
 sensor_types = interval_data[0].split(",")
 sensor_readings = interval_data[1].split(",")
 
-app_config_access.current_config.custom_temperature_offset = app_config_access.current_config.temperature_offset
-
 print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n" +
-      "Enable Debug Logging: " + str(app_config_access.current_config.enable_debug_logging) +
-      "  ||  Record Interval Sensors to SQL Database: " + str(app_config_access.current_config.enable_interval_recording) +
-      "\n  Record Trigger Sensors to SQL Database: " + str(app_config_access.current_config.enable_trigger_recording) +
-      "\n  Seconds between Interval recordings: " + str(app_config_access.current_config.sleep_duration_interval))
-print("\n  Enable Custom Temperature Offset: " + str(app_config_access.current_config.enable_custom_temp) +
-      " || Current Temperature Offset: " + str(app_config_access.current_config.temperature_offset))
+      "Enable Debug Logging: " + str(current_config.enable_debug_logging) +
+      "  ||  Record Interval Sensors to SQL Database: " + str(current_config.enable_interval_recording) +
+      "\n  Record Trigger Sensors to SQL Database: " + str(current_config.enable_trigger_recording) +
+      "\n  Seconds between Interval recordings: " + str(current_config.sleep_duration_interval))
+print("\n  Enable Custom Temperature Offset: " + str(current_config.enable_custom_temp) +
+      " || Current Temperature Offset: " + str(current_config.temperature_offset))
 print("\n*** Sensor Data test ***")
 str_message = ""
 count = 0
@@ -74,9 +74,7 @@ while count < len(sensor_types):
         str_message = ""
     count = count + 1
 
-count = 0
-
-if app_config_access.installed_sensors.has_display:
+if installed_sensors.has_display:
     print("\nShowing Temperature on Installed Display, Please Wait ...")
     cpu_temp = float(get_sensor_reading(sensor_commands.environmental_temp))
     display_text_on_sensor(str(round(cpu_temp, 2)) + "c")

@@ -19,7 +19,7 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 
 
 class CreateConfig:
@@ -45,8 +45,7 @@ class CreateConfig:
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
     if os.path.isfile(file_locations.main_config):
-        config_file_content = app_generic_functions.get_file_content(
-            file_locations.main_config).strip().split("\n")
+        config_file_content = get_file_content(file_locations.main_config).strip().split("\n")
         installed_config = convert_config_lines_to_obj(config_file_content)
     else:
         logger.primary_logger.info("Primary Configuration file not found - Saving Default")
@@ -135,7 +134,7 @@ def write_config_to_file(config):
     else:
         new_config = convert_config_to_str(config)
 
-    app_generic_functions.write_file_to_disk(file_locations.main_config, new_config)
+    write_file_to_disk(file_locations.main_config, new_config)
 
     # Save Log level with each config file save
-    app_generic_functions.write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))
+    write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))

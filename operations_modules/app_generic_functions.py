@@ -84,11 +84,9 @@ def get_text_running_thread_state(service_enabled, thread_variable):
     if service_enabled:
         return_text = "Stopped"
         if thread_variable is None:
-            return_text = "Error"
+            return_text = "Missing Sensor"
         elif thread_variable.is_running:
             return_text = "Running"
-        elif not thread_variable.is_running:
-            return_text = "Stopped"
     else:
         return_text = "Disabled"
     return return_text
@@ -275,3 +273,26 @@ def get_response_bg_colour(response_time):
         logger.network_logger.debug("Check Online Status Error: " + str(error))
         background_colour = "purple"
     return background_colour
+
+
+class CreateSensorCommands:
+    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
+
+    def __init__(self):
+        self.sensor_name = "GetHostName"
+        self.system_uptime = "GetSystemUptime"
+        self.cpu_temp = "GetCPUTemperature"
+        self.environmental_temp = "GetEnvTemperature"
+        self.env_temp_offset = "GetTempOffsetEnv"
+        self.pressure = "GetPressure"
+        self.altitude = "GetAltitude"
+        self.humidity = "GetHumidity"
+        self.distance = "GetDistance"
+        self.gas = "GetAllGas"
+        self.lumen = "GetLumen"
+        self.electromagnetic_spectrum = "GetEMS"
+        self.ultra_violet = "GetAllUltraViolet"
+        self.accelerometer_xyz = "GetAccelerometerXYZ"
+        self.magnetometer_xyz = "GetMagnetometerXYZ"
+        self.gyroscope_xyz = "GetGyroscopeXYZ"
+        self.display_text = "DisplayText"

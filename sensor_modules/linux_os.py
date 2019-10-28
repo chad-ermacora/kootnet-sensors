@@ -12,10 +12,10 @@ import os
 import socket
 import psutil
 from time import strftime
+from operations_modules import app_cached_variables
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
 from operations_modules import sqlite_database
 from operations_modules.sqlite_database import CreateDatabaseVariables
 
@@ -81,7 +81,7 @@ class CreateLinuxSystem:
 
     def get_uptime_str(self):
         """ Returns System UpTime as a human readable String. """
-        if app_config_access.current_platform == "Linux":
+        if app_cached_variables.current_platform == "Linux":
             var_minutes = self.get_uptime_raw()
             str_day_hour_min = ""
             try:

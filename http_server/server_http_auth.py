@@ -32,7 +32,7 @@ def set_http_auth_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
     logger.primary_logger.debug("Loading HTTP Authentication File")
 
-    if os.path.isfile(file_locations.main_config):
+    if os.path.isfile(file_locations.http_auth):
         try:
             auth_file = open(file_locations.http_auth, "r")
             auth_file_lines = auth_file.readlines()

@@ -27,9 +27,9 @@ from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
 from operations_modules import network_wifi
 from operations_modules import software_version
-from operations_modules.online_services import weather_underground
-from operations_modules.online_services import luftdaten
-from operations_modules.online_services import open_sense_map
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 if software_version.old_version == software_version.version:
     html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
@@ -150,13 +150,13 @@ class CreateReplacementVariables:
                 rpi_model_name = "Raspberry Pi"
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
-            wu_config = weather_underground.CreateWeatherUndergroundConfig()
+            wu_config = CreateWeatherUndergroundConfig()
             wu_config.update_settings_from_file(file_content=weather_underground_config_raw, skip_write=True)
 
-            luftdaten_config = luftdaten.CreateLuftdatenConfig()
+            luftdaten_config = CreateLuftdatenConfig()
             luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)
 
-            osm_config = open_sense_map.CreateOpenSenseMapConfig()
+            osm_config = CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
             convert_config = app_config_access.config_primary.convert_config_lines_to_obj

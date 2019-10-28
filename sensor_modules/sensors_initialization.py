@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from operations_modules import app_cached_variables
 from operations_modules import logger
 from operations_modules import app_config_access
 from operations_modules import software_version
@@ -40,7 +41,7 @@ from sensor_modules import pimoroni_1_12_mono_oled
 
 if software_version.old_version == software_version.version:
     # Initialize sensor access, based on installed sensors file
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         operating_system_a = linux_os.CreateLinuxSystem()
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
