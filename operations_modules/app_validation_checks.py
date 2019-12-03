@@ -50,9 +50,14 @@ def ip_address_is_valid(ip_address):
 
 
 def subnet_mask_is_valid(subnet_mask):
-    if re.match(r'/[0-9][0-9]|/[0-9]', subnet_mask):
-        return True
-    return False
+    subnet_ok = False
+    count = 8
+    while count <= 30:
+        good_subnet = "/" + str(count)
+        if subnet_mask == good_subnet:
+            subnet_ok = True
+        count += 1
+    return subnet_ok
 
 
 def wireless_ssid_is_valid(text_ssid):

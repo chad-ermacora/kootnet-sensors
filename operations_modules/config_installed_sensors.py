@@ -142,7 +142,6 @@ class CreateInstalledSensors:
                      str(self.pimoroni_matrix_11x7) + " = " + self.pimoroni_matrix_11x7_name + "\n" + \
                      str(self.pimoroni_st7735) + " = " + self.pimoroni_st7735_name + "\n" + \
                      str(self.pimoroni_mono_oled_luma) + " = " + self.pimoroni_mono_oled_luma_name + "\n"
-
         return return_str
 
     def get_raspberry_pi_model(self):
@@ -171,7 +170,6 @@ def get_installed_sensors_from_file():
         logger.primary_logger.info("Installed Sensors Configuration file not found - Saving Default")
         installed_sensors = CreateInstalledSensors()
         write_to_file(installed_sensors)
-
     return installed_sensors
 
 

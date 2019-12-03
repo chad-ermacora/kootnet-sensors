@@ -9,6 +9,11 @@ from http_server.server_http_auth import auth
 html_functional_routes = Blueprint("html_basics", __name__)
 
 
+@html_functional_routes.route("/favicon.ico")
+def fav_icon():
+    return send_file(file_locations.html_icon)
+
+
 @html_functional_routes.route("/MenuScript.js")
 def menu_script():
     return send_file(file_locations.menu_script)

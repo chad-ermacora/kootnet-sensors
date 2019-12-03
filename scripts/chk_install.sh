@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # HTTP Download Server Options
-APT_GET_INSTALL="python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock cifs-utils libfreetype6-dev libjpeg-dev build-essential openssl"
+APT_GET_INSTALL="python3 python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock cifs-utils libfreetype6-dev libjpeg-dev build-essential openssl"
 DATA_DIR="/home/kootnet_data"  # This is hardcoded into linux services
 CONFIG_DIR="/etc/kootnet"
 # Network + Other Setup

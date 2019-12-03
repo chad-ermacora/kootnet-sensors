@@ -82,3 +82,4 @@ mui_colors_min_css = "/opt/kootnet-sensors/http_server/extras/mui-colors.min-ver
 mui_min_js = "/opt/kootnet-sensors/http_server/extras/mui.min-ver-0.9.43.js"
 menu_script = "/opt/kootnet-sensors/http_server/extras/menu.js"
 menu_css_style = "/opt/kootnet-sensors/http_server/extras/style.css"
+html_icon = "/opt/kootnet-sensors/extras/icon.ico"
