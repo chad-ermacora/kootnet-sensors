@@ -26,8 +26,8 @@ class CreateICM20948:
     """ Creates Function access to the ICM20948. """
     def __init__(self):
         try:
-            self.icm20948_import = __import__('icm20948', fromlist=['ICM20948'])
-            self.imu = self.icm20948_import.ICM20948()
+            icm20948_import = __import__("sensor_modules.drivers.icm20948", fromlist=["ICM20948"])
+            self.imu = icm20948_import.ICM20948()
             logger.sensors_logger.debug("Pimoroni ICM20948 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni ICM20948 Initialization Failed: " + str(error))

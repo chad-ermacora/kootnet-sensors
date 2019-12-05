@@ -19,7 +19,7 @@ class CreateRPSystem:
 
     def __init__(self):
         try:
-            self.gp_import = __import__('gpiozero')
+            self.gp_import = __import__("gpiozero")
             logger.sensors_logger.debug("Raspberry Pi System Access Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi System Access Initialization - Failed: " + str(error))

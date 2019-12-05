@@ -26,7 +26,6 @@ from operations_modules import app_generic_functions
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-from smbus2 import SMBus
 
 
 round_decimal_to = 5
@@ -45,36 +44,39 @@ class CreateEnviroPlus:
 
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
-            self.enviroplus_import = __import__('enviroplus', fromlist=['gas'])
-            self.pms5003_import = __import__('pms5003', fromlist=['PMS5003'])
-            self.bme280_import = __import__('bme280')
-            self.ST7735_import = __import__('ST7735')
-            self.ltr559_import = __import__('ltr559')
+            ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
 
-            bus = SMBus(1)
-            self.bme280 = self.bme280_import.BME280(i2c_dev=bus)
-
-            # Create ST7735 LCD display class
-            self.st7735 = self.ST7735_import.ST7735(
-                port=0,
-                cs=1,
-                dc=9,
-                backlight=12,
-                rotation=270,
-                spi_speed_hz=10000000
-            )
-            # Initialize display
+            logger.sensors_logger.critical("PimoEnv Level a")
+            bme280_fromlist_import = ["read_temperature", "read_humidity", "read_pressure"]
+            self.bme280 = __import__("sensor_modules.drivers.enviroplus.bme280", fromlist=bme280_fromlist_import)
+            logger.sensors_logger.critical("PimoEnv Level b")
+            self.gas_access = __import__("sensor_modules.drivers.enviroplus", fromlist=["read_all"])
+            logger.sensors_logger.critical("PimoEnv Level c")
+            # self.ltr_559 = ltr559_import.LTR559()
+            logger.sensors_logger.critical("PimoEnv Level d")
+            # Setup & Initialize display
+            st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735"])
+            logger.sensors_logger.critical("PimoEnv Level e")
+            self.st7735 = st7735_import.ST7735(port=0, cs=1, dc=9, backlight=12, rotation=270, spi_speed_hz=10000000)
+            logger.sensors_logger.critical("PimoEnv Level f")
             self.st7735.begin()
+            logger.sensors_logger.critical("PimoEnv Level g")
 
             # First readings seem to return an error.  Getting them over with before needing readings
-            self.bme280.get_temperature()
+            logger.sensors_logger.critical("PimoEnv Level 0")
+            self.bme280.read_temperature()
+            logger.sensors_logger.critical("PimoEnv Level 1")
             time.sleep(0.1)
-            self.bme280.get_humidity()
+            self.bme280.read_humidity()
+            logger.sensors_logger.critical("PimoEnv Level 2")
             time.sleep(0.1)
-            self.bme280.get_pressure()
+            self.bme280.read_pressure()
+            logger.sensors_logger.critical("PimoEnv Level 3")
             time.sleep(0.1)
-            self.ltr559_import.get_lux()
+            self.ltr_559.get_lux()
+            logger.sensors_logger.critical("PimoEnv Level 4")
 
+            # Start thread to turn off display after set amount of seconds (Set after top file imports)
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
@@ -94,8 +96,9 @@ class CreateEnviroPlus:
 
         if app_config_access.installed_sensors.has_particulate_matter:
             try:
+                pms5003_import = __import__("sensor_modules.drivers.pms5003", fromlist=["PMS5003"])
                 self._enable_psm5003_serial()
-                self.enviro_plus_pm_access = self.pms5003_import.PMS5003()
+                self.enviro_plus_pm_access = pms5003_import.PMS5003()
                 self.thread_pm_keep_alive = Thread(target=self._readings_keep_alive)
                 self.thread_pm_keep_alive.daemon = True
                 self.thread_pm_keep_alive.start()
@@ -119,7 +122,7 @@ class CreateEnviroPlus:
         while True:
             if not self.pause_particle_matter_keep_alive:
                 self.enviro_plus_pm_access.read()
-                self.enviroplus_import.gas.read_all()
+                self.gas_access.read_all()
             else:
                 time.sleep(1)
             time.sleep(1)
@@ -160,7 +163,7 @@ class CreateEnviroPlus:
     def temperature(self):
         """ Returns Temperature as a Float. """
         try:
-            temp_var = float(self.bme280.get_temperature())
+            temp_var = float(self.bme280.read_temperature())
         except Exception as error:
             temp_var = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Temperature - Failed: " + str(error))
@@ -169,7 +172,7 @@ class CreateEnviroPlus:
     def pressure(self):
         """ Returns Pressure as a Integer. """
         try:
-            pressure_hpa = self.bme280.get_pressure()
+            pressure_hpa = self.bme280.read_pressure()
         except Exception as error:
             pressure_hpa = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Pressure - Failed: " + str(error))
@@ -178,7 +181,7 @@ class CreateEnviroPlus:
     def humidity(self):
         """ Returns Humidity as a Float. """
         try:
-            var_humidity = self.bme280.get_humidity()
+            var_humidity = self.bme280.read_humidity()
         except Exception as error:
             var_humidity = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Humidity - Failed: " + str(error))
@@ -187,7 +190,7 @@ class CreateEnviroPlus:
     def lumen(self):
         """ Returns Lumen as a Float. """
         try:
-            lumen = float(self.ltr559_import.get_lux())
+            lumen = float(self.ltr_559.get_lux())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Lumen - Failed: " + str(error))
             lumen = 0.0
@@ -196,7 +199,7 @@ class CreateEnviroPlus:
     def distance(self):
         """ Returns distance in cm?. """
         try:
-            distance = float(self.ltr559_import.get_proximity())
+            distance = float(self.ltr_559.get_proximity())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Proximity - Failed: " + str(error))
             distance = 0.0
@@ -205,7 +208,7 @@ class CreateEnviroPlus:
     def gas_data(self):
         """ Returns 3 gas readings Oxidised, Reduced and nh3 as a list. """
         try:
-            enviro_plus_gas_data = self.enviroplus_import.gas.read_all()
+            enviro_plus_gas_data = self.gas_access.read_all()
             oxidised = enviro_plus_gas_data.oxidising / 1000
             reduced = enviro_plus_gas_data.reducing / 1000
             nh3 = enviro_plus_gas_data.nh3 / 1000

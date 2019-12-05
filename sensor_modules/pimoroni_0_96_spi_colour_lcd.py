@@ -28,11 +28,11 @@ class CreateST7735:
 
     def __init__(self):
         try:
-            self.st7735_import = __import__('ST7735')
+            st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735", "BG_SPI_CS_FRONT"])
             # Create ST7735 LCD display class.
-            self.display = self.st7735_import.ST7735(
+            self.display = st7735_import.ST7735(
                 port=0,
-                cs=self.st7735_import.BG_SPI_CS_FRONT,  # BG_SPI_CSB_BACK or BG_SPI_CS_FRONT
+                cs=st7735_import.BG_SPI_CS_FRONT,  # BG_SPI_CSB_BACK or BG_SPI_CS_FRONT
                 dc=9,
                 backlight=19,  # 18 for back BG slot, 19 for front BG slot.
                 rotation=90,
@@ -50,7 +50,7 @@ class CreateST7735:
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         try:
-            img = Image.new('RGB', (self.display.width, self.display.height), color=(0, 0, 0))
+            img = Image.new("RGB", (self.display.width, self.display.height), color=(0, 0, 0))
             draw = ImageDraw.Draw(img)
             font = ImageFont.truetype(file_locations.display_font, 30)
             size_x, size_y = draw.textsize(message, font)

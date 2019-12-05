@@ -27,9 +27,9 @@ class CreateVL53L1X:
 
     def __init__(self):
         try:
-            self.vl53l1x_import = __import__('VL53L1X')
+            vl53l1x_import = __import__("sensor_modules.drivers.vl53l1x", fromlist=["VL53L1X"])
             # Initialise the i2c bus and configure the sensor
-            self.time_of_flight = self.vl53l1x_import.VL53L1X(i2c_bus=1, i2c_address=0x29)
+            self.time_of_flight = vl53l1x_import.VL53L1X(i2c_bus=1, i2c_address=0x29)
             logger.sensors_logger.debug("Pimoroni VL53L1X Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VL53L1X Initialization - Failed: " + str(error))

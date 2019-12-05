@@ -28,8 +28,8 @@ class CreateLTR559:
 
     def __init__(self):
         try:
-            self.ltr_559_import = __import__('ltr559')
-            self.ltr_559 = self.ltr_559_import.LTR559()
+            ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
+            self.ltr_559 = ltr559_import.LTR559()
             self.ltr_559.get_lux()
             logger.sensors_logger.debug("Pimoroni LTR-559 Initialization - OK")
         except Exception as error:

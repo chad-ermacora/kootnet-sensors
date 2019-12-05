@@ -29,8 +29,8 @@ class CreateLSM303D:
 
     def __init__(self):
         try:
-            self.lsm303d_import = __import__('lsm303d')
-            self.lsm = self.lsm303d_import.LSM303D(lsm303d_address)
+            lsm303d_import = __import__("sensor_modules.drivers.lsm303d", fromlist=["LSM303D"])
+            self.lsm = lsm303d_import.LSM303D(lsm303d_address)
             self.lsm.accelerometer()
             logger.sensors_logger.debug("Pimoroni LSM303D Initialization - OK")
         except Exception as error:

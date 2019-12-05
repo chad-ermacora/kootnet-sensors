@@ -28,11 +28,11 @@ class CreateBME680:
     def __init__(self):
         self.pause_gas_keep_alive = False
         try:
-            self.bme680_import = __import__('bme680')
-            self.sensor = self.bme680_import.BME680()
-            self.sensor.set_humidity_oversample(self.bme680_import.OS_2X)
-            self.sensor.set_filter(self.bme680_import.FILTER_SIZE_3)
-            self.sensor.set_gas_status(self.bme680_import.ENABLE_GAS_MEAS)
+            bme680_import = __import__("sensor_modules.drivers.bme680", fromlist=["BME680"])
+            self.sensor = bme680_import.BME680()
+            self.sensor.set_humidity_oversample(bme680_import.OS_2X)
+            self.sensor.set_filter(bme680_import.FILTER_SIZE_3)
+            self.sensor.set_gas_status(bme680_import.ENABLE_GAS_MEAS)
             self.sensor.set_gas_heater_temperature(320)
             self.sensor.set_gas_heater_duration(150)
             self.sensor.select_gas_heater_profile(0)

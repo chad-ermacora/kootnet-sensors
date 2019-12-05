@@ -20,11 +20,11 @@ import os
 from time import sleep
 from operations_modules import app_cached_variables
 from operations_modules import logger
-if os.geteuid() != 0:
-    log_message = "--- Failed to Start Kootnet Sensors - Elevated (root) permissions required for Hardware Access"
-    logger.primary_logger.critical(log_message)
-    while True:
-        sleep(600)
+# if os.geteuid() != 0:
+#     log_message = "--- Failed to Start Kootnet Sensors - Elevated (root) permissions required for Hardware Access"
+#     logger.primary_logger.critical(log_message)
+#     while True:
+#         sleep(600)
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:

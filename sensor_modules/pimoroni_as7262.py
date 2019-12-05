@@ -26,12 +26,13 @@ class CreateAS7262:
 
     def __init__(self):
         try:
-            self.as7262_import = __import__('as7262').AS7262()
-            self.as7262_import.soft_reset()
-            self.as7262_import.set_gain(64)
-            self.as7262_import.set_integration_time(21)
-            self.as7262_import.set_measurement_mode(2)
-            self.as7262_import.set_illumination_led(0)
+            as7262_import = __import__("sensor_modules.drivers.as7262", fromlist=["AS7262"])
+            self.as7262_access = as7262_import.AS7262()
+            self.as7262_access.soft_reset()
+            self.as7262_access.set_gain(64)
+            self.as7262_access.set_integration_time(21)
+            self.as7262_access.set_measurement_mode(2)
+            self.as7262_access.set_illumination_led(0)
             logger.sensors_logger.debug("Pimoroni AS7262 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 Initialization - Failed: " + str(error))
@@ -46,7 +47,7 @@ class CreateAS7262:
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
         try:
-            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_import.get_calibrated_values()
+            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_access.get_calibrated_values()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0

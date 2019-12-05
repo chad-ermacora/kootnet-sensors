@@ -25,7 +25,8 @@ class CreateEnviro:
 
     def __init__(self):
         try:
-            self.enviro_import = __import__('envirophat')
+            enviro_from_list = ["weather", "light", "motion"]
+            self.enviro_import = __import__("sensor_modules.drivers.envirophat", fromlist=enviro_from_list)
             self.enviro_import.weather.temperature()
             logger.sensors_logger.debug("Pimoroni Enviro pHAT Initialization - OK")
         except Exception as error:
@@ -52,7 +53,7 @@ class CreateEnviro:
     def pressure(self):
         """ Returns Pressure as a Integer in hPa. """
         try:
-            pressure_hpa = self.enviro_import.weather.pressure(unit='hPa')
+            pressure_hpa = self.enviro_import.weather.pressure(unit="hPa")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro Pressure - Failed: " + str(error))
             pressure_hpa = 0

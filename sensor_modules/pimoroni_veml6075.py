@@ -26,13 +26,13 @@ class CreateVEML6075:
 
     def __init__(self):
         try:
-            self.veml6075_import = __import__('veml6075')
-            self.smbus_import = __import__('smbus')
+            veml6075_import = __import__("sensor_modules.drivers.veml6075", fromlist=["VEML6075"])
+            self.smbus_import = __import__("smbus")
             self.bus = self.smbus_import.SMBus(1)
-            self.uv_sensor = self.veml6075_import.VEML6075(i2c_dev=self.bus)
+            self.uv_sensor = veml6075_import.VEML6075(i2c_dev=self.bus)
             self.uv_sensor.set_shutdown(False)
             self.uv_sensor.set_high_dynamic_range(False)
-            self.uv_sensor.set_integration_time('100ms')
+            self.uv_sensor.set_integration_time("100ms")
             logger.sensors_logger.debug("Pimoroni VEML6075 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VEML6075 Initialization - Failed: " + str(error))

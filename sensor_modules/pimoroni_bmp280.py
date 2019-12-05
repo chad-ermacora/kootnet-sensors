@@ -27,9 +27,9 @@ class CreateBMP280:
 
     def __init__(self):
         try:
-            self.bmp280_import = __import__('bmp280')
+            bmp280_import = __import__("sensor_modules.drivers.bmp280", fromlist=["BMP280"])
             bus = smbus2.SMBus(1)
-            self.bmp280 = self.bmp280_import.BMP280(i2c_dev=bus)
+            self.bmp280 = bmp280_import.BMP280(i2c_dev=bus)
             self.bmp280.get_temperature()
             logger.sensors_logger.debug("Pimoroni BMP280 Initialization - OK")
         except Exception as error:

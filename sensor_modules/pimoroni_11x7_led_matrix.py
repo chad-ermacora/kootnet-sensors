@@ -27,9 +27,8 @@ class CreateMatrix11x7:
     def __init__(self):
         try:
             self.display_ready = True
-            self.matrix_11x7_import = __import__('matrix11x7', fromlist=['Matrix11x7'])
-            self.matrix_11x7_fonts_import = __import__('matrix11x7.fonts', fromlist=['font5x7'])
-            self.matrix11x7 = self.matrix_11x7_import.Matrix11x7()
+            matrix_11x7_import = __import__("sensor_modules.drivers.matrix11x7", fromlist=["Matrix11x7"])
+            self.matrix11x7 = matrix_11x7_import.Matrix11x7()
             self.matrix11x7.set_brightness(0.15)
             logger.sensors_logger.debug("Pimoroni 11x7 LED Matrix Initialization - OK")
         except Exception as error:

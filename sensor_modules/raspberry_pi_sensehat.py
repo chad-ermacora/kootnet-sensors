@@ -31,8 +31,8 @@ class CreateRPSenseHAT:
     def __init__(self):
         try:
             self.display_ready = True
-            self.sense_hat_import = __import__("sense_hat")
-            self.sense = self.sense_hat_import.SenseHat()
+            sense_hat_import = __import__("sensor_modules.drivers.sense_hat", fromlist=["SenseHat"])
+            self.sense_hat_access = sense_hat_import.SenseHat()
             logger.sensors_logger.debug("Raspberry Pi Sense HAT Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization - Failed: " + str(error))
@@ -48,7 +48,7 @@ class CreateRPSenseHAT:
     def temperature(self):
         """ Returns Temperature as a Float. """
         try:
-            env_temp = float(self.sense.get_temperature())
+            env_temp = float(self.sense_hat_access.get_temperature())
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Temperature - Failed: " + str(error))
             env_temp = 0.0
@@ -57,7 +57,7 @@ class CreateRPSenseHAT:
     def pressure(self):
         """ Returns Pressure as a Integer. """
         try:
-            pressure_hpa = self.sense.get_pressure()
+            pressure_hpa = self.sense_hat_access.get_pressure()
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Pressure - Failed: " + str(error))
             pressure_hpa = 0
@@ -66,7 +66,7 @@ class CreateRPSenseHAT:
     def humidity(self):
         """ Returns Humidity as a Float. """
         try:
-            var_humidity = self.sense.get_humidity()
+            var_humidity = self.sense_hat_access.get_humidity()
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Humidity - Failed: " + str(error))
             var_humidity = 0.0
@@ -75,7 +75,7 @@ class CreateRPSenseHAT:
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
         try:
-            tmp_acc = self.sense.get_accelerometer_raw()
+            tmp_acc = self.sense_hat_access.get_accelerometer_raw()
 
             acc_x, acc_y, acc_z = tmp_acc["x"], tmp_acc["y"], tmp_acc["z"]
         except Exception as error:
@@ -86,7 +86,7 @@ class CreateRPSenseHAT:
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """
         try:
-            tmp_mag = self.sense.get_compass_raw()
+            tmp_mag = self.sense_hat_access.get_compass_raw()
             mag_x, mag_y, mag_z = tmp_mag["x"], tmp_mag["y"], tmp_mag["z"]
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Magnetometer XYZ - Failed: " + str(error))
@@ -96,7 +96,7 @@ class CreateRPSenseHAT:
     def gyroscope_xyz(self):
         """ Returns Gyroscope X, Y, Z as Floats. """
         try:
-            tmp_gyro = self.sense.get_gyroscope_raw()
+            tmp_gyro = self.sense_hat_access.get_gyroscope_raw()
             gyro_x, gyro_y, gyro_z = tmp_gyro["x"], tmp_gyro["y"], tmp_gyro["z"]
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Gyroscope XYZ - Failed: " + str(error))
@@ -139,28 +139,28 @@ class CreateRPSenseHAT:
             logger.primary_logger.info("SenseHAT JoyStick Program Started")
             shutdown_confirm = False
             while True:
-                event = self.sense.stick.wait_for_event()
+                event = self.sense_hat_access.stick.wait_for_event()
 
                 acc = self.accelerometer_xyz()
                 acc_x = round(acc[0], 0)
                 acc_y = round(acc[1], 0)
 
                 if acc_x == -1:
-                    self.sense.set_rotation(90)
+                    self.sense_hat_access.set_rotation(90)
                 elif acc_y == 1:
-                    self.sense.set_rotation(0)
+                    self.sense_hat_access.set_rotation(0)
                 elif acc_y == -1:
-                    self.sense.set_rotation(180)
+                    self.sense_hat_access.set_rotation(180)
                 else:
-                    self.sense.set_rotation(270)
+                    self.sense_hat_access.set_rotation(270)
 
                 if event.direction == "up":
                     shutdown_confirm = False
                     self.display_text(app_cached_variables.ip)
                 elif event.direction == "down":
-                    self.sense.set_pixels(steve)
+                    self.sense_hat_access.set_pixels(steve)
                     if shutdown_confirm:
-                        self.sense.show_message("Shutting Down", scroll_speed=0.08, text_colour=(75, 0, 0))
+                        self.sense_hat_access.show_message("Shutting Down", scroll_speed=0.08, text_colour=(75, 0, 0))
                         system("shutdown -h now")
                 elif event.direction == "left":
                     shutdown_confirm = False
@@ -170,10 +170,10 @@ class CreateRPSenseHAT:
                     self.display_text(str(int(self.temperature())) + "c")
                 elif event.action == "held":
                     shutdown_confirm = True
-                    self.sense.show_message("Off1", scroll_speed=0.08, text_colour=(75, 0, 0))
+                    self.sense_hat_access.show_message("Off1", scroll_speed=0.08, text_colour=(75, 0, 0))
 
                 # Clear events to prevent multiple loops if button(s) hit multiple times
-                self.sense.stick.get_events()
+                self.sense_hat_access.stick.get_events()
         except Exception as error:
             logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations: " + str(error))
 
@@ -187,15 +187,15 @@ class CreateRPSenseHAT:
                 acc_y = round(acc[1], 0)
 
                 if acc_x == -1:
-                    self.sense.set_rotation(90)
+                    self.sense_hat_access.set_rotation(90)
                 elif acc_y == 1:
-                    self.sense.set_rotation(0)
+                    self.sense_hat_access.set_rotation(0)
                 elif acc_y == -1:
-                    self.sense.set_rotation(180)
+                    self.sense_hat_access.set_rotation(180)
                 else:
-                    self.sense.set_rotation(270)
+                    self.sense_hat_access.set_rotation(270)
 
-                self.sense.show_message(str(message), scroll_speed=0.12, text_colour=(75, 0, 0))
+                self.sense_hat_access.show_message(str(message), scroll_speed=0.12, text_colour=(75, 0, 0))
             except Exception as error:
                 logger.sensors_logger.error("Unable to set Message Orientation: " + str(error))
             self.display_ready = True

@@ -30,9 +30,9 @@ class CreateLumaOLED:
         try:
             self.display_off_count = 0
             self.display_is_on = True
-            self.luma_serial_import = __import__('luma.core.interface.serial', fromlist=['i2c'])
-            self.luma_sh1106_import = __import__('luma.oled.device', fromlist=['sh1106'])
-            self.luma_canvas_import = __import__('luma.core.render', fromlist=['canvas'])
+            self.luma_serial_import = __import__("luma.core.interface.serial", fromlist=["i2c"])
+            self.luma_canvas_import = __import__("luma.core.render", fromlist=["canvas"])
+            self.luma_sh1106_import = __import__("luma.oled.device", fromlist=["sh1106"])
             serial = self.luma_serial_import.i2c(port=1, address=0x3C)
             self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
 

@@ -31,7 +31,7 @@ class CreateBH1745:
 
     def __init__(self):
         try:
-            bh1745_import = __import__('bh1745')
+            bh1745_import = __import__("sensor_modules.drivers.bh1745", fromlist=["BH1745"])
             self.bh1745 = bh1745_import.BH1745()
             self.bh1745.setup()
             logger.sensors_logger.debug("Pimoroni BH1745 Initialization - OK")
