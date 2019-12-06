@@ -12,6 +12,7 @@ werkzeug
 psutil
 requests
 plotly >= 4.0.0
+numpy
 # Sensor Hardware Modules
 # All Commented out Modules are included in the main app folder
 # Commented Modules are left for requirement reference
