@@ -1,5 +1,7 @@
 # Required Sensor Program Modules
 gpiozero
+pyserial
+spidev
 smbus
 smbus2
 flask
@@ -13,6 +15,8 @@ plotly >= 4.0.0
 # Sensor Hardware Modules
 # All Commented out Modules are included in the main app folder
 # Commented Modules are left for requirement reference
+luma.core
+luma.oled
 #sense_hat
 #bme680
 #bmp280
@@ -26,6 +30,4 @@ plotly >= 4.0.0
 #veml6075
 #matrix11x7
 #st7735
-enviroplus
-luma.core
-luma.oled
+#enviroplus

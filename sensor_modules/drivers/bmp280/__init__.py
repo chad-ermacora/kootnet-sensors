@@ -1,6 +1,6 @@
 """BMP280 Driver."""
-from i2cdevice import Device, Register, BitField, _int_to_bytes
-from i2cdevice.adapter import LookupAdapter, Adapter
+from ..i2cdevice import Device, Register, BitField, _int_to_bytes
+from ..i2cdevice.adapter import LookupAdapter, Adapter
 import struct
 
 

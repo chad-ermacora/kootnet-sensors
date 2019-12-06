@@ -167,7 +167,6 @@ class ICM20948:
         self.bank(2)
         # 125Hz - 1.125 kHz / (1 + rate)
         rate = int((1125.0 / rate) - 1)
-        # TODO maybe use struct to pack and then write_bytes
         self.write(ICM20948_ACCEL_SMPLRT_DIV_1, (rate >> 8) & 0xff)
         self.write(ICM20948_ACCEL_SMPLRT_DIV_2, rate & 0xff)
 

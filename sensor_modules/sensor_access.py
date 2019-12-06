@@ -201,6 +201,8 @@ def get_altitude():
     sensor_ready_checks.altitude_ready = False
     if app_config_access.installed_sensors.pimoroni_bmp280:
         altitude = sensors_direct.pimoroni_bmp280_a.altitude()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        altitude = sensors_direct.pimoroni_enviroplus_a.altitude()
     else:
         altitude = no_sensor_present
     sensor_ready_checks.altitude_ready = True

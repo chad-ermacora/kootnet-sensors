@@ -2,8 +2,8 @@
 import time
 import struct
 
-from i2cdevice import Device, Register, BitField, _int_to_bytes
-from i2cdevice.adapter import Adapter, LookupAdapter
+from ..i2cdevice import Device, Register, BitField, _int_to_bytes
+from ..i2cdevice.adapter import Adapter, LookupAdapter
 
 __version__ = '0.1.0'
 
@@ -156,7 +156,6 @@ class AS7262:
             ), bit_width=192),
         ))
 
-        # TODO : Integrate into i2cdevice so that LookupAdapter fields can always be exported to constants
         # Iterate through all register fields and export their lookup tables to constants
         for register in self._as7262.registers:
             register = self._as7262.registers[register]

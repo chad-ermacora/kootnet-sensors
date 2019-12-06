@@ -1,8 +1,8 @@
 """Library for the BH1745 colour sensor."""
 import time
 
-from i2cdevice import Device, Register, BitField
-from i2cdevice.adapter import LookupAdapter, U16ByteSwapAdapter
+from ..i2cdevice import Device, Register, BitField
+from ..i2cdevice.adapter import LookupAdapter, U16ByteSwapAdapter
 
 
 __version__ = '0.0.4'
@@ -110,7 +110,6 @@ class BH1745:
 
         self._bh1745.select_address(self._i2c_addr)
 
-        # TODO : Integrate into i2cdevice so that LookupAdapter fields can always be exported to constants
         # Iterate through all register fields and export their lookup tables to constants
         for register in self._bh1745.registers:
             register = self._bh1745.registers[register]

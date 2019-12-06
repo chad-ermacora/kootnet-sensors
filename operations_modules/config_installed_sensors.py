@@ -244,6 +244,7 @@ def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
                 new_installed_sensors.has_display = 1
                 new_installed_sensors.has_env_temperature = 1
                 new_installed_sensors.has_pressure = 1
+                new_installed_sensors.has_altitude = 1
                 new_installed_sensors.has_humidity = 1
                 new_installed_sensors.has_distance = 1
                 new_installed_sensors.has_lumen = 1

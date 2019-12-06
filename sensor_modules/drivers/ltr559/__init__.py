@@ -1,7 +1,7 @@
 """Library for the LITE-ON LTR559 digital light and proximity sensor."""
 import time
-from i2cdevice import Device, Register, BitField
-from i2cdevice.adapter import Adapter, LookupAdapter, U16ByteSwapAdapter
+from ..i2cdevice import Device, Register, BitField
+from ..i2cdevice.adapter import Adapter, LookupAdapter, U16ByteSwapAdapter
 
 __version__ = '0.1.0'
 
@@ -232,7 +232,6 @@ class LTR559:
                              mode='als+ps',
                              polarity=interrupt_pin_polarity)
 
-        # FIXME use datasheet defaults or document
         # No need to run the proximity LED at 100mA, so we pick 50 instead.
         # Tests suggest this works pretty well.
         self._ltr559.set('PS_LED',

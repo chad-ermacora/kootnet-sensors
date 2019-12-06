@@ -45,36 +45,23 @@ class CreateEnviroPlus:
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
             ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
-
-            logger.sensors_logger.critical("PimoEnv Level a")
-            bme280_fromlist_import = ["read_temperature", "read_humidity", "read_pressure"]
-            self.bme280 = __import__("sensor_modules.drivers.enviroplus.bme280", fromlist=bme280_fromlist_import)
-            logger.sensors_logger.critical("PimoEnv Level b")
-            self.gas_access = __import__("sensor_modules.drivers.enviroplus", fromlist=["read_all"])
-            logger.sensors_logger.critical("PimoEnv Level c")
-            # self.ltr_559 = ltr559_import.LTR559()
-            logger.sensors_logger.critical("PimoEnv Level d")
+            bme280_import = __import__("sensor_modules.drivers.enviroplus.custom-bme280", fromlist="BME280")
+            self.gas_access = __import__("sensor_modules.drivers.enviroplus.mics6814", fromlist=["read_all"])
+            self.ltr_559 = ltr559_import.LTR559()
+            self.bme280 = bme280_import.BME280()
             # Setup & Initialize display
             st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735"])
-            logger.sensors_logger.critical("PimoEnv Level e")
             self.st7735 = st7735_import.ST7735(port=0, cs=1, dc=9, backlight=12, rotation=270, spi_speed_hz=10000000)
-            logger.sensors_logger.critical("PimoEnv Level f")
             self.st7735.begin()
-            logger.sensors_logger.critical("PimoEnv Level g")
 
             # First readings seem to return an error.  Getting them over with before needing readings
-            logger.sensors_logger.critical("PimoEnv Level 0")
-            self.bme280.read_temperature()
-            logger.sensors_logger.critical("PimoEnv Level 1")
+            self.bme280.get_temperature()
             time.sleep(0.1)
-            self.bme280.read_humidity()
-            logger.sensors_logger.critical("PimoEnv Level 2")
+            self.bme280.get_humidity()
             time.sleep(0.1)
-            self.bme280.read_pressure()
-            logger.sensors_logger.critical("PimoEnv Level 3")
+            self.bme280.get_pressure()
             time.sleep(0.1)
             self.ltr_559.get_lux()
-            logger.sensors_logger.critical("PimoEnv Level 4")
 
             # Start thread to turn off display after set amount of seconds (Set after top file imports)
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
@@ -163,7 +150,7 @@ class CreateEnviroPlus:
     def temperature(self):
         """ Returns Temperature as a Float. """
         try:
-            temp_var = float(self.bme280.read_temperature())
+            temp_var = float(self.bme280.get_temperature())
         except Exception as error:
             temp_var = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Temperature - Failed: " + str(error))
@@ -172,16 +159,28 @@ class CreateEnviroPlus:
     def pressure(self):
         """ Returns Pressure as a Integer. """
         try:
-            pressure_hpa = self.bme280.read_pressure()
+            pressure_hpa = self.bme280.get_pressure()
         except Exception as error:
             pressure_hpa = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Pressure - Failed: " + str(error))
         return int(pressure_hpa)
 
+    def altitude(self):
+        """ Returns Altitude as a Float. """
+        # This should probably have a baseline of one sample every second for 100 seconds, but have it's own thread
+        # Having it's own thread should allow the program to continue while waiting for this
+        # Replace "pressure" with a baseline of the sum of 100 divided by the length 100
+        try:
+            var_altitude = self.bme280.get_altitude()
+        except Exception as error:
+            var_altitude = 0.0
+            logger.sensors_logger.error("Pimoroni Enviro+ Altitude - Failed: " + str(error))
+        return round(var_altitude, round_decimal_to)
+
     def humidity(self):
         """ Returns Humidity as a Float. """
         try:
-            var_humidity = self.bme280.read_humidity()
+            var_humidity = self.bme280.get_humidity()
         except Exception as error:
             var_humidity = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Humidity - Failed: " + str(error))
