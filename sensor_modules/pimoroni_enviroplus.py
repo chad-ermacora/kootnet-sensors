@@ -27,10 +27,10 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 
-
 round_decimal_to = 5
 turn_off_display_seconds = 25
-pause_sensor_during_access_sec = 0.05
+readings_update_threshold_sec = 0.25
+pause_sensor_during_access_sec = 0.15
 
 
 class CreateEnviroPlus:
@@ -42,6 +42,10 @@ class CreateEnviroPlus:
             self.display_is_on = True
             self.display_ready = True
             self.particle_matter_in_use = False
+            self.readings_last_updated = time.time()
+            self.pm1 = 0.0
+            self.pm25 = 0.0
+            self.pm10 = 0.0
 
             self.font = ImageFont.truetype(file_locations.display_font, 40)
 
@@ -101,6 +105,23 @@ class CreateEnviroPlus:
         while True:
             self.particulate_matter_data()
             time.sleep(1)
+
+    def _update_pm_readings(self):
+        if (time.time() - self.readings_last_updated) > readings_update_threshold_sec:
+            update_readings = True
+            while self.particle_matter_in_use:
+                update_readings = False
+                time.sleep(pause_sensor_during_access_sec)
+            if update_readings:
+                self.particle_matter_in_use = True
+                try:
+                    enviro_plus_pm_data = self.enviro_plus_pm_access.read()
+                    self.pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
+                    self.pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
+                    self.pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
+                except Exception as error:
+                    logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter Update - Failed: " + str(error))
+                self.particle_matter_in_use = False
 
     # Displays text on the 0.96" LCD
     def display_text(self, message):
@@ -211,24 +232,10 @@ class CreateEnviroPlus:
 
     def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
-        if self.particle_matter_in_use:
-            time.sleep(pause_sensor_during_access_sec)
-        self.particle_matter_in_use = True
-        try:
-            enviro_plus_pm_data = self.enviro_plus_pm_access.read()
-
-            pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
-            pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
-            pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
-
-            pm_list_pm1_pm25_pm10 = [round(pm1, round_decimal_to),
-                                     round(pm25, round_decimal_to),
-                                     round(pm10, round_decimal_to)]
-        except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter - Failed: " + str(error))
-            pm_list_pm1_pm25_pm10 = [0.0, 0.0, 0.0]
-        self.particle_matter_in_use = False
-        return pm_list_pm1_pm25_pm10
+        self._update_pm_readings()
+        return [round(self.pm1, round_decimal_to),
+                round(self.pm25, round_decimal_to),
+                round(self.pm10, round_decimal_to)]
 
     @staticmethod
     def _enable_psm5003_serial():

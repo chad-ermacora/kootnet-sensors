@@ -20,7 +20,7 @@ from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
-readings_update_threshold_sec = 0.5
+readings_update_threshold_sec = 0.25
 pause_sensor_during_access_sec = 0.05
 gas_keep_alive_update_sec = 1
 
@@ -59,11 +59,11 @@ class CreateBME680:
     def _gas_readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni BME680 Gas keep alive started")
         while True:
-            self._check_sensor_readings()
+            self._update_sensor_readings()
             time.sleep(gas_keep_alive_update_sec)
 
-    def _check_sensor_readings(self):
-        if self.pause_sensor_access:
+    def _update_sensor_readings(self):
+        while self.pause_sensor_access:
             time.sleep(pause_sensor_during_access_sec)
         if (time.time() - self.readings_last_updated) > readings_update_threshold_sec:
             self.pause_sensor_access = True
@@ -71,13 +71,13 @@ class CreateBME680:
                 self.sensor.get_sensor_data()
                 self.readings_last_updated = time.time()
             except Exception as error:
-                logger.sensors_logger.error("Pimoroni BME680 Sensor Readings Update - Failed: " + str(error))
+                logger.sensors_logger.error("Pimoroni BME680 Sensor Update - Failed: " + str(error))
                 time.sleep(1)
             self.pause_sensor_access = False
 
     def temperature(self):
         """ Returns Temperature as a Float. """
-        self._check_sensor_readings()
+        self._update_sensor_readings()
         try:
             temp_var = float(self.sensor.data.temperature)
         except Exception as error:
@@ -87,7 +87,7 @@ class CreateBME680:
 
     def pressure(self):
         """ Returns Pressure as a Integer. """
-        self._check_sensor_readings()
+        self._update_sensor_readings()
         try:
             pressure_hpa = self.sensor.data.pressure
         except Exception as error:
@@ -97,7 +97,7 @@ class CreateBME680:
 
     def humidity(self):
         """ Returns Humidity as a Float. """
-        self._check_sensor_readings()
+        self._update_sensor_readings()
         try:
             var_humidity = self.sensor.data.humidity
         except Exception as error:
@@ -107,7 +107,7 @@ class CreateBME680:
 
     def gas_resistance_index(self):
         """ Returns Gas Resistance Index as a float in kΩ. """
-        self._check_sensor_readings()
+        self._update_sensor_readings()
         try:
             gas_var = round(self.sensor.data.gas_resistance / 1000, round_decimal_to)
         except Exception as error:
