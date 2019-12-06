@@ -54,10 +54,7 @@ class CreateBME680:
     def _gas_readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni BME680 Gas keep alive started")
         while True:
-            if not self.pause_gas_keep_alive:
-                self.sensor.get_sensor_data()
-            else:
-                sleep(1)
+            self.gas_resistance_index()
             sleep(1)
 
     def temperature(self):

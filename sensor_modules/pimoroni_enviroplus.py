@@ -98,11 +98,7 @@ class CreateEnviroPlus:
     def _readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni Enviro+ PMS5003 Particulate Matter & Gas keep alive started")
         while True:
-            if not self.pause_particle_matter_keep_alive:
-                self.enviro_plus_pm_access.read()
-                self.gas_access.read_all()
-            else:
-                time.sleep(1)
+            self.particulate_matter_data()
             time.sleep(1)
 
     # Displays text on the 0.96" LCD
