@@ -119,6 +119,7 @@ class CreateEnviroPlus:
                     self.pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
                     self.pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
                     self.pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
+                    self.readings_last_updated = time.time()
                 except Exception as error:
                     logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter Update - Failed: " + str(error))
                 self.particle_matter_in_use = False
