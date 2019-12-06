@@ -54,15 +54,6 @@ class CreateEnviroPlus:
             self.st7735 = st7735_import.ST7735(port=0, cs=1, dc=9, backlight=12, rotation=270, spi_speed_hz=10000000)
             self.st7735.begin()
 
-            # First readings seem to return an error.  Getting them over with before needing readings
-            self.bme280.get_temperature()
-            time.sleep(0.1)
-            self.bme280.get_humidity()
-            time.sleep(0.1)
-            self.bme280.get_pressure()
-            time.sleep(0.1)
-            self.ltr_559.get_lux()
-
             # Start thread to turn off display after set amount of seconds (Set after top file imports)
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
