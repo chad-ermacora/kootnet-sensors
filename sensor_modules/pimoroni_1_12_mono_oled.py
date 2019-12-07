@@ -25,8 +25,8 @@ turn_off_display = 30
 
 class CreateLumaOLED:
     """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128). """
-
     def __init__(self):
+        self.display_in_use = False
         try:
             self.display_off_count = 0
             self.display_is_on = True
@@ -74,14 +74,18 @@ class CreateLumaOLED:
 
     def display_text(self, message):
         """ Shows Provided Text on LED Display. """
-        self.device.show()
-        self.display_off_count = 0
-        self.display_is_on = True
-
-        try:
-            clean_message = self._format_message(message)
-            with self.luma_canvas_import.canvas(self.device) as draw:
-                draw.rectangle(self.device.bounding_box, outline="white", fill="black")
-                draw.text((5, 5), clean_message, fill="white")
-        except Exception as error:
-            logger.sensors_logger.error("Message on 1.12 Mono OLED - Failed: " + str(error))
+        if not self.display_in_use:
+            self.display_in_use = True
+            self.device.show()
+            self.display_off_count = 0
+            self.display_is_on = True
+            try:
+                clean_message = self._format_message(message)
+                with self.luma_canvas_import.canvas(self.device) as draw:
+                    draw.rectangle(self.device.bounding_box, outline="white", fill="black")
+                    draw.text((5, 5), clean_message, fill="white")
+            except Exception as error:
+                logger.sensors_logger.error("Message on Pimoroni 1.12'' Mono OLED - Failed: " + str(error))
+            self.display_in_use = False
+        else:
+            logger.sensors_logger.debug("Pimoroni 1.12'' Mono OLED - In Use")

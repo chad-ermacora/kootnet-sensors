@@ -15,16 +15,18 @@ Created on Tue June 25 10:53:56 2019
 
 @author: OO-Dragon
 """
+import time
 from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
+pause_sensor_during_access_sec = 0.15
 
 
 class CreateVEML6075:
     """ Creates Function access to the Pimoroni VEML6075. """
-
     def __init__(self):
+        self.sensor_in_use = False
         try:
             veml6075_import = __import__("sensor_modules.drivers.veml6075", fromlist=["VEML6075"])
             self.smbus_import = __import__("smbus")
@@ -42,6 +44,9 @@ class CreateVEML6075:
 
     def ultra_violet_index(self):
         """ Returns Ultra Violet Index. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             uva, uvb = self.uv_sensor.get_measurements()
             uv_comp1, uv_comp2 = self.uv_sensor.get_comparitor_readings()
@@ -49,29 +54,33 @@ class CreateVEML6075:
         except Exception as error:
             uv_index = [0.0, 0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UV Index Reading - Failed: " + str(error))
-
+        self.sensor_in_use = False
         return uv_index[2]
 
     def ultra_violet(self):
         """ Returns Ultra Violet (A,B) as a list. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             uva, uvb = self.uv_sensor.get_measurements()
         except Exception as error:
             uva, uvb = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed: " + str(error))
-
         return_list_uva_uvb = [round(float(uva), round_decimal_to), round(float(uvb), round_decimal_to)]
-
+        self.sensor_in_use = False
         return return_list_uva_uvb
 
     def ultra_violet_comparator(self):
         """ Returns 2 Ultra Violet comparator as a list. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             uv_comp1, uv_comp2 = self.uv_sensor.get_comparitor_readings()
         except Exception as error:
             uv_comp1, uv_comp2 = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed: " + str(error))
-
         return_list_uv_comparator = [round(float(uv_comp1), round_decimal_to), round(float(uv_comp2), round_decimal_to)]
-
+        self.sensor_in_use = False
         return return_list_uv_comparator

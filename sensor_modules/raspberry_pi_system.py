@@ -8,16 +8,18 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
+import time
 from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
+pause_sensor_during_access_sec = 0.15
 
 
 class CreateRPSystem:
     """ Creates Function access to Raspberry Pi Hardware Information. """
-
     def __init__(self):
+        self.sensor_in_use = False
         try:
             self.gp_import = __import__("gpiozero")
             logger.sensors_logger.debug("Raspberry Pi System Access Initialization - OK")
@@ -28,10 +30,14 @@ class CreateRPSystem:
 
     def cpu_temperature(self):
         """ Returns System CPU Temperature as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             cpu = self.gp_import.CPUTemperature()
             cpu_temp_c = float(cpu.temperature)
         except Exception as error:
             cpu_temp_c = 0.0
             logger.sensors_logger.error("Raspberry Pi CPU Temperature Sensor - Failed: " + str(error))
+        self.sensor_in_use = False
         return round(cpu_temp_c, round_decimal_to)

@@ -35,14 +35,15 @@ pause_sensor_during_access_sec = 0.15
 
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
-
     def __init__(self):
         try:
             self.display_off_count = 0
             self.display_is_on = True
-            self.display_ready = True
-            self.particle_matter_in_use = False
-            self.readings_last_updated = time.time()
+
+            self.display_in_use = False
+            self.sensor_in_use = False
+
+            self.pm_readings_last_updated = time.time()
             self.pm1 = 0.0
             self.pm25 = 0.0
             self.pm10 = 0.0
@@ -106,28 +107,10 @@ class CreateEnviroPlus:
             self.particulate_matter_data()
             time.sleep(1)
 
-    def _update_pm_readings(self):
-        if (time.time() - self.readings_last_updated) > readings_update_threshold_sec:
-            update_readings = True
-            while self.particle_matter_in_use:
-                update_readings = False
-                time.sleep(pause_sensor_during_access_sec)
-            if update_readings:
-                self.particle_matter_in_use = True
-                try:
-                    enviro_plus_pm_data = self.enviro_plus_pm_access.read()
-                    self.pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
-                    self.pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
-                    self.pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
-                    self.readings_last_updated = time.time()
-                except Exception as error:
-                    logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter Update - Failed: " + str(error))
-                self.particle_matter_in_use = False
-
     # Displays text on the 0.96" LCD
     def display_text(self, message):
-        if self.display_ready:
-            self.display_ready = False
+        if not self.display_in_use:
+            self.display_in_use = True
             message_img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
             blank_img = message_img
             draw = ImageDraw.Draw(message_img)
@@ -152,27 +135,34 @@ class CreateEnviroPlus:
                 self.st7735.display(blank_img)
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni Enviro+ Display - Failed: " + str(error))
-
-            self.display_ready = True
+            self.display_in_use = False
         else:
-            logger.sensors_logger.warning("Unable to display message on Pimoroni Enviro+.  Already in use.")
+            logger.sensors_logger.debug("Unable to display message on Pimoroni Enviro+.  Already in use.")
 
     def temperature(self):
         """ Returns Temperature as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             temp_var = float(self.bme280.get_temperature())
         except Exception as error:
             temp_var = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Temperature - Failed: " + str(error))
+        self.sensor_in_use = False
         return round(temp_var, round_decimal_to)
 
     def pressure(self):
         """ Returns Pressure as a Integer. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             pressure_hpa = self.bme280.get_pressure()
         except Exception as error:
             pressure_hpa = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Pressure - Failed: " + str(error))
+        self.sensor_in_use = False
         return int(pressure_hpa)
 
     def altitude(self):
@@ -180,42 +170,61 @@ class CreateEnviroPlus:
         # This should probably have a baseline of one sample every second for 100 seconds, but have it's own thread
         # Having it's own thread should allow the program to continue while waiting for this
         # Replace "pressure" with a baseline of the sum of 100 divided by the length 100
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             var_altitude = self.bme280.get_altitude()
         except Exception as error:
             var_altitude = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Altitude - Failed: " + str(error))
+        self.sensor_in_use = False
         return round(var_altitude, round_decimal_to)
 
     def humidity(self):
         """ Returns Humidity as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             var_humidity = self.bme280.get_humidity()
         except Exception as error:
             var_humidity = 0.0
             logger.sensors_logger.error("Pimoroni Enviro+ Humidity - Failed: " + str(error))
+        self.sensor_in_use = False
         return round(var_humidity, round_decimal_to)
 
     def lumen(self):
         """ Returns Lumen as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             lumen = float(self.ltr_559.get_lux())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Lumen - Failed: " + str(error))
             lumen = 0.0
+        self.sensor_in_use = False
         return round(lumen, round_decimal_to)
 
     def distance(self):
         """ Returns distance in cm?. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             distance = float(self.ltr_559.get_proximity())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ Proximity - Failed: " + str(error))
             distance = 0.0
+        self.sensor_in_use = False
         return round(distance, round_decimal_to)
 
     def gas_data(self):
         """ Returns 3 gas readings Oxidised, Reduced and nh3 as a list. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             enviro_plus_gas_data = self.gas_access.read_all()
             oxidised = enviro_plus_gas_data.oxidising / 1000
@@ -229,11 +238,27 @@ class CreateEnviroPlus:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro+ GAS - Failed: " + str(error))
             gas_list_oxidised_reduced_nh3 = [0.0, 0.0, 0.0]
+        self.sensor_in_use = False
         return gas_list_oxidised_reduced_nh3
 
     def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
-        self._update_pm_readings()
+        if (time.time() - self.pm_readings_last_updated) > readings_update_threshold_sec:
+            update_readings = True
+            while self.sensor_in_use:
+                update_readings = False
+                time.sleep(pause_sensor_during_access_sec)
+            if update_readings:
+                self.sensor_in_use = True
+                try:
+                    enviro_plus_pm_data = self.enviro_plus_pm_access.read()
+                    self.pm1 = enviro_plus_pm_data.pm_ug_per_m3(1.0)
+                    self.pm25 = enviro_plus_pm_data.pm_ug_per_m3(2.5)
+                    self.pm10 = enviro_plus_pm_data.pm_ug_per_m3(10)
+                    self.pm_readings_last_updated = time.time()
+                except Exception as error:
+                    logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter Update - Failed: " + str(error))
+                self.sensor_in_use = False
         return [round(self.pm1, round_decimal_to),
                 round(self.pm25, round_decimal_to),
                 round(self.pm10, round_decimal_to)]

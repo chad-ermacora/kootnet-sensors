@@ -23,10 +23,9 @@ from operations_modules import app_config_access
 
 class CreateMatrix11x7:
     """ Creates Function access to the Pimoroni 11x7 LED Matrix. """
-
     def __init__(self):
+        self.display_in_use = False
         try:
-            self.display_ready = True
             matrix_11x7_import = __import__("sensor_modules.drivers.matrix11x7", fromlist=["Matrix11x7"])
             self.matrix11x7 = matrix_11x7_import.Matrix11x7()
             self.matrix11x7.set_brightness(0.15)
@@ -39,8 +38,8 @@ class CreateMatrix11x7:
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
         message_length = len(message)
-        if self.display_ready:
-            self.display_ready = False
+        if not self.display_in_use:
+            self.display_in_use = True
             try:
                 self.matrix11x7.write_string("   " + message + "    ")
                 # Scroll the buffer content
@@ -54,6 +53,6 @@ class CreateMatrix11x7:
                 self.matrix11x7.show()
             except Exception as error:
                 logger.sensors_logger.error("Scroll Message on Matrix11x7 - Failed: " + str(error))
-            self.display_ready = True
+            self.display_in_use = False
         else:
-            logger.sensors_logger.info("Unable to display message on Pimoroni 11x7 LED Matrix.  Already in use.")
+            logger.sensors_logger.debug("Unable to display message on Pimoroni 11x7 LED Matrix.  Already in use.")

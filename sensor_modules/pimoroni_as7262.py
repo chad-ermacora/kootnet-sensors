@@ -15,16 +15,18 @@ pip3 install as7262
 
 @author: OO-Dragon
 """
+import time
 from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
+pause_sensor_during_access_sec = 0.15
 
 
 class CreateAS7262:
     """ Creates Function access to the Pimoroni AS7262. """
-
     def __init__(self):
+        self.sensor_in_use = False
         try:
             as7262_import = __import__("sensor_modules.drivers.as7262", fromlist=["AS7262"])
             self.as7262_access = as7262_import.AS7262()
@@ -46,12 +48,15 @@ class CreateAS7262:
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_access.get_calibrated_values()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
             red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
-
+        self.sensor_in_use = False
         return round(red_650, round_decimal_to), round(orange_600, round_decimal_to), \
                round(yellow_570, round_decimal_to), round(green_550, round_decimal_to), \
                round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)

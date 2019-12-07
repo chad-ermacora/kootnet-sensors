@@ -27,11 +27,9 @@ gas_keep_alive_update_sec = 1
 
 class CreateBME680:
     """ Creates Function access to the Pimoroni BME680. """
-
     def __init__(self):
-        self.pause_sensor_access = False
+        self.sensor_in_use = False
         self.readings_last_updated = time.time()
-
         try:
             bme680_import = __import__("sensor_modules.drivers.bme680", fromlist=["BME680"])
             self.sensor = bme680_import.BME680()
@@ -65,18 +63,18 @@ class CreateBME680:
     def _update_sensor_readings(self):
         if (time.time() - self.readings_last_updated) > readings_update_threshold_sec:
             update_readings = True
-            while self.pause_sensor_access:
+            while self.sensor_in_use:
                 update_readings = False
                 time.sleep(pause_sensor_during_access_sec)
             if update_readings:
-                self.pause_sensor_access = True
+                self.sensor_in_use = True
                 try:
                     self.sensor.get_sensor_data()
                     self.readings_last_updated = time.time()
                 except Exception as error:
                     logger.sensors_logger.error("Pimoroni BME680 Sensor Update - Failed: " + str(error))
                     time.sleep(1)
-                self.pause_sensor_access = False
+                self.sensor_in_use = False
 
     def temperature(self):
         """ Returns Temperature as a Float. """

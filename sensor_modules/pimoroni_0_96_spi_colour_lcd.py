@@ -25,8 +25,8 @@ from operations_modules import file_locations
 
 class CreateST7735:
     """ Creates Function access to the Pimoroni 10.96" SPI Colour LCD (160x80). """
-
     def __init__(self):
+        self.display_in_use = False
         try:
             st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735", "BG_SPI_CS_FRONT"])
             # Create ST7735 LCD display class.
@@ -49,21 +49,26 @@ class CreateST7735:
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
-        try:
-            img = Image.new("RGB", (self.display.width, self.display.height), color=(0, 0, 0))
-            draw = ImageDraw.Draw(img)
-            font = ImageFont.truetype(file_locations.display_font, 30)
-            size_x, size_y = draw.textsize(message, font)
+        if not self.display_in_use:
+            self.display_in_use = True
+            try:
+                img = Image.new("RGB", (self.display.width, self.display.height), color=(0, 0, 0))
+                draw = ImageDraw.Draw(img)
+                font = ImageFont.truetype(file_locations.display_font, 30)
+                size_x, size_y = draw.textsize(message, font)
 
-            text_x = 160
-            text_y = (80 - size_y) // 2
+                text_x = 160
+                text_y = (80 - size_y) // 2
 
-            t_start = time.time()
-            while True:
-                x = (time.time() - t_start) * 100
-                x %= (size_x + 160)
-                draw.rectangle((0, 0, 160, 80), (0, 0, 0))
-                draw.text((int(text_x - x), text_y), message, font=font, fill=(255, 255, 255))
-                self.display.display(img)
-        except Exception as error:
-            logger.sensors_logger.error("Scroll Message on 10.96 SPI Colour LCD - Failed: " + str(error))
+                t_start = time.time()
+                while True:
+                    x = (time.time() - t_start) * 100
+                    x %= (size_x + 160)
+                    draw.rectangle((0, 0, 160, 80), (0, 0, 0))
+                    draw.text((int(text_x - x), text_y), message, font=font, fill=(255, 255, 255))
+                    self.display.display(img)
+            except Exception as error:
+                logger.sensors_logger.error("Scroll Message on 10.96 SPI Colour LCD - Failed: " + str(error))
+            self.display_in_use = False
+        else:
+            logger.sensors_logger.debug("10.96 SPI Colour LCD - In Use")
