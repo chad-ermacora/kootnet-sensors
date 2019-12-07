@@ -7,9 +7,11 @@ from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
 from http_server.server_http_sensor_control import get_clean_address_list
-from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import check_sensor_status_sensor_control, \
+from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
+    check_sensor_status_sensor_control, \
     create_all_databases_zipped, create_multiple_sensor_logs_zipped, put_all_reports_zipped_to_cache, \
-    downloads_sensor_control, get_html_reports_combo, sensor_control_management, get_sum_db_sizes
+    downloads_sensor_control, get_html_reports_combo, sensor_control_management, get_sum_db_sizes, \
+    CreateSensorHTTPCommand
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
 
@@ -168,3 +170,40 @@ def download_sc_big_zip():
         logger.network_logger.error("Send Big Zip Error: " + str(error))
     app_cached_variables.sc_big_zip_in_memory = False
     return message_and_return("Problem loading Zip", url="/SensorControlManage")
+
+
+@html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
+def sc_active_online_services():
+    logger.network_logger.debug("* Sensor Control 'Active Online Services' Accessed by " + str(request.remote_addr))
+    ip_list = get_clean_address_list(request)
+    if len(ip_list) > 0:
+        service_state = 0
+        if request.form.get("enable_online_service") is not None:
+            service_state = 1
+
+        for ip in ip_list:
+            c_data = {"service": request.form.get("online_service_selected_action"), "service_state": service_state}
+            sensor_http_command_instance = CreateSensorHTTPCommand(ip, "SetActiveOnlineServices", command_data=c_data)
+            sensor_http_command_instance.send_http_online_service_set()
+    msg2 = "Online Service command sent"
+    return message_and_return("Sensor Control - Online Service", url="/SensorControlManage", text_message2=msg2)
+
+
+@html_sensor_control_routes.route("/SetActiveOnlineServices", methods=["POST"])
+@auth.login_required
+def set_active_online_services():
+    logger.network_logger.debug("* Set 'Active Online Services' Accessed by " + str(request.remote_addr))
+
+    active_state = 0
+    if str(request.form.get("service_state")) == "1":
+        active_state = 1
+
+    if request.form.get("service") == "weather_underground":
+        app_config_access.weather_underground_config.weather_underground_enabled = active_state
+        app_config_access.weather_underground_config.write_config_to_file()
+    elif request.form.get("service") == "luftdaten":
+        app_config_access.luftdaten_config.luftdaten_enabled = active_state
+        app_config_access.luftdaten_config.write_config_to_file()
+    elif request.form.get("service") == "open_sense_map":
+        app_config_access.open_sense_map_config.open_sense_map_enabled = active_state
+        app_config_access.open_sense_map_config.write_config_to_file()

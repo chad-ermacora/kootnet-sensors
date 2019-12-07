@@ -136,12 +136,6 @@
                     The Big Zip
                 </button>
             </label>
-            <div class="tooltip" style="color: red; display: inline-block; text-align: center; width: 600px;">
-                ?
-                <span class="tooltiptext">
-                    Generate downloads below to activate the corresponding download buttons above
-                </span>
-            </div>
             <br>
             <br>
             <fieldset style="text-align: center;">
@@ -237,14 +231,14 @@
             <br>
             <ul class="mui-tabs__bar">
                 <li class="mui--is-active">
-                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                       data-mui-controls="primary-config-tab">
+                    <a style="color: red; background-color: #212121;"
+                       data-mui-toggle="tab" data-mui-controls="primary-config-tab">
                         Main
                     </a>
                 </li>
                 <li>
-                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                       data-mui-controls="installed-sensors-tab">
+                    <a style="color: red; background-color: #212121;"
+                       data-mui-toggle="tab" data-mui-controls="installed-sensors-tab">
                         Installed Sensors
                     </a>
                 </li>
@@ -264,16 +258,16 @@
             <br>
             <div class="mui-container-fluid">
                 <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
-                    <p style="color: red">Work In Progress</p>
+                    <p style="color: red;">Work In Progress</p>
                 </div>
                 <div class="mui-tabs__pane" id="installed-sensors-tab">
-                    <p style="color: red">Work In Progress</p>
+                    <p style="color: red;">Work In Progress</p>
                 </div>
                 <div class="mui-tabs__pane" id="wifi-config-tab">
-                    <p style="color: red">Work In Progress</p>
+                    <p style="color: red;">Work In Progress</p>
                 </div>
                 <div class="mui-tabs__pane" id="trigger-variances-tab">
-                    <p style="color: red">Work In Progress</p>
+                    <p style="color: red;">Work In Progress</p>
                 </div>
             </div>
         </div>
@@ -284,7 +278,7 @@
                 <div class="mui-container-fluid" style="background-color: #00B0FF;">
                     <button type="submit"
                             class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                            formaction="/japan" disabled>
+                            formaction="/SCActiveOnlineServices">
                         Send Update
                     </button>
                     <h5><b>
@@ -292,18 +286,18 @@
                     </b></h5>
                     <label>Choose Online Service to Update</label>
                     <div class="mui-radio">
-                        <label class="container_radio" style="font-size: small">
-                            <input type="radio" name="online_service_selected_action" checked
-                                   value="weather_underground">
+                        <label class="container_radio" style="font-size: small;">
+                            <input type="radio" name="online_service_selected_action" value="weather_underground"
+                            checked>
                             Weather Underground
                             <span class="checkmark_radio"></span>
                         </label>
-                        <label class="container_radio" style="font-size: small">
+                        <label class="container_radio" style="font-size: small;">
                             <input type="radio" name="online_service_selected_action" value="luftdaten">
                             Luftdaten
                             <span class="checkmark_radio"></span>
                         </label>
-                        <label class="container_radio" style="font-size: small">
+                        <label class="container_radio" style="font-size: small;">
                             <input type="radio" name="online_service_selected_action" value="open_sense_map">
                             Open Sense Map
                             <span class="checkmark_radio"></span>
@@ -311,19 +305,18 @@
                     </div>
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="enable_online_service"
-                                   value="">
+                            <input type="checkbox" name="enable_online_service" value="">
                             Enable Selected Online Service
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
                     <br>
                     <div class="mui-textfield">
-                        <label style="color: black">
+                        <label style="color: black;">
                             Seconds between Updates
                             <br>
-                            <input style="width: 75px" type="number" min="1" name="online_service_interval"
-                                   value="900.0">
+                            <input style="width: 75px;" type="number" min="1" name="online_service_interval"
+                                   value="900.0" disabled>
                         </label>
                     </div>
                     <br>

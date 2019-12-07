@@ -1,4 +1,5 @@
 import time
+import requests
 from threading import Thread
 from flask import render_template
 from operations_modules import logger
@@ -10,6 +11,35 @@ from http_server.server_http_generic_functions import get_sensor_control_report
 from http_server.server_http_sensor_control import CreateNetworkGetCommands
 
 network_commands = CreateNetworkGetCommands()
+
+
+class CreateSensorHTTPCommand:
+    def __init__(self, sensor_address, command, command_data=None):
+        if command_data is None:
+            self.sensor_command_data = {"NotSet": True}
+        else:
+            self.sensor_command_data = command_data
+
+        self.sensor_address = sensor_address
+        self.http_port = "10065"
+        self.sensor_command = command
+        self._check_ip_port()
+
+    def send_http_online_service_set(self):
+        """ Sends command and data to sensor. """
+        try:
+            url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
+            logger.network_logger.critical(url)
+            requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data,
+                          auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+        except Exception as error:
+            logger.network_logger.error("Unable to send command to " + str(self.sensor_address) + ": " + str(error))
+
+    def _check_ip_port(self):
+        if app_generic_functions.check_for_port_in_address(self.sensor_address):
+            ip_and_port = app_generic_functions.get_ip_and_port_split(self.sensor_address)
+            self.sensor_address = ip_and_port[0]
+            self.http_port = ip_and_port[1]
 
 
 def check_sensor_status_sensor_control(address_list):
