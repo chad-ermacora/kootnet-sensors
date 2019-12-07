@@ -29,7 +29,7 @@ try:
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
-    from http_server.flask_blueprints.sensor_control import html_sensor_control_routes
+    from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
     from http_server.flask_blueprints.system_commands import html_system_commands_routes
     from http_server.flask_blueprints.online_services import html_online_services_routes

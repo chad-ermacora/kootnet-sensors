@@ -1,92 +1,15 @@
 import time
 from threading import Thread
-from flask import Blueprint, render_template, request, send_file
+from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
-from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
-from http_server import server_http_sensor_control
+from http_server.server_http_generic_functions import get_sensor_control_report
+from http_server.server_http_sensor_control import CreateNetworkGetCommands
 
-html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
-sensor_network_commands = server_http_sensor_control.CreateNetworkGetCommands()
-
-
-@html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
-def html_sensor_control_management():
-    logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
-    if request.method == "POST":
-        sc_action = request.form.get("selected_action")
-        sc_download_type = request.form.get("selected_send_type")
-        app_config_access.sensor_control_config.set_from_html_post(request)
-        ip_list = server_http_sensor_control.get_clean_address_list(request)
-
-        if len(ip_list) > 0:
-            check_status = app_config_access.sensor_control_config.radio_check_status
-            combo_reports = app_config_access.sensor_control_config.radio_report_combo
-            system_report = app_config_access.sensor_control_config.radio_report_system
-            config_report = app_config_access.sensor_control_config.radio_report_config
-            sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-            create_zipped_reports = app_config_access.sensor_control_config.radio_download_reports
-            download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
-            download_logs = app_config_access.sensor_control_config.radio_download_logs
-            create_the_big_zip = app_config_access.sensor_control_config.radio_create_the_big_zip
-
-            if sc_action == check_status:
-                return check_sensor_status_sensor_control(ip_list)
-            elif sc_action == combo_reports:
-                return get_html_reports_combo(ip_list, skip_rewrite_link=True)
-            elif sc_action == system_report:
-                return get_sensor_control_report(ip_list, report_type=system_report)
-            elif sc_action == config_report:
-                return get_sensor_control_report(ip_list, report_type=config_report)
-            elif sc_action == sensors_report:
-                return get_sensor_control_report(ip_list, report_type=sensors_report)
-            elif sc_action == create_zipped_reports:
-                app_config_access.creating_the_reports_zip = True
-                logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
-                app_generic_functions.clear_zip_names()
-                app_generic_functions.thread_function(_put_all_reports_zipped_to_cache, args=ip_list)
-            elif sc_action == download_sql_databases:
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    return downloads_sensor_control(ip_list, download_type=download_sql_databases)
-                else:
-                    app_config_access.creating_databases_zip = True
-                    logger.network_logger.info("Sensor Control - Databases Zip Generation Started")
-                    app_generic_functions.thread_function(_create_all_databases_zipped, args=ip_list)
-            elif sc_action == download_logs:
-                app_generic_functions.clear_zip_names()
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    return downloads_sensor_control(ip_list, download_type=download_logs)
-                elif sc_download_type == app_config_access.sensor_control_config.radio_send_type_relayed:
-                    app_config_access.creating_logs_zip = True
-                    logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Started")
-                    app_generic_functions.thread_function(_create_multiple_sensor_logs_zipped, args=ip_list)
-            elif sc_action == create_the_big_zip:
-                logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
-                databases_size = _get_sum_db_sizes(ip_list)
-                if app_generic_functions.save_to_memory_ok(databases_size):
-                    app_generic_functions.clear_zip_names()
-                    app_cached_variables.sc_big_zip_in_memory = True
-                else:
-                    app_cached_variables.sc_big_zip_in_memory = False
-                app_config_access.creating_the_big_zip = True
-                app_generic_functions.thread_function(_create_the_big_zip, args=ip_list)
-    return sensor_control_management()
-
-
-@html_sensor_control_routes.route("/MultiSCSaveSettings", methods=["POST"])
-@auth.login_required
-def html_sensor_control_save_settings():
-    logger.network_logger.debug("* HTML Sensor Control Settings saved by " + str(request.remote_addr))
-    try:
-        app_config_access.sensor_control_config.set_from_html_post(request)
-        app_config_access.sensor_control_config.write_current_config_to_file()
-    except Exception as error:
-        logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
-    return sensor_control_management()
+network_commands = CreateNetworkGetCommands()
 
 
 def check_sensor_status_sensor_control(address_list):
@@ -94,12 +17,8 @@ def check_sensor_status_sensor_control(address_list):
 
     threads = []
     for address in address_list:
-        threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address, True]))
-
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+        threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, True]))
+    app_generic_functions.start_and_wait_threads(threads)
 
     address_responses = []
     while not app_cached_variables.data_queue.empty():
@@ -128,13 +47,9 @@ def check_sensor_status_sensor_control(address_list):
     return render_template("sensor_control_online_status.html", SensorResponse=text_insert.strip())
 
 
-def _create_all_databases_zipped(ip_list):
+def create_all_databases_zipped(ip_list):
     try:
-        get_db_command = sensor_network_commands.sensor_sql_database
-        database_sum_sizes = _get_sum_db_sizes(ip_list)
-        write_to_memory = app_generic_functions.save_to_memory_ok(database_sum_sizes)
-
-        _queue_name_and_file_list(ip_list, command=get_db_command)
+        _queue_name_and_file_list(ip_list, command=network_commands.sensor_sql_database)
 
         data_list = app_generic_functions.get_data_queue_items()
         database_names = []
@@ -144,6 +59,7 @@ def _create_all_databases_zipped(ip_list):
             database_names.append(db_name)
             sensors_database.append(sensor_data[2])
 
+        write_to_memory = app_generic_functions.save_to_memory_ok(get_sum_db_sizes(ip_list))
         if write_to_memory:
             app_generic_functions.clear_zip_names()
             app_cached_variables.sc_databases_zip_in_memory = True
@@ -162,10 +78,9 @@ def _create_all_databases_zipped(ip_list):
     logger.network_logger.info("Sensor Control - Databases Zip Generation Complete")
 
 
-def _create_multiple_sensor_logs_zipped(ip_list):
+def create_multiple_sensor_logs_zipped(ip_list):
     try:
-        get_db_command = sensor_network_commands.download_zipped_logs
-        _queue_name_and_file_list(ip_list, command=get_db_command)
+        _queue_name_and_file_list(ip_list, command=network_commands.download_zipped_logs)
 
         data_list = app_generic_functions.get_data_queue_items()
         database_names = []
@@ -185,7 +100,7 @@ def _create_multiple_sensor_logs_zipped(ip_list):
     logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Complete")
 
 
-def _get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
+def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
     get_sensor_reading = app_generic_functions.get_http_sensor_reading
     task_start_time = time.time()
     sensor_status = get_sensor_reading(address)
@@ -205,7 +120,7 @@ def _get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=
                                          "download_size": str(download_size)})
 
 
-def _put_all_reports_zipped_to_cache(ip_list):
+def put_all_reports_zipped_to_cache(ip_list):
     try:
         hostname = app_cached_variables.hostname
         html_reports = [get_html_reports_combo(ip_list)]
@@ -219,7 +134,6 @@ def _put_all_reports_zipped_to_cache(ip_list):
 
 
 def downloads_sensor_control(address_list, download_type="sensors_download_databases"):
-    network_commands = server_http_sensor_control.CreateNetworkGetCommands()
     download_command = network_commands.sensor_sql_database
     download_type_message = "the SQLite3 Database Zipped"
     add_zipped_database_size = True
@@ -242,13 +156,9 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
 
     threads = []
     for address in address_list:
-        threads.append(Thread(target=_get_remote_sensor_check_and_delay, args=[address, False, add_zipped_database_size,
-                                                                               add_zipped_logs_size]))
-
-    for thread in threads:
-        thread.start()
-    for thread in threads:
-        thread.join()
+        threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, False, add_zipped_database_size,
+                                                                              add_zipped_logs_size]))
+    app_generic_functions.start_and_wait_threads(threads)
 
     address_responses = []
     while not app_cached_variables.data_queue.empty():
@@ -316,8 +226,7 @@ def _replace_text_in_report(report, new_text):
     return report
 
 
-def _create_the_big_zip(ip_list):
-    network_commands = server_http_sensor_control.CreateNetworkGetCommands()
+def create_the_big_zip(ip_list):
     app_cached_variables.sc_big_zip_name = "TheBigZip_" + app_cached_variables.hostname + "_" + \
                                            str(time.time())[:-8] + ".zip"
 
@@ -334,8 +243,7 @@ def _create_the_big_zip(ip_list):
                 return_names.append(current_file_name)
                 return_files.append(sensor[2])
 
-            total_databases_size = _get_sum_db_sizes(ip_list)
-            if app_generic_functions.save_to_memory_ok(total_databases_size):
+            if app_generic_functions.save_to_memory_ok(get_sum_db_sizes(ip_list)):
                 app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(return_names, return_files)
             else:
                 zip_location = file_locations.html_sensor_control_big_zip
@@ -351,13 +259,10 @@ def _create_the_big_zip(ip_list):
 
 
 def _queue_name_and_file_list(ip_list, command):
-    thread_list = []
+    threads = []
     for address in ip_list:
-        thread_list.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
-    for thread in thread_list:
-        thread.start()
-    for thread in thread_list:
-        thread.join()
+        threads.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
+    app_generic_functions.start_and_wait_threads(threads)
 
 
 def _worker_queue_list_ip_name_file(address, command):
@@ -499,16 +404,13 @@ def sensor_control_management():
                            SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20)
 
 
-def _get_sum_db_sizes(ip_list):
+def get_sum_db_sizes(ip_list):
     databases_size = 0.0
     try:
-        db_size_threads = []
+        threads = []
         for address in ip_list:
-            db_size_threads.append(Thread(target=_worker_get_db_size, args=[address]))
-        for thread in db_size_threads:
-            thread.start()
-        for thread in db_size_threads:
-            thread.join()
+            threads.append(Thread(target=_worker_get_db_size, args=[address]))
+        app_generic_functions.start_and_wait_threads(threads)
 
         while not app_cached_variables.flask_return_data_queue.empty():
             db_size = app_cached_variables.flask_return_data_queue.get()
@@ -522,7 +424,7 @@ def _get_sum_db_sizes(ip_list):
 
 def _worker_get_db_size(address):
     get_http_sensor_reading = app_generic_functions.get_http_sensor_reading
-    get_database_size_command = sensor_network_commands.sensor_sql_database_size
+    get_database_size_command = network_commands.sensor_sql_database_size
     try:
         try_get = True
         get_error_count = 0
@@ -541,88 +443,3 @@ def _worker_get_db_size(address):
     except Exception as error:
         log_msg = "Sensor Control - Unable to retrieve Database Size for " + address + ": " + str(error)
         logger.network_logger.error(log_msg)
-
-
-@html_sensor_control_routes.route("/DownloadSCDatabasesZip")
-def download_sc_databases_zip():
-    logger.network_logger.debug("* Download Zip of Multiple Sensor DBs Accessed by " + str(request.remote_addr))
-    if not app_config_access.creating_databases_zip:
-        if app_cached_variables.sc_databases_zip_name != "":
-            try:
-                if app_cached_variables.sc_databases_zip_in_memory:
-                    zip_file = app_cached_variables.sc_in_memory_zip
-                else:
-                    zip_file = file_locations.html_sensor_control_databases_zip
-
-                zip_filename = app_cached_variables.sc_databases_zip_name
-                app_cached_variables.sc_databases_zip_name = ""
-                app_cached_variables.sc_databases_zip_in_memory = False
-                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
-            except Exception as error:
-                logger.network_logger.error("Send Databases Zip Error: " + str(error))
-                app_cached_variables.sc_databases_zip_name = ""
-                app_cached_variables.sc_databases_zip_in_memory = False
-                return message_and_return("Problem loading Zip", url="/SensorControlManage")
-    else:
-        return message_and_return("Zipped Databases Creation in Progress", url="/SensorControlManage")
-
-
-@html_sensor_control_routes.route("/DownloadSCReportsZip")
-def download_sc_reports_zip():
-    logger.network_logger.debug("* Download SC Reports Zipped Accessed by " + str(request.remote_addr))
-    try:
-        if not app_config_access.creating_the_reports_zip:
-            if app_cached_variables.sc_reports_zip_name != "":
-                zip_file = app_cached_variables.sc_in_memory_zip
-                zip_filename = app_cached_variables.sc_reports_zip_name
-                app_cached_variables.sc_reports_zip_name = ""
-                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
-        else:
-            return message_and_return("Zipped Reports Creation in Progress", url="/SensorControlManage")
-    except Exception as error:
-        logger.network_logger.error("Send Reports Zip Error: " + str(error))
-
-    app_cached_variables.sc_reports_zip_name = ""
-    return message_and_return("Problem loading Zip", url="/SensorControlManage")
-
-
-@html_sensor_control_routes.route("/DownloadSCLogsZip")
-def download_sc_logs_zip():
-    logger.network_logger.debug("* Download SC Logs Zipped Accessed by " + str(request.remote_addr))
-    try:
-        if not app_config_access.creating_logs_zip:
-            if app_cached_variables.sc_logs_zip_name != "":
-                zip_file = app_cached_variables.sc_in_memory_zip
-                zip_filename = app_cached_variables.sc_logs_zip_name
-                app_cached_variables.sc_logs_zip_name = ""
-                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
-        else:
-            return message_and_return("Zipped Multiple Sensors Logs Creation in Progress", url="/SensorControlManage")
-    except Exception as error:
-        logger.network_logger.error("Send SC Logs Zip Error: " + str(error))
-
-    app_cached_variables.sc_logs_zip_name = ""
-    return message_and_return("Problem loading Zip", url="/SensorControlManage")
-
-
-@html_sensor_control_routes.route("/DownloadSCBigZip")
-def download_sc_big_zip():
-    logger.network_logger.debug("* Download 'The Big Zip' Accessed by " + str(request.remote_addr))
-    try:
-        if not app_config_access.creating_the_big_zip:
-            if app_cached_variables.sc_big_zip_name != "":
-                if app_cached_variables.sc_big_zip_in_memory:
-                    zip_file = app_cached_variables.sc_in_memory_zip
-                else:
-                    zip_file = file_locations.html_sensor_control_big_zip
-
-                zip_filename = app_cached_variables.sc_big_zip_name
-                app_cached_variables.sc_big_zip_name = ""
-                app_cached_variables.sc_big_zip_in_memory = False
-                return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
-        else:
-            return message_and_return("Big Zip Creation in Progress", url="/SensorControlManage")
-    except Exception as error:
-        logger.network_logger.error("Send Big Zip Error: " + str(error))
-    app_cached_variables.sc_big_zip_in_memory = False
-    return message_and_return("Problem loading Zip", url="/SensorControlManage")

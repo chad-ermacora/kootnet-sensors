@@ -80,6 +80,13 @@ class CreateMonitoredThread:
                         time.sleep(600)
 
 
+def start_and_wait_threads(threads_list):
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
+
+
 def get_text_running_thread_state(service_enabled, thread_variable):
     if service_enabled:
         return_text = "Stopped"
