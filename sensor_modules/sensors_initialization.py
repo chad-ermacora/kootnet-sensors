@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules import app_cached_variables
+from os import geteuid
 from operations_modules import logger
 from operations_modules import app_config_access
 from operations_modules import software_version
@@ -38,11 +38,10 @@ from sensor_modules import pimoroni_11x7_led_matrix
 from sensor_modules import pimoroni_0_96_spi_colour_lcd
 from sensor_modules import pimoroni_1_12_mono_oled
 
+operating_system_a = linux_os.CreateLinuxSystem()
 
-if software_version.old_version == software_version.version:
+if software_version.old_version == software_version.version and geteuid() == 0:
     # Initialize sensor access, based on installed sensors file
-    if app_cached_variables.current_platform == "Linux":
-        operating_system_a = linux_os.CreateLinuxSystem()
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
@@ -87,4 +86,7 @@ if software_version.old_version == software_version.version:
 else:
     # Skip Sensor Initializations on upgrade
     # They won't be used & program will be restarted when the upgrade is done.
-    pass
+    if geteuid() == 0:
+        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Upgrade in progress")
+    else:
+        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")

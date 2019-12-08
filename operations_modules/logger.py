@@ -125,6 +125,7 @@ def clear_sensor_log():
     log_content.close()
 
 
+check_debug_logging()
 # Initialize 3 Logs, Primary, Network and Sensors
 primary_logger = logging.getLogger("PrimaryLog")
 network_logger = logging.getLogger("NetworkLog")

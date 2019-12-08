@@ -24,10 +24,9 @@ from operations_modules.app_generic_functions import get_file_content, write_fil
 
 class CreateConfig:
     """ Creates object with default sensor configuration settings. """
-
     def __init__(self):
         self.enable_debug_logging = 0
-        self.enable_display = 1
+        self.enable_display = 0
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 300.0
@@ -51,7 +50,6 @@ def get_config_from_file():
         logger.primary_logger.info("Primary Configuration file not found - Saving Default")
         installed_config = CreateConfig()
         write_config_to_file(installed_config)
-
     return installed_config
 
 
@@ -65,7 +63,6 @@ def convert_config_to_str(config):
                       str(config.sleep_duration_interval) + " = Recording Interval in Seconds ** Caution **\n" + \
                       str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n" + \
                       str(config.temperature_offset) + " = Current Temperature Offset"
-
     return config_file_str
 
 
@@ -122,7 +119,6 @@ def convert_config_lines_to_obj(config_lines, skip_write=False):
             message = "Primary Configuration Load Error: Using one or more defaults.  Please review the Configuration."
             logger.primary_logger.warning(message)
             write_config_to_file(new_config)
-
     return new_config
 
 
@@ -133,8 +129,6 @@ def write_config_to_file(config):
         config = convert_config_lines_to_obj(config)
     else:
         new_config = convert_config_to_str(config)
-
     write_file_to_disk(file_locations.main_config, new_config)
-
     # Save Log level with each config file save
     write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))

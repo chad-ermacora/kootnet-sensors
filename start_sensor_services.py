@@ -20,7 +20,9 @@ import os
 from time import sleep
 from operations_modules import app_cached_variables
 from operations_modules import logger
+running_with_root = True
 if os.geteuid() != 0:
+    running_with_root = False
     log_message = "--- Warning - Kootnet Sensors requires Elevated (root) permissions for some sensors"
     logger.primary_logger.warning(log_message)
 try:
@@ -43,21 +45,20 @@ from operations_modules.online_services.luftdaten import start_luftdaten
 from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
 from operations_modules.online_services.open_sense_map import start_open_sense_map
 
+if running_with_root:
+    # Ensure files, database & configurations are OK
+    program_start_checks.set_file_permissions()
+    if software_version.old_version != software_version.version:
+        os.system("systemctl start SensorUpgradeChecks")
+        # Sleep before loading anything due to needed updates
+        # The update service will automatically restart this app when it's done
+        while True:
+            sleep(30)
 
-# Ensure files, database & configurations are OK
-program_start_checks.set_file_permissions()
 program_start_checks.check_database_structure()
-
-if software_version.old_version != software_version.version:
-    os.system("systemctl start SensorUpgradeChecks")
-    # Sleep before loading anything due to needed updates
-    # The update service will automatically restart this app when it's done
-    while True:
-        sleep(30)
-
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 
-if app_config_access.installed_sensors.no_sensors is False:
+if app_config_access.installed_sensors.no_sensors is False and running_with_root:
     # Start up special Sensor Access Service like SenseHat Joystick
     sensor_access.start_special_sensor_interactive_services()
 
@@ -96,6 +97,7 @@ if app_config_access.installed_sensors.no_sensors is False:
     if app_config_access.open_sense_map_config.open_sense_map_enabled:
         text_name = "Open Sense Map"
         app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
+    sensor_access.display_message("KS-Sensors Recording Started")
 else:
     logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
@@ -103,8 +105,6 @@ else:
 program_start_checks.check_ssl_files()
 # Start the HTTP Server for remote access
 thread_function(server_http.https_start_and_watch)
-
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
-sensor_access.display_message("KS-Sensors")
 while True:
     sleep(3600)

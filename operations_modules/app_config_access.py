@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from os import geteuid
 from operations_modules import logger
 from operations_modules import config_sensor_control
 from operations_modules import config_primary
@@ -32,7 +33,7 @@ weather_underground_config = CreateWeatherUndergroundConfig()
 luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
 
-if software_version.old_version != software_version.version:
+if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensors()
     current_config = config_primary.CreateConfig()

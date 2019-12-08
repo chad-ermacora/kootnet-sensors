@@ -127,6 +127,8 @@ def get_db_first_last_date():
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
+    if not os.path.isfile(file_locations.program_last_updated):
+        return "Unknown"
     last_updated_file = get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
