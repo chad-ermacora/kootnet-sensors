@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/http_server/ssl_files/kootnet_default.crt
+/http_server/ssl_files/kootnet_default.csr
+/http_server/ssl_files/kootnet_default.key
