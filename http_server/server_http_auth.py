@@ -40,11 +40,15 @@ def set_http_auth_from_file():
             app_config_access.http_flask_user = auth_file_lines[0].strip()
             app_config_access.http_flask_password = auth_file_lines[1].strip()
         except Exception as error:
-            save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+            save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
+            app_config_access.http_flask_user = default_http_flask_user
+            app_config_access.http_flask_password = generate_password_hash(default_http_flask_password)
     else:
         logger.primary_logger.warning("Configuration file not found, using and saving default")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
+        app_config_access.http_flask_user = default_http_flask_user
+        app_config_access.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
 def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
@@ -58,13 +62,14 @@ def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
 
 
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
-    verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
-    http_flask_user = verified_user
-    http_flask_password = generate_password_hash(verified_password)
-    save_data = http_flask_user + "\n" + http_flask_password
-    auth_file = open(file_locations.http_auth, "w")
-    auth_file.write(save_data)
-    auth_file.close()
+    try:
+        verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
+        save_data = verified_user + "\n" + generate_password_hash(verified_password)
+        auth_file = open(file_locations.http_auth, "w")
+        auth_file.write(save_data)
+        auth_file.close()
+    except Exception as error:
+        logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 
 
 auth = HTTPBasicAuth()
