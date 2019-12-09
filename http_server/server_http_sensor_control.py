@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import time
+from os import geteuid
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
@@ -31,12 +32,7 @@ from operations_modules.config_weather_underground import CreateWeatherUndergrou
 from operations_modules.config_luftdaten import CreateLuftdatenConfig
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
-if software_version.old_version == software_version.version:
-    html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
-                            "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                            "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                            "senor_ip_18", "senor_ip_19", "senor_ip_20"]
-
+if software_version.old_version == software_version.version or geteuid() != 0:
     try:
         html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
         html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
@@ -51,6 +47,11 @@ if software_version.old_version == software_version.version:
         html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
     except Exception as init_error:
         logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
+
+html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
+                            "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
+                            "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
+                            "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
 
 class CreateNetworkGetCommands:
@@ -350,7 +351,6 @@ def get_clean_address_list(http_request):
         while not app_cached_variables.flask_return_data_queue.empty():
             ip_list.append(app_cached_variables.flask_return_data_queue.get())
             app_cached_variables.flask_return_data_queue.task_done()
-
     except Exception as error:
         logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
     return ip_list
