@@ -19,7 +19,9 @@
         }
     </style>
 
-    <h2 style="text-decoration: underline; color: red;"><strong><a style="color: red;" href="/">Database Information - {{ HostName }}</a></strong></h2>
+    <h2 style="text-decoration: underline; color: red;"><strong><a style="color: red;" href="/">
+        Database Information - {{ HostName }}
+    </a></strong></h2>
 
     <div class="mui-container-fluid">
         <div class="mui-row">
@@ -47,5 +49,16 @@
             onclick="window.location.href = '/DownloadSQLDatabase';">
         Download SQL Database
     </button>
+
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/UploadSQLDatabase';" disabled>
+        Upload SQL Database
+    </button>
+
+    <p style="color: red;">
+        The SQLite3 Database holds all recorded information, including sensor readings and notes.
+        <br>
+        Download it for offline access or backup purposes.
+    </p>
 
 {% endblock %}
