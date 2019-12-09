@@ -10,12 +10,13 @@
 
         .mui-col-md-3 {
             background-color: #00ffff;
-            width: 275px;
+            width: 235px;
         }
 
         .mui-col-md-4 {
             background-color: #0BB10D;
-            width: 275px;
+            min-width: 110px;
+            width: auto;
         }
 
         .mui-col-md-8 {
@@ -30,7 +31,7 @@
     </style>
 
     <h2><strong>
-        <a style="text-decoration: underline; color: red" href="/SensorInformation">
+        <a style="text-decoration: underline; color: red;" href="/SensorInformation">
             {{ HostName }} - {{ IPAddress }}
         </a>
     </strong></h2>
@@ -39,7 +40,7 @@
     <div class="mui-container-fluid">
         <div class="mui-row">
             <div class="mui-col-md-3">Operating System</div>
-            <div class="mui-col-md-8">{{ OSVersion }}</div>
+            <div class="mui-col-md-4">{{ OSVersion }}</div>
         </div>
 
         <div class="mui-row">
@@ -49,22 +50,22 @@
 
         <div class="mui-row">
             <div class="mui-col-md-3">Last Updated</div>
-            <div class="mui-col-md-8">{{ LastUpdated }}</div>
+            <div class="mui-col-md-4">{{ LastUpdated }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-3">Sensor Date & Time</div>
-            <div class="mui-col-md-8">{{ DateTime }}</div>
+            <div class="mui-col-md-4">{{ DateTime }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-3">Sensor Uptime</div>
-            <div class="mui-col-md-8">{{ SystemUptime }}</div>
+            <div class="mui-col-md-4">{{ SystemUptime }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-3">Sensor Reboots</div>
-            <div class="mui-col-md-4">{{ SensorReboots }}</div>
+            <div class="mui-col-md-8">{{ SensorReboots }}</div>
         </div>
 
         <div class="mui-row">
@@ -79,7 +80,17 @@
 
         <div class="mui-row">
             <div class="mui-col-md-3">Drive Usage</div>
-            <div class="mui-col-md-4" style="background-color: green">{{ DiskUsage }} %</div>
+            <div class="mui-col-md-8" style="background-color: green;">{{ DiskUsage }} %</div>
+        </div>
+    </div>
+
+    <h2><strong><span style="color: red;">
+        Installed & Enabled Sensors
+    </span></strong></h2>
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-4">{{ InstalledSensors }}</div>
         </div>
     </div>
 
@@ -181,41 +192,6 @@
     </div>
 
     <br>
-
-    <div class="mui-container-fluid">
-        <div class="mui-row">
-            <div class="mui-col-md-3">Installed Sensors</div>
-            <div class="mui-col-md-8">{{ InstalledSensors }}</div>
-        </div>
-    </div>
-
-    <br>
-
-    <h2><strong><span style="color: red">
-        Database Information
-    </span></strong></h2>
-
-    <div class="mui-container-fluid">
-        <div class="mui-row">
-            <div class="mui-col-md-3">Local Location</div>
-            <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Date Range</div>
-            <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Size on Disk</div>
-            <div class="mui-col-md-4">{{ SQLDatabaseSize }} MB</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Number of Notes</div>
-            <div class="mui-col-md-4">{{ NumberNotes }}</div>
-        </div>
-    </div>
 
     <script>
         document.getElementById("trigger-threads").addEventListener("click", function () {

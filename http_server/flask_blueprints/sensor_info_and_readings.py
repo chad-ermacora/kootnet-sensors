@@ -10,6 +10,18 @@ from sensor_modules import sensor_access
 html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes", __name__)
 
 
+@html_sensor_info_readings_routes.route("/")
+@html_sensor_info_readings_routes.route("/index")
+@html_sensor_info_readings_routes.route("/index.html")
+def index():
+    return render_template("index.html",
+                           HostName=app_cached_variables.hostname,
+                           SQLDatabaseLocation=file_locations.sensor_database,
+                           SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
+                           SQLDatabaseSize=sensor_access.get_db_size(),
+                           NumberNotes=sensor_access.get_db_notes_count())
+
+
 @html_sensor_info_readings_routes.route("/About")
 @html_sensor_info_readings_routes.route("/SensorInformation")
 def html_system_information():
@@ -110,11 +122,7 @@ def html_system_information():
                            WeatherUndergroundService=weather_underground,
                            LuftdatenService=luftdaten,
                            OpenSenseMapService=open_sense_map,
-                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
-                           SQLDatabaseLocation=file_locations.sensor_database,
-                           SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-                           SQLDatabaseSize=sensor_access.get_db_size(),
-                           NumberNotes=sensor_access.get_db_notes_count())
+                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")

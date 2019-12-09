@@ -6,13 +6,6 @@ from operations_modules import app_cached_variables
 html_basic_routes = Blueprint("html_basic_routes", __name__)
 
 
-@html_basic_routes.route("/")
-@html_basic_routes.route("/index")
-@html_basic_routes.route("/index.html")
-def index():
-    return render_template("index.html", HostName=app_cached_variables.hostname)
-
-
 @html_basic_routes.route("/Quick")
 @html_basic_routes.route("/SystemCommands")
 def html_system_management():
