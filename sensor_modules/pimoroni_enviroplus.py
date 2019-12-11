@@ -30,7 +30,7 @@ from PIL import ImageFont
 round_decimal_to = 5
 turn_off_display_seconds = 25
 readings_update_threshold_sec = 0.25
-pause_sensor_during_access_sec = 0.15
+pause_sensor_during_access_sec = 0.05
 
 
 class CreateEnviroPlus:

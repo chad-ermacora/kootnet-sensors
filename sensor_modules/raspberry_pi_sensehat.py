@@ -24,7 +24,7 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 
 round_decimal_to = 5
-pause_sensor_during_access_sec = 0.15
+pause_sensor_during_access_sec = 0.05
 
 
 class CreateRPSenseHAT:
