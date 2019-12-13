@@ -32,7 +32,7 @@ class CreateAS7262:
             self.as7262_access = as7262_import.AS7262()
             self.as7262_access.soft_reset()
             self.as7262_access.set_gain(64)
-            self.as7262_access.set_integration_time(21)
+            self.as7262_access.set_integration_time(17.857)
             self.as7262_access.set_measurement_mode(2)
             self.as7262_access.set_illumination_led(0)
             logger.sensors_logger.debug("Pimoroni AS7262 Initialization - OK")
