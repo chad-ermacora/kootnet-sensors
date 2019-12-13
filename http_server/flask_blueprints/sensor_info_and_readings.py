@@ -138,28 +138,28 @@ def html_sensors_readings():
     except Exception as error:
         logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
     red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
-
     return render_template("sensor_readings.html",
+                           URLRedirect="SensorReadings",
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),
-                           CPUTemperature=sensor_access.get_cpu_temperature(),
-                           RAWEnvTemperature=raw_temp,
-                           AdjustedEnvTemperature=adjusted_temp,
-                           EnvTemperatureOffset=temp_offset,
-                           Pressure=sensor_access.get_pressure(),
-                           Altitude=sensor_access.get_altitude(),
-                           Humidity=sensor_access.get_humidity(),
-                           Distance=sensor_access.get_distance(),
-                           GasResistanceIndex=sensor_access.get_gas_resistance_index(),
-                           GasOxidising=sensor_access.get_gas_oxidised(),
-                           GasReducing=sensor_access.get_gas_reduced(),
-                           GasNH3=sensor_access.get_gas_nh3(),
-                           PM1=sensor_access.get_particulate_matter_1(),
-                           PM25=sensor_access.get_particulate_matter_2_5(),
-                           PM10=sensor_access.get_particulate_matter_10(),
-                           Lumen=sensor_access.get_lumen(),
+                           CPUTemperature=str(sensor_access.get_cpu_temperature()) + "°C",
+                           RAWEnvTemperature=str(raw_temp) + "°C",
+                           AdjustedEnvTemperature=str(adjusted_temp) + "°C",
+                           EnvTemperatureOffset=str(temp_offset) + "°C",
+                           Pressure=str(sensor_access.get_pressure()) + "hPa",
+                           Altitude=str(sensor_access.get_altitude()) + "Meters",
+                           Humidity=str(sensor_access.get_humidity()) + "%RH",
+                           Distance=str(sensor_access.get_distance()) + "?",
+                           GasResistanceIndex=str(sensor_access.get_gas_resistance_index()) + "kΩ",
+                           GasOxidising=str(sensor_access.get_gas_oxidised()) + "kΩ",
+                           GasReducing=str(sensor_access.get_gas_reduced()) + "kΩ",
+                           GasNH3=str(sensor_access.get_gas_nh3()) + "kΩ",
+                           PM1=str(sensor_access.get_particulate_matter_1()) + "µg/m³",
+                           PM25=str(sensor_access.get_particulate_matter_2_5()) + "µg/m³",
+                           PM10=str(sensor_access.get_particulate_matter_10()) + "µg/m³",
+                           Lumen=str(sensor_access.get_lumen()) + "lm",
                            Red=red,
                            Orange=orange,
                            Yellow=yellow,
@@ -168,9 +168,9 @@ def html_sensors_readings():
                            Violet=violet,
                            UVA=sensor_access.get_ultra_violet_a(),
                            UVB=sensor_access.get_ultra_violet_b(),
-                           Acc=sensor_access.get_accelerometer_xyz(),
-                           Mag=sensor_access.get_magnetometer_xyz(),
-                           Gyro=sensor_access.get_gyroscope_xyz())
+                           Acc=str(sensor_access.get_accelerometer_xyz()) + "g",
+                           Mag=str(sensor_access.get_magnetometer_xyz()) + "μT",
+                           Gyro=str(sensor_access.get_gyroscope_xyz()) + "°/s")
 
 
 def _get_ems_for_render_template():
@@ -198,3 +198,42 @@ def _get_ems_for_render_template():
             blue = ems[2]
             violet = app_cached_variables.no_sensor_present
     return [red, orange, yellow, green, blue, violet]
+
+
+@html_sensor_info_readings_routes.route("/TestSensorLatency")
+def html_sensors_latency():
+    logger.network_logger.debug("** Sensor Latency accessed from " + str(request.remote_addr))
+    sensors_latency = sensor_access.get_sensors_latency()
+    return render_template("sensor_readings.html",
+                           URLRedirect="TestSensorLatency",
+                           HostName="Sensor Latency",
+                           IPAddress=app_cached_variables.ip,
+                           DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
+                           SystemUptime=sensor_access.get_uptime_str(),
+                           CPUTemperature=str(sensors_latency[0]) + " Seconds",
+                           RAWEnvTemperature=str(sensors_latency[1]) + " Seconds",
+                           AdjustedEnvTemperature="",
+                           EnvTemperatureOffset="",
+                           Pressure=str(sensors_latency[2]) + " Seconds",
+                           Altitude=str(sensors_latency[3]) + " Seconds",
+                           Humidity=str(sensors_latency[4]) + " Seconds",
+                           Distance=str(sensors_latency[5]) + " Seconds",
+                           GasResistanceIndex=str(sensors_latency[6]) + " Seconds",
+                           GasOxidising=str(sensors_latency[7]) + " Seconds",
+                           GasReducing=str(sensors_latency[8]) + " Seconds",
+                           GasNH3=str(sensors_latency[9]) + " Seconds",
+                           PM1=str(sensors_latency[10]) + " Seconds",
+                           PM25=str(sensors_latency[11]) + " Seconds",
+                           PM10=str(sensors_latency[12]) + " Seconds",
+                           Lumen=str(sensors_latency[13]) + " Seconds",
+                           Red="All Colours: " + str(sensors_latency[14]) + " Seconds",
+                           Orange="",
+                           Yellow="",
+                           Green="",
+                           Blue="",
+                           Violet="",
+                           UVA=str(sensors_latency[16]) + " Seconds",
+                           UVB=str(sensors_latency[17]) + " Seconds",
+                           Acc=str(sensors_latency[18]) + " Seconds",
+                           Mag=str(sensors_latency[19]) + " Seconds",
+                           Gyro=str(sensors_latency[20]) + " Seconds")

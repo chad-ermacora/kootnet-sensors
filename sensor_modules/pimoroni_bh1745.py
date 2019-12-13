@@ -25,7 +25,7 @@ from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
-pause_sensor_during_access_sec = 0.05
+pause_sensor_during_access_sec = 0.02
 
 
 class CreateBH1745:

@@ -30,7 +30,9 @@ from PIL import ImageFont
 round_decimal_to = 5
 turn_off_display_seconds = 25
 readings_update_threshold_sec = 0.25
-pause_sensor_during_access_sec = 0.05
+pause_sensor_during_access_sec = 0.02
+pause_sensor_during_access_sec_gas = 0.095
+pause_sensor_during_access_sec_pm = 0.002
 
 
 class CreateEnviroPlus:
@@ -223,7 +225,7 @@ class CreateEnviroPlus:
     def gas_data(self):
         """ Returns 3 gas readings Oxidised, Reduced and nh3 as a list. """
         while self.sensor_in_use:
-            time.sleep(pause_sensor_during_access_sec)
+            time.sleep(pause_sensor_during_access_sec_gas)
         self.sensor_in_use = True
         try:
             enviro_plus_gas_data = self.gas_access.read_all()
@@ -247,7 +249,7 @@ class CreateEnviroPlus:
             update_readings = True
             while self.sensor_in_use:
                 update_readings = False
-                time.sleep(pause_sensor_during_access_sec)
+                time.sleep(pause_sensor_during_access_sec_pm)
             if update_readings:
                 self.sensor_in_use = True
                 try:

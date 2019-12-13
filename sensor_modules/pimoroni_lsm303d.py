@@ -23,7 +23,7 @@ from operations_modules import app_config_access
 
 lsm303d_address = 0x1d
 round_decimal_to = 5
-pause_sensor_during_access_sec = 0.05
+pause_sensor_during_access_sec = 0.007
 
 
 class CreateLSM303D:

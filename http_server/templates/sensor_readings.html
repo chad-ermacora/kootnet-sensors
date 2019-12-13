@@ -28,7 +28,7 @@
     </style>
 
     <h2><strong><span style="text-decoration: underline;">
-    <a href='/SensorReadings' style='color: red'>{{ HostName }} - {{ IPAddress }}</a>
+    <a href='/{{ URLRedirect }}' style='color: red'>{{ HostName }} - {{ IPAddress }}</a>
 </span></strong></h2>
 
     <h3><strong>
@@ -44,7 +44,7 @@
                    target="_blank">System Temperature
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ CPUTemperature }} °C</div>
+            <div class="mui-col-md-6">{{ CPUTemperature }}</div>
         </div>
 
         <div class="mui-row">
@@ -53,17 +53,17 @@
                    target="_blank">RAW Env Temperature
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ RAWEnvTemperature }} °C</div>
+            <div class="mui-col-md-6">{{ RAWEnvTemperature }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-4">Adjusted Env Temperature</div>
-            <div class="mui-col-md-6">{{ AdjustedEnvTemperature }} °C</div>
+            <div class="mui-col-md-6">{{ AdjustedEnvTemperature }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-4">Env Temp Offset</div>
-            <div class="mui-col-md-6">{{ EnvTemperatureOffset }} °C</div>
+            <div class="mui-col-md-6">{{ EnvTemperatureOffset }}</div>
         </div>
 
         <div class="mui-row">
@@ -72,7 +72,7 @@
                    target="_blank">Pressure
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ Pressure }} hPa</div>
+            <div class="mui-col-md-6">{{ Pressure }}</div>
         </div>
 
         <div class="mui-row">
@@ -81,7 +81,7 @@
                    target="_blank">Altitude
                 </a>
             </div>
-            <div class="mui-col-md-6" style="">{{ Altitude }} Meters</div>
+            <div class="mui-col-md-6" style="">{{ Altitude }}</div>
         </div>
 
         <div class="mui-row">
@@ -90,7 +90,7 @@
                    target="_blank">Humidity
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ Humidity }} %RH</div>
+            <div class="mui-col-md-6">{{ Humidity }}</div>
         </div>
 
         <div class="mui-row">
@@ -99,12 +99,12 @@
                    target="_blank">Distance
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ Distance }} ?</div>
+            <div class="mui-col-md-6">{{ Distance }}</div>
         </div>
 
         <div class="mui-row">
             <div class="mui-col-md-4">Gas Resistance</div>
-            <div class="mui-col-md-6">{{ GasResistanceIndex }} kΩ</div>
+            <div class="mui-col-md-6">{{ GasResistanceIndex }}</div>
         </div>
 
         <div class="mui-row">
@@ -113,7 +113,7 @@
                    target="_blank">Nitrogen Dioxide - Oxidising
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ GasOxidising }} kΩ</div>
+            <div class="mui-col-md-6">{{ GasOxidising }}</div>
         </div>
 
         <div class="mui-row">
@@ -122,7 +122,7 @@
                    target="_blank">Carbon Monoxide - Reducing
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ GasReducing }} kΩ</div>
+            <div class="mui-col-md-6">{{ GasReducing }}</div>
         </div>
 
         <div class="mui-row">
@@ -131,7 +131,7 @@
                    target="_blank">Ammonia - NH3
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ GasNH3 }} kΩ</div>
+            <div class="mui-col-md-6">{{ GasNH3 }}</div>
         </div>
 
         <div class="mui-row">
@@ -140,7 +140,7 @@
                    target="_blank">Particulate Matter 1.0
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ PM1 }} µg/m³</div>
+            <div class="mui-col-md-6">{{ PM1 }}</div>
         </div>
 
         <div class="mui-row">
@@ -149,7 +149,7 @@
                    target="_blank">Particulate Matter 2.5
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ PM25 }} µg/m³</div>
+            <div class="mui-col-md-6">{{ PM25 }}</div>
         </div>
 
         <div class="mui-row">
@@ -158,7 +158,7 @@
                    target="_blank">Particulate Matter 10
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ PM10 }} µg/m³</div>
+            <div class="mui-col-md-6">{{ PM10 }}</div>
         </div>
 
         <div class="mui-row">
@@ -167,7 +167,7 @@
                    target="_blank">Lumen
                 </a>
             </div>
-            <div class="mui-col-md-6">{{ Lumen }} lm</div>
+            <div class="mui-col-md-6">{{ Lumen }}</div>
         </div>
 
         <div class="mui-row">
@@ -248,7 +248,7 @@
                    target="_blank">Accelerometer XYZ
                 </a>
             </div>
-            <div class="mui-col-md-6" style="min-width: 300px;">{{ Acc }} g</div>
+            <div class="mui-col-md-6" style="min-width: 300px;">{{ Acc }}</div>
         </div>
 
         <div class="mui-row">
@@ -257,7 +257,7 @@
                    target="_blank">Magnetometer XYZ
                 </a>
             </div>
-            <div class="mui-col-md-6" style="min-width: 300px;">{{ Mag }} μT</div>
+            <div class="mui-col-md-6" style="min-width: 300px;">{{ Mag }}</div>
         </div>
 
         <div class="mui-row">
@@ -266,7 +266,7 @@
                    target="_blank">Gyroscope XYZ
                 </a>
             </div>
-            <div class="mui-col-md-6" style="min-width: 300px;">{{ Gyro }} °/s</div>
+            <div class="mui-col-md-6" style="min-width: 300px;">{{ Gyro }}</div>
         </div>
     </div>
 

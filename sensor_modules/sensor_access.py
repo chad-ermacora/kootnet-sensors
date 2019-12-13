@@ -18,7 +18,7 @@
 """
 import os
 import math
-from time import sleep
+import time
 from datetime import datetime
 from threading import Thread
 from operations_modules import logger
@@ -136,6 +136,37 @@ def get_last_updated():
     except Exception as error:
         logger.sensors_logger.warning("Invalid Kootnet Sensor's Last Updated File: " + str(error))
     return last_updated.strip()
+
+
+def get_sensors_latency():
+    """ Returns sensors latency in seconds as a dictionary. """
+    sensor_function_list = [get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
+                            get_distance, get_gas_resistance_index, get_gas_oxidised, get_gas_reduced, get_gas_nh3,
+                            get_particulate_matter_1, get_particulate_matter_2_5, get_particulate_matter_10,
+                            get_lumen, get_ems, get_ultra_violet_index, get_ultra_violet_a, get_ultra_violet_b,
+                            get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+
+    sensor_latency_list = []
+    for sensor_function in sensor_function_list:
+        thing = _get_sensor_latency(sensor_function)
+        if thing is None:
+            sensor_latency_list.append(None)
+        else:
+            sensor_latency_list.append(round(thing, 6))
+    return sensor_latency_list
+
+
+def _get_sensor_latency(sensor_function):
+    try:
+        start_time = time.time()
+        sensor_reading = sensor_function()
+        end_time = time.time()
+        if sensor_reading == no_sensor_present:
+            return None
+        return float(end_time - start_time)
+    except Exception as error:
+        logger.sensors_logger.warning("Problem getting sensor latency: " + str(error))
+        return 0.0
 
 
 def get_cpu_temperature():
@@ -439,7 +470,7 @@ def start_special_sensor_interactive_services():
 
 def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
-    sleep(sleep_before_restart)
+    time.sleep(sleep_before_restart)
     os.system(os_cli_commands.restart_sensor_services_command)
 
 

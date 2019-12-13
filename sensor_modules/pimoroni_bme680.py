@@ -21,7 +21,7 @@ from operations_modules import app_config_access
 
 round_decimal_to = 5
 readings_update_threshold_sec = 0.25
-pause_sensor_during_access_sec = 0.05
+pause_sensor_during_access_sec = 0.007
 gas_keep_alive_update_sec = 1
 
 
