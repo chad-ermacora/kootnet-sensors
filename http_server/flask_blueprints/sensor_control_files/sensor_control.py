@@ -172,6 +172,48 @@ def download_sc_big_zip():
     return message_and_return("Problem loading Zip", url="/SensorControlManage")
 
 
+@html_sensor_control_routes.route("/SensorControlEditConfigMain", methods=["POST"])
+def sc_edit_config_primary():
+    logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
+    ip_list = get_clean_address_list(request)
+    if len(ip_list) > 0:
+        pass
+    msg2 = "Primary configuration sent to sensors"
+    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+
+
+@html_sensor_control_routes.route("/SensorControlEditInstalledSensors", methods=["POST"])
+def sc_edit_config_installed_sensors():
+    msg = "* Sensor Control Set 'Installed Sensors Config' Accessed by "
+    logger.network_logger.debug(msg + str(request.remote_addr))
+    ip_list = get_clean_address_list(request)
+    if len(ip_list) > 0:
+        pass
+    msg2 = "Installed Sensors configuration sent to sensors"
+    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+
+
+@html_sensor_control_routes.route("/SensorControlEditConfigWifi", methods=["POST"])
+def sc_edit_config_wifi():
+    logger.network_logger.debug("* Sensor Control Set 'Wifi Config' Accessed by " + str(request.remote_addr))
+    ip_list = get_clean_address_list(request)
+    if len(ip_list) > 0:
+        pass
+    msg2 = "Wireless configuration sent to sensors"
+    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+
+
+@html_sensor_control_routes.route("/SensorControlEditTriggerVariances", methods=["POST"])
+def sc_edit_config_triggers():
+    msg = "* Sensor Control Set 'Trigger Variances Config' Accessed by "
+    logger.network_logger.debug(msg + str(request.remote_addr))
+    ip_list = get_clean_address_list(request)
+    if len(ip_list) > 0:
+        pass
+    msg2 = "Trigger configuration sent to sensors"
+    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+
+
 @html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
 def sc_active_online_services():
     logger.network_logger.debug("* Sensor Control 'Active Online Services' Accessed by " + str(request.remote_addr))
@@ -185,7 +227,7 @@ def sc_active_online_services():
             c_data = {"service": request.form.get("online_service_selected_action"), "service_state": service_state}
             sensor_http_command_instance = CreateSensorHTTPCommand(ip, "SetActiveOnlineServices", command_data=c_data)
             sensor_http_command_instance.send_http_online_service_set()
-    msg2 = "Online Service command sent"
+    msg2 = "Online Service setting sent to sensors"
     return message_and_return("Sensor Control - Online Service", url="/SensorControlManage", text_message2=msg2)
 
 

@@ -431,7 +431,8 @@ def sensor_control_management():
                            SensorIP17=app_config_access.sensor_control_config.sensor_ip_dns17,
                            SensorIP18=app_config_access.sensor_control_config.sensor_ip_dns18,
                            SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
-                           SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20)
+                           SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
+                           SensorControlEditConfig=render_template("sensor_control_edit_configs.html"))
 
 
 def get_sum_db_sizes(ip_list):

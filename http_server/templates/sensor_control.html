@@ -16,6 +16,14 @@
             display: none;
             overflow: hidden;
         }
+
+        .mui-form {
+            background-color: #00B0FF;
+        }
+
+        .mui-col-md-4 {
+            width: 275px;
+        }
     </style>
 
     <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red;">
@@ -29,7 +37,8 @@
         _<b id="blink_shadow">{{ ExtraTextMessage|safe }}</b>_
     </fieldset>
 
-    <form class="mui-form" method="POST" style="max-width: 600px;" action="/SensorControlManage">
+    <form class="mui-form" method="POST" style="max-width: 600px; background-color: black;"
+          action="/SensorControlManage">
         <fieldset style="text-align: center;">
             <button type="button" id="ip_show_hide"
                     class="mui-btn mui-btn--raised">
@@ -61,7 +70,8 @@
                                 <label>
                                     IP or DNS Address
                                 </label>
-                                <input type="text" name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
+                                <input type="text" name="senor_ip_1" placeholder="eg. 192.168.10.11"
+                                       value="{{ SensorIP1 }}">
                                 <input type="text" name="senor_ip_3" value="{{ SensorIP3 }}">
                                 <input type="text" name="senor_ip_5" value="{{ SensorIP5 }}">
                                 <input type="text" name="senor_ip_7" value="{{ SensorIP7 }}">
@@ -78,7 +88,8 @@
                                 <label>
                                     IP or DNS Address
                                 </label>
-                                <input type="text" name="senor_ip_2" placeholder="eg. 192.168.10.12" value="{{ SensorIP2 }}">
+                                <input type="text" name="senor_ip_2" placeholder="eg. 192.168.10.12"
+                                       value="{{ SensorIP2 }}">
                                 <input type="text" name="senor_ip_4" value="{{ SensorIP4 }}">
                                 <input type="text" name="senor_ip_6" value="{{ SensorIP6 }}">
                                 <input type="text" name="senor_ip_8" value="{{ SensorIP8 }}">
@@ -157,7 +168,7 @@
                         <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedComboReports }}
                                    id="RadioComboReports" value="combo_report">
-                            3x Reports Combo
+                            3x Combination Report
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
@@ -185,7 +196,7 @@
                             <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
                                    id="RadioDownloadReports"
                                    value="sensors_download_reports" {{ DisabledDownloadReports }}>
-                            Zip of all 3 Reports
+                            Zip of Combination Report
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: small">
@@ -227,54 +238,9 @@
             </fieldset>
         </div>
 
-        <div class="mui-tabs__pane" id="edit-config-tab">
-            <br>
-            <ul class="mui-tabs__bar">
-                <li class="mui--is-active">
-                    <a style="color: red; background-color: #212121;"
-                       data-mui-toggle="tab" data-mui-controls="primary-config-tab">
-                        Main
-                    </a>
-                </li>
-                <li>
-                    <a style="color: red; background-color: #212121;"
-                       data-mui-toggle="tab" data-mui-controls="installed-sensors-tab">
-                        Installed Sensors
-                    </a>
-                </li>
-                <li>
-                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                       data-mui-controls="wifi-config-tab">
-                        WiFi
-                    </a>
-                </li>
-                <li>
-                    <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                       data-mui-controls="trigger-variances-tab">
-                        Trigger Variances
-                    </a>
-                </li>
-            </ul>
-            <br>
-            <div class="mui-container-fluid">
-                <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
-                    <p style="color: red;">Work In Progress</p>
-                </div>
-                <div class="mui-tabs__pane" id="installed-sensors-tab">
-                    <p style="color: red;">Work In Progress</p>
-                </div>
-                <div class="mui-tabs__pane" id="wifi-config-tab">
-                    <p style="color: red;">Work In Progress</p>
-                </div>
-                <div class="mui-tabs__pane" id="trigger-variances-tab">
-                    <p style="color: red;">Work In Progress</p>
-                </div>
-            </div>
-        </div>
-
         <div class="mui-tabs__pane" id="online-services-tab">
             <br>
-            <fieldset style="text-align: center">
+            <fieldset style="text-align: center;">
                 <div class="mui-container-fluid" style="background-color: #00B0FF;">
                     <button type="submit"
                             class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
@@ -288,7 +254,7 @@
                     <div class="mui-radio">
                         <label class="container_radio" style="font-size: small;">
                             <input type="radio" name="online_service_selected_action" value="weather_underground"
-                            checked>
+                                   checked>
                             Weather Underground
                             <span class="checkmark_radio"></span>
                         </label>
@@ -322,6 +288,10 @@
                     <br>
                 </div>
             </fieldset>
+        </div>
+
+        <div class="mui-tabs__pane" id="edit-config-tab">
+            {{ SensorControlEditConfig|safe }}
         </div>
     </form>
 
@@ -428,6 +398,16 @@
         function refresh_page_timed() {
             window.location = "/SensorControlManage";
         }
+    </script>
+
+    <script>
+        jQuery('#enable_interval_recording').change(function () {
+            document.getElementsByName("interval_delay_seconds")[0].disabled = !jQuery(this).prop('checked');
+        });
+
+        jQuery('#enable_custom_temp_offset').change(function () {
+            document.getElementsByName("custom_temperature_offset")[0].disabled = !jQuery(this).prop('checked');
+        });
     </script>
 
 {% endblock %}
