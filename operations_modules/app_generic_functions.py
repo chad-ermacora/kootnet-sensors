@@ -258,8 +258,12 @@ def clear_zip_names():
 
 
 def save_to_memory_ok(write_size):
-    if psutil.virtual_memory().available > ((write_size * 1_000_000) + 25_000_000):
-        return True
+    try:
+        # Numbers 1,000,000 / 25,000,000
+        if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
+            return True
+    except Exception as error:
+        logger.primary_logger.warning("Error checking virtual memory: " + str(error))
     return False
 
 
