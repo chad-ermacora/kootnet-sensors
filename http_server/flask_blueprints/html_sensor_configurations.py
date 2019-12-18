@@ -177,47 +177,15 @@ def html_set_config_main():
     logger.network_logger.debug("** HTML Apply - Main Configuration - Source: " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            check_html_config_main(request)
+            new_config = app_config_access.config_primary.html_request_to_config_main(request)
+            app_config_access.current_config = new_config
+            app_config_access.config_primary.write_config_to_file(new_config)
+            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
-            return message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-
+            return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
-
-
-def check_html_config_main(html_request):
-    logger.network_logger.debug("Starting HTML Main Configuration Update Check")
-    if html_request.form.get("debug_logging") is not None:
-        app_config_access.current_config.enable_debug_logging = 1
-    else:
-        app_config_access.current_config.enable_debug_logging = 0
-
-    if html_request.form.get("enable_display") is not None:
-        app_config_access.current_config.enable_display = 1
-    else:
-        app_config_access.current_config.enable_display = 0
-
-    if html_request.form.get("enable_interval_recording") is not None:
-        app_config_access.current_config.enable_interval_recording = 1
-    else:
-        app_config_access.current_config.enable_interval_recording = 0
-    if html_request.form.get("interval_delay_seconds") is not None:
-        new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
-        app_config_access.current_config.sleep_duration_interval = new_sleep_duration
-
-    if html_request.form.get("enable_trigger_recording") is not None:
-        app_config_access.current_config.enable_trigger_recording = 1
-    else:
-        app_config_access.current_config.enable_trigger_recording = 0
-
-    if html_request.form.get("enable_custom_temp_offset") is not None:
-        new_temp = float(html_request.form.get("custom_temperature_offset"))
-        app_config_access.current_config.enable_custom_temp = 1
-        app_config_access.current_config.temperature_offset = new_temp
-    else:
-        app_config_access.current_config.enable_custom_temp = 0
-    app_config_access.config_primary.write_config_to_file(app_config_access.current_config)
 
 
 @html_sensor_config_routes.route("/EditInstalledSensors", methods=["POST"])
@@ -226,77 +194,16 @@ def html_set_installed_sensors():
     logger.network_logger.debug("** HTML Apply - Installed Sensors - Source " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            check_html_installed_sensors(request)
+            r_t_is = app_config_access.config_installed_sensors.html_request_to_installed_sensors_config
+            new_installed_sensors = r_t_is(request)
+            installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
+            app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
+            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
-            return message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
+            return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
             return message_and_return("Bad Installed Sensors POST Request", url="/ConfigurationsHTML")
-
-
-def check_html_installed_sensors(html_request):
-    logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
-    new_installed_sensors = app_config_access.config_installed_sensors.CreateInstalledSensors()
-
-    try:
-        if html_request.form.get("linux_system") is not None:
-            new_installed_sensors.linux_system = 1
-
-        if html_request.form.get("raspberry_pi") is not None:
-            new_installed_sensors.raspberry_pi = 1
-
-        if html_request.form.get("raspberry_pi_sense_hat") is not None:
-            new_installed_sensors.raspberry_pi_sense_hat = 1
-
-        if html_request.form.get("pimoroni_bh1745") is not None:
-            new_installed_sensors.pimoroni_bh1745 = 1
-
-        if html_request.form.get("pimoroni_as7262") is not None:
-            new_installed_sensors.pimoroni_as7262 = 1
-
-        if html_request.form.get("pimoroni_bmp280") is not None:
-            new_installed_sensors.pimoroni_bmp280 = 1
-
-        if html_request.form.get("pimoroni_bme680") is not None:
-            new_installed_sensors.pimoroni_bme680 = 1
-
-        if html_request.form.get("pimoroni_enviro") is not None:
-            new_installed_sensors.pimoroni_enviro = 1
-
-        if html_request.form.get("pimoroni_enviroplus") is not None:
-            new_installed_sensors.pimoroni_enviroplus = 1
-
-        if html_request.form.get("pimoroni_pms5003") is not None:
-            new_installed_sensors.pimoroni_pms5003 = 1
-
-        if html_request.form.get("pimoroni_lsm303d") is not None:
-            new_installed_sensors.pimoroni_lsm303d = 1
-
-        if html_request.form.get("pimoroni_icm20948") is not None:
-            new_installed_sensors.pimoroni_icm20948 = 1
-
-        if html_request.form.get("pimoroni_vl53l1x") is not None:
-            new_installed_sensors.pimoroni_vl53l1x = 1
-
-        if html_request.form.get("pimoroni_ltr_559") is not None:
-            new_installed_sensors.pimoroni_ltr_559 = 1
-
-        if html_request.form.get("pimoroni_veml6075") is not None:
-            new_installed_sensors.pimoroni_veml6075 = 1
-
-        if html_request.form.get("pimoroni_matrix_11x7") is not None:
-            new_installed_sensors.pimoroni_matrix_11x7 = 1
-
-        if html_request.form.get("pimoroni_st7735") is not None:
-            new_installed_sensors.pimoroni_st7735 = 1
-
-        if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-            new_installed_sensors.pimoroni_mono_oled_luma = 1
-    except Exception as error:
-        logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-
-    installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
-    app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
 
 
 @html_sensor_config_routes.route("/EditTriggerVariances", methods=["POST"])
@@ -582,54 +489,21 @@ def html_set_wifi_config():
         else:
             message = "Do not use double quotes in the Wireless Key Sections."
             return message_and_return("Invalid Wireless Key", text_message2=message, url="/ConfigurationsHTML")
-
         if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
-            new_wireless_config = check_html_config_wifi(request)
+            new_wireless_config = network_wifi.html_request_to_config_wifi(request)
             if new_wireless_config is not "":
+                network_wifi.write_wifi_config_to_file(new_wireless_config)
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
                 return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
         else:
+            logger.network_logger.debug("HTML WiFi Configuration Update Failed")
             title_message = "Unable to Process Wireless Configuration"
             message = "Network Names cannot be blank and can only use " + \
                              "Alphanumeric Characters, dashes, underscores and spaces."
             return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
     return message_and_return("Unable to Process WiFi Configuration", url="/ConfigurationsHTML")
-
-
-def check_html_config_wifi(html_request):
-    logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
-    if html_request.form.get("ssid1") is not None:
-        wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
-
-        wifi_country_code = "CA"
-        if len(html_request.form.get("country_code")) == 2:
-            wifi_country_code = html_request.form.get("country_code").upper()
-
-        wifi_ssid1 = html_request.form.get("ssid1")
-        wifi_security_type1 = html_request.form.get("wifi_security1")
-        wifi_psk1 = html_request.form.get("wifi_key1")
-
-        if wifi_security_type1 == "wireless_wpa":
-            wifi_security_type1 = ""
-            if wifi_psk1 is not "":
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
-            else:
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", app_cached_variables.wifi_psk)
-        else:
-            wifi_security_type1 = "key_mgmt=None"
-            wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
-
-        wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)
-        wifi_template = wifi_template.replace("{{ WirelessSSID1 }}", wifi_ssid1)
-        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
-
-        network_wifi.write_wifi_config_to_file(wifi_template)
-        return wifi_template
-    else:
-        logger.network_logger.warning("HTML WiFi Configuration Update Failed: Missing SSID")
-        return ""
 
 
 @html_sensor_config_routes.route("/HTMLRawConfigurations")

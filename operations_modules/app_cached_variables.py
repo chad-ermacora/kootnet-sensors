@@ -87,7 +87,7 @@ wifi_ssid = ""
 wifi_security_type = ""
 wifi_psk = ""
 
-# Login to remote sensors (Used primarily in Sensor Control
+# Login to remote sensors (Used primarily in Sensor Control)
 http_login = ""
 http_password = ""
 

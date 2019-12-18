@@ -4,14 +4,13 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
+from operations_modules import network_wifi
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
-from http_server.server_http_sensor_control import get_clean_address_list
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
-    check_sensor_status_sensor_control, \
-    create_all_databases_zipped, create_multiple_sensor_logs_zipped, put_all_reports_zipped_to_cache, \
-    downloads_sensor_control, get_html_reports_combo, sensor_control_management, get_sum_db_sizes, \
-    CreateSensorHTTPCommand
+    check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
+    put_all_reports_zipped_to_cache, downloads_sensor_control, get_html_reports_combo, sensor_control_management, \
+    get_sum_db_sizes, CreateSensorHTTPCommand
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
 
@@ -23,7 +22,7 @@ def html_sensor_control_management():
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
         app_config_access.sensor_control_config.set_from_html_post(request)
-        ip_list = get_clean_address_list(request)
+        ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
 
         if len(ip_list) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
@@ -82,6 +81,7 @@ def html_sensor_control_save_settings():
     try:
         app_config_access.sensor_control_config.set_from_html_post(request)
         app_config_access.sensor_control_config.write_current_config_to_file()
+        print(str(app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()))
     except Exception as error:
         logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
     return sensor_control_management()
@@ -175,9 +175,14 @@ def download_sc_big_zip():
 @html_sensor_control_routes.route("/SensorControlEditConfigMain", methods=["POST"])
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
-    ip_list = get_clean_address_list(request)
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        pass
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
+        new_config = app_config_access.config_primary.html_request_to_config_main(request)
+        send_config = app_config_access.config_primary.convert_config_to_str(new_config)
+        for ip in ip_list:
+            app_generic_functions.send_http_command(ip, "SetConfiguration", included_data=send_config)
     msg2 = "Primary configuration sent to sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -186,9 +191,14 @@ def sc_edit_config_primary():
 def sc_edit_config_installed_sensors():
     msg = "* Sensor Control Set 'Installed Sensors Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
-    ip_list = get_clean_address_list(request)
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        pass
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
+        new_sensors = app_config_access.config_installed_sensors.html_request_to_installed_sensors_config(request)
+        installed_sensors_text = new_sensors.get_installed_sensors_config_as_str()
+        for ip in ip_list:
+            app_generic_functions.send_http_command(ip, "SetInstalledSensors", included_data=installed_sensors_text)
     msg2 = "Installed Sensors configuration sent to sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -196,18 +206,33 @@ def sc_edit_config_installed_sensors():
 @html_sensor_control_routes.route("/SensorControlEditConfigWifi", methods=["POST"])
 def sc_edit_config_wifi():
     logger.network_logger.debug("* Sensor Control Set 'Wifi Config' Accessed by " + str(request.remote_addr))
-    ip_list = get_clean_address_list(request)
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        pass
-    msg2 = "Wireless configuration sent to sensors"
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
+        new_wifi = network_wifi.html_request_to_config_wifi(request)
+        for ip in ip_list:
+            app_generic_functions.send_http_command(ip, "SetWifiConfiguration", included_data=new_wifi)
+    msg2 = "Wireless configuration sent to sensors.  You must reboot the sensors for it to take effect."
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+
+
+def _invalid_login_credentials():
+    if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
+        return True
+    return False
+
+
+def _get_invalid_login_page():
+    msg2 = "You must enter the Sensor Login Credentials to update Configurations"
+    return message_and_return("Warning: Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
 @html_sensor_control_routes.route("/SensorControlEditTriggerVariances", methods=["POST"])
 def sc_edit_config_triggers():
     msg = "* Sensor Control Set 'Trigger Variances Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
-    ip_list = get_clean_address_list(request)
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
         pass
     msg2 = "Trigger configuration sent to sensors"
@@ -217,7 +242,7 @@ def sc_edit_config_triggers():
 @html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
 def sc_active_online_services():
     logger.network_logger.debug("* Sensor Control 'Active Online Services' Accessed by " + str(request.remote_addr))
-    ip_list = get_clean_address_list(request)
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
         service_state = 0
         if request.form.get("enable_online_service") is not None:

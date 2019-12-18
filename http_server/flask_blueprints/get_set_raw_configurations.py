@@ -23,7 +23,7 @@ def get_primary_configuration():
 @auth.login_required
 def set_configuration():
     logger.network_logger.info("** Primary Sensor Configuration Set by " + str(request.remote_addr))
-    raw_config = request.form['command_data'].splitlines()
+    raw_config = request.form["command_data"].splitlines()
     new_config = config_primary.convert_config_lines_to_obj(raw_config)
     config_primary.write_config_to_file(new_config)
     app_generic_functions.thread_function(sensor_access.restart_services)
@@ -40,7 +40,7 @@ def get_installed_sensors():
 @auth.login_required
 def set_installed_sensors():
     logger.network_logger.info("** Installed Sensors Set by " + str(request.remote_addr))
-    raw_installed_sensors = request.form['command_data'].splitlines()
+    raw_installed_sensors = request.form["command_data"].splitlines()
     new_installed_sensors = config_installed_sensors.convert_lines_to_obj(raw_installed_sensors)
     config_installed_sensors.write_to_file(new_installed_sensors)
     app_generic_functions.thread_function(sensor_access.restart_services)
@@ -59,7 +59,7 @@ def get_wifi_config():
 def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))
     try:
-        new_wifi_config = request.form['command_data']
+        new_wifi_config = request.form["command_data"]
         network_wifi.write_wifi_config_to_file(new_wifi_config)
     except Exception as error:
         logger.network_logger.error("* Wifi Set from " + str(request.remote_addr) + " Failed: " + str(error))
@@ -77,7 +77,7 @@ def get_variance_config():
 def set_variance_config():
     logger.network_logger.debug("* Variance Configuration Set by " + str(request.remote_addr))
     try:
-        new_variance_config = request.form['command_data']
+        new_variance_config = request.form["command_data"]
         write_triggers_to_file(new_variance_config)
     except Exception as error:
         logger.network_logger.info("* Variance Configuration Set from " + str(request.remote_addr) +

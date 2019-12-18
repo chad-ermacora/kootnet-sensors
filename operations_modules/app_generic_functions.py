@@ -144,13 +144,29 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         http_port = ip_and_port[1]
     try:
         url = "https://" + sensor_address + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False,
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False, auth=login_credentials)
         return tmp_return_data.text
     except Exception as error:
         log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
         logger.network_logger.debug(log_msg)
         return "Error"
+
+
+def send_http_command(sensor_address, command, included_data=None, http_port="10065", timeout=10):
+    """ Sends command and data (if any) to a remote sensor. """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
+    try:
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        command_data = {'command_data': included_data}
+        requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
+    except Exception as error:
+        log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
 
 
 def get_http_sensor_file(sensor_address, command, http_port="10065"):
@@ -161,8 +177,8 @@ def get_http_sensor_file(sensor_address, command, http_port="10065"):
         http_port = ip_and_port[1]
     try:
         url = "https://" + sensor_address + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False,
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
         return tmp_return_data.content
     except Exception as error:
         log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
@@ -178,8 +194,8 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
         http_port = ip_and_port[1]
     try:
         url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
-        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False,
-                     auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
 
@@ -259,7 +275,7 @@ def clear_zip_names():
 
 def save_to_memory_ok(write_size):
     try:
-        # Numbers 1,000,000 / 25,000,000
+        # Numbers 1,000,000 / 25,000,000. Not using underscores to maintain compatibility with Python 3.5.x
         if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
             return True
     except Exception as error:

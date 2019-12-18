@@ -53,6 +53,41 @@ def get_config_from_file():
     return installed_config
 
 
+def html_request_to_config_main(html_request):
+    logger.network_logger.debug("Starting HTML Main Configuration Update Check")
+    new_config = CreateConfig()
+    if html_request.form.get("debug_logging") is not None:
+        new_config.enable_debug_logging = 1
+    else:
+        new_config.enable_debug_logging = 0
+
+    if html_request.form.get("enable_display") is not None:
+        new_config.enable_display = 1
+    else:
+        new_config.enable_display = 0
+
+    if html_request.form.get("enable_interval_recording") is not None:
+        new_config.enable_interval_recording = 1
+    else:
+        new_config.enable_interval_recording = 0
+    if html_request.form.get("interval_delay_seconds") is not None:
+        new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
+        new_config.sleep_duration_interval = new_sleep_duration
+
+    if html_request.form.get("enable_trigger_recording") is not None:
+        new_config.enable_trigger_recording = 1
+    else:
+        new_config.enable_trigger_recording = 0
+
+    if html_request.form.get("enable_custom_temp_offset") is not None:
+        new_temp = float(html_request.form.get("custom_temperature_offset"))
+        new_config.enable_custom_temp = 1
+        new_config.temperature_offset = new_temp
+    else:
+        new_config.enable_custom_temp = 0
+    return new_config
+
+
 def convert_config_to_str(config):
     """ Takes configuration Object and returns it as a string. """
     config_file_str = "Enable = 1 & Disable = 0\n" + \

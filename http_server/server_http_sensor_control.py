@@ -18,14 +18,12 @@
 """
 import time
 from os import geteuid
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
     get_file_content, check_for_port_in_address, get_ip_and_port_split
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
-from operations_modules import app_validation_checks
 from operations_modules import network_wifi
 from operations_modules import software_version
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
@@ -329,37 +327,3 @@ def get_online_report(ip_address, report_type="systems_report"):
     except Exception as error:
         log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
         logger.network_logger.warning(log_msg)
-
-
-def get_clean_address_list(http_request):
-    raw_ip_list = []
-    ip_list = []
-    threaded_checks = []
-    try:
-        for sensor in html_address_list:
-            sensor_address = http_request.form.get(sensor)
-            if app_validation_checks.ip_address_is_valid(sensor_address):
-                raw_ip_list.append(sensor_address)
-        for address in raw_ip_list:
-            threaded_checks.append(Thread(target=_check_address, args=[address]))
-        for thread in threaded_checks:
-            thread.daemon = True
-            thread.start()
-        for thread in threaded_checks:
-            thread.join()
-
-        while not app_cached_variables.flask_return_data_queue.empty():
-            ip_list.append(app_cached_variables.flask_return_data_queue.get())
-            app_cached_variables.flask_return_data_queue.task_done()
-    except Exception as error:
-        logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
-    return ip_list
-
-
-def _check_address(sensor_address):
-    try:
-        sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
-        if sensor_online_check == "OK":
-            app_cached_variables.flask_return_data_queue.put(sensor_address)
-    except Exception as error:
-        logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))

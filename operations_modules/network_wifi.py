@@ -16,8 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from operations_modules import logger
 from operations_modules import app_generic_functions
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 
 
 def get_wifi_country_code(wifi_config_lines):
@@ -49,6 +51,36 @@ def get_wifi_psk(wifi_config_lines):
         line_stripped = line.strip()
         if line_stripped[:4] == "psk=":
             return line_stripped[5:-1]
+
+
+def html_request_to_config_wifi(html_request):
+    logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
+    if html_request.form.get("ssid1") is not None:
+        wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
+
+        wifi_country_code = "CA"
+        if len(html_request.form.get("country_code")) == 2:
+            wifi_country_code = html_request.form.get("country_code").upper()
+
+        wifi_ssid1 = html_request.form.get("ssid1")
+        wifi_security_type1 = html_request.form.get("wifi_security1")
+        wifi_psk1 = html_request.form.get("wifi_key1")
+
+        if wifi_security_type1 == "wireless_wpa":
+            wifi_security_type1 = ""
+            if wifi_psk1 is not "":
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
+            else:
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", app_cached_variables.wifi_psk)
+        else:
+            wifi_security_type1 = "key_mgmt=None"
+            wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
+
+        wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)
+        wifi_template = wifi_template.replace("{{ WirelessSSID1 }}", wifi_ssid1)
+        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
+        return wifi_template
+    return ""
 
 
 def get_wifi_config_from_file():
