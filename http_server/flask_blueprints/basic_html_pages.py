@@ -1,7 +1,5 @@
 from flask import Blueprint, render_template, request
 from operations_modules import logger
-from operations_modules import app_cached_variables
-
 
 html_basic_routes = Blueprint("html_basic_routes", __name__)
 

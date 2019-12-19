@@ -24,6 +24,12 @@
         .mui-col-md-4 {
             width: 275px;
         }
+
+        .tabs-holder {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
     </style>
 
     <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red;">
@@ -106,20 +112,22 @@
             </div>
         </fieldset>
 
-        <ul class="mui-tabs__bar">
-            <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                                          data-mui-controls="main-tab">
-                Checks & Downloads
-            </a></li>
-            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="edit-config-tab">
-                Configurations
-            </a></li>
-            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="online-services-tab">
-                Online Services
-            </a></li>
-        </ul>
+        <div class="tabs-holder">
+            <ul class="mui-tabs__bar">
+                <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                                              data-mui-controls="main-tab">
+                    Checks & Downloads
+                </a></li>
+                <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+                       data-mui-controls="edit-config-tab">
+                    Configurations
+                </a></li>
+                <li><a style="color: red; background-color: #212121; align-content: center;" data-mui-toggle="tab"
+                       data-mui-controls="system-commands-tab">
+                    System Commands
+                </a></li>
+            </ul>
+        </div>
 
         <div class="mui-tabs__pane mui--is-active" id="main-tab">
             <br>
@@ -238,61 +246,48 @@
             </fieldset>
         </div>
 
-        <div class="mui-tabs__pane" id="online-services-tab">
+        <div class="mui-tabs__pane" id="system-commands-tab">
             <br>
-            <fieldset style="text-align: center;">
-                <div class="mui-container-fluid" style="background-color: #00B0FF;">
-                    <button type="submit"
-                            class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                            formaction="/SCActiveOnlineServices">
-                        Send Update
+            <div class="tabs-holder">
+                <div class="mui-dropdown">
+                    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                        Upgrades
+                        <span class="mui-caret"></span>
                     </button>
-                    <h5><b>
-                        This will update Configurations on ALL listed Sensors for the selected Online Service
-                    </b></h5>
-                    <label>Choose Online Service to Update</label>
-                    <div class="mui-radio">
-                        <label class="container_radio" style="font-size: small;">
-                            <input type="radio" name="online_service_selected_action" value="weather_underground"
-                                   checked>
-                            Weather Underground
-                            <span class="checkmark_radio"></span>
-                        </label>
-                        <label class="container_radio" style="font-size: small;">
-                            <input type="radio" name="online_service_selected_action" value="luftdaten">
-                            Luftdaten
-                            <span class="checkmark_radio"></span>
-                        </label>
-                        <label class="container_radio" style="font-size: small;">
-                            <input type="radio" name="online_service_selected_action" value="open_sense_map">
-                            Open Sense Map
-                            <span class="checkmark_radio"></span>
-                        </label>
-                    </div>
-                    <div class="mui-checkbox" style="display: inline-block;">
-                        <label class="container_checkbox">
-                            <input type="checkbox" name="enable_online_service" value="">
-                            Enable Selected Online Service
-                            <span class="checkmark_checkbox"></span>
-                        </label>
-                    </div>
-                    <br>
-                    <div class="mui-textfield">
-                        <label style="color: black;">
-                            Seconds between Updates
-                            <br>
-                            <input style="width: 75px;" type="number" min="1" name="online_service_interval"
-                                   value="900.0" disabled>
-                        </label>
-                    </div>
-                    <br>
+                    <ul class="mui-dropdown__menu">
+                        <li><a href="/SCUpgradeOnline">HTTP Upgrade</a></li>
+                        <li><a href="/SCUpgradeSMB">SMB Upgrade</a></li>
+                        <li><a href="/SCUpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
+                        <li><a href="/SCUpgradeSMBDev">DEV - SMB Upgrade</a></li>
+                    </ul>
                 </div>
-            </fieldset>
+                <div class="mui-dropdown">
+                    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                        Power Commands
+                        <span class="mui-caret"></span>
+                    </button>
+                    <ul class="mui-dropdown__menu">
+                        <li><a href="/SCRestartServices">Restart Program</a></li>
+                        <li><a href="/SCRebootSystem">Reboot System</a></li>
+                        {#                    <li><a href="/SCShutdownSystem">Shutdown System</a></li>#}
+                    </ul>
+                </div>
+                <div class="mui-dropdown">
+                    <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                        Other
+                        <span class="mui-caret"></span>
+                    </button>
+                    <ul class="mui-dropdown__menu">
+                        <li><a href="/SCReInstallRequirements">Check and Install Requirements</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="mui-tabs__pane" id="edit-config-tab">
             {{ SensorControlEditConfig|safe }}
         </div>
+
     </form>
 
     <script>

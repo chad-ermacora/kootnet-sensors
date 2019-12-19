@@ -172,6 +172,7 @@ def download_sc_big_zip():
 
 
 @html_sensor_control_routes.route("/SensorControlEditConfigMain", methods=["POST"])
+@auth.login_required
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
@@ -187,6 +188,7 @@ def sc_edit_config_primary():
 
 
 @html_sensor_control_routes.route("/SensorControlEditInstalledSensors", methods=["POST"])
+@auth.login_required
 def sc_edit_config_installed_sensors():
     msg = "* Sensor Control Set 'Installed Sensors Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
@@ -203,6 +205,7 @@ def sc_edit_config_installed_sensors():
 
 
 @html_sensor_control_routes.route("/SensorControlEditConfigWifi", methods=["POST"])
+@auth.login_required
 def sc_edit_config_wifi():
     logger.network_logger.debug("* Sensor Control Set 'Wifi Config' Accessed by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
@@ -216,33 +219,27 @@ def sc_edit_config_wifi():
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
-def _invalid_login_credentials():
-    if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
-        return True
-    return False
-
-
-def _get_invalid_login_page():
-    msg2 = "You must enter the Sensor Login Credentials to update Configurations"
-    return message_and_return("Warning: Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
-
-
 @html_sensor_control_routes.route("/SensorControlEditTriggerVariances", methods=["POST"])
+@auth.login_required
 def sc_edit_config_triggers():
     msg = "* Sensor Control Set 'Trigger Variances Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        pass
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
     msg2 = "Trigger configuration sent to sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
 @html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
+@auth.login_required
 def sc_active_online_services():
     logger.network_logger.debug("* Sensor Control 'Active Online Services' Accessed by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
         service_state = 0
         if request.form.get("enable_online_service") is not None:
             service_state = 1
@@ -273,3 +270,78 @@ def set_active_online_services():
     elif request.form.get("service") == "open_sense_map":
         app_config_access.open_sense_map_config.open_sense_map_enabled = active_state
         app_config_access.open_sense_map_config.write_config_to_file()
+
+
+@html_sensor_control_routes.route("/SCUpgradeOnline")
+@auth.login_required
+def sc_upgrade_online():
+    logger.network_logger.debug("* Sensor Control 'HTTP Upgrade' Accessed by " + str(request.remote_addr))
+    return _run_system_command("UpgradeOnline")
+
+
+@html_sensor_control_routes.route("/SCUpgradeSMB")
+@auth.login_required
+def sc_upgrade_smb():
+    logger.network_logger.debug("* Sensor Control 'SMB Upgrade' Accessed by " + str(request.remote_addr))
+    return _run_system_command("UpgradeSMB")
+
+
+@html_sensor_control_routes.route("/SCUpgradeOnlineDev")
+@auth.login_required
+def sc_dev_upgrade_online():
+    logger.network_logger.debug("* Sensor Control 'Dev HTTP Upgrade' Accessed by " + str(request.remote_addr))
+    return _run_system_command("UpgradeOnlineDev")
+
+
+@html_sensor_control_routes.route("/SCUpgradeSMBDev")
+@auth.login_required
+def sc_dev_upgrade_smb():
+    logger.network_logger.debug("* Sensor Control 'Dev HTTP Upgrade' Accessed by " + str(request.remote_addr))
+    return _run_system_command("UpgradeSMBDev")
+
+
+@html_sensor_control_routes.route("/SCRestartServices")
+@auth.login_required
+def sc_restart_service():
+    logger.network_logger.debug("* Sensor Control 'Restart Service' Accessed by " + str(request.remote_addr))
+    return _run_system_command("RestartServices")
+
+
+@html_sensor_control_routes.route("/SCRebootSystem")
+@auth.login_required
+def sc_reboot_system():
+    logger.network_logger.debug("* Sensor Control 'Restart System' Accessed by " + str(request.remote_addr))
+    return _run_system_command("RebootSystem")
+
+
+@html_sensor_control_routes.route("/SCReInstallRequirements")
+@auth.login_required
+def sc_reinstall_requirements():
+    logger.network_logger.debug("* Sensor Control 'Re-Install Requirements' Accessed by " + str(request.remote_addr))
+    return _run_system_command("ReInstallRequirements")
+
+
+def _run_system_command(command):
+    logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
+    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+    if len(ip_list) > 0:
+        if _invalid_login_credentials():
+            return _get_invalid_login_page()
+        for ip in ip_list:
+            app_generic_functions.get_http_sensor_reading(ip, command=command)
+        msg2 = "System Command '" + command + "' sent to " + str(len(ip_list)) + " Sensors"
+        return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+    msg2 = "Error sending System Command '" + command + "' to " + str(len(ip_list)) + " Sensors"
+    return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+
+
+def _invalid_login_credentials():
+    if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
+        return True
+    return False
+
+
+def _get_invalid_login_page():
+    msg1 = "Warning - Sensor Control - Configurations"
+    msg2 = "You must enter the Sensor Login Credentials to update Configurations"
+    return message_and_return(msg1, url="/SensorControlManage", text_message2=msg2)
