@@ -257,8 +257,8 @@ def _replace_text_in_report(report, new_text):
 
 
 def create_the_big_zip(ip_list):
-    app_cached_variables.sc_big_zip_name = "TheBigZip_" + app_cached_variables.hostname + "_" + \
-                                           str(time.time())[:-8] + ".zip"
+    new_name = "TheBigZip_" + app_cached_variables.hostname + "_" + str(time.time())[:-8] + ".zip"
+    app_cached_variables.sc_big_zip_name = new_name
 
     if len(ip_list) > 0:
         try:
