@@ -183,7 +183,7 @@ def sc_edit_config_primary():
         send_config = app_config_access.config_primary.convert_config_to_str(new_config)
         for ip in ip_list:
             app_generic_functions.send_http_command(ip, "SetConfiguration", included_data=send_config)
-    msg2 = "Primary configuration sent to sensors"
+    msg2 = "Primary configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
@@ -200,7 +200,7 @@ def sc_edit_config_installed_sensors():
         installed_sensors_text = new_sensors.get_installed_sensors_config_as_str()
         for ip in ip_list:
             app_generic_functions.send_http_command(ip, "SetInstalledSensors", included_data=installed_sensors_text)
-    msg2 = "Installed Sensors configuration sent to sensors"
+    msg2 = "Installed Sensors configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
@@ -215,7 +215,7 @@ def sc_edit_config_wifi():
         new_wifi = network_wifi.html_request_to_config_wifi(request)
         for ip in ip_list:
             app_generic_functions.send_http_command(ip, "SetWifiConfiguration", included_data=new_wifi)
-    msg2 = "Wireless configuration sent to sensors.  You must reboot the sensors for it to take effect."
+    msg2 = "Wireless configuration sent to " + str(len(ip_list)) + " Sensors.  You must reboot the sensors for it to take effect."
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
@@ -228,7 +228,11 @@ def sc_edit_config_triggers():
     if len(ip_list) > 0:
         if _invalid_login_credentials():
             return _get_invalid_login_page()
-    msg2 = "Trigger configuration sent to sensors"
+        new_triggers = app_config_access.config_trigger_variances.html_request_to_variance_triggers(request)
+        trigger_text_config = app_config_access.config_trigger_variances.convert_triggers_to_str(new_triggers)
+        for ip in ip_list:
+            app_generic_functions.send_http_command(ip, "SetVarianceConfiguration", included_data=trigger_text_config)
+    msg2 = "Trigger configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
 
@@ -249,8 +253,8 @@ def sc_active_online_services():
                   "online_service_interval": request.form.get("online_service_interval")}
         for ip in ip_list:
             sensor_http_command_instance = CreateSensorHTTPCommand(ip, "SetActiveOnlineServices", command_data=c_data)
-            sensor_http_command_instance.send_http_online_service_set()
-    msg2 = "Online Service setting sent to sensors"
+            sensor_http_command_instance.send_http_command()
+    msg2 = "Online Service setting sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Online Service", url="/SensorControlManage", text_message2=msg2)
 
 

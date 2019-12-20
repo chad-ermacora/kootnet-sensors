@@ -25,7 +25,7 @@ class CreateSensorHTTPCommand:
         self.sensor_command = command
         self._check_ip_port()
 
-    def send_http_online_service_set(self):
+    def send_http_command(self):
         """ Sends command and data to sensor. """
         try:
             url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
