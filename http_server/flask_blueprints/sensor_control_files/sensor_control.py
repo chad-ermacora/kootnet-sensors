@@ -235,7 +235,7 @@ def sc_edit_config_triggers():
 @html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
 @auth.login_required
 def sc_active_online_services():
-    logger.network_logger.debug("* Sensor Control 'Active Online Services' Accessed by " + str(request.remote_addr))
+    logger.network_logger.debug("* Sensor Control 'Online Services' Accessed by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
         if _invalid_login_credentials():
@@ -244,8 +244,10 @@ def sc_active_online_services():
         if request.form.get("enable_online_service") is not None:
             service_state = 1
 
+        c_data = {"service": request.form.get("online_service_selected_action"),
+                  "service_state": service_state,
+                  "online_service_interval": request.form.get("online_service_interval")}
         for ip in ip_list:
-            c_data = {"service": request.form.get("online_service_selected_action"), "service_state": service_state}
             sensor_http_command_instance = CreateSensorHTTPCommand(ip, "SetActiveOnlineServices", command_data=c_data)
             sensor_http_command_instance.send_http_online_service_set()
     msg2 = "Online Service setting sent to sensors"
@@ -261,14 +263,21 @@ def set_active_online_services():
     if str(request.form.get("service_state")) == "1":
         active_state = 1
 
+    send_interval = 10.0
+    if float(request.form.get("online_service_interval")) > send_interval:
+        send_interval = float(request.form.get("online_service_interval"))
+
     if request.form.get("service") == "weather_underground":
         app_config_access.weather_underground_config.weather_underground_enabled = active_state
+        app_config_access.weather_underground_config.interval_seconds = send_interval
         app_config_access.weather_underground_config.write_config_to_file()
     elif request.form.get("service") == "luftdaten":
         app_config_access.luftdaten_config.luftdaten_enabled = active_state
+        app_config_access.luftdaten_config.interval_seconds = send_interval
         app_config_access.luftdaten_config.write_config_to_file()
     elif request.form.get("service") == "open_sense_map":
         app_config_access.open_sense_map_config.open_sense_map_enabled = active_state
+        app_config_access.open_sense_map_config.interval_seconds = send_interval
         app_config_access.open_sense_map_config.write_config_to_file()
 
 

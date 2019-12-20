@@ -29,7 +29,6 @@ class CreateSensorHTTPCommand:
         """ Sends command and data to sensor. """
         try:
             url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
-            logger.network_logger.critical(url)
             requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data,
                           auth=(app_cached_variables.http_login, app_cached_variables.http_password))
         except Exception as error:
