@@ -9,7 +9,7 @@ This can also be installed on Ubuntu in order to use the 'Sensor Control' manage
 Installing on a Raspberry Pi (Any Model)
 -------------------------
 
-The short version of installing on a Pi is to install Raspbian and run the following 2 commands in a terminal, one after another. 
+The short version of installing on a Pi is to install Raspbian and run the following command in a terminal.  
 After the install is done, open the following URL on the Pi itself to configure the sensor.
 https://localhost:10065/
 
