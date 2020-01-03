@@ -30,16 +30,14 @@ def get_installed_sensors_raw():
 
     if os.path.isfile(file_locations.installed_sensors_config):
         try:
-            sensor_list_file = open(file_locations.installed_sensors_config, 'r')
-            raw_installed_sensor_file = sensor_list_file.readlines()
-            sensor_list_file.close()
+            with open(file_locations.installed_sensors_config, 'r') as sensor_list_file:
+                raw_installed_sensor_file = sensor_list_file.readlines()
         except Exception as error:
             logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
             raw_installed_sensor_file = []
     else:
         logger.primary_logger.error("Installed Sensors file not found, using and saving default")
         raw_installed_sensor_file = []
-
     return raw_installed_sensor_file
 
 
@@ -49,17 +47,14 @@ def get_installed_config_raw():
 
     if os.path.isfile(file_locations.main_config):
         try:
-            config_file = open(file_locations.main_config, "r")
-            config_file_content = config_file.readlines()
-            config_file.close()
+            with open(file_locations.main_config, "r") as config_file:
+                config_file_content = config_file.readlines()
         except Exception as error:
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
             config_file_content = []
-
     else:
         logger.primary_logger.error("Configuration file not found, using and saving default")
         config_file_content = []
-
     return config_file_content
 
 

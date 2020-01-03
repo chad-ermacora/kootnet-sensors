@@ -34,11 +34,10 @@ def set_http_auth_from_file():
 
     if os.path.isfile(file_locations.http_auth):
         try:
-            auth_file = open(file_locations.http_auth, "r")
-            auth_file_lines = auth_file.readlines()
-            auth_file.close()
-            app_config_access.http_flask_user = auth_file_lines[0].strip()
-            app_config_access.http_flask_password = auth_file_lines[1].strip()
+            with open(file_locations.http_auth, "r") as auth_file:
+                auth_file_lines = auth_file.readlines()
+                app_config_access.http_flask_user = auth_file_lines[0].strip()
+                app_config_access.http_flask_password = auth_file_lines[1].strip()
         except Exception as error:
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
@@ -65,9 +64,8 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
     try:
         verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
         save_data = verified_user + "\n" + generate_password_hash(verified_password)
-        auth_file = open(file_locations.http_auth, "w")
-        auth_file.write(save_data)
-        auth_file.close()
+        with open(file_locations.http_auth, "w") as auth_file:
+            auth_file.write(save_data)
     except Exception as error:
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 

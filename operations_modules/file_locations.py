@@ -30,22 +30,20 @@ try:
 except Exception as error:
     print("Script Location Error: " + str(error))
 
-running_with_root = True
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
 
 if os.geteuid() != 0:
-    running_with_root = False
     sensor_data_dir = "/home/" + str(getuser()).strip() + "/kootnet_data"
     sensor_config_dir = "/home/" + str(getuser()).strip() + "/kootnet_data/config"
 
-for directory in [sensor_data_dir, sensor_config_dir]:
-    try:
-        os.mkdir(directory)
-    except FileExistsError:
-        pass
-    except Exception as error:
-        print("Make Directory Error: " + str(error))
+    directory_list = [sensor_data_dir, sensor_config_dir, sensor_data_dir + "/logs", sensor_data_dir + "/scripts"]
+    for directory in directory_list:
+        if not os.path.isdir(directory):
+            try:
+                os.mkdir(directory)
+            except Exception as error:
+                print("Make Directory Error: " + str(error))
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
@@ -65,7 +63,7 @@ main_config = sensor_config_dir + "/main_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 
-http_auth = sensor_data_dir + "/auth.conf"
+http_auth = sensor_config_dir + "/auth.conf"
 
 html_sensor_control_config = sensor_config_dir + "/html_sensor_control.conf"
 html_sensor_control_reports_zip = sensor_data_dir + "/ReportsZip.zip"
@@ -112,4 +110,3 @@ html_report_config3_end = program_root_dir + "/http_server/templates/non-flask/r
 html_report_sensors_test1_start = program_root_dir + "/http_server/templates/non-flask/report_sensors_test1_start.html"
 html_report_sensors_test2_sensor = program_root_dir + "/http_server/templates/non-flask/report_sensors_test2_sensor.html"
 html_report_sensors_test3_end = program_root_dir + "/http_server/templates/non-flask/report_sensors_test3_end.html"
-

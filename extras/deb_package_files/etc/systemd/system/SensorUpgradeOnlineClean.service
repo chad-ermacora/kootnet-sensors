@@ -1,5 +1,5 @@
 [Unit]
-Description=KootNet Sensors - Clean Upgrade Process Online
+Description=KootNet Sensors - Clean HTTP Upgrade
 
 [Service]
 Type=simple

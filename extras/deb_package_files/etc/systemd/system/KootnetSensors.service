@@ -10,7 +10,7 @@ RestartSec=5
 User=root
 Group=root
 WorkingDirectory=/opt/kootnet-sensors
-ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/start_sensor_services.py
+ExecStart=/home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_sensor_services.py
 
 [Install]
 WantedBy=multi-user.target

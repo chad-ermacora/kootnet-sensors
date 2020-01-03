@@ -18,13 +18,13 @@
 """
 import os
 from time import sleep
-from operations_modules import app_cached_variables
 from operations_modules import logger
-running_with_root = True
-if os.geteuid() != 0:
-    running_with_root = False
-    log_message = "--- Warning - Kootnet Sensors requires Elevated (root) permissions for some sensors"
-    logger.primary_logger.warning(log_message)
+from operations_modules import program_start_checks
+# Ensure files, database & configurations are OK
+running_with_root = False
+if os.geteuid() == 0:
+    running_with_root = True
+    program_start_checks.run_program_start_checks()
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
@@ -35,9 +35,8 @@ except Exception as import_error_raw:
         sleep(600)
 from http_server import server_http
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
-from operations_modules import program_start_checks
+from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
 from operations_modules import server_display
@@ -45,20 +44,8 @@ from operations_modules.online_services.luftdaten import start_luftdaten
 from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
 from operations_modules.online_services.open_sense_map import start_open_sense_map
 
-if running_with_root:
-    # Ensure files, database & configurations are OK
-    program_start_checks.set_file_permissions()
-    if software_version.old_version != software_version.version:
-        os.system("systemctl start SensorUpgradeChecks")
-        # Sleep before loading anything due to needed updates
-        # The update service will automatically restart this app when it's done
-        while True:
-            sleep(30)
-
-program_start_checks.check_database_structure()
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
-
-if app_config_access.installed_sensors.no_sensors is False and running_with_root:
+if running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up special Sensor Access Service like SenseHat Joystick
     sensor_access.start_special_sensor_interactive_services()
 
@@ -99,10 +86,12 @@ if app_config_access.installed_sensors.no_sensors is False and running_with_root
         app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
     sensor_access.display_message("KS-Sensors Recording Started")
 else:
-    logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
+    if not running_with_root:
+        log_message = "--- Warning - Kootnet Sensors requires Elevated (root) permissions for some sensors"
+        logger.primary_logger.warning(log_message)
+    else:
+        logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
-# Make sure SSL Files are there before starting HTTPS Server
-program_start_checks.check_ssl_files()
 # Start the HTTP Server for remote access
 thread_function(server_http.https_start_and_watch)
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")

@@ -5,5 +5,5 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/change_http_auth_credentials.py
+/home/kootnet_data/env/bin/python /opt/kootnet-sensors/change_http_auth_credentials.py
 systemctl restart KootnetSensors 2>/dev/null

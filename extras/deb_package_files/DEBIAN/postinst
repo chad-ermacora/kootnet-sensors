@@ -1,0 +1,29 @@
+#!/bin/bash
+PYTHON_VENV_DIR="/home/kootnet_data/env"
+INSTALL_DIR="/opt/kootnet-sensors"
+CONFIG_DIR="/etc/kootnet"
+if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]
+then
+ python3 -m venv --system-site-packages ${PYTHON_VENV_DIR}
+ ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
+ date > ${CONFIG_DIR}/installed_datetime.txt
+fi
+${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
+if [[ ! -f ${CONFIG_DIR}/installed_datetime.txt ]]
+then
+ date > ${CONFIG_DIR}/installed_datetime.txt
+fi
+echo '*/1 * * * * fake-hwclock' >> /tmp/tmp34441.txt
+crontab -u root /tmp/tmp34441.txt
+rm /tmp/tmp34441.txt
+date > ${CONFIG_DIR}/last_updated.txt
+echo ' - DEB' >> ${CONFIG_DIR}/last_updated.txt
+systemctl daemon-reload
+systemctl enable KootnetSensors
+systemctl start KootnetSensors
+printf "\n\nWaiting for program initalization to finish...\n\n"
+while [ "$(wget --no-check-certificate -q -O - "https://localhost:10065/CheckOnlineStatus")" != "OK" ]
+do
+  sleep 2
+done
+printf "Initalization Complete\n\n"

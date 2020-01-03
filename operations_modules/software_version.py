@@ -20,25 +20,42 @@ from os import path
 from operations_modules import file_locations
 
 
+class CreateRefinedVersion:
+    """ Takes the provided program version and creates a data class object. """
+    def __init__(self, instance_version):
+        try:
+            version_split = instance_version.split(".")
+            self.major_version = version_split[0]
+            self.feature_version = int(version_split[1])
+            self.minor_version = int(version_split[2])
+        except Exception as error:
+            print("Bad Version - " + str(instance_version))
+            print(str(error))
+            self.major_version = 0
+            self.feature_version = 0
+            self.minor_version = 0
+
+
 def _get_old_version():
     """ Loads the previously written program version and returns it as a string. """
     if path.isfile(file_locations.old_version_file):
-        old_version_file = open(file_locations.old_version_file, 'r')
-        old_version_content = old_version_file.read()
-        old_version_file.close()
-        return old_version_content.strip()
+        with open(file_locations.old_version_file, 'r') as old_version_file:
+            old_version_content = old_version_file.read()
+            return old_version_content.strip()
     else:
         write_program_version_to_file()
-        return "0.0.0"
+        return "New_Install.99.999"
 
 
 def write_program_version_to_file():
     """ Writes the current program version to previous program version file. """
-    current_version_file = open(file_locations.old_version_file, 'w')
-    current_version_file.write(version)
-    current_version_file.close()
+    with open(file_locations.old_version_file, 'w') as current_version_file:
+        current_version_file.write(version)
 
 
 # Current Version of the program
-version = "Alpha.28.108"
+new_install = False
+version = "Alpha.28.150"
 old_version = _get_old_version()
+if old_version == "New_Install.99.999":
+    new_install = True

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Kootnet Sensors - Web Configuration
+Comment=Web interface for configuring sensor
+Type=Application
+Icon=/opt/kootnet-sensors/extras/icon.ico
+TryExec=/usr/bin/x-www-browser
+Exec=x-www-browser https://localhost:10065/SystemCommands
+Terminal=false
+Categories=Utility;Science;
+StartupNotify=true

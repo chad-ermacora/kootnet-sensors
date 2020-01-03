@@ -1,5 +1,5 @@
 [Unit]
-Description=KootNet Sensors - Clean Upgrade Process SMB
+Description=KootNet Sensors - Clean SMB Upgrade
 
 [Service]
 Type=simple

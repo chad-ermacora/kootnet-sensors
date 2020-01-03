@@ -102,12 +102,10 @@ def get_text_running_thread_state(service_enabled, thread_variable):
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
-
     if os.path.isfile(load_file):
         try:
-            loaded_file = open(load_file, open_type)
-            file_content = loaded_file.read()
-            loaded_file.close()
+            with open(load_file, open_type) as loaded_file:
+                file_content = loaded_file.read()
         except Exception as error:
             file_content = ""
             logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
@@ -120,9 +118,8 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
     """ Writes provided file and content to local disk. """
     logger.primary_logger.debug("Writing content to " + str(file_location))
     try:
-        write_file = open(file_location, open_type)
-        write_file.write(file_content)
-        write_file.close()
+        with open(file_location, open_type) as write_file:
+            write_file.write(file_content)
     except Exception as error:
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 

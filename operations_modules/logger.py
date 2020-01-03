@@ -62,67 +62,57 @@ def set_logging_level():
 def check_debug_logging():
     """ Check to see if debug logging is enabled and apply if necessary. """
     if os.path.isfile(file_locations.debug_logging_config):
-        debug_file = open(file_locations.debug_logging_config, "r")
-        debug = debug_file.read().strip()
-        debug_file.close()
-
-        if int(debug):
-            return 1
-        else:
-            return 0
+        with open(file_locations.debug_logging_config, "r") as debug_file:
+            debug = debug_file.read().strip()
+            try:
+                if int(debug):
+                    return 1
+            except Exception as error:
+                print("Error checking Debug logging: " + str(error))
+        return 0
     else:
-        enable_debug = open(file_locations.debug_logging_config, 'w')
-        enable_debug.write("0")
-        enable_debug.close()
+        with open(file_locations.debug_logging_config, 'w') as enable_debug:
+            enable_debug.write("0")
         return 0
 
 
 def get_number_of_log_entries(log_file):
     """ Opens provided log file location and returns the amount of log entries in it. """
-    log_content = open(log_file, "r")
-    log_lines = log_content.readlines()
-    log_content.close()
-
-    return len(log_lines)
+    with open(log_file, "r") as log_content:
+        log_lines = log_content.readlines()
+        return len(log_lines)
 
 
 def get_sensor_log(log_file):
     """ Opens provided log file location and returns its content. """
-    log_content = open(log_file, "r")
-    log_lines = log_content.readlines()
-    log_content.close()
+    with open(log_file, "r") as log_content:
+        log_lines = log_content.readlines()
+        if max_log_lines_return:
+            log_lines = log_lines[-max_log_lines_return:]
+        log_lines.reverse()
 
-    if max_log_lines_return:
-        log_lines = log_lines[-max_log_lines_return:]
-
-    log_lines.reverse()
-
-    return_log = ""
-    for log in log_lines:
-        return_log += log
-
-    return return_log
+        return_log = ""
+        for log in log_lines:
+            return_log += log
+        return return_log
 
 
 def clear_primary_log():
     """ Clears all Primary Sensor Log. """
-    log_content = open(file_locations.primary_log, "w")
-    log_content.write("")
-    log_content.close()
+    with open(file_locations.primary_log, "w") as log_content:
+        log_content.write("")
 
 
 def clear_network_log():
     """ Clears all Network Sensor Log. """
-    log_content = open(file_locations.network_log, "w")
-    log_content.write("")
-    log_content.close()
+    with open(file_locations.network_log, "w") as log_content:
+        log_content.write("")
 
 
 def clear_sensor_log():
     """ Clears all Sensor(s) Log. """
-    log_content = open(file_locations.sensors_log, "w")
-    log_content.write("")
-    log_content.close()
+    with open(file_locations.sensors_log, "w") as log_content:
+        log_content.write("")
 
 
 check_debug_logging()

@@ -117,11 +117,11 @@ def upgrade_http():
     return message_and_return("HTTP Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/CleanOnline")
+@html_system_commands_routes.route("/UpgradeOnlineClean")
 @auth.login_required
 def upgrade_clean_http():
     logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["CleanOnline"])
+    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineClean"])
     return message_and_return("HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -141,11 +141,11 @@ def upgrade_smb():
     return message_and_return("SMB Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/CleanSMB")
+@html_system_commands_routes.route("/UpgradeSMBClean")
 @auth.login_required
 def upgrade_clean_smb():
     logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["CleanSMB"])
+    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBClean"])
     return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 

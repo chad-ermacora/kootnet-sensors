@@ -18,9 +18,15 @@
 """
 from http_server import server_http_auth
 
-print("Please enter in a Username and Password for Sensor Web Management")
-new_user = input("New Username: ")
-new_password = input("New Password: ")
 
-server_http_auth.save_http_auth_to_file(new_user, new_password)
-input("New Username and Password set.  Press enter to continue.")
+def change_https_auth():
+    print("Please enter in a Username and Password for Sensor Web Management")
+    new_user = input("New Username: ")
+    new_password = input("New Password: ")
+
+    server_http_auth.save_http_auth_to_file(new_user, new_password)
+    input("New Username and Password set.  Press enter to continue.")
+
+
+if __name__ == '__main__':
+    change_https_auth()

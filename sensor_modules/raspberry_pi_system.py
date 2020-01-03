@@ -8,6 +8,7 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
+import os
 import time
 from operations_modules import logger
 from operations_modules import app_config_access
@@ -22,6 +23,7 @@ class CreateRPSystem:
         self.sensor_in_use = False
         try:
             self.gp_import = __import__("gpiozero")
+            self.enable_raspberry_pi_hardware()
             logger.sensors_logger.debug("Raspberry Pi System Access Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi System Access Initialization - Failed: " + str(error))
@@ -41,3 +43,13 @@ class CreateRPSystem:
             logger.sensors_logger.error("Raspberry Pi CPU Temperature Sensor - Failed: " + str(error))
         self.sensor_in_use = False
         return round(cpu_temp_c, round_decimal_to)
+
+    @staticmethod
+    def enable_raspberry_pi_hardware():
+        """ Enables I2C, SPI & Wireless on Raspberry Pis. """
+        try:
+            os.system("raspi-config nonint do_i2c 0")
+            os.system("raspi-config nonint do_spi 0")
+            os.system("rfkill unblock wifi")
+        except Exception as error:
+            logger.sensors_logger.error("Error enabling Raspberry Pi I2C, SPI & Wifi: " + str(error))

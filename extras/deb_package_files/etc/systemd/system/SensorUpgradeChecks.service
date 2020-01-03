@@ -6,7 +6,7 @@ Type=simple
 Restart=no
 User=root
 Group=root
-ExecStart=/home/kootnet_data/python-env/bin/python /opt/kootnet-sensors/run_upgrade_checks.py
+ExecStart=/home/kootnet_data/env/bin/python /opt/kootnet-sensors/run_upgrade_checks.py
 
 [Install]
 WantedBy=multi-user.target
