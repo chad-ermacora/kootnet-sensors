@@ -25,14 +25,16 @@ if [[ -f ${CONFIG_DIR}"/installed_datetime.txt" ]]; then
     if [[ "$(wget --no-check-certificate -q -O - "https://localhost:10065/CheckOnlineStatus")" == "OK" ]]; then
       printf "Printing config & testing sensors\n\n"
       /home/kootnet_data/env/bin/python /opt/kootnet-sensors/test_sensors.py
+      printf "Press enter to exit ..."
+      read -r nothing
       exit 0
     elif [ "$counter" -gt 30 ]; then
       printf "Timeout: The application did not start within 60 seconds, this may indicate a problem.\n\n"
+      printf "Press enter to exit ..."
+      read -r nothing
       exit 1
     fi
     sleep 2
     counter=$((counter + 1))
   done
 fi
-printf "\nPress enter to exit ..."
-read -r nothing
