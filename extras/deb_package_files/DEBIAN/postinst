@@ -16,7 +16,6 @@ crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt
 date >${CONFIG_DIR}/last_updated.txt
 echo ' - DEB' >>${CONFIG_DIR}/last_updated.txt
-find /opt/kootnet-sensors -type d -name __pycache__ -exec rm -rf {} \;
 systemctl daemon-reload
 systemctl enable KootnetSensors
 systemctl start KootnetSensors

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 HTTP_SERVER="http://kootenay-networks.com"
-DEB_INSTALLER="/KootNetSensors.deb"
+DEB_INSTALLER="/KootnetSensors.deb"
 CONFIG_DIR="/etc/kootnet"
 clear
 # Make sure its running with root
@@ -23,4 +23,4 @@ rm -R -f /home/kootnet_data/env 2>/dev/null
 rm -f ${CONFIG_DIR}/installed_datetime.txt
 rm -R -f /opt/kootnet-sensors 2>/dev/null
 wget -O /tmp${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
-apt-get -y install /tmp${DEB_INSTALLER}
+apt-get -y --allow-downgrades --reinstall install /tmp${DEB_INSTALLER}

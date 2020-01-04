@@ -3,7 +3,7 @@
 SMB_SERVER="//USB-Development"
 # shellcheck disable=SC2089
 CIFS_OPTIONS="username=myself,password='123'"
-DEB_INSTALLER="/KootNetSensors.deb"
+DEB_INSTALLER="/KootnetSensors.deb"
 CONFIG_DIR="/etc/kootnet"
 clear
 # Make sure its running with root
@@ -31,4 +31,4 @@ mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
 printf '\n\nDownload Started\n'
 cp /mnt/supernas${DEB_INSTALLER} /tmp
-apt-get -y install /tmp${DEB_INSTALLER}
+apt-get -y --reinstall --allow-downgrades install /tmp${DEB_INSTALLER}
