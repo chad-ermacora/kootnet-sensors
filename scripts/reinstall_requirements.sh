@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 PYTHON_VENV_DIR="/home/kootnet_data/env"
 APT_GET_INSTALL="python3 python3-pip python3-venv libatlas3-base fonts-freefont-ttf sense-hat fake-hwclock cifs-utils libfreetype6-dev libjpeg-dev build-essential"
 apt-get update

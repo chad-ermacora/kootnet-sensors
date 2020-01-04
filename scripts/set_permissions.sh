@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 DATA_DIR="/home/kootnet_data"
 CONFIG_DIR="/etc/kootnet"
 # Make sure log files exist to set permissions

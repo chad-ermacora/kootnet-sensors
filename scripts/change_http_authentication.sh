@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"

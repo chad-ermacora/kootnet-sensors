@@ -8,9 +8,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   date >${CONFIG_DIR}/installed_datetime.txt
 fi
 ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
-if [[ ! -f ${CONFIG_DIR}/installed_datetime.txt ]]; then
-  date >${CONFIG_DIR}/installed_datetime.txt
-fi
 echo '*/1 * * * * fake-hwclock' >>/tmp/tmp34441.txt
 crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt

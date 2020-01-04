@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 # THIS IS NOT WORKING.  It may be removed in future version due to a lack of work on the Mobile Unit
 CONFIG_DIR="/etc/kootnet"
 # Update script that is run when the E-Ink upgrade command is sent
