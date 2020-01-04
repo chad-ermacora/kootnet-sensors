@@ -11,7 +11,8 @@ This can also be installed on other Debian based systems like Ubuntu for the abi
 Installing on a Raspberry Pi (Any Model)
 -------------------------
 
-If you have a Debian desktop environment, you can simply [download this file](http://kootenay-networks.com/?page_id=170) and double click to install.  
+If you have a Debian desktop environment, you can simply 
+[download this file](http://kootenay-networks.com/installers/KootnetSensors.deb) and double click to install.  
 After the install is done, open https://localhost:10065 on the Pi itself to configure the sensor  
 If you are installing from the command line, run the following command in a terminal.  
 
