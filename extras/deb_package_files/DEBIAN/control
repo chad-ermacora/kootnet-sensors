@@ -1,10 +1,10 @@
 Package: kootnet-sensors
-Version: 0.28-150
-Section: base
-Priority: optional
+Version: 0.28-154
+Section: utils
+Priority: extra
 Architecture: all
-Depends: python3 (>= 3.5.0), python3-venv (>= 3.5.0), bash, openssl
-Recommends: fake-hwclock, cifs-utils, fonts-freefont-ttf, libfreetype6-dev, build-essential, libatlas3-base, libjpeg-dev
+Depends: python3 (>= 3.5.0), python3-venv (>= 3.5.0), bash, wget, openssl, libopenjp2-7, libtiff-dev
+Recommends: fake-hwclock, cifs-utils, libatlas3-base, sense-hat
 Maintainer: Chad Ermacora <chad.e@linux.com>
 Homepage: https://github.com/chad-ermacora/sensor-rp
 Description: Kootnet Sensors

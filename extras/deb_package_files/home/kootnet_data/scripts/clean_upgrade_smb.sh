@@ -7,8 +7,7 @@ DEB_INSTALLER="/KootNetSensors.deb"
 CONFIG_DIR="/etc/kootnet"
 clear
 # Make sure its running with root
-if [[ "$1" == "dev" ]]
-then
+if [[ "$1" == "dev" ]]; then
   SMB_SHARE="/KootNetSMB/dev"
   printf '\n-- DEVELOPMENT CLEAN UPGRADE --\n'
 else
