@@ -24,6 +24,7 @@ pause_sensor_during_access_sec = 0.005
 
 class CreateEnviro:
     """ Creates Function access to the Pimoroni Enviro pHAT. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

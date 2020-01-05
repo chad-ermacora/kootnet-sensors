@@ -30,14 +30,14 @@ sensor_commands = CreateSensorCommands()
 
 
 def get_sensor_reading(command):
-    """ Returns requested sensor data (based on the provided command data). """
+    """ Returns requested local sensor data (based on the provided command data). """
     url = "https://127.0.0.1:10065/" + command
     tmp_return_data = requests.get(url=url, verify=False)
     return tmp_return_data.text
 
 
 def get_interval_sensor_data():
-    """ Returns requested sensor data (based on the provided command data). """
+    """ Returns local sensor Interval data. """
     url = "https://127.0.0.1:10065/GetIntervalSensorReadings"
     tmp_return_data = requests.get(url=url, verify=False)
     return_data = tmp_return_data.text.split(command_data_separator)
@@ -45,7 +45,7 @@ def get_interval_sensor_data():
 
 
 def display_text_on_sensor(text_message):
-    """ Returns requested sensor data (based on the provided command data). """
+    """ Displays text on local sensors display (if any). """
     url = "https://127.0.0.1:10065/DisplayText"
     requests.put(url=url, data={'command_data': text_message}, verify=False)
 

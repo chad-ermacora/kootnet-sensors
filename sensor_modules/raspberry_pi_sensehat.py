@@ -29,6 +29,7 @@ pause_sensor_during_access_sec = 0.02
 
 class CreateRPSenseHAT:
     """ Creates Function access to the Raspberry Pi Sense HAT. """
+
     def __init__(self):
         self.sensor_in_use = False
         self.display_in_use = False

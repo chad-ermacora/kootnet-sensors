@@ -27,6 +27,7 @@ gas_keep_alive_update_sec = 1
 
 class CreateBME680:
     """ Creates Function access to the Pimoroni BME680. """
+
     def __init__(self):
         self.sensor_in_use = False
         self.readings_last_updated = time.time()

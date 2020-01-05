@@ -25,6 +25,7 @@ pause_sensor_during_access_sec = 0.5
 
 class CreateAS7262:
     """ Creates Function access to the Pimoroni AS7262. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

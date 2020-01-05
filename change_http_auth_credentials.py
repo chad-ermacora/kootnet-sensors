@@ -20,6 +20,7 @@ from http_server import server_http_auth
 
 
 def change_https_auth():
+    """ Terminal app that asks for and replaces Kootnet Sensors Web Portal Login. """
     print("Please enter in a Username and Password for Sensor Web Management")
     new_user = input("New Username: ")
     new_password = input("New Password: ")

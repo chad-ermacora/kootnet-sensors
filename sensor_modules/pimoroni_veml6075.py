@@ -25,6 +25,7 @@ pause_sensor_during_access_sec = 0.004
 
 class CreateVEML6075:
     """ Creates Function access to the Pimoroni VEML6075. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

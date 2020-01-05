@@ -14,6 +14,8 @@ network_commands = CreateNetworkGetCommands()
 
 
 class CreateSensorHTTPCommand:
+    """ Creates Object to use for Sending a command and optional data to a remote sensor. """
+
     def __init__(self, sensor_address, command, command_data=None):
         if command_data is None:
             self.sensor_command_data = {"NotSet": True}
@@ -42,6 +44,10 @@ class CreateSensorHTTPCommand:
 
 
 def check_sensor_status_sensor_control(address_list):
+    """
+    Uses provided remote sensor IP or DNS addresses (as a list) and checks if it's online.
+    Returns a flask rendered template with results as an HTML page.
+    """
     text_insert = ""
 
     threads = []
@@ -77,6 +83,10 @@ def check_sensor_status_sensor_control(address_list):
 
 
 def create_all_databases_zipped(ip_list):
+    """
+    Downloads remote sensor databases from provided IP or DNS addresses (as a list)
+    then creates a single zip file for download off the local web portal.
+    """
     try:
         _queue_name_and_file_list(ip_list, command=network_commands.sensor_sql_database)
 
@@ -108,6 +118,10 @@ def create_all_databases_zipped(ip_list):
 
 
 def create_multiple_sensor_logs_zipped(ip_list):
+    """
+    Downloads remote sensor logs from provided IP or DNS addresses (as a list)
+    then creates a single zip file for download off the local web portal.
+    """
     try:
         _queue_name_and_file_list(ip_list, command=network_commands.download_zipped_logs)
 
@@ -130,6 +144,10 @@ def create_multiple_sensor_logs_zipped(ip_list):
 
 
 def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
+    """
+    Checks a remote sensor's response time and add's it to the app_cached_variables.data_queue.
+    Optional: Include hostname, database size and zipped log size.
+    """
     get_sensor_reading = app_generic_functions.get_http_sensor_reading
     task_start_time = time.time()
     sensor_status = get_sensor_reading(address)
@@ -150,6 +168,10 @@ def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=F
 
 
 def put_all_reports_zipped_to_cache(ip_list):
+    """
+    Downloads ALL remote sensor reports from provided IP or DNS addresses (as a list)
+    then creates a single zip file for download off the local web portal.
+    """
     try:
         hostname = app_cached_variables.hostname
         html_reports = [get_html_reports_combo(ip_list)]
@@ -163,6 +185,11 @@ def put_all_reports_zipped_to_cache(ip_list):
 
 
 def downloads_sensor_control(address_list, download_type="sensors_download_databases"):
+    """
+    Used to initiate Downloads from provided IP or DNS addresses (list).
+    Function option "download_type" dictates which type of download.
+    Default = sensors_download_databases
+    """
     download_command = network_commands.sensor_sql_database
     download_type_message = "the SQLite3 Database Zipped"
     add_zipped_database_size = True
@@ -222,6 +249,10 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
 
 
 def get_html_reports_combo(ip_list, skip_rewrite_link=False):
+    """
+    Returns a combination of all reports in HTML format.
+    Reports are downloaded from the provided list of remote sensors (IP or DNS addresses)
+    """
     try:
         system_report = app_config_access.sensor_control_config.radio_report_system
         config_report = app_config_access.sensor_control_config.radio_report_config
@@ -256,6 +287,10 @@ def _replace_text_in_report(report, new_text):
 
 
 def create_the_big_zip(ip_list):
+    """
+    Downloads everything from sensors based on provided IP or DNS addresses (as a list)
+    then creates a single zip file for download off the local web portal.
+    """
     new_name = "TheBigZip_" + app_cached_variables.hostname + "_" + str(time.time())[:-8] + ".zip"
     app_cached_variables.sc_big_zip_name = new_name
 
@@ -304,6 +339,7 @@ def _worker_queue_list_ip_name_file(address, command):
 
 
 def sensor_control_management():
+    """ Returns flask rendered template (HTML page) of "Sensor Control" in the Web Portal. """
     radio_checked_online_status = ""
     radio_checked_combo_reports = ""
     radio_checked_systems_report = ""
@@ -435,6 +471,10 @@ def sensor_control_management():
 
 
 def get_sum_db_sizes(ip_list):
+    """
+    Gets the size of remote sensors zipped database based on provided IP or DNS addresses (as a list)
+    Puts results into app_cached_variables.flask_return_data_queue
+    """
     databases_size = 0.0
     try:
         threads = []

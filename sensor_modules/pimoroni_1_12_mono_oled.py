@@ -25,6 +25,7 @@ turn_off_display = 30
 
 class CreateLumaOLED:
     """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128). """
+
     def __init__(self):
         self.display_in_use = False
         try:

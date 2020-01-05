@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script is a interactive script to edit Kootnet Sensors Configurations
 CONFIG_DIR="/etc/kootnet"
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
@@ -7,7 +8,7 @@ if [[ $EUID != 0 ]]; then
   exit $?
 fi
 # Change HTTP Authentication User & Password
-read -p "Do you want to Change the HTTP Authentication? (Y/N) " -n 1 -r AUTH
+read -p "Do you want to Change the Web Portal's Login? (Y/N) " -n 1 -r AUTH
 echo
 if [[ ${AUTH} =~ ^[Yy]$ ]]; then
   /home/kootnet_data/env/bin/python /opt/kootnet-sensors/change_http_auth_credentials.py

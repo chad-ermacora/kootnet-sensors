@@ -28,6 +28,7 @@ pause_sensor_during_access_sec = 0.007
 
 class CreateLSM303D:
     """ Creates Function access to the Pimoroni LSM303D. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

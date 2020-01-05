@@ -26,6 +26,7 @@ pause_sensor_during_access_sec = 0.02
 
 class CreateBMP280:
     """ Creates Function access to the Pimoroni BMP280. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

@@ -27,6 +27,7 @@ if geteuid() == 0:
     # Raspberry Pi System is created first to enable I2C, SPI & Wifi
     # This is to ensure they are enabled for the other hardware Sensors
     from sensor_modules import raspberry_pi_system
+
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
     from sensor_modules import pimoroni_as7262
@@ -44,6 +45,7 @@ if geteuid() == 0:
     from sensor_modules import pimoroni_11x7_led_matrix
     from sensor_modules import pimoroni_0_96_spi_colour_lcd
     from sensor_modules import pimoroni_1_12_mono_oled
+
     # Initialize sensor access, based on installed sensors file
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         rp_sense_hat_a = raspberry_pi_sensehat.CreateRPSenseHAT()

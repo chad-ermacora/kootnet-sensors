@@ -23,6 +23,7 @@ from operations_modules import app_config_access
 
 class CreateMatrix11x7:
     """ Creates Function access to the Pimoroni 11x7 LED Matrix. """
+
     def __init__(self):
         self.display_in_use = False
         try:

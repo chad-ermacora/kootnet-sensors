@@ -25,6 +25,7 @@ from operations_modules import file_locations
 
 class CreateST7735:
     """ Creates Function access to the Pimoroni 10.96" SPI Colour LCD (160x80). """
+
     def __init__(self):
         self.display_in_use = False
         try:

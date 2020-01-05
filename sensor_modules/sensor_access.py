@@ -462,6 +462,7 @@ def display_message(text_msg):
 
 
 def start_special_sensor_interactive_services():
+    """ If available start additional hardware Interaction thread. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         text_name = "Sensor Interactive Service"
         function = sensors_direct.rp_sense_hat_a.start_joy_stick_commands

@@ -37,6 +37,7 @@ pause_sensor_during_access_sec_pm = 0.002
 
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
+
     def __init__(self):
         try:
             self.display_off_count = 0
@@ -109,8 +110,8 @@ class CreateEnviroPlus:
             self.particulate_matter_data()
             time.sleep(1)
 
-    # Displays text on the 0.96" LCD
     def display_text(self, message):
+        """ Scrolls Provided Text on LED Display. """
         if not self.display_in_use:
             self.display_in_use = True
             message_img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))

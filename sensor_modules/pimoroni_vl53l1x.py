@@ -26,6 +26,7 @@ pause_sensor_during_access_sec = 0.3
 
 class CreateVL53L1X:
     """ Creates Function access to the Pimoroni VL53L1X. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

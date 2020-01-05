@@ -26,6 +26,7 @@ pause_sensor_during_access_sec = 0.01
 
 class CreateICM20948:
     """ Creates Function access to the ICM20948. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

@@ -19,6 +19,7 @@ pause_sensor_during_access_sec = 0.005
 
 class CreateRPSystem:
     """ Creates Function access to Raspberry Pi Hardware Information. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

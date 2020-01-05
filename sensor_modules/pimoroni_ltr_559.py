@@ -27,6 +27,7 @@ pause_sensor_during_access_sec = 0.02
 
 class CreateLTR559:
     """ Creates Function access to the Pimoroni LTR-559. """
+
     def __init__(self):
         self.sensor_in_use = False
         try:

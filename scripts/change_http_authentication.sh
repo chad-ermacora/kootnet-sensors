@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script runs a Python3 script to change Kootnet Sensors Web Portal Login Credentials
 # Make sure its running with root
 if [[ $EUID != 0 ]]; then
   printf "\nStarting with sudo\n"
