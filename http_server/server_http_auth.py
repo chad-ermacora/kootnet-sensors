@@ -23,13 +23,12 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_config_access
 
-
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
 
 
 def set_http_auth_from_file():
-    """ Loads configuration from file and returns it as a configuration object. """
+    """ Loads Web Portal (flask app) login credentials from file and updates them in the configuration. """
     logger.primary_logger.debug("Loading HTTP Authentication File")
 
     if os.path.isfile(file_locations.http_auth):
@@ -61,6 +60,7 @@ def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
 
 
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
+    """ Saves Web Portal (flask app) login credentials to file. """
     try:
         verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
         save_data = verified_user + "\n" + generate_password_hash(verified_password)
@@ -70,4 +70,5 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 
 
+# Create Flask app HTTP login
 auth = HTTPBasicAuth()

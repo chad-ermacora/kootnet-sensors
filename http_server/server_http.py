@@ -22,6 +22,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import delayed_cache_update
+
 https_import_error_msg = ""
 https_import_errors = True
 try:
@@ -58,6 +59,8 @@ flask_http_port = 10065
 
 
 class CreateSensorHTTP:
+    """ Creates an instance of the Web Portal HTTPS server using Flask and WSGIServer from gevent. """
+
     def __init__(self):
         app = Flask(__name__)
         Compress(app)
@@ -90,7 +93,7 @@ class CreateSensorHTTP:
 
 
 def https_start_and_watch():
-    # Start the HTTP Server for remote access
+    """ Starts an instance of the HTTP Flask server, assuming imports are OK. """
     if https_import_errors:
         log_message = "--- Failed to Start HTTPS Server - Missing Required Dependencies: "
         logger.primary_logger.critical(log_message + str(https_import_error_msg))
