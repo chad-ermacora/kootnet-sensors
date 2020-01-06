@@ -20,11 +20,37 @@ from platform import system
 from queue import Queue
 from operations_modules.sqlite_database import CreateDatabaseVariables
 
-# Static variables
+# The following variables are populated at runtime (Up until the next blank line)
+# This helps lessen disk reads by caching commonly used variables
 current_platform = system()
+operating_system_name = ""
 database_variables = CreateDatabaseVariables()
+program_last_updated = ""
+reboot_count = ""
+total_ram_memory = 0.0
+total_ram_memory_size_type = " MB"
+
+# Static variables
 command_data_separator = "[new_data_section]"
 no_sensor_present = "NoSensor"
+
+# Network Variables
+hostname = ""
+ip = ""
+ip_subnet = ""
+gateway = ""
+dns1 = ""
+dns2 = ""
+
+# Wifi Variables
+wifi_country_code = ""
+wifi_ssid = ""
+wifi_security_type = ""
+wifi_psk = ""
+
+# Flask App Login Variables (Web Portal Login)
+http_flask_user = "Kootnet"
+http_flask_password = "sensors"
 
 # Running "Service" Threads
 http_server_thread = None
@@ -34,6 +60,29 @@ interactive_sensor_thread = None
 weather_underground_thread = None
 luftdaten_thread = None
 open_sense_map_thread = None
+
+# Running Trigger Recording Threads
+trigger_thread_sensor_uptime = None
+trigger_thread_cpu_temp = None
+trigger_thread_env_temp = None
+trigger_thread_pressure = None
+trigger_thread_altitude = None
+trigger_thread_humidity = None
+trigger_thread_distance = None
+trigger_thread_lumen = None
+trigger_thread_visible_ems = None
+trigger_thread_accelerometer = None
+trigger_thread_magnetometer = None
+trigger_thread_gyroscope = None
+
+# Checked before running OS upgrade. Is changed to False when OS upgrade started
+linux_os_upgrade_ready = True
+
+# Variables to make sure Sensor Control is only creating a single copy at any given time
+creating_the_reports_zip = False
+creating_the_big_zip = False
+creating_databases_zip = False
+creating_logs_zip = False
 
 # Possible Trigger "High / Low" States
 normal_state = "Normal"
@@ -53,41 +102,7 @@ state_accelerometer = normal_state
 state_magnetometer = normal_state
 state_gyroscope = normal_state
 
-# Running Trigger Recording Threads
-trigger_thread_sensor_uptime = None
-trigger_thread_cpu_temp = None
-trigger_thread_env_temp = None
-trigger_thread_pressure = None
-trigger_thread_altitude = None
-trigger_thread_humidity = None
-trigger_thread_distance = None
-trigger_thread_lumen = None
-trigger_thread_visible_ems = None
-trigger_thread_accelerometer = None
-trigger_thread_magnetometer = None
-trigger_thread_gyroscope = None
-
-# This file is updated with variables at runtime.
-# This helps lessen disk reads by caching commonly used variables
-program_last_updated = ""
-reboot_count = ""
-total_ram_memory = 0.0
-total_ram_memory_size_type = " MB"
-
-operating_system_name = ""
-hostname = ""
-ip = ""
-ip_subnet = ""
-gateway = ""
-dns1 = ""
-dns2 = ""
-
-wifi_country_code = ""
-wifi_ssid = ""
-wifi_security_type = ""
-wifi_psk = ""
-
-# Login to remote sensors (Used primarily in Sensor Control)
+# Login used for remote sensors (Used in Sensor Control)
 http_login = ""
 http_password = ""
 

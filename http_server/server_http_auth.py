@@ -21,7 +21,7 @@ from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_config_access
+from operations_modules import app_cached_variables
 
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
@@ -35,18 +35,18 @@ def set_http_auth_from_file():
         try:
             with open(file_locations.http_auth, "r") as auth_file:
                 auth_file_lines = auth_file.readlines()
-                app_config_access.http_flask_user = auth_file_lines[0].strip()
-                app_config_access.http_flask_password = auth_file_lines[1].strip()
+                app_cached_variables.http_flask_user = auth_file_lines[0].strip()
+                app_cached_variables.http_flask_password = auth_file_lines[1].strip()
         except Exception as error:
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
-            app_config_access.http_flask_user = default_http_flask_user
-            app_config_access.http_flask_password = generate_password_hash(default_http_flask_password)
+            app_cached_variables.http_flask_user = default_http_flask_user
+            app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
     else:
         logger.primary_logger.warning("Configuration file not found, using and saving default")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
-        app_config_access.http_flask_user = default_http_flask_user
-        app_config_access.http_flask_password = generate_password_hash(default_http_flask_password)
+        app_cached_variables.http_flask_user = default_http_flask_user
+        app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
 def _verify_http_credentials(new_http_flask_user, new_http_flask_password):

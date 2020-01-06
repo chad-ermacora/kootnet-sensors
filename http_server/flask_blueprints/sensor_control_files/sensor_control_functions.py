@@ -113,7 +113,7 @@ def create_all_databases_zipped(ip_list):
     except Exception as error:
         logger.network_logger.error("Sensor Control - Databases Zip Generation Error: " + str(error))
         app_cached_variables.sc_databases_zip_name = ""
-    app_config_access.creating_databases_zip = False
+    app_cached_variables.creating_databases_zip = False
     logger.network_logger.info("Sensor Control - Databases Zip Generation Complete")
 
 
@@ -139,7 +139,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
     except Exception as error:
         logger.network_logger.error("Sensor Control - Logs Zip Generation Error: " + str(error))
         app_cached_variables.sc_logs_zip_name = ""
-    app_config_access.creating_logs_zip = False
+    app_cached_variables.creating_logs_zip = False
     logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Complete")
 
 
@@ -180,7 +180,7 @@ def put_all_reports_zipped_to_cache(ip_list):
         app_cached_variables.sc_reports_zip_name = "Reports_from_" + hostname + "_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Reports Zip Generation Error: " + str(error))
-    app_config_access.creating_the_reports_zip = False
+    app_cached_variables.creating_the_reports_zip = False
     logger.network_logger.info("Sensor Control - Reports Zip Generation Complete")
 
 
@@ -315,10 +315,10 @@ def create_the_big_zip(ip_list):
                                                 file_location=zip_location)
 
             logger.network_logger.info("Sensor Control - The Big Zip Generation Completed")
-            app_config_access.creating_the_big_zip = False
+            app_cached_variables.creating_the_big_zip = False
         except Exception as error:
             logger.primary_logger.error("Sensor Control - Big Zip Error: " + str(error))
-            app_config_access.creating_the_big_zip = False
+            app_cached_variables.creating_the_big_zip = False
             app_cached_variables.sc_big_zip_name = ""
 
 
@@ -393,35 +393,35 @@ def sensor_control_management():
         radio_checked_send_relayed = "checked"
 
     download_big_zip = "disabled"
-    if not app_config_access.creating_the_big_zip and app_cached_variables.sc_big_zip_name != "":
+    if not app_cached_variables.creating_the_big_zip and app_cached_variables.sc_big_zip_name != "":
         download_big_zip = ""
 
     download_reports_zip = "disabled"
-    if not app_config_access.creating_the_reports_zip and app_cached_variables.sc_reports_zip_name != "":
+    if not app_cached_variables.creating_the_reports_zip and app_cached_variables.sc_reports_zip_name != "":
         download_reports_zip = ""
 
     download_databases_zip = "disabled"
-    if not app_config_access.creating_databases_zip and app_cached_variables.sc_databases_zip_name != "":
+    if not app_cached_variables.creating_databases_zip and app_cached_variables.sc_databases_zip_name != "":
         download_databases_zip = ""
 
     download_logs_zip = "disabled"
-    if not app_config_access.creating_logs_zip and app_cached_variables.sc_logs_zip_name != "":
+    if not app_cached_variables.creating_logs_zip and app_cached_variables.sc_logs_zip_name != "":
         download_logs_zip = ""
 
     extra_message = ""
     disabled_reports_zip = ""
     disabled_big_zip = ""
     disable_run_action_button = ""
-    if app_config_access.creating_the_big_zip:
+    if app_cached_variables.creating_the_big_zip:
         extra_message = "Creating Big Zip"
         disable_run_action_button = "disabled"
-    elif app_config_access.creating_the_reports_zip:
+    elif app_cached_variables.creating_the_reports_zip:
         extra_message = "Creating Reports Zip"
         disable_run_action_button = "disabled"
-    elif app_config_access.creating_databases_zip:
+    elif app_cached_variables.creating_databases_zip:
         extra_message = "Creating Databases Zip"
         disable_run_action_button = "disabled"
-    elif app_config_access.creating_logs_zip:
+    elif app_cached_variables.creating_logs_zip:
         extra_message = "Creating Logs Zip"
         disable_run_action_button = "disabled"
 

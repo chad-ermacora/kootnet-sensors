@@ -571,7 +571,7 @@ def upgrade_linux_os():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
         os.system(os_cli_commands.bash_commands["UpgradeSystemOS"])
-        app_config_access.linux_os_upgrade_ready = True
+        app_cached_variables.linux_os_upgrade_ready = True
         logger.primary_logger.warning("Linux OS Upgrade Done")
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))

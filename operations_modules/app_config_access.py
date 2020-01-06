@@ -49,17 +49,5 @@ else:
     luftdaten_config.update_settings_from_file()
     open_sense_map_config.update_settings_from_file()
 
-linux_os_upgrade_ready = True
-
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"
-
-# Sensor Control Variables
-creating_the_reports_zip = False
-creating_the_big_zip = False
-creating_databases_zip = False
-creating_logs_zip = False
-
-# Flask Login Variables
-http_flask_user = "Kootnet"
-http_flask_password = "sensors"

@@ -198,9 +198,9 @@ def upgrade_system_os():
     message2 = "The sensor will reboot when done. This will take awhile.  " + \
                "You may continue to use the sensor during the upgrade process.  " + \
                "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
-    if app_config_access.linux_os_upgrade_ready:
+    if app_cached_variables.linux_os_upgrade_ready:
         message = "Operating System Upgrade Started"
-        app_config_access.linux_os_upgrade_ready = False
+        app_cached_variables.linux_os_upgrade_ready = False
         app_generic_functions.thread_function(sensor_access.upgrade_linux_os)
     else:
         logger.network_logger.warning("* Operating System Upgrade Already Running")
