@@ -418,6 +418,7 @@ def convert_triggers_lines_to_obj(trigger_text_file):
 
 
 def html_request_to_variance_triggers(html_request):
+    """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
     logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
     trigger_variances = CreateTriggerVariances()
 

@@ -54,6 +54,7 @@ def get_config_from_file():
 
 
 def html_request_to_config_main(html_request):
+    """ Creates and returns a Main configuration object instance based on provided HTML configurations. """
     logger.network_logger.debug("Starting HTML Main Configuration Update Check")
     new_config = CreateConfig()
     if html_request.form.get("debug_logging") is not None:

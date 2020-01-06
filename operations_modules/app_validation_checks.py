@@ -35,6 +35,7 @@ def text_is_alphanumeric(text_string):
 
 
 def ip_address_is_valid(ip_address):
+    """ Checks if an IPv4 address is valid. Returns True for valid and False for Invalid. """
     ip_address_tweaked = ip_address.replace(":", "a")
     ip_address_tweaked = ip_address_tweaked.replace(".", "a")
     if ip_address != "" and text_is_alphanumeric(ip_address_tweaked):
@@ -50,6 +51,7 @@ def ip_address_is_valid(ip_address):
 
 
 def subnet_mask_is_valid(subnet_mask):
+    """ Checks if a subnet mask if valid.  Returns True for valid and False for Invalid. """
     subnet_ok = False
     count = 8
     while count <= 30:
@@ -62,8 +64,8 @@ def subnet_mask_is_valid(subnet_mask):
 
 def wireless_ssid_is_valid(text_ssid):
     """
-    Returns True if provided text only uses Alphanumeric characters, spaces, underscores and dashes.
-    Otherwise returns False.
+    Checks if a wireless SSID is valid. Returns True for valid and False for Invalid.
+    Checks that text only uses Alphanumeric characters, spaces, underscores and dashes.
     """
     if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', text_ssid):
         return True
@@ -72,6 +74,10 @@ def wireless_ssid_is_valid(text_ssid):
 
 
 def text_has_no_double_quotes(text_string):
+    """
+    Checks if the provided string has double quotes or not.
+    Returns True if no quotes are found and False if they are.
+    """
     if text_string.find('"') is not -1:
         return False
     else:
@@ -91,6 +97,7 @@ def hostname_is_valid(text_hostname):
 
 
 def valid_sensor_reading(reading):
+    """ If sensor reads as no_sensor_present (AKA Sensor not installed or missing), returns False, otherwise True. """
     if reading == no_sensor_present:
         return False
     return True

@@ -98,6 +98,7 @@ class CreateInstalledSensors:
         self.pimoroni_mono_oled_luma_name = "Pimoroni 1.12'' Mono OLED (128x128, white/black)"
 
     def get_installed_names_str(self):
+        """ Returns a string of all currently installed sensors. """
         str_installed_sensors = ""
         sensors_installed_list = [self.linux_system, self.raspberry_pi, self.raspberry_pi_sense_hat,
                                   self.pimoroni_bh1745, self.pimoroni_as7262, self.pimoroni_bmp280,
@@ -122,6 +123,7 @@ class CreateInstalledSensors:
         return "N/A"
 
     def get_installed_sensors_config_as_str(self):
+        """ Returns current Install Sensors as a string ready to be written to disk. """
         self.raspberry_pi_name = self.get_raspberry_pi_model()
         return_str = "Enable = 1 & Disable = 0\n" + \
                      str(self.linux_system) + " = " + self.linux_system_name + "\n" + \
@@ -145,6 +147,7 @@ class CreateInstalledSensors:
         return return_str
 
     def get_raspberry_pi_model(self):
+        """ Returns the local Raspberry Pi model. """
         if self.raspberry_pi:
             try:
                 pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
@@ -174,6 +177,7 @@ def get_installed_sensors_from_file():
 
 
 def html_request_to_installed_sensors_config(html_request):
+    """ Creates and returns a Installed Sensors configuration object instance based on provided HTML configurations. """
     logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
     new_installed_sensors = CreateInstalledSensors()
     try:

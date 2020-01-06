@@ -112,6 +112,7 @@ class CreateSensorControlConfig:
         return return_ip_list
 
     def get_clean_ip_addresses_as_list(self):
+        """ Returns a list of verified Online remote sensors based on 'Sensor Controls' current address list. """
         raw_ip_list = self.get_raw_ip_addresses_as_list()
         valid_ip_list = []
         online_ip_list = []
@@ -137,6 +138,10 @@ class CreateSensorControlConfig:
 
     @staticmethod
     def _check_address(sensor_address):
+        """
+        Checks if a remote sensor is online and if so, saves the results to a queue.
+        Queue located at app_cached_variables.flask_return_data_queue.
+        """
         try:
             sensor_online_check = app_generic_functions.get_http_sensor_reading(sensor_address, timeout=4)
             if sensor_online_check == "OK":
@@ -145,6 +150,7 @@ class CreateSensorControlConfig:
             logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))
 
     def set_from_html_post(self, html_request):
+        """ Applies and Saves 'Sensor Controls' settings. """
         new_settings_list = []
         for html_request_setting in self.html_post_settings:
             new_settings_list.append(html_request.form.get(html_request_setting))

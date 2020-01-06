@@ -56,9 +56,7 @@ class CreateLuftdatenConfig:
         self.write_config_to_file()
 
     def update_settings_from_file(self, file_content=None, skip_write=False):
-        """
-        Updates Luftdaten settings based on saved configuration file.  Creates Default file if missing.
-        """
+        """ Updates Luftdaten settings based on saved configuration file.  Creates Default file if missing. """
         if os.path.isfile(file_locations.luftdaten_config) or skip_write:
             if file_content is None:
                 loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.luftdaten_config)
@@ -93,9 +91,9 @@ class CreateLuftdatenConfig:
         config_str = self.get_configuration_str()
         app_generic_functions.write_file_to_disk(file_locations.luftdaten_config, config_str)
 
-    # extracts serial from cpuinfo
     @staticmethod
     def _get_cpu_serial():
+        """ Returns Raspberry Pi CPU Serial number. """
         try:
             with open('/proc/cpuinfo', 'r') as f:
                 for line in f:

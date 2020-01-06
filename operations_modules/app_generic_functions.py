@@ -87,6 +87,7 @@ class CreateMonitoredThread:
 
 
 def start_and_wait_threads(threads_list):
+    """ Starts provided list of threads and waits for them all to complete. """
     for thread in threads_list:
         thread.start()
     for thread in threads_list:
@@ -271,13 +272,22 @@ def get_data_queue_items():
     return que_data
 
 
-def replace_text_lists(text_file, old_list, new_list):
+def replace_text_lists(original_text, old_list, new_list):
+    """
+    Replaces text in the provided 'original_text' argument.
+    original_text = a string of text.
+    old_list = a list of strings to replace in 'original_text'.
+    new_list = a list of strings that will replace the 'old_list' list of strings.
+    """
     for old_text, new_text in zip(old_list, new_list):
-        text_file = text_file.replace(old_text, new_text)
-    return text_file
+        original_text = original_text.replace(old_text, new_text)
+    return original_text
 
 
 def clear_zip_names():
+    """
+    Set's all sensor control download names to nothing ("")
+    """
     app_cached_variables.sc_reports_zip_name = ""
     app_cached_variables.sc_logs_zip_name = ""
     if app_cached_variables.sc_databases_zip_in_memory:
@@ -287,6 +297,7 @@ def clear_zip_names():
 
 
 def save_to_memory_ok(write_size):
+    """ Checks to see if there is enough RAM to save file to to memory or not. """
     try:
         # Numbers 1,000,000 / 25,000,000. Not using underscores to maintain compatibility with Python 3.5.x
         if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
@@ -297,6 +308,7 @@ def save_to_memory_ok(write_size):
 
 
 def get_response_bg_colour(response_time):
+    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
     try:
         delay_float = float(response_time)
         background_colour = "green"

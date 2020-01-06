@@ -84,7 +84,8 @@ class CreateWeatherUndergroundConfig:
 
     def update_settings_from_file(self, file_content=None, skip_write=False):
         """
-        Updates Weather Underground settings based on saved configuration file.  Creates Default file if missing.
+        Updates Weather Underground settings based on saved configuration file.
+        Creates Default file if missing.
         """
         if os.path.isfile(file_locations.weather_underground_config) or skip_write:
             if file_content is None:

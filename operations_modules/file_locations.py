@@ -21,6 +21,8 @@
 import os
 from getpass import getuser
 
+# Holds the location of required files such as configurations and extra resources
+# Locations change to the user's home directory + /kootnet_data if not run with root
 program_root_dir = ""
 try:
     split_location = os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]

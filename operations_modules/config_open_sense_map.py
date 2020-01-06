@@ -196,9 +196,7 @@ class CreateOpenSenseMapConfig:
         self.write_config_to_file()
 
     def update_settings_from_file(self, file_content=None, skip_write=False):
-        """
-        Updates Open Sense Map settings based on saved configuration file.  Creates Default file if missing.
-        """
+        """ Updates Open Sense Map settings based on saved configuration file.  Creates Default file if missing. """
         if os.path.isfile(file_locations.osm_config) or skip_write:
             if file_content is None:
                 loaded_configuration_raw = app_generic_functions.get_file_content(file_locations.osm_config)
