@@ -31,6 +31,12 @@ logging.captureWarnings(True)
 
 
 class CreateMonitoredThread:
+    """
+    Creates a thread and checks every 30 seconds to make sure its still running.
+    If the thread stops, it will be restarted up to 5 times by default.
+    If it gets restarted more then 5 times, it logs an error message and stops.
+    """
+
     def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=5):
         self.is_running = True
         self.function = function
@@ -88,6 +94,7 @@ def start_and_wait_threads(threads_list):
 
 
 def get_text_running_thread_state(service_enabled, thread_variable):
+    """ Checks to see if a 'service' thread is running and returns the result as text. """
     if service_enabled:
         return_text = "Stopped"
         if thread_variable is None:
@@ -125,6 +132,7 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
 
 
 def thread_function(function, args=None):
+    """ Starts provided function as a thread with optional arguments. """
     if args:
         system_thread = Thread(target=function, args=[args])
     else:
@@ -134,7 +142,7 @@ def thread_function(function, args=None):
 
 
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
-    """ Returns requested sensor data (based on the provided command data). """
+    """ Returns requested remote sensor data (based on the provided command data). """
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -167,7 +175,7 @@ def send_http_command(sensor_address, command, included_data=None, http_port="10
 
 
 def get_http_sensor_file(sensor_address, command, http_port="10065"):
-    """ Returns requested sensor file (based on the provided command data). """
+    """ Returns requested remote sensor file (based on the provided command data). """
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -184,7 +192,7 @@ def get_http_sensor_file(sensor_address, command, http_port="10065"):
 
 
 def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
-    """ Returns requested sensor data (based on the provided command data). """
+    """ Sends provided text message to a remote sensor's display. """
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -198,6 +206,7 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
 
 
 def check_for_port_in_address(address):
+    """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
     ip_split = address.strip().split(":")
     if len(ip_split) == 2:
         return True
@@ -207,10 +216,15 @@ def check_for_port_in_address(address):
 
 
 def get_ip_and_port_split(address):
+    """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
     return address.split(":")
 
 
 def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
+    """
+    Creates a zip of 1 or more files provided as a list.
+    Saves to memory or disk based on save_type & file_location
+    """
     try:
         if save_type == "get_bytes_io":
             return_zip_file = BytesIO()
@@ -237,6 +251,7 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
 
 
 def get_zip_size(zip_file):
+    """ Returns the size of provided Zip file. """
     files_size = 0.0
     try:
         with ZipFile(zip_file, 'r') as zip_file_access:
@@ -248,6 +263,7 @@ def get_zip_size(zip_file):
 
 
 def get_data_queue_items():
+    """ Returns an item from the app_cached_variables.data_queue. """
     que_data = []
     while not app_cached_variables.data_queue.empty():
         que_data.append(app_cached_variables.data_queue.get())
