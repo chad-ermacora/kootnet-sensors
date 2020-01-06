@@ -46,14 +46,14 @@ if software_version.old_version == software_version.version or geteuid() != 0:
     except Exception as init_error:
         logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
-html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
-                            "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                            "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                            "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5",
+                     "senor_ip_6", "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10",
+                     "senor_ip_11", "senor_ip_12", "senor_ip_13", "senor_ip_14", "senor_ip_15",
+                     "senor_ip_16", "senor_ip_17", "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
 
 class CreateNetworkGetCommands:
-    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
+    """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
 
     def __init__(self):
         self.sensor_sql_database = "DownloadSQLDatabase"
