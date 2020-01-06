@@ -8,9 +8,8 @@ from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from http_server.server_http_generic_functions import get_sensor_control_report
-from http_server.server_http_sensor_control import CreateNetworkGetCommands
 
-network_commands = CreateNetworkGetCommands()
+network_commands = app_cached_variables.CreateNetworkGetCommands()
 
 
 class CreateSensorHTTPCommand:

@@ -17,7 +17,6 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
-from operations_modules.sqlite_database import CreateDatabaseVariables
 
 round_decimal_to = 2
 
@@ -26,7 +25,7 @@ class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
 
     def __init__(self):
-        self.database_variables = CreateDatabaseVariables()
+        self.database_variables = app_cached_variables.CreateDatabaseVariables()
         logger.sensors_logger.debug("Linux System Module Initialization - OK")
 
     @staticmethod

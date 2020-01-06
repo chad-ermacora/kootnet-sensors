@@ -8,12 +8,11 @@ from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import os_cli_commands
 from http_server.server_http_auth import auth
-from http_server import server_http_sensor_control
 from http_server.server_http_generic_functions import message_and_return
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
-sensor_network_commands = server_http_sensor_control.CreateNetworkGetCommands()
+sensor_network_commands = app_cached_variables.CreateNetworkGetCommands()
 message_few_min = "This may take a few minutes ..."
 
 

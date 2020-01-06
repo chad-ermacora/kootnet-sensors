@@ -19,9 +19,9 @@
 from time import sleep, time
 from datetime import datetime
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread, CreateSensorCommands
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_config_access
-from operations_modules.app_cached_variables import normal_state, low_state, high_state
+from operations_modules.app_cached_variables import CreateNetworkGetCommands, normal_state, low_state, high_state
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
@@ -29,7 +29,7 @@ from sensor_modules import sensor_access
 class CreateTriggerVarianceData:
     def __init__(self, sensor_type, sensor_database_variable, enabled=True, thread_name="GenericTriggerThread",
                  variance=99999.99, sensor_wait_seconds=10, num_of_readings=1, number_of_reading_sets=3):
-        self.sensor_types = CreateSensorCommands()
+        self.sensor_types = CreateNetworkGetCommands()
         self.sensor_type = sensor_type
         self.get_sensor_data_function = None
         self.has_sensor = self._check_for_sensor()

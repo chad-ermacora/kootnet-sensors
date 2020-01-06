@@ -21,8 +21,8 @@ import time
 import sqlite3
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules import sqlite_database
 from operations_modules import os_cli_commands
 
 
@@ -49,7 +49,7 @@ def _set_file_permissions():
 def _check_database_structure():
     """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = sqlite_database.CreateDatabaseVariables()
+    database_variables = app_cached_variables.CreateDatabaseVariables()
 
     columns_created = 0
     columns_already_made = 0

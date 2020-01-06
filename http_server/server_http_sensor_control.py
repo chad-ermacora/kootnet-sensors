@@ -52,63 +52,9 @@ html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "se
                      "senor_ip_16", "senor_ip_17", "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
 
-class CreateNetworkGetCommands:
-    """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
-
-    def __init__(self):
-        self.sensor_sql_database = "DownloadSQLDatabase"
-        self.sensor_sql_database_size = "GetSQLDBSize"
-        self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
-        self.sensor_configuration = "GetConfigurationReport"
-        self.sensor_configuration_file = "GetConfiguration"
-        self.installed_sensors_file = "GetInstalledSensors"
-        self.wifi_config_file = "GetWifiConfiguration"
-        self.variance_config = "GetVarianceConfiguration"
-        self.weather_underground_config_file = "GetOnlineServicesWeatherUnderground"
-        self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
-        self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
-        self.system_data = "GetSystemData"
-        self.primary_log = "GetPrimaryLog"
-        self.network_log = "GetNetworkLog"
-        self.sensors_log = "GetSensorsLog"
-        self.download_zipped_logs = "DownloadZippedLogs"
-        self.download_zipped_logs_size = "GetZippedLogsSize"
-        self.download_zipped_everything = "DownloadZippedEverything"
-        self.sensor_readings = "GetIntervalSensorReadings"
-        self.sensor_name = "GetHostName"
-        self.system_uptime = "GetSystemUptime"
-        self.system_date_time = "GetSystemDateTime"
-        self.cpu_temp = "GetCPUTemperature"
-        self.environmental_temp = "GetEnvTemperature"
-        self.env_temp_offset = "GetTempOffsetEnv"
-        self.pressure = "GetPressure"
-        self.altitude = "GetAltitude"
-        self.humidity = "GetHumidity"
-        self.distance = "GetDistance"
-        self.gas_index = "GetGasResistanceIndex"
-        self.gas_oxidised = "GetGasOxidised"
-        self.gas_reduced = "GetGasReduced"
-        self.gas_nh3 = "GetGasNH3"
-        self.pm_1 = "GetParticulateMatter1"
-        self.pm_2_5 = "GetParticulateMatter2_5"
-        self.pm_10 = "GetParticulateMatter10"
-        self.lumen = "GetLumen"
-        self.rgb = "GetEMS"
-        self.ultra_violet_index = "GetUltraVioletA"
-        self.ultra_violet_a = "GetUltraVioletA"
-        self.ultra_violet_b = "GetUltraVioletB"
-        self.accelerometer_xyz = "GetAccelerometerXYZ"
-        self.magnetometer_xyz = "GetMagnetometerXYZ"
-        self.gyroscope_xyz = "GetGyroscopeXYZ"
-        self.database_notes = "GetDatabaseNotes"
-        self.database_note_dates = "GetDatabaseNoteDates"
-        self.database_user_note_dates = "GetDatabaseNoteUserDates"
-
-
 class CreateReplacementVariables:
-
     def __init__(self):
-        self.remote_sensor_commands = CreateNetworkGetCommands()
+        self.remote_sensor_commands = app_cached_variables.CreateNetworkGetCommands()
 
     @staticmethod
     def report_system():
@@ -252,7 +198,8 @@ class CreateReplacementVariables:
     def report_test_sensors(self, ip_address):
         try:
             get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
-            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command).strip()
+            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command, timeout=20)
+            sensor_readings_raw = sensor_readings_raw.strip()
             sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
             sensor_readings = sensor_readings_raw.split(app_cached_variables.command_data_separator)[1].split(",")
 

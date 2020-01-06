@@ -21,12 +21,11 @@ import requests
 from operations_modules.config_primary import get_config_from_file
 from operations_modules.config_installed_sensors import get_installed_sensors_from_file
 from operations_modules.app_cached_variables import command_data_separator
-from operations_modules.app_generic_functions import CreateSensorCommands
 
 logging.captureWarnings(True)
 current_config = get_config_from_file()
 installed_sensors = get_installed_sensors_from_file()
-sensor_commands = CreateSensorCommands()
+display_text_on_remote_sensor_command = "DisplayText"
 
 
 def get_sensor_reading(command):
@@ -76,7 +75,7 @@ while count < len(sensor_types):
 
 if installed_sensors.has_display:
     print("\nShowing Temperature on Installed Display, Please Wait ...")
-    cpu_temp = float(get_sensor_reading(sensor_commands.environmental_temp))
+    cpu_temp = float(get_sensor_reading(display_text_on_remote_sensor_command))
     display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
 
 print("\nTesting Complete")

@@ -19,9 +19,8 @@
 from operations_modules import logger, app_config_access, app_cached_variables
 from operations_modules import app_cached_variables as app_cv
 from operations_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
-from operations_modules.app_generic_functions import CreateSensorCommands
 
-sensor_types = CreateSensorCommands()
+sensor_types = app_cv.CreateNetworkGetCommands()
 database_variables = app_cached_variables.database_variables
 trigger_variances = app_config_access.trigger_variances
 
