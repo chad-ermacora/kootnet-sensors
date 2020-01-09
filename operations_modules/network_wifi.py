@@ -23,6 +23,10 @@ from operations_modules import app_cached_variables
 
 
 def get_wifi_country_code(wifi_config_lines):
+    """
+    Checks the wpa_supplicant.conf file for the set country code and returns it.
+    If not found, returns an empty string.
+    """
     for line in wifi_config_lines:
         line_stripped = line.strip()
         if line_stripped[:8] == "country=":
@@ -31,6 +35,10 @@ def get_wifi_country_code(wifi_config_lines):
 
 
 def get_wifi_ssid(wifi_config_lines):
+    """
+    Checks the wpa_supplicant.conf file for a wireless network name (SSID) and returns it.
+    If not found, returns an empty string.
+    """
     for line in wifi_config_lines:
         line_stripped = line.strip()
         if line_stripped[:5] == "ssid=":
@@ -39,6 +47,10 @@ def get_wifi_ssid(wifi_config_lines):
 
 
 def get_wifi_security_type(wifi_config_lines):
+    """
+    Checks the wpa_supplicant.conf file for the set wireless's security type and returns it.
+    If not found, returns an empty string.
+    """
     for line in wifi_config_lines:
         line_stripped = line.strip()
         if line_stripped[:9] == "key_mgmt=":
@@ -47,6 +59,10 @@ def get_wifi_security_type(wifi_config_lines):
 
 
 def get_wifi_psk(wifi_config_lines):
+    """
+    Checks the wpa_supplicant.conf file for the set wireless password and returns it.
+    If not found, returns an empty string.
+    """
     for line in wifi_config_lines:
         line_stripped = line.strip()
         if line_stripped[:4] == "psk=":
@@ -54,6 +70,7 @@ def get_wifi_psk(wifi_config_lines):
 
 
 def html_request_to_config_wifi(html_request):
+    """ Takes the provided HTML wireless settings and creates a new WPA Supplicant string and returns it. """
     logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
     if html_request.form.get("ssid1") is not None:
         wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
@@ -89,5 +106,5 @@ def get_wifi_config_from_file():
 
 
 def write_wifi_config_to_file(config):
-    """ Writes provided wpa_supplicant file to local disk. """
+    """ Writes provided wpa_supplicant.conf file to local disk. """
     app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, config)

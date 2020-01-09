@@ -27,6 +27,10 @@ from operations_modules import os_cli_commands
 
 
 def run_program_start_checks():
+    """
+    This function is used before most of the program has started.
+    Sets file permissions, checks the database and generates the HTTPS certificates if not present.
+    """
     logger.primary_logger.info(" -- Starting Programs Checks ...")
     _set_file_permissions()
     if software_version.old_version != software_version.version:
@@ -47,7 +51,7 @@ def _set_file_permissions():
 
 
 def _check_database_structure():
-    """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
+    """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running DB Checks")
     database_variables = app_cached_variables.CreateDatabaseVariables()
 
@@ -84,9 +88,8 @@ def _check_database_structure():
 
         db_connection.commit()
         db_connection.close()
-        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, " + \
-                            str(columns_created) + " Created"
-        logger.primary_logger.debug(debug_log_message)
+        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
+        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
     except Exception as error:
         logger.primary_logger.error("DB Connection Failed: " + str(error))
 
@@ -112,6 +115,7 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 
 def _check_ssl_files():
+    """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
 
     if os.path.isfile(file_locations.http_ssl_key):
@@ -124,12 +128,15 @@ def _check_ssl_files():
         logger.primary_logger.debug("SSL CSR Found")
     else:
         logger.primary_logger.info("SSL CSR not Found - Generating CSR")
-        os.system("openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr +
-                  " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'")
+        terminal_command_part1 = "openssl req -new -key " + file_locations.http_ssl_key
+        terminal_command_part2 = " -out " + file_locations.http_ssl_csr + " -subj"
+        terminal_command_part3 = " '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
+        os.system(terminal_command_part1 + terminal_command_part2 + terminal_command_part3)
 
     if os.path.isfile(file_locations.http_ssl_crt):
         logger.primary_logger.debug("SSL Certificate Found")
     else:
         logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
-        os.system("openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr +
-                  " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt)
+        terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
+        terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
+        os.system(terminal_command_part1 + terminal_command_part2)

@@ -42,7 +42,7 @@ def run_upgrade_checks():
             logger.primary_logger.info(msg)
             no_changes = False
             program_upgrade_functions.reset_installed_sensors()
-            program_upgrade_functions.reset_config()
+            program_upgrade_functions.reset_main_config()
             program_upgrade_functions.reset_variance_config()
         elif previous_version.feature_version == 26:
             no_changes = False
@@ -55,7 +55,7 @@ def run_upgrade_checks():
         msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
         logger.primary_logger.error(msg)
         program_upgrade_functions.reset_installed_sensors()
-        program_upgrade_functions.reset_config()
+        program_upgrade_functions.reset_main_config()
 
     # Since run_upgrade_checks is only run if there is a different version, show upgrade but no configuration changes
     if no_changes:

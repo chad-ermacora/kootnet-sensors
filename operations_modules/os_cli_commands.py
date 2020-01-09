@@ -21,7 +21,8 @@ restart_sensor_services_command = "systemctl daemon-reload ; " + \
 
 # TODO: ReInstallRequirements doesn't work Remove it (Clean upgrade does it and then some)
 # TODO: Add ability to upgrade net facing pip packages (Flask, gevent)
-# or have it in the Distribution repository
+
+# Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
                  "UpgradeOnline": "systemctl start SensorUpgradeOnline",
                  "UpgradeOnlineClean": "systemctl start SensorUpgradeOnlineClean",

@@ -48,7 +48,8 @@ Controlling the Sensor
 
 **Kootnet Sensors** has a built in HTTPS server (Web Portal) to monitor, manage and use the Kootnet Sensor.  
 There is also a 'Sensor Control' section in the Web Portal for managing one or more remote sensors.  
-Assuming the sensor's IP is 192.168.10.11, you can access the sensor at https://192.168.10.11:10065
+Assuming the sensor's IP is 192.168.10.11, you can access the sensor at https://192.168.10.11:10065 
+from any device with a web browser on the same network. 
 
 **Default Web Portal Login**  
 *User*: Kootnet  

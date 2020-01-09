@@ -25,8 +25,8 @@ from operations_modules import config_trigger_variances
 
 
 def get_installed_sensors_raw():
-    """ Loads RAW sensors from file and returns it. """
-    logger.primary_logger.debug("Loading Installed Sensors and Returning")
+    """ Loads the installed sensors from file and returns it as a list of lines. """
+    logger.primary_logger.debug("Loading Installed Sensors Configuration File")
 
     if os.path.isfile(file_locations.installed_sensors_config):
         try:
@@ -41,9 +41,9 @@ def get_installed_sensors_raw():
     return raw_installed_sensor_file
 
 
-def get_installed_config_raw():
-    """ Loads configuration from file and returns it as a configuration object. """
-    logger.primary_logger.debug("Loading Configuration File")
+def get_main_config_raw():
+    """ Loads the main configuration from file and returns it as a list of lines. """
+    logger.primary_logger.debug("Loading Main Configuration File")
 
     if os.path.isfile(file_locations.main_config):
         try:
@@ -64,9 +64,9 @@ def reset_installed_sensors():
     config_installed_sensors.write_to_file(config_installed_sensors.CreateInstalledSensors())
 
 
-def reset_config():
-    """ Writes a default configuration file. """
-    logger.primary_logger.warning(" **** Primary Configuration Reset ****")
+def reset_main_config():
+    """ Writes a default main configuration file. """
+    logger.primary_logger.warning(" **** Main Configuration Reset ****")
     config_primary.write_config_to_file(config_primary.CreateConfig())
 
 

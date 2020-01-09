@@ -24,18 +24,15 @@ from sensor_modules import sensor_access
 
 
 def start_interval_recording():
-    """ Starts recording all Interval sensor readings to the SQL database every X Seconds (set in config). """
+    """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
     logger.primary_logger.info(" -- Interval Recording Started")
     while True:
         try:
             new_sensor_data = get_interval_sensor_readings()
             new_sensor_data = new_sensor_data.split(app_cached_variables.command_data_separator)
-            interval_sql_execute = "INSERT OR IGNORE INTO IntervalData (" + \
-                                   str(new_sensor_data[0]) + \
-                                   ") VALUES (" + \
-                                   str(new_sensor_data[1]) + ")"
-
-            sqlite_database.write_to_sql_database(interval_sql_execute)
+            interval_sql_execute_part1 = "INSERT OR IGNORE INTO IntervalData (" + str(new_sensor_data[0])
+            interval_sql_execute_part2 = ") VALUES (" + str(new_sensor_data[1]) + ")"
+            sqlite_database.write_to_sql_database(interval_sql_execute_part1 + interval_sql_execute_part2)
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
         sleep(app_config_access.current_config.sleep_duration_interval)

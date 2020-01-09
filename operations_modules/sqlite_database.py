@@ -22,14 +22,13 @@ from operations_modules import logger
 
 
 class CreateOtherDataEntry:
-    """ Creates a object, holding required data for making a OtherData SQL execute string. """
+    """ Creates a object, holding required data for making a 'OtherData' SQL execute string. """
 
     def __init__(self):
         self.database_location = file_locations.sensor_database
         self.sql_query_start = "INSERT OR IGNORE INTO OtherData ("
         self.sql_query_values_start = ") VALUES ("
         self.sql_query_values_end = ")"
-
         self.sensor_types = ""
         self.sensor_readings = ""
 
@@ -49,27 +48,14 @@ def write_to_sql_database(sql_query):
 
 
 def sql_execute_get_data(sql_query):
+    """ Returns SQL data based on provided sql_query. """
     try:
         database_connection = sqlite3.connect(file_locations.sensor_database)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
-        sqlite_database.close()
         database_connection.close()
     except Exception as error:
         logger.primary_logger.error("SQL Execute Get Data Error: " + str(error))
         sql_column_data = []
-
     return sql_column_data
-
-
-def sql_execute(sql_query):
-    try:
-        database_connection = sqlite3.connect(file_locations.sensor_database)
-        sqlite_database = database_connection.cursor()
-        sqlite_database.execute(sql_query)
-        database_connection.commit()
-        sqlite_database.close()
-        database_connection.close()
-    except Exception as error:
-        logger.primary_logger.error("SQL Execute Error: " + str(error))

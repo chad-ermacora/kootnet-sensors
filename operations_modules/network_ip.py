@@ -18,9 +18,14 @@
 """
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+# TODO: Add ability to check for Ethernet vs. Wireless in all relevant areas
 
 
 def check_for_dhcp(dhcpcd_config_lines):
+    """
+    Checks the dhcpcd.conf file for a static IP address.
+    Returns True if no static IPs are found, otherwise returns false.
+    """
     dhcp_status = True
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
@@ -30,6 +35,10 @@ def check_for_dhcp(dhcpcd_config_lines):
 
 
 def get_dhcpcd_ip(dhcpcd_config_lines):
+    """
+    Checks the dhcpcd.conf file for a static IP address.
+    Returns the IP address if a static IP is found, otherwise returns a empty string.
+    """
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
@@ -39,6 +48,10 @@ def get_dhcpcd_ip(dhcpcd_config_lines):
 
 
 def get_gateway(dhcpcd_config_lines):
+    """
+    Checks the dhcpcd.conf file for a static gateway address (router).
+    Returns the IP address of said gateway if found, otherwise returns a empty string.
+    """
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:15] == "static routers=":
@@ -47,6 +60,10 @@ def get_gateway(dhcpcd_config_lines):
 
 
 def get_subnet(dhcpcd_config_lines):
+    """
+    Checks the dhcpcd.conf file for a static IP address.
+    Returns the Subnet Mask of a static IP if found, otherwise returns a empty string.
+    """
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:18] == "static ip_address=":
@@ -56,6 +73,10 @@ def get_subnet(dhcpcd_config_lines):
 
 
 def get_dns(dhcpcd_config_lines, dns_server=0):
+    """
+    Checks the dhcpcd.conf file for a static IP address.
+    Returns the DNS server(s) IP addresses if a static IP is found, otherwise returns a empty string.
+    """
     for line in dhcpcd_config_lines:
         line_stripped = line.strip()
         if line_stripped[:27] == "static domain_name_servers=":

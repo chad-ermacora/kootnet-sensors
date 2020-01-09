@@ -538,7 +538,7 @@ def add_note_to_database(datetime_note):
         sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
                        sql_data.sensor_readings + sql_data.sql_query_values_end)
 
-        sqlite_database.sql_execute(sql_execute)
+        sqlite_database.write_to_sql_database(sql_execute)
     else:
         logger.sensors_logger.error("Unable to add bad Note")
 
@@ -554,7 +554,7 @@ def update_note_in_database(datetime_note):
 
         sql_execute = "UPDATE OtherData SET " + "Notes = " + note + \
                       ",UserDateTime = " + user_datetime + " WHERE DateTime = " + current_datetime
-        sqlite_database.sql_execute(sql_execute)
+        sqlite_database.write_to_sql_database(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
 
@@ -564,7 +564,7 @@ def delete_db_note(note_datetime):
     sql_query = "DELETE FROM " + str(app_cached_variables.database_variables.table_other) + \
                 " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
-    sqlite_database.sql_execute(sql_query)
+    sqlite_database.write_to_sql_database(sql_query)
 
 
 def upgrade_linux_os():
