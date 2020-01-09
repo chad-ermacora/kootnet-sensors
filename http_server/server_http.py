@@ -17,11 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import delayed_cache_update
+
 https_import_error_msg = ""
 https_import_errors = True
 try:
@@ -29,7 +30,7 @@ try:
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
-    from http_server.flask_blueprints.sensor_control import html_sensor_control_routes
+    from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
     from http_server.flask_blueprints.system_commands import html_system_commands_routes
     from http_server.flask_blueprints.online_services import html_online_services_routes
@@ -58,6 +59,8 @@ flask_http_port = 10065
 
 
 class CreateSensorHTTP:
+    """ Creates an instance of the HTTPS Web Portal server using Flask and WSGIServer from gevent. """
+
     def __init__(self):
         app = Flask(__name__)
         Compress(app)
@@ -77,7 +80,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_legacy_cc_routes)
         app.register_blueprint(html_sensor_info_readings_routes)
 
-        app_generic_functions.thread_function(delayed_cache_update)
+        thread_function(delayed_cache_update)
 
         try:
             http_server = WSGIServer((flask_http_ip, flask_http_port), app,
@@ -90,21 +93,10 @@ class CreateSensorHTTP:
 
 
 def https_start_and_watch():
-    # Start the HTTP Server for remote access
+    """ Starts an instance of the HTTP Flask server if imports are OK. """
     if https_import_errors:
         log_message = "--- Failed to Start HTTPS Server - Missing Required Dependencies: "
         logger.primary_logger.critical(log_message + str(https_import_error_msg))
         while True:
             sleep(600)
-    sensor_http_server_thread = Thread(target=CreateSensorHTTP)
-    sensor_http_server_thread.daemon = True
-    sensor_http_server_thread.start()
-    logger.primary_logger.debug("HTTPS Server Thread Started")
-
-    while True:
-        sleep(30)
-        if not sensor_http_server_thread.is_alive():
-            logger.primary_logger.error("HTTPS Server Stopped Unexpectedly - Restarting...")
-            sensor_http_server_thread = Thread(target=CreateSensorHTTP)
-            sensor_http_server_thread.daemon = True
-            sensor_http_server_thread.start()
+    app_cached_variables.http_server_thread = CreateMonitoredThread(CreateSensorHTTP, thread_name="HTTPS Server")

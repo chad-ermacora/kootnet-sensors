@@ -1,0 +1,12 @@
+[Unit]
+Description=KootNet Sensors - HTTP Upgrade
+
+[Service]
+Type=simple
+Restart=no
+User=root
+Group=root
+ExecStart=/bin/bash /home/kootnet_data/scripts/update_kootnet-sensors_http.sh
+
+[Install]
+WantedBy=multi-user.target

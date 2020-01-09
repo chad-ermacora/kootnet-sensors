@@ -16,17 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from platform import system
+from os import geteuid
 from operations_modules import logger
 from operations_modules import config_sensor_control
 from operations_modules import config_primary
 from operations_modules import config_installed_sensors
-from operations_modules import sqlite_database
 from operations_modules import software_version
 from operations_modules import config_trigger_variances
-from operations_modules.online_services.weather_underground import CreateWeatherUndergroundConfig
-from operations_modules.online_services.luftdaten import CreateLuftdatenConfig
-from operations_modules.online_services.open_sense_map import CreateOpenSenseMapConfig
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
 sensor_control_config = config_sensor_control.CreateSensorControlConfig()
@@ -34,7 +33,7 @@ weather_underground_config = CreateWeatherUndergroundConfig()
 luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
 
-if software_version.old_version != software_version.version:
+if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensors()
     current_config = config_primary.CreateConfig()
@@ -50,24 +49,5 @@ else:
     luftdaten_config.update_settings_from_file()
     open_sense_map_config.update_settings_from_file()
 
-current_platform = system()
-database_variables = sqlite_database.CreateDatabaseVariables()
-linux_os_upgrade_ready = True
-
-# Online Service Variables
-wu_thread_running = False
-luftdaten_thread_running = False
-open_sense_map_thread_running = False
-
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"
-
-# Sensor Control Variables
-creating_the_reports_zip = False
-creating_the_big_zip = False
-creating_databases_zip = False
-creating_logs_zip = False
-
-# Flask Login Variables
-http_flask_user = "Kootnet"
-http_flask_password = "sensors"

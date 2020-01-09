@@ -20,6 +20,7 @@ import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
 from operations_modules.app_cached_variables import no_sensor_present
+from operations_modules.app_generic_functions import check_for_port_in_address
 
 
 def text_is_alphanumeric(text_string):
@@ -34,25 +35,37 @@ def text_is_alphanumeric(text_string):
 
 
 def ip_address_is_valid(ip_address):
-    if ip_address != "":
-        try:
-            if _check_ip_address(ip_address):
-                return True
-        except Exception as error:
-            logger.network_logger.debug("Validating Address Failed: " + str(error))
+    """ Checks if an IPv4 address is valid. Returns True for valid and False for Invalid. """
+    ip_address_tweaked = ip_address.replace(":", "a")
+    ip_address_tweaked = ip_address_tweaked.replace(".", "a")
+    if ip_address != "" and text_is_alphanumeric(ip_address_tweaked):
+        if check_for_port_in_address(ip_address):
+            return True
+        else:
+            try:
+                if _check_ip_address(ip_address):
+                    return True
+            except Exception as error:
+                logger.network_logger.debug("Validating Address Failed: " + str(error))
     return False
 
 
 def subnet_mask_is_valid(subnet_mask):
-    if re.match(r'/[0-9][0-9]|/[0-9]', subnet_mask):
-        return True
-    return False
+    """ Checks if a subnet mask if valid.  Returns True for valid and False for Invalid. """
+    subnet_ok = False
+    count = 8
+    while count <= 30:
+        good_subnet = "/" + str(count)
+        if subnet_mask == good_subnet:
+            subnet_ok = True
+        count += 1
+    return subnet_ok
 
 
 def wireless_ssid_is_valid(text_ssid):
     """
-    Returns True if provided text only uses Alphanumeric characters, spaces, underscores and dashes.
-    Otherwise returns False.
+    Checks if a wireless SSID is valid. Returns True for valid and False for Invalid.
+    Checks that text only uses Alphanumeric characters, spaces, underscores and dashes.
     """
     if re.match(r'^[a-zA-Z0-9][ A-Za-z0-9_-]*$', text_ssid):
         return True
@@ -61,6 +74,10 @@ def wireless_ssid_is_valid(text_ssid):
 
 
 def text_has_no_double_quotes(text_string):
+    """
+    Checks if the provided string has double quotes or not.
+    Returns True if no quotes are found and False if they are.
+    """
     if text_string.find('"') is not -1:
         return False
     else:
@@ -80,6 +97,7 @@ def hostname_is_valid(text_hostname):
 
 
 def valid_sensor_reading(reading):
+    """ If sensor reads as no_sensor_present (AKA Sensor not installed or missing), returns False, otherwise True. """
     if reading == no_sensor_present:
         return False
     return True

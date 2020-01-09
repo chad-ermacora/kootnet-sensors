@@ -17,10 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
+from operations_modules import app_validation_checks
 
 
 class CreateSensorControlConfig:
@@ -34,6 +36,7 @@ class CreateSensorControlConfig:
                                    "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
         self.radio_check_status = "online_status"
+        self.radio_report_combo = "combo_report"
         self.radio_report_system = "systems_report"
         self.radio_report_config = "config_report"
         self.radio_report_test_sensors = "sensors_test_report"
@@ -95,7 +98,59 @@ class CreateSensorControlConfig:
                           str(self.sensor_ip_dns20) + " = Sensor IP / DNS Entry 20"
         return config_file_str
 
+    def get_raw_ip_addresses_as_list(self):
+        """ Returns a list of all IP addresses. """
+        current_ip_list = [self.sensor_ip_dns1, self.sensor_ip_dns2, self.sensor_ip_dns3, self.sensor_ip_dns4,
+                           self.sensor_ip_dns5, self.sensor_ip_dns6, self.sensor_ip_dns7, self.sensor_ip_dns8,
+                           self.sensor_ip_dns9, self.sensor_ip_dns10, self.sensor_ip_dns11, self.sensor_ip_dns12,
+                           self.sensor_ip_dns13, self.sensor_ip_dns14, self.sensor_ip_dns15, self.sensor_ip_dns16,
+                           self.sensor_ip_dns17, self.sensor_ip_dns18, self.sensor_ip_dns19, self.sensor_ip_dns20]
+        return_ip_list = []
+        for ip in current_ip_list:
+            if ip != "":
+                return_ip_list.append(ip)
+        return return_ip_list
+
+    def get_clean_ip_addresses_as_list(self):
+        """ Returns a list of verified Online remote sensors based on 'Sensor Controls' current address list. """
+        raw_ip_list = self.get_raw_ip_addresses_as_list()
+        valid_ip_list = []
+        online_ip_list = []
+        threaded_checks = []
+        try:
+            for ip in raw_ip_list:
+                if app_validation_checks.ip_address_is_valid(ip):
+                    valid_ip_list.append(ip)
+            for address in valid_ip_list:
+                threaded_checks.append(Thread(target=self._check_address, args=[address]))
+            for thread in threaded_checks:
+                thread.daemon = True
+                thread.start()
+            for thread in threaded_checks:
+                thread.join()
+
+            while not app_cached_variables.flask_return_data_queue.empty():
+                online_ip_list.append(app_cached_variables.flask_return_data_queue.get())
+                app_cached_variables.flask_return_data_queue.task_done()
+        except Exception as error:
+            logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
+        return online_ip_list
+
+    @staticmethod
+    def _check_address(sensor_address):
+        """
+        Checks if a remote sensor is online and if so, saves the results to a queue.
+        Queue located at app_cached_variables.flask_return_data_queue.
+        """
+        try:
+            sensor_online_check = app_generic_functions.get_http_sensor_reading(sensor_address, timeout=4)
+            if sensor_online_check == "OK":
+                app_cached_variables.flask_return_data_queue.put(sensor_address)
+        except Exception as error:
+            logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))
+
     def set_from_html_post(self, html_request):
+        """ Applies and Saves 'Sensor Controls' settings. """
         new_settings_list = []
         for html_request_setting in self.html_post_settings:
             new_settings_list.append(html_request.form.get(html_request_setting))

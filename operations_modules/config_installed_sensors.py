@@ -98,6 +98,7 @@ class CreateInstalledSensors:
         self.pimoroni_mono_oled_luma_name = "Pimoroni 1.12'' Mono OLED (128x128, white/black)"
 
     def get_installed_names_str(self):
+        """ Returns a string of all currently installed sensors. """
         str_installed_sensors = ""
         sensors_installed_list = [self.linux_system, self.raspberry_pi, self.raspberry_pi_sense_hat,
                                   self.pimoroni_bh1745, self.pimoroni_as7262, self.pimoroni_bmp280,
@@ -122,6 +123,7 @@ class CreateInstalledSensors:
         return "N/A"
 
     def get_installed_sensors_config_as_str(self):
+        """ Returns current Install Sensors as a string ready to be written to disk. """
         self.raspberry_pi_name = self.get_raspberry_pi_model()
         return_str = "Enable = 1 & Disable = 0\n" + \
                      str(self.linux_system) + " = " + self.linux_system_name + "\n" + \
@@ -142,10 +144,10 @@ class CreateInstalledSensors:
                      str(self.pimoroni_matrix_11x7) + " = " + self.pimoroni_matrix_11x7_name + "\n" + \
                      str(self.pimoroni_st7735) + " = " + self.pimoroni_st7735_name + "\n" + \
                      str(self.pimoroni_mono_oled_luma) + " = " + self.pimoroni_mono_oled_luma_name + "\n"
-
         return return_str
 
     def get_raspberry_pi_model(self):
+        """ Returns the local Raspberry Pi model. """
         if self.raspberry_pi:
             try:
                 pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
@@ -171,8 +173,70 @@ def get_installed_sensors_from_file():
         logger.primary_logger.info("Installed Sensors Configuration file not found - Saving Default")
         installed_sensors = CreateInstalledSensors()
         write_to_file(installed_sensors)
-
     return installed_sensors
+
+
+def html_request_to_installed_sensors_config(html_request):
+    """ Creates and returns a Installed Sensors configuration object instance based on provided HTML configurations. """
+    logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
+    new_installed_sensors = CreateInstalledSensors()
+    try:
+        if html_request.form.get("linux_system") is not None:
+            new_installed_sensors.linux_system = 1
+
+        if html_request.form.get("raspberry_pi") is not None:
+            new_installed_sensors.raspberry_pi = 1
+
+        if html_request.form.get("raspberry_pi_sense_hat") is not None:
+            new_installed_sensors.raspberry_pi_sense_hat = 1
+
+        if html_request.form.get("pimoroni_bh1745") is not None:
+            new_installed_sensors.pimoroni_bh1745 = 1
+
+        if html_request.form.get("pimoroni_as7262") is not None:
+            new_installed_sensors.pimoroni_as7262 = 1
+
+        if html_request.form.get("pimoroni_bmp280") is not None:
+            new_installed_sensors.pimoroni_bmp280 = 1
+
+        if html_request.form.get("pimoroni_bme680") is not None:
+            new_installed_sensors.pimoroni_bme680 = 1
+
+        if html_request.form.get("pimoroni_enviro") is not None:
+            new_installed_sensors.pimoroni_enviro = 1
+
+        if html_request.form.get("pimoroni_enviroplus") is not None:
+            new_installed_sensors.pimoroni_enviroplus = 1
+
+        if html_request.form.get("pimoroni_pms5003") is not None:
+            new_installed_sensors.pimoroni_pms5003 = 1
+
+        if html_request.form.get("pimoroni_lsm303d") is not None:
+            new_installed_sensors.pimoroni_lsm303d = 1
+
+        if html_request.form.get("pimoroni_icm20948") is not None:
+            new_installed_sensors.pimoroni_icm20948 = 1
+
+        if html_request.form.get("pimoroni_vl53l1x") is not None:
+            new_installed_sensors.pimoroni_vl53l1x = 1
+
+        if html_request.form.get("pimoroni_ltr_559") is not None:
+            new_installed_sensors.pimoroni_ltr_559 = 1
+
+        if html_request.form.get("pimoroni_veml6075") is not None:
+            new_installed_sensors.pimoroni_veml6075 = 1
+
+        if html_request.form.get("pimoroni_matrix_11x7") is not None:
+            new_installed_sensors.pimoroni_matrix_11x7 = 1
+
+        if html_request.form.get("pimoroni_st7735") is not None:
+            new_installed_sensors.pimoroni_st7735 = 1
+
+        if html_request.form.get("pimoroni_mono_oled_luma") is not None:
+            new_installed_sensors.pimoroni_mono_oled_luma = 1
+    except Exception as error:
+        logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+    return new_installed_sensors
 
 
 def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
@@ -246,6 +310,7 @@ def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
                 new_installed_sensors.has_display = 1
                 new_installed_sensors.has_env_temperature = 1
                 new_installed_sensors.has_pressure = 1
+                new_installed_sensors.has_altitude = 1
                 new_installed_sensors.has_humidity = 1
                 new_installed_sensors.has_distance = 1
                 new_installed_sensors.has_lumen = 1

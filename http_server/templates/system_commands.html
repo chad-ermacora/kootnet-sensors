@@ -43,7 +43,7 @@
 
     <h2 style="color: red;">Experimental & Advanced</h2>
     <span style="color: darkorange">
-    Use with caution. Functions here may not work properly under all conditions.
+    CAUTION: Functions below may not work properly under all conditions.
     </span>
     <br>
     <br>
@@ -51,16 +51,10 @@
             onclick="window.location.href = '/HTMLRawConfigurations';">
         View Raw Configuration Files
     </button>
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Other
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
-            <li><a href="/ReInstallRequirements">Check and Install Requirements</a></li>
-        </ul>
-    </div>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/TestSensorLatency';">
+        Test Sensors Latency
+    </button>
     <br>
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
@@ -68,8 +62,8 @@
             <span class="mui-caret"></span>
         </button>
         <ul class="mui-dropdown__menu">
-            <li><a href="/CleanOnline">Clean - HTTP Upgrade</a></li>
-            <li><a href="/CleanSMB">Clean - SMB Upgrade</a></li>
+            <li><a href="/UpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
+            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>
         </ul>
     </div>
 
@@ -81,6 +75,17 @@
         <ul class="mui-dropdown__menu">
             <li><a href="/UpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
             <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
+        </ul>
+    </div>
+    <br>
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Other
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
+            <li><a href="/ReInstallRequirements">Check and Install Requirements</a></li>
         </ul>
     </div>
 

@@ -17,25 +17,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import time
+from os import geteuid
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_response_bg_colour
+from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
+    get_file_content, check_for_port_in_address, get_ip_and_port_split
 from operations_modules import app_config_access
 from operations_modules import app_cached_variables
-from operations_modules import app_validation_checks
 from operations_modules import network_wifi
 from operations_modules import software_version
-from operations_modules.online_services import weather_underground
-from operations_modules.online_services import luftdaten
-from operations_modules.online_services import open_sense_map
-from operations_modules.app_generic_functions import get_http_sensor_reading, get_file_content
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
-if software_version.old_version == software_version.version:
-    html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6",
-                            "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                            "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                            "senor_ip_18", "senor_ip_19", "senor_ip_20"]
-
+if software_version.old_version == software_version.version or geteuid() != 0:
     try:
         html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
         html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
@@ -51,63 +46,15 @@ if software_version.old_version == software_version.version:
     except Exception as init_error:
         logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
-
-class CreateNetworkGetCommands:
-    """ Create a object instance holding available network "Get" commands (AKA expecting data back). """
-
-    def __init__(self):
-        self.sensor_sql_database = "DownloadSQLDatabase"
-        self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
-        self.sensor_configuration = "GetConfigurationReport"
-        self.sensor_configuration_file = "GetConfiguration"
-        self.installed_sensors_file = "GetInstalledSensors"
-        self.wifi_config_file = "GetWifiConfiguration"
-        self.variance_config = "GetVarianceConfiguration"
-        self.weather_underground_config_file = "GetOnlineServicesWeatherUnderground"
-        self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
-        self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
-        self.system_data = "GetSystemData"
-        self.primary_log = "GetPrimaryLog"
-        self.network_log = "GetNetworkLog"
-        self.sensors_log = "GetSensorsLog"
-        self.download_zipped_logs = "DownloadZippedLogs"
-        self.download_zipped_logs_size = "GetZippedLogsSize"
-        self.download_zipped_everything = "DownloadZippedEverything"
-        self.sensor_readings = "GetIntervalSensorReadings"
-        self.sensor_name = "GetHostName"
-        self.system_uptime = "GetSystemUptime"
-        self.system_date_time = "GetSystemDateTime"
-        self.cpu_temp = "GetCPUTemperature"
-        self.environmental_temp = "GetEnvTemperature"
-        self.env_temp_offset = "GetTempOffsetEnv"
-        self.pressure = "GetPressure"
-        self.altitude = "GetAltitude"
-        self.humidity = "GetHumidity"
-        self.distance = "GetDistance"
-        self.gas_index = "GetGasResistanceIndex"
-        self.gas_oxidised = "GetGasOxidised"
-        self.gas_reduced = "GetGasReduced"
-        self.gas_nh3 = "GetGasNH3"
-        self.pm_1 = "GetParticulateMatter1"
-        self.pm_2_5 = "GetParticulateMatter2_5"
-        self.pm_10 = "GetParticulateMatter10"
-        self.lumen = "GetLumen"
-        self.rgb = "GetEMS"
-        self.ultra_violet_index = "GetUltraVioletA"
-        self.ultra_violet_a = "GetUltraVioletA"
-        self.ultra_violet_b = "GetUltraVioletB"
-        self.accelerometer_xyz = "GetAccelerometerXYZ"
-        self.magnetometer_xyz = "GetMagnetometerXYZ"
-        self.gyroscope_xyz = "GetGyroscopeXYZ"
-        self.database_notes = "GetDatabaseNotes"
-        self.database_note_dates = "GetDatabaseNoteDates"
-        self.database_user_note_dates = "GetDatabaseNoteUserDates"
+html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5",
+                     "senor_ip_6", "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10",
+                     "senor_ip_11", "senor_ip_12", "senor_ip_13", "senor_ip_14", "senor_ip_15",
+                     "senor_ip_16", "senor_ip_17", "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
 
 class CreateReplacementVariables:
-
     def __init__(self):
-        self.remote_sensor_commands = CreateNetworkGetCommands()
+        self.remote_sensor_commands = app_cached_variables.CreateNetworkGetCommands()
 
     @staticmethod
     def report_system():
@@ -148,13 +95,13 @@ class CreateReplacementVariables:
                 rpi_model_name = "Raspberry Pi"
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
-            wu_config = weather_underground.CreateWeatherUndergroundConfig()
+            wu_config = CreateWeatherUndergroundConfig()
             wu_config.update_settings_from_file(file_content=weather_underground_config_raw, skip_write=True)
 
-            luftdaten_config = luftdaten.CreateLuftdatenConfig()
+            luftdaten_config = CreateLuftdatenConfig()
             luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)
 
-            osm_config = open_sense_map.CreateOpenSenseMapConfig()
+            osm_config = CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
             convert_config = app_config_access.config_primary.convert_config_lines_to_obj
@@ -251,7 +198,8 @@ class CreateReplacementVariables:
     def report_test_sensors(self, ip_address):
         try:
             get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
-            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command).strip()
+            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command, timeout=20)
+            sensor_readings_raw = sensor_readings_raw.strip()
             sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
             sensor_readings = sensor_readings_raw.split(app_cached_variables.command_data_separator)[1].split(",")
 
@@ -297,7 +245,12 @@ def get_online_report(ip_address, report_type="systems_report"):
         command_and_replacements = CreateReplacementVariables().report_test_sensors(ip_address)
 
     try:
-        sensor_report = sensor_report.replace("{{ IPAddress }}", ip_address)
+        if check_for_port_in_address(ip_address):
+            address_split = get_ip_and_port_split(ip_address)
+            address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
+        else:
+            address_and_port = ip_address.strip() + ":10065"
+        sensor_report = sensor_report.replace("{{ IPAddress }}", address_and_port)
         task_start_time = time.time()
         sensor_check = get_http_sensor_reading(ip_address)
         task_end_time = str(round(time.time() - task_start_time, 3))
@@ -321,15 +274,3 @@ def get_online_report(ip_address, report_type="systems_report"):
     except Exception as error:
         log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
         logger.network_logger.warning(log_msg)
-
-
-def get_clean_address_list(http_request):
-    ip_list = []
-    try:
-        for sensor in html_address_list:
-            sensor_address = http_request.form.get(sensor)
-            if sensor_address is not None and app_validation_checks.ip_address_is_valid(sensor_address):
-                ip_list.append(sensor_address)
-    except Exception as error:
-        logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
-    return ip_list

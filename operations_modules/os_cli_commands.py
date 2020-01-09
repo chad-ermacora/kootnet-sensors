@@ -19,13 +19,17 @@
 restart_sensor_services_command = "systemctl daemon-reload ; " + \
                                   "systemctl restart KootnetSensors"
 
-bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_e-ink.sh",
-                 "UpgradeOnline": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_http.sh",
-                 "UpgradeOnlineDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_http.sh",
-                 "UpgradeSMB": "bash /opt/kootnet-sensors/scripts/install_update_kootnet-sensors_smb.sh",
-                 "UpgradeSMBDEV": "bash /opt/kootnet-sensors/scripts/dev_upgrade_smb.sh",
-                 "CleanOnline": "systemctl start SensorCleanUpgradeOnline",
-                 "CleanSMB": "systemctl start SensorCleanUpgradeSMB",
+# TODO: ReInstallRequirements doesn't work Remove it (Clean upgrade does it and then some)
+# TODO: Add ability to upgrade net facing pip packages (Flask, gevent)
+
+# Dictionary of Terminal commands
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
+                 "UpgradeOnline": "systemctl start SensorUpgradeOnline",
+                 "UpgradeOnlineClean": "systemctl start SensorUpgradeOnlineClean",
+                 "UpgradeOnlineDEV": "systemctl start SensorUpgradeOnlineDEV",
+                 "UpgradeSMB": "systemctl start SensorUpgradeSMB",
+                 "UpgradeSMBClean": "systemctl start SensorUpgradeSMBClean",
+                 "UpgradeSMBDEV": "systemctl start SensorUpgradeSMBDEV",
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now",
                  "UpgradeSystemOS": "bash /opt/kootnet-sensors/scripts/linux_system_os_upgrade.sh",

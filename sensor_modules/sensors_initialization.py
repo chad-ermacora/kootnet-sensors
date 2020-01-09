@@ -16,34 +16,37 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from os import geteuid
 from operations_modules import logger
 from operations_modules import app_config_access
-from operations_modules import software_version
 from sensor_modules import linux_os
-from sensor_modules import pimoroni_as7262
-from sensor_modules import pimoroni_bh1745
-from sensor_modules import pimoroni_bme680
-from sensor_modules import pimoroni_bmp280
-from sensor_modules import pimoroni_enviro
-from sensor_modules import pimoroni_enviroplus
-from sensor_modules import pimoroni_lsm303d
-from sensor_modules import pimoroni_icm20948
-from sensor_modules import pimoroni_ltr_559
-from sensor_modules import pimoroni_vl53l1x
-from sensor_modules import pimoroni_veml6075
-from sensor_modules import raspberry_pi_sensehat
-from sensor_modules import raspberry_pi_system
-from sensor_modules import pimoroni_11x7_led_matrix
-from sensor_modules import pimoroni_0_96_spi_colour_lcd
-from sensor_modules import pimoroni_1_12_mono_oled
 
+operating_system_a = linux_os.CreateLinuxSystem()
 
-if software_version.old_version == software_version.version:
-    # Initialize sensor access, based on installed sensors file
-    if app_config_access.current_platform == "Linux":
-        operating_system_a = linux_os.CreateLinuxSystem()
+if geteuid() == 0:
+    # Raspberry Pi System is created first to enable I2C, SPI & Wifi
+    # This is to ensure they are enabled for the other hardware Sensors
+    from sensor_modules import raspberry_pi_system
+
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
+    from sensor_modules import pimoroni_as7262
+    from sensor_modules import pimoroni_bh1745
+    from sensor_modules import pimoroni_bme680
+    from sensor_modules import pimoroni_bmp280
+    from sensor_modules import pimoroni_enviro
+    from sensor_modules import pimoroni_enviroplus
+    from sensor_modules import pimoroni_lsm303d
+    from sensor_modules import pimoroni_icm20948
+    from sensor_modules import pimoroni_ltr_559
+    from sensor_modules import pimoroni_vl53l1x
+    from sensor_modules import pimoroni_veml6075
+    from sensor_modules import raspberry_pi_sensehat
+    from sensor_modules import pimoroni_11x7_led_matrix
+    from sensor_modules import pimoroni_0_96_spi_colour_lcd
+    from sensor_modules import pimoroni_1_12_mono_oled
+
+    # Initialize sensor access, based on installed sensors file
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         rp_sense_hat_a = raspberry_pi_sensehat.CreateRPSenseHAT()
     if app_config_access.installed_sensors.pimoroni_bh1745:
@@ -86,4 +89,7 @@ if software_version.old_version == software_version.version:
 else:
     # Skip Sensor Initializations on upgrade
     # They won't be used & program will be restarted when the upgrade is done.
-    pass
+    if geteuid() == 0:
+        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Upgrade in progress")
+    else:
+        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")

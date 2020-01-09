@@ -25,41 +25,36 @@ from operations_modules import config_trigger_variances
 
 
 def get_installed_sensors_raw():
-    """ Loads RAW sensors from file and returns it. """
-    logger.primary_logger.debug("Loading Installed Sensors and Returning")
+    """ Loads the installed sensors from file and returns it as a list of lines. """
+    logger.primary_logger.debug("Loading Installed Sensors Configuration File")
 
     if os.path.isfile(file_locations.installed_sensors_config):
         try:
-            sensor_list_file = open(file_locations.installed_sensors_config, 'r')
-            raw_installed_sensor_file = sensor_list_file.readlines()
-            sensor_list_file.close()
+            with open(file_locations.installed_sensors_config, 'r') as sensor_list_file:
+                raw_installed_sensor_file = sensor_list_file.readlines()
         except Exception as error:
             logger.primary_logger.error("Unable to open installed_sensors.conf: " + str(error))
             raw_installed_sensor_file = []
     else:
         logger.primary_logger.error("Installed Sensors file not found, using and saving default")
         raw_installed_sensor_file = []
-
     return raw_installed_sensor_file
 
 
-def get_installed_config_raw():
-    """ Loads configuration from file and returns it as a configuration object. """
-    logger.primary_logger.debug("Loading Configuration File")
+def get_main_config_raw():
+    """ Loads the main configuration from file and returns it as a list of lines. """
+    logger.primary_logger.debug("Loading Main Configuration File")
 
     if os.path.isfile(file_locations.main_config):
         try:
-            config_file = open(file_locations.main_config, "r")
-            config_file_content = config_file.readlines()
-            config_file.close()
+            with open(file_locations.main_config, "r") as config_file:
+                config_file_content = config_file.readlines()
         except Exception as error:
             logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
             config_file_content = []
-
     else:
         logger.primary_logger.error("Configuration file not found, using and saving default")
         config_file_content = []
-
     return config_file_content
 
 
@@ -69,9 +64,9 @@ def reset_installed_sensors():
     config_installed_sensors.write_to_file(config_installed_sensors.CreateInstalledSensors())
 
 
-def reset_config():
-    """ Writes a default configuration file. """
-    logger.primary_logger.warning(" **** Primary Configuration Reset ****")
+def reset_main_config():
+    """ Writes a default main configuration file. """
+    logger.primary_logger.warning(" **** Main Configuration Reset ****")
     config_primary.write_config_to_file(config_primary.CreateConfig())
 
 

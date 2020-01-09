@@ -5,6 +5,7 @@ from sensor_modules import sensor_access
 
 
 def update_cached_variables():
+    """ Updates app_cached_variables.py variables. """
     app_cached_variables.ip = sensor_access.get_ip()
     app_cached_variables.total_ram_memory = psutil.virtual_memory().total / 1000000
     if app_cached_variables.total_ram_memory > 1000:
@@ -48,5 +49,9 @@ def update_cached_variables():
 
 
 def delayed_cache_update():
+    """
+    Updates app_cached_variables.py variables after 5 seconds.
+    Used after the program starts to allow things like the IP address to be obtained.
+    """
     sleep(5)
     update_cached_variables()

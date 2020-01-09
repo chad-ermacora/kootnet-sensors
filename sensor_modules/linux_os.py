@@ -12,12 +12,11 @@ import os
 import socket
 import psutil
 from time import strftime
+from operations_modules import app_cached_variables
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
 from operations_modules import sqlite_database
-from operations_modules.sqlite_database import CreateDatabaseVariables
 
 round_decimal_to = 2
 
@@ -26,7 +25,7 @@ class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
 
     def __init__(self):
-        self.database_variables = CreateDatabaseVariables()
+        self.database_variables = app_cached_variables.CreateDatabaseVariables()
         logger.sensors_logger.debug("Linux System Module Initialization - OK")
 
     @staticmethod
@@ -81,7 +80,7 @@ class CreateLinuxSystem:
 
     def get_uptime_str(self):
         """ Returns System UpTime as a human readable String. """
-        if app_config_access.current_platform == "Linux":
+        if app_cached_variables.current_platform == "Linux":
             var_minutes = self.get_uptime_raw()
             str_day_hour_min = ""
             try:
@@ -146,7 +145,8 @@ class CreateLinuxSystem:
     def get_sql_db_size():
         """ Returns Sensor SQLite DB Size in MB as a Float. """
         try:
-            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1024000
+            # Num 1,000,000. Not using underscores to maintain compatibility with Python 3.5.x
+            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1000000
         except Exception as error:
             logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
             db_size_mb = 0.0

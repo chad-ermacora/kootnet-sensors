@@ -1,28 +1,34 @@
 # Required Sensor Program Modules
-werkzeug
-psutil
-requests
 gpiozero
+pyserial
+spidev
+smbus
+smbus2
 flask
 Flask-Compress
 Flask-HTTPAuth
 gevent
+werkzeug
+psutil
+requests
 plotly >= 4.0.0
+numpy
 # Sensor Hardware Modules
-envirophat
-enviroplus
-sense_hat
-bme680
-bmp280
-as7262
-bh1745
-lsm303d
-icm20948
-smbus2
-smbus
-#vl53l1x
-ltr559
-veml6075
+# All Commented out Modules are included in the main app folder
+# Commented Modules are left for requirement reference
+luma.core
 luma.oled
-matrix11x7
-st7735
+#sense_hat
+#bme680
+#bmp280
+#as7262
+#bh1745
+#vl53l1x
+#ltr559
+#envirophat
+#lsm303d
+#icm20948
+#veml6075
+#matrix11x7
+#st7735
+#enviroplus

@@ -18,88 +18,86 @@
 """
 import os
 import math
-from time import sleep
+import time
 from datetime import datetime
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import os_cli_commands
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content
+from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
 from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
-from sensor_modules import sensor_ready_checks
 from sensor_modules import sensors_initialization as sensors_direct
-
-sensor_in_use_delay = 0.1
 
 
 def get_operating_system_name():
     """ Returns sensors Operating System Name and version. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_os_name_version()
     return no_sensor_present
 
 
 def get_hostname():
     """ Returns sensors hostname. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_hostname()
     return no_sensor_present
 
 
 def get_ip():
     """ Returns sensor IP Address as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_ip()
     return no_sensor_present
 
 
 def get_disk_usage_gb():
     """ Returns sensor root disk usage as GB's. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_gb()
     return no_sensor_present
 
 
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_percent()
     return no_sensor_present
 
 
 def get_memory_usage_percent():
     """ Returns sensor RAM usage as a %. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_memory_usage_percent()
     return no_sensor_present
 
 
 def get_system_datetime():
     """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sys_datetime_str()
     return no_sensor_present
 
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_raw()
     return no_sensor_present
 
 
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_str()
     return no_sensor_present
 
 
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
     return no_sensor_present
@@ -107,21 +105,21 @@ def get_system_reboot_count():
 
 def get_db_size():
     """ Returns SQL Database size in MB. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sql_db_size()
     return no_sensor_present
 
 
 def get_db_notes_count():
     """ Returns Number of Notes in the SQL Database. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_notes_count()
     return no_sensor_present
 
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    if app_config_access.current_platform == "Linux":
+    if app_cached_variables.current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_first_last_date()
     return no_sensor_present
 
@@ -129,7 +127,9 @@ def get_db_first_last_date():
 def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
-    last_updated_file = app_generic_functions.get_file_content(file_locations.program_last_updated)
+    if not os.path.isfile(file_locations.program_last_updated):
+        return "Unknown"
+    last_updated_file = get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
         last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
@@ -138,24 +138,48 @@ def get_last_updated():
     return last_updated.strip()
 
 
+def get_sensors_latency():
+    """ Returns sensors latency in seconds as a dictionary. """
+    sensor_function_list = [get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
+                            get_distance, get_gas_resistance_index, get_gas_oxidised, get_gas_reduced, get_gas_nh3,
+                            get_particulate_matter_1, get_particulate_matter_2_5, get_particulate_matter_10,
+                            get_lumen, get_ems, get_ultra_violet_index, get_ultra_violet_a, get_ultra_violet_b,
+                            get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+
+    sensor_latency_list = []
+    for sensor_function in sensor_function_list:
+        thing = _get_sensor_latency(sensor_function)
+        if thing is None:
+            sensor_latency_list.append(None)
+        else:
+            sensor_latency_list.append(round(thing, 6))
+    return sensor_latency_list
+
+
+def _get_sensor_latency(sensor_function):
+    try:
+        start_time = time.time()
+        sensor_reading = sensor_function()
+        end_time = time.time()
+        if sensor_reading == no_sensor_present:
+            return None
+        return float(end_time - start_time)
+    except Exception as error:
+        logger.sensors_logger.warning("Problem getting sensor latency: " + str(error))
+        return 0.0
+
+
 def get_cpu_temperature():
     """ Returns sensors CPU temperature. """
-    while not sensor_ready_checks.cpu_temperature_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.cpu_temperature_ready = False
     if app_config_access.installed_sensors.raspberry_pi:
         temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
     else:
         temperature = no_sensor_present
-    sensor_ready_checks.cpu_temperature_ready = True
     return temperature
 
 
 def get_sensor_temperature():
     """ Returns sensors Environmental temperature. """
-    while not sensor_ready_checks.env_temperature_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.env_temperature_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
@@ -168,15 +192,11 @@ def get_sensor_temperature():
         temperature = sensors_direct.rp_sense_hat_a.temperature()
     else:
         temperature = no_sensor_present
-    sensor_ready_checks.env_temperature_ready = True
     return temperature
 
 
 def get_pressure():
     """ Returns sensors pressure. """
-    while not sensor_ready_checks.pressure_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.pressure_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
         pressure = sensors_direct.pimoroni_enviro_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
@@ -189,28 +209,22 @@ def get_pressure():
         pressure = sensors_direct.rp_sense_hat_a.pressure()
     else:
         pressure = no_sensor_present
-    sensor_ready_checks.pressure_ready = True
     return pressure
 
 
 def get_altitude():
     """ Returns sensors altitude. """
-    while not sensor_ready_checks.altitude_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.altitude_ready = False
     if app_config_access.installed_sensors.pimoroni_bmp280:
         altitude = sensors_direct.pimoroni_bmp280_a.altitude()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        altitude = sensors_direct.pimoroni_enviroplus_a.altitude()
     else:
         altitude = no_sensor_present
-    sensor_ready_checks.altitude_ready = True
     return altitude
 
 
 def get_humidity():
     """ Returns sensors humidity. """
-    while not sensor_ready_checks.humidity_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.humidity_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_bme680:
@@ -219,7 +233,6 @@ def get_humidity():
         humidity = sensors_direct.rp_sense_hat_a.humidity()
     else:
         humidity = no_sensor_present
-    sensor_ready_checks.humidity_ready = True
     return humidity
 
 
@@ -245,9 +258,6 @@ def get_dew_point():
 
 def get_distance():
     """ Returns sensors distance. """
-    while not sensor_ready_checks.distance_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.distance_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         distance = sensors_direct.pimoroni_enviroplus_a.distance()
     elif app_config_access.installed_sensors.pimoroni_vl53l1x:
@@ -256,109 +266,77 @@ def get_distance():
         distance = sensors_direct.pimoroni_ltr_559_a.distance()
     else:
         distance = no_sensor_present
-    sensor_ready_checks.distance_ready = True
     return distance
 
 
 def get_gas_resistance_index():
     """ Returns sensors gas resistance index. """
-    while not sensor_ready_checks.gas_resistance_index_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.gas_resistance_index_ready = False
     if app_config_access.installed_sensors.pimoroni_bme680:
         index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
     else:
         index = no_sensor_present
-    sensor_ready_checks.gas_resistance_index_ready = True
     return index
 
 
 def get_gas_oxidised():
     """ Returns sensors gas reading for oxidising. """
-    while not sensor_ready_checks.gas_oxidised_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.gas_oxidised_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         oxidising = sensors_direct.pimoroni_enviroplus_a.gas_data()[0]
     else:
         oxidising = no_sensor_present
-    sensor_ready_checks.gas_oxidised_ready = True
     return oxidising
 
 
 def get_gas_reduced():
     """ Returns sensors gas reading for reducing. """
-    while not sensor_ready_checks.gas_reduced_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.gas_reduced_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         reducing = sensors_direct.pimoroni_enviroplus_a.gas_data()[1]
     else:
         reducing = no_sensor_present
-    sensor_ready_checks.gas_reduced_ready = True
     return reducing
 
 
 def get_gas_nh3():
     """ Returns sensors gas reading for NH3. """
-    while not sensor_ready_checks.gas_nh3_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.gas_nh3_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         nh3_reading = sensors_direct.pimoroni_enviroplus_a.gas_data()[2]
     else:
         nh3_reading = no_sensor_present
-    sensor_ready_checks.gas_nh3_ready = True
     return nh3_reading
 
 
 def get_particulate_matter_1():
     """ Returns sensor reading for PM1. """
-    while not sensor_ready_checks.particulate_matter1_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.particulate_matter1_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm1_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[0]
     else:
         pm1_reading = no_sensor_present
-    sensor_ready_checks.particulate_matter1_ready = True
     return pm1_reading
 
 
 def get_particulate_matter_2_5():
     """ Returns sensor reading for PM2.5. """
-    while not sensor_ready_checks.particulate_matter2_5_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.particulate_matter2_5_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm2_5_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[1]
     else:
         pm2_5_reading = no_sensor_present
-    sensor_ready_checks.particulate_matter2_5_ready = True
     return pm2_5_reading
 
 
 def get_particulate_matter_10():
     """ Returns sensor reading for PM10. """
-    while not sensor_ready_checks.particulate_matter10_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.particulate_matter10_ready = False
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm10_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[2]
     else:
         pm10_reading = no_sensor_present
-    sensor_ready_checks.particulate_matter10_ready = True
     return pm10_reading
 
 
 def get_lumen():
     """ Returns sensors lumen. """
-    while not sensor_ready_checks.lumen_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.lumen_ready = False
     if app_config_access.installed_sensors.pimoroni_enviro:
         lumen = sensors_direct.pimoroni_enviro_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
@@ -369,15 +347,11 @@ def get_lumen():
         lumen = sensors_direct.pimoroni_ltr_559_a.lumen()
     else:
         lumen = no_sensor_present
-    sensor_ready_checks.lumen_ready = True
     return lumen
 
 
 def get_ems():
     """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
-    while not sensor_ready_checks.ems_colours_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.ems_colours_ready = False
     if app_config_access.installed_sensors.pimoroni_as7262:
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -386,54 +360,38 @@ def get_ems():
         colours = sensors_direct.pimoroni_bh1745_a.ems()
     else:
         colours = no_sensor_present
-    sensor_ready_checks.ems_colours_ready = True
     return colours
 
 
 def get_ultra_violet_index():
     """ Returns Ultra Violet Index. """
-    while not sensor_ready_checks.ultra_violet_index_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.ultra_violet_index_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uv_index_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
     else:
         uv_index_reading = no_sensor_present
-    sensor_ready_checks.ultra_violet_index_ready = True
     return uv_index_reading
 
 
 def get_ultra_violet_a():
     """ Returns Ultra Violet A (UVA). """
-    while not sensor_ready_checks.ultra_violet_a_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.ultra_violet_a_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uva_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[0]
     else:
         uva_reading = no_sensor_present
-    sensor_ready_checks.ultra_violet_a_ready = True
     return uva_reading
 
 
 def get_ultra_violet_b():
     """ Returns Ultra Violet B (UVB). """
-    while not sensor_ready_checks.ultra_violet_b_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.ultra_violet_b_ready = False
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uvb_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[1]
     else:
         uvb_reading = no_sensor_present
-    sensor_ready_checks.ultra_violet_b_ready = True
     return uvb_reading
 
 
 def get_accelerometer_xyz():
     """ Returns sensors Accelerometer XYZ. """
-    while not sensor_ready_checks.accelerometer_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.accelerometer_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -444,15 +402,11 @@ def get_accelerometer_xyz():
         xyz = sensors_direct.pimoroni_icm20948_a.accelerometer_xyz()
     else:
         xyz = no_sensor_present
-    sensor_ready_checks.accelerometer_ready = True
     return xyz
 
 
 def get_magnetometer_xyz():
     """ Returns sensors Magnetometer XYZ. """
-    while not sensor_ready_checks.magnetometer_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.magnetometer_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -463,22 +417,17 @@ def get_magnetometer_xyz():
         xyz = sensors_direct.pimoroni_icm20948_a.magnetometer_xyz()
     else:
         xyz = no_sensor_present
-    sensor_ready_checks.magnetometer_ready = True
     return xyz
 
 
 def get_gyroscope_xyz():
     """ Returns sensors Gyroscope XYZ. """
-    while not sensor_ready_checks.gyroscope_ready:
-        sleep(sensor_in_use_delay)
-    sensor_ready_checks.gyroscope_ready = False
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
         xyz = sensors_direct.pimoroni_icm20948_a.gyroscope_xyz()
     else:
         xyz = no_sensor_present
-    sensor_ready_checks.gyroscope_ready = True
     return xyz
 
 
@@ -513,38 +462,39 @@ def display_message(text_msg):
 
 
 def start_special_sensor_interactive_services():
+    """ If available start additional hardware Interaction thread. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        sh_joy_stick_thread = Thread(target=sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
-        sh_joy_stick_thread.daemon = True
-        sh_joy_stick_thread.start()
+        text_name = "Sensor Interactive Service"
+        function = sensors_direct.rp_sense_hat_a.start_joy_stick_commands
+        app_cached_variables.interactive_sensor_thread = CreateMonitoredThread(function, thread_name=text_name)
 
 
 def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
-    sleep(sleep_before_restart)
+    time.sleep(sleep_before_restart)
     os.system(os_cli_commands.restart_sensor_services_command)
 
 
 def get_db_notes():
     """ Returns a comma separated string of Notes from the SQL Database. """
-    sql_query = "SELECT " + app_config_access.database_variables.other_table_column_notes + \
-                " FROM " + app_config_access.database_variables.table_other
+    sql_query = "SELECT " + app_cached_variables.database_variables.other_table_column_notes + \
+                " FROM " + app_cached_variables.database_variables.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
     """ Returns a comma separated string of Note Dates from the SQL Database. """
-    sql_query_notes = "SELECT " + app_config_access.database_variables.all_tables_datetime + \
-                      " FROM " + app_config_access.database_variables.table_other
+    sql_query_notes = "SELECT " + app_cached_variables.database_variables.all_tables_datetime + \
+                      " FROM " + app_cached_variables.database_variables.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
     """ Returns a comma separated string of User Note Dates from the SQL Database. """
-    sql_query_user_datetime = "SELECT " + app_config_access.database_variables.other_table_column_user_date_time + \
-                              " FROM " + app_config_access.database_variables.table_other
+    sql_query_user_datetime = "SELECT " + app_cached_variables.database_variables.other_table_column_user_date_time + \
+                              " FROM " + app_cached_variables.database_variables.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
     return _create_str_from_list(sql_data_user_datetime)
 
@@ -580,15 +530,15 @@ def add_note_to_database(datetime_note):
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
 
-        sql_data.sensor_types = app_config_access.database_variables.all_tables_datetime + ", " + \
-                                app_config_access.database_variables.other_table_column_user_date_time + ", " + \
-                                app_config_access.database_variables.other_table_column_notes
+        sql_data.sensor_types = app_cached_variables.database_variables.all_tables_datetime + ", " + \
+                                app_cached_variables.database_variables.other_table_column_user_date_time + ", " + \
+                                app_cached_variables.database_variables.other_table_column_notes
         sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
 
         sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
                        sql_data.sensor_readings + sql_data.sql_query_values_end)
 
-        sqlite_database.sql_execute(sql_execute)
+        sqlite_database.write_to_sql_database(sql_execute)
     else:
         logger.sensors_logger.error("Unable to add bad Note")
 
@@ -604,24 +554,24 @@ def update_note_in_database(datetime_note):
 
         sql_execute = "UPDATE OtherData SET " + "Notes = " + note + \
                       ",UserDateTime = " + user_datetime + " WHERE DateTime = " + current_datetime
-        sqlite_database.sql_execute(sql_execute)
+        sqlite_database.write_to_sql_database(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
 
 
 def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
-    sql_query = "DELETE FROM " + str(app_config_access.database_variables.table_other) + \
-                " WHERE " + str(app_config_access.database_variables.all_tables_datetime) + \
+    sql_query = "DELETE FROM " + str(app_cached_variables.database_variables.table_other) + \
+                " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
-    sqlite_database.sql_execute(sql_query)
+    sqlite_database.write_to_sql_database(sql_query)
 
 
 def upgrade_linux_os():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
         os.system(os_cli_commands.bash_commands["UpgradeSystemOS"])
-        app_config_access.linux_os_upgrade_ready = True
+        app_cached_variables.linux_os_upgrade_ready = True
         logger.primary_logger.warning("Linux OS Upgrade Done")
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))

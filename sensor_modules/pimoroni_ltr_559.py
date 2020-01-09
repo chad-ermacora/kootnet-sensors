@@ -17,39 +17,52 @@ pip3 install ltr559
 
 @author: OO-Dragon
 """
+import time
 from operations_modules import logger
 from operations_modules import app_config_access
 
 round_decimal_to = 5
+pause_sensor_during_access_sec = 0.02
 
 
 class CreateLTR559:
     """ Creates Function access to the Pimoroni LTR-559. """
 
     def __init__(self):
+        self.sensor_in_use = False
         try:
-            self.ltr_559_import = __import__('ltr559')
-            self.ltr_559 = self.ltr_559_import.LTR559()
+            ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
+            self.ltr_559 = ltr559_import.LTR559()
             self.ltr_559.get_lux()
             logger.sensors_logger.debug("Pimoroni LTR-559 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_ltr_559 = 0
+            app_config_access.installed_sensors.has_lumen = 0
+            app_config_access.installed_sensors.has_distance = 0
 
     def lumen(self):
         """ Returns Lumen as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             lumen = float(self.ltr_559.get_lux())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Lumen - Failed: " + str(error))
             lumen = 0.0
+        self.sensor_in_use = False
         return round(lumen, round_decimal_to)
 
     def distance(self):
         """ Returns distance in cm?. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
         try:
             distance = float(self.ltr_559.get_proximity())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LTR-559 Proximity - Failed: " + str(error))
             distance = 0.0
+        self.sensor_in_use = False
         return round(distance, round_decimal_to)

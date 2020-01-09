@@ -2,11 +2,16 @@ from flask import Blueprint, send_file, render_template, request
 from werkzeug.security import check_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_config_access
+from operations_modules import app_cached_variables
 from http_server import server_http_generic_functions
 from http_server.server_http_auth import auth
 
 html_functional_routes = Blueprint("html_basics", __name__)
+
+
+@html_functional_routes.route("/favicon.ico")
+def fav_icon():
+    return send_file(file_locations.html_icon)
 
 
 @html_functional_routes.route("/MenuScript.js")
@@ -46,9 +51,9 @@ def logout():
 
 @auth.verify_password
 def verify_password(username, password):
-    if username == app_config_access.http_flask_user:
+    if username == app_cached_variables.http_flask_user:
         logger.network_logger.debug("* Login attempt from " + str(request.remote_addr))
-        return check_password_hash(app_config_access.http_flask_password, password)
+        return check_password_hash(app_cached_variables.http_flask_password, password)
     return False
 
 

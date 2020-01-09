@@ -19,19 +19,13 @@
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_config_access
+from sensor_modules import sensor_access
 
 
-class CreateSensorDisplay:
-    logger.primary_logger.debug("Created Sensor Display Server Object")
-
-    def __init__(self, sensor_access):
-        self.sensor_access = sensor_access
-        self.scroll_interval_readings_on_display()
-
-    def scroll_interval_readings_on_display(self):
-        logger.primary_logger.info(" -- Sensor Display Server Started")
-        while True:
-            message = "CPU: " + str(int(self.sensor_access.get_cpu_temperature())) + "°C "
-            message += "ENV: " + str(int(self.sensor_access.get_sensor_temperature())) + "°C "
-            self.sensor_access.display_message(message)
-            sleep(app_config_access.current_config.sleep_duration_interval)
+def scroll_interval_readings_on_display():
+    logger.primary_logger.info(" -- Sensor Display Server Started")
+    while True:
+        message = "CPU: " + str(int(sensor_access.get_cpu_temperature())) + "°C "
+        message += "ENV: " + str(int(sensor_access.get_sensor_temperature())) + "°C "
+        sensor_access.display_message(message)
+        sleep(app_config_access.current_config.sleep_duration_interval)

@@ -44,8 +44,8 @@ td {
   position: fixed;
   top: 0;
   bottom: 0;
-  width: 225px;
-  left: -225px;
+  width: 240px;
+  left: -240px;
   overflow: auto;
   z-index: 2;
   background-color: #000000;

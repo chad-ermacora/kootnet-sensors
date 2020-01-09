@@ -26,7 +26,7 @@ class CreateTriggerVariances:
     """ Create a Trigger Variance configuration object. These are also the default values. """
 
     def __init__(self):
-        self.sensor_uptime_enabled = 1
+        self.sensor_uptime_enabled = 0
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
 
         self.cpu_temperature_enabled = 0
@@ -89,19 +89,19 @@ class CreateTriggerVariances:
         self.accelerometer_x_variance = 0.1
         self.accelerometer_y_variance = 0.1
         self.accelerometer_z_variance = 0.1
-        self.accelerometer_wait_seconds = 0.25
+        self.accelerometer_wait_seconds = 0.3
 
         self.magnetometer_enabled = 0
         self.magnetometer_x_variance = 25.0
         self.magnetometer_y_variance = 25.0
         self.magnetometer_z_variance = 25.0
-        self.magnetometer_wait_seconds = 0.25
+        self.magnetometer_wait_seconds = 0.3
 
         self.gyroscope_enabled = 0
         self.gyroscope_x_variance = 25.0
         self.gyroscope_y_variance = 25.0
         self.gyroscope_z_variance = 25.0
-        self.gyroscope_wait_seconds = 0.25
+        self.gyroscope_wait_seconds = 0.3
 
     def init_trigger_variances(self, installed_sensors):
         """ Sets default values for all variances in the provided configuration object. """
@@ -414,8 +414,151 @@ def convert_triggers_lines_to_obj(trigger_text_file):
         logger.primary_logger.warning("One or more bad options in Trigger Variance configuration file.  " +
                                       "Using defaults for bad entries and saving.")
         write_triggers_to_file(new_trigger_variances)
-
     return new_trigger_variances
+
+
+def html_request_to_variance_triggers(html_request):
+    """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
+    logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
+    trigger_variances = CreateTriggerVariances()
+
+    new_uptime_days = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
+    trigger_variances.sensor_uptime_wait_seconds = new_uptime_days
+    if html_request.form.get("checkbox_sensor_uptime") is not None:
+        trigger_variances.sensor_uptime_enabled = 1
+
+    new_variance = html_request.form.get("trigger_cpu_temperature")
+    new_seconds_delay = html_request.form.get("seconds_cpu_temperature")
+    trigger_variances.cpu_temperature_variance = new_variance
+    trigger_variances.cpu_temperature_wait_seconds = new_seconds_delay
+    if html_request.form.get("checkbox_cpu_temperature") is not None:
+        trigger_variances.cpu_temperature_enabled = 1
+
+    new_variance = html_request.form.get("trigger_env_temperature")
+    new_seconds_delay = html_request.form.get("seconds_env_temperature")
+    trigger_variances.env_temperature_variance = new_variance
+    trigger_variances.env_temperature_wait_seconds = new_seconds_delay
+    if html_request.form.get("env_temperature") is not None:
+        trigger_variances.env_temperature_enabled = 1
+
+    new_variance = html_request.form.get("trigger_pressure")
+    new_seconds_delay = html_request.form.get("seconds_pressure")
+    trigger_variances.pressure_variance = new_variance
+    trigger_variances.pressure_wait_seconds = new_seconds_delay
+    if html_request.form.get("pressure") is not None:
+        trigger_variances.pressure_enabled = 1
+
+    new_variance = html_request.form.get("trigger_humidity")
+    new_seconds_delay = html_request.form.get("seconds_humidity")
+    trigger_variances.humidity_variance = new_variance
+    trigger_variances.humidity_wait_seconds = new_seconds_delay
+    if html_request.form.get("humidity") is not None:
+        trigger_variances.humidity_enabled = 1
+
+    new_variance = html_request.form.get("trigger_altitude")
+    new_seconds_delay = html_request.form.get("seconds_altitude")
+    trigger_variances.altitude_variance = new_variance
+    trigger_variances.altitude_wait_seconds = new_seconds_delay
+    if html_request.form.get("altitude") is not None:
+        trigger_variances.altitude_enabled = 1
+
+    new_variance = html_request.form.get("trigger_distance")
+    new_seconds_delay = html_request.form.get("seconds_distance")
+    trigger_variances.distance_variance = new_variance
+    trigger_variances.distance_wait_seconds = new_seconds_delay
+    if html_request.form.get("distance") is not None:
+        trigger_variances.distance_enabled = 1
+
+    new_variance = html_request.form.get("trigger_lumen")
+    new_seconds_delay = html_request.form.get("seconds_lumen")
+    trigger_variances.lumen_variance = new_variance
+    trigger_variances.lumen_wait_seconds = new_seconds_delay
+    if html_request.form.get("lumen") is not None:
+        trigger_variances.lumen_enabled = 1
+
+    new_variance_red = html_request.form.get("red")
+    new_variance_orange = html_request.form.get("orange")
+    new_variance_yellow = html_request.form.get("yellow")
+    new_variance_green = html_request.form.get("green")
+    new_variance_blue = html_request.form.get("blue")
+    new_variance_violet = html_request.form.get("violet")
+    new_seconds_delay = html_request.form.get("seconds_colour")
+    trigger_variances.red_variance = new_variance_red
+    trigger_variances.orange_variance = new_variance_orange
+    trigger_variances.yellow_variance = new_variance_yellow
+    trigger_variances.green_variance = new_variance_green
+    trigger_variances.blue_variance = new_variance_blue
+    trigger_variances.violet_variance = new_variance_violet
+    trigger_variances.colour_wait_seconds = new_seconds_delay
+    if html_request.form.get("colour") is not None:
+        trigger_variances.colour_enabled = 1
+
+    new_variance_uva = html_request.form.get("ultra_violet_a")
+    new_variance_uvb = html_request.form.get("ultra_violet_b")
+    new_seconds_delay = html_request.form.get("seconds_ultra_violet")
+    trigger_variances.ultra_violet_a_variance = new_variance_uva
+    trigger_variances.ultra_violet_b_variance = new_variance_uvb
+    trigger_variances.ultra_violet_wait_seconds = new_seconds_delay
+    if html_request.form.get("ultra_violet") is not None:
+        trigger_variances.ultra_violet_enabled = 1
+
+    new_variance_index = html_request.form.get("trigger_gas_index")
+    new_variance_oxidising = html_request.form.get("trigger_gas_oxidising")
+    new_variance_reducing = html_request.form.get("trigger_gas_reducing")
+    new_variance_nh3 = html_request.form.get("trigger_gas_nh3")
+    new_seconds_delay = html_request.form.get("seconds_gas")
+    trigger_variances.gas_resistance_index_variance = new_variance_index
+    trigger_variances.gas_oxidising_variance = new_variance_oxidising
+    trigger_variances.gas_reducing_variance = new_variance_reducing
+    trigger_variances.gas_nh3_variance = new_variance_nh3
+    trigger_variances.gas_wait_seconds = new_seconds_delay
+    if html_request.form.get("gas") is not None:
+        trigger_variances.gas_enabled = 1
+
+    new_variance_pm1 = html_request.form.get("trigger_pm1")
+    new_variance_pm2_5 = html_request.form.get("trigger_pm2_5")
+    new_variance_pm_10 = html_request.form.get("trigger_pm10")
+    new_seconds_delay = html_request.form.get("seconds_pm")
+    trigger_variances.particulate_matter_1_variance = new_variance_pm1
+    trigger_variances.particulate_matter_2_5_variance = new_variance_pm2_5
+    trigger_variances.particulate_matter_10_variance = new_variance_pm_10
+    trigger_variances.humidity_wait_seconds = new_seconds_delay
+    if html_request.form.get("particulate_matter") is not None:
+        trigger_variances.particulate_matter_enabled = 1
+
+    new_variance_x = html_request.form.get("accelerometer_x")
+    new_variance_y = html_request.form.get("accelerometer_y")
+    new_variance_z = html_request.form.get("accelerometer_z")
+    new_seconds_delay = html_request.form.get("seconds_accelerometer")
+    trigger_variances.accelerometer_x_variance = new_variance_x
+    trigger_variances.accelerometer_y_variance = new_variance_y
+    trigger_variances.accelerometer_z_variance = new_variance_z
+    trigger_variances.accelerometer_wait_seconds = new_seconds_delay
+    if html_request.form.get("accelerometer") is not None:
+        trigger_variances.accelerometer_enabled = 1
+
+    new_variance_x = html_request.form.get("magnetometer_x")
+    new_variance_y = html_request.form.get("magnetometer_y")
+    new_variance_z = html_request.form.get("magnetometer_z")
+    new_seconds_delay = html_request.form.get("seconds_magnetometer")
+    trigger_variances.magnetometer_x_variance = new_variance_x
+    trigger_variances.magnetometer_y_variance = new_variance_y
+    trigger_variances.magnetometer_z_variance = new_variance_z
+    trigger_variances.magnetometer_wait_seconds = new_seconds_delay
+    if html_request.form.get("magnetometer") is not None:
+        trigger_variances.magnetometer_enabled = 1
+
+    new_variance_x = html_request.form.get("gyroscope_x")
+    new_variance_y = html_request.form.get("gyroscope_y")
+    new_variance_z = html_request.form.get("gyroscope_z")
+    new_seconds_delay = html_request.form.get("seconds_gyroscope")
+    trigger_variances.gyroscope_x_variance = new_variance_x
+    trigger_variances.gyroscope_y_variance = new_variance_y
+    trigger_variances.gyroscope_z_variance = new_variance_z
+    trigger_variances.gyroscope_wait_seconds = new_seconds_delay
+    if html_request.form.get("gyroscope") is not None:
+        trigger_variances.gyroscope_enabled = 1
+    return trigger_variances
 
 
 def get_triggers_variances_from_file():

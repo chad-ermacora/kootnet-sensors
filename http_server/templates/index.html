@@ -2,11 +2,65 @@
 
 {% block content %}
 
-    <h2 style="text-decoration: underline; color: red;"><strong>KootNet Sensors - {{ HostName }}</strong></h2>
+    <style>
+        .mui-container-fluid {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .mui-col-md-3 {
+            background-color: #00ffff;
+            width: 175px;
+        }
+
+        .mui-col-md-8 {
+            background-color: #0BB10D;
+            width: auto;
+        }
+    </style>
+
+    <h2 style="text-decoration: underline; color: red;"><strong><a style="color: red;" href="/">
+        Database Information - {{ HostName }}
+    </a></strong></h2>
+
+    <div class="mui-container-fluid">
+        <div class="mui-row">
+            <div class="mui-col-md-3">Local Location</div>
+            <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Date Range</div>
+            <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Size on Disk</div>
+            <div class="mui-col-md-8">{{ SQLDatabaseSize }} MB</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Number of Notes</div>
+            <div class="mui-col-md-8">{{ NumberNotes }}</div>
+        </div>
+    </div>
 
     <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
             onclick="window.location.href = '/DownloadSQLDatabase';">
         Download SQL Database
     </button>
+
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/UploadSQLDatabase';" disabled>
+        Upload SQL Database
+    </button>
+
+    <br><br>
+
+    <p style="color: red;">
+        The SQLite3 Database holds all recorded information, including sensor readings and notes.
+        <br>
+        Download it for offline access or backup purposes.
+    </p>
 
 {% endblock %}

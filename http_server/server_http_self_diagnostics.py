@@ -18,6 +18,7 @@
 """
 from operations_modules.app_generic_functions import get_http_sensor_reading
 from operations_modules.app_cached_variables import no_sensor_present
+# TODO: Get this working
 
 http_username = "Kootnet"
 http_password = "sensors"

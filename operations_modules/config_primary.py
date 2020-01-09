@@ -19,15 +19,14 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 
 
 class CreateConfig:
     """ Creates object with default sensor configuration settings. """
-
     def __init__(self):
         self.enable_debug_logging = 0
-        self.enable_display = 1
+        self.enable_display = 0
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 300.0
@@ -45,15 +44,49 @@ class CreateConfig:
 def get_config_from_file():
     """ Loads configuration from file and returns it as a configuration object. """
     if os.path.isfile(file_locations.main_config):
-        config_file_content = app_generic_functions.get_file_content(
-            file_locations.main_config).strip().split("\n")
+        config_file_content = get_file_content(file_locations.main_config).strip().split("\n")
         installed_config = convert_config_lines_to_obj(config_file_content)
     else:
         logger.primary_logger.info("Primary Configuration file not found - Saving Default")
         installed_config = CreateConfig()
         write_config_to_file(installed_config)
-
     return installed_config
+
+
+def html_request_to_config_main(html_request):
+    """ Creates and returns a Main configuration object instance based on provided HTML configurations. """
+    logger.network_logger.debug("Starting HTML Main Configuration Update Check")
+    new_config = CreateConfig()
+    if html_request.form.get("debug_logging") is not None:
+        new_config.enable_debug_logging = 1
+    else:
+        new_config.enable_debug_logging = 0
+
+    if html_request.form.get("enable_display") is not None:
+        new_config.enable_display = 1
+    else:
+        new_config.enable_display = 0
+
+    if html_request.form.get("enable_interval_recording") is not None:
+        new_config.enable_interval_recording = 1
+    else:
+        new_config.enable_interval_recording = 0
+    if html_request.form.get("interval_delay_seconds") is not None:
+        new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
+        new_config.sleep_duration_interval = new_sleep_duration
+
+    if html_request.form.get("enable_trigger_recording") is not None:
+        new_config.enable_trigger_recording = 1
+    else:
+        new_config.enable_trigger_recording = 0
+
+    if html_request.form.get("enable_custom_temp_offset") is not None:
+        new_temp = float(html_request.form.get("custom_temperature_offset"))
+        new_config.enable_custom_temp = 1
+        new_config.temperature_offset = new_temp
+    else:
+        new_config.enable_custom_temp = 0
+    return new_config
 
 
 def convert_config_to_str(config):
@@ -66,7 +99,6 @@ def convert_config_to_str(config):
                       str(config.sleep_duration_interval) + " = Recording Interval in Seconds ** Caution **\n" + \
                       str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n" + \
                       str(config.temperature_offset) + " = Current Temperature Offset"
-
     return config_file_str
 
 
@@ -123,7 +155,6 @@ def convert_config_lines_to_obj(config_lines, skip_write=False):
             message = "Primary Configuration Load Error: Using one or more defaults.  Please review the Configuration."
             logger.primary_logger.warning(message)
             write_config_to_file(new_config)
-
     return new_config
 
 
@@ -134,8 +165,6 @@ def write_config_to_file(config):
         config = convert_config_lines_to_obj(config)
     else:
         new_config = convert_config_to_str(config)
-
-    app_generic_functions.write_file_to_disk(file_locations.main_config, new_config)
-
+    write_file_to_disk(file_locations.main_config, new_config)
     # Save Log level with each config file save
-    app_generic_functions.write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))
+    write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))

@@ -19,11 +19,12 @@
 import os
 from time import sleep
 from operations_modules import logger
-if os.geteuid() != 0:
-    log_message = "--- Failed to Start Kootnet Sensors - Elevated (root) permissions required for Hardware Access"
-    logger.primary_logger.critical(log_message)
-    while True:
-        sleep(600)
+from operations_modules import program_start_checks
+# Ensure files, database & configurations are OK
+running_with_root = False
+if os.geteuid() == 0:
+    running_with_root = True
+    program_start_checks.run_program_start_checks()
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
@@ -32,30 +33,19 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(600)
-from threading import Thread
 from http_server import server_http
-from operations_modules import program_start_checks
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from operations_modules import software_version
 from operations_modules import recording_interval
 from operations_modules import recording_triggers
-# from operations_modules import server_display
-
-
-# Ensure files, database & configurations are OK
-program_start_checks.set_file_permissions()
-program_start_checks.check_database_structure()
-
-if software_version.old_version != software_version.version:
-    os.system("systemctl start SensorUpgradeChecks")
-    # Sleep before loading anything due to needed updates
-    # The update service will automatically restart this app when it's done
-    while True:
-        sleep(30)
+from operations_modules import server_display
+from operations_modules.online_services.luftdaten import start_luftdaten
+from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
+from operations_modules.online_services.open_sense_map import start_open_sense_map
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
-
-if app_config_access.installed_sensors.no_sensors is False:
+if running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up special Sensor Access Service like SenseHat Joystick
     sensor_access.start_special_sensor_interactive_services()
 
@@ -64,53 +54,46 @@ if app_config_access.installed_sensors.no_sensors is False:
         if app_config_access.installed_sensors.has_display:
             pass
             # This currently only displays sensor readings every interval recording. Disabled for now.
-            # display_thread = Thread(target=server_display.CreateSensorDisplay, args=[sensor_access])
-            # display_thread.daemon = True
-            # display_thread.start()
+            text_name = "Display"
+            function = server_display.scroll_interval_readings_on_display
+            app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
         else:
             logger.primary_logger.warning("No Compatible Displays Installed")
 
     # Start up Interval Sensor Recording
     if app_config_access.current_config.enable_interval_recording:
-        interval_recording_thread = Thread(target=recording_interval.CreateIntervalRecording)
-        interval_recording_thread.daemon = True
-        interval_recording_thread.start()
+        text_name = "Interval Recording"
+        function = recording_interval.start_interval_recording
+        app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
     else:
         logger.primary_logger.debug("Interval Recording Disabled in Config")
 
     # Start up Trigger Sensor Recording
     if app_config_access.current_config.enable_trigger_recording:
-        recording_triggers.start_trigger_recording(sensor_access)
+        app_cached_variables.trigger_recording_thread = thread_function(recording_triggers.start_trigger_recording)
     else:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")
 
     # Start up all enabled Online Services
     if app_config_access.weather_underground_config.weather_underground_enabled:
-        app_config_access.weather_underground_config.sensor_access = sensor_access
-        wu_thread = Thread(target=app_config_access.weather_underground_config.start_weather_underground)
-        wu_thread.daemon = True
-        wu_thread.start()
+        text_name = "Weather Underground"
+        app_cached_variables.weather_underground_thread = CreateMonitoredThread(start_wu, thread_name=text_name)
     if app_config_access.luftdaten_config.luftdaten_enabled:
-        app_config_access.luftdaten_config.sensor_access = sensor_access
-        luftdaten_thread = Thread(target=app_config_access.luftdaten_config.start_luftdaten)
-        luftdaten_thread.daemon = True
-        luftdaten_thread.start()
+        text_name = "Luftdaten"
+        app_cached_variables.luftdaten_thread = CreateMonitoredThread(start_luftdaten, thread_name=text_name)
     if app_config_access.open_sense_map_config.open_sense_map_enabled:
-        app_config_access.open_sense_map_config.sensor_access = sensor_access
-        open_sense_map_thread = Thread(target=app_config_access.open_sense_map_config.start_open_sense_map)
-        open_sense_map_thread.daemon = True
-        open_sense_map_thread.start()
+        text_name = "Open Sense Map"
+        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
+    sensor_access.display_message("KS-Sensors Recording Started")
 else:
-    logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
+    if not running_with_root:
+        log_message = "--- Warning - Kootnet Sensors requires Elevated (root) permissions for some sensors"
+        logger.primary_logger.warning(log_message)
+    else:
+        logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
-# Make sure SSL Files are there before starting HTTPS Server
-program_start_checks.check_ssl_files()
 # Start the HTTP Server for remote access
-https_server_and_check_thread = Thread(target=server_http.https_start_and_watch)
-https_server_and_check_thread.daemon = True
-https_server_and_check_thread.start()
-
+thread_function(server_http.https_start_and_watch)
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
-sensor_access.display_message("KS-Sensors")
 while True:
-    sleep(600)
+    sleep(3600)

@@ -177,47 +177,15 @@ def html_set_config_main():
     logger.network_logger.debug("** HTML Apply - Main Configuration - Source: " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            check_html_config_main(request)
+            new_config = app_config_access.config_primary.html_request_to_config_main(request)
+            app_config_access.current_config = new_config
+            app_config_access.config_primary.write_config_to_file(new_config)
+            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
-            return message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-
+            return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
-
-
-def check_html_config_main(html_request):
-    logger.network_logger.debug("Starting HTML Main Configuration Update Check")
-    if html_request.form.get("debug_logging") is not None:
-        app_config_access.current_config.enable_debug_logging = 1
-    else:
-        app_config_access.current_config.enable_debug_logging = 0
-
-    if html_request.form.get("enable_display") is not None:
-        app_config_access.current_config.enable_display = 1
-    else:
-        app_config_access.current_config.enable_display = 0
-
-    if html_request.form.get("enable_interval_recording") is not None:
-        app_config_access.current_config.enable_interval_recording = 1
-    else:
-        app_config_access.current_config.enable_interval_recording = 0
-    if html_request.form.get("interval_delay_seconds") is not None:
-        new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
-        app_config_access.current_config.sleep_duration_interval = new_sleep_duration
-
-    if html_request.form.get("enable_trigger_recording") is not None:
-        app_config_access.current_config.enable_trigger_recording = 1
-    else:
-        app_config_access.current_config.enable_trigger_recording = 0
-
-    if html_request.form.get("enable_custom_temp_offset") is not None:
-        new_temp = float(html_request.form.get("custom_temperature_offset"))
-        app_config_access.current_config.enable_custom_temp = 1
-        app_config_access.current_config.temperature_offset = new_temp
-    else:
-        app_config_access.current_config.enable_custom_temp = 0
-    app_config_access.config_primary.write_config_to_file(app_config_access.current_config)
 
 
 @html_sensor_config_routes.route("/EditInstalledSensors", methods=["POST"])
@@ -226,77 +194,16 @@ def html_set_installed_sensors():
     logger.network_logger.debug("** HTML Apply - Installed Sensors - Source " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            check_html_installed_sensors(request)
+            r_t_is = app_config_access.config_installed_sensors.html_request_to_installed_sensors_config
+            new_installed_sensors = r_t_is(request)
+            installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
+            app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
+            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
-            return message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
+            return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
             return message_and_return("Bad Installed Sensors POST Request", url="/ConfigurationsHTML")
-
-
-def check_html_installed_sensors(html_request):
-    logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
-    new_installed_sensors = app_config_access.config_installed_sensors.CreateInstalledSensors()
-
-    try:
-        if html_request.form.get("linux_system") is not None:
-            new_installed_sensors.linux_system = 1
-
-        if html_request.form.get("raspberry_pi") is not None:
-            new_installed_sensors.raspberry_pi = 1
-
-        if html_request.form.get("raspberry_pi_sense_hat") is not None:
-            new_installed_sensors.raspberry_pi_sense_hat = 1
-
-        if html_request.form.get("pimoroni_bh1745") is not None:
-            new_installed_sensors.pimoroni_bh1745 = 1
-
-        if html_request.form.get("pimoroni_as7262") is not None:
-            new_installed_sensors.pimoroni_as7262 = 1
-
-        if html_request.form.get("pimoroni_bmp280") is not None:
-            new_installed_sensors.pimoroni_bmp280 = 1
-
-        if html_request.form.get("pimoroni_bme680") is not None:
-            new_installed_sensors.pimoroni_bme680 = 1
-
-        if html_request.form.get("pimoroni_enviro") is not None:
-            new_installed_sensors.pimoroni_enviro = 1
-
-        if html_request.form.get("pimoroni_enviroplus") is not None:
-            new_installed_sensors.pimoroni_enviroplus = 1
-
-        if html_request.form.get("pimoroni_pms5003") is not None:
-            new_installed_sensors.pimoroni_pms5003 = 1
-
-        if html_request.form.get("pimoroni_lsm303d") is not None:
-            new_installed_sensors.pimoroni_lsm303d = 1
-
-        if html_request.form.get("pimoroni_icm20948") is not None:
-            new_installed_sensors.pimoroni_icm20948 = 1
-
-        if html_request.form.get("pimoroni_vl53l1x") is not None:
-            new_installed_sensors.pimoroni_vl53l1x = 1
-
-        if html_request.form.get("pimoroni_ltr_559") is not None:
-            new_installed_sensors.pimoroni_ltr_559 = 1
-
-        if html_request.form.get("pimoroni_veml6075") is not None:
-            new_installed_sensors.pimoroni_veml6075 = 1
-
-        if html_request.form.get("pimoroni_matrix_11x7") is not None:
-            new_installed_sensors.pimoroni_matrix_11x7 = 1
-
-        if html_request.form.get("pimoroni_st7735") is not None:
-            new_installed_sensors.pimoroni_st7735 = 1
-
-        if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-            new_installed_sensors.pimoroni_mono_oled_luma = 1
-    except Exception as error:
-        logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-
-    installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
-    app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
 
 
 @html_sensor_config_routes.route("/EditTriggerVariances", methods=["POST"])
@@ -305,182 +212,13 @@ def html_set_trigger_variances():
     logger.network_logger.debug("** HTML Apply - Trigger Variances - Source " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            check_html_variance_triggers(request)
+            new_trigger_settings = app_config_access.config_trigger_variances.html_request_to_variance_triggers(request)
+            app_config_access.trigger_variances = new_trigger_settings
+            app_config_access.config_trigger_variances.write_triggers_to_file(new_trigger_settings)
             return message_and_return("Trigger Variances Set", url="/ConfigurationsHTML")
         except Exception as error:
             logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
     return message_and_return("Bad Trigger Variances POST Request", url="/ConfigurationsHTML")
-
-
-def check_html_variance_triggers(html_request):
-    logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
-    if html_request.form.get("checkbox_sensor_uptime") is not None:
-        new_uptime_days = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
-        app_config_access.trigger_variances.sensor_uptime_enabled = 1
-        app_config_access.trigger_variances.sensor_uptime_wait_seconds = new_uptime_days
-    else:
-        app_config_access.trigger_variances.sensor_uptime_enabled = 0
-
-    if html_request.form.get("checkbox_cpu_temperature") is not None:
-        new_variance = html_request.form.get("trigger_cpu_temperature")
-        new_seconds_delay = html_request.form.get("seconds_cpu_temperature")
-        app_config_access.trigger_variances.cpu_temperature_enabled = 1
-        app_config_access.trigger_variances.cpu_temperature_variance = new_variance
-        app_config_access.trigger_variances.cpu_temperature_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.cpu_temperature_enabled = 0
-
-    if html_request.form.get("env_temperature") is not None:
-        new_variance = html_request.form.get("trigger_env_temperature")
-        new_seconds_delay = html_request.form.get("seconds_env_temperature")
-        app_config_access.trigger_variances.env_temperature_enabled = 1
-        app_config_access.trigger_variances.env_temperature_variance = new_variance
-        app_config_access.trigger_variances.env_temperature_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.env_temperature_enabled = 0
-
-    if html_request.form.get("pressure") is not None:
-        new_variance = html_request.form.get("trigger_pressure")
-        new_seconds_delay = html_request.form.get("seconds_pressure")
-        app_config_access.trigger_variances.pressure_enabled = 1
-        app_config_access.trigger_variances.pressure_variance = new_variance
-        app_config_access.trigger_variances.pressure_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.pressure_enabled = 0
-
-    if html_request.form.get("humidity") is not None:
-        new_variance = html_request.form.get("trigger_humidity")
-        new_seconds_delay = html_request.form.get("seconds_humidity")
-        app_config_access.trigger_variances.humidity_enabled = 1
-        app_config_access.trigger_variances.humidity_variance = new_variance
-        app_config_access.trigger_variances.humidity_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.humidity_enabled = 0
-
-    if html_request.form.get("altitude") is not None:
-        new_variance = html_request.form.get("trigger_altitude")
-        new_seconds_delay = html_request.form.get("seconds_altitude")
-        app_config_access.trigger_variances.altitude_enabled = 1
-        app_config_access.trigger_variances.altitude_variance = new_variance
-        app_config_access.trigger_variances.altitude_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.altitude_enabled = 0
-
-    if html_request.form.get("distance") is not None:
-        new_variance = html_request.form.get("trigger_distance")
-        new_seconds_delay = html_request.form.get("seconds_distance")
-        app_config_access.trigger_variances.distance_enabled = 1
-        app_config_access.trigger_variances.distance_variance = new_variance
-        app_config_access.trigger_variances.distance_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.distance_enabled = 0
-
-    if html_request.form.get("lumen") is not None:
-        new_variance = html_request.form.get("trigger_lumen")
-        new_seconds_delay = html_request.form.get("seconds_lumen")
-        app_config_access.trigger_variances.lumen_enabled = 1
-        app_config_access.trigger_variances.lumen_variance = new_variance
-        app_config_access.trigger_variances.lumen_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.lumen_enabled = 0
-
-    if html_request.form.get("colour") is not None:
-        new_variance_red = html_request.form.get("red")
-        new_variance_orange = html_request.form.get("orange")
-        new_variance_yellow = html_request.form.get("yellow")
-        new_variance_green = html_request.form.get("green")
-        new_variance_blue = html_request.form.get("blue")
-        new_variance_violet = html_request.form.get("violet")
-        new_seconds_delay = html_request.form.get("seconds_colour")
-        app_config_access.trigger_variances.colour_enabled = 1
-        app_config_access.trigger_variances.red_variance = new_variance_red
-        app_config_access.trigger_variances.orange_variance = new_variance_orange
-        app_config_access.trigger_variances.yellow_variance = new_variance_yellow
-        app_config_access.trigger_variances.green_variance = new_variance_green
-        app_config_access.trigger_variances.blue_variance = new_variance_blue
-        app_config_access.trigger_variances.violet_variance = new_variance_violet
-        app_config_access.trigger_variances.colour_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.colour_enabled = 0
-
-    if html_request.form.get("ultra_violet") is not None:
-        new_variance_uva = html_request.form.get("ultra_violet_a")
-        new_variance_uvb = html_request.form.get("ultra_violet_b")
-        new_seconds_delay = html_request.form.get("seconds_ultra_violet")
-        app_config_access.trigger_variances.ultra_violet_enabled = 1
-        app_config_access.trigger_variances.ultra_violet_a_variance = new_variance_uva
-        app_config_access.trigger_variances.ultra_violet_b_variance = new_variance_uvb
-        app_config_access.trigger_variances.ultra_violet_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.ultra_violet_enabled = 0
-
-    if html_request.form.get("gas") is not None:
-        new_variance_index = html_request.form.get("trigger_gas_index")
-        new_variance_oxidising = html_request.form.get("trigger_gas_oxidising")
-        new_variance_reducing = html_request.form.get("trigger_gas_reducing")
-        new_variance_nh3 = html_request.form.get("trigger_gas_nh3")
-        new_seconds_delay = html_request.form.get("seconds_gas")
-        app_config_access.trigger_variances.gas_enabled = 1
-        app_config_access.trigger_variances.gas_resistance_index_variance = new_variance_index
-        app_config_access.trigger_variances.gas_oxidising_variance = new_variance_oxidising
-        app_config_access.trigger_variances.gas_reducing_variance = new_variance_reducing
-        app_config_access.trigger_variances.gas_nh3_variance = new_variance_nh3
-        app_config_access.trigger_variances.gas_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.gas_enabled = 0
-
-    if html_request.form.get("particulate_matter") is not None:
-        new_variance_pm1 = html_request.form.get("trigger_pm1")
-        new_variance_pm2_5 = html_request.form.get("trigger_pm2_5")
-        new_variance_pm_10 = html_request.form.get("trigger_pm10")
-        new_seconds_delay = html_request.form.get("seconds_pm")
-        app_config_access.trigger_variances.particulate_matter_enabled = 1
-        app_config_access.trigger_variances.particulate_matter_1_variance = new_variance_pm1
-        app_config_access.trigger_variances.particulate_matter_2_5_variance = new_variance_pm2_5
-        app_config_access.trigger_variances.particulate_matter_10_variance = new_variance_pm_10
-        app_config_access.trigger_variances.humidity_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.particulate_matter_enabled = 0
-
-    if html_request.form.get("accelerometer") is not None:
-        new_variance_x = html_request.form.get("accelerometer_x")
-        new_variance_y = html_request.form.get("accelerometer_y")
-        new_variance_z = html_request.form.get("accelerometer_z")
-        new_seconds_delay = html_request.form.get("seconds_accelerometer")
-        app_config_access.trigger_variances.accelerometer_enabled = 1
-        app_config_access.trigger_variances.accelerometer_x_variance = new_variance_x
-        app_config_access.trigger_variances.accelerometer_y_variance = new_variance_y
-        app_config_access.trigger_variances.accelerometer_z_variance = new_variance_z
-        app_config_access.trigger_variances.accelerometer_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.accelerometer_enabled = 0
-
-    if html_request.form.get("magnetometer") is not None:
-        new_variance_x = html_request.form.get("magnetometer_x")
-        new_variance_y = html_request.form.get("magnetometer_y")
-        new_variance_z = html_request.form.get("magnetometer_z")
-        new_seconds_delay = html_request.form.get("seconds_magnetometer")
-        app_config_access.trigger_variances.magnetometer_enabled = 1
-        app_config_access.trigger_variances.magnetometer_x_variance = new_variance_x
-        app_config_access.trigger_variances.magnetometer_y_variance = new_variance_y
-        app_config_access.trigger_variances.magnetometer_z_variance = new_variance_z
-        app_config_access.trigger_variances.magnetometer_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.magnetometer_enabled = 0
-
-    if html_request.form.get("gyroscope") is not None:
-        new_variance_x = html_request.form.get("gyroscope_x")
-        new_variance_y = html_request.form.get("gyroscope_y")
-        new_variance_z = html_request.form.get("gyroscope_z")
-        new_seconds_delay = html_request.form.get("seconds_gyroscope")
-        app_config_access.trigger_variances.gyroscope_enabled = 1
-        app_config_access.trigger_variances.gyroscope_x_variance = new_variance_x
-        app_config_access.trigger_variances.gyroscope_y_variance = new_variance_y
-        app_config_access.trigger_variances.gyroscope_z_variance = new_variance_z
-        app_config_access.trigger_variances.gyroscope_wait_seconds = new_seconds_delay
-    else:
-        app_config_access.trigger_variances.gyroscope_enabled = 0
-    config_trigger_variances.write_triggers_to_file(app_config_access.trigger_variances)
 
 
 @html_sensor_config_routes.route("/ResetTriggerVariances")
@@ -582,54 +320,21 @@ def html_set_wifi_config():
         else:
             message = "Do not use double quotes in the Wireless Key Sections."
             return message_and_return("Invalid Wireless Key", text_message2=message, url="/ConfigurationsHTML")
-
         if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
-            new_wireless_config = check_html_config_wifi(request)
+            new_wireless_config = network_wifi.html_request_to_config_wifi(request)
             if new_wireless_config is not "":
+                network_wifi.write_wifi_config_to_file(new_wireless_config)
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
                 return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
         else:
+            logger.network_logger.debug("HTML WiFi Configuration Update Failed")
             title_message = "Unable to Process Wireless Configuration"
             message = "Network Names cannot be blank and can only use " + \
                              "Alphanumeric Characters, dashes, underscores and spaces."
             return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
     return message_and_return("Unable to Process WiFi Configuration", url="/ConfigurationsHTML")
-
-
-def check_html_config_wifi(html_request):
-    logger.network_logger.debug("Starting HTML WiFi Configuration Update Check")
-    if html_request.form.get("ssid1") is not None:
-        wifi_template = app_generic_functions.get_file_content(file_locations.wifi_config_file_template)
-
-        wifi_country_code = "CA"
-        if len(html_request.form.get("country_code")) == 2:
-            wifi_country_code = html_request.form.get("country_code").upper()
-
-        wifi_ssid1 = html_request.form.get("ssid1")
-        wifi_security_type1 = html_request.form.get("wifi_security1")
-        wifi_psk1 = html_request.form.get("wifi_key1")
-
-        if wifi_security_type1 == "wireless_wpa":
-            wifi_security_type1 = ""
-            if wifi_psk1 is not "":
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
-            else:
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", app_cached_variables.wifi_psk)
-        else:
-            wifi_security_type1 = "key_mgmt=None"
-            wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
-
-        wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)
-        wifi_template = wifi_template.replace("{{ WirelessSSID1 }}", wifi_ssid1)
-        wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
-
-        network_wifi.write_wifi_config_to_file(wifi_template)
-        return wifi_template
-    else:
-        logger.network_logger.warning("HTML WiFi Configuration Update Failed: Missing SSID")
-        return ""
 
 
 @html_sensor_config_routes.route("/HTMLRawConfigurations")

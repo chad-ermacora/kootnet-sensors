@@ -27,12 +27,13 @@ class CreateLumaOLED:
     """ Creates Function access to the Pimoroni 1.12" Mono OLED (128x128). """
 
     def __init__(self):
+        self.display_in_use = False
         try:
             self.display_off_count = 0
             self.display_is_on = True
-            self.luma_serial_import = __import__('luma.core.interface.serial', fromlist=['i2c'])
-            self.luma_sh1106_import = __import__('luma.oled.device', fromlist=['sh1106'])
-            self.luma_canvas_import = __import__('luma.core.render', fromlist=['canvas'])
+            self.luma_serial_import = __import__("luma.core.interface.serial", fromlist=["i2c"])
+            self.luma_canvas_import = __import__("luma.core.render", fromlist=["canvas"])
+            self.luma_sh1106_import = __import__("luma.oled.device", fromlist=["sh1106"])
             serial = self.luma_serial_import.i2c(port=1, address=0x3C)
             self.device = self.luma_sh1106_import.sh1106(serial_interface=serial, width=128, height=128, rotate=2)
 
@@ -43,6 +44,7 @@ class CreateLumaOLED:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128) Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
+            app_config_access.installed_sensors.has_display = 0
 
     def _display_timed_off(self):
         while True:
@@ -73,14 +75,18 @@ class CreateLumaOLED:
 
     def display_text(self, message):
         """ Shows Provided Text on LED Display. """
-        self.device.show()
-        self.display_off_count = 0
-        self.display_is_on = True
-
-        try:
-            clean_message = self._format_message(message)
-            with self.luma_canvas_import.canvas(self.device) as draw:
-                draw.rectangle(self.device.bounding_box, outline="white", fill="black")
-                draw.text((5, 5), clean_message, fill="white")
-        except Exception as error:
-            logger.sensors_logger.error("Message on 1.12 Mono OLED - Failed: " + str(error))
+        if not self.display_in_use:
+            self.display_in_use = True
+            self.device.show()
+            self.display_off_count = 0
+            self.display_is_on = True
+            try:
+                clean_message = self._format_message(message)
+                with self.luma_canvas_import.canvas(self.device) as draw:
+                    draw.rectangle(self.device.bounding_box, outline="white", fill="black")
+                    draw.text((5, 5), clean_message, fill="white")
+            except Exception as error:
+                logger.sensors_logger.error("Message on Pimoroni 1.12'' Mono OLED - Failed: " + str(error))
+            self.display_in_use = False
+        else:
+            logger.sensors_logger.debug("Pimoroni 1.12'' Mono OLED - In Use")

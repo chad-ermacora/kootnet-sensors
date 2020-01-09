@@ -1,0 +1,12 @@
+Package: kootnet-sensors
+Version: 0.28-161
+Section: utils
+Priority: extra
+Architecture: all
+Depends: python3 (>= 3.5.0), python3-venv (>= 3.5.0), bash, wget, openssl, libopenjp2-7, libtiff-dev
+Recommends: fake-hwclock, cifs-utils, libatlas3-base, sense-hat
+Maintainer: Chad Ermacora <chad.e@linux.com>
+Homepage: https://github.com/chad-ermacora/sensor-rp
+Description: Kootnet Sensors
+ Record & Monitor Sensor Readings. 
+ Manage through the HTTPS portal at https://localhost:10065 

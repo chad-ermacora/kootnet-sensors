@@ -8,12 +8,11 @@ from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import os_cli_commands
 from http_server.server_http_auth import auth
-from http_server import server_http_sensor_control
 from http_server.server_http_generic_functions import message_and_return
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
-sensor_network_commands = server_http_sensor_control.CreateNetworkGetCommands()
+sensor_network_commands = app_cached_variables.CreateNetworkGetCommands()
 message_few_min = "This may take a few minutes ..."
 
 
@@ -117,11 +116,11 @@ def upgrade_http():
     return message_and_return("HTTP Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/CleanOnline")
+@html_system_commands_routes.route("/UpgradeOnlineClean")
 @auth.login_required
 def upgrade_clean_http():
     logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["CleanOnline"])
+    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineClean"])
     return message_and_return("HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -141,11 +140,11 @@ def upgrade_smb():
     return message_and_return("SMB Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/CleanSMB")
+@html_system_commands_routes.route("/UpgradeSMBClean")
 @auth.login_required
 def upgrade_clean_smb():
     logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["CleanSMB"])
+    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBClean"])
     return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -198,9 +197,9 @@ def upgrade_system_os():
     message2 = "The sensor will reboot when done. This will take awhile.  " + \
                "You may continue to use the sensor during the upgrade process.  " + \
                "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
-    if app_config_access.linux_os_upgrade_ready:
+    if app_cached_variables.linux_os_upgrade_ready:
         message = "Operating System Upgrade Started"
-        app_config_access.linux_os_upgrade_ready = False
+        app_cached_variables.linux_os_upgrade_ready = False
         app_generic_functions.thread_function(sensor_access.upgrade_linux_os)
     else:
         logger.network_logger.warning("* Operating System Upgrade Already Running")

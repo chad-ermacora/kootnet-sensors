@@ -17,60 +17,43 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import time
 import sqlite3
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules import sqlite_database
-from operations_modules import program_upgrade_functions
 from operations_modules import os_cli_commands
 
 
-class CreateRefinedVersion:
-    """ Takes the provided program version and creates a data class object. """
-
-    def __init__(self, version):
-        try:
-            version_split = version.split(".")
-            self.major_version = version_split[0]
-            self.feature_version = int(version_split[1])
-            self.minor_version = int(version_split[2])
-        except Exception as error:
-            logger.primary_logger.warning("Bad Version - " + str(version))
-            logger.primary_logger.debug(str(error))
-            self.major_version = 0
-            self.feature_version = 0
-            self.minor_version = 0
-
-
-def check_ssl_files():
-    logger.primary_logger.debug("Running SSL Certificate & Key Checks")
-
-    if os.path.isfile(file_locations.http_ssl_key):
-        logger.primary_logger.debug("SSL Key Found")
-    else:
-        logger.primary_logger.info("SSL Key not Found - Generating Key")
-        os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
-
-    if os.path.isfile(file_locations.http_ssl_csr):
-        logger.primary_logger.debug("SSL CSR Found")
-    else:
-        logger.primary_logger.info("SSL CSR not Found - Generating CSR")
-        os.system("openssl req -new -key " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_csr +
-                  " -subj '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'")
-
-    if os.path.isfile(file_locations.http_ssl_crt):
-        logger.primary_logger.debug("SSL Certificate Found")
-    else:
-        logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
-        os.system("openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr +
-                  " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt)
+def run_program_start_checks():
+    """
+    This function is used before most of the program has started.
+    Sets file permissions, checks the database and generates the HTTPS certificates if not present.
+    """
+    logger.primary_logger.info(" -- Starting Programs Checks ...")
+    _set_file_permissions()
+    if software_version.old_version != software_version.version:
+        logger.primary_logger.info(" -- Starting Programs Upgrade Checks ...")
+        os.system("systemctl start SensorUpgradeChecks")
+        # Sleep before loading anything due to needed updates
+        # The update service will automatically restart this app when it's done
+        while True:
+            time.sleep(30)
+    _check_database_structure()
+    _check_ssl_files()
 
 
-def check_database_structure():
-    """ Loads or creates the SQLite Database, verifying all Tables and Columns. """
+def _set_file_permissions():
+    """ Re-sets program file permissions. """
+    if os.geteuid() == 0:
+        os.system(os_cli_commands.bash_commands["SetPermissions"])
+
+
+def _check_database_structure():
+    """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = sqlite_database.CreateDatabaseVariables()
+    database_variables = app_cached_variables.CreateDatabaseVariables()
 
     columns_created = 0
     columns_already_made = 0
@@ -105,9 +88,8 @@ def check_database_structure():
 
         db_connection.commit()
         db_connection.close()
-        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, " + \
-                            str(columns_created) + " Created"
-        logger.primary_logger.debug(debug_log_message)
+        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
+        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
     except Exception as error:
         logger.primary_logger.error("DB Connection Failed: " + str(error))
 
@@ -127,52 +109,34 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         return True
-    except Exception:
+    except Exception as error:
+        print(str(error))
         return False
 
 
-def run_upgrade_checks():
-    """
-     Checks previous written version of the program to the current version.
-     If the current version is different, start upgrade functions.
-    """
-    logger.primary_logger.debug("Old Version: " + software_version.old_version +
-                                " || New Version: " + software_version.version)
-    previous_version = CreateRefinedVersion(software_version.old_version)
-    no_changes = True
+def _check_ssl_files():
+    """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
+    logger.primary_logger.debug("Running SSL Certificate & Key Checks")
 
-    if previous_version.major_version == "New_Install":
-        no_changes = False
-        logger.primary_logger.info("New Install Detected")
-
-    elif previous_version.major_version == "Alpha":
-        if previous_version.feature_version < 26:
-            no_changes = False
-            logger.primary_logger.info("Upgraded: " + software_version.old_version +
-                                       " || New: " + software_version.version)
-            program_upgrade_functions.reset_installed_sensors()
-            program_upgrade_functions.reset_config()
-            program_upgrade_functions.reset_variance_config()
-        elif previous_version.feature_version == 26:
-            no_changes = False
-            program_upgrade_functions.reset_installed_sensors()
-        elif previous_version.feature_version == 27:
-            if previous_version.minor_version < 8:
-                program_upgrade_functions.reset_installed_sensors()
+    if os.path.isfile(file_locations.http_ssl_key):
+        logger.primary_logger.debug("SSL Key Found")
     else:
-        no_changes = False
-        logger.primary_logger.error("Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors")
-        program_upgrade_functions.reset_installed_sensors()
-        program_upgrade_functions.reset_config()
+        logger.primary_logger.info("SSL Key not Found - Generating Key")
+        os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
 
-    # Since run_upgrade_checks is only run if there is a different version, show upgrade but no configuration changes
-    if no_changes:
-        logger.primary_logger.info("Upgrade detected || No configuration changes || Old: " +
-                                   software_version.old_version + " New: " + software_version.version)
-    software_version.write_program_version_to_file()
-    os.system(os_cli_commands.restart_sensor_services_command)
+    if os.path.isfile(file_locations.http_ssl_csr):
+        logger.primary_logger.debug("SSL CSR Found")
+    else:
+        logger.primary_logger.info("SSL CSR not Found - Generating CSR")
+        terminal_command_part1 = "openssl req -new -key " + file_locations.http_ssl_key
+        terminal_command_part2 = " -out " + file_locations.http_ssl_csr + " -subj"
+        terminal_command_part3 = " '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
+        os.system(terminal_command_part1 + terminal_command_part2 + terminal_command_part3)
 
-
-def set_file_permissions():
-    """ Re-sets program file permissions. """
-    os.system(os_cli_commands.bash_commands["SetPermissions"])
+    if os.path.isfile(file_locations.http_ssl_crt):
+        logger.primary_logger.debug("SSL Certificate Found")
+    else:
+        logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
+        terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
+        terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
+        os.system(terminal_command_part1 + terminal_command_part2)

@@ -15,13 +15,13 @@ html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
 @html_plotly_graphing_routes.route("/PlotlyGraph")
 def html_plotly_graphing():
     logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
-    generating_message = "Generating Plotly Graph. This may take awhile."
-    generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
     save_to_folder = file_locations.plotly_save_folder
 
+    extra_message = ""
+    button_disabled = ""
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
-        logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
+        extra_message = "Creating Graph - Please Wait"
+        button_disabled = "disabled"
 
     try:
         plotly_filename_interval = file_locations.plotly_filename_interval
@@ -38,6 +38,8 @@ def html_plotly_graphing():
         triggers_creation_date = "No Plotly Graph Found"
 
     return render_template("plotly_graph.html",
+                           ExtraTextMessage=extra_message,
+                           CreateButtonDisabled=button_disabled,
                            IntervalPlotlyDate=interval_creation_date,
                            TriggerPlotlyDate=triggers_creation_date)
 
@@ -45,13 +47,8 @@ def html_plotly_graphing():
 @html_plotly_graphing_routes.route("/CreatePlotlyGraph", methods=["POST"])
 @auth.login_required
 def html_create_plotly_graph():
-    generating_message = "Generating Plotly Graph. This may take awhile."
-    generating_message2 = "Once the graph is complete, you will automatically be returned to the Graphing page."
-
-    if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
-        logger.primary_logger.debug("Plotly Graph is currently being generated, please wait...")
-        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
-    elif request.method == "POST" and "SQLRecordingType" in request.form:
+    if not server_plotly_graph_variables.graph_creation_in_progress and \
+            request.method == "POST" and "SQLRecordingType" in request.form:
         logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
         try:
             new_graph_data = server_plotly_graph_variables.CreateGraphData()
@@ -75,7 +72,6 @@ def html_create_plotly_graph():
                 app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
-        return message_and_return(generating_message, text_message2=generating_message2, url="/PlotlyGraph")
     return html_plotly_graphing()
 
 

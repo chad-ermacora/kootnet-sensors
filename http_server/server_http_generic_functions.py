@@ -7,6 +7,10 @@ from sensor_modules.sensor_access import get_system_datetime
 
 
 def message_and_return(return_message, text_message2="", url="/", special_command=""):
+    """
+    Returns an HTML page of the provided message then redirects to the index web page after 10 seconds.
+    Optional: Add a secondary text message, customize the URL or add a special HTML command.
+    """
     return render_template("message_return.html",
                            TextMessage=return_message,
                            TextMessage2=text_message2,
@@ -15,6 +19,10 @@ def message_and_return(return_message, text_message2="", url="/", special_comman
 
 
 def get_sensor_control_report(address_list, report_type="systems_report"):
+    """
+    Returns a HTML report based on report_type and sensor addresses provided (IP or DNS addresses as a list).
+    Default: systems_report
+    """
     config_report = app_config_access.sensor_control_config.radio_report_config
     sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
     html_sensor_report_end = server_http_sensor_control.html_report_system_end
@@ -31,8 +39,7 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
     sensor_reports = []
     threads = []
     for address in address_list:
-        if address != "Invalid":
-            threads.append(Thread(target=server_http_sensor_control.get_online_report, args=[address, report_type]))
+        threads.append(Thread(target=server_http_sensor_control.get_online_report, args=[address, report_type]))
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -55,6 +62,7 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
 
 
 def get_html_checkbox_state(config_setting):
+    """ Generic function to return HTML code for checkboxes (Used in flask render templates). """
     if config_setting:
         return "checked"
     return ""

@@ -30,15 +30,90 @@ from operations_modules import app_cached_variables
 logging.captureWarnings(True)
 
 
+class CreateMonitoredThread:
+    """
+    Creates a thread and checks every 30 seconds to make sure its still running.
+    If the thread stops, it will be restarted up to 5 times by default.
+    If it gets restarted more then 5 times, it logs an error message and stops.
+    """
+
+    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=5):
+        self.is_running = True
+        self.function = function
+        self.args = args
+        self.thread_name = thread_name
+
+        self.current_restart_count = 0
+        self.max_restart_count = max_restart_tries
+
+        self._thread_and_monitor()
+
+    def _thread_and_monitor(self):
+        try:
+            monitored_thread = Thread(target=self._worker_thread_and_monitor)
+            monitored_thread.daemon = True
+            monitored_thread.start()
+        except Exception as error:
+            logger.primary_logger.error("--- " + self.thread_name + " Thread Failed: " + str(error))
+
+    def _worker_thread_and_monitor(self):
+        logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
+        if self.args is not None:
+            monitored_thread = Thread(target=self.function, args=self.args)
+        else:
+            monitored_thread = Thread(target=self.function)
+        monitored_thread.daemon = True
+        monitored_thread.start()
+
+        while True:
+            time.sleep(30)
+            if not monitored_thread.is_alive():
+                logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
+                self.is_running = False
+                self.current_restart_count += 1
+                if self.current_restart_count < self.max_restart_count:
+                    if self.args is not None:
+                        monitored_thread = Thread(target=self.function, args=self.args)
+                    else:
+                        monitored_thread = Thread(target=self.function)
+                    monitored_thread.daemon = True
+                    monitored_thread.start()
+                    self.is_running = True
+                else:
+                    log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
+                    logger.primary_logger.critical(log_msg + " Times.  No further restart attempts will be made.")
+                    while True:
+                        time.sleep(600)
+
+
+def start_and_wait_threads(threads_list):
+    """ Starts provided list of threads and waits for them all to complete. """
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
+
+
+def get_text_running_thread_state(service_enabled, thread_variable):
+    """ Checks to see if a 'service' thread is running and returns the result as text. """
+    if service_enabled:
+        return_text = "Stopped"
+        if thread_variable is None:
+            return_text = "Missing Sensor"
+        elif thread_variable.is_running:
+            return_text = "Running"
+    else:
+        return_text = "Disabled"
+    return return_text
+
+
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
-
     if os.path.isfile(load_file):
         try:
-            loaded_file = open(load_file, open_type)
-            file_content = loaded_file.read()
-            loaded_file.close()
+            with open(load_file, open_type) as loaded_file:
+                file_content = loaded_file.read()
         except Exception as error:
             file_content = ""
             logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
@@ -51,65 +126,106 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
     """ Writes provided file and content to local disk. """
     logger.primary_logger.debug("Writing content to " + str(file_location))
     try:
-        write_file = open(file_location, open_type)
-        write_file.write(file_content)
-        write_file.close()
+        with open(file_location, open_type) as write_file:
+            write_file.write(file_content)
     except Exception as error:
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
 def thread_function(function, args=None):
+    """ Starts provided function as a thread with optional arguments. """
     if args:
         system_thread = Thread(target=function, args=[args])
     else:
         system_thread = Thread(target=function)
-
     system_thread.daemon = True
     system_thread.start()
 
 
-def get_http_sensor_reading(http_ip, http_port="10065", command="CheckOnlineStatus"):
-    """ Returns requested sensor data (based on the provided command data). """
+def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
+    """ Returns requested remote sensor data (based on the provided command data). """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url,
-                                       timeout=10,
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                                       verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False, auth=login_credentials)
         return tmp_return_data.text
     except Exception as error:
-        logger.network_logger.debug("Remote Sensor Data Request - HTTPS GET Error for " + http_ip + ": " + str(error))
+        log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
         return "Error"
 
 
-def get_http_sensor_file(http_ip, command, http_port="10065"):
-    """ Returns requested sensor file (based on the provided command data). """
+def send_http_command(sensor_address, command, included_data=None, http_port="10065", timeout=10):
+    """ Sends command and data (if any) to a remote sensor. """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/" + command
-        tmp_return_data = requests.get(url=url,
-                                       timeout=(4, 120),
-                                       auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                                       verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        command_data = {'command_data': included_data}
+        requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
+    except Exception as error:
+        log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
+
+
+def get_http_sensor_file(sensor_address, command, http_port="10065"):
+    """ Returns requested remote sensor file (based on the provided command data). """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
+    try:
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
         return tmp_return_data.content
     except Exception as error:
-        logger.network_logger.debug("Remote Sensor File Request - HTTPS GET Error for " + http_ip + ": " + str(error))
+        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
         return "Error"
 
 
-def http_display_text_on_sensor(text_message, http_ip, http_port="10065"):
-    """ Returns requested sensor data (based on the provided command data). """
+def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
+    """ Sends provided text message to a remote sensor's display. """
+    if check_for_port_in_address(sensor_address):
+        ip_and_port = get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
     try:
-        url = "https://" + http_ip + ":" + http_port + "/DisplayText"
-        requests.put(url=url,
-                     timeout=4,
-                     auth=(app_cached_variables.http_login, app_cached_variables.http_password),
-                     data={'command_data': text_message},
-                     verify=False)
+        url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
 
 
+def check_for_port_in_address(address):
+    """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
+    ip_split = address.strip().split(":")
+    if len(ip_split) == 2:
+        return True
+    elif len(ip_split) > 2:
+        logger.network_logger.info("IPv6 Used in Sensor Control")
+    return False
+
+
+def get_ip_and_port_split(address):
+    """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
+    return address.split(":")
+
+
 def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
+    """
+    Creates a zip of 1 or more files provided as a list.
+    Saves to memory or disk based on save_type & file_location
+    """
     try:
         if save_type == "get_bytes_io":
             return_zip_file = BytesIO()
@@ -136,6 +252,7 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
 
 
 def get_zip_size(zip_file):
+    """ Returns the size of provided Zip file. """
     files_size = 0.0
     try:
         with ZipFile(zip_file, 'r') as zip_file_access:
@@ -147,6 +264,7 @@ def get_zip_size(zip_file):
 
 
 def get_data_queue_items():
+    """ Returns an item from the app_cached_variables.data_queue. """
     que_data = []
     while not app_cached_variables.data_queue.empty():
         que_data.append(app_cached_variables.data_queue.get())
@@ -154,13 +272,22 @@ def get_data_queue_items():
     return que_data
 
 
-def replace_text_lists(text_file, old_list, new_list):
+def replace_text_lists(original_text, old_list, new_list):
+    """
+    Replaces text in the provided 'original_text' argument.
+    original_text = a string of text.
+    old_list = a list of strings to replace in 'original_text'.
+    new_list = a list of strings that will replace the 'old_list' list of strings.
+    """
     for old_text, new_text in zip(old_list, new_list):
-        text_file = text_file.replace(old_text, new_text)
-    return text_file
+        original_text = original_text.replace(old_text, new_text)
+    return original_text
 
 
 def clear_zip_names():
+    """
+    Set's all sensor control download names to nothing ("")
+    """
     app_cached_variables.sc_reports_zip_name = ""
     app_cached_variables.sc_logs_zip_name = ""
     if app_cached_variables.sc_databases_zip_in_memory:
@@ -170,12 +297,18 @@ def clear_zip_names():
 
 
 def save_to_memory_ok(write_size):
-    if psutil.virtual_memory().available > (write_size + 25000):
-        return True
+    """ Checks to see if there is enough RAM to save file to to memory or not. """
+    try:
+        # Numbers 1,000,000 / 25,000,000. Not using underscores to maintain compatibility with Python 3.5.x
+        if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
+            return True
+    except Exception as error:
+        logger.primary_logger.warning("Error checking virtual memory: " + str(error))
     return False
 
 
 def get_response_bg_colour(response_time):
+    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
     try:
         delay_float = float(response_time)
         background_colour = "green"
