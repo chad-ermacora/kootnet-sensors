@@ -32,7 +32,7 @@ except Exception as import_error_raw:
     log_message = "--- Failed to Start Kootnet Sensors - Problem Loading Sensor Access: "
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
-        sleep(600)
+        sleep(3600)
 from http_server import server_http
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables

@@ -36,6 +36,8 @@ def run_upgrade_checks():
     if previous_version.major_version == "New_Install":
         logger.primary_logger.info("New Install Detected")
         no_changes = False
+    elif previous_version.major_version == "Beta":
+        pass
     elif previous_version.major_version == "Alpha":
         if previous_version.feature_version < 26:
             msg = "Upgraded: " + software_version.old_version + " || New: " + software_version.version
