@@ -56,7 +56,7 @@ def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
         return new_http_flask_user, new_http_flask_password
     else:
         logger.primary_logger.warning("HTTP Authentication User or Password are less then 4 chars.  Using default.")
-        return "Kootnet", "sensors"
+        return default_http_flask_user, default_http_flask_password
 
 
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):

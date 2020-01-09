@@ -35,7 +35,7 @@ plotly_io.templates.default = app_config_access.plotly_theme
 
 
 def create_plotly_graph(new_graph_data):
-    """ Create Plotly offline HTML Graph, based on user selections in the Graph Window. """
+    """ Create Plotly offline HTML Graph, based on user selections in the Web Portal Graphing section. """
     server_plotly_graph_variables.graph_creation_in_progress = True
 
     if new_graph_data.graph_table is "Triggers":
