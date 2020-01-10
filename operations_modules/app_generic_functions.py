@@ -42,42 +42,35 @@ class CreateMonitoredThread:
         self.function = function
         self.args = args
         self.thread_name = thread_name
-
         self.current_restart_count = 0
         self.max_restart_count = max_restart_tries
 
-        self._thread_and_monitor()
+        if self.args is not None:
+            self.monitored_thread = Thread(target=self.function, args=self.args)
+        else:
+            self.monitored_thread = Thread(target=self.function)
+        self.monitored_thread.daemon = True
+
+        self.watch_thread = Thread(target=self._thread_and_monitor)
+        self.watch_thread.daemon = True
+        self.watch_thread.start()
 
     def _thread_and_monitor(self):
-        try:
-            monitored_thread = Thread(target=self._worker_thread_and_monitor)
-            monitored_thread.daemon = True
-            monitored_thread.start()
-        except Exception as error:
-            logger.primary_logger.error("--- " + self.thread_name + " Thread Failed: " + str(error))
-
-    def _worker_thread_and_monitor(self):
         logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
-        if self.args is not None:
-            monitored_thread = Thread(target=self.function, args=self.args)
-        else:
-            monitored_thread = Thread(target=self.function)
-        monitored_thread.daemon = True
-        monitored_thread.start()
-
+        self.monitored_thread.start()
         while True:
             time.sleep(30)
-            if not monitored_thread.is_alive():
+            if not self.monitored_thread.is_alive():
                 logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
                 self.is_running = False
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
                     if self.args is not None:
-                        monitored_thread = Thread(target=self.function, args=self.args)
+                        self.monitored_thread = Thread(target=self.function, args=self.args)
                     else:
-                        monitored_thread = Thread(target=self.function)
-                    monitored_thread.daemon = True
-                    monitored_thread.start()
+                        self.monitored_thread = Thread(target=self.function)
+                    self.monitored_thread.daemon = True
+                    self.monitored_thread.start()
                     self.is_running = True
                 else:
                     log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
