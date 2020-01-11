@@ -2,5 +2,5 @@
 systemctl disable KootnetSensors
 systemctl stop KootnetSensors
 crontab -u root -r
-find /opt/kootnet-sensors -type d -name __pycache__ -exec rm -rf {} \;
+find /opt/kootnet-sensors -type d -name __pycache__ -exec rm -rf {} \; 2>/dev/null
 exit 0
