@@ -37,11 +37,14 @@ class CreateInstalledSensors:
         self.raspberry_pi_sense_hat = 0
         self.pimoroni_bh1745 = 0
         self.pimoroni_as7262 = 0
+        self.pimoroni_mcp9600 = 0
         self.pimoroni_bmp280 = 0
         self.pimoroni_bme680 = 0
         self.pimoroni_enviro = 0
         self.pimoroni_enviroplus = 0
+        self.pimoroni_sgp30 = 0
         self.pimoroni_pms5003 = 0
+        self.pimoroni_msa301 = 0
         self.pimoroni_lsm303d = 0
         self.pimoroni_icm20948 = 0
         self.pimoroni_vl53l1x = 0
@@ -82,11 +85,14 @@ class CreateInstalledSensors:
         self.raspberry_pi_sense_hat_name = "Raspberry Pi Sense HAT"
         self.pimoroni_bh1745_name = "Pimoroni BH1745"
         self.pimoroni_as7262_name = "Pimoroni AS7262"
+        self.pimoroni_mcp9600_name = "Pimoroni MCP9600"
         self.pimoroni_bmp280_name = "Pimoroni BMP280"
         self.pimoroni_bme680_name = "Pimoroni BME680"
         self.pimoroni_enviro_name = "Pimoroni EnviroPHAT"
         self.pimoroni_enviroplus_name = "Pimoroni Enviro+"
+        self.pimoroni_sgp30_name = "Pimoroni SGP30"
         self.pimoroni_pms5003_name = "Pimoroni PMS5003"
+        self.pimoroni_msa301_name = "Pimoroni MSA301"
         self.pimoroni_lsm303d_name = "Pimoroni LSM303D"
         self.pimoroni_icm20948_name = "Pimoroni ICM20948"
         self.pimoroni_vl53l1x_name = "Pimoroni VL53L1X"
@@ -102,17 +108,20 @@ class CreateInstalledSensors:
         str_installed_sensors = ""
         sensors_installed_list = [self.linux_system, self.raspberry_pi, self.raspberry_pi_sense_hat,
                                   self.pimoroni_bh1745, self.pimoroni_as7262, self.pimoroni_bmp280,
+                                  self.pimoroni_mcp9600,
                                   self.pimoroni_bme680, self.pimoroni_enviro, self.pimoroni_enviroplus,
-                                  self.pimoroni_pms5003, self.pimoroni_lsm303d, self.pimoroni_icm20948,
-                                  self.pimoroni_vl53l1x, self.pimoroni_ltr_559, self.pimoroni_veml6075,
-                                  self.pimoroni_matrix_11x7, self.pimoroni_st7735, self.pimoroni_mono_oled_luma]
+                                  self.pimoroni_sgp30, self.pimoroni_pms5003, self.pimoroni_msa301,
+                                  self.pimoroni_lsm303d, self.pimoroni_icm20948, self.pimoroni_vl53l1x,
+                                  self.pimoroni_ltr_559, self.pimoroni_veml6075, self.pimoroni_matrix_11x7,
+                                  self.pimoroni_st7735, self.pimoroni_mono_oled_luma]
         sensors_names_list = [self.linux_system_name, self.raspberry_pi_name, self.raspberry_pi_sense_hat_name,
                               self.pimoroni_bh1745_name, self.pimoroni_as7262_name, self.pimoroni_bmp280_name,
+                              self.pimoroni_mcp9600_name,
                               self.pimoroni_bme680_name, self.pimoroni_enviro_name, self.pimoroni_enviroplus_name,
-                              self.pimoroni_pms5003_name, self.pimoroni_lsm303d_name, self.pimoroni_icm20948_name,
-                              self.pimoroni_vl53l1x_name, self.pimoroni_ltr_559_name, self.pimoroni_veml6075_name,
-                              self.pimoroni_matrix_11x7_name, self.pimoroni_st7735_name,
-                              self.pimoroni_mono_oled_luma_name]
+                              self.pimoroni_sgp30_name, self.pimoroni_pms5003_name, self.pimoroni_lsm303d_name,
+                              self.pimoroni_msa301_name, self.pimoroni_icm20948_name, self.pimoroni_vl53l1x_name,
+                              self.pimoroni_ltr_559_name, self.pimoroni_veml6075_name, self.pimoroni_matrix_11x7_name,
+                              self.pimoroni_st7735_name, self.pimoroni_mono_oled_luma_name]
 
         for sensor, sensor_name in zip(sensors_installed_list, sensors_names_list):
             if sensor:
@@ -143,7 +152,10 @@ class CreateInstalledSensors:
                      str(self.pimoroni_veml6075) + " = " + self.pimoroni_veml6075_name + "\n" + \
                      str(self.pimoroni_matrix_11x7) + " = " + self.pimoroni_matrix_11x7_name + "\n" + \
                      str(self.pimoroni_st7735) + " = " + self.pimoroni_st7735_name + "\n" + \
-                     str(self.pimoroni_mono_oled_luma) + " = " + self.pimoroni_mono_oled_luma_name + "\n"
+                     str(self.pimoroni_mono_oled_luma) + " = " + self.pimoroni_mono_oled_luma_name + "\n" + \
+                     str(self.pimoroni_msa301) + " = " + self.pimoroni_msa301_name + "\n" + \
+                     str(self.pimoroni_sgp30) + " = " + self.pimoroni_sgp30_name + "\n" + \
+                     str(self.pimoroni_mcp9600) + " = " + self.pimoroni_mcp9600_name + "\n"
         return return_str
 
     def get_raspberry_pi_model(self):
@@ -196,6 +208,9 @@ def html_request_to_installed_sensors_config(html_request):
         if html_request.form.get("pimoroni_as7262") is not None:
             new_installed_sensors.pimoroni_as7262 = 1
 
+        if html_request.form.get("pimoroni_mcp9600") is not None:
+            new_installed_sensors.pimoroni_mcp9600 = 1
+
         if html_request.form.get("pimoroni_bmp280") is not None:
             new_installed_sensors.pimoroni_bmp280 = 1
 
@@ -208,8 +223,14 @@ def html_request_to_installed_sensors_config(html_request):
         if html_request.form.get("pimoroni_enviroplus") is not None:
             new_installed_sensors.pimoroni_enviroplus = 1
 
+        if html_request.form.get("pimoroni_sgp30") is not None:
+            new_installed_sensors.pimoroni_sgp30 = 1
+
         if html_request.form.get("pimoroni_pms5003") is not None:
             new_installed_sensors.pimoroni_pms5003 = 1
+
+        if html_request.form.get("pimoroni_msa301") is not None:
+            new_installed_sensors.pimoroni_msa301 = 1
 
         if html_request.form.get("pimoroni_lsm303d") is not None:
             new_installed_sensors.pimoroni_lsm303d = 1
@@ -347,10 +368,19 @@ def convert_lines_to_obj(installed_sensor_lines, skip_write=False):
             elif count == 17:
                 new_installed_sensors.pimoroni_mono_oled_luma = 1
                 new_installed_sensors.has_display = 1
+            elif count == 18:
+                new_installed_sensors.pimoroni_msa301 = 1
+                new_installed_sensors.has_acc = 1
+            elif count == 19:
+                new_installed_sensors.pimoroni_sgp30 = 1
+                new_installed_sensors.has_gas = 1
+            elif count == 20:
+                new_installed_sensors.pimoroni_mcp9600 = 1
+                new_installed_sensors.has_env_temperature = 1
         count += 1
 
     if not skip_write:
-        if len(installed_sensor_lines) != 19:
+        if len(installed_sensor_lines) != 22:
             message = "Invalid number of Installed Sensors in the configuration file. Seeing " + \
                       str(len(installed_sensor_lines)) + ". Installed Sensors Configuration Review Recommended."
             logger.primary_logger.warning(message)

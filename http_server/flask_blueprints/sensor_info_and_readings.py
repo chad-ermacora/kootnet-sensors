@@ -1,3 +1,4 @@
+from os import geteuid
 from time import strftime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
@@ -89,6 +90,10 @@ def html_system_information():
                                                    app_cached_variables.open_sense_map_thread)
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
+
+    installed_sensors_text = "Sensors Disabled - Not running with root"
+    if geteuid() == 0:
+        installed_sensors_text = app_config_access.installed_sensors.get_installed_names_str()
     return render_template("sensor_information.html",
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
@@ -122,7 +127,7 @@ def html_system_information():
                            WeatherUndergroundService=weather_underground,
                            LuftdatenService=luftdaten,
                            OpenSenseMapService=open_sense_map,
-                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
+                           InstalledSensors=installed_sensors_text)
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")

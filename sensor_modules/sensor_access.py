@@ -184,6 +184,8 @@ def get_sensor_temperature():
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_mcp9600:
+        temperature = sensors_direct.pimoroni_mcp9600_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         temperature = sensors_direct.pimoroni_bmp280_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bme680:
@@ -270,9 +272,11 @@ def get_distance():
 
 
 def get_gas_resistance_index():
-    """ Returns sensors gas resistance index. """
+    """ Returns sensors gas resistance index for VOC. """
     if app_config_access.installed_sensors.pimoroni_bme680:
         index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
+    elif app_config_access.installed_sensors.pimoroni_sgp30:
+        index = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
     else:
         index = no_sensor_present
     return index
@@ -396,6 +400,8 @@ def get_accelerometer_xyz():
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
         xyz = sensors_direct.pimoroni_enviro_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_msa301:
+        xyz = sensors_direct.pimoroni_msa301_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_lsm303d:
         xyz = sensors_direct.pimoroni_lsm303d_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
