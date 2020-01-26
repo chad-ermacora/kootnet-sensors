@@ -41,7 +41,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
 
-        self._set_default_configuration_in_settings_list()
+        self._update_configuration_settings_list()
         if load_from_file:
             self.init_config_variables()
 
@@ -72,7 +72,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         # Save Log level with each config file save
         write_file_to_disk(file_locations.debug_logging_config, str(self.enable_debug_logging))
 
-    def _set_default_configuration_in_settings_list(self):
+    def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
                                 str(self.enable_interval_recording), str(self.enable_trigger_recording),
@@ -111,4 +111,4 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.temperature_offset = new_temp
         else:
             self.enable_custom_temp = 0
-        self._set_default_configuration_in_settings_list()
+        self._update_configuration_settings_list()
