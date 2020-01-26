@@ -30,6 +30,49 @@ from operations_modules import app_cached_variables
 logging.captureWarnings(True)
 
 
+class CreateGeneralConfiguration:
+    """ Base Configuration Template Class """
+    def __init__(self):
+        self.config_file_location = ""
+        self.config_file_header = "General Configuration File"
+        self.valid_setting_count = 0
+        self.config_settings = []
+        self.config_settings_names = []
+
+    def save_config_to_file(self):
+        """ Saves configuration to file. """
+        logger.primary_logger.debug("Saving Configuration to " + str(self.config_file_location))
+        write_file_to_disk(self.config_file_location, self.get_config_as_str())
+
+    def get_config_as_str(self):
+        """ Returns configuration as a String. """
+        logger.primary_logger.debug("Returning Configuration as string for " + str(self.config_file_location))
+        new_file_content = self.config_file_header + "\n"
+        for setting, setting_name in zip(self.config_settings, self.config_settings_names):
+            new_file_content += str(setting) + " = " + str(setting_name) + "\n"
+        return new_file_content
+
+    def set_config_with_str(self, config_file_text):
+        if config_file_text is not None:
+            config_file_text = config_file_text.strip().split("\n")
+            config_file_text = config_file_text[1:]  # Remove the header that's not a setting
+            if self.valid_setting_count == len(config_file_text):
+                self.config_settings = []
+                for line in config_file_text:
+                    try:
+                        line_split = line.split("=")
+                        setting = line_split[0].strip()
+                    except Exception as error:
+                        logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                        setting = "error"
+                    self.config_settings.append(setting)
+            else:
+                log_msg = "Invalid number of settings found in "
+                logger.primary_logger.warning(log_msg + str(self.config_file_location))
+        else:
+            logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
+
+
 class CreateMonitoredThread:
     """
     Creates a thread and checks every 30 seconds to make sure its still running.

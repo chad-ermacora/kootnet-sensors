@@ -86,8 +86,9 @@ class CreateReplacementVariables:
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
 
-            sensor_config_lines = sensor_config_raw.strip().split("\n")
             installed_sensors_lines = installed_sensors_raw.strip().split("\n")
+            sensors_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
+            sensors_config.set_config_with_str(sensor_config_raw)
             try:
                 rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
             except Exception as error:
@@ -104,9 +105,7 @@ class CreateReplacementVariables:
             osm_config = CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
-            convert_config = app_config_access.config_primary.convert_config_lines_to_obj
             convert_installed_sensors = app_config_access.config_installed_sensors.convert_lines_to_obj
-            sensors_config = convert_config(sensor_config_lines, skip_write=True)
             installed_sensors_config = convert_installed_sensors(installed_sensors_lines, skip_write=True)
 
             installed_sensors_config.raspberry_pi_name = rpi_model_name

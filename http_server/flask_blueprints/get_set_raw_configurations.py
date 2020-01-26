@@ -16,16 +16,15 @@ html_get_config_routes = Blueprint("html_get_config_routes", __name__)
 @html_get_config_routes.route("/GetConfiguration")
 def get_primary_configuration():
     logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.config_primary.convert_config_to_str(app_config_access.current_config)
+    return app_config_access.current_config.get_config_as_str()
 
 
 @html_get_config_routes.route("/SetConfiguration", methods=["PUT"])
 @auth.login_required
 def set_configuration():
     logger.network_logger.info("** Primary Sensor Configuration Set by " + str(request.remote_addr))
-    raw_config = request.form["command_data"].splitlines()
-    new_config = config_primary.convert_config_lines_to_obj(raw_config)
-    config_primary.write_config_to_file(new_config)
+    app_config_access.current_config.set_config_with_str(request.form["command_data"])
+    app_config_access.current_config.save_config_to_file()
     app_generic_functions.thread_function(sensor_access.restart_services)
     return "OK"
 

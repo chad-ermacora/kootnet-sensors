@@ -175,12 +175,13 @@ def download_sc_big_zip():
 @auth.login_required
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
+    new_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
         if _invalid_login_credentials():
             return _get_invalid_login_page()
-        new_config = app_config_access.config_primary.html_request_to_config_main(request)
-        send_config = app_config_access.config_primary.convert_config_to_str(new_config)
+        new_config.update_with_html_request(request)
+        send_config = new_config.get_config_as_str()
         for ip in ip_list:
             app_generic_functions.send_http_command(ip, "SetConfiguration", included_data=send_config)
     msg2 = "Primary configuration sent to " + str(len(ip_list)) + " Sensors"

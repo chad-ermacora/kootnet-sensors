@@ -180,9 +180,8 @@ def html_set_config_main():
     logger.network_logger.debug("** HTML Apply - Main Configuration - Source: " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            new_config = app_config_access.config_primary.html_request_to_config_main(request)
-            app_config_access.current_config = new_config
-            app_config_access.config_primary.write_config_to_file(new_config)
+            app_config_access.current_config.update_with_html_request(request)
+            app_config_access.current_config.save_config_to_file()
             return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
             return return_page

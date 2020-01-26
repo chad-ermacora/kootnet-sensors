@@ -67,7 +67,8 @@ def reset_installed_sensors():
 def reset_main_config():
     """ Writes a default main configuration file. """
     logger.primary_logger.warning(" **** Main Configuration Reset ****")
-    config_primary.write_config_to_file(config_primary.CreateConfig())
+    default_primary_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)
+    default_primary_config.save_config_to_file()
 
 
 def reset_variance_config():

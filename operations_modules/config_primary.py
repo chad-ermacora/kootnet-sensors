@@ -16,15 +16,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content, write_file_to_disk
 
 
-class CreateConfig:
-    """ Creates object with default sensor configuration settings. """
-    def __init__(self):
+class CreatePrimaryConfiguration(CreateGeneralConfiguration):
+    """ Creates the Primary Configuration object and loads settings from file (by default). """
+
+    def __init__(self, load_from_file=True):
+        CreateGeneralConfiguration.__init__(self)
+        self.config_file_location = file_locations.main_config
+        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.valid_setting_count = 7
+        self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
+                                      "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
+                                      "Recording Interval in Seconds ** Caution **",
+                                      "Enable Custom Temperature Offset", "Current Temperature Offset"]
         self.enable_debug_logging = 0
         self.enable_display = 0
         self.enable_interval_recording = 1
@@ -33,138 +41,74 @@ class CreateConfig:
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
 
-    def get_config_as_csv(self):
-        return str(self.enable_interval_recording) + "," + \
-               str(self.enable_trigger_recording) + "," + \
-               str(self.sleep_duration_interval) + "," + \
-               str(self.enable_custom_temp) + "," + \
-               str(self.temperature_offset)
+        self._set_default_configuration_in_settings_list()
+        if load_from_file:
+            self.init_config_variables()
 
-
-def get_config_from_file():
-    """ Loads configuration from file and returns it as a configuration object. """
-    if os.path.isfile(file_locations.main_config):
-        config_file_content = get_file_content(file_locations.main_config).strip().split("\n")
-        installed_config = convert_config_lines_to_obj(config_file_content)
-    else:
-        logger.primary_logger.info("Primary Configuration file not found - Saving Default")
-        installed_config = CreateConfig()
-        write_config_to_file(installed_config)
-    return installed_config
-
-
-def html_request_to_config_main(html_request):
-    """ Creates and returns a Main configuration object instance based on provided HTML configurations. """
-    logger.network_logger.debug("Starting HTML Main Configuration Update Check")
-    new_config = CreateConfig()
-    if html_request.form.get("debug_logging") is not None:
-        new_config.enable_debug_logging = 1
-    else:
-        new_config.enable_debug_logging = 0
-
-    if html_request.form.get("enable_display") is not None:
-        new_config.enable_display = 1
-    else:
-        new_config.enable_display = 0
-
-    if html_request.form.get("enable_interval_recording") is not None:
-        new_config.enable_interval_recording = 1
-    else:
-        new_config.enable_interval_recording = 0
-    if html_request.form.get("interval_delay_seconds") is not None:
-        new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
-        new_config.sleep_duration_interval = new_sleep_duration
-
-    if html_request.form.get("enable_trigger_recording") is not None:
-        new_config.enable_trigger_recording = 1
-    else:
-        new_config.enable_trigger_recording = 0
-
-    if html_request.form.get("enable_custom_temp_offset") is not None:
-        new_temp = float(html_request.form.get("custom_temperature_offset"))
-        new_config.enable_custom_temp = 1
-        new_config.temperature_offset = new_temp
-    else:
-        new_config.enable_custom_temp = 0
-    return new_config
-
-
-def convert_config_to_str(config):
-    """ Takes configuration Object and returns it as a string. """
-    config_file_str = "Enable = 1 & Disable = 0\n" + \
-                      str(config.enable_debug_logging) + " = Enable Debug Logging\n" + \
-                      str(config.enable_display) + " = Enable Mini Display\n" + \
-                      str(config.enable_interval_recording) + " = Interval Recording to SQL Database\n" + \
-                      str(config.enable_trigger_recording) + " = Trigger Recording to SQL Database\n" + \
-                      str(config.sleep_duration_interval) + " = Recording Interval in Seconds ** Caution **\n" + \
-                      str(config.enable_custom_temp) + " = Enable Custom Temperature Offset\n" + \
-                      str(config.temperature_offset) + " = Current Temperature Offset"
-    return config_file_str
-
-
-def convert_config_lines_to_obj(config_lines, skip_write=False):
-    """ Converts provided configuration text as a list of lines into a object and returns it. """
-    new_config = CreateConfig()
-    bad_load = False
-
-    primary_config = []
-    count = 0
-    for config_line in config_lines:
-        if count > 0:
+    def init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+        self.set_config_with_str(get_file_content(file_locations.main_config))
+        if self.valid_setting_count == len(self.config_settings):
             try:
-                if count == 5 or count == 7:
-                    primary_config.append(float(config_line.split("=")[0].strip()))
-                else:
-                    if config_line.strip()[0] == "1":
-                        primary_config.append(1)
-                    else:
-                        primary_config.append(0)
+                self.enable_debug_logging = int(self.config_settings[0])
+                self.enable_display = int(self.config_settings[1])
+                self.enable_interval_recording = int(self.config_settings[2])
+                self.enable_trigger_recording = int(self.config_settings[3])
+                self.sleep_duration_interval = float(self.config_settings[4])
+                self.enable_custom_temp = int(self.config_settings[5])
+                self.temperature_offset = float(self.config_settings[6])
             except Exception as error:
-                logger.primary_logger.error("Primary Config Error on line #" + str(count) + ": " + str(error))
-                bad_load = True
-                if count == 5 or count == 7:
-                    primary_config.append(35505.0)
-                else:
-                    primary_config.append(0)
-        count += 1
+                log_msg = "Error setting variables from "
+                log_msg2 = "Saving Default Configuration for "
+                logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+                logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+                self.save_config_to_file()
+        else:
+            log_msg = "Invalid number of setting for "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+        # Save Log level with each config file save
+        write_file_to_disk(file_locations.debug_logging_config, str(self.enable_debug_logging))
 
-    # 2 following values are defaulted at 1, so defaulting to 0 for loading from file
-    new_config.enable_display = 0
-    new_config.enable_interval_recording = 0
-    count = 0
-    for value in primary_config:
-        if value:
-            if count == 0:
-                new_config.enable_debug_logging = 1
-            elif count == 1:
-                new_config.enable_display = 1
-            elif count == 2:
-                new_config.enable_interval_recording = 1
-            elif count == 3:
-                new_config.enable_trigger_recording = 1
-            elif count == 4:
-                new_config.sleep_duration_interval = value
-            elif count == 5:
-                new_config.enable_custom_temp = 1
-            elif count == 6:
-                new_config.temperature_offset = value
-        count += 1
+    def _set_default_configuration_in_settings_list(self):
+        """ Set's config_settings variable list based on current settings. """
+        self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
+                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
+                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
+                                str(self.temperature_offset)]
 
-    if not skip_write:
-        if bad_load:
-            message = "Primary Configuration Load Error: Using one or more defaults.  Please review the Configuration."
-            logger.primary_logger.warning(message)
-            write_config_to_file(new_config)
-    return new_config
+    def update_with_html_request(self, html_request):
+        """ Updates the primary configuration based on provided HTML configuration data. """
+        logger.network_logger.debug("Starting HTML Main Configuration Update Check")
+        if html_request.form.get("debug_logging") is not None:
+            self.enable_debug_logging = 1
+        else:
+            self.enable_debug_logging = 0
 
+        if html_request.form.get("enable_display") is not None:
+            self.enable_display = 1
+        else:
+            self.enable_display = 0
 
-def write_config_to_file(config):
-    """ Writes provided configuration file to local disk. The provided configuration can be string or object. """
-    if type(config) is str:
-        new_config = config
-        config = convert_config_lines_to_obj(config)
-    else:
-        new_config = convert_config_to_str(config)
-    write_file_to_disk(file_locations.main_config, new_config)
-    # Save Log level with each config file save
-    write_file_to_disk(file_locations.debug_logging_config, str(config.enable_debug_logging))
+        if html_request.form.get("enable_interval_recording") is not None:
+            self.enable_interval_recording = 1
+        else:
+            self.enable_interval_recording = 0
+        if html_request.form.get("interval_delay_seconds") is not None:
+            new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
+            self.sleep_duration_interval = new_sleep_duration
+
+        if html_request.form.get("enable_trigger_recording") is not None:
+            self.enable_trigger_recording = 1
+        else:
+            self.enable_trigger_recording = 0
+
+        if html_request.form.get("enable_custom_temp_offset") is not None:
+            new_temp = float(html_request.form.get("custom_temperature_offset"))
+            self.enable_custom_temp = 1
+            self.temperature_offset = new_temp
+        else:
+            self.enable_custom_temp = 0
+        self._set_default_configuration_in_settings_list()
