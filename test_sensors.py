@@ -19,12 +19,12 @@
 import logging
 import requests
 from operations_modules.config_primary import CreatePrimaryConfiguration
-from operations_modules.config_installed_sensors import get_installed_sensors_from_file
+from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from operations_modules.app_cached_variables import command_data_separator
 
 logging.captureWarnings(True)
 current_config = CreatePrimaryConfiguration()
-installed_sensors = get_installed_sensors_from_file()
+installed_sensors = CreateInstalledSensorsConfiguration()
 display_text_on_remote_sensor_command = "DisplayText"
 
 

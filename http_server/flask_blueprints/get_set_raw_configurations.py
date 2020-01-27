@@ -32,16 +32,16 @@ def set_configuration():
 @html_get_config_routes.route("/GetInstalledSensors")
 def get_installed_sensors():
     logger.network_logger.debug("* Installed Sensors Sent to " + str(request.remote_addr))
-    return app_config_access.installed_sensors.get_installed_sensors_config_as_str()
+    return app_config_access.installed_sensors.get_config_as_str()
 
 
 @html_get_config_routes.route("/SetInstalledSensors", methods=["PUT"])
 @auth.login_required
 def set_installed_sensors():
     logger.network_logger.info("** Installed Sensors Set by " + str(request.remote_addr))
-    raw_installed_sensors = request.form["command_data"].splitlines()
-    new_installed_sensors = config_installed_sensors.convert_lines_to_obj(raw_installed_sensors)
-    config_installed_sensors.write_to_file(new_installed_sensors)
+    raw_installed_sensors = request.form["command_data"]
+    app_config_access.installed_sensors.set_config_with_str(raw_installed_sensors)
+    app_config_access.installed_sensors.save_config_to_file()
     app_generic_functions.thread_function(sensor_access.restart_services)
     return "OK"
 

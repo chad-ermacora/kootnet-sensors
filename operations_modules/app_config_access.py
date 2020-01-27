@@ -29,25 +29,35 @@ from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
 sensor_control_config = config_sensor_control.CreateSensorControlConfig()
+sensor_control_config.set_from_disk()
 weather_underground_config = CreateWeatherUndergroundConfig()
 luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
+weather_underground_config.update_settings_from_file()
+luftdaten_config.update_settings_from_file()
+open_sense_map_config.update_settings_from_file()
 
 if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
-    installed_sensors = config_installed_sensors.CreateInstalledSensors()
+    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)
     trigger_variances = config_trigger_variances.CreateTriggerVariances()
+    weather_underground_config.weather_underground_enabled = 0
+    luftdaten_config.luftdaten_enabled = 0
+    open_sense_map_config.open_sense_map_enabled = 0
+elif geteuid() != 0:
+    logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")
+    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
+    current_config = config_primary.CreatePrimaryConfiguration()
+    trigger_variances = config_trigger_variances.CreateTriggerVariances()
+    weather_underground_config.weather_underground_enabled = 0
+    luftdaten_config.luftdaten_enabled = 0
+    open_sense_map_config.open_sense_map_enabled = 0
 else:
     logger.primary_logger.debug("Initializing configurations")
-    installed_sensors = config_installed_sensors.get_installed_sensors_from_file()
-    installed_sensors.raspberry_pi_name = installed_sensors.get_raspberry_pi_model()
+    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration()
     current_config = config_primary.CreatePrimaryConfiguration()
     trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
-    sensor_control_config.set_from_disk()
-    weather_underground_config.update_settings_from_file()
-    luftdaten_config.update_settings_from_file()
-    open_sense_map_config.update_settings_from_file()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

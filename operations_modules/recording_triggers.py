@@ -19,8 +19,8 @@
 from operations_modules import logger, app_config_access, app_cached_variables
 from operations_modules import app_cached_variables as app_cv
 from operations_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
+from sensor_modules import sensor_access
 
-sensor_types = app_cv.CreateNetworkGetCommands()
 database_variables = app_cached_variables.database_variables
 trigger_variances = app_config_access.trigger_variances
 
@@ -29,48 +29,48 @@ def start_trigger_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
     logger.primary_logger.debug("Trigger Thread(s) Starting")
     try:
-        sensor_uptime_data = CreateTriggerVarianceData(sensor_types.system_uptime,
+        sensor_uptime_data = CreateTriggerVarianceData(sensor_access.get_uptime_minutes,
                                                        database_variables.sensor_uptime,
                                                        enabled=trigger_variances.sensor_uptime_enabled,
                                                        thread_name="Trigger - Sensor Uptime",
                                                        sensor_wait_seconds=trigger_variances.sensor_uptime_wait_seconds)
-        cpu_temp_data = CreateTriggerVarianceData(sensor_types.cpu_temp,
+        cpu_temp_data = CreateTriggerVarianceData(sensor_access.get_cpu_temperature,
                                                   database_variables.system_temperature,
                                                   enabled=trigger_variances.cpu_temperature_enabled,
                                                   thread_name="Trigger - CPU Temperature",
                                                   variance=trigger_variances.cpu_temperature_variance,
                                                   sensor_wait_seconds=trigger_variances.cpu_temperature_wait_seconds)
-        env_temp_data = CreateTriggerVarianceData(sensor_types.environmental_temp,
+        env_temp_data = CreateTriggerVarianceData(sensor_access.get_sensor_temperature,
                                                   database_variables.env_temperature,
                                                   thread_name="Trigger - ENV Temperature",
                                                   enabled=trigger_variances.env_temperature_enabled,
                                                   variance=trigger_variances.env_temperature_variance,
                                                   sensor_wait_seconds=trigger_variances.env_temperature_wait_seconds)
-        pressure_data = CreateTriggerVarianceData(sensor_types.pressure,
+        pressure_data = CreateTriggerVarianceData(sensor_access.get_pressure,
                                                   database_variables.pressure,
                                                   thread_name="Trigger - Pressure",
                                                   enabled=trigger_variances.pressure_enabled,
                                                   variance=trigger_variances.pressure_variance,
                                                   sensor_wait_seconds=trigger_variances.pressure_wait_seconds)
-        altitude_data = CreateTriggerVarianceData(sensor_types.altitude,
+        altitude_data = CreateTriggerVarianceData(sensor_access.get_altitude,
                                                   database_variables.altitude,
                                                   thread_name="Trigger - Altitude",
                                                   enabled=trigger_variances.altitude_enabled,
                                                   variance=trigger_variances.altitude_variance,
                                                   sensor_wait_seconds=trigger_variances.altitude_wait_seconds)
-        humidity_data = CreateTriggerVarianceData(sensor_types.humidity,
+        humidity_data = CreateTriggerVarianceData(sensor_access.get_humidity,
                                                   database_variables.humidity,
                                                   thread_name="Trigger - Humidity",
                                                   enabled=trigger_variances.humidity_enabled,
                                                   variance=trigger_variances.humidity_variance,
                                                   sensor_wait_seconds=trigger_variances.humidity_wait_seconds)
-        distance_data = CreateTriggerVarianceData(sensor_types.distance,
+        distance_data = CreateTriggerVarianceData(sensor_access.get_distance,
                                                   database_variables.distance,
                                                   thread_name="Trigger - Distance",
                                                   enabled=trigger_variances.distance_enabled,
                                                   variance=trigger_variances.distance_variance,
                                                   sensor_wait_seconds=trigger_variances.distance_wait_seconds)
-        lumen_data = CreateTriggerVarianceData(sensor_types.lumen,
+        lumen_data = CreateTriggerVarianceData(sensor_access.get_lumen,
                                                database_variables.lumen,
                                                thread_name="Trigger - Lumen",
                                                enabled=trigger_variances.lumen_enabled,
@@ -98,7 +98,7 @@ def start_trigger_recording():
                                   app_config_access.trigger_variances.green_variance,
                                   app_config_access.trigger_variances.blue_variance,
                                   app_config_access.trigger_variances.violet_variance]
-        visible_ems_data = CreateTriggerVarianceData(sensor_types.electromagnetic_spectrum,
+        visible_ems_data = CreateTriggerVarianceData(sensor_access.get_ems,
                                                      ems_database_sensor_variable,
                                                      thread_name="Trigger - Visible Electromagnetic Spectrum",
                                                      enabled=trigger_variances.colour_enabled,
@@ -112,7 +112,7 @@ def start_trigger_recording():
         acc_variances_list = [app_config_access.trigger_variances.accelerometer_x_variance,
                               app_config_access.trigger_variances.accelerometer_y_variance,
                               app_config_access.trigger_variances.accelerometer_z_variance]
-        accelerometer_data = CreateTriggerVarianceData(sensor_types.accelerometer_xyz,
+        accelerometer_data = CreateTriggerVarianceData(sensor_access.get_accelerometer_xyz,
                                                        acc_database_sensor_variable,
                                                        thread_name="Trigger - Accelerometer",
                                                        enabled=trigger_variances.accelerometer_enabled,
@@ -126,7 +126,7 @@ def start_trigger_recording():
         mag_variances_list = [app_config_access.trigger_variances.magnetometer_x_variance,
                               app_config_access.trigger_variances.magnetometer_y_variance,
                               app_config_access.trigger_variances.magnetometer_z_variance]
-        magnetometer_data = CreateTriggerVarianceData(sensor_types.magnetometer_xyz,
+        magnetometer_data = CreateTriggerVarianceData(sensor_access.get_magnetometer_xyz,
                                                       mag_database_sensor_variable,
                                                       thread_name="Trigger - Magnetometer",
                                                       enabled=trigger_variances.magnetometer_enabled,
@@ -140,7 +140,7 @@ def start_trigger_recording():
         gyro_variances_list = [app_config_access.trigger_variances.gyroscope_x_variance,
                                app_config_access.trigger_variances.gyroscope_y_variance,
                                app_config_access.trigger_variances.gyroscope_z_variance]
-        gyroscope_data = CreateTriggerVarianceData(sensor_types.gyroscope_xyz,
+        gyroscope_data = CreateTriggerVarianceData(sensor_access.get_gyroscope_xyz,
                                                    gyro_database_sensor_variable,
                                                    thread_name="Trigger - Gyroscope",
                                                    enabled=trigger_variances.gyroscope_enabled,

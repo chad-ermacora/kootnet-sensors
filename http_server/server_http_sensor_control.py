@@ -26,6 +26,7 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version
+from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
 from operations_modules.config_luftdaten import CreateLuftdatenConfig
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
@@ -105,10 +106,10 @@ class CreateReplacementVariables:
             osm_config = CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
 
-            convert_installed_sensors = app_config_access.config_installed_sensors.convert_lines_to_obj
-            installed_sensors_config = convert_installed_sensors(installed_sensors_lines, skip_write=True)
+            installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
+            installed_sensors_config.set_config_with_str(installed_sensors_raw)
 
-            installed_sensors_config.raspberry_pi_name = rpi_model_name
+            installed_sensors_config.config_settings_names[1] = rpi_model_name
 
             weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
             luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)

@@ -21,18 +21,20 @@ from datetime import datetime
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_config_access
-from operations_modules.app_cached_variables import CreateNetworkGetCommands, normal_state, low_state, high_state
+from operations_modules.app_cached_variables import normal_state, low_state, high_state, no_sensor_present
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
 
 class CreateTriggerVarianceData:
-    def __init__(self, sensor_type, sensor_database_variable, enabled=True, thread_name="GenericTriggerThread",
-                 variance=99999.99, sensor_wait_seconds=10, num_of_readings=1, number_of_reading_sets=3):
-        self.sensor_types = CreateNetworkGetCommands()
-        self.sensor_type = sensor_type
-        self.get_sensor_data_function = None
-        self.has_sensor = self._check_for_sensor()
+    def __init__(self, get_sensor_data_function, sensor_database_variable, enabled=True,
+                 thread_name="GenericTriggerThread", variance=99999.99, sensor_wait_seconds=10,
+                 num_of_readings=1, number_of_reading_sets=3):
+        self.get_sensor_data_function = get_sensor_data_function
+        self.has_sensor = True
+        test_sensor_reading = self.get_sensor_data_function()
+        if test_sensor_reading == no_sensor_present:
+            self.has_sensor = False
         self.enabled = enabled
         self.thread_name = thread_name
         self.num_of_readings = num_of_readings
@@ -46,56 +48,6 @@ class CreateTriggerVarianceData:
         self.max_trigger_errors = 10
         self.last_error_time = time()
         self.reset_errors_after = 60.0
-
-    def _check_for_sensor(self):
-        if self.sensor_type == self.sensor_types.system_uptime:
-            self.get_sensor_data_function = sensor_access.get_uptime_minutes
-            return True
-        elif self.sensor_type == self.sensor_types.cpu_temp:
-            if app_config_access.installed_sensors.has_cpu_temperature:
-                self.get_sensor_data_function = sensor_access.get_cpu_temperature
-                return True
-        elif self.sensor_type == self.sensor_types.environmental_temp:
-            if app_config_access.installed_sensors.has_env_temperature:
-                self.get_sensor_data_function = sensor_access.get_sensor_temperature
-                return True
-        elif self.sensor_type == self.sensor_types.pressure:
-            if app_config_access.installed_sensors.has_pressure:
-                self.get_sensor_data_function = sensor_access.get_pressure
-                return True
-        elif self.sensor_type == self.sensor_types.altitude:
-            if app_config_access.installed_sensors.has_altitude:
-                self.get_sensor_data_function = sensor_access.get_altitude
-                return True
-        elif self.sensor_type == self.sensor_types.humidity:
-            if app_config_access.installed_sensors.has_humidity:
-                self.get_sensor_data_function = sensor_access.get_humidity
-                return True
-        elif self.sensor_type == self.sensor_types.distance:
-            if app_config_access.installed_sensors.has_distance:
-                self.get_sensor_data_function = sensor_access.get_distance
-                return True
-        elif self.sensor_type == self.sensor_types.lumen:
-            if app_config_access.installed_sensors.has_lumen:
-                self.get_sensor_data_function = sensor_access.get_lumen
-                return True
-        elif self.sensor_type == self.sensor_types.electromagnetic_spectrum:
-            if app_config_access.installed_sensors.has_red:
-                self.get_sensor_data_function = sensor_access.get_ems
-                return True
-        elif self.sensor_type == self.sensor_types.accelerometer_xyz:
-            if app_config_access.installed_sensors.has_acc:
-                self.get_sensor_data_function = sensor_access.get_accelerometer_xyz
-                return True
-        elif self.sensor_type == self.sensor_types.magnetometer_xyz:
-            if app_config_access.installed_sensors.has_mag:
-                self.get_sensor_data_function = sensor_access.get_magnetometer_xyz
-                return True
-        elif self.sensor_type == self.sensor_types.gyroscope_xyz:
-            if app_config_access.installed_sensors.has_gyro:
-                self.get_sensor_data_function = sensor_access.get_gyroscope_xyz
-                return True
-        return False
 
 
 class CreateTriggerVarianceThread:

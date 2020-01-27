@@ -196,10 +196,8 @@ def html_set_installed_sensors():
     logger.network_logger.debug("** HTML Apply - Installed Sensors - Source " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            r_t_is = app_config_access.config_installed_sensors.html_request_to_installed_sensors_config
-            new_installed_sensors = r_t_is(request)
-            installed_sensors_text = new_installed_sensors.get_installed_sensors_config_as_str()
-            app_config_access.config_installed_sensors.write_to_file(installed_sensors_text)
+            app_config_access.installed_sensors.update_with_html_request(request)
+            app_config_access.installed_sensors.save_config_to_file()
             return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
             app_generic_functions.thread_function(sensor_access.restart_services)
             return return_page

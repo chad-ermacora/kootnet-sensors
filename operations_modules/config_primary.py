@@ -57,6 +57,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                 self.sleep_duration_interval = float(self.config_settings[4])
                 self.enable_custom_temp = int(self.config_settings[5])
                 self.temperature_offset = float(self.config_settings[6])
+                self._update_configuration_settings_list()
             except Exception as error:
                 log_msg = "Error setting variables from "
                 log_msg2 = "Saving Default Configuration for "
@@ -69,8 +70,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             logger.primary_logger.warning(log_msg + str(self.config_file_location))
             logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
             self.save_config_to_file()
-        # Save Log level with each config file save
-        write_file_to_disk(file_locations.debug_logging_config, str(self.enable_debug_logging))
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
@@ -81,7 +80,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
     def update_with_html_request(self, html_request):
         """ Updates the primary configuration based on provided HTML configuration data. """
-        logger.network_logger.debug("Starting HTML Main Configuration Update Check")
+        logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
         else:

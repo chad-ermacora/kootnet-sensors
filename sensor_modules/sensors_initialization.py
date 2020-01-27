@@ -100,6 +100,3 @@ else:
     # They won't be used & program will be restarted when the upgrade is done.
     if geteuid() == 0:
         logger.primary_logger.warning(" -- Sensors Initialization Skipped - Upgrade in progress")
-    else:
-        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")
-        app_config_access.installed_sensors = app_config_access.config_installed_sensors.CreateInstalledSensors()

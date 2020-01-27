@@ -50,8 +50,6 @@ if os.geteuid() != 0:
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
-debug_logging_config = sensor_config_dir + "/enable_debug_logging.conf"
-
 log_directory = sensor_data_dir + "/logs/"
 primary_log = log_directory + "Primary_log.txt"
 network_log = log_directory + "Network_log.txt"
