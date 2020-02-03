@@ -27,14 +27,14 @@ from sensor_modules import sensor_access
 
 
 class CreateTriggerVarianceData:
-    def __init__(self, get_sensor_data_function, sensor_database_variable, enabled=True,
+    def __init__(self, get_sensor_data_function, sensor_database_variable, enabled=1,
                  thread_name="GenericTriggerThread", variance=99999.99, sensor_wait_seconds=10,
                  num_of_readings=1, number_of_reading_sets=3):
         self.get_sensor_data_function = get_sensor_data_function
-        self.has_sensor = True
+        self.has_sensor = 1
         test_sensor_reading = self.get_sensor_data_function()
         if test_sensor_reading == no_sensor_present:
-            self.has_sensor = False
+            self.has_sensor = 0
         self.enabled = enabled
         self.thread_name = thread_name
         self.num_of_readings = num_of_readings
@@ -48,6 +48,17 @@ class CreateTriggerVarianceData:
         self.max_trigger_errors = 10
         self.last_error_time = time()
         self.reset_errors_after = 60.0
+        if self.enabled:
+            logger.primary_logger.debug(thread_name + " - Enabled: " + str(self.enabled) +
+                                        " Has Sensor: " + str(self.has_sensor) +
+                                        " Test Reading: " + str(test_sensor_reading) +
+                                        " DB Variable: " + str(sensor_database_variable) +
+                                        " # Readings: " + str(self.num_of_readings) +
+                                        " # Sets: " + str(self.number_of_sets) +
+                                        " Variance: " + str(self.variance) +
+                                        " Wait Sec: " + str(self.sensor_wait_seconds))
+        else:
+            logger.primary_logger.debug(thread_name + " - Disabled")
 
 
 class CreateTriggerVarianceThread:
@@ -64,9 +75,11 @@ class CreateTriggerVarianceThread:
         self.reading_and_datetime_stamps = []
         if self.trigger_data.enabled and self.trigger_data.has_sensor:
             if sensor_uptime:
-                self.monitored_thread = CreateMonitoredThread(self._sensor_uptime_check, thread_name=self.trigger_data.thread_name)
+                self.monitored_thread = CreateMonitoredThread(self._sensor_uptime_check,
+                                                              thread_name=self.trigger_data.thread_name)
             else:
-                self.monitored_thread = CreateMonitoredThread(self._data_check, thread_name=self.trigger_data.thread_name)
+                self.monitored_thread = CreateMonitoredThread(self._data_check,
+                                                              thread_name=self.trigger_data.thread_name)
         else:
             logger.primary_logger.debug(self.trigger_data.thread_name + " disabled or missing sensor")
             self.monitored_thread = None
@@ -96,7 +109,7 @@ class CreateTriggerVarianceThread:
             sqlite_database.write_to_sql_database(execute_str_list[0])
 
     def _data_check(self):
-        log_msg = self.trigger_data.sensor_type + " Starting Checks.  Checking every "
+        log_msg = self.trigger_data.thread_name + " Starting Checks.  Checking every "
         logger.primary_logger.debug(log_msg + str(self.trigger_data.sensor_wait_seconds) + " Seconds")
         while True:
             if self.number_of_errors > self.trigger_data.max_trigger_errors:
@@ -104,7 +117,6 @@ class CreateTriggerVarianceThread:
                 logger.primary_logger.warning(log_msg)
                 while True:
                     sleep(3600)
-
             if self._check_differences():
                 execute_str_list = []
                 if self.trigger_data.num_of_readings == 1:
@@ -140,7 +152,7 @@ class CreateTriggerVarianceThread:
                             count += 1
                     previous_readings = reading_list
         except Exception as error:
-            logger.primary_logger.warning(self.trigger_data.sensor_type + " Trigger difference check: " + str(error))
+            logger.primary_logger.warning(self.trigger_data.thread_name + " Trigger difference check: " + str(error))
             if (time() - self.trigger_data.last_error_time) > self.trigger_data.reset_errors_after:
                 self.number_of_errors = 0
             self.trigger_data.last_error_time = time()
@@ -171,8 +183,8 @@ def _readings_to_sql_write_str_single_data(trigger_object):
     try:
         for reading, datetime_var in zip(trigger_object.reading_and_datetime_stamps[0],
                                          trigger_object.reading_and_datetime_stamps[1]):
-            execute_string = sql_query_start + trigger_object.sql_columns_str + sql_query_values_start + "'" + \
-                                        datetime_var + "','"
+            execute_string = sql_query_start + trigger_object.sql_columns_str + \
+                             sql_query_values_start + "'" + datetime_var + "','"
             if app_config_access.installed_sensors.linux_system:
                 execute_string += trigger_object.trigger_data.sql_sensor_name + "','" + \
                                   trigger_object.trigger_data.sql_ip + "','"

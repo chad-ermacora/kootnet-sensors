@@ -154,8 +154,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.raspberry_pi_sense_hat = int(self.config_settings[2])
             self.pimoroni_bh1745 = int(self.config_settings[3])
             self.pimoroni_as7262 = int(self.config_settings[4])
-            self.pimoroni_bmp280 = int(self.config_settings[5])
-            self.pimoroni_mcp9600 = int(self.config_settings[6])
+            self.pimoroni_mcp9600 = int(self.config_settings[5])
+            self.pimoroni_bmp280 = int(self.config_settings[6])
             self.pimoroni_bme680 = int(self.config_settings[7])
             self.pimoroni_enviro = int(self.config_settings[8])
             self.pimoroni_enviroplus = int(self.config_settings[9])
@@ -178,8 +178,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.linux_system), str(self.raspberry_pi), str(self.raspberry_pi_sense_hat),
-                                str(self.pimoroni_bh1745), str(self.pimoroni_as7262), str(self.pimoroni_bmp280),
-                                str(self.pimoroni_mcp9600), str(self.pimoroni_bme680), str(self.pimoroni_enviro),
+                                str(self.pimoroni_bh1745), str(self.pimoroni_as7262), str(self.pimoroni_mcp9600),
+                                str(self.pimoroni_bmp280), str(self.pimoroni_bme680), str(self.pimoroni_enviro),
                                 str(self.pimoroni_enviroplus), str(self.pimoroni_sgp30), str(self.pimoroni_pms5003),
                                 str(self.pimoroni_msa301), str(self.pimoroni_lsm303d), str(self.pimoroni_icm20948),
                                 str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
