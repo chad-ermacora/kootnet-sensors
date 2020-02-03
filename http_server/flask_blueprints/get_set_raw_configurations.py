@@ -3,10 +3,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
-from operations_modules import config_primary
-from operations_modules import config_installed_sensors
 from operations_modules import network_wifi
-from operations_modules.config_trigger_variances import write_triggers_to_file
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
 
@@ -39,8 +36,7 @@ def get_installed_sensors():
 @auth.login_required
 def set_installed_sensors():
     logger.network_logger.info("** Installed Sensors Set by " + str(request.remote_addr))
-    raw_installed_sensors = request.form["command_data"]
-    app_config_access.installed_sensors.set_config_with_str(raw_installed_sensors)
+    app_config_access.installed_sensors.set_config_with_str(request.form["command_data"])
     app_config_access.installed_sensors.save_config_to_file()
     app_generic_functions.thread_function(sensor_access.restart_services)
     return "OK"
@@ -76,10 +72,10 @@ def get_variance_config():
 def set_variance_config():
     logger.network_logger.debug("* Variance Configuration Set by " + str(request.remote_addr))
     try:
-        new_variance_config = request.form["command_data"]
-        write_triggers_to_file(new_variance_config)
+        app_config_access.trigger_variances.set_config_with_str(request.form["command_data"])
+        app_config_access.trigger_variances.save_config_to_file()
     except Exception as error:
-        logger.network_logger.info("* Variance Configuration Set from " + str(request.remote_addr) +
-                                   " Failed: " + str(error))
+        log_msg = "* Variance Configuration Set from " + str(request.remote_addr) + " Failed: " + str(error)
+        logger.network_logger.info(log_msg)
     app_generic_functions.thread_function(sensor_access.restart_services)
     return "OK"

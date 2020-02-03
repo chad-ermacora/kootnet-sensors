@@ -16,16 +16,46 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_generic_functions
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
 
 
-class CreateTriggerVariances:
-    """ Create a Trigger Variance configuration object. These are also the default values. """
+class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
+    """ Creates the Trigger Variances Configuration object and loads settings from file (by default). """
 
-    def __init__(self):
+    def __init__(self, load_from_file=True):
+        CreateGeneralConfiguration.__init__(self)
+        self.config_file_location = file_locations.trigger_variances_config
+        self.config_file_header = "Configure Variance Settings.  0 = Disabled, 1 = Enabled"
+        self.valid_setting_count = 62
+        self.config_settings_names = ["Enable Sensor Uptime", "Seconds between SQL Writes of Sensor Uptime",
+                                      "Enable CPU Temperature", "CPU Temperature variance",
+                                      "Seconds between 'CPU Temperature' readings", "Enable Environmental Temperature",
+                                      "Environmental Temperature variance",
+                                      "Seconds between 'Env Temperature' readings", "Enable Pressure",
+                                      "Pressure variance", "Seconds between 'Pressure' readings", "Enable Altitude",
+                                      "Altitude variance", "Seconds between 'Altitude' readings", "Enable Humidity",
+                                      "Humidity variance", "Seconds between 'Humidity' readings", "Enable Distance",
+                                      "Distance variance", "Seconds between 'Distance' readings", "Enable Gas",
+                                      "Gas Resistance Index variance", "Gas Oxidising variance",
+                                      "Gas Reducing variance", "Gas NH3 variance", "Seconds between 'Gas' readings",
+                                      "Enable Particulate Matter (PM)", "Particulate Matter 1 (PM1) variance",
+                                      "Particulate Matter 2.5 (PM2.5) variance",
+                                      "Particulate Matter 10 (PM10) variance",
+                                      "Seconds between 'PM' readings", "Enable Lumen", "Lumen variance",
+                                      "Seconds between 'Lumen' readings", "Enable Colour", "Red variance",
+                                      "Orange variance", "Yellow variance", "Green variance", "Blue variance",
+                                      "Violet variance", "Seconds between 'Colour' readings", "Enable Ultra Violet",
+                                      "Ultra Violet Index variance", "Ultra Violet A variance",
+                                      "Ultra Violet B variance", "Seconds between 'Ultra Violet' readings",
+                                      "Enable Accelerometer", "Accelerometer X variance", "Accelerometer Y variance",
+                                      "Accelerometer Z variance", "Seconds between 'Accelerometer' readings",
+                                      "Enable Magnetometer", "Magnetometer X variance", "Magnetometer Y variance",
+                                      "Magnetometer Z variance", "Seconds between 'Magnetometer' readings",
+                                      "Enable Gyroscope", "Gyroscope X variance", "Gyroscope Y variance",
+                                      "Gyroscope Z variance", "Seconds between 'Gyroscope' readings"]
+
         self.sensor_uptime_enabled = 0
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
 
@@ -41,30 +71,17 @@ class CreateTriggerVariances:
         self.pressure_variance = 10
         self.pressure_wait_seconds = 1.0
 
-        self.altitude_enabled = 0
-        self.altitude_variance = 10
-        self.altitude_wait_seconds = 1.0
-
         self.humidity_enabled = 0
         self.humidity_variance = 5.0
         self.humidity_wait_seconds = 1.0
 
+        self.altitude_enabled = 0
+        self.altitude_variance = 10
+        self.altitude_wait_seconds = 1.0
+
         self.distance_enabled = 0
         self.distance_variance = 5.0
         self.distance_wait_seconds = 1.0
-
-        self.gas_enabled = 0
-        self.gas_resistance_index_variance = 100.0
-        self.gas_oxidising_variance = 100.0
-        self.gas_reducing_variance = 100.0
-        self.gas_nh3_variance = 100.0
-        self.gas_wait_seconds = 30.0
-
-        self.particulate_matter_enabled = 0
-        self.particulate_matter_1_variance = 4.0
-        self.particulate_matter_2_5_variance = 4.0
-        self.particulate_matter_10_variance = 4.0
-        self.particulate_matter_wait_seconds = 60.0
 
         self.lumen_enabled = 0
         self.lumen_variance = 100.0
@@ -85,6 +102,19 @@ class CreateTriggerVariances:
         self.ultra_violet_b_variance = 10.0
         self.ultra_violet_wait_seconds = 5.0
 
+        self.gas_enabled = 0
+        self.gas_resistance_index_variance = 100.0
+        self.gas_oxidising_variance = 100.0
+        self.gas_reducing_variance = 100.0
+        self.gas_nh3_variance = 100.0
+        self.gas_wait_seconds = 30.0
+
+        self.particulate_matter_enabled = 0
+        self.particulate_matter_1_variance = 4.0
+        self.particulate_matter_2_5_variance = 4.0
+        self.particulate_matter_10_variance = 4.0
+        self.particulate_matter_wait_seconds = 60.0
+
         self.accelerometer_enabled = 0
         self.accelerometer_x_variance = 0.1
         self.accelerometer_y_variance = 0.1
@@ -103,35 +133,223 @@ class CreateTriggerVariances:
         self.gyroscope_z_variance = 25.0
         self.gyroscope_wait_seconds = 0.3
 
-    def init_trigger_variances(self, installed_sensors):
-        """ Sets default values for all variances in the provided configuration object. """
-        if installed_sensors.raspberry_pi_sense_hat:
-            self.accelerometer_x_variance = 0.01
-            self.accelerometer_y_variance = 0.01
-            self.accelerometer_z_variance = 0.01
-            self.magnetometer_x_variance = 2.0
-            self.magnetometer_y_variance = 2.0
-            self.magnetometer_z_variance = 2.0
-            self.gyroscope_x_variance = 0.05
-            self.gyroscope_y_variance = 0.05
-            self.gyroscope_z_variance = 0.05
-        if installed_sensors.pimoroni_enviro:
-            self.accelerometer_x_variance = 0.05
-            self.accelerometer_y_variance = 0.05
-            self.accelerometer_z_variance = 0.05
-            self.magnetometer_x_variance = 600.0
-            self.magnetometer_y_variance = 600.0
-            self.magnetometer_z_variance = 600.0
-        if installed_sensors.pimoroni_lsm303d:
-            self.accelerometer_x_variance = 0.1
-            self.accelerometer_y_variance = 0.1
-            self.accelerometer_z_variance = 0.1
-            self.magnetometer_x_variance = 0.02
-            self.magnetometer_y_variance = 0.02
-            self.magnetometer_z_variance = 0.02
+        self._update_configuration_settings_list()
+        if load_from_file:
+            self._init_config_variables()
+
+    def set_config_with_str(self, config_file_text):
+        super().set_config_with_str(config_file_text)
+        self._update_variables_from_settings_list()
+
+    def update_with_html_request(self, html_request):
+        """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
+        logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
+
+        if html_request.form.get("checkbox_sensor_uptime") is not None:
+            self.sensor_uptime_enabled = 1
+        self.sensor_uptime_wait_seconds = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
+
+        if html_request.form.get("checkbox_cpu_temperature") is not None:
+            self.cpu_temperature_enabled = 1
+        self.cpu_temperature_variance = float(html_request.form.get("trigger_cpu_temperature"))
+        self.cpu_temperature_wait_seconds = float(html_request.form.get("seconds_cpu_temperature"))
+
+        if html_request.form.get("env_temperature") is not None:
+            self.env_temperature_enabled = 1
+        self.env_temperature_variance = float(html_request.form.get("trigger_env_temperature"))
+        self.env_temperature_wait_seconds = float(html_request.form.get("seconds_env_temperature"))
+
+        if html_request.form.get("pressure") is not None:
+            self.pressure_enabled = 1
+        self.pressure_variance = float(html_request.form.get("trigger_pressure"))
+        self.pressure_wait_seconds = float(html_request.form.get("seconds_pressure"))
+
+        if html_request.form.get("humidity") is not None:
+            self.humidity_enabled = 1
+        self.humidity_variance = float(html_request.form.get("trigger_humidity"))
+        self.humidity_wait_seconds = float(html_request.form.get("seconds_humidity"))
+
+        if html_request.form.get("altitude") is not None:
+            self.altitude_enabled = 1
+        self.altitude_variance = float(html_request.form.get("trigger_altitude"))
+        self.altitude_wait_seconds = float(html_request.form.get("seconds_altitude"))
+
+        if html_request.form.get("distance") is not None:
+            self.distance_enabled = 1
+        self.distance_variance = float(html_request.form.get("trigger_distance"))
+        self.distance_wait_seconds = float(html_request.form.get("seconds_distance"))
+
+        if html_request.form.get("lumen") is not None:
+            self.lumen_enabled = 1
+        self.lumen_variance = float(html_request.form.get("trigger_lumen"))
+        self.lumen_wait_seconds = float(html_request.form.get("seconds_lumen"))
+
+        if html_request.form.get("colour") is not None:
+            self.colour_enabled = 1
+        self.red_variance = float(html_request.form.get("red"))
+        self.orange_variance = float(html_request.form.get("orange"))
+        self.yellow_variance = float(html_request.form.get("yellow"))
+        self.green_variance = float(html_request.form.get("green"))
+        self.blue_variance = float(html_request.form.get("blue"))
+        self.violet_variance = float(html_request.form.get("violet"))
+        self.colour_wait_seconds = float(html_request.form.get("seconds_colour"))
+
+        if html_request.form.get("ultra_violet") is not None:
+            self.ultra_violet_enabled = 1
+        self.ultra_violet_a_variance = float(html_request.form.get("ultra_violet_a"))
+        self.ultra_violet_b_variance = float(html_request.form.get("ultra_violet_b"))
+        self.ultra_violet_wait_seconds = float(html_request.form.get("seconds_ultra_violet"))
+
+        if html_request.form.get("gas") is not None:
+            self.gas_enabled = 1
+        self.gas_resistance_index_variance = float(html_request.form.get("trigger_gas_index"))
+        self.gas_oxidising_variance = float(html_request.form.get("trigger_gas_oxidising"))
+        self.gas_reducing_variance = float(html_request.form.get("trigger_gas_reducing"))
+        self.gas_nh3_variance = float(html_request.form.get("trigger_gas_nh3"))
+        self.gas_wait_seconds = float(html_request.form.get("seconds_gas"))
+
+        if html_request.form.get("particulate_matter") is not None:
+            self.particulate_matter_enabled = 1
+        self.particulate_matter_1_variance = float(html_request.form.get("trigger_pm1"))
+        self.particulate_matter_2_5_variance = float(html_request.form.get("trigger_pm2_5"))
+        self.particulate_matter_10_variance = float(html_request.form.get("trigger_pm10"))
+        self.humidity_wait_seconds = float(html_request.form.get("seconds_pm"))
+
+        if html_request.form.get("accelerometer") is not None:
+            self.accelerometer_enabled = 1
+        self.accelerometer_x_variance = float(html_request.form.get("accelerometer_x"))
+        self.accelerometer_y_variance = float(html_request.form.get("accelerometer_y"))
+        self.accelerometer_z_variance = float(html_request.form.get("accelerometer_z"))
+        self.accelerometer_wait_seconds = float(html_request.form.get("seconds_accelerometer"))
+
+        if html_request.form.get("magnetometer") is not None:
+            self.magnetometer_enabled = 1
+        self.magnetometer_x_variance = float(html_request.form.get("magnetometer_x"))
+        self.magnetometer_y_variance = float(html_request.form.get("magnetometer_y"))
+        self.magnetometer_z_variance = float(html_request.form.get("magnetometer_z"))
+        self.magnetometer_wait_seconds = float(html_request.form.get("seconds_magnetometer"))
+
+        if html_request.form.get("gyroscope") is not None:
+            self.gyroscope_enabled = 1
+        self.gyroscope_x_variance = float(html_request.form.get("gyroscope_x"))
+        self.gyroscope_y_variance = float(html_request.form.get("gyroscope_y"))
+        self.gyroscope_z_variance = float(html_request.form.get("gyroscope_z"))
+        self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
+        self._update_configuration_settings_list()
 
     def reset_settings(self):
-        self.__init__()
+        self.__init__(load_from_file=False)
+
+    def _init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+        try:
+            self.set_config_with_str(get_file_content(file_locations.trigger_variances_config))
+        except Exception as error:
+            log_msg = "Error setting variables from "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+
+    def _update_configuration_settings_list(self):
+        """ Set's config_settings variable list based on current settings. """
+        self.config_settings = [str(self.sensor_uptime_enabled), str(self.sensor_uptime_wait_seconds),
+                                str(self.cpu_temperature_enabled), str(self.cpu_temperature_variance),
+                                str(self.cpu_temperature_wait_seconds), str(self.env_temperature_enabled),
+                                str(self.env_temperature_variance), str(self.env_temperature_wait_seconds),
+                                str(self.pressure_enabled), str(self.pressure_variance),
+                                str(self.pressure_wait_seconds), str(self.altitude_enabled),
+                                str(self.altitude_variance), str(self.altitude_wait_seconds),
+                                str(self.humidity_enabled), str(self.humidity_variance),
+                                str(self.humidity_wait_seconds), str(self.distance_enabled),
+                                str(self.distance_variance), str(self.distance_wait_seconds), str(self.gas_enabled),
+                                str(self.gas_resistance_index_variance), str(self.gas_oxidising_variance),
+                                str(self.gas_reducing_variance), str(self.gas_nh3_variance), str(self.gas_wait_seconds),
+                                str(self.particulate_matter_enabled), str(self.particulate_matter_1_variance),
+                                str(self.particulate_matter_2_5_variance), str(self.particulate_matter_10_variance),
+                                str(self.particulate_matter_wait_seconds), str(self.lumen_enabled),
+                                str(self.lumen_variance), str(self.lumen_wait_seconds), str(self.colour_enabled),
+                                str(self.red_variance), str(self.orange_variance), str(self.yellow_variance),
+                                str(self.green_variance), str(self.blue_variance), str(self.violet_variance),
+                                str(self.colour_wait_seconds), str(self.ultra_violet_enabled),
+                                str(self.ultra_violet_index_variance), str(self.ultra_violet_a_variance),
+                                str(self.ultra_violet_b_variance), str(self.ultra_violet_wait_seconds),
+                                str(self.accelerometer_enabled), str(self.accelerometer_x_variance),
+                                str(self.accelerometer_y_variance), str(self.accelerometer_z_variance),
+                                str(self.accelerometer_wait_seconds), str(self.magnetometer_enabled),
+                                str(self.magnetometer_x_variance), str(self.magnetometer_y_variance),
+                                str(self.magnetometer_z_variance), str(self.magnetometer_wait_seconds),
+                                str(self.gyroscope_enabled), str(self.gyroscope_x_variance),
+                                str(self.gyroscope_y_variance), str(self.gyroscope_z_variance),
+                                str(self.gyroscope_wait_seconds)]
+
+    def _update_variables_from_settings_list(self):
+        if self.valid_setting_count == len(self.config_settings):
+            self.sensor_uptime_enabled = int(self.config_settings[0])
+            self.sensor_uptime_wait_seconds = float(self.config_settings[1])
+            self.cpu_temperature_enabled = int(self.config_settings[2])
+            self.cpu_temperature_variance = float(self.config_settings[3])
+            self.cpu_temperature_wait_seconds = float(self.config_settings[4])
+            self.env_temperature_enabled = int(self.config_settings[5])
+            self.env_temperature_variance = float(self.config_settings[6])
+            self.env_temperature_wait_seconds = float(self.config_settings[7])
+            self.pressure_enabled = int(self.config_settings[8])
+            self.pressure_variance = float(self.config_settings[9])
+            self.pressure_wait_seconds = float(self.config_settings[10])
+            self.altitude_enabled = int(self.config_settings[11])
+            self.altitude_variance = float(self.config_settings[12])
+            self.altitude_wait_seconds = float(self.config_settings[13])
+            self.humidity_enabled = int(self.config_settings[14])
+            self.humidity_variance = float(self.config_settings[15])
+            self.humidity_wait_seconds = float(self.config_settings[16])
+            self.distance_enabled = int(self.config_settings[17])
+            self.distance_variance = float(self.config_settings[18])
+            self.distance_wait_seconds = float(self.config_settings[19])
+            self.gas_enabled = int(self.config_settings[20])
+            self.gas_resistance_index_variance = float(self.config_settings[21])
+            self.gas_oxidising_variance = float(self.config_settings[22])
+            self.gas_reducing_variance = float(self.config_settings[23])
+            self.gas_nh3_variance = float(self.config_settings[24])
+            self.gas_wait_seconds = float(self.config_settings[25])
+            self.particulate_matter_enabled = int(self.config_settings[26])
+            self.particulate_matter_1_variance = float(self.config_settings[27])
+            self.particulate_matter_2_5_variance = float(self.config_settings[28])
+            self.particulate_matter_10_variance = float(self.config_settings[29])
+            self.particulate_matter_wait_seconds = float(self.config_settings[30])
+            self.lumen_enabled = int(self.config_settings[31])
+            self.lumen_variance = float(self.config_settings[32])
+            self.lumen_wait_seconds = float(self.config_settings[33])
+            self.colour_enabled = int(self.config_settings[34])
+            self.red_variance = float(self.config_settings[35])
+            self.orange_variance = float(self.config_settings[36])
+            self.yellow_variance = float(self.config_settings[37])
+            self.green_variance = float(self.config_settings[38])
+            self.blue_variance = float(self.config_settings[39])
+            self.violet_variance = float(self.config_settings[40])
+            self.colour_wait_seconds = float(self.config_settings[41])
+            self.ultra_violet_enabled = int(self.config_settings[42])
+            self.ultra_violet_index_variance = float(self.config_settings[43])
+            self.ultra_violet_a_variance = float(self.config_settings[44])
+            self.ultra_violet_b_variance = float(self.config_settings[45])
+            self.ultra_violet_wait_seconds = float(self.config_settings[46])
+            self.accelerometer_enabled = int(self.config_settings[47])
+            self.accelerometer_x_variance = float(self.config_settings[48])
+            self.accelerometer_y_variance = float(self.config_settings[49])
+            self.accelerometer_z_variance = float(self.config_settings[50])
+            self.accelerometer_wait_seconds = float(self.config_settings[51])
+            self.magnetometer_enabled = int(self.config_settings[52])
+            self.magnetometer_x_variance = float(self.config_settings[53])
+            self.magnetometer_y_variance = float(self.config_settings[54])
+            self.magnetometer_z_variance = float(self.config_settings[55])
+            self.magnetometer_wait_seconds = float(self.config_settings[56])
+            self.gyroscope_enabled = int(self.config_settings[57])
+            self.gyroscope_x_variance = float(self.config_settings[58])
+            self.gyroscope_y_variance = float(self.config_settings[59])
+            self.gyroscope_z_variance = float(self.config_settings[60])
+            self.gyroscope_wait_seconds = float(self.config_settings[61])
+        else:
+            log_msg = "Error setting variables from "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location))
 
 
 # Not used yet, considering high low variances
@@ -197,391 +415,3 @@ class CreateTriggerLowHighVariances:
         self.gyroscope_enabled = 0
         self.gyroscope_low = 0
         self.gyroscope_high = 600
-
-
-def convert_triggers_to_str(triggers):
-    """ Returns trigger variances as text to write to the local disk trigger variances file. """
-    return_str = "Enable or Disable & set Variance settings.  0 = Disabled, 1 = Enabled.\n" + \
-                 str(triggers.sensor_uptime_enabled) + " = Enable Sensor Uptime\n" + \
-                 str(triggers.sensor_uptime_wait_seconds) + " = Seconds between SQL Writes of Sensor Uptime\n\n" + \
-                 str(triggers.cpu_temperature_enabled) + " = Enable CPU Temperature\n" + \
-                 str(triggers.cpu_temperature_variance) + " = CPU Temperature variance\n" + \
-                 str(triggers.cpu_temperature_wait_seconds) + " = Seconds between 'CPU Temperature' readings\n\n" + \
-                 str(triggers.env_temperature_enabled) + " = Enable Environmental Temperature\n" + \
-                 str(triggers.env_temperature_variance) + " = Environmental Temperature variance\n" + \
-                 str(triggers.env_temperature_wait_seconds) + " = Seconds between 'Env Temperature' readings\n\n" + \
-                 str(triggers.pressure_enabled) + " = Enable Pressure\n" + \
-                 str(triggers.pressure_variance) + " = Pressure variance\n" + \
-                 str(triggers.pressure_wait_seconds) + " = Seconds between 'Pressure' readings\n\n" + \
-                 str(triggers.altitude_enabled) + " = Enable Altitude\n" + \
-                 str(triggers.altitude_variance) + " = Altitude variance\n" + \
-                 str(triggers.altitude_wait_seconds) + " = Seconds between 'Altitude' readings\n\n" + \
-                 str(triggers.humidity_enabled) + " = Enable Humidity\n" + \
-                 str(triggers.humidity_variance) + " = Humidity variance\n" + \
-                 str(triggers.humidity_wait_seconds) + " = Seconds between 'Humidity' readings\n\n" + \
-                 str(triggers.distance_enabled) + " = Enable Distance\n" + \
-                 str(triggers.distance_variance) + " = Distance variance\n" + \
-                 str(triggers.distance_wait_seconds) + " = Seconds between 'Distance' readings\n\n" + \
-                 str(triggers.gas_enabled) + " = Enable Gas\n" + \
-                 str(triggers.gas_resistance_index_variance) + " = Gas Resistance Index variance\n" + \
-                 str(triggers.gas_oxidising_variance) + " = Gas Oxidising variance\n" + \
-                 str(triggers.gas_reducing_variance) + " = Gas Reducing variance\n" + \
-                 str(triggers.gas_nh3_variance) + " = Gas NH3 variance\n" + \
-                 str(triggers.gas_wait_seconds) + " = Seconds between 'Gas' readings\n\n" + \
-                 str(triggers.particulate_matter_enabled) + " = Enable Particulate Matter (PM)\n" + \
-                 str(triggers.particulate_matter_1_variance) + " = Particulate Matter 1 (PM1) variance\n" + \
-                 str(triggers.particulate_matter_2_5_variance) + " = Particulate Matter 2.5 (PM2.5) variance\n" + \
-                 str(triggers.particulate_matter_10_variance) + " = Particulate Matter 10 (PM10) variance\n" + \
-                 str(triggers.particulate_matter_wait_seconds) + " = Seconds between 'PM' readings\n\n" + \
-                 str(triggers.lumen_enabled) + " = Enable Lumen\n" + \
-                 str(triggers.lumen_variance) + " = Lumen variance\n" + \
-                 str(triggers.lumen_wait_seconds) + " = Seconds between 'Lumen' readings\n\n" + \
-                 str(triggers.colour_enabled) + " = Enable Colour\n" + \
-                 str(triggers.red_variance) + " = Red variance\n" + \
-                 str(triggers.orange_variance) + " = Orange variance\n" + \
-                 str(triggers.yellow_variance) + " = Yellow variance\n" + \
-                 str(triggers.green_variance) + " = Green variance\n" + \
-                 str(triggers.blue_variance) + " = Blue variance\n" + \
-                 str(triggers.violet_variance) + " = Violet variance\n" + \
-                 str(triggers.colour_wait_seconds) + " = Seconds between 'Colour' readings\n\n" + \
-                 str(triggers.ultra_violet_enabled) + " = Enable Ultra Violet\n" + \
-                 str(triggers.ultra_violet_index_variance) + " = Ultra Violet Index variance\n" + \
-                 str(triggers.ultra_violet_a_variance) + " = Ultra Violet A variance\n" + \
-                 str(triggers.ultra_violet_b_variance) + " = Ultra Violet B variance\n" + \
-                 str(triggers.ultra_violet_wait_seconds) + " = Seconds between 'Ultra Violet' readings\n\n" + \
-                 str(triggers.accelerometer_enabled) + " = Enable Accelerometer\n" + \
-                 str(triggers.accelerometer_x_variance) + " = Accelerometer X variance\n" + \
-                 str(triggers.accelerometer_y_variance) + " = Accelerometer Y variance\n" + \
-                 str(triggers.accelerometer_z_variance) + " = Accelerometer Z variance\n" + \
-                 str(triggers.accelerometer_wait_seconds) + " = Seconds between 'Accelerometer' readings\n\n" + \
-                 str(triggers.magnetometer_enabled) + " = Enable Magnetometer\n" + \
-                 str(triggers.magnetometer_x_variance) + " = Magnetometer X variance\n" + \
-                 str(triggers.magnetometer_y_variance) + " = Magnetometer Y variance\n" + \
-                 str(triggers.magnetometer_z_variance) + " = Magnetometer Z variance\n" + \
-                 str(triggers.magnetometer_wait_seconds) + " = Seconds between 'Magnetometer' readings\n\n" + \
-                 str(triggers.gyroscope_enabled) + " = Enable Gyroscope\n" + \
-                 str(triggers.gyroscope_x_variance) + " = Gyroscope X variance\n" + \
-                 str(triggers.gyroscope_y_variance) + " = Gyroscope Y variance\n" + \
-                 str(triggers.gyroscope_z_variance) + " = Gyroscope Z variance\n" + \
-                 str(triggers.gyroscope_wait_seconds) + " = Seconds between 'Gyroscope' readings\n"
-
-    return return_str
-
-
-def convert_triggers_lines_to_obj(trigger_text_file):
-    """ Creates a Trigger Variance object with provided text from the variance configuration file. """
-    new_trigger_variances = CreateTriggerVariances()
-    bad_load = False
-
-    try:
-        new_trigger_variances.sensor_uptime_enabled = int(trigger_text_file[1].split('=')[0].strip())
-        new_trigger_variances.sensor_uptime_wait_seconds = float(trigger_text_file[2].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Sensor Uptime after 'X': " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.cpu_temperature_enabled = int(trigger_text_file[4].split('=')[0].strip())
-        new_trigger_variances.cpu_temperature_variance = float(trigger_text_file[5].split('=')[0].strip())
-        new_trigger_variances.cpu_temperature_wait_seconds = float(trigger_text_file[6].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - CPU Temperature/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.env_temperature_enabled = int(trigger_text_file[8].split('=')[0].strip())
-        new_trigger_variances.env_temperature_variance = float(trigger_text_file[9].split('=')[0].strip())
-        new_trigger_variances.env_temperature_wait_seconds = float(trigger_text_file[10].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Environmental Temperature/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.pressure_enabled = int(trigger_text_file[12].split('=')[0].strip())
-        new_trigger_variances.pressure_variance = float(trigger_text_file[13].split('=')[0].strip())
-        new_trigger_variances.pressure_wait_seconds = float(trigger_text_file[14].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Pressure/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.altitude_enabled = int(trigger_text_file[16].split('=')[0].strip())
-        new_trigger_variances.altitude_variance = float(trigger_text_file[17].split('=')[0].strip())
-        new_trigger_variances.altitude_wait_seconds = float(trigger_text_file[18].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Altitude/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.humidity_enabled = int(trigger_text_file[20].split('=')[0].strip())
-        new_trigger_variances.humidity_variance = float(trigger_text_file[21].split('=')[0].strip())
-        new_trigger_variances.humidity_wait_seconds = float(trigger_text_file[22].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Humidity/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.distance_enabled = int(trigger_text_file[24].split('=')[0].strip())
-        new_trigger_variances.distance_variance = float(trigger_text_file[25].split('=')[0].strip())
-        new_trigger_variances.distance_wait_seconds = float(trigger_text_file[26].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Distance/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.gas_enabled = int(trigger_text_file[28].split('=')[0].strip())
-        new_trigger_variances.gas_resistance_index_variance = float(trigger_text_file[29].split('=')[0].strip())
-        new_trigger_variances.gas_oxidising_variance = float(trigger_text_file[30].split('=')[0].strip())
-        new_trigger_variances.gas_reducing_variance = float(trigger_text_file[31].split('=')[0].strip())
-        new_trigger_variances.gas_nh3_variance = float(trigger_text_file[32].split('=')[0].strip())
-        new_trigger_variances.gas_wait_seconds = float(trigger_text_file[33].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Gas/Time : " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.particulate_matter_enabled = int(trigger_text_file[35].split('=')[0].strip())
-        new_trigger_variances.particulate_matter_1_variance = float(trigger_text_file[36].split('=')[0].strip())
-        new_trigger_variances.particulate_matter_2_5_variance = float(trigger_text_file[37].split('=')[0].strip())
-        new_trigger_variances.particulate_matter_10_variance = float(trigger_text_file[38].split('=')[0].strip())
-        new_trigger_variances.particulate_matter_wait_seconds = float(trigger_text_file[39].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Particulate Matter/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.lumen_enabled = int(trigger_text_file[41].split('=')[0].strip())
-        new_trigger_variances.lumen_variance = float(trigger_text_file[42].split('=')[0].strip())
-        new_trigger_variances.lumen_wait_seconds = float(trigger_text_file[43].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Lumen/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.colour_enabled = int(trigger_text_file[45].split('=')[0].strip())
-        new_trigger_variances.red_variance = float(trigger_text_file[46].split('=')[0].strip())
-        new_trigger_variances.orange_variance = float(trigger_text_file[47].split('=')[0].strip())
-        new_trigger_variances.yellow_variance = float(trigger_text_file[48].split('=')[0].strip())
-        new_trigger_variances.green_variance = float(trigger_text_file[49].split('=')[0].strip())
-        new_trigger_variances.blue_variance = float(trigger_text_file[50].split('=')[0].strip())
-        new_trigger_variances.violet_variance = float(trigger_text_file[51].split('=')[0].strip())
-        new_trigger_variances.colour_wait_seconds = float(trigger_text_file[52].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Colour/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.ultra_violet_enabled = int(trigger_text_file[54].split('=')[0].strip())
-        new_trigger_variances.ultra_violet_index_variance = float(trigger_text_file[55].split('=')[0].strip())
-        new_trigger_variances.ultra_violet_a_variance = float(trigger_text_file[56].split('=')[0].strip())
-        new_trigger_variances.ultra_violet_b_variance = float(trigger_text_file[57].split('=')[0].strip())
-        new_trigger_variances.ultra_violet_wait_seconds = float(trigger_text_file[58].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Ultra Violet/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.accelerometer_enabled = int(trigger_text_file[60].split('=')[0].strip())
-        new_trigger_variances.accelerometer_x_variance = float(trigger_text_file[61].split('=')[0].strip())
-        new_trigger_variances.accelerometer_y_variance = float(trigger_text_file[62].split('=')[0].strip())
-        new_trigger_variances.accelerometer_z_variance = float(trigger_text_file[63].split('=')[0].strip())
-        new_trigger_variances.accelerometer_wait_seconds = float(trigger_text_file[64].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Accelerometer/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.magnetometer_enabled = int(trigger_text_file[66].split('=')[0].strip())
-        new_trigger_variances.magnetometer_x_variance = float(trigger_text_file[67].split('=')[0].strip())
-        new_trigger_variances.magnetometer_y_variance = float(trigger_text_file[68].split('=')[0].strip())
-        new_trigger_variances.magnetometer_z_variance = float(trigger_text_file[69].split('=')[0].strip())
-        new_trigger_variances.magnetometer_wait_seconds = float(trigger_text_file[70].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Magnetometer/Time: " + str(error))
-        bad_load = True
-
-    try:
-        new_trigger_variances.gyroscope_enabled = int(trigger_text_file[72].split('=')[0].strip())
-        new_trigger_variances.gyroscope_x_variance = float(trigger_text_file[73].split('=')[0].strip())
-        new_trigger_variances.gyroscope_y_variance = float(trigger_text_file[74].split('=')[0].strip())
-        new_trigger_variances.gyroscope_z_variance = float(trigger_text_file[75].split('=')[0].strip())
-        new_trigger_variances.gyroscope_wait_seconds = float(trigger_text_file[76].split('=')[0].strip())
-    except Exception as error:
-        logger.primary_logger.warning("Invalid Trigger - Gyroscope/Time: " + str(error))
-        bad_load = True
-
-    if bad_load:
-        logger.primary_logger.warning("One or more bad options in Trigger Variance configuration file.  " +
-                                      "Using defaults for bad entries and saving.")
-        write_triggers_to_file(new_trigger_variances)
-    return new_trigger_variances
-
-
-def html_request_to_variance_triggers(html_request):
-    """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
-    logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
-    trigger_variances = CreateTriggerVariances()
-
-    new_uptime_days = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
-    trigger_variances.sensor_uptime_wait_seconds = new_uptime_days
-    if html_request.form.get("checkbox_sensor_uptime") is not None:
-        trigger_variances.sensor_uptime_enabled = 1
-
-    new_variance = html_request.form.get("trigger_cpu_temperature")
-    new_seconds_delay = html_request.form.get("seconds_cpu_temperature")
-    trigger_variances.cpu_temperature_variance = new_variance
-    trigger_variances.cpu_temperature_wait_seconds = new_seconds_delay
-    if html_request.form.get("checkbox_cpu_temperature") is not None:
-        trigger_variances.cpu_temperature_enabled = 1
-
-    new_variance = html_request.form.get("trigger_env_temperature")
-    new_seconds_delay = html_request.form.get("seconds_env_temperature")
-    trigger_variances.env_temperature_variance = new_variance
-    trigger_variances.env_temperature_wait_seconds = new_seconds_delay
-    if html_request.form.get("env_temperature") is not None:
-        trigger_variances.env_temperature_enabled = 1
-
-    new_variance = html_request.form.get("trigger_pressure")
-    new_seconds_delay = html_request.form.get("seconds_pressure")
-    trigger_variances.pressure_variance = new_variance
-    trigger_variances.pressure_wait_seconds = new_seconds_delay
-    if html_request.form.get("pressure") is not None:
-        trigger_variances.pressure_enabled = 1
-
-    new_variance = html_request.form.get("trigger_humidity")
-    new_seconds_delay = html_request.form.get("seconds_humidity")
-    trigger_variances.humidity_variance = new_variance
-    trigger_variances.humidity_wait_seconds = new_seconds_delay
-    if html_request.form.get("humidity") is not None:
-        trigger_variances.humidity_enabled = 1
-
-    new_variance = html_request.form.get("trigger_altitude")
-    new_seconds_delay = html_request.form.get("seconds_altitude")
-    trigger_variances.altitude_variance = new_variance
-    trigger_variances.altitude_wait_seconds = new_seconds_delay
-    if html_request.form.get("altitude") is not None:
-        trigger_variances.altitude_enabled = 1
-
-    new_variance = html_request.form.get("trigger_distance")
-    new_seconds_delay = html_request.form.get("seconds_distance")
-    trigger_variances.distance_variance = new_variance
-    trigger_variances.distance_wait_seconds = new_seconds_delay
-    if html_request.form.get("distance") is not None:
-        trigger_variances.distance_enabled = 1
-
-    new_variance = html_request.form.get("trigger_lumen")
-    new_seconds_delay = html_request.form.get("seconds_lumen")
-    trigger_variances.lumen_variance = new_variance
-    trigger_variances.lumen_wait_seconds = new_seconds_delay
-    if html_request.form.get("lumen") is not None:
-        trigger_variances.lumen_enabled = 1
-
-    new_variance_red = html_request.form.get("red")
-    new_variance_orange = html_request.form.get("orange")
-    new_variance_yellow = html_request.form.get("yellow")
-    new_variance_green = html_request.form.get("green")
-    new_variance_blue = html_request.form.get("blue")
-    new_variance_violet = html_request.form.get("violet")
-    new_seconds_delay = html_request.form.get("seconds_colour")
-    trigger_variances.red_variance = new_variance_red
-    trigger_variances.orange_variance = new_variance_orange
-    trigger_variances.yellow_variance = new_variance_yellow
-    trigger_variances.green_variance = new_variance_green
-    trigger_variances.blue_variance = new_variance_blue
-    trigger_variances.violet_variance = new_variance_violet
-    trigger_variances.colour_wait_seconds = new_seconds_delay
-    if html_request.form.get("colour") is not None:
-        trigger_variances.colour_enabled = 1
-
-    new_variance_uva = html_request.form.get("ultra_violet_a")
-    new_variance_uvb = html_request.form.get("ultra_violet_b")
-    new_seconds_delay = html_request.form.get("seconds_ultra_violet")
-    trigger_variances.ultra_violet_a_variance = new_variance_uva
-    trigger_variances.ultra_violet_b_variance = new_variance_uvb
-    trigger_variances.ultra_violet_wait_seconds = new_seconds_delay
-    if html_request.form.get("ultra_violet") is not None:
-        trigger_variances.ultra_violet_enabled = 1
-
-    new_variance_index = html_request.form.get("trigger_gas_index")
-    new_variance_oxidising = html_request.form.get("trigger_gas_oxidising")
-    new_variance_reducing = html_request.form.get("trigger_gas_reducing")
-    new_variance_nh3 = html_request.form.get("trigger_gas_nh3")
-    new_seconds_delay = html_request.form.get("seconds_gas")
-    trigger_variances.gas_resistance_index_variance = new_variance_index
-    trigger_variances.gas_oxidising_variance = new_variance_oxidising
-    trigger_variances.gas_reducing_variance = new_variance_reducing
-    trigger_variances.gas_nh3_variance = new_variance_nh3
-    trigger_variances.gas_wait_seconds = new_seconds_delay
-    if html_request.form.get("gas") is not None:
-        trigger_variances.gas_enabled = 1
-
-    new_variance_pm1 = html_request.form.get("trigger_pm1")
-    new_variance_pm2_5 = html_request.form.get("trigger_pm2_5")
-    new_variance_pm_10 = html_request.form.get("trigger_pm10")
-    new_seconds_delay = html_request.form.get("seconds_pm")
-    trigger_variances.particulate_matter_1_variance = new_variance_pm1
-    trigger_variances.particulate_matter_2_5_variance = new_variance_pm2_5
-    trigger_variances.particulate_matter_10_variance = new_variance_pm_10
-    trigger_variances.humidity_wait_seconds = new_seconds_delay
-    if html_request.form.get("particulate_matter") is not None:
-        trigger_variances.particulate_matter_enabled = 1
-
-    new_variance_x = html_request.form.get("accelerometer_x")
-    new_variance_y = html_request.form.get("accelerometer_y")
-    new_variance_z = html_request.form.get("accelerometer_z")
-    new_seconds_delay = html_request.form.get("seconds_accelerometer")
-    trigger_variances.accelerometer_x_variance = new_variance_x
-    trigger_variances.accelerometer_y_variance = new_variance_y
-    trigger_variances.accelerometer_z_variance = new_variance_z
-    trigger_variances.accelerometer_wait_seconds = new_seconds_delay
-    if html_request.form.get("accelerometer") is not None:
-        trigger_variances.accelerometer_enabled = 1
-
-    new_variance_x = html_request.form.get("magnetometer_x")
-    new_variance_y = html_request.form.get("magnetometer_y")
-    new_variance_z = html_request.form.get("magnetometer_z")
-    new_seconds_delay = html_request.form.get("seconds_magnetometer")
-    trigger_variances.magnetometer_x_variance = new_variance_x
-    trigger_variances.magnetometer_y_variance = new_variance_y
-    trigger_variances.magnetometer_z_variance = new_variance_z
-    trigger_variances.magnetometer_wait_seconds = new_seconds_delay
-    if html_request.form.get("magnetometer") is not None:
-        trigger_variances.magnetometer_enabled = 1
-
-    new_variance_x = html_request.form.get("gyroscope_x")
-    new_variance_y = html_request.form.get("gyroscope_y")
-    new_variance_z = html_request.form.get("gyroscope_z")
-    new_seconds_delay = html_request.form.get("seconds_gyroscope")
-    trigger_variances.gyroscope_x_variance = new_variance_x
-    trigger_variances.gyroscope_y_variance = new_variance_y
-    trigger_variances.gyroscope_z_variance = new_variance_z
-    trigger_variances.gyroscope_wait_seconds = new_seconds_delay
-    if html_request.form.get("gyroscope") is not None:
-        trigger_variances.gyroscope_enabled = 1
-    return trigger_variances
-
-
-def get_triggers_variances_from_file():
-    """ Loads configuration from file and returns it as a configuration object. """
-    if os.path.isfile(file_locations.trigger_variances_config):
-        trigger_file_content = app_generic_functions.get_file_content(file_locations.trigger_variances_config)
-        trigger_file_content = trigger_file_content.split("\n")
-        installed_trigger_variances = convert_triggers_lines_to_obj(trigger_file_content)
-    else:
-        logger.primary_logger.info("Trigger Variance Configuration file not found - Saving Default")
-        installed_trigger_variances = CreateTriggerVariances()
-        write_triggers_to_file(installed_trigger_variances)
-
-    return installed_trigger_variances
-
-
-def write_triggers_to_file(triggers):
-    """ Writes provided trigger variances object instance or string to local disk. """
-    try:
-        if type(triggers) is str:
-            new_triggers = triggers
-        else:
-            new_triggers = convert_triggers_to_str(triggers)
-        app_generic_functions.write_file_to_disk(file_locations.trigger_variances_config, new_triggers)
-    except Exception as error:
-        logger.primary_logger.error("Unable to write trigger file: " + str(error))

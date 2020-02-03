@@ -41,15 +41,15 @@ if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)
-    trigger_variances = config_trigger_variances.CreateTriggerVariances()
+    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration(load_from_file=False)
     weather_underground_config.weather_underground_enabled = 0
     luftdaten_config.luftdaten_enabled = 0
     open_sense_map_config.open_sense_map_enabled = 0
 elif geteuid() != 0:
-    logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")
+    logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration()
-    trigger_variances = config_trigger_variances.CreateTriggerVariances()
+    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
     weather_underground_config.weather_underground_enabled = 0
     luftdaten_config.luftdaten_enabled = 0
     open_sense_map_config.open_sense_map_enabled = 0
@@ -57,7 +57,7 @@ else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration()
     current_config = config_primary.CreatePrimaryConfiguration()
-    trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
+    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

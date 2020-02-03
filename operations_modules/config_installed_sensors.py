@@ -65,49 +65,115 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
         self._update_configuration_settings_list()
         if load_from_file:
-            self.init_config_variables()
+            self._init_config_variables()
         self._update_has_sensor_variables()
 
-    def init_config_variables(self):
+    def set_config_with_str(self, config_file_text):
+        super().set_config_with_str(config_file_text)
+        self._update_variables_from_settings_list()
+        self._update_has_sensor_variables()
+
+    def update_with_html_request(self, html_request):
+        """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
+        logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
+        self.__init__(load_from_file=False)
+        try:
+            if html_request.form.get("linux_system") is not None:
+                self.linux_system = 1
+            if html_request.form.get("raspberry_pi") is not None:
+                self.raspberry_pi = 1
+            if html_request.form.get("raspberry_pi_sense_hat") is not None:
+                self.raspberry_pi_sense_hat = 1
+            if html_request.form.get("pimoroni_bh1745") is not None:
+                self.pimoroni_bh1745 = 1
+            if html_request.form.get("pimoroni_as7262") is not None:
+                self.pimoroni_as7262 = 1
+            if html_request.form.get("pimoroni_mcp9600") is not None:
+                self.pimoroni_mcp9600 = 1
+            if html_request.form.get("pimoroni_bmp280") is not None:
+                self.pimoroni_bmp280 = 1
+            if html_request.form.get("pimoroni_bme680") is not None:
+                self.pimoroni_bme680 = 1
+            if html_request.form.get("pimoroni_enviro") is not None:
+                self.pimoroni_enviro = 1
+            if html_request.form.get("pimoroni_enviroplus") is not None:
+                self.pimoroni_enviroplus = 1
+            if html_request.form.get("pimoroni_sgp30") is not None:
+                self.pimoroni_sgp30 = 1
+            if html_request.form.get("pimoroni_pms5003") is not None:
+                self.pimoroni_pms5003 = 1
+            if html_request.form.get("pimoroni_msa301") is not None:
+                self.pimoroni_msa301 = 1
+            if html_request.form.get("pimoroni_lsm303d") is not None:
+                self.pimoroni_lsm303d = 1
+            if html_request.form.get("pimoroni_icm20948") is not None:
+                self.pimoroni_icm20948 = 1
+            if html_request.form.get("pimoroni_vl53l1x") is not None:
+                self.pimoroni_vl53l1x = 1
+            if html_request.form.get("pimoroni_ltr_559") is not None:
+                self.pimoroni_ltr_559 = 1
+            if html_request.form.get("pimoroni_veml6075") is not None:
+                self.pimoroni_veml6075 = 1
+            if html_request.form.get("pimoroni_matrix_11x7") is not None:
+                self.pimoroni_matrix_11x7 = 1
+            if html_request.form.get("pimoroni_st7735") is not None:
+                self.pimoroni_st7735 = 1
+            if html_request.form.get("pimoroni_mono_oled_luma") is not None:
+                self.pimoroni_mono_oled_luma = 1
+        except Exception as error:
+            logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+        self._update_configuration_settings_list()
+        self._update_has_sensor_variables()
+
+    def get_installed_names_str(self):
+        """ Returns Installed Sensors as a String. """
+        logger.primary_logger.debug("Returning Installed Sensors as a string for " + str(self.config_file_location))
+        new_file_content = ""
+        for setting, setting_name in zip(self.config_settings, self.config_settings_names):
+            if int(setting):
+                new_file_content += str(setting_name) + " || "
+        if len(new_file_content) > 4:
+            return new_file_content[:-4]
+        return "N/A"
+
+    def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
-        self.set_config_with_str(get_file_content(file_locations.installed_sensors_config))
-        if self.valid_setting_count == len(self.config_settings):
-            try:
-                self.linux_system = int(self.config_settings[0])
-                self.raspberry_pi = int(self.config_settings[1])
-                self.raspberry_pi_sense_hat = int(self.config_settings[2])
-                self.pimoroni_bh1745 = int(self.config_settings[3])
-                self.pimoroni_as7262 = int(self.config_settings[4])
-                self.pimoroni_bmp280 = int(self.config_settings[5])
-                self.pimoroni_mcp9600 = int(self.config_settings[6])
-                self.pimoroni_bme680 = int(self.config_settings[7])
-                self.pimoroni_enviro = int(self.config_settings[8])
-                self.pimoroni_enviroplus = int(self.config_settings[9])
-                self.pimoroni_sgp30 = int(self.config_settings[10])
-                self.pimoroni_pms5003 = int(self.config_settings[11])
-                self.pimoroni_msa301 = int(self.config_settings[12])
-                self.pimoroni_lsm303d = int(self.config_settings[13])
-                self.pimoroni_icm20948 = int(self.config_settings[14])
-                self.pimoroni_vl53l1x = int(self.config_settings[15])
-                self.pimoroni_ltr_559 = int(self.config_settings[16])
-                self.pimoroni_veml6075 = int(self.config_settings[17])
-                self.pimoroni_matrix_11x7 = int(self.config_settings[18])
-                self.pimoroni_st7735 = int(self.config_settings[19])
-                self.pimoroni_mono_oled_luma = int(self.config_settings[20])
-                self.config_settings_names[1] = self.get_raspberry_pi_model()
-                self._update_configuration_settings_list()
-            except Exception as error:
-                log_msg = "Error setting variables from "
-                log_msg2 = "Saving Default Configuration for "
-                logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
-                logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
-                self.save_config_to_file()
-        else:
-            log_msg = "Invalid number of setting for "
+        try:
+            self.set_config_with_str(get_file_content(file_locations.installed_sensors_config))
+        except Exception as error:
+            log_msg = "Error setting variables from "
             log_msg2 = "Saving Default Configuration for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
             logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
             self.save_config_to_file()
+
+    def _update_variables_from_settings_list(self):
+        if self.valid_setting_count == len(self.config_settings):
+            self.linux_system = int(self.config_settings[0])
+            self.raspberry_pi = int(self.config_settings[1])
+            self.raspberry_pi_sense_hat = int(self.config_settings[2])
+            self.pimoroni_bh1745 = int(self.config_settings[3])
+            self.pimoroni_as7262 = int(self.config_settings[4])
+            self.pimoroni_bmp280 = int(self.config_settings[5])
+            self.pimoroni_mcp9600 = int(self.config_settings[6])
+            self.pimoroni_bme680 = int(self.config_settings[7])
+            self.pimoroni_enviro = int(self.config_settings[8])
+            self.pimoroni_enviroplus = int(self.config_settings[9])
+            self.pimoroni_sgp30 = int(self.config_settings[10])
+            self.pimoroni_pms5003 = int(self.config_settings[11])
+            self.pimoroni_msa301 = int(self.config_settings[12])
+            self.pimoroni_lsm303d = int(self.config_settings[13])
+            self.pimoroni_icm20948 = int(self.config_settings[14])
+            self.pimoroni_vl53l1x = int(self.config_settings[15])
+            self.pimoroni_ltr_559 = int(self.config_settings[16])
+            self.pimoroni_veml6075 = int(self.config_settings[17])
+            self.pimoroni_matrix_11x7 = int(self.config_settings[18])
+            self.pimoroni_st7735 = int(self.config_settings[19])
+            self.pimoroni_mono_oled_luma = int(self.config_settings[20])
+            self.config_settings_names[1] = self._get_raspberry_pi_model()
+        else:
+            log_msg = "Invalid number of setting for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location))
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
@@ -229,7 +295,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.has_mag = 0
         self.has_gyro = 0
 
-    def get_raspberry_pi_model(self):
+    def _get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """
         if self.raspberry_pi:
             try:
@@ -240,66 +306,3 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             except Exception as error:
                 logger.primary_logger.warning("Unable to get Raspberry Pi Model: " + str(error))
         return "Raspberry Pi"
-
-    def get_installed_names_str(self):
-        """ Returns Installed Sensors as a String. """
-        logger.primary_logger.debug("Returning Installed Sensors as a string for " + str(self.config_file_location))
-        new_file_content = ""
-        for setting, setting_name in zip(self.config_settings, self.config_settings_names):
-            if int(setting):
-                new_file_content += str(setting_name) + " || "
-        if len(new_file_content) > 4:
-            return new_file_content[:-4]
-        return "N/A"
-
-    def update_with_html_request(self, html_request):
-        """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
-        logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
-        self.__init__(load_from_file=False)
-        try:
-            if html_request.form.get("linux_system") is not None:
-                self.linux_system = 1
-            if html_request.form.get("raspberry_pi") is not None:
-                self.raspberry_pi = 1
-            if html_request.form.get("raspberry_pi_sense_hat") is not None:
-                self.raspberry_pi_sense_hat = 1
-            if html_request.form.get("pimoroni_bh1745") is not None:
-                self.pimoroni_bh1745 = 1
-            if html_request.form.get("pimoroni_as7262") is not None:
-                self.pimoroni_as7262 = 1
-            if html_request.form.get("pimoroni_mcp9600") is not None:
-                self.pimoroni_mcp9600 = 1
-            if html_request.form.get("pimoroni_bmp280") is not None:
-                self.pimoroni_bmp280 = 1
-            if html_request.form.get("pimoroni_bme680") is not None:
-                self.pimoroni_bme680 = 1
-            if html_request.form.get("pimoroni_enviro") is not None:
-                self.pimoroni_enviro = 1
-            if html_request.form.get("pimoroni_enviroplus") is not None:
-                self.pimoroni_enviroplus = 1
-            if html_request.form.get("pimoroni_sgp30") is not None:
-                self.pimoroni_sgp30 = 1
-            if html_request.form.get("pimoroni_pms5003") is not None:
-                self.pimoroni_pms5003 = 1
-            if html_request.form.get("pimoroni_msa301") is not None:
-                self.pimoroni_msa301 = 1
-            if html_request.form.get("pimoroni_lsm303d") is not None:
-                self.pimoroni_lsm303d = 1
-            if html_request.form.get("pimoroni_icm20948") is not None:
-                self.pimoroni_icm20948 = 1
-            if html_request.form.get("pimoroni_vl53l1x") is not None:
-                self.pimoroni_vl53l1x = 1
-            if html_request.form.get("pimoroni_ltr_559") is not None:
-                self.pimoroni_ltr_559 = 1
-            if html_request.form.get("pimoroni_veml6075") is not None:
-                self.pimoroni_veml6075 = 1
-            if html_request.form.get("pimoroni_matrix_11x7") is not None:
-                self.pimoroni_matrix_11x7 = 1
-            if html_request.form.get("pimoroni_st7735") is not None:
-                self.pimoroni_st7735 = 1
-            if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-                self.pimoroni_mono_oled_luma = 1
-        except Exception as error:
-            logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-        self._update_configuration_settings_list()
-        self._update_has_sensor_variables()

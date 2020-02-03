@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
 
 
 class CreatePrimaryConfiguration(CreateGeneralConfiguration):
@@ -43,40 +43,11 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         self._update_configuration_settings_list()
         if load_from_file:
-            self.init_config_variables()
+            self._init_config_variables()
 
-    def init_config_variables(self):
-        """ Sets configuration settings from file, saves default if missing. """
-        self.set_config_with_str(get_file_content(file_locations.main_config))
-        if self.valid_setting_count == len(self.config_settings):
-            try:
-                self.enable_debug_logging = int(self.config_settings[0])
-                self.enable_display = int(self.config_settings[1])
-                self.enable_interval_recording = int(self.config_settings[2])
-                self.enable_trigger_recording = int(self.config_settings[3])
-                self.sleep_duration_interval = float(self.config_settings[4])
-                self.enable_custom_temp = int(self.config_settings[5])
-                self.temperature_offset = float(self.config_settings[6])
-                self._update_configuration_settings_list()
-            except Exception as error:
-                log_msg = "Error setting variables from "
-                log_msg2 = "Saving Default Configuration for "
-                logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
-                logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
-                self.save_config_to_file()
-        else:
-            log_msg = "Invalid number of setting for "
-            log_msg2 = "Saving Default Configuration for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
-            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
-            self.save_config_to_file()
-
-    def _update_configuration_settings_list(self):
-        """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
-                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
-                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
-                                str(self.temperature_offset)]
+    def set_config_with_str(self, config_file_text):
+        super().set_config_with_str(config_file_text)
+        self._update_variables_from_settings_list()
 
     def update_with_html_request(self, html_request):
         """ Updates the primary configuration based on provided HTML configuration data. """
@@ -111,3 +82,34 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         else:
             self.enable_custom_temp = 0
         self._update_configuration_settings_list()
+
+    def _init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+        try:
+            self.set_config_with_str(get_file_content(file_locations.main_config))
+        except Exception as error:
+            log_msg = "Error setting variables from "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+
+    def _update_configuration_settings_list(self):
+        """ Set's config_settings variable list based on current settings. """
+        self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
+                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
+                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
+                                str(self.temperature_offset)]
+
+    def _update_variables_from_settings_list(self):
+        if self.valid_setting_count == len(self.config_settings):
+            self.enable_debug_logging = int(self.config_settings[0])
+            self.enable_display = int(self.config_settings[1])
+            self.enable_interval_recording = int(self.config_settings[2])
+            self.enable_trigger_recording = int(self.config_settings[3])
+            self.sleep_duration_interval = float(self.config_settings[4])
+            self.enable_custom_temp = int(self.config_settings[5])
+            self.temperature_offset = float(self.config_settings[6])
+        else:
+            log_msg = "Invalid number of setting for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location))

@@ -10,7 +10,6 @@ from operations_modules import app_config_access
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules import app_validation_checks
-from operations_modules import config_trigger_variances
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 from sensor_modules import sensor_access
@@ -212,9 +211,8 @@ def html_set_trigger_variances():
     logger.network_logger.debug("** HTML Apply - Trigger Variances - Source " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            new_trigger_settings = app_config_access.config_trigger_variances.html_request_to_variance_triggers(request)
-            app_config_access.trigger_variances = new_trigger_settings
-            app_config_access.config_trigger_variances.write_triggers_to_file(new_trigger_settings)
+            app_config_access.trigger_variances.update_with_html_request(request)
+            app_config_access.trigger_variances.save_config_to_file()
             return message_and_return("Trigger Variances Set", url="/ConfigurationsHTML")
         except Exception as error:
             logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))

@@ -86,10 +86,7 @@ if running_with_root and app_config_access.installed_sensors.no_sensors is False
         app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
     sensor_access.display_message("KS-Sensors Recording Started")
 else:
-    if not running_with_root:
-        log_message = "--- Warning - Kootnet Sensors requires Elevated (root) permissions for some sensors"
-        logger.primary_logger.warning(log_message)
-    else:
+    if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
 # Start the HTTP Server for remote access

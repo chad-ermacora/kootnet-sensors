@@ -75,4 +75,5 @@ def reset_main_config():
 def reset_variance_config():
     """ Writes a default Trigger Variance configuration file. """
     logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
-    config_trigger_variances.write_triggers_to_file(config_trigger_variances.CreateTriggerVariances())
+    default_variance = config_trigger_variances.CreateTriggerVariancesConfiguration(load_from_file=False)
+    default_variance.save_config_to_file()

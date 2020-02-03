@@ -24,6 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import network_wifi
 from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from operations_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
@@ -249,8 +250,9 @@ def sc_edit_config_triggers():
     if len(ip_list) > 0:
         if _invalid_login_credentials():
             return _get_invalid_login_page()
-        new_triggers = app_config_access.config_trigger_variances.html_request_to_variance_triggers(request)
-        trigger_text_config = app_config_access.config_trigger_variances.convert_triggers_to_str(new_triggers)
+        new_triggers = CreateTriggerVariancesConfiguration(load_from_file=False)
+        new_triggers.update_with_html_request(request)
+        trigger_text_config = new_triggers.get_config_as_str()
         for ip in ip_list:
             app_generic_functions.send_http_command(ip, "SetVarianceConfiguration", included_data=trigger_text_config)
     msg2 = "Trigger configuration sent to " + str(len(ip_list)) + " Sensors"

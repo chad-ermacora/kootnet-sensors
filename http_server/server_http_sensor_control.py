@@ -87,14 +87,9 @@ class CreateReplacementVariables:
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
 
-            installed_sensors_lines = installed_sensors_raw.strip().split("\n")
             sensors_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
             sensors_config.set_config_with_str(sensor_config_raw)
-            try:
-                rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
-            except Exception as error:
-                logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
-                rpi_model_name = "Raspberry Pi"
+
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
             wu_config = CreateWeatherUndergroundConfig()
@@ -108,7 +103,12 @@ class CreateReplacementVariables:
 
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
             installed_sensors_config.set_config_with_str(installed_sensors_raw)
-
+            try:
+                installed_sensors_lines = installed_sensors_raw.strip().split("\n")
+                rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
+            except Exception as error:
+                logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
+                rpi_model_name = "Raspberry Pi"
             installed_sensors_config.config_settings_names[1] = rpi_model_name
 
             weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
