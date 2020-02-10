@@ -274,3 +274,7 @@ sc_big_zip_name = ""
 sc_databases_zip_in_memory = False
 sc_big_zip_in_memory = False
 sc_in_memory_zip = b''
+
+# HTML Sensor Notes Variables
+notes_total_count = 0
+note_current = 1

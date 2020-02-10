@@ -28,6 +28,7 @@ https_import_errors = True
 try:
     from http_server import server_http_auth
     from http_server.flask_blueprints.html_functional import html_functional_routes
+    from http_server.flask_blueprints.html_notes import html_notes_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
@@ -47,7 +48,7 @@ try:
     https_import_errors = False
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
-    server_http_auth, html_functional_routes, html_basic_routes, = None, None, None
+    server_http_auth, html_functional_routes, html_basic_routes, html_notes_routes = None, None, None, None
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
@@ -67,6 +68,7 @@ class CreateSensorHTTP:
         server_http_auth.set_http_auth_from_file()
 
         app.register_blueprint(html_functional_routes)
+        app.register_blueprint(html_notes_routes)
         app.register_blueprint(html_basic_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)

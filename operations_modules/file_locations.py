@@ -48,6 +48,7 @@ if os.geteuid() != 0:
                 print("Make Directory Error: " + str(error))
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
+sensor_html_help = program_root_dir + "/extras/SensorUnitHelp.html"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
 log_directory = sensor_data_dir + "/logs/"
@@ -96,6 +97,24 @@ mui_min_js = program_root_dir + "/http_server/extras/mui.min-ver-0.9.43.js"
 menu_script = program_root_dir + "/http_server/extras/menu.js"
 menu_css_style = program_root_dir + "/http_server/extras/style.css"
 html_icon = program_root_dir + "/extras/icon.ico"
+
+tinymce_min_js = program_root_dir + "/http_server/extras/tinymce/tinymce.min.js"
+tinymce_theme_min_js = program_root_dir + "/http_server/extras/tinymce/themes/silver/theme.min.js"
+tinymce_jquery_min_js = program_root_dir + "/http_server/extras/tinymce/jquery.tinymce.min.js"
+tinymce_skin_min_css = program_root_dir + "/http_server/extras/tinymce/skins/ui/oxide-dark/skin.min.css"
+tinymce_ui_content_min_css = program_root_dir + "/http_server/extras/tinymce/skins/ui/oxide-dark/content.min.css"
+tinymce_content_min_css = program_root_dir + "/http_server/extras/tinymce/skins/content/dark/content.min.css"
+
+tinymce_plugin_link = program_root_dir + "/http_server/extras/tinymce/plugins/link/plugin.min.js"
+tinymce_plugin_autolink = program_root_dir + "/http_server/extras/tinymce/plugins/autolink/plugin.min.js"
+tinymce_plugin_lists = program_root_dir + "/http_server/extras/tinymce/plugins/lists/plugin.min.js"
+tinymce_plugin_print = program_root_dir + "/http_server/extras/tinymce/plugins/print/plugin.min.js"
+tinymce_plugin_wordcount = program_root_dir + "/http_server/extras/tinymce/plugins/wordcount/plugin.min.js"
+tinymce_plugin_code = program_root_dir + "/http_server/extras/tinymce/plugins/code/plugin.min.js"
+tinymce_plugin_insertdatetime = program_root_dir + "/http_server/extras/tinymce/plugins/insertdatetime/plugin.min.js"
+tinymce_plugin_fullscreen = program_root_dir + "/http_server/extras/tinymce/plugins/fullscreen/plugin.min.js"
+tinymce_plugin_spellchecker = program_root_dir + "/http_server/extras/tinymce/plugins/spellchecker/plugin.min.js"
+tinymce_plugin_help = program_root_dir + "/http_server/extras/tinymce/plugins/help/plugin.min.js"
 
 html_combo_report = program_root_dir + "/http_server/templates/non-flask/report_3_combo.html"
 
