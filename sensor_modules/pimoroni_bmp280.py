@@ -16,7 +16,6 @@ Created on Tue June 25 10:53:56 2019
 @author: OO-Dragon
 """
 import time
-import smbus2
 from operations_modules import logger
 from operations_modules import app_config_access
 
@@ -31,7 +30,8 @@ class CreateBMP280:
         self.sensor_in_use = False
         try:
             bmp280_import = __import__("sensor_modules.drivers.bmp280", fromlist=["BMP280"])
-            bus = smbus2.SMBus(1)
+            smbus2_import = __import__("smbus2", fromlist=["SMBus"])
+            bus = smbus2_import.SMBus(1)
             self.bmp280 = bmp280_import.BMP280(i2c_dev=bus)
             self.bmp280.get_temperature()
             logger.sensors_logger.debug("Pimoroni BMP280 Initialization - OK")
