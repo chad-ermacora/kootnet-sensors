@@ -24,7 +24,7 @@ from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import os_cli_commands
-from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content
+from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content, write_file_to_disk
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
@@ -128,11 +128,15 @@ def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
     if not os.path.isfile(file_locations.program_last_updated):
-        return "Unknown"
+        logger.sensors_logger.debug("Previous version file not found - Creating version file")
+        last_updated_text = "No Update Detected"
+        write_file_to_disk(file_locations.program_last_updated, last_updated_text)
+        return last_updated_text
     last_updated_file = get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
-        last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
+        for line in last_updated_lines:
+            last_updated += str(line)
     except Exception as error:
         logger.sensors_logger.warning("Invalid Kootnet Sensor's Last Updated File: " + str(error))
     return last_updated.strip()
