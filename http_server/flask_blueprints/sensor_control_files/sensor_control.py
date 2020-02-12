@@ -42,10 +42,11 @@ def html_sensor_control_management():
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
         app_config_access.sensor_control_config.set_from_html_post(request)
-        ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
+        ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
 
         if len(ip_list) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
+                ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
                 return check_sensor_status_sensor_control(ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_combo:
                 return get_html_reports_combo(ip_list, skip_rewrite_link=True)
