@@ -48,7 +48,6 @@ def check_sensor_status_sensor_control(address_list):
     Returns a flask rendered template with results as an HTML page.
     """
     text_insert = ""
-
     threads = []
     for address in address_list:
         threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, True]))
@@ -61,23 +60,22 @@ def check_sensor_status_sensor_control(address_list):
 
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
-        if response["status"] == "OK":
-            new_address = response["address"]
-            port = "10065"
-            if app_generic_functions.check_for_port_in_address(response["address"]):
-                address_split = app_generic_functions.get_ip_and_port_split(response["address"])
-                new_address = address_split[0]
-                port = address_split[1]
-            response_time = response["response_time"]
-            background_colour = app_generic_functions.get_response_bg_colour(response_time)
-            sensor_url_link = "'https://" + new_address + ":" + port + "/SensorInformation'"
+        new_address = response["address"]
+        port = "10065"
+        if app_generic_functions.check_for_port_in_address(response["address"]):
+            address_split = app_generic_functions.get_ip_and_port_split(response["address"])
+            new_address = address_split[0]
+            port = address_split[1]
+        response_time = response["response_time"]
+        background_colour = app_generic_functions.get_response_bg_colour(response_time)
+        sensor_url_link = "'https://" + new_address + ":" + port + "/SensorInformation'"
 
-            text_insert += "        <tr><th><span style='background-color: #f2f2f2;'><a target='_blank' href=" + \
-                           sensor_url_link + ">" + response["address"] + "</a></span></th>\n" + \
-                           "        <th><span style='background-color: " + background_colour + ";'>" + \
-                           response_time + " Seconds</span></th>\n" + \
-                           "        <th><span style='background-color: #f2f2f2;'>" + \
-                           response["sensor_hostname"] + "</span></th></tr>\n"
+        text_insert += "        <tr><th><span style='background-color: #f2f2f2;'><a target='_blank' href=" + \
+                       sensor_url_link + ">" + response["address"] + "</a></span></th>\n" + \
+                       "        <th><span style='background-color: " + background_colour + ";'>" + \
+                       response_time + " Seconds</span></th>\n" + \
+                       "        <th><span style='background-color: #f2f2f2;'>" + \
+                       response["sensor_hostname"] + "</span></th></tr>\n"
     return render_template("sensor_control_online_status.html", SensorResponse=text_insert.strip())
 
 
@@ -149,16 +147,21 @@ def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=F
     """
     get_sensor_reading = app_generic_functions.get_http_sensor_reading
     task_start_time = time.time()
-    sensor_status = get_sensor_reading(address)
+    sensor_status = get_sensor_reading(address, timeout=5)
     task_end_time = round(time.time() - task_start_time, 3)
-    sensor_hostname = ""
-    download_size = "NA"
-    if add_hostname:
-        sensor_hostname = get_sensor_reading(address, command="GetHostName").strip()
-    if add_db_size:
-        download_size = get_sensor_reading(address, command="GetSQLDBSize").strip()
-    if add_logs_size:
-        download_size = get_sensor_reading(address, command="GetZippedLogsSize").strip()
+    if sensor_status == "OK":
+        sensor_hostname = ""
+        download_size = "NA"
+        if add_hostname:
+            sensor_hostname = get_sensor_reading(address, command="GetHostName").strip()
+        if add_db_size:
+            download_size = get_sensor_reading(address, command="GetSQLDBSize").strip()
+        if add_logs_size:
+            download_size = get_sensor_reading(address, command="GetZippedLogsSize").strip()
+    else:
+        task_end_time = "NA "
+        sensor_hostname = "Offline"
+        download_size = "NA"
     app_cached_variables.data_queue.put({"address": address,
                                          "status": str(sensor_status),
                                          "response_time": str(task_end_time),
