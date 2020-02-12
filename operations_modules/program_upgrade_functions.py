@@ -29,7 +29,7 @@ def reset_installed_sensors():
     default_installed_sensors.save_config_to_file()
 
 
-def reset_main_config():
+def reset_primary_config():
     """ Writes a default main configuration file. """
     logger.primary_logger.warning(" **** Main Configuration Reset ****")
     default_primary_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)

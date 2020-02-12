@@ -60,7 +60,7 @@ log_zip_file = log_directory + "all_logs.zip"
 old_version_file = sensor_config_dir + "/installed_version.txt"
 program_last_updated = sensor_config_dir + "/last_updated.txt"
 
-main_config = sensor_config_dir + "/main_config.conf"
+primary_config = sensor_config_dir + "/main_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 

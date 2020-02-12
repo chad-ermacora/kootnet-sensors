@@ -339,7 +339,7 @@ def html_set_wifi_config():
 @auth.login_required
 def html_raw_configurations_view():
     logger.network_logger.debug("** HTML Raw Configurations viewed by " + str(request.remote_addr))
-    main_config = app_generic_functions.get_file_content(file_locations.main_config)
+    primary_config = app_generic_functions.get_file_content(file_locations.primary_config)
     installed_sensors = app_generic_functions.get_file_content(file_locations.installed_sensors_config)
     networking = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file)
     wifi = app_generic_functions.get_file_content(file_locations.wifi_config_file)
@@ -349,7 +349,7 @@ def html_raw_configurations_view():
     luftdaten_config = app_generic_functions.get_file_content(file_locations.luftdaten_config)
     open_sense_map_config = app_generic_functions.get_file_content(file_locations.osm_config)
     return render_template("view_raw_configurations.html",
-                           MainConfiguration=main_config,
+                           MainConfiguration=primary_config,
                            InstalledSensorsConfiguration=installed_sensors,
                            NetworkConfiguration=networking,
                            WiFiConfiguration=wifi,

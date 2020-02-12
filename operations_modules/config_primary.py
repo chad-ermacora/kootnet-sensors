@@ -26,7 +26,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self)
-        self.config_file_location = file_locations.main_config
+        self.config_file_location = file_locations.primary_config
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 7
         self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
@@ -86,7 +86,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
         try:
-            self.set_config_with_str(get_file_content(file_locations.main_config))
+            self.check_config_file_exists()
+            self.set_config_with_str(get_file_content(self.config_file_location))
         except Exception as error:
             log_msg = "Error setting variables from "
             log_msg2 = "Saving Default Configuration for "

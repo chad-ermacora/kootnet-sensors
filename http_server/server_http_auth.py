@@ -43,7 +43,7 @@ def set_http_auth_from_file():
             app_cached_variables.http_flask_user = default_http_flask_user
             app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
     else:
-        logger.primary_logger.warning("Configuration file not found, using and saving default")
+        logger.primary_logger.warning("Web authentication file not found, using and saving default of Kootnet/sensors")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
         app_cached_variables.http_flask_user = default_http_flask_user
         app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
