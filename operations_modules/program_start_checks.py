@@ -33,15 +33,16 @@ def run_program_start_checks():
     """
     logger.primary_logger.info(" -- Starting Programs Checks ...")
     _set_file_permissions()
-    if software_version.old_version != software_version.version:
-        logger.primary_logger.info(" -- Starting Programs Upgrade Checks ...")
-        os.system("systemctl start SensorUpgradeChecks")
-        # Sleep before loading anything due to needed updates
-        # The update service will automatically restart this app when it's done
-        while True:
-            time.sleep(30)
     _check_database_structure()
     _check_ssl_files()
+    if os.geteuid() == 0:
+        if software_version.old_version != software_version.version:
+            logger.primary_logger.info(" -- Starting Programs Upgrade Checks ...")
+            os.system("systemctl start SensorUpgradeChecks")
+            # Sleep before loading anything due to needed updates
+            # The update service will automatically restart this app when it's done
+            while True:
+                time.sleep(30)
 
 
 def _set_file_permissions():
@@ -110,7 +111,7 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         return True
     except Exception as error:
-        print(str(error))
+        logger.primary_logger.debug(str(error))
         return False
 
 

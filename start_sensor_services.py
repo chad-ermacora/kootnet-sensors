@@ -21,10 +21,10 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import program_start_checks
 # Ensure files, database & configurations are OK
+program_start_checks.run_program_start_checks()
 running_with_root = False
 if os.geteuid() == 0:
     running_with_root = True
-    program_start_checks.run_program_start_checks()
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
