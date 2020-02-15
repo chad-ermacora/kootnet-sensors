@@ -158,7 +158,8 @@ def html_edit_online_services_luftdaten():
     main_message = "Luftdaten Updated - "
     message2 = ""
     if request.method == "POST":
-        app_config_access.luftdaten_config.update_luftdaten_html(request)
+        app_config_access.luftdaten_config.update_with_html_request(request)
+        app_config_access.luftdaten_config.save_config_to_file()
         if app_cached_variables.luftdaten_thread is not None:
             main_message += "Restarting Sensor Software"
             message2 = "New Luftdaten settings will take effect after the sensor software restarts"

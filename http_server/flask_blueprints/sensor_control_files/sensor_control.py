@@ -288,7 +288,7 @@ def set_active_online_services():
     logger.network_logger.debug("* Set 'Active Online Services' Accessed by " + str(request.remote_addr))
 
     active_state = 0
-    if str(request.form.get("service_state")) == "1":
+    if request.form.get("service_state") is not None:
         active_state = 1
 
     send_interval = 10.0
@@ -296,14 +296,20 @@ def set_active_online_services():
         send_interval = float(request.form.get("online_service_interval"))
 
     if request.form.get("service") == "weather_underground":
+        if send_interval < 2.0:
+            send_interval = 2.0
         app_config_access.weather_underground_config.weather_underground_enabled = active_state
         app_config_access.weather_underground_config.interval_seconds = send_interval
         app_config_access.weather_underground_config.save_config_to_file()
     elif request.form.get("service") == "luftdaten":
+        if send_interval < 10.0:
+            send_interval = 10.0
         app_config_access.luftdaten_config.luftdaten_enabled = active_state
         app_config_access.luftdaten_config.interval_seconds = send_interval
-        app_config_access.luftdaten_config.write_config_to_file()
+        app_config_access.luftdaten_config.save_config_to_file()
     elif request.form.get("service") == "open_sense_map":
+        if send_interval < 10.0:
+            send_interval = 10.0
         app_config_access.open_sense_map_config.open_sense_map_enabled = active_state
         app_config_access.open_sense_map_config.interval_seconds = send_interval
         app_config_access.open_sense_map_config.write_config_to_file()

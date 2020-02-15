@@ -28,7 +28,7 @@ from operations_modules import network_wifi
 from operations_modules import software_version
 from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
-from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 if software_version.old_version == software_version.version or geteuid() != 0:
@@ -95,8 +95,8 @@ class CreateReplacementVariables:
             wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
             wu_config.set_config_with_str(weather_underground_config_raw)
 
-            luftdaten_config = CreateLuftdatenConfig()
-            luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)
+            luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
+            luftdaten_config.set_config_with_str(luftdaten_config_raw)
 
             osm_config = CreateOpenSenseMapConfig()
             osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
@@ -115,13 +115,6 @@ class CreateReplacementVariables:
             luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
             open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
 
-            if wu_config.bad_config_load:
-                weather_underground_enabled = ""
-            if luftdaten_config.bad_load:
-                luftdaten_enabled = ""
-            if osm_config.bad_load:
-                open_sense_map_enabled = ""
-
             wifi_ssid = ""
             if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
                 wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
@@ -134,38 +127,50 @@ class CreateReplacementVariables:
             text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
 
             wifi_network_colour = "orangered"
-            debug_colour = "#F4A460"
-            display_colour = "#F4A460"
-            interval_recording_colour = "#F4A460"
-            trigger_recording_colour = "#F4A460"
-            temp_offset_colour = "#F4A460"
-            weather_underground_colour = "orangered"
-            luftdaten_colour = "#F4A460"
-            open_sense_map_colour = "orangered"
             if len(wifi_ssid) > 0:
                 wifi_network_colour = "#0099ff"
+
+            debug_colour = "#F4A460"
             if sensors_config.enable_debug_logging:
                 debug_colour = "lightgreen"
+
+            display_colour = "#F4A460"
             if sensors_config.enable_display:
                 display_colour = "lightgreen"
+
+            interval_recording_colour = "#F4A460"
             if sensors_config.enable_interval_recording:
                 interval_recording_colour = "lightgreen"
+
+            trigger_recording_colour = "#F4A460"
             if sensors_config.enable_trigger_recording:
                 trigger_recording_colour = "lightgreen"
+
+            temp_offset_colour = "#F4A460"
             if sensors_config.enable_custom_temp:
                 temp_offset_colour = "lightgreen"
+
+            weather_underground_colour = "#F4A460"
             if wu_config.weather_underground_enabled:
                 weather_underground_colour = "lightgreen"
-            else:
-                if not wu_config.bad_config_load:
-                    weather_underground_colour = "#F4A460"
+
+            luftdaten_colour = "#F4A460"
             if luftdaten_config.luftdaten_enabled:
                 luftdaten_colour = "lightgreen"
+
+            open_sense_map_colour = "#F4A460"
             if osm_config.open_sense_map_enabled:
                 open_sense_map_colour = "lightgreen"
-            else:
-                if not wu_config.bad_config_load:
-                    open_sense_map_colour = "#F4A460"
+
+            if wu_config.bad_config_load:
+                weather_underground_colour = "orangered"
+                weather_underground_enabled = ""
+            if luftdaten_config.bad_config_load:
+                luftdaten_colour = "orangered"
+                luftdaten_enabled = ""
+            if osm_config.bad_load:
+                open_sense_map_colour = "orangered"
+                open_sense_map_enabled = ""
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],

@@ -43,7 +43,7 @@ def start_luftdaten():
             logger.network_logger.debug("Luftdaten - Detailed Error: " + str(error))
 
         if no_sensors:
-            logger.network_logger.warning("Luftdaten - No further updates will be attempted: No Compatible Sensors")
+            logger.primary_logger.error("Luftdaten - No Compatible Sensors: No further attempts will be made")
             while True:
                 sleep(3600)
         sleep(luftdaten_config.interval_seconds)

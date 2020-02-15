@@ -40,6 +40,8 @@ class CreateGeneralConfiguration:
         self.config_settings = []
         self.config_settings_names = []
 
+        self.bad_config_load = False
+
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
         try:
@@ -84,13 +86,16 @@ class CreateGeneralConfiguration:
                         setting = line_split[0].strip()
                     except Exception as error:
                         logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                        self.bad_config_load = True
                         setting = "error"
                     self.config_settings.append(setting)
             else:
                 log_msg = "Invalid number of settings found in "
                 logger.primary_logger.warning(log_msg + str(self.config_file_location))
+                self.bad_config_load = True
         else:
             logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
+            self.bad_config_load = True
 
 
 class CreateMonitoredThread:

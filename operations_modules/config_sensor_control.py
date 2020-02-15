@@ -160,6 +160,13 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.sensor_ip_dns18 = html_request.form.get(self.config_settings_names[19])
             self.sensor_ip_dns19 = html_request.form.get(self.config_settings_names[20])
             self.sensor_ip_dns20 = html_request.form.get(self.config_settings_names[21])
+
+            http_login = html_request.form.get("sensor_username")
+            http_password = html_request.form.get("sensor_password")
+            if http_login != "":
+                app_cached_variables.http_login = http_login
+            if http_password != "":
+                app_cached_variables.http_password = http_password
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self._update_configuration_settings_list()

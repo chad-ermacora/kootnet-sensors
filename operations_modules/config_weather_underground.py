@@ -49,8 +49,6 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
         self.wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
         self.wu_action = "&action=updateraw"
 
-        self.bad_config_load = False
-
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
@@ -62,7 +60,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
 
     def update_with_html_request(self, html_request):
         """ Updates the Weather Underground configuration based on provided HTML configuration data. """
-        logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
+        logger.network_logger.debug("Starting Weather Underground Configuration Update Check")
         self.weather_underground_enabled = 0
         if html_request.form.get("enable_weather_underground") is not None:
             self.weather_underground_enabled = 1
@@ -76,8 +74,8 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
 
             if html_request.form.get("weather_underground_interval") is not None:
                 self.interval_seconds = float(html_request.form.get("weather_underground_interval"))
-                if self.interval_seconds < 10.0:
-                    self.interval_seconds = 10.0
+                if self.interval_seconds < 2.0:
+                    self.interval_seconds = 2.0
 
             self.station_id = "NA"
             if html_request.form.get("station_id") is not None:

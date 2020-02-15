@@ -24,13 +24,11 @@ from operations_modules import config_installed_sensors
 from operations_modules import software_version
 from operations_modules import config_trigger_variances
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
-from operations_modules.config_luftdaten import CreateLuftdatenConfig
+from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
-luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
-luftdaten_config.update_settings_from_file()
 open_sense_map_config.update_settings_from_file()
 
 if software_version.old_version != software_version.version and geteuid() == 0:
@@ -40,7 +38,7 @@ if software_version.old_version != software_version.version and geteuid() == 0:
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration(load_from_file=False)
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration(load_from_file=False)
     weather_underground_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
-    luftdaten_config.luftdaten_enabled = 0
+    luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
     open_sense_map_config.open_sense_map_enabled = 0
 elif geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
@@ -49,7 +47,7 @@ elif geteuid() != 0:
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
-    luftdaten_config.luftdaten_enabled = 0
+    luftdaten_config = CreateLuftdatenConfiguration()
     open_sense_map_config.open_sense_map_enabled = 0
 else:
     logger.primary_logger.debug("Initializing configurations")
@@ -58,6 +56,7 @@ else:
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
+    luftdaten_config = CreateLuftdatenConfiguration()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"
