@@ -25,11 +25,7 @@ from operations_modules import software_version
 from operations_modules import config_trigger_variances
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
-
-# Creates and loads primary configurations and variables used throughout the program.
-open_sense_map_config = CreateOpenSenseMapConfig()
-open_sense_map_config.update_settings_from_file()
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
 if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
@@ -39,7 +35,7 @@ if software_version.old_version != software_version.version and geteuid() == 0:
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration(load_from_file=False)
     weather_underground_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
     luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-    open_sense_map_config.open_sense_map_enabled = 0
+    open_sense_map_config = CreateOpenSenseMapConfiguration(load_from_file=False)
 elif geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
@@ -48,7 +44,7 @@ elif geteuid() != 0:
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
     luftdaten_config = CreateLuftdatenConfiguration()
-    open_sense_map_config.open_sense_map_enabled = 0
+    open_sense_map_config = CreateOpenSenseMapConfiguration()
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration()
@@ -57,6 +53,7 @@ else:
     sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
     luftdaten_config = CreateLuftdatenConfiguration()
+    open_sense_map_config = CreateOpenSenseMapConfiguration()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

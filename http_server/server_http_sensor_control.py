@@ -29,7 +29,7 @@ from operations_modules import software_version
 from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
 if software_version.old_version == software_version.version or geteuid() != 0:
     try:
@@ -100,8 +100,9 @@ class CreateReplacementVariables:
             luftdaten_config.config_file_location = "Sensor Control Reports - Luftdaten - Sensor: " + ip_address
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
 
-            osm_config = CreateOpenSenseMapConfig()
-            osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
+            osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
+            osm_config.config_file_location = "Sensor Control Reports - Open Sense Map - Sensor: " + ip_address
+            osm_config.set_config_with_str(open_sense_map_config_raw)
 
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
             installed_sensors_config.set_config_with_str(installed_sensors_raw)
@@ -170,7 +171,7 @@ class CreateReplacementVariables:
             if luftdaten_config.bad_config_load:
                 luftdaten_colour = "orangered"
                 luftdaten_enabled = ""
-            if osm_config.bad_load:
+            if osm_config.bad_config_load:
                 open_sense_map_colour = "orangered"
                 open_sense_map_enabled = ""
 

@@ -101,7 +101,6 @@ def html_sensor_control_save_settings():
     try:
         app_config_access.sensor_control_config.update_with_html_request(request)
         app_config_access.sensor_control_config.save_config_to_file()
-        print(str(app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()))
     except Exception as error:
         logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))
     return sensor_control_management()
@@ -312,7 +311,7 @@ def set_active_online_services():
             send_interval = 10.0
         app_config_access.open_sense_map_config.open_sense_map_enabled = active_state
         app_config_access.open_sense_map_config.interval_seconds = send_interval
-        app_config_access.open_sense_map_config.write_config_to_file()
+        app_config_access.open_sense_map_config.save_config_to_file()
 
 
 @html_sensor_control_routes.route("/SCUpgradeOnline")

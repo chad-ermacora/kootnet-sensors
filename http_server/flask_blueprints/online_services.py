@@ -183,7 +183,8 @@ def html_edit_online_services_open_sense_map():
     main_message = "Open Sense Map Updated - "
     message2 = ""
     if request.method == "POST":
-        app_config_access.open_sense_map_config.update_open_sense_map_html(request)
+        app_config_access.open_sense_map_config.update_with_html_request(request)
+        app_config_access.open_sense_map_config.save_config_to_file()
         if app_cached_variables.open_sense_map_thread is not None:
             main_message += "Restarting Sensor Software"
             message2 = "New Open Sense Map settings will take effect after the sensor software restarts"
