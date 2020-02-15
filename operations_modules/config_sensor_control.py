@@ -28,8 +28,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
     """ Creates the HTML Sensor Control Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self)
-        self.config_file_location = file_locations.html_sensor_control_config
+        CreateGeneralConfiguration.__init__(self, file_locations.html_sensor_control_config)
         self.config_file_header = "This contains saved values for HTML Sensor Control"
         self.valid_setting_count = 22
         self.config_settings_names = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
@@ -77,6 +76,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
+            self._update_variables_from_settings_list()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)

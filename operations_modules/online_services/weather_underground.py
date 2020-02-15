@@ -66,7 +66,8 @@ def start_weather_underground():
                 logger.network_logger.error("Weather Underground - Error sending data")
                 logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
         else:
-            logger.network_logger.warning("Weather Underground - Not Updated: No Compatible Sensors")
+            log_msg = "Weather Underground - No Compatible Sensors: No further attempts will be made"
+            logger.network_logger.error(log_msg)
             while True:
                 sleep(3600)
         sleep(interval_seconds)

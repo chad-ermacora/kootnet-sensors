@@ -298,7 +298,7 @@ def set_active_online_services():
     if request.form.get("service") == "weather_underground":
         app_config_access.weather_underground_config.weather_underground_enabled = active_state
         app_config_access.weather_underground_config.interval_seconds = send_interval
-        app_config_access.weather_underground_config.write_config_to_file()
+        app_config_access.weather_underground_config.save_config_to_file()
     elif request.form.get("service") == "luftdaten":
         app_config_access.luftdaten_config.luftdaten_enabled = active_state
         app_config_access.luftdaten_config.interval_seconds = send_interval

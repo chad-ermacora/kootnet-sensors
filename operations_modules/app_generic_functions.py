@@ -33,8 +33,8 @@ logging.captureWarnings(True)
 class CreateGeneralConfiguration:
     """ Base Configuration Template Class """
 
-    def __init__(self):
-        self.config_file_location = ""
+    def __init__(self, config_file_location):
+        self.config_file_location = config_file_location
         self.config_file_header = "General Configuration File"
         self.valid_setting_count = 0
         self.config_settings = []
@@ -43,8 +43,8 @@ class CreateGeneralConfiguration:
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
         try:
-            self.check_config_file_exists()
-            self.set_config_with_str(get_file_content(self.config_file_location))
+            if self.check_config_file_exists():
+                self.set_config_with_str(get_file_content(self.config_file_location))
         except Exception as error:
             log_msg = "Error setting variables from "
             log_msg2 = "Saving Default Configuration for "
@@ -56,6 +56,8 @@ class CreateGeneralConfiguration:
         if not os.path.isfile(self.config_file_location):
             logger.primary_logger.info(self.config_file_location + " Not found, saving default")
             self.save_config_to_file()
+            return False
+        return True
 
     def save_config_to_file(self):
         """ Saves configuration to file. """

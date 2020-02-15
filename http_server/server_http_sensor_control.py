@@ -27,7 +27,7 @@ from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version
 from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
-from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from operations_modules.config_luftdaten import CreateLuftdatenConfig
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
@@ -92,8 +92,8 @@ class CreateReplacementVariables:
 
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
-            wu_config = CreateWeatherUndergroundConfig()
-            wu_config.update_settings_from_file(file_content=weather_underground_config_raw, skip_write=True)
+            wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
+            wu_config.set_config_with_str(weather_underground_config_raw)
 
             luftdaten_config = CreateLuftdatenConfig()
             luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)

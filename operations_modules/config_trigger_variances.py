@@ -25,8 +25,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
     """ Creates the Trigger Variances Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self)
-        self.config_file_location = file_locations.trigger_variances_config
+        CreateGeneralConfiguration.__init__(self, file_locations.trigger_variances_config)
         self.config_file_header = "Configure Variance Settings.  0 = Disabled, 1 = Enabled"
         self.valid_setting_count = 62
         self.config_settings_names = ["Enable Sensor Uptime", "Seconds between SQL Writes of Sensor Uptime",
@@ -136,6 +135,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
+            self._update_variables_from_settings_list()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)

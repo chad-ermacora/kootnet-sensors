@@ -133,7 +133,8 @@ def html_edit_online_services_wu():
     main_message = "Weather Underground Updated - "
     message2 = ""
     if request.method == "POST":
-        app_config_access.weather_underground_config.update_weather_underground_html(request, skip_write=False)
+        app_config_access.weather_underground_config.update_with_html_request(request)
+        app_config_access.weather_underground_config.save_config_to_file()
         if app_cached_variables.weather_underground_thread is not None:
             main_message += "Restarting Sensor Software"
             message2 = "New Weather Underground settings will take effect after the sensor software restarts"

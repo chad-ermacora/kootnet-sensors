@@ -25,8 +25,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     """ Creates the Primary Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self)
-        self.config_file_location = file_locations.primary_config
+        CreateGeneralConfiguration.__init__(self, file_locations.primary_config)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 7
         self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
@@ -44,6 +43,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
+            self._update_variables_from_settings_list()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)

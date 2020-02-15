@@ -26,8 +26,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     """ Creates the Primary Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self)
-        self.config_file_location = file_locations.installed_sensors_config
+        CreateGeneralConfiguration.__init__(self, file_locations.installed_sensors_config)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 21
         self.config_settings_names = ["Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
@@ -66,6 +65,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
+            self._update_variables_from_settings_list()
         self._update_has_sensor_variables()
 
     def set_config_with_str(self, config_file_text):
