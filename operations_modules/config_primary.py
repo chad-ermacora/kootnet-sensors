@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
+from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
 class CreatePrimaryConfiguration(CreateGeneralConfiguration):
@@ -82,18 +82,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         else:
             self.enable_custom_temp = 0
         self._update_configuration_settings_list()
-
-    def _init_config_variables(self):
-        """ Sets configuration settings from file, saves default if missing. """
-        try:
-            self.check_config_file_exists()
-            self.set_config_with_str(get_file_content(self.config_file_location))
-        except Exception as error:
-            log_msg = "Error setting variables from "
-            log_msg2 = "Saving Default Configuration for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
-            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
-            self.save_config_to_file()
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """

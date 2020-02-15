@@ -41,7 +41,7 @@ def html_sensor_control_management():
     if request.method == "POST":
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
-        app_config_access.sensor_control_config.set_from_html_post(request)
+        app_config_access.sensor_control_config.update_with_html_request(request)
         ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
 
         if len(ip_list) > 0:
@@ -99,8 +99,8 @@ def html_sensor_control_management():
 def html_sensor_control_save_settings():
     logger.network_logger.debug("* HTML Sensor Control Settings saved by " + str(request.remote_addr))
     try:
-        app_config_access.sensor_control_config.set_from_html_post(request)
-        app_config_access.sensor_control_config.write_current_config_to_file()
+        app_config_access.sensor_control_config.update_with_html_request(request)
+        app_config_access.sensor_control_config.save_config_to_file()
         print(str(app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()))
     except Exception as error:
         logger.network_logger.error("Unable to process HTML Sensor Control Settings: " + str(error))

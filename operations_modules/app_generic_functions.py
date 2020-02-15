@@ -40,6 +40,18 @@ class CreateGeneralConfiguration:
         self.config_settings = []
         self.config_settings_names = []
 
+    def _init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+        try:
+            self.check_config_file_exists()
+            self.set_config_with_str(get_file_content(self.config_file_location))
+        except Exception as error:
+            log_msg = "Error setting variables from "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+
     def check_config_file_exists(self):
         if not os.path.isfile(self.config_file_location):
             logger.primary_logger.info(self.config_file_location + " Not found, saving default")

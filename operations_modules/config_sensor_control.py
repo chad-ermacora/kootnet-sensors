@@ -16,24 +16,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules import app_generic_functions
 from operations_modules import app_validation_checks
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_http_sensor_reading
 
 
-class CreateSensorControlConfig:
-    """ Creates object with default HTML Sensor Control configuration settings. """
+class CreateSensorControlConfiguration(CreateGeneralConfiguration):
+    """ Creates the HTML Sensor Control Configuration object and loads settings from file (by default). """
 
-    def __init__(self):
-        self.html_post_settings = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
-                                   "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6", "senor_ip_7",
-                                   "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                                   "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                                   "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+    def __init__(self, load_from_file=True):
+        CreateGeneralConfiguration.__init__(self)
+        self.config_file_location = file_locations.html_sensor_control_config
+        self.config_file_header = "This contains saved values for HTML Sensor Control"
+        self.valid_setting_count = 22
+        self.config_settings_names = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
+                                      "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6", "senor_ip_7",
+                                      "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
+                                      "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
+                                      "senor_ip_18", "senor_ip_19", "senor_ip_20"]
 
         self.radio_check_status = "online_status"
         self.radio_report_combo = "combo_report"
@@ -71,32 +74,13 @@ class CreateSensorControlConfig:
         self.sensor_ip_dns19 = ""
         self.sensor_ip_dns20 = ""
 
-    def get_settings_as_str(self):
-        """ Takes Sensor Control configuration Object and returns it as a string. """
-        config_file_str = "This contains saved values for HTML Sensor Control.\n" + \
-                          str(self.selected_action) + " = Default Choice for Action\n" + \
-                          str(self.selected_send_type) + " = Default Choice for Download Type (Relayed or Direct)\n" + \
-                          str(self.sensor_ip_dns1) + " = Sensor IP / DNS Entry 1\n" + \
-                          str(self.sensor_ip_dns2) + " = Sensor IP / DNS Entry 2\n" + \
-                          str(self.sensor_ip_dns3) + " = Sensor IP / DNS Entry 3\n" + \
-                          str(self.sensor_ip_dns4) + " = Sensor IP / DNS Entry 4\n" + \
-                          str(self.sensor_ip_dns5) + " = Sensor IP / DNS Entry 5\n" + \
-                          str(self.sensor_ip_dns6) + " = Sensor IP / DNS Entry 6\n" + \
-                          str(self.sensor_ip_dns7) + " = Sensor IP / DNS Entry 7\n" + \
-                          str(self.sensor_ip_dns8) + " = Sensor IP / DNS Entry 8\n" + \
-                          str(self.sensor_ip_dns9) + " = Sensor IP / DNS Entry 9\n" + \
-                          str(self.sensor_ip_dns10) + " = Sensor IP / DNS Entry 10\n" + \
-                          str(self.sensor_ip_dns11) + " = Sensor IP / DNS Entry 11\n" + \
-                          str(self.sensor_ip_dns12) + " = Sensor IP / DNS Entry 12\n" + \
-                          str(self.sensor_ip_dns13) + " = Sensor IP / DNS Entry 13\n" + \
-                          str(self.sensor_ip_dns14) + " = Sensor IP / DNS Entry 14\n" + \
-                          str(self.sensor_ip_dns15) + " = Sensor IP / DNS Entry 15\n" + \
-                          str(self.sensor_ip_dns16) + " = Sensor IP / DNS Entry 16\n" + \
-                          str(self.sensor_ip_dns17) + " = Sensor IP / DNS Entry 17\n" + \
-                          str(self.sensor_ip_dns18) + " = Sensor IP / DNS Entry 18\n" + \
-                          str(self.sensor_ip_dns19) + " = Sensor IP / DNS Entry 19\n" + \
-                          str(self.sensor_ip_dns20) + " = Sensor IP / DNS Entry 20"
-        return config_file_str
+        self._update_configuration_settings_list()
+        if load_from_file:
+            self._init_config_variables()
+
+    def set_config_with_str(self, config_file_text):
+        super().set_config_with_str(config_file_text)
+        self._update_variables_from_settings_list()
 
     def get_raw_ip_addresses_as_list(self):
         """ Returns a list of all IP addresses. """
@@ -143,97 +127,75 @@ class CreateSensorControlConfig:
         Queue located at app_cached_variables.flask_return_data_queue.
         """
         try:
-            sensor_online_check = app_generic_functions.get_http_sensor_reading(sensor_address, timeout=4)
+            sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
             if sensor_online_check == "OK":
                 app_cached_variables.flask_return_data_queue.put(sensor_address)
         except Exception as error:
             logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))
 
-    def set_from_html_post(self, html_request):
-        """ Applies and Saves 'Sensor Controls' settings. """
-        new_settings_list = []
-        for html_request_setting in self.html_post_settings:
-            new_settings_list.append(html_request.form.get(html_request_setting))
-        self._update_settings_with_list(new_settings_list)
-        http_login = html_request.form.get("sensor_username")
-        http_password = html_request.form.get("sensor_password")
-        if http_login != "":
-            app_cached_variables.http_login = http_login
-        if http_password != "":
-            app_cached_variables.http_password = http_password
+    def update_with_html_request(self, html_request):
+        """ Updates the HTML Sensor Control configuration based on provided HTML configuration data. """
+        logger.network_logger.debug("Starting HTML Sensor Control Configuration Update Check")
+        self.__init__(load_from_file=False)
+        try:
+            self.selected_action = html_request.form.get(self.config_settings_names[0])
+            self.selected_send_type = html_request.form.get(self.config_settings_names[1])
+            self.sensor_ip_dns1 = html_request.form.get(self.config_settings_names[2])
+            self.sensor_ip_dns2 = html_request.form.get(self.config_settings_names[3])
+            self.sensor_ip_dns3 = html_request.form.get(self.config_settings_names[4])
+            self.sensor_ip_dns4 = html_request.form.get(self.config_settings_names[5])
+            self.sensor_ip_dns5 = html_request.form.get(self.config_settings_names[6])
+            self.sensor_ip_dns6 = html_request.form.get(self.config_settings_names[7])
+            self.sensor_ip_dns7 = html_request.form.get(self.config_settings_names[8])
+            self.sensor_ip_dns8 = html_request.form.get(self.config_settings_names[9])
+            self.sensor_ip_dns9 = html_request.form.get(self.config_settings_names[10])
+            self.sensor_ip_dns10 = html_request.form.get(self.config_settings_names[11])
+            self.sensor_ip_dns11 = html_request.form.get(self.config_settings_names[12])
+            self.sensor_ip_dns12 = html_request.form.get(self.config_settings_names[13])
+            self.sensor_ip_dns13 = html_request.form.get(self.config_settings_names[14])
+            self.sensor_ip_dns14 = html_request.form.get(self.config_settings_names[15])
+            self.sensor_ip_dns15 = html_request.form.get(self.config_settings_names[16])
+            self.sensor_ip_dns16 = html_request.form.get(self.config_settings_names[17])
+            self.sensor_ip_dns17 = html_request.form.get(self.config_settings_names[18])
+            self.sensor_ip_dns18 = html_request.form.get(self.config_settings_names[19])
+            self.sensor_ip_dns19 = html_request.form.get(self.config_settings_names[20])
+            self.sensor_ip_dns20 = html_request.form.get(self.config_settings_names[21])
+        except Exception as error:
+            logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+        self._update_configuration_settings_list()
 
-    def set_from_disk(self):
-        """ Loads Sensor Control configuration from file and returns it as a configuration object. """
-        if os.path.isfile(file_locations.html_sensor_control_config):
-            config_content = app_generic_functions.get_file_content(file_locations.html_sensor_control_config).strip()
-            self.set_from_raw_config_content(config_content, skip_write=True)
-        else:
-            logger.primary_logger.info("Sensor Control Configuration file not found - Saving Default")
-            self.write_current_config_to_file()
+    def _update_configuration_settings_list(self):
+        """ Set's config_settings variable list based on current settings. """
+        self.config_settings = [str(self.selected_action), str(self.selected_send_type),
+                                str(self.sensor_ip_dns1), str(self.sensor_ip_dns2), str(self.sensor_ip_dns3),
+                                str(self.sensor_ip_dns4), str(self.sensor_ip_dns5), str(self.sensor_ip_dns6),
+                                str(self.sensor_ip_dns7), str(self.sensor_ip_dns8), str(self.sensor_ip_dns9),
+                                str(self.sensor_ip_dns10), str(self.sensor_ip_dns11), str(self.sensor_ip_dns12),
+                                str(self.sensor_ip_dns13), str(self.sensor_ip_dns14), str(self.sensor_ip_dns15),
+                                str(self.sensor_ip_dns16), str(self.sensor_ip_dns17), str(self.sensor_ip_dns18),
+                                str(self.sensor_ip_dns19), str(self.sensor_ip_dns20)]
 
-    def set_from_raw_config_content(self, sensor_control_config_text, skip_write=False):
-        """ Converts provided Sensor Control configuration text as a list of lines into a object and returns it. """
-        sensor_control_config_text_lines_list = sensor_control_config_text.split("\n")
-        new_config_settings_list = []
-        for line in sensor_control_config_text_lines_list:
-            new_config_settings_list.append(line.split("=")[0].strip())
-        self._update_settings_with_list(new_config_settings_list[1:])
-        if not skip_write:
-            self.write_current_config_to_file()
-
-    def _update_settings_with_list(self, settings_list):
-        count = 0
-        for new_setting in settings_list:
-            if count == 0:
-                self.selected_action = new_setting
-            if count == 1:
-                self.selected_send_type = new_setting
-            if count == 2:
-                self.sensor_ip_dns1 = new_setting
-            if count == 3:
-                self.sensor_ip_dns2 = new_setting
-            if count == 4:
-                self.sensor_ip_dns3 = new_setting
-            if count == 5:
-                self.sensor_ip_dns4 = new_setting
-            if count == 6:
-                self.sensor_ip_dns5 = new_setting
-            if count == 7:
-                self.sensor_ip_dns6 = new_setting
-            if count == 8:
-                self.sensor_ip_dns7 = new_setting
-            if count == 9:
-                self.sensor_ip_dns8 = new_setting
-            if count == 10:
-                self.sensor_ip_dns9 = new_setting
-            if count == 11:
-                self.sensor_ip_dns10 = new_setting
-            if count == 12:
-                self.sensor_ip_dns11 = new_setting
-            if count == 13:
-                self.sensor_ip_dns12 = new_setting
-            if count == 14:
-                self.sensor_ip_dns13 = new_setting
-            if count == 15:
-                self.sensor_ip_dns14 = new_setting
-            if count == 16:
-                self.sensor_ip_dns15 = new_setting
-            if count == 17:
-                self.sensor_ip_dns16 = new_setting
-            if count == 18:
-                self.sensor_ip_dns17 = new_setting
-            if count == 19:
-                self.sensor_ip_dns18 = new_setting
-            if count == 20:
-                self.sensor_ip_dns19 = new_setting
-            if count == 21:
-                self.sensor_ip_dns20 = new_setting
-            count += 1
-
-    def write_current_config_to_file(self):
-        """
-        Writes provided Sensor Control configuration file to local disk.
-        The provided configuration can be string or object.
-        """
-        new_config = self.get_settings_as_str()
-        app_generic_functions.write_file_to_disk(file_locations.html_sensor_control_config, new_config)
+    def _update_variables_from_settings_list(self):
+        if self.valid_setting_count == len(self.config_settings):
+            self.selected_action = str(self.config_settings[0])
+            self.selected_send_type = str(self.config_settings[1])
+            self.sensor_ip_dns1 = str(self.config_settings[2])
+            self.sensor_ip_dns2 = str(self.config_settings[3])
+            self.sensor_ip_dns3 = str(self.config_settings[4])
+            self.sensor_ip_dns4 = str(self.config_settings[5])
+            self.sensor_ip_dns5 = str(self.config_settings[6])
+            self.sensor_ip_dns6 = str(self.config_settings[7])
+            self.sensor_ip_dns7 = str(self.config_settings[8])
+            self.sensor_ip_dns8 = str(self.config_settings[9])
+            self.sensor_ip_dns9 = str(self.config_settings[10])
+            self.sensor_ip_dns10 = str(self.config_settings[11])
+            self.sensor_ip_dns11 = str(self.config_settings[12])
+            self.sensor_ip_dns12 = str(self.config_settings[13])
+            self.sensor_ip_dns13 = str(self.config_settings[14])
+            self.sensor_ip_dns14 = str(self.config_settings[15])
+            self.sensor_ip_dns15 = str(self.config_settings[16])
+            self.sensor_ip_dns16 = str(self.config_settings[17])
+            self.sensor_ip_dns17 = str(self.config_settings[18])
+            self.sensor_ip_dns18 = str(self.config_settings[19])
+            self.sensor_ip_dns19 = str(self.config_settings[20])
+            self.sensor_ip_dns20 = str(self.config_settings[21])

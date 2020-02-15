@@ -28,8 +28,6 @@ from operations_modules.config_luftdaten import CreateLuftdatenConfig
 from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 # Creates and loads primary configurations and variables used throughout the program.
-sensor_control_config = config_sensor_control.CreateSensorControlConfig()
-sensor_control_config.set_from_disk()
 weather_underground_config = CreateWeatherUndergroundConfig()
 luftdaten_config = CreateLuftdatenConfig()
 open_sense_map_config = CreateOpenSenseMapConfig()
@@ -42,6 +40,7 @@ if software_version.old_version != software_version.version and geteuid() == 0:
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration(load_from_file=False)
+    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration(load_from_file=False)
     weather_underground_config.weather_underground_enabled = 0
     luftdaten_config.luftdaten_enabled = 0
     open_sense_map_config.open_sense_map_enabled = 0
@@ -50,6 +49,7 @@ elif geteuid() != 0:
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration()
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
+    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
     weather_underground_config.weather_underground_enabled = 0
     luftdaten_config.luftdaten_enabled = 0
     open_sense_map_config.open_sense_map_enabled = 0
@@ -58,6 +58,7 @@ else:
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration()
     current_config = config_primary.CreatePrimaryConfiguration()
     trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
+    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

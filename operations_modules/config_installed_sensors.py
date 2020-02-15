@@ -19,7 +19,7 @@
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
+from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
 class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
@@ -135,18 +135,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         if len(new_file_content) > 4:
             return new_file_content[:-4]
         return "N/A"
-
-    def _init_config_variables(self):
-        """ Sets configuration settings from file, saves default if missing. """
-        try:
-            self.check_config_file_exists()
-            self.set_config_with_str(get_file_content(self.config_file_location))
-        except Exception as error:
-            log_msg = "Error setting variables from "
-            log_msg2 = "Saving Default Configuration for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
-            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
-            self.save_config_to_file()
 
     def _update_variables_from_settings_list(self):
         if self.valid_setting_count == len(self.config_settings):
