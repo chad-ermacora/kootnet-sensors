@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
@@ -286,7 +287,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
     def _get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """
-        if self.raspberry_pi:
+        if self.raspberry_pi and os.path.isfile("/proc/device-tree/model"):
             try:
                 pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
                 logger.primary_logger.debug("Pi Version: " + str(pi_version))

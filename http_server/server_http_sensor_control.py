@@ -93,9 +93,11 @@ class CreateReplacementVariables:
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
             wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
+            wu_config.config_file_location = "Sensor Control Reports - Weather Underground - Sensor: " + ip_address
             wu_config.set_config_with_str(weather_underground_config_raw)
 
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
+            luftdaten_config.config_file_location = "Sensor Control Reports - Luftdaten - Sensor: " + ip_address
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
 
             osm_config = CreateOpenSenseMapConfig()
