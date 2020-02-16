@@ -91,7 +91,7 @@ class CreateGeneralConfiguration:
                     self.config_settings.append(setting)
             else:
                 log_msg = "Invalid number of settings found in "
-                logger.primary_logger.warning(log_msg + str(self.config_file_location))
+                logger.primary_logger.debug(log_msg + str(self.config_file_location))
                 self.bad_config_load = True
         else:
             logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))

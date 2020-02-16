@@ -1,6 +1,6 @@
 [Desktop Entry]
-Name=Kootnet Sensors - Web Configuration
-Comment=Web interface for configuring sensor
+Name=Web Portal - Kootnet Sensors
+Comment=Web interface for configuring & using Kootnet Sensor
 Type=Application
 Icon=/opt/kootnet-sensors/extras/icon.ico
 TryExec=/usr/bin/x-www-browser

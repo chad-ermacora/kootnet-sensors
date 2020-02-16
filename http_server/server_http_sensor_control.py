@@ -92,16 +92,17 @@ class CreateReplacementVariables:
 
             wifi_config_lines = wifi_config_raw.strip().split("\n")
 
+            end_log_msg = ip_address + " - Bad Login?"
             wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
-            wu_config.config_file_location = "Sensor Control Reports - Weather Underground - Sensor: " + ip_address
+            wu_config.config_file_location = "Sensor Control's Weather Underground Config from " + end_log_msg
             wu_config.set_config_with_str(weather_underground_config_raw)
 
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-            luftdaten_config.config_file_location = "Sensor Control Reports - Luftdaten - Sensor: " + ip_address
+            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + end_log_msg
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
 
             osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
-            osm_config.config_file_location = "Sensor Control Reports - Open Sense Map - Sensor: " + ip_address
+            osm_config.config_file_location = "Sensor Control's Open Sense Map Config from " + end_log_msg
             osm_config.set_config_with_str(open_sense_map_config_raw)
 
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
