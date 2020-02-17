@@ -129,3 +129,6 @@ html_report_config3_end = program_root_dir + "/http_server/templates/non-flask/r
 html_report_sensors_test1_start = program_root_dir + "/http_server/templates/non-flask/report_sensors_test1_start.html"
 html_report_sensors_test2_sensor = program_root_dir + "/http_server/templates/non-flask/report_sensors_test2_sensor.html"
 html_report_sensors_test3_end = program_root_dir + "/http_server/templates/non-flask/report_sensors_test3_end.html"
+
+html_report_sensors_latency1_start = program_root_dir + "/http_server/templates/non-flask/report_sensors_latency1_start.html"
+html_report_sensors_latency2_sensor = program_root_dir + "/http_server/templates/non-flask/report_sensors_test2_sensor.html"

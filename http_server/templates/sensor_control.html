@@ -189,10 +189,17 @@
                             Configurations Report
                             <span class="checkmark_radio"></span>
                         </label>
+                        <br>
                         <label class="container_radio" style="font-size: small">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
                                    id="RadioSensorsTests" value="sensors_test_report">
-                            Sensors Tests
+                            Current Sensor Readings
+                            <span class="checkmark_radio"></span>
+                        </label>
+                        <label class="container_radio" style="font-size: small">
+                            <input type="radio" name="selected_action" {{ CheckedSensorsLatencyReports }}
+                                   id="RadioSensorsLatency" value="sensors_latency_report">
+                            Sensors Latency
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
@@ -315,6 +322,13 @@
         });
 
         jQuery('#RadioSensorsTests').click(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementById("SelectedRelayedDownloads").click();
+                disable_all_selected();
+            }
+        });
+
+        jQuery('#RadioSensorsLatency').click(function () {
             if (jQuery(this).prop('checked')) {
                 document.getElementById("SelectedRelayedDownloads").click();
                 disable_all_selected();

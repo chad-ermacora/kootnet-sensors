@@ -25,6 +25,7 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
     """
     config_report = app_config_access.sensor_control_config.radio_report_config
     sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+    latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
     html_sensor_report_end = server_http_sensor_control.html_report_system_end
 
     new_report = server_http_sensor_control.html_report_system_start
@@ -33,6 +34,9 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
         html_sensor_report_end = server_http_sensor_control.html_report_config_end
     elif report_type == sensors_report:
         new_report = server_http_sensor_control.html_report_sensors_test_start
+        html_sensor_report_end = server_http_sensor_control.html_report_sensors_test_end
+    elif report_type == latency_report:
+        new_report = server_http_sensor_control.html_report_sensors_latency_start
         html_sensor_report_end = server_http_sensor_control.html_report_sensors_test_end
     new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
 
@@ -48,7 +52,7 @@ def get_sensor_control_report(address_list, report_type="systems_report"):
     data_queue = app_cached_variables.data_queue
     if report_type == config_report:
         data_queue = app_cached_variables.data_queue2
-    if report_type == sensors_report:
+    if report_type == sensors_report or report_type == latency_report:
         data_queue = app_cached_variables.data_queue3
     while not data_queue.empty():
         sensor_reports.append(data_queue.get())

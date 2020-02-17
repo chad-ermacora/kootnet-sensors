@@ -44,6 +44,9 @@ if software_version.old_version == software_version.version or geteuid() != 0:
         html_report_sensors_test_start = get_file_content(file_locations.html_report_sensors_test1_start).strip()
         html_report_sensors_test_end = get_file_content(file_locations.html_report_sensors_test3_end).strip()
         html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
+
+        html_report_sensors_latency_start = get_file_content(file_locations.html_report_sensors_latency1_start).strip()
+        html_report_sensors_latency_sensor = get_file_content(file_locations.html_report_sensors_latency2_sensor).strip()
     except Exception as init_error:
         logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
@@ -204,9 +207,12 @@ class CreateReplacementVariables:
             logger.network_logger.warning(log_msg)
             return []
 
-    def report_test_sensors(self, ip_address):
+    def report_sensors_choice(self, ip_address, report_type="sensors_test"):
         try:
-            get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
+            if report_type == "sensors_test":
+                get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
+            else:
+                get_sensors_readings_command = self.remote_sensor_commands.sensors_latency
             sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command, timeout=20)
             sensor_readings_raw = sensor_readings_raw.strip()
             sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
@@ -243,6 +249,7 @@ class CreateReplacementVariables:
 def get_online_report(ip_address, report_type="systems_report"):
     report_type_config = app_config_access.sensor_control_config.radio_report_config
     report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
+    report_type_latency_sensors = app_config_access.sensor_control_config.radio_report_sensors_latency
 
     sensor_report = html_report_system_sensor
     command_and_replacements = CreateReplacementVariables().report_system()
@@ -251,7 +258,10 @@ def get_online_report(ip_address, report_type="systems_report"):
         command_and_replacements = CreateReplacementVariables().report_config(ip_address)
     elif report_type == report_type_test_sensors:
         sensor_report = html_report_sensors_test_sensor
-        command_and_replacements = CreateReplacementVariables().report_test_sensors(ip_address)
+        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address)
+    elif report_type == report_type_latency_sensors:
+        sensor_report = html_report_sensors_latency_sensor
+        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address, report_type="Latency")
 
     try:
         if check_for_port_in_address(ip_address):
@@ -276,7 +286,7 @@ def get_online_report(ip_address, report_type="systems_report"):
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
             if report_type == report_type_config:
                 app_cached_variables.data_queue2.put([sensor_name, sensor_report])
-            elif report_type == report_type_test_sensors:
+            elif report_type == report_type_latency_sensors or report_type == report_type_test_sensors:
                 app_cached_variables.data_queue3.put([sensor_name, sensor_report])
             else:
                 app_cached_variables.data_queue.put([sensor_name, sensor_report])

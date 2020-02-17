@@ -7,11 +7,33 @@ from sensor_modules import sensor_access
 html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 
 
-# This one isn't in use yet, but there for allowing one sensor to record all readings
 @html_sensor_readings_routes.route("/GetIntervalSensorReadings")
 def get_interval_readings():
     logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
     return str(get_interval_sensor_readings())
+
+
+@html_sensor_readings_routes.route("/GetSensorsLatency")
+def get_sensors_latency():
+    logger.network_logger.debug("* Sensor Latency sent to " + str(request.remote_addr))
+    names_latency_list = sensor_access.get_sensors_latency()
+    try:
+        text_part1 = ""
+        text_part2 = ""
+        beginning_part = []
+        end_part = []
+        for name, entry in zip(names_latency_list[0], names_latency_list[1]):
+            if entry is not None:
+                beginning_part.append(name)
+                end_part.append(entry)
+        for name, entry in zip(beginning_part, end_part):
+            text_part1 += str(name) + ","
+            text_part2 += str(entry) + ","
+        text_part1 = text_part1[:-1]
+        text_part2 = text_part2[:-1]
+    except Exception as error:
+        return "Error" + sensor_access.command_data_separator + str(error)
+    return text_part1 + sensor_access.command_data_separator + text_part2
 
 
 @html_sensor_readings_routes.route("/GetCPUTemperature")

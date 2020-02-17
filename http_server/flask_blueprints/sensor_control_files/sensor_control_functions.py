@@ -347,6 +347,7 @@ def sensor_control_management():
     radio_checked_systems_report = ""
     radio_checked_config_report = ""
     radio_checked_sensors_test_report = ""
+    radio_checked_sensors_latency_report = ""
     radio_checked_download_reports = ""
     radio_checked_download_database = ""
     radio_checked_download_logs = ""
@@ -376,6 +377,10 @@ def sensor_control_management():
         disabled_download_direct = "disabled"
     elif selected_action == app_config_access.sensor_control_config.radio_report_test_sensors:
         radio_checked_sensors_test_report = "checked"
+        disabled_download_relayed = "disabled"
+        disabled_download_direct = "disabled"
+    elif selected_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
+        radio_checked_sensors_latency_report = "checked"
         disabled_download_relayed = "disabled"
         disabled_download_direct = "disabled"
     elif selected_action == app_config_access.sensor_control_config.radio_download_reports:
@@ -439,6 +444,7 @@ def sensor_control_management():
                            CheckedSystemReports=radio_checked_systems_report,
                            CheckedConfigReports=radio_checked_config_report,
                            CheckedSensorsTestReports=radio_checked_sensors_test_report,
+                           CheckedSensorsLatencyReports=radio_checked_sensors_latency_report,
                            CheckedRelayedDownload=radio_checked_send_relayed,
                            CheckedDirectDownload=radio_checked_send_direct,
                            CheckedDownloadReports=radio_checked_download_reports,

@@ -42,6 +42,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         self.radio_report_system = "systems_report"
         self.radio_report_config = "config_report"
         self.radio_report_test_sensors = "sensors_test_report"
+        self.radio_report_sensors_latency = "sensors_latency_report"
         self.radio_download_reports = "sensors_download_reports"
         self.radio_download_databases = "sensors_download_databases"
         self.radio_download_logs = "sensors_download_logs"

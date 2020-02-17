@@ -149,6 +149,11 @@ def get_sensors_latency():
                             get_particulate_matter_1, get_particulate_matter_2_5, get_particulate_matter_10,
                             get_lumen, get_ems, get_ultra_violet_index, get_ultra_violet_a, get_ultra_violet_b,
                             get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+    sensor_names_list = ["cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
+                         "distance", "gas_resistance_index", "gas_oxidised", "gas_reduced", "gas_nh3",
+                         "particulate_matter_1", "particulate_matter_2_5", "particulate_matter_10",
+                         "lumen", "colours", "ultra_violet_index", "ultra_violet_a", "ultra_violet_b",
+                         "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
 
     sensor_latency_list = []
     for sensor_function in sensor_function_list:
@@ -157,7 +162,7 @@ def get_sensors_latency():
             sensor_latency_list.append(None)
         else:
             sensor_latency_list.append(round(thing, 6))
-    return sensor_latency_list
+    return [sensor_names_list, sensor_latency_list]
 
 
 def _get_sensor_latency(sensor_function):

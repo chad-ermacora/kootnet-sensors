@@ -43,6 +43,7 @@ class CreateNetworkGetCommands:
         self.download_zipped_logs_size = "GetZippedLogsSize"
         self.download_zipped_everything = "DownloadZippedEverything"
         self.sensor_readings = "GetIntervalSensorReadings"
+        self.sensors_latency = "GetSensorsLatency"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"

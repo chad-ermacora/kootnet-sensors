@@ -59,6 +59,9 @@ def html_sensor_control_management():
             elif sc_action == app_config_access.sensor_control_config.radio_report_test_sensors:
                 sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
                 return get_sensor_control_report(ip_list, report_type=sensors_report)
+            elif sc_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
+                latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
+                return get_sensor_control_report(ip_list, report_type=latency_report)
             elif sc_action == app_config_access.sensor_control_config.radio_download_reports:
                 app_cached_variables.creating_the_reports_zip = True
                 logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
