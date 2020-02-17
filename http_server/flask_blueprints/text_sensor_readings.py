@@ -118,7 +118,6 @@ def get_all_particulate_matter():
     return_pm = [sensor_access.get_particulate_matter_1(),
                  sensor_access.get_particulate_matter_2_5(),
                  sensor_access.get_particulate_matter_10()]
-
     return str(return_pm)
 
 

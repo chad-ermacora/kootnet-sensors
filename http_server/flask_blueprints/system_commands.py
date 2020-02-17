@@ -228,3 +228,4 @@ def display_text():
         sensor_access.display_message(text_message)
     else:
         logger.network_logger.warning("* Unable to Display Text: Sensor Display disabled or not installed")
+    return "OK"
