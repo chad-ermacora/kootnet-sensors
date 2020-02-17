@@ -46,6 +46,11 @@
         Sensor Readings Report
     </a>
 </button>
+<button class="tablink button" onclick="openPage('sensor-latency-tab', this, '#1A237E')">
+    <a style="color: red;" data-mui-toggle="tab" data-mui-controls="sensor-latency-tab">
+        Sensor Latency Report
+    </a>
+</button>
 
 <div class="tabcontent" id="system-tab">
     {{ FullSystemReport }}
@@ -57,6 +62,10 @@
 
 <div class="tabcontent" id="sensor-readings-tab">
     {{ FullReadingsReport }}
+</div>
+
+<div class="tabcontent" id="sensor-latency-tab">
+    {{ FullLatencyReport }}
 </div>
 
 <script>

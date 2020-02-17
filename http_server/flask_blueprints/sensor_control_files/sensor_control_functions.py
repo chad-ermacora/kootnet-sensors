@@ -259,20 +259,24 @@ def get_html_reports_combo(ip_list, skip_rewrite_link=False):
         system_report = app_config_access.sensor_control_config.radio_report_system
         config_report = app_config_access.sensor_control_config.radio_report_config
         sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+        latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
 
         html_system_report = get_sensor_control_report(ip_list, report_type=system_report)
         html_config_report = get_sensor_control_report(ip_list, report_type=config_report)
         html_readings_report = get_sensor_control_report(ip_list, report_type=sensors_report)
+        html_latency_report = get_sensor_control_report(ip_list, report_type=latency_report)
 
         if not skip_rewrite_link:
             html_system_report = _replace_text_in_report(html_system_report, "System")
             html_config_report = _replace_text_in_report(html_config_report, "Configuration")
             html_readings_report = _replace_text_in_report(html_readings_report, "Sensor Readings")
+            html_latency_report = _replace_text_in_report(html_latency_report, "Sensor Latency")
 
         html_final_combo_return = app_generic_functions.get_file_content(file_locations.html_combo_report)
         html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
         html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", html_config_report)
         html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", html_readings_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullLatencyReport }}", html_latency_report)
     except Exception as error:
         logger.primary_logger.error("Sensor Control - Unable to Generate Reports for Download: " + str(error))
         html_final_combo_return = "Error"
