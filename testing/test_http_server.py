@@ -17,8 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import unittest
-from http_server import server_http_self_diagnostics
-from operations_modules.app_generic_functions import http_display_text_on_sensor
+from . import server_http_self_diagnostics
 
 
 class TestApp(unittest.TestCase):
@@ -92,8 +91,7 @@ class TestApp(unittest.TestCase):
         self.assertTrue(server_http_self_diagnostics.test_html_get_gyroscope())
 
     def test_html_display_text(self):
-        http_display_text_on_sensor("This is a Test Message", "localhost")
-        self.assertTrue(True)
+        self.assertTrue(server_http_self_diagnostics.http_display_text_on_sensor("This is a Test Message"))
 
 
 if __name__ == '__main__':

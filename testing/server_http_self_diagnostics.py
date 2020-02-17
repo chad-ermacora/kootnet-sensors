@@ -16,15 +16,42 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules.app_generic_functions import get_http_sensor_reading
-from operations_modules.app_cached_variables import no_sensor_present
-# TODO: Get this working
+import requests
 
-http_username = "Kootnet"
+# TODO: Get this working
+http_login = "Kootnet"
 http_password = "sensors"
 
-http_ip = "localhost"
-http_port = "10065"
+sensor_address = "localhost"
+no_sensor_present = "NoSensor"
+default_http_port = "10065"
+
+
+def get_http_sensor_reading(command="CheckOnlineStatus", timeout=10):
+    """ Returns requested remote sensor data (based on the provided command data). """
+    try:
+        url = "https://" + sensor_address + ":" + default_http_port + "/" + command
+        login_credentials = (http_login, http_password)
+        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False, auth=login_credentials)
+        if tmp_return_data.status_code == 200:
+            return tmp_return_data.text
+        return None
+    except Exception as error:
+        log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        print(log_msg)
+        return None
+
+
+def http_display_text_on_sensor(text_message):
+    """ Sends provided text message to a remote sensor's display. """
+    try:
+        url = "https://" + sensor_address + ":" + default_http_port + "/DisplayText"
+        login_credentials = (http_login, http_password)
+        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
+        return True
+    except Exception as error:
+        print("Unable to display text on Sensor: " + str(error))
+        return False
 
 
 def test_html_get_hostname():
