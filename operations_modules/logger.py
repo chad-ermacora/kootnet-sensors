@@ -29,7 +29,6 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 from operations_modules import file_locations
-from operations_modules.config_primary import CreatePrimaryConfiguration
 
 if not os.path.exists(os.path.dirname(file_locations.log_directory)):
     os.makedirs(os.path.dirname(file_locations.log_directory))
@@ -48,7 +47,7 @@ def initialize_logger(logger, log_location, formatter):
 
 
 def set_logging_level():
-    if CreatePrimaryConfiguration().enable_debug_logging:
+    if _debug_enabled():
         primary_logger.setLevel(logging.DEBUG)
         network_logger.setLevel(logging.DEBUG)
         sensors_logger.setLevel(logging.DEBUG)
@@ -56,6 +55,17 @@ def set_logging_level():
         primary_logger.setLevel(logging.INFO)
         network_logger.setLevel(logging.INFO)
         sensors_logger.setLevel(logging.INFO)
+
+
+def _debug_enabled():
+    if os.path.isfile(file_locations.primary_config):
+        with open(file_locations.primary_config, "r") as loaded_file:
+            file_lines_list = loaded_file.read().split("\n")
+            if len(file_lines_list) > 1:
+                debug_setting = file_lines_list[1].split("=")[0].strip()
+                if int(debug_setting):
+                    return True
+    return False
 
 
 def get_number_of_log_entries(log_file):
