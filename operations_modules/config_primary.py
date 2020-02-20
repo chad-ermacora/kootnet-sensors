@@ -108,7 +108,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_display = 1
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 1
-        self.sleep_duration_interval = 11.11
+        self.sleep_duration_interval = 245.11
         self.enable_custom_temp = 1
         self.temperature_offset = 11.11
         self._update_configuration_settings_list()
@@ -118,7 +118,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_display = 0
         self.enable_interval_recording = 0
         self.enable_trigger_recording = 0
-        self.sleep_duration_interval = 0.0
+        self.sleep_duration_interval = 320.58
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
         self._update_configuration_settings_list()

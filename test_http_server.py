@@ -39,7 +39,7 @@ weather_underground_config_test = CreateWeatherUndergroundConfiguration(load_fro
 luftdaten_config_test = CreateLuftdatenConfiguration(load_from_file=False)
 open_sense_map_config_test = CreateOpenSenseMapConfiguration(load_from_file=False)
 
-sensor_address = "192.168.7.197"
+sensor_address = "localhost"
 default_http_port = "10065"
 http_login = "Kootnet"
 http_password = "sensors"

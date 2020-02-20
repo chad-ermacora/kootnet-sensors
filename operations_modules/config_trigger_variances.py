@@ -242,160 +242,160 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
 
     def set_settings_for_test1(self):
         self.sensor_uptime_enabled = 0
-        self.sensor_uptime_wait_seconds = 90009797.559  # Basically 4 weeks
+        self.sensor_uptime_wait_seconds = 240.729
 
         self.cpu_temperature_enabled = 0
-        self.cpu_temperature_variance = 9797.55
-        self.cpu_temperature_wait_seconds = 9797.55
+        self.cpu_temperature_variance = 65.72
+        self.cpu_temperature_wait_seconds = 65.72
 
         self.env_temperature_enabled = 0
-        self.env_temperature_variance = 9797.55
-        self.env_temperature_wait_seconds = 9797.55
+        self.env_temperature_variance = 65.72
+        self.env_temperature_wait_seconds = 65.72
 
         self.pressure_enabled = 0
-        self.pressure_variance = 9797.55
-        self.pressure_wait_seconds = 9797.55
+        self.pressure_variance = 65.72
+        self.pressure_wait_seconds = 65.72
 
         self.humidity_enabled = 0
-        self.humidity_variance = 9797.55
-        self.humidity_wait_seconds = 9797.55
+        self.humidity_variance = 65.72
+        self.humidity_wait_seconds = 65.72
 
         self.altitude_enabled = 0
-        self.altitude_variance = 9797.55
-        self.altitude_wait_seconds = 9797.55
+        self.altitude_variance = 65.72
+        self.altitude_wait_seconds = 65.72
 
         self.distance_enabled = 0
-        self.distance_variance = 9797.55
-        self.distance_wait_seconds = 9797.55
+        self.distance_variance = 65.72
+        self.distance_wait_seconds = 65.72
 
         self.lumen_enabled = 0
-        self.lumen_variance = 9797.55
-        self.lumen_wait_seconds = 9797.55
+        self.lumen_variance = 65.72
+        self.lumen_wait_seconds = 65.72
 
         self.colour_enabled = 0
-        self.red_variance = 9797.55
-        self.orange_variance = 9797.55
-        self.yellow_variance = 9797.55
-        self.green_variance = 9797.55
-        self.blue_variance = 9797.55
-        self.violet_variance = 9797.55
-        self.colour_wait_seconds = 9797.55
+        self.red_variance = 65.72
+        self.orange_variance = 65.72
+        self.yellow_variance = 65.72
+        self.green_variance = 65.72
+        self.blue_variance = 65.72
+        self.violet_variance = 65.72
+        self.colour_wait_seconds = 65.72
 
         self.ultra_violet_enabled = 0
-        self.ultra_violet_index_variance = 9797.55
-        self.ultra_violet_a_variance = 9797.55
-        self.ultra_violet_b_variance = 9797.55
-        self.ultra_violet_wait_seconds = 9797.55
+        self.ultra_violet_index_variance = 65.72
+        self.ultra_violet_a_variance = 65.72
+        self.ultra_violet_b_variance = 65.72
+        self.ultra_violet_wait_seconds = 65.72
 
         self.gas_enabled = 0
-        self.gas_resistance_index_variance = 9797.55
-        self.gas_oxidising_variance = 9797.55
-        self.gas_reducing_variance = 9797.55
-        self.gas_nh3_variance = 9797.55
-        self.gas_wait_seconds = 9797.55
+        self.gas_resistance_index_variance = 65.72
+        self.gas_oxidising_variance = 65.72
+        self.gas_reducing_variance = 65.72
+        self.gas_nh3_variance = 65.72
+        self.gas_wait_seconds = 65.72
 
         self.particulate_matter_enabled = 0
-        self.particulate_matter_1_variance = 9797.55
-        self.particulate_matter_2_5_variance = 9797.55
-        self.particulate_matter_10_variance = 9797.55
-        self.particulate_matter_wait_seconds = 9797.55
+        self.particulate_matter_1_variance = 65.72
+        self.particulate_matter_2_5_variance = 65.72
+        self.particulate_matter_10_variance = 65.72
+        self.particulate_matter_wait_seconds = 65.72
 
         self.accelerometer_enabled = 0
-        self.accelerometer_x_variance = 9797.55
-        self.accelerometer_y_variance = 9797.55
-        self.accelerometer_z_variance = 9797.55
-        self.accelerometer_wait_seconds = 9797.55
+        self.accelerometer_x_variance = 65.72
+        self.accelerometer_y_variance = 65.72
+        self.accelerometer_z_variance = 65.72
+        self.accelerometer_wait_seconds = 65.72
 
         self.magnetometer_enabled = 0
-        self.magnetometer_x_variance = 9797.55
-        self.magnetometer_y_variance = 9797.55
-        self.magnetometer_z_variance = 9797.55
-        self.magnetometer_wait_seconds = 9797.55
+        self.magnetometer_x_variance = 65.72
+        self.magnetometer_y_variance = 65.72
+        self.magnetometer_z_variance = 65.72
+        self.magnetometer_wait_seconds = 65.72
 
         self.gyroscope_enabled = 0
-        self.gyroscope_x_variance = 9797.55
-        self.gyroscope_y_variance = 9797.55
-        self.gyroscope_z_variance = 9797.55
-        self.gyroscope_wait_seconds = 9797.55
+        self.gyroscope_x_variance = 65.72
+        self.gyroscope_y_variance = 65.72
+        self.gyroscope_z_variance = 65.72
+        self.gyroscope_wait_seconds = 65.72
         self._update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.sensor_uptime_enabled = 1
-        self.sensor_uptime_wait_seconds = 91119999.999  # Basically 4 weeks
+        self.sensor_uptime_wait_seconds = 658.169
 
         self.cpu_temperature_enabled = 1
-        self.cpu_temperature_variance = 9999.99
-        self.cpu_temperature_wait_seconds = 9999.99
+        self.cpu_temperature_variance = 84.16
+        self.cpu_temperature_wait_seconds = 84.16
 
         self.env_temperature_enabled = 1
-        self.env_temperature_variance = 9999.99
-        self.env_temperature_wait_seconds = 9999.99
+        self.env_temperature_variance = 84.16
+        self.env_temperature_wait_seconds = 84.16
 
         self.pressure_enabled = 1
-        self.pressure_variance = 9999.99
-        self.pressure_wait_seconds = 9999.99
+        self.pressure_variance = 84.16
+        self.pressure_wait_seconds = 84.16
 
         self.humidity_enabled = 1
-        self.humidity_variance = 9999.99
-        self.humidity_wait_seconds = 9999.99
+        self.humidity_variance = 84.16
+        self.humidity_wait_seconds = 84.16
 
         self.altitude_enabled = 1
-        self.altitude_variance = 9999.99
-        self.altitude_wait_seconds = 9999.99
+        self.altitude_variance = 84.16
+        self.altitude_wait_seconds = 84.16
 
         self.distance_enabled = 1
-        self.distance_variance = 9999.99
-        self.distance_wait_seconds = 9999.99
+        self.distance_variance = 84.16
+        self.distance_wait_seconds = 84.16
 
         self.lumen_enabled = 1
-        self.lumen_variance = 9999.99
-        self.lumen_wait_seconds = 9999.99
+        self.lumen_variance = 84.16
+        self.lumen_wait_seconds = 84.16
 
         self.colour_enabled = 1
-        self.red_variance = 9999.99
-        self.orange_variance = 9999.99
-        self.yellow_variance = 9999.99
-        self.green_variance = 9999.99
-        self.blue_variance = 9999.99
-        self.violet_variance = 9999.99
-        self.colour_wait_seconds = 9999.99
+        self.red_variance = 84.16
+        self.orange_variance = 84.16
+        self.yellow_variance = 84.16
+        self.green_variance = 84.16
+        self.blue_variance = 84.16
+        self.violet_variance = 84.16
+        self.colour_wait_seconds = 84.16
 
         self.ultra_violet_enabled = 1
-        self.ultra_violet_index_variance = 9999.99
-        self.ultra_violet_a_variance = 9999.99
-        self.ultra_violet_b_variance = 9999.99
-        self.ultra_violet_wait_seconds = 9999.99
+        self.ultra_violet_index_variance = 84.16
+        self.ultra_violet_a_variance = 84.16
+        self.ultra_violet_b_variance = 84.16
+        self.ultra_violet_wait_seconds = 84.16
 
         self.gas_enabled = 1
-        self.gas_resistance_index_variance = 9999.99
-        self.gas_oxidising_variance = 9999.99
-        self.gas_reducing_variance = 9999.99
-        self.gas_nh3_variance = 9999.99
-        self.gas_wait_seconds = 9999.99
+        self.gas_resistance_index_variance = 84.16
+        self.gas_oxidising_variance = 84.16
+        self.gas_reducing_variance = 84.16
+        self.gas_nh3_variance = 84.16
+        self.gas_wait_seconds = 84.16
 
         self.particulate_matter_enabled = 1
-        self.particulate_matter_1_variance = 9999.99
-        self.particulate_matter_2_5_variance = 9999.99
-        self.particulate_matter_11_variance = 9999.99
-        self.particulate_matter_wait_seconds = 9999.99
+        self.particulate_matter_1_variance = 84.16
+        self.particulate_matter_2_5_variance = 84.16
+        self.particulate_matter_11_variance = 84.16
+        self.particulate_matter_wait_seconds = 84.16
 
         self.accelerometer_enabled = 1
-        self.accelerometer_x_variance = 9999.99
-        self.accelerometer_y_variance = 9999.99
-        self.accelerometer_z_variance = 9999.99
-        self.accelerometer_wait_seconds = 9999.99
+        self.accelerometer_x_variance = 84.16
+        self.accelerometer_y_variance = 84.16
+        self.accelerometer_z_variance = 84.16
+        self.accelerometer_wait_seconds = 84.16
 
         self.magnetometer_enabled = 1
-        self.magnetometer_x_variance = 9999.99
-        self.magnetometer_y_variance = 9999.99
-        self.magnetometer_z_variance = 9999.99
-        self.magnetometer_wait_seconds = 9999.99
+        self.magnetometer_x_variance = 84.16
+        self.magnetometer_y_variance = 84.16
+        self.magnetometer_z_variance = 84.16
+        self.magnetometer_wait_seconds = 84.16
 
         self.gyroscope_enabled = 1
-        self.gyroscope_x_variance = 9999.99
-        self.gyroscope_y_variance = 9999.99
-        self.gyroscope_z_variance = 9999.99
-        self.gyroscope_wait_seconds = 9999.99
+        self.gyroscope_x_variance = 84.16
+        self.gyroscope_y_variance = 84.16
+        self.gyroscope_z_variance = 84.16
+        self.gyroscope_wait_seconds = 84.16
         self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
