@@ -102,3 +102,23 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         else:
             log_msg = "Invalid number of setting for "
             logger.primary_logger.warning(log_msg + str(self.config_file_location))
+
+    def set_settings_for_test1(self):
+        self.enable_debug_logging = 1
+        self.enable_display = 1
+        self.enable_interval_recording = 1
+        self.enable_trigger_recording = 1
+        self.sleep_duration_interval = 11.11
+        self.enable_custom_temp = 1
+        self.temperature_offset = 11.11
+        self._update_configuration_settings_list()
+
+    def set_settings_for_test2(self):
+        self.enable_debug_logging = 0
+        self.enable_display = 0
+        self.enable_interval_recording = 0
+        self.enable_trigger_recording = 0
+        self.sleep_duration_interval = 0.0
+        self.enable_custom_temp = 0
+        self.temperature_offset = 0.0
+        self._update_configuration_settings_list()

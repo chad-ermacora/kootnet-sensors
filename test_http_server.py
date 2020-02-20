@@ -16,44 +16,184 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import requests
 import unittest
+from time import sleep
+from operations_modules.app_generic_functions import get_http_sensor_reading, http_display_text_on_sensor, \
+    send_http_command
+from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables import no_sensor_present, command_data_separator, \
+    CreateNetworkGetCommands, CreateNetworkSetCommands
+from operations_modules.config_primary import CreatePrimaryConfiguration
+from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from operations_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
+from operations_modules.config_sensor_control import CreateSensorControlConfiguration
+from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
+from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
+from operations_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
+primary_config_test = CreatePrimaryConfiguration(load_from_file=False)
+installed_sensors_config_test = CreateInstalledSensorsConfiguration(load_from_file=False)
+trigger_variances_config_test = CreateTriggerVariancesConfiguration(load_from_file=False)
+sensor_control_config_test = CreateSensorControlConfiguration(load_from_file=False)
+weather_underground_config_test = CreateWeatherUndergroundConfiguration(load_from_file=False)
+luftdaten_config_test = CreateLuftdatenConfiguration(load_from_file=False)
+open_sense_map_config_test = CreateOpenSenseMapConfiguration(load_from_file=False)
+
+sensor_address = "192.168.7.197"
+default_http_port = "10065"
 http_login = "Kootnet"
 http_password = "sensors"
+app_cached_variables.http_login = http_login
+app_cached_variables.http_password = http_password
 
-sensor_address = "localhost"
-default_http_port = "10065"
-no_sensor_present = "NoSensor"
-command_data_separator = "[new_data_section]"
+remote_set = CreateNetworkSetCommands()
+remote_get = CreateNetworkGetCommands()
+sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name,
+                       remote_get.system_uptime, remote_get.sensor_readings,
+                       remote_get.sensors_latency, remote_get.cpu_temp,
+                       remote_get.environmental_temp, remote_get.env_temp_offset,
+                       remote_get.pressure, remote_get.altitude, remote_get.humidity,
+                       remote_get.distance, remote_get.all_gas, remote_get.gas_index,
+                       remote_get.gas_oxidised, remote_get.gas_reduced,
+                       remote_get.gas_nh3, remote_get.all_particulate_matter,
+                       remote_get.pm_1, remote_get.pm_2_5, remote_get.pm_10,
+                       remote_get.lumen, remote_get.electromagnetic_spectrum,
+                       remote_get.all_ultra_violet, remote_get.ultra_violet_a,
+                       remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
+                       remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
 
-sensor_get_commands = ["CheckOnlineStatus", "GetHostName", "GetSystemUptime", "GetIntervalSensorReadings",
-                       "GetSensorsLatency", "GetCPUTemperature", "GetEnvTemperature", "GetTempOffsetEnv", "GetPressure",
-                       "GetAltitude", "GetHumidity", "GetDistance", "GetAllGas", "GetGasResistanceIndex",
-                       "GetGasOxidised", "GetGasReduced", "GetGasNH3", "GetAllParticulateMatter",
-                       "GetParticulateMatter1", "GetParticulateMatter2_5", "GetParticulateMatter10", "GetLumen",
-                       "GetEMS", "GetAllUltraViolet", "GetUltraVioletA", "GetUltraVioletB", "GetAccelerometerXYZ",
-                       "GetMagnetometerXYZ", "GetGyroscopeXYZ"]
+bad_sensor_contact = True
+bad_sensor_contact_msg = " --- Sensor appears to be Offline ---"
+if get_http_sensor_reading(sensor_address, http_port=default_http_port, timeout=5) == "OK":
+    bad_sensor_contact = False
 
 
 class TestApp(unittest.TestCase):
+    def test_primary_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(primary_config_test,
+                                                      remote_get.sensor_configuration_file,
+                                                      remote_set.set_primary_configuration))
+
+    def test_installed_sensors_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(installed_sensors_config_test,
+                                                      remote_get.installed_sensors_file,
+                                                      remote_set.set_installed_sensors))
+
+    def test_trigger_variances_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(trigger_variances_config_test,
+                                                      remote_get.variance_config,
+                                                      remote_set.set_variance_configuration))
+
+    def test_sensor_control_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(sensor_control_config_test,
+                                                      remote_get.sensor_control_configuration_file,
+                                                      remote_set.set_sensor_control_configuration))
+
+    def test_weather_underground_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(weather_underground_config_test,
+                                                      remote_get.weather_underground_config_file,
+                                                      remote_set.set_weather_underground_configuration))
+
+    def test_luftdaten_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(luftdaten_config_test,
+                                                      remote_get.luftdaten_config_file,
+                                                      remote_set.set_luftdaten_configuration))
+
+    def test_open_sense_map_config(self):
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            self.assertTrue(self._config_test_changes(open_sense_map_config_test,
+                                                      remote_get.open_sense_map_config_file,
+                                                      remote_set.set_open_sense_map_configuration))
+
+    def _config_test_changes(self, config_instance, config_get_command, config_set_command):
+        original_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        config_instance.set_settings_for_test1()
+        send_http_command(sensor_address, command=config_set_command, http_port=default_http_port,
+                          included_data=config_instance.get_config_as_str(), test_run=True)
+        first_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        if self._bad_config(config_instance.get_config_as_str(), first_set_config):
+            return False
+        config_instance.set_settings_for_test2()
+        send_http_command(sensor_address, command=config_set_command, http_port=default_http_port,
+                          included_data=config_instance.get_config_as_str(), test_run=True)
+        second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        if self._bad_config(config_instance.get_config_as_str(), second_set_config):
+            return False
+
+        send_http_command(sensor_address, command=config_set_command, http_port=default_http_port,
+                          included_data=original_config, test_run=True)
+        original_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        if self._bad_config(original_config, original_set_config):
+            return False
+        return True
+
+    @staticmethod
+    def _bad_config(sent_config, received_config):
+        print("--- Config Compare ---")
+        print("-Sent Config-\n" + sent_config + "-Received Config-\n" + received_config)
+        print("\n")
+        if sent_config == received_config:
+            return False
+        return True
+
     def test_html_display_text(self):
-        self.assertTrue(http_display_text_on_sensor("This is a Test Message"))
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            msg = "This is a Test Message"
+            if http_display_text_on_sensor(msg, sensor_address, http_port=default_http_port):
+                print("Info: Sent Sensor Display Message OK")
+                self.assertTrue(True)
+            else:
+                self.assertTrue(False)
+                print("Error: Sent Sensor Display Message Failed")
 
     def test_sensor_get_commands(self):
-        sensor_responses = []
-        for command in sensor_get_commands:
-            sensor_responses.append(get_http_sensor_reading(command))
+        if bad_sensor_contact:
+            print(bad_sensor_contact_msg)
+            self.assertTrue(False)
+        else:
+            sensor_responses = []
+            for command in sensor_get_commands:
+                sensor_responses.append(get_http_sensor_reading(sensor_address, command=command,
+                                                                http_port=default_http_port, timeout=5))
 
-        bad_count = 0
-        for response in sensor_responses:
-            if response is None:
-                bad_count += 1
+            bad_count = 0
+            for response in sensor_responses:
+                if response is None:
+                    bad_count += 1
 
-        if bad_count > 0:
-            log_msg = "Warning: " + str(bad_count) + " Bad HTTPS Responses out of " + str(len(sensor_get_commands))
-            print(log_msg + " - Server Offline or Bad Network Connection?")
-        if not bad_count == len(sensor_get_commands):
+            if bad_count > 0:
+                log_msg = "Warning: " + str(bad_count) + " Bad HTTPS Responses out of " + str(len(sensor_get_commands))
+                print(log_msg + " - Bad Network Connection?")
             # from routes file system_commands.py
             self.assertTrue(sensor_responses[0] == "OK")
             self.assertTrue(isinstance(sensor_responses[1], str))
@@ -126,42 +266,14 @@ class TestApp(unittest.TestCase):
                 self.assertTrue(isinstance(float(sensor_reading[0]), float))
                 self.assertTrue(isinstance(float(sensor_reading[1]), float))
                 self.assertTrue(isinstance(float(sensor_reading[2]), float))
-        else:
-            self.assertTrue(False)
-
-
-def get_http_sensor_reading(command="CheckOnlineStatus", timeout=10):
-    """ Returns requested remote sensor data (based on the provided command data). """
-    try:
-        url = "https://" + sensor_address + ":" + default_http_port + "/" + command
-        login_credentials = (http_login, http_password)
-        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False, auth=login_credentials)
-        if tmp_return_data.status_code == 200:
-            return tmp_return_data.text
-        return None
-    except Exception as error:
-        log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
-        print(log_msg)
-        return None
-
-
-def http_display_text_on_sensor(text_message):
-    """ Sends provided text message to a remote sensor's display. """
-    try:
-        url = "https://" + sensor_address + ":" + default_http_port + "/DisplayText"
-        login_credentials = (http_login, http_password)
-        tmp_return_data = requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
-        if tmp_return_data.text == "OK":
-            return True
-    except Exception as error:
-        print("Unable to display text on Sensor: " + str(error))
-    return False
+        sleep(1)
 
 
 def check_no_sensor_return(sensor_data, data_name):
     if sensor_data == no_sensor_present:
         print("Warning: " + data_name + " No Sensor Present")
         return True
+    print("Info: " + data_name + " OK")
     return False
 
 

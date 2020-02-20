@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from flask import Blueprint, render_template, request, send_file
-from operations_modules import logger, file_locations, app_config_access, app_cached_variables
+from flask import Blueprint, render_template, request
+from operations_modules import logger, app_config_access, app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules.online_services.weather_underground import start_weather_underground
 from operations_modules.online_services.luftdaten import start_luftdaten
@@ -104,26 +104,6 @@ def html_online_services():
                            OSMUVIndexID=app_config_access.open_sense_map_config.ultra_violet_index_id,
                            OSMUVAID=app_config_access.open_sense_map_config.ultra_violet_a_id,
                            OSMUVBID=app_config_access.open_sense_map_config.ultra_violet_b_id)
-
-
-@html_online_services_routes.route("/GetOnlineServicesWeatherUnderground")
-@auth.login_required
-def html_get_raw_online_services_config_wu():
-    logger.network_logger.debug("** Get Online Services - Weather Underground accessed from " + str(request.remote_addr))
-    return send_file(file_locations.weather_underground_config)
-
-
-@html_online_services_routes.route("/GetOnlineServicesLuftdaten")
-def html_get_raw_online_services_config_luftdaten():
-    logger.network_logger.debug("** Get Online Services - Luftdaten accessed from " + str(request.remote_addr))
-    return send_file(file_locations.luftdaten_config)
-
-
-@html_online_services_routes.route("/GetOnlineServicesOpenSenseMap")
-@auth.login_required
-def html_get_raw_online_services_config_open_sense_map():
-    logger.network_logger.debug("** Get Online Services - Open Sense Map accessed from " + str(request.remote_addr))
-    return send_file(file_locations.osm_config)
 
 
 @html_online_services_routes.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])

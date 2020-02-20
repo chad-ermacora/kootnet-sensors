@@ -20,19 +20,53 @@ from platform import system
 from queue import Queue
 
 
+class CreateNetworkSetCommands:
+    """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
+
+    def __init__(self):
+        self.set_host_name = "SetHostName"
+        self.set_datetime = "SetDateTime"
+        self.set_primary_configuration = "SetPrimaryConfiguration"
+        self.set_installed_sensors = "SetInstalledSensors"
+        self.set_variance_configuration = "SetVarianceConfiguration"
+        self.set_sensor_control_configuration = "SetSensorControlConfiguration"
+        self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
+        self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
+        self.set_open_sense_map_configuration = "SetOpenSenseMapConfiguration"
+        self.set_wifi_configuration = "SetWifiConfiguration"
+
+        # self.put_sql_note = "PutDatabaseNote"
+        # self.delete_sql_note = "DeleteDatabaseNote"
+        # self.update_sql_note = "UpdateDatabaseNote"
+        #
+        # self.restart_services = "RestartServices"
+        # self.shutdown_system = "ShutdownSystem"
+        # self.reboot_system = "RebootSystem"
+        # self.upgrade_system_os = "UpgradeSystemOS"
+        # self.reinstall_requirements = "ReInstallRequirements"
+        # self.upgrade_online = "UpgradeOnline"
+        # self.upgrade_online_dev = "UpgradeOnlineDev"
+        # self.upgrade_smb = "UpgradeSMB"
+        # self.upgrade_smb_dev = "UpgradeSMBDev"
+        # self.clean_upgrade_online = "CleanOnline"
+        # self.clean_upgrade_smb = "CleanSMB"
+
+
 class CreateNetworkGetCommands:
     """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
 
     def __init__(self):
+        self.check_online_status = "CheckOnlineStatus"
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_size = "GetSQLDBSize"
         self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
+        self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.variance_config = "GetVarianceConfiguration"
-        self.weather_underground_config_file = "GetOnlineServicesWeatherUnderground"
+        self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
         self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
         self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
         self.system_data = "GetSystemData"
@@ -54,15 +88,18 @@ class CreateNetworkGetCommands:
         self.altitude = "GetAltitude"
         self.humidity = "GetHumidity"
         self.distance = "GetDistance"
+        self.all_gas = "GetAllGas"
         self.gas_index = "GetGasResistanceIndex"
         self.gas_oxidised = "GetGasOxidised"
         self.gas_reduced = "GetGasReduced"
         self.gas_nh3 = "GetGasNH3"
+        self.all_particulate_matter = "GetAllParticulateMatter"
         self.pm_1 = "GetParticulateMatter1"
         self.pm_2_5 = "GetParticulateMatter2_5"
         self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
         self.electromagnetic_spectrum = "GetEMS"
+        self.all_ultra_violet = "GetAllUltraViolet"
         self.ultra_violet_index = "GetUltraVioletA"
         self.ultra_violet_a = "GetUltraVioletA"
         self.ultra_violet_b = "GetUltraVioletB"

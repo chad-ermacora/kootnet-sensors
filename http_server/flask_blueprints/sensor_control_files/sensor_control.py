@@ -206,7 +206,7 @@ def sc_edit_config_primary():
         new_config.update_with_html_request(request)
         send_config = new_config.get_config_as_str()
         for ip in ip_list:
-            app_generic_functions.send_http_command(ip, "SetConfiguration", included_data=send_config)
+            app_generic_functions.send_http_command(ip, "SetPrimaryConfiguration", included_data=send_config)
     msg2 = "Primary configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 

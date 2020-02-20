@@ -220,7 +220,7 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         return "Error"
 
 
-def send_http_command(sensor_address, command, included_data=None, http_port="10065", timeout=10):
+def send_http_command(sensor_address, command, included_data=None, test_run=None, http_port="10065", timeout=10):
     """ Sends command and data (if any) to a remote sensor. """
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
@@ -229,7 +229,7 @@ def send_http_command(sensor_address, command, included_data=None, http_port="10
     try:
         url = "https://" + sensor_address + ":" + http_port + "/" + command
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        command_data = {'command_data': included_data}
+        command_data = {"command_data": included_data, "test_run": test_run}
         requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
     except Exception as error:
         log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
@@ -262,9 +262,12 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
     try:
         url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
+        tmp_return_data = requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
+        if tmp_return_data.text == "OK":
+            return True
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
+    return False
 
 
 def check_for_port_in_address(address):
