@@ -48,18 +48,14 @@ app_cached_variables.http_password = http_password
 
 remote_set = CreateNetworkSetCommands()
 remote_get = CreateNetworkGetCommands()
-sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name,
-                       remote_get.system_uptime, remote_get.sensor_readings,
-                       remote_get.sensors_latency, remote_get.cpu_temp,
-                       remote_get.environmental_temp, remote_get.env_temp_offset,
-                       remote_get.pressure, remote_get.altitude, remote_get.humidity,
-                       remote_get.distance, remote_get.all_gas, remote_get.gas_index,
-                       remote_get.gas_oxidised, remote_get.gas_reduced,
-                       remote_get.gas_nh3, remote_get.all_particulate_matter,
-                       remote_get.pm_1, remote_get.pm_2_5, remote_get.pm_10,
-                       remote_get.lumen, remote_get.electromagnetic_spectrum,
-                       remote_get.all_ultra_violet, remote_get.ultra_violet_a,
-                       remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
+sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
+                       remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,
+                       remote_get.environmental_temp, remote_get.env_temp_offset, remote_get.pressure,
+                       remote_get.altitude, remote_get.humidity, remote_get.distance, remote_get.all_gas,
+                       remote_get.gas_index, remote_get.gas_oxidised, remote_get.gas_reduced, remote_get.gas_nh3,
+                       remote_get.all_particulate_matter, remote_get.pm_1, remote_get.pm_2_5, remote_get.pm_10,
+                       remote_get.lumen, remote_get.electromagnetic_spectrum, remote_get.all_ultra_violet,
+                       remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
                        remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
 
 bad_sensor_contact = True
