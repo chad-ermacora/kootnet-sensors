@@ -152,11 +152,11 @@ class TestApp(unittest.TestCase):
 
     @staticmethod
     def _bad_config(sent_config, received_config):
-        print("--- Config Compare ---")
-        print("-Sent Config-\n" + sent_config + "-Received Config-\n" + received_config)
-        print("\n")
         if sent_config == received_config:
+            print("-Sent Config- is identical to -Received Config-")
             return False
+        print("Error: -Sent Config- is different to -Received Config-\n")
+        print("-Sent Config-\n" + str(sent_config) + "\n-Received Config-\n" + str(received_config))
         return True
 
     def test_html_display_text(self):
