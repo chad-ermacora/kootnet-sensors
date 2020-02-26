@@ -8,7 +8,6 @@ touch ${DATA_DIR}/logs/Sensors_log.txt
 touch ${DATA_DIR}/logs/Network_log.txt
 # Make sure permissions are correct
 printf '\nSetting permissions\n'
-chmod 744 ${DATA_DIR} -R
-chmod 754 ${DATA_DIR}/scripts/*
+chmod 755 ${DATA_DIR} -R
 chmod 744 ${CONFIG_DIR} -R
-chmod 754 /opt/kootnet-sensors -R
+chmod 755 /opt/kootnet-sensors -R

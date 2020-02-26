@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Sensor Tests - Kootnet Sensors
+Comment=GUI for Testing a Kootnet Sensor, Locally or over a Network
+Icon=/opt/kootnet-sensors/extras/icon_diagnostics.png
+Exec=/home/kootnet_data/env/bin/python /opt/kootnet-sensors/gui_test_http_server.py
+Type=Application
+Encoding=UTF-8
+Terminal=false
+Categories=Utility;Science;

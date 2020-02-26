@@ -39,6 +39,8 @@ weather_underground_config_test = CreateWeatherUndergroundConfiguration(load_fro
 luftdaten_config_test = CreateLuftdatenConfiguration(load_from_file=False)
 open_sense_map_config_test = CreateOpenSenseMapConfiguration(load_from_file=False)
 
+bad_sensor_contact_msg = " --- Sensor appears to be Offline ---"
+
 sensor_address = "localhost"
 default_http_port = "10065"
 http_login = "Kootnet"
@@ -58,8 +60,8 @@ sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name, r
                        remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
                        remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
 
+
 bad_sensor_contact = True
-bad_sensor_contact_msg = " --- Sensor appears to be Offline ---"
 if get_http_sensor_reading(sensor_address, http_port=default_http_port, timeout=5) == "OK":
     bad_sensor_contact = False
 
@@ -153,10 +155,10 @@ class TestApp(unittest.TestCase):
     @staticmethod
     def _bad_config(sent_config, received_config):
         if sent_config == received_config:
-            print("-Sent Config- is identical to -Received Config-")
+            print("Info: Configuration Check OK.")
             return False
-        print("Error: -Sent Config- is different to -Received Config-\n")
-        print("-Sent Config-\n" + str(sent_config) + "\n-Received Config-\n" + str(received_config))
+        print("Error: Sent Configuration is different from Received Configuration\n")
+        print("-Sent Configuration-\n" + str(sent_config) + "\n-Received Configuration-\n" + str(received_config))
         return True
 
     def test_html_display_text(self):
@@ -267,7 +269,7 @@ class TestApp(unittest.TestCase):
 
 def check_no_sensor_return(sensor_data, data_name):
     if sensor_data == no_sensor_present:
-        print("Warning: " + data_name + " No Sensor Present")
+        print("Warning: " + data_name + " Reading as No Sensor Present")
         return True
     print("Info: " + data_name + " OK")
     return False

@@ -8,6 +8,8 @@ psutil
 requests
 plotly >= 4.0.0
 numpy
+# Required for Testing GUI
+guizero
 # ---
 # Commented Modules are left for requirement reference
 # The following entries before 'Sensor Hardware Modules' are installed only in Raspbian
