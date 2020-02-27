@@ -20,24 +20,17 @@ import logging
 import requests
 from operations_modules.config_primary import CreatePrimaryConfiguration
 from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
-from operations_modules.app_cached_variables import command_data_separator
+from operations_modules.app_cached_variables import CreateNetworkGetCommands, command_data_separator
 
 logging.captureWarnings(True)
 current_config = CreatePrimaryConfiguration()
 installed_sensors = CreateInstalledSensorsConfiguration()
-display_text_on_remote_sensor_command = "DisplayText"
-
-
-def get_sensor_reading(command):
-    """ Returns requested local sensor data (based on the provided command data). """
-    url = "https://127.0.0.1:10065/" + command
-    tmp_return_data = requests.get(url=url, verify=False)
-    return tmp_return_data.text
+remote_get = CreateNetworkGetCommands()
 
 
 def get_interval_sensor_data():
     """ Returns local sensor Interval data. """
-    url = "https://127.0.0.1:10065/GetIntervalSensorReadings"
+    url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
     tmp_return_data = requests.get(url=url, verify=False)
     return_data = tmp_return_data.text.split(command_data_separator)
     return [str(return_data[0]), str(return_data[1])]
@@ -74,8 +67,6 @@ while count < len(sensor_types):
     count = count + 1
 
 if installed_sensors.has_display:
-    print("\nShowing Temperature on Installed Display, Please Wait ...")
-    cpu_temp = float(get_sensor_reading(display_text_on_remote_sensor_command))
-    display_text_on_sensor(str(round(cpu_temp, 2)) + "c")
-
+    print("\nShowing Test Message on Installed Display, Please Wait ...")
+    display_text_on_sensor("Display Test Message")
 print("\nTesting Complete")
