@@ -7,6 +7,21 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
+# Enable or Disable Kootnet Sensor Service & Auto Start
+printf "1. Continue to Configurations\n2. Enable and Start KootnetSensors\n"
+printf "3. Disable and Stop KootnetSensors\n\n"
+read -p "Enter Choice: " -n 1 -r AUTH
+echo
+if [[ ${AUTH} == "2" ]]; then
+  systemctl enable KootnetSensors
+  systemctl start KootnetSensors
+elif [[ ${AUTH} == "3" ]]; then
+  systemctl stop KootnetSensors
+  systemctl disable KootnetSensors
+  printf "\nKootnetSensors Disabled\n"
+  exit
+fi
+clear
 # Change HTTP Authentication User & Password
 read -p "Do you want to Change the Web Portal's Login? (Y/N) " -n 1 -r AUTH
 echo

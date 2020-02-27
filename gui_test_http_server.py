@@ -67,7 +67,7 @@ def run_tests():
 redirect_string = io.StringIO()
 sys.stdout = redirect_string
 
-app = guizero.App(title="KootNet Sensors - Unit Tester", width=622, height=518, layout="grid")
+app = guizero.App(title="KootNet Sensors - Unit Tester for Beta.29.x", width=622, height=518, layout="grid")
 app_address_text = guizero.Text(app, text="Sensor Address", grid=[1, 1], align="left")
 app_textbox_address = guizero.TextBox(app, text="localhost", width=40, grid=[2, 1], align="left")
 app_button_test_sensor = guizero.PushButton(app, text="Start Tests", command=button_go, grid=[3, 1], align="right")
