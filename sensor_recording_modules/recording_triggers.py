@@ -20,7 +20,7 @@ from operations_modules import logger
 from operations_modules.app_config_access import trigger_variances, installed_sensors
 from operations_modules.app_cached_variables import database_variables
 from operations_modules import app_cached_variables
-from operations_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
+from sensor_recording_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
 from sensor_modules import sensor_access
 
 

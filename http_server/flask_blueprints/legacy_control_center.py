@@ -5,7 +5,7 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
 from operations_modules import software_version
-from operations_modules.recording_interval import get_interval_sensor_readings
+from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from http_server.server_http_generic_functions import message_and_return
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access

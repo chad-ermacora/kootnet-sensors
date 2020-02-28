@@ -37,9 +37,9 @@ from http_server import server_http
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from operations_modules import recording_interval
-from operations_modules import recording_triggers
 from operations_modules import server_display
+from sensor_recording_modules import recording_interval
+from sensor_recording_modules import recording_triggers
 from operations_modules.online_services.luftdaten import start_luftdaten
 from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
 from operations_modules.online_services.open_sense_map import start_open_sense_map
