@@ -35,6 +35,8 @@ def button_go():
 def run_tests():
     app_text_output.enable()
     app_text_output.value = "Running Tests, Please wait..."
+    app_textbox_address.disable()
+    app_button_test_sensor.disable()
     app_text_output.disable()
     tmp_ip = app_textbox_address.value
     tmp_port = test_http_server.default_http_port
@@ -60,6 +62,8 @@ def run_tests():
         if test_http_server.sensor_address == "localhost":
             new_text += "\nLocal Primary Log\n" + logger.get_sensor_log(file_locations.primary_log)
     app_text_output.value = new_text
+    app_button_test_sensor.enable()
+    app_textbox_address.enable()
     redirect_string.truncate(0)
     redirect_string.seek(0)
 
