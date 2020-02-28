@@ -19,9 +19,9 @@
 from flask import Blueprint, render_template, request
 from operations_modules import logger, app_config_access, app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
-from operations_modules.online_services.weather_underground import start_weather_underground
-from operations_modules.online_services.luftdaten import start_luftdaten
-from operations_modules.online_services.open_sense_map import start_open_sense_map
+from online_services_modules.weather_underground import start_weather_underground
+from online_services_modules.luftdaten import start_luftdaten
+from online_services_modules.open_sense_map import start_open_sense_map
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 from sensor_modules import sensor_access

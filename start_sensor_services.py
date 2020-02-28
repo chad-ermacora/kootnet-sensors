@@ -40,9 +40,9 @@ from operations_modules import app_config_access
 from operations_modules import server_display
 from sensor_recording_modules import recording_interval
 from sensor_recording_modules import recording_triggers
-from operations_modules.online_services.luftdaten import start_luftdaten
-from operations_modules.online_services.weather_underground import start_weather_underground as start_wu
-from operations_modules.online_services.open_sense_map import start_open_sense_map
+from online_services_modules.luftdaten import start_luftdaten
+from online_services_modules.weather_underground import start_weather_underground as start_wu
+from online_services_modules.open_sense_map import start_open_sense_map
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 if running_with_root and app_config_access.installed_sensors.no_sensors is False:
