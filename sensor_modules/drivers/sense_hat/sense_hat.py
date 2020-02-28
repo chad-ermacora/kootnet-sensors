@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import struct
 import os
-import sys
 import math
 import time
 import numpy as np
@@ -18,7 +17,6 @@ from .stick import SenseStick
 
 
 class SenseHat(object):
-
     SENSE_HAT_FB_NAME = 'RPi-Sense FB'
     SENSE_HAT_FB_FBIOGET_GAMMA = 61696
     SENSE_HAT_FB_FBIOSET_GAMMA = 61697
@@ -28,12 +26,7 @@ class SenseHat(object):
     SENSE_HAT_FB_GAMMA_USER = 2
     SETTINGS_HOME_PATH = '.config/sense_hat'
 
-    def __init__(
-            self,
-            imu_settings_file='RTIMULib',
-            text_assets='sense_hat_text'
-        ):
-
+    def __init__(self, imu_settings_file='RTIMULib', text_assets='sense_hat_text'):
         self._fb_device = self._get_fb_device()
         if self._fb_device is None:
             raise OSError('Cannot detect %s device' % self.SENSE_HAT_FB_NAME)
@@ -43,8 +36,8 @@ class SenseHat(object):
 
         # 0 is With B+ HDMI port facing downwards
         pix_map0 = np.array([
-             [0,  1,  2,  3,  4,  5,  6,  7],
-             [8,  9, 10, 11, 12, 13, 14, 15],
+            [0, 1, 2, 3, 4, 5, 6, 7],
+            [8, 9, 10, 11, 12, 13, 14, 15],
             [16, 17, 18, 19, 20, 21, 22, 23],
             [24, 25, 26, 27, 28, 29, 30, 31],
             [32, 33, 34, 35, 36, 37, 38, 39],
@@ -58,8 +51,8 @@ class SenseHat(object):
         pix_map270 = np.rot90(pix_map180)
 
         self._pix_map = {
-              0: pix_map0,
-             90: pix_map90,
+            0: pix_map0,
+            90: pix_map90,
             180: pix_map180,
             270: pix_map270
         }
@@ -117,7 +110,8 @@ class SenseHat(object):
             char = text_pixels[start:end]
             self._text_dict[s] = char
 
-    def _trim_whitespace(self, char):  # For loading text assets only
+    @staticmethod
+    def _trim_whitespace(char):  # For loading text assets only
         """
         Internal. Trims white space pixels from the front and back of loaded
         text characters
@@ -218,7 +212,8 @@ class SenseHat(object):
         else:
             raise ValueError('Rotation must be 0, 90, 180 or 270 degrees')
 
-    def _pack_bin(self, pix):
+    @staticmethod
+    def _pack_bin(pix):
         """
         Internal. Encodes python list [R,G,B] into 16 bit RGB565
         """
@@ -229,7 +224,8 @@ class SenseHat(object):
         bits16 = (r << 11) + (g << 5) + b
         return struct.pack('H', bits16)
 
-    def _unpack_bin(self, packed):
+    @staticmethod
+    def _unpack_bin(packed):
         """
         Internal. Decodes 16 bit RGB565 into python list [R,G,B]
         """
@@ -281,7 +277,8 @@ class SenseHat(object):
 
         for index, pix in enumerate(pixel_list):
             if len(pix) != 3:
-                raise ValueError('Pixel at index %d is invalid. Pixels must contain 3 elements: Red, Green and Blue' % index)
+                raise ValueError(
+                    'Pixel at index %d is invalid. Pixels must contain 3 elements: Red, Green and Blue' % index)
 
             for element in pix:
                 if element > 255 or element < 0:
@@ -423,13 +420,7 @@ class SenseHat(object):
         else:
             return list(self._text_dict['?'])
 
-    def show_message(
-            self,
-            text_string,
-            scroll_speed=.1,
-            text_colour=[255, 255, 255],
-            back_colour=[0, 0, 0]
-        ):
+    def show_message(self, text_string, scroll_speed=.1, text_colour=[255, 255, 255], back_colour=[0, 0, 0]):
         """
         Scrolls a string of text across the LED matrix using the specified
         speed and colours
@@ -465,12 +456,7 @@ class SenseHat(object):
             time.sleep(scroll_speed)
         self._rotation = previous_rotation
 
-    def show_letter(
-            self,
-            s,
-            text_colour=[255, 255, 255],
-            back_colour=[0, 0, 0]
-        ):
+    def show_letter(self, s, text_colour=[255, 255, 255], back_colour=[0, 0, 0]):
         """
         Displays a single text character on the LED matrix using the specified
         colours
@@ -497,7 +483,7 @@ class SenseHat(object):
 
     @property
     def gamma(self):
-        buffer = array.array('B', [0]*32)
+        buffer = array.array('B', [0] * 32)
         with open(self._fb_device) as f:
             fcntl.ioctl(f, self.SENSE_HAT_FB_FBIOGET_GAMMA, buffer)
         return list(buffer)
@@ -526,7 +512,8 @@ class SenseHat(object):
 
     @property
     def low_light(self):
-        return self.gamma == [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10]
+        return self.gamma == [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2,
+                              3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 10, 10]
 
     @low_light.setter
     def low_light(self, value):
@@ -566,7 +553,7 @@ class SenseHat(object):
         self._init_humidity()  # Ensure humidity sensor is initialised
         humidity = 0
         data = self._humidity.humidityRead()
-        if (data[0]):  # Humidity valid
+        if data[0]:  # Humidity valid
             humidity = data[1]
         return humidity
 
@@ -582,7 +569,7 @@ class SenseHat(object):
         self._init_humidity()  # Ensure humidity sensor is initialised
         temp = 0
         data = self._humidity.humidityRead()
-        if (data[2]):  # Temp valid
+        if data[2]:  # Temp valid
             temp = data[3]
         return temp
 
@@ -594,7 +581,7 @@ class SenseHat(object):
         self._init_pressure()  # Ensure pressure sensor is initialised
         temp = 0
         data = self._pressure.pressureRead()
-        if (data[2]):  # Temp valid
+        if data[2]:  # Temp valid
             temp = data[3]
         return temp
 
@@ -621,7 +608,7 @@ class SenseHat(object):
         self._init_pressure()  # Ensure pressure sensor is initialised
         pressure = 0
         data = self._pressure.pressureRead()
-        if (data[0]):  # Pressure valid
+        if data[0]:  # Pressure valid
             pressure = data[1]
         return pressure
 
@@ -660,8 +647,8 @@ class SenseHat(object):
         self._init_imu()  # Ensure imu is initialised
 
         if (not isinstance(compass_enabled, bool)
-        or not isinstance(gyro_enabled, bool)
-        or not isinstance(accel_enabled, bool)):
+                or not isinstance(gyro_enabled, bool)
+                or not isinstance(accel_enabled, bool)):
             raise TypeError('All set_imu_config parameters must be of boolean type')
 
         if self._compass_enabled != compass_enabled:
