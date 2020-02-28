@@ -18,14 +18,14 @@
 """
 from os import geteuid
 from operations_modules import logger
-from operations_modules import config_sensor_control
-from operations_modules import config_primary
-from operations_modules import config_installed_sensors
+from configuration_modules import config_sensor_control
+from configuration_modules import config_primary
+from configuration_modules import config_installed_sensors
 from operations_modules import software_version
-from operations_modules import config_trigger_variances
-from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
-from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
+from configuration_modules import config_trigger_variances
+from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
+from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
+from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
 if software_version.old_version != software_version.version and geteuid() == 0:
     logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")

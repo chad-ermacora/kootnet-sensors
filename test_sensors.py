@@ -18,8 +18,8 @@
 """
 import logging
 import requests
-from operations_modules.config_primary import CreatePrimaryConfiguration
-from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from operations_modules.app_cached_variables import CreateNetworkGetCommands, command_data_separator
 
 logging.captureWarnings(True)

@@ -17,9 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules import config_primary
-from operations_modules import config_installed_sensors
-from operations_modules import config_trigger_variances
+from configuration_modules import config_primary
+from configuration_modules import config_installed_sensors
+from configuration_modules import config_trigger_variances
 
 
 def reset_installed_sensors():

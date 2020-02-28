@@ -26,10 +26,10 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version
-from operations_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
-from operations_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
-from operations_modules.config_luftdaten import CreateLuftdatenConfiguration
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
+from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
+from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
 if software_version.old_version == software_version.version or geteuid() != 0:
     try:
