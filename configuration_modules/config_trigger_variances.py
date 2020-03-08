@@ -376,7 +376,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self.particulate_matter_enabled = 1
         self.particulate_matter_1_variance = 84.16
         self.particulate_matter_2_5_variance = 84.16
-        self.particulate_matter_11_variance = 84.16
+        self.particulate_matter_10_variance = 84.16
         self.particulate_matter_wait_seconds = 84.16
 
         self.accelerometer_enabled = 1
