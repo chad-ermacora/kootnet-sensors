@@ -33,7 +33,7 @@ def run_program_start_checks():
     """
     logger.primary_logger.info(" -- Starting Programs Checks ...")
     _set_file_permissions()
-    _check_database_structure()
+    check_database_structure()
     _check_ssl_files()
     if os.geteuid() == 0:
         if software_version.old_version != software_version.version:
@@ -51,7 +51,7 @@ def _set_file_permissions():
         os.system(os_cli_commands.bash_commands["SetPermissions"])
 
 
-def _check_database_structure():
+def check_database_structure():
     """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running DB Checks")
     database_variables = app_cached_variables.CreateDatabaseVariables()
