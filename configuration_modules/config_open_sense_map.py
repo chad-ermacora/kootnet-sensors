@@ -136,66 +136,6 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             self.ultra_violet_b_id = html_request.form.get("uv_b_id").strip()
         self._update_configuration_settings_list()
 
-    def set_settings_for_test1(self):
-        self.open_sense_map_enabled = 0
-        self.sense_box_id = "11111"
-        self.interval_seconds = 911100.11
-
-        self.temperature_id = "123333"
-        self.pressure_id = "123333"
-        self.altitude_id = "123333"
-        self.humidity_id = "123333"
-        self.gas_voc_id = "123333"
-        self.gas_oxidised_id = "123333"
-        self.gas_reduced_id = "123333"
-        self.gas_nh3_id = "123333"
-        self.pm1_id = "123333"
-        self.pm2_5_id = "123333"
-        self.pm10_id = "123333"
-
-        self.lumen_id = "123333"
-        self.red_id = "123333"
-        self.orange_id = "123333"
-        self.yellow_id = "123333"
-        self.green_id = "123333"
-        self.blue_id = "123333"
-        self.violet_id = "123333"
-
-        self.ultra_violet_index_id = "123333"
-        self.ultra_violet_a_id = "123333"
-        self.ultra_violet_b_id = "123333"
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.open_sense_map_enabled = 1
-        self.sense_box_id = "33322158"
-        self.interval_seconds = 12.9
-
-        self.temperature_id = "698742"
-        self.pressure_id = "698742"
-        self.altitude_id = "698742"
-        self.humidity_id = "698742"
-        self.gas_voc_id = "698742"
-        self.gas_oxidised_id = "698742"
-        self.gas_reduced_id = "698742"
-        self.gas_nh3_id = "698742"
-        self.pm1_id = "698742"
-        self.pm2_5_id = "698742"
-        self.pm10_id = "698742"
-
-        self.lumen_id = "698742"
-        self.red_id = "698742"
-        self.orange_id = "698742"
-        self.yellow_id = "698742"
-        self.green_id = "698742"
-        self.blue_id = "698742"
-        self.violet_id = "698742"
-
-        self.ultra_violet_index_id = "698742"
-        self.ultra_violet_a_id = "698742"
-        self.ultra_violet_b_id = "698742"
-        self._update_configuration_settings_list()
-
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.open_sense_map_enabled), str(self.sense_box_id), str(self.interval_seconds),

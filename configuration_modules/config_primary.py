@@ -52,35 +52,33 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the primary configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
+
+        self.enable_debug_logging = 0
+        self.enable_display = 0
+        self.enable_interval_recording = 0
+        self.enable_trigger_recording = 0
+        self.enable_custom_temp = 0
+
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
-        else:
-            self.enable_debug_logging = 0
 
         if html_request.form.get("enable_display") is not None:
             self.enable_display = 1
-        else:
-            self.enable_display = 0
 
         if html_request.form.get("enable_interval_recording") is not None:
             self.enable_interval_recording = 1
-        else:
-            self.enable_interval_recording = 0
+
         if html_request.form.get("interval_delay_seconds") is not None:
             new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
             self.sleep_duration_interval = new_sleep_duration
 
         if html_request.form.get("enable_trigger_recording") is not None:
             self.enable_trigger_recording = 1
-        else:
-            self.enable_trigger_recording = 0
 
         if html_request.form.get("enable_custom_temp_offset") is not None:
             new_temp = float(html_request.form.get("custom_temperature_offset"))
             self.enable_custom_temp = 1
             self.temperature_offset = new_temp
-        else:
-            self.enable_custom_temp = 0
         self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
@@ -102,23 +100,3 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         else:
             log_msg = "Invalid number of setting for "
             logger.primary_logger.warning(log_msg + str(self.config_file_location))
-
-    def set_settings_for_test1(self):
-        self.enable_debug_logging = 1
-        self.enable_display = 1
-        self.enable_interval_recording = 1
-        self.enable_trigger_recording = 1
-        self.sleep_duration_interval = 245.11
-        self.enable_custom_temp = 1
-        self.temperature_offset = 11.11
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.enable_debug_logging = 0
-        self.enable_display = 0
-        self.enable_interval_recording = 0
-        self.enable_trigger_recording = 0
-        self.sleep_duration_interval = 320.58
-        self.enable_custom_temp = 0
-        self.temperature_offset = 0.0
-        self._update_configuration_settings_list()

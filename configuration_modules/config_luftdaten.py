@@ -65,16 +65,6 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
                 self.interval_seconds = 10.0
         self._update_configuration_settings_list()
 
-    def set_settings_for_test1(self):
-        self.luftdaten_enabled = 0
-        self.interval_seconds = 9663.09
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.luftdaten_enabled = 1
-        self.interval_seconds = 55712.21
-        self._update_configuration_settings_list()
-
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.luftdaten_enabled), str(self.interval_seconds)]

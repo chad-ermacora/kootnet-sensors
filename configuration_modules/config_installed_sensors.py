@@ -140,36 +140,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             return new_file_content[:-4]
         return "N/A"
 
-    def set_settings_for_test1(self):
-        self._set_default_has_sensor_variables()
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.linux_system = 1
-        self.raspberry_pi = 1
-
-        self.raspberry_pi_sense_hat = 1
-        self.pimoroni_bh1745 = 1
-        self.pimoroni_as7262 = 1
-        self.pimoroni_mcp9600 = 1
-        self.pimoroni_bmp280 = 1
-        self.pimoroni_bme680 = 1
-        self.pimoroni_enviro = 1
-        self.pimoroni_enviroplus = 1
-        self.pimoroni_sgp30 = 1
-        self.pimoroni_pms5003 = 1
-        self.pimoroni_msa301 = 1
-        self.pimoroni_lsm303d = 1
-        self.pimoroni_icm20948 = 1
-        self.pimoroni_vl53l1x = 1
-        self.pimoroni_ltr_559 = 1
-        self.pimoroni_veml6075 = 1
-
-        self.pimoroni_matrix_11x7 = 1
-        self.pimoroni_st7735 = 1
-        self.pimoroni_mono_oled_luma = 1
-        self._update_configuration_settings_list()
-
     def _update_variables_from_settings_list(self):
         if self.valid_setting_count == len(self.config_settings):
             self.linux_system = int(self.config_settings[0])

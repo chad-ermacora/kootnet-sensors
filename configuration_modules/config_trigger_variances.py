@@ -54,39 +54,31 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
                                       "Magnetometer Z variance", "Seconds between 'Magnetometer' readings",
                                       "Enable Gyroscope", "Gyroscope X variance", "Gyroscope Y variance",
                                       "Gyroscope Z variance", "Seconds between 'Gyroscope' readings"]
+        self._disable_all_triggers()
 
-        self.sensor_uptime_enabled = 0
         self.sensor_uptime_wait_seconds = 1209600.0  # Basically 4 weeks
 
-        self.cpu_temperature_enabled = 0
         self.cpu_temperature_variance = 5.0
         self.cpu_temperature_wait_seconds = 1.0
 
-        self.env_temperature_enabled = 0
         self.env_temperature_variance = 5.0
         self.env_temperature_wait_seconds = 1.0
 
-        self.pressure_enabled = 0
         self.pressure_variance = 10
         self.pressure_wait_seconds = 1.0
 
-        self.humidity_enabled = 0
         self.humidity_variance = 5.0
         self.humidity_wait_seconds = 1.0
 
-        self.altitude_enabled = 0
         self.altitude_variance = 10
         self.altitude_wait_seconds = 1.0
 
-        self.distance_enabled = 0
         self.distance_variance = 5.0
         self.distance_wait_seconds = 1.0
 
-        self.lumen_enabled = 0
         self.lumen_variance = 100.0
         self.lumen_wait_seconds = 1.0
 
-        self.colour_enabled = 0
         self.red_variance = 15.0
         self.orange_variance = 15.0
         self.yellow_variance = 15.0
@@ -95,38 +87,32 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self.violet_variance = 15.0
         self.colour_wait_seconds = 10.0
 
-        self.ultra_violet_enabled = 0
         self.ultra_violet_index_variance = 5.0
         self.ultra_violet_a_variance = 10.0
         self.ultra_violet_b_variance = 10.0
         self.ultra_violet_wait_seconds = 5.0
 
-        self.gas_enabled = 0
         self.gas_resistance_index_variance = 100.0
         self.gas_oxidising_variance = 100.0
         self.gas_reducing_variance = 100.0
         self.gas_nh3_variance = 100.0
         self.gas_wait_seconds = 30.0
 
-        self.particulate_matter_enabled = 0
         self.particulate_matter_1_variance = 4.0
         self.particulate_matter_2_5_variance = 4.0
         self.particulate_matter_10_variance = 4.0
         self.particulate_matter_wait_seconds = 60.0
 
-        self.accelerometer_enabled = 0
         self.accelerometer_x_variance = 0.1
         self.accelerometer_y_variance = 0.1
         self.accelerometer_z_variance = 0.1
         self.accelerometer_wait_seconds = 0.3
 
-        self.magnetometer_enabled = 0
         self.magnetometer_x_variance = 25.0
         self.magnetometer_y_variance = 25.0
         self.magnetometer_z_variance = 25.0
         self.magnetometer_wait_seconds = 0.3
 
-        self.gyroscope_enabled = 0
         self.gyroscope_x_variance = 25.0
         self.gyroscope_y_variance = 25.0
         self.gyroscope_z_variance = 25.0
@@ -141,9 +127,12 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
 
+    # noinspection PyAttributeOutsideInit
     def update_with_html_request(self, html_request):
         """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
         logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
+
+        self._disable_all_triggers()
 
         if html_request.form.get("checkbox_sensor_uptime") is not None:
             self.sensor_uptime_enabled = 1
@@ -239,164 +228,6 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
 
     def reset_settings(self):
         self.__init__(load_from_file=False)
-
-    def set_settings_for_test1(self):
-        self.sensor_uptime_enabled = 0
-        self.sensor_uptime_wait_seconds = 240.729
-
-        self.cpu_temperature_enabled = 0
-        self.cpu_temperature_variance = 65.72
-        self.cpu_temperature_wait_seconds = 65.72
-
-        self.env_temperature_enabled = 0
-        self.env_temperature_variance = 65.72
-        self.env_temperature_wait_seconds = 65.72
-
-        self.pressure_enabled = 0
-        self.pressure_variance = 65.72
-        self.pressure_wait_seconds = 65.72
-
-        self.humidity_enabled = 0
-        self.humidity_variance = 65.72
-        self.humidity_wait_seconds = 65.72
-
-        self.altitude_enabled = 0
-        self.altitude_variance = 65.72
-        self.altitude_wait_seconds = 65.72
-
-        self.distance_enabled = 0
-        self.distance_variance = 65.72
-        self.distance_wait_seconds = 65.72
-
-        self.lumen_enabled = 0
-        self.lumen_variance = 65.72
-        self.lumen_wait_seconds = 65.72
-
-        self.colour_enabled = 0
-        self.red_variance = 65.72
-        self.orange_variance = 65.72
-        self.yellow_variance = 65.72
-        self.green_variance = 65.72
-        self.blue_variance = 65.72
-        self.violet_variance = 65.72
-        self.colour_wait_seconds = 65.72
-
-        self.ultra_violet_enabled = 0
-        self.ultra_violet_index_variance = 65.72
-        self.ultra_violet_a_variance = 65.72
-        self.ultra_violet_b_variance = 65.72
-        self.ultra_violet_wait_seconds = 65.72
-
-        self.gas_enabled = 0
-        self.gas_resistance_index_variance = 65.72
-        self.gas_oxidising_variance = 65.72
-        self.gas_reducing_variance = 65.72
-        self.gas_nh3_variance = 65.72
-        self.gas_wait_seconds = 65.72
-
-        self.particulate_matter_enabled = 0
-        self.particulate_matter_1_variance = 65.72
-        self.particulate_matter_2_5_variance = 65.72
-        self.particulate_matter_10_variance = 65.72
-        self.particulate_matter_wait_seconds = 65.72
-
-        self.accelerometer_enabled = 0
-        self.accelerometer_x_variance = 65.72
-        self.accelerometer_y_variance = 65.72
-        self.accelerometer_z_variance = 65.72
-        self.accelerometer_wait_seconds = 65.72
-
-        self.magnetometer_enabled = 0
-        self.magnetometer_x_variance = 65.72
-        self.magnetometer_y_variance = 65.72
-        self.magnetometer_z_variance = 65.72
-        self.magnetometer_wait_seconds = 65.72
-
-        self.gyroscope_enabled = 0
-        self.gyroscope_x_variance = 65.72
-        self.gyroscope_y_variance = 65.72
-        self.gyroscope_z_variance = 65.72
-        self.gyroscope_wait_seconds = 65.72
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.sensor_uptime_enabled = 1
-        self.sensor_uptime_wait_seconds = 658.169
-
-        self.cpu_temperature_enabled = 1
-        self.cpu_temperature_variance = 84.16
-        self.cpu_temperature_wait_seconds = 84.16
-
-        self.env_temperature_enabled = 1
-        self.env_temperature_variance = 84.16
-        self.env_temperature_wait_seconds = 84.16
-
-        self.pressure_enabled = 1
-        self.pressure_variance = 84.16
-        self.pressure_wait_seconds = 84.16
-
-        self.humidity_enabled = 1
-        self.humidity_variance = 84.16
-        self.humidity_wait_seconds = 84.16
-
-        self.altitude_enabled = 1
-        self.altitude_variance = 84.16
-        self.altitude_wait_seconds = 84.16
-
-        self.distance_enabled = 1
-        self.distance_variance = 84.16
-        self.distance_wait_seconds = 84.16
-
-        self.lumen_enabled = 1
-        self.lumen_variance = 84.16
-        self.lumen_wait_seconds = 84.16
-
-        self.colour_enabled = 1
-        self.red_variance = 84.16
-        self.orange_variance = 84.16
-        self.yellow_variance = 84.16
-        self.green_variance = 84.16
-        self.blue_variance = 84.16
-        self.violet_variance = 84.16
-        self.colour_wait_seconds = 84.16
-
-        self.ultra_violet_enabled = 1
-        self.ultra_violet_index_variance = 84.16
-        self.ultra_violet_a_variance = 84.16
-        self.ultra_violet_b_variance = 84.16
-        self.ultra_violet_wait_seconds = 84.16
-
-        self.gas_enabled = 1
-        self.gas_resistance_index_variance = 84.16
-        self.gas_oxidising_variance = 84.16
-        self.gas_reducing_variance = 84.16
-        self.gas_nh3_variance = 84.16
-        self.gas_wait_seconds = 84.16
-
-        self.particulate_matter_enabled = 1
-        self.particulate_matter_1_variance = 84.16
-        self.particulate_matter_2_5_variance = 84.16
-        self.particulate_matter_10_variance = 84.16
-        self.particulate_matter_wait_seconds = 84.16
-
-        self.accelerometer_enabled = 1
-        self.accelerometer_x_variance = 84.16
-        self.accelerometer_y_variance = 84.16
-        self.accelerometer_z_variance = 84.16
-        self.accelerometer_wait_seconds = 84.16
-
-        self.magnetometer_enabled = 1
-        self.magnetometer_x_variance = 84.16
-        self.magnetometer_y_variance = 84.16
-        self.magnetometer_z_variance = 84.16
-        self.magnetometer_wait_seconds = 84.16
-
-        self.gyroscope_enabled = 1
-        self.gyroscope_x_variance = 84.16
-        self.gyroscope_y_variance = 84.16
-        self.gyroscope_z_variance = 84.16
-        self.gyroscope_wait_seconds = 84.16
-        self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
@@ -497,6 +328,23 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         else:
             log_msg = "Error setting variables from "
             logger.primary_logger.warning(log_msg + str(self.config_file_location))
+
+    def _disable_all_triggers(self):
+        self.sensor_uptime_enabled = 0
+        self.cpu_temperature_enabled = 0
+        self.env_temperature_enabled = 0
+        self.pressure_enabled = 0
+        self.humidity_enabled = 0
+        self.altitude_enabled = 0
+        self.distance_enabled = 0
+        self.lumen_enabled = 0
+        self.colour_enabled = 0
+        self.ultra_violet_enabled = 0
+        self.gas_enabled = 0
+        self.particulate_matter_enabled = 0
+        self.accelerometer_enabled = 0
+        self.magnetometer_enabled = 0
+        self.gyroscope_enabled = 0
 
 
 # Not used yet, considering high low variances

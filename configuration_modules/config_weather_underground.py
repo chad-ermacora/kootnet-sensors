@@ -86,24 +86,6 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
                 self.station_key = str(html_request.form.get("station_key")).strip()
         self._update_configuration_settings_list()
 
-    def set_settings_for_test1(self):
-        self.weather_underground_enabled = 0
-        self.interval_seconds = 999.9
-        self.outdoor_sensor = 0
-        self.station_id = "Test_1"
-        self.station_key = "Test_2"
-        self.wu_rapid_fire_enabled = 0
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.weather_underground_enabled = 1
-        self.interval_seconds = 78855.321
-        self.outdoor_sensor = 1
-        self.station_id = "Test_3"
-        self.station_key = "Test_5"
-        self.wu_rapid_fire_enabled = 1
-        self._update_configuration_settings_list()
-
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.weather_underground_enabled), str(self.interval_seconds),

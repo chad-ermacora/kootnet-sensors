@@ -172,56 +172,6 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self._update_configuration_settings_list()
 
-    def set_settings_for_test1(self):
-        self.selected_action = self.radio_download_reports
-        self.selected_send_type = self.radio_send_type_relayed
-        self.sensor_ip_dns1 = "1.2.3.4"
-        self.sensor_ip_dns2 = "1.2.3.4"
-        self.sensor_ip_dns3 = "1.2.3.4"
-        self.sensor_ip_dns4 = "1.2.3.4"
-        self.sensor_ip_dns5 = "1.2.3.4"
-        self.sensor_ip_dns6 = "1.2.3.4"
-        self.sensor_ip_dns7 = "1.2.3.4"
-        self.sensor_ip_dns8 = "1.2.3.4"
-        self.sensor_ip_dns9 = "1.2.3.4"
-        self.sensor_ip_dns10 = "1.2.3.4"
-        self.sensor_ip_dns11 = "1.2.3.4"
-        self.sensor_ip_dns12 = "1.2.3.4"
-        self.sensor_ip_dns13 = "1.2.3.4"
-        self.sensor_ip_dns14 = "1.2.3.4"
-        self.sensor_ip_dns15 = "1.2.3.4"
-        self.sensor_ip_dns16 = "1.2.3.4"
-        self.sensor_ip_dns17 = "1.2.3.4"
-        self.sensor_ip_dns18 = "1.2.3.4"
-        self.sensor_ip_dns19 = "1.2.3.4"
-        self.sensor_ip_dns20 = "1.2.3.4"
-        self._update_configuration_settings_list()
-
-    def set_settings_for_test2(self):
-        self.selected_action = self.radio_download_logs
-        self.selected_send_type = self.radio_send_type_direct
-        self.sensor_ip_dns1 = "229.165.237.111"
-        self.sensor_ip_dns2 = "229.165.237.111"
-        self.sensor_ip_dns3 = "229.165.237.111"
-        self.sensor_ip_dns4 = "229.165.237.111"
-        self.sensor_ip_dns5 = "229.165.237.111"
-        self.sensor_ip_dns6 = "229.165.237.111"
-        self.sensor_ip_dns7 = "229.165.237.111"
-        self.sensor_ip_dns8 = "229.165.237.111"
-        self.sensor_ip_dns9 = "229.165.237.111"
-        self.sensor_ip_dns10 = "229.165.237.111"
-        self.sensor_ip_dns11 = "229.165.237.111"
-        self.sensor_ip_dns12 = "229.165.237.111"
-        self.sensor_ip_dns13 = "229.165.237.111"
-        self.sensor_ip_dns14 = "229.165.237.111"
-        self.sensor_ip_dns15 = "229.165.237.111"
-        self.sensor_ip_dns16 = "229.165.237.111"
-        self.sensor_ip_dns17 = "229.165.237.111"
-        self.sensor_ip_dns18 = "229.165.237.111"
-        self.sensor_ip_dns19 = "229.165.237.111"
-        self.sensor_ip_dns20 = "229.165.237.111"
-        self._update_configuration_settings_list()
-
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.selected_action), str(self.selected_send_type),
