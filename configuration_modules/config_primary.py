@@ -32,7 +32,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                       "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
                                       "Recording Interval in Seconds ** Caution **",
                                       "Enable Custom Temperature Offset", "Current Temperature Offset",
-                                      "Web Portal Port # (Default is 10065)"]
+                                      "HTTPS Port Number (Default is 10065)"]
         self.enable_debug_logging = 0
         self.enable_display = 0
         self.enable_interval_recording = 1
