@@ -76,9 +76,8 @@ weather_underground_config = sensor_config_dir + "/online_services_weather_under
 luftdaten_config = sensor_config_dir + "/online_services_luftdaten.conf"
 osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
 
-plotly_save_folder = sensor_data_dir
-plotly_filename_interval = "IntervalPlotlySensorGraph.html"
-plotly_filename_triggers = "TriggersPlotlySensorGraph.html"
+plotly_graph_interval = sensor_data_dir + "/IntervalPlotlySensorGraph.html"
+plotly_graph_triggers = sensor_data_dir + "/TriggersPlotlySensorGraph.html"
 
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"

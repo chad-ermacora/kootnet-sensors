@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime
 from flask import Blueprint, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -7,9 +8,11 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import os_cli_commands
+from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
 from sensor_modules import sensor_access
+
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
 sensor_network_commands = app_cached_variables.CreateNetworkGetCommands()
@@ -56,6 +59,43 @@ def get_sensor_program_version():
 def get_sql_db_size():
     logger.network_logger.debug("* Sensor's Database Size sent to " + str(request.remote_addr))
     return str(sensor_access.get_db_size())
+
+
+@html_system_commands_routes.route("/UploadSQLDatabase", methods=["GET", "POST"])
+@auth.login_required
+def put_sql_db():
+    logger.network_logger.info("* Sensor's Database Replaced by " + str(request.remote_addr))
+    return_message_ok = "The previous database was archived and replaced with the uploaded Database."
+    return_message_fail = "Invalid SQLite3 Database File."
+    return_backup_fail = "Upload cancelled due to failed database backup."
+
+    temp_db_location = file_locations.sensor_data_dir + "/upload_test.sqlite"
+    new_database = request.files["command_data"]
+    if new_database is not None:
+        new_database.save(temp_db_location)
+        if validate_sqlite_database(database_location=temp_db_location):
+            check_database_structure(database_location=temp_db_location)
+            if _move_database():
+                os.system("mv -f " + temp_db_location + " " + file_locations.sensor_database)
+                return message_and_return("Sensor Database Uploaded OK", text_message2=return_message_ok, url="/")
+            else:
+                return message_and_return("Sensor Database Backup Failed", text_message2=return_backup_fail, url="/")
+    return message_and_return("Sensor Database Uploaded Failed", text_message2=return_message_fail, url="/")
+
+
+def _move_database():
+    sql_filename = app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + "SensorDatabase.sqlite"
+    zip_filename = str(datetime.utcnow().strftime("%Y-%m-%d_%H_%M_%S")) + "SensorDatabase.zip"
+    try:
+        zip_content = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
+        app_generic_functions.zip_files([sql_filename], [zip_content], save_type="save_to_disk",
+                                        file_location=file_locations.sensor_data_dir + "/" + zip_filename)
+        logger.network_logger.info("* Sensor's Database backed up as " + file_locations.sensor_data_dir + zip_filename)
+        os.system("rm " + file_locations.sensor_database)
+        return True
+    except Exception as error:
+        logger.network_logger.error("Unable to backup database as zip - " + str(error))
+    return False
 
 
 @html_system_commands_routes.route("/GetZippedSQLDatabaseSize")

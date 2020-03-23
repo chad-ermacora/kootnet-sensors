@@ -42,7 +42,7 @@ def create_plotly_graph(new_graph_data):
         new_graph_data.bypass_sql_skip = True
 
     logger.primary_logger.info("Plotly Graph Generation Started")
-    graph_multiprocess = Process(target=_start_plotly_graph, args=[new_graph_data])
+    graph_multiprocess = Process(target=_start_plotly_graph, args=(new_graph_data,))
     graph_multiprocess.start()
     graph_multiprocess.join()
     logger.primary_logger.info("Plotly Graph Generation Complete")
@@ -290,9 +290,10 @@ def _plotly_graph(graph_data):
                 fig['layout'].update(height=2048)
 
             if graph_data.graph_table == app_cached_variables.database_variables.table_interval:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_interval)
+                plot_file_location = file_locations.plotly_graph_interval
             else:
-                offline.plot(fig, filename=graph_data.save_to + file_locations.plotly_filename_triggers)
+                plot_file_location = file_locations.plotly_graph_triggers
+            offline.plot(fig, filename=plot_file_location, auto_open=False)
             logger.primary_logger.debug("Plotly Graph Creation - OK")
         except Exception as error:
             logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))
