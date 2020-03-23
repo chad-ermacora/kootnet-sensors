@@ -158,6 +158,7 @@ def html_edit_configurations():
                                CheckedWiFiSecurityNone1=wifi_security_type_none1,
                                CheckedDHCP=dhcp_checkbox,
                                IPHostname=app_cached_variables.hostname,
+                               IPWebPort=app_config_access.current_config.web_portal_port,
                                IPv4Address=app_cached_variables.ip,
                                IPv4AddressDisabled=ip_disabled,
                                IPv4Subnet=app_cached_variables.ip_subnet,

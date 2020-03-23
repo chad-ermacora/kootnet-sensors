@@ -22,6 +22,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import delayed_cache_update
+from operations_modules import app_config_access
 
 https_import_error_msg = ""
 https_import_errors = True
@@ -55,9 +56,6 @@ except ImportError as https_import_error_msg_raw:
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     Flask, Compress, WSGIServer = None, None, None
 
-flask_http_ip = ""
-flask_http_port = 10065
-
 
 class CreateSensorHTTP:
     """ Creates an instance of the HTTPS Web Portal server using Flask and WSGIServer from gevent. """
@@ -85,10 +83,12 @@ class CreateSensorHTTP:
         thread_function(delayed_cache_update)
 
         try:
-            http_server = WSGIServer((flask_http_ip, flask_http_port), app,
+            flask_http_ip = app_config_access.current_config.flask_http_ip
+            flask_port_number = app_config_access.current_config.web_portal_port
+            http_server = WSGIServer((flask_http_ip, flask_port_number), app,
                                      keyfile=file_locations.http_ssl_key,
                                      certfile=file_locations.http_ssl_crt)
-            logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_http_port))
+            logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_port_number))
             http_server.serve_forever()
         except Exception as error:
             logger.primary_logger.critical("--- Failed to Start HTTPS Server: " + str(error))

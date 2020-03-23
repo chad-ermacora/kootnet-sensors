@@ -27,11 +27,12 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 7
+        self.valid_setting_count = 8
         self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
                                       "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
                                       "Recording Interval in Seconds ** Caution **",
-                                      "Enable Custom Temperature Offset", "Current Temperature Offset"]
+                                      "Enable Custom Temperature Offset", "Current Temperature Offset",
+                                      "Web Portal Port # (Default is 10065)"]
         self.enable_debug_logging = 0
         self.enable_display = 0
         self.enable_interval_recording = 1
@@ -39,6 +40,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.sleep_duration_interval = 300.0
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
+
+        self.flask_http_ip = ""
+        self.web_portal_port = 10065
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -79,6 +83,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             new_temp = float(html_request.form.get("custom_temperature_offset"))
             self.enable_custom_temp = 1
             self.temperature_offset = new_temp
+
+        if html_request.form.get("ip_web_port") is not None:
+            self.web_portal_port = int(html_request.form.get("ip_web_port"))
         self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
@@ -86,7 +93,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
                                 str(self.enable_interval_recording), str(self.enable_trigger_recording),
                                 str(self.sleep_duration_interval), str(self.enable_custom_temp),
-                                str(self.temperature_offset)]
+                                str(self.temperature_offset), str(self.web_portal_port)]
 
     def _update_variables_from_settings_list(self):
         if self.valid_setting_count == len(self.config_settings):
@@ -97,6 +104,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.sleep_duration_interval = float(self.config_settings[4])
             self.enable_custom_temp = int(self.config_settings[5])
             self.temperature_offset = float(self.config_settings[6])
+            self.web_portal_port = int(self.config_settings[7])
         else:
             log_msg = "Invalid number of setting for "
             logger.primary_logger.warning(log_msg + str(self.config_file_location))
