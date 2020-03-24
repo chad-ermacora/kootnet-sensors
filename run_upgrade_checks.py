@@ -39,20 +39,15 @@ def run_upgrade_checks():
     elif previous_version.major_version == "Beta":
         if previous_version.feature_version == 29:
             if previous_version.minor_version < 13:
-                program_upgrade_functions.reset_variance_config()
                 program_upgrade_functions.reset_installed_sensors()
+                program_upgrade_functions.reset_variance_config()
     elif previous_version.major_version == "Alpha":
-        if previous_version.feature_version < 26:
-            msg = "Upgraded: " + software_version.old_version + " || New: " + software_version.version
-            logger.primary_logger.info(msg)
-            no_changes = False
-            program_upgrade_functions.reset_installed_sensors()
-            program_upgrade_functions.reset_primary_config()
-            program_upgrade_functions.reset_variance_config()
-        elif previous_version.feature_version > 25:
-            no_changes = False
-            program_upgrade_functions.reset_installed_sensors()
-            program_upgrade_functions.reset_variance_config()
+        msg = "Upgraded: " + software_version.old_version + " || New: " + software_version.version
+        logger.primary_logger.info(msg)
+        no_changes = False
+        program_upgrade_functions.reset_installed_sensors()
+        program_upgrade_functions.reset_primary_config()
+        program_upgrade_functions.reset_variance_config()
     else:
         no_changes = False
         msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
