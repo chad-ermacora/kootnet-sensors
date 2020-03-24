@@ -59,7 +59,7 @@ def run_tests():
     new_text = redirect_string.getvalue()
     app_text_output.enable()
     if test_http_server.bad_sensor_contact:
-        new_text += "-- Sensor Offline --"
+        new_text += "-- Sensor Offline --\n\n"
         if test_http_server.sensor_address == "localhost":
             new_text += "\nLocal Primary Log\n" + logger.get_sensor_log(file_locations.primary_log)
     elif test_http_server.bad_sensor_login:
