@@ -24,6 +24,12 @@ def check_online():
     return "OK"
 
 
+@html_system_commands_routes.route("/TestLogin")
+@auth.login_required
+def test_login():
+    return "OK"
+
+
 @html_system_commands_routes.route("/GetHostName")
 def get_hostname():
     logger.network_logger.debug("* Sensor's HostName sent to " + str(request.remote_addr))
