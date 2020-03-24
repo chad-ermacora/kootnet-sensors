@@ -1,6 +1,7 @@
 import os
 import shutil
 from flask import Blueprint, render_template, request
+from werkzeug.security import generate_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -10,7 +11,7 @@ from operations_modules import app_config_access
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules import app_validation_checks
-from http_server.server_http_auth import auth
+from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 from sensor_modules import sensor_access
 
@@ -168,7 +169,8 @@ def html_edit_configurations():
                                IPDNS1=app_cached_variables.dns1,
                                IPDNS1Disabled=dns1_disabled,
                                IPDNS2=app_cached_variables.dns2,
-                               IPDNS2Disabled=dns2_disabled)
+                               IPDNS2Disabled=dns2_disabled,
+                               LoginUserName=app_cached_variables.http_flask_user)
     except Exception as error:
         logger.network_logger.error("HTML unable to display Configurations: " + str(error))
         return render_template("message_return.html", message2="Unable to Display Configurations...")
@@ -334,6 +336,25 @@ def html_set_wifi_config():
                              "Alphanumeric Characters, dashes, underscores and spaces."
             return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
     return message_and_return("Unable to Process WiFi Configuration", url="/ConfigurationsHTML")
+
+
+@html_sensor_config_routes.route("/EditLogin", methods=["POST"])
+@auth.login_required
+def html_set_login_credentials():
+    logger.primary_logger.warning("*** Login Credentials Changed - Source " + str(request.remote_addr))
+    if request.method == "POST":
+        if request.form.get("login_username") and request.form.get("login_password"):
+            temp_username = str(request.form.get("login_username"))
+            temp_password = str(request.form.get("login_password"))
+            if len(temp_username) > 3 and len(temp_password) > 3:
+                app_cached_variables.http_flask_user = temp_username
+                app_cached_variables.http_flask_password = generate_password_hash(temp_password)
+                save_http_auth_to_file(temp_username, temp_password)
+                message = "The Username and Password has been updated"
+                return message_and_return("Username and Password Updated", text_message2=message, url="/ConfigurationsHTML")
+        message = "Username and Password must be 4 to 62 characters long and cannot be blank."
+        return message_and_return("Invalid Username or Password", text_message2=message, url="/ConfigurationsHTML")
+    return message_and_return("Unable to Process Login Credentials", url="/ConfigurationsHTML")
 
 
 @html_sensor_config_routes.route("/HTMLRawConfigurations")

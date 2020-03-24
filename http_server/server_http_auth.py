@@ -26,6 +26,9 @@ from operations_modules import app_cached_variables
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
 
+min_length_username = 4
+min_length_password = 4
+
 
 def set_http_auth_from_file():
     """ Loads Web Portal (flask app) login credentials from file and updates them in the configuration. """
@@ -49,21 +52,14 @@ def set_http_auth_from_file():
         app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
-def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
-    if len(new_http_flask_user) > 2 and len(new_http_flask_password) > 2:
-        new_http_flask_user = new_http_flask_user
-        new_http_flask_password = new_http_flask_password
-        return new_http_flask_user, new_http_flask_password
-    else:
-        logger.primary_logger.warning("HTTP Authentication User or Password are less then 4 chars.  Using default.")
-        return default_http_flask_user, default_http_flask_password
-
-
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
     """ Saves Web Portal (flask app) login credentials to file. """
     try:
-        verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
-        save_data = verified_user + "\n" + generate_password_hash(verified_password)
+        if len(new_http_flask_user) < min_length_username:
+            new_http_flask_user = default_http_flask_user
+        if len(new_http_flask_password) < min_length_password:
+            new_http_flask_password = default_http_flask_password
+        save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
         with open(file_locations.http_auth, "w") as auth_file:
             auth_file.write(save_data)
     except Exception as error:

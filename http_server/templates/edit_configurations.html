@@ -29,6 +29,15 @@
 
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="trigger-variances-tab">
+                Trigger Variances
+            </a>
+        </li>
+
+        <br>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="network-config-tab">
                 Networking
             </a>
@@ -43,8 +52,8 @@
 
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-               data-mui-controls="trigger-variances-tab">
-                Trigger Variances
+               data-mui-controls="change-login-tab">
+                Change Login
             </a>
         </li>
     </ul>
@@ -53,8 +62,8 @@
 
     <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigMain">
-            <fieldset style="text-align: center">
-                <h2><u><a style="color: black" href="{{ PageURL }}">Main Configuration</a></u></h2>
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Main Configuration</a></u></h2>
 
                 <div class="mui-textfield">
                     <label style="color: black; font-size: medium;">
@@ -136,10 +145,9 @@
     </div>
 
     <div class="mui-tabs__pane" id="installed-sensors-tab">
-        <form class="mui-form" method="POST" style="width: 575px; min-height: 300px;"
-              action="/EditInstalledSensors">
-            <fieldset style="text-align: center">
-                <h2><u><a style="color: black" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
+        <form class="mui-form" method="POST" style="width: 575px; min-height: 300px;" action="/EditInstalledSensors">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
 
                 <h4><u>Raspberry Pi</u></h4>
 
@@ -330,149 +338,12 @@
         </form>
     </div>
 
-    <div class="mui-tabs__pane" id="network-config-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-              action="/EditConfigIPv4">
-            <fieldset style="text-align: center;">
-                <h2><u><a style="color: black;" href="{{ PageURL }}">Network Configuration</a></u></h2>
-
-                <div class="mui-textfield">
-                    <label style="color: black;">
-                        HostName
-                        <br>
-                        <input style="width: 125px;" type="text" id="ip_hostname" name="ip_hostname" required
-                               placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
-                               value="{{ IPHostname }}">
-                    </label>
-                </div>
-
-                <br>
-                <h4><u>Wireless IP Settings</u></h4>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" id="IP_DHCP" name="ip_dhcp" value="" {{ CheckedDHCP }}>
-                        DHCP
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        IPv4 Address
-                        <br>
-                        <input style="width: 125px" type="text" name="ip_address"
-                               placeholder="eg. 192.168.10.11" minlength="7"
-                               value="{{ IPv4Address }}" {{ IPv4AddressDisabled }}>
-                    </label>
-                </div>
-
-                <div class="mui-textfield" style="inset-inline-end: auto">
-                    <label style="color: black">
-                        <a style="color: black" target="_blank"
-                           href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
-                            Subnet mask
-                        </a>
-                        <br>
-                        <input style="width: 50px" type="text" name="ip_subnet"
-                               placeholder="eg. /24" minlength="2" maxlength="3"
-                               value="{{ IPv4Subnet }}" {{ IPv4SubnetDisabled }}>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Gateway
-                        <br>
-                        <input style="width: 125px" type="text" name="ip_gateway"
-                               placeholder="eg. 192.168.10.1" minlength="7" maxlength="15"
-                               value="{{ IPGateway }}" {{ IPGatewayDisabled }}>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Primary DNS
-                        <br>
-                        <input style="width: 125px" type="text" name="ip_dns1"
-                               placeholder="eg. 8.8.8.8" minlength="7" maxlength="15"
-                               value="{{ IPDNS1 }}" {{ IPDNS1Disabled }}>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Secondary DNS
-                        <br>
-                        <input style="width: 125px" type="text" name="ip_dns2"
-                               placeholder="eg. 8.8.4.4" minlength="7" maxlength="15"
-                               value="{{ IPDNS2 }}" {{ IPDNS2Disabled }}>
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-            </fieldset>
-        </form>
-    </div>
-
-    <div class="mui-tabs__pane" id="wifi-config-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
-              action="/EditConfigWifi">
-            <fieldset style="text-align: center">
-                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
-
-                <label>
-                    <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
-                        Two Character Country Code
-                    </a>
-                    <br>
-                    <input type="text" style="width: 25px" maxlength="2" minlength="2"
-                           name="country_code" value="{{ WirelessCountryCode }}" required>
-                </label>
-
-                <br>
-                <br>
-
-                <label>Wireless Security</label>
-                <div class="mui-radio">
-                    <label class="container_radio">Secured (WEP/WPA/WPA2)
-                        <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
-                        <span class="checkmark_radio"></span>
-                    </label>
-                    <label class="container_radio">Open (None)
-                        <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
-                        <span class="checkmark_radio"></span>
-                    </label>
-                </div>
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Wireless Network Name (SSID)
-                        <br>
-                        <input style="width: 150px" type="text" name="ssid1" maxlength="32"
-                               placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
-                    </label>
-                </div>
-                <br>
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Wireless Key
-                        <br>
-                        <input style="width: 175px" type="password" name="wifi_key1"
-                               placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
-                               value="">
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
-            </fieldset>
-        </form>
-    </div>
 
     <div class="mui-tabs__pane" id="trigger-variances-tab">
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
-            <fieldset style="text-align: center">
-                <h2><u><a style="color: black" href="{{ PageURL }}">Trigger Variances</a></u></h2>
-                <h5 style="color: #930a09"><b>
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Trigger Variances</a></u></h2>
+                <h5 style="color: #930a09;"><b>
                     ** Warning Trigger Variances are still under active development **
                     <br>
                     It is recommended to check the logs periodically
@@ -1008,6 +879,172 @@
                 </div>
                 <br>
                 <button type="submit" class="mui-btn mui-btn--raised" formaction="/EditTriggerVariances">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="network-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigIPv4">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Network Configuration</a></u></h2>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        HostName
+                        <br>
+                        <input style="width: 125px;" type="text" id="ip_hostname" name="ip_hostname" required
+                               placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
+                               value="{{ IPHostname }}">
+                    </label>
+                </div>
+
+                <br>
+                <h4><u>Wireless IP Settings</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" id="IP_DHCP" name="ip_dhcp" value="" {{ CheckedDHCP }}>
+                        DHCP
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        IPv4 Address
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_address"
+                               placeholder="eg. 192.168.10.11" minlength="7"
+                               value="{{ IPv4Address }}" {{ IPv4AddressDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield" style="inset-inline-end: auto">
+                    <label style="color: black">
+                        <a style="color: black" target="_blank"
+                           href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                            Subnet mask
+                        </a>
+                        <br>
+                        <input style="width: 50px" type="text" name="ip_subnet"
+                               placeholder="eg. /24" minlength="2" maxlength="3"
+                               value="{{ IPv4Subnet }}" {{ IPv4SubnetDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Gateway
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_gateway"
+                               placeholder="eg. 192.168.10.1" minlength="7" maxlength="15"
+                               value="{{ IPGateway }}" {{ IPGatewayDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Primary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns1"
+                               placeholder="eg. 8.8.8.8" minlength="7" maxlength="15"
+                               value="{{ IPDNS1 }}" {{ IPDNS1Disabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Secondary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns2"
+                               placeholder="eg. 8.8.4.4" minlength="7" maxlength="15"
+                               value="{{ IPDNS2 }}" {{ IPDNS2Disabled }}>
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="wifi-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigWifi">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
+
+                <label>
+                    <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
+                        Two Character Country Code
+                    </a>
+                    <br>
+                    <input type="text" style="width: 25px" maxlength="2" minlength="2"
+                           name="country_code" value="{{ WirelessCountryCode }}" required>
+                </label>
+
+                <br>
+                <br>
+
+                <label>Wireless Security</label>
+                <div class="mui-radio">
+                    <label class="container_radio">Secured (WEP/WPA/WPA2)
+                        <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                        <span class="checkmark_radio"></span>
+                    </label>
+                    <label class="container_radio">Open (None)
+                        <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                        <span class="checkmark_radio"></span>
+                    </label>
+                </div>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Network Name (SSID)
+                        <br>
+                        <input style="width: 150px" type="text" name="ssid1" maxlength="32"
+                               placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                    </label>
+                </div>
+                <br>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Key
+                        <br>
+                        <input style="width: 175px" type="password" name="wifi_key1"
+                               placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
+                               value="">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="change-login-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditLogin">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Change Login</a></u></h2>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        Username
+                        <br>
+                        <input style="width: 125px;" type="text" id="login_username" name="login_username" required
+                               placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        Password
+                        <br>
+                        <input style="width: 125px;" type="password" id="login_password" name="login_password" required
+                               placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
             </fieldset>
         </form>
     </div>
