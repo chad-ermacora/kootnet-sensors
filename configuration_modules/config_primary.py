@@ -25,7 +25,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     """ Creates the Primary Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.primary_config)
+        CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 8
         self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
@@ -96,7 +96,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                 str(self.temperature_offset), str(self.web_portal_port)]
 
     def _update_variables_from_settings_list(self):
-        if self.valid_setting_count == len(self.config_settings):
+        bad_load = 0
+        try:
             self.enable_debug_logging = int(self.config_settings[0])
             self.enable_display = int(self.config_settings[1])
             self.enable_interval_recording = int(self.config_settings[2])
@@ -104,7 +105,21 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.sleep_duration_interval = float(self.config_settings[4])
             self.enable_custom_temp = int(self.config_settings[5])
             self.temperature_offset = float(self.config_settings[6])
-            self.web_portal_port = int(self.config_settings[7])
-        else:
-            log_msg = "Invalid number of setting for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+        except Exception as error:
+            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+            logger.primary_logger.error(log_msg + str(error))
+            bad_load += 100
+
+        if bad_load < 99:
+            try:
+                self.web_portal_port = int(self.config_settings[7])
+            except Exception as error:
+                logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
+                logger.primary_logger.debug(str(error))
+                bad_load += 1
+
+        if bad_load:
+            self._update_configuration_settings_list()
+            if self.load_from_file:
+                logger.primary_logger.info("Saving Primary Configuration.")
+                self.save_config_to_file()

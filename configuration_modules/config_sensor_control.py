@@ -28,7 +28,8 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
     """ Creates the HTML Sensor Control Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.html_sensor_control_config)
+        html_sensor_control_config = file_locations.html_sensor_control_config
+        CreateGeneralConfiguration.__init__(self, html_sensor_control_config, load_from_file=load_from_file)
         self.config_file_header = "This contains saved values for HTML Sensor Control"
         self.valid_setting_count = 22
         self.config_settings_names = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
@@ -184,7 +185,8 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
                                 str(self.sensor_ip_dns19), str(self.sensor_ip_dns20)]
 
     def _update_variables_from_settings_list(self):
-        if self.valid_setting_count == len(self.config_settings):
+        bad_load = 0
+        try:
             self.selected_action = str(self.config_settings[0])
             self.selected_send_type = str(self.config_settings[1])
             self.sensor_ip_dns1 = str(self.config_settings[2])
@@ -207,3 +209,17 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.sensor_ip_dns18 = str(self.config_settings[19])
             self.sensor_ip_dns19 = str(self.config_settings[20])
             self.sensor_ip_dns20 = str(self.config_settings[21])
+        except Exception as error:
+            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+            logger.primary_logger.error(log_msg + str(error))
+            bad_load += 100
+
+        if bad_load < 99:
+            # Add new Settings here.
+            pass
+
+        if bad_load:
+            self._update_configuration_settings_list()
+            if self.load_from_file:
+                logger.primary_logger.info("Saving Sensor Control Configuration.")
+                self.save_config_to_file()

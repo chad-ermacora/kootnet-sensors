@@ -33,7 +33,8 @@ logging.captureWarnings(True)
 class CreateGeneralConfiguration:
     """ Base Configuration Template Class """
 
-    def __init__(self, config_file_location):
+    def __init__(self, config_file_location, load_from_file=True):
+        self.load_from_file = load_from_file
         self.config_file_location = config_file_location
         self.config_file_header = "General Configuration File"
         self.valid_setting_count = 0
@@ -79,20 +80,20 @@ class CreateGeneralConfiguration:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
             if self.valid_setting_count == len(config_file_text):
-                self.config_settings = []
-                for line in config_file_text:
-                    try:
-                        line_split = line.split("=")
-                        setting = line_split[0].strip()
-                    except Exception as error:
-                        logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
-                        self.bad_config_load = True
-                        setting = "error"
-                    self.config_settings.append(setting)
-            else:
                 log_msg = "Invalid number of settings found in "
                 logger.primary_logger.debug(log_msg + str(self.config_file_location))
                 self.bad_config_load = True
+
+            self.config_settings = []
+            for line in config_file_text:
+                try:
+                    line_split = line.split("=")
+                    setting = line_split[0].strip()
+                except Exception as error:
+                    logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                    self.bad_config_load = True
+                    setting = "error"
+                self.config_settings.append(setting)
         else:
             logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
             self.bad_config_load = True
@@ -262,7 +263,8 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
     try:
         url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
+        send_data = {'command_data': text_message}
+        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
         if tmp_return_data.text == "OK":
             return True
     except Exception as error:

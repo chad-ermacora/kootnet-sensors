@@ -25,7 +25,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
     """ Creates the Open Sense Map Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.osm_config)
+        CreateGeneralConfiguration.__init__(self, file_locations.osm_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 24
         self.config_settings_names = ["Enable Open Sense Map", "SenseBox ID", "Send to Server in Seconds",
@@ -148,35 +148,35 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
                                 str(self.ultra_violet_b_id)]
 
     def _update_variables_from_settings_list(self):
-        if self.valid_setting_count == len(self.config_settings):
-            try:
-                self.open_sense_map_enabled = int(self.config_settings[0])
-                self.sense_box_id = str(self.config_settings[1])
-                self.interval_seconds = float(self.config_settings[2])
-                self.temperature_id = str(self.config_settings[3])
-                self.pressure_id = str(self.config_settings[4])
-                self.altitude_id = str(self.config_settings[5])
-                self.humidity_id = str(self.config_settings[6])
-                self.gas_voc_id = str(self.config_settings[7])
-                self.gas_nh3_id = str(self.config_settings[8])
-                self.gas_oxidised_id = str(self.config_settings[9])
-                self.gas_reduced_id = str(self.config_settings[10])
-                self.pm1_id = str(self.config_settings[11])
-                self.pm2_5_id = str(self.config_settings[12])
-                self.pm10_id = str(self.config_settings[13])
-                self.lumen_id = str(self.config_settings[14])
-                self.red_id = str(self.config_settings[15])
-                self.orange_id = str(self.config_settings[16])
-                self.yellow_id = str(self.config_settings[17])
-                self.green_id = str(self.config_settings[18])
-                self.blue_id = str(self.config_settings[19])
-                self.violet_id = str(self.config_settings[20])
-                self.ultra_violet_index_id = str(self.config_settings[21])
-                self.ultra_violet_a_id = str(self.config_settings[22])
-                self.ultra_violet_b_id = str(self.config_settings[23])
-            except Exception as error:
-                log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-                logger.primary_logger.warning(log_msg + str(error))
-        else:
-            log_msg = "Invalid number of setting for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+        try:
+            self.open_sense_map_enabled = int(self.config_settings[0])
+            self.sense_box_id = str(self.config_settings[1])
+            self.interval_seconds = float(self.config_settings[2])
+            self.temperature_id = str(self.config_settings[3])
+            self.pressure_id = str(self.config_settings[4])
+            self.altitude_id = str(self.config_settings[5])
+            self.humidity_id = str(self.config_settings[6])
+            self.gas_voc_id = str(self.config_settings[7])
+            self.gas_nh3_id = str(self.config_settings[8])
+            self.gas_oxidised_id = str(self.config_settings[9])
+            self.gas_reduced_id = str(self.config_settings[10])
+            self.pm1_id = str(self.config_settings[11])
+            self.pm2_5_id = str(self.config_settings[12])
+            self.pm10_id = str(self.config_settings[13])
+            self.lumen_id = str(self.config_settings[14])
+            self.red_id = str(self.config_settings[15])
+            self.orange_id = str(self.config_settings[16])
+            self.yellow_id = str(self.config_settings[17])
+            self.green_id = str(self.config_settings[18])
+            self.blue_id = str(self.config_settings[19])
+            self.violet_id = str(self.config_settings[20])
+            self.ultra_violet_index_id = str(self.config_settings[21])
+            self.ultra_violet_a_id = str(self.config_settings[22])
+            self.ultra_violet_b_id = str(self.config_settings[23])
+        except Exception as error:
+            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+            logger.primary_logger.error(log_msg + str(error))
+            self._update_configuration_settings_list()
+            if self.load_from_file:
+                logger.primary_logger.info("Saving Open Sense Map Configuration.")
+                self.save_config_to_file()

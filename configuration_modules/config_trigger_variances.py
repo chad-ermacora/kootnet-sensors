@@ -25,7 +25,8 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
     """ Creates the Trigger Variances Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.trigger_variances_config)
+        trigger_variances_config = file_locations.trigger_variances_config
+        CreateGeneralConfiguration.__init__(self, trigger_variances_config, load_from_file=load_from_file)
         self.config_file_header = "Configure Variance Settings.  0 = Disabled, 1 = Enabled"
         self.valid_setting_count = 62
         self.config_settings_names = ["Enable Sensor Uptime", "Seconds between SQL Writes of Sensor Uptime",
@@ -262,7 +263,8 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
                                 str(self.gyroscope_wait_seconds)]
 
     def _update_variables_from_settings_list(self):
-        if self.valid_setting_count == len(self.config_settings):
+        bad_load = 0
+        try:
             self.sensor_uptime_enabled = int(self.config_settings[0])
             self.sensor_uptime_wait_seconds = float(self.config_settings[1])
             self.cpu_temperature_enabled = int(self.config_settings[2])
@@ -325,9 +327,20 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
             self.gyroscope_y_variance = float(self.config_settings[59])
             self.gyroscope_z_variance = float(self.config_settings[60])
             self.gyroscope_wait_seconds = float(self.config_settings[61])
-        else:
-            log_msg = "Error setting variables from "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+        except Exception as error:
+            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+            logger.primary_logger.error(log_msg + str(error))
+            bad_load += 100
+
+        if bad_load < 99:
+            # Add new Settings here.
+            pass
+
+        if bad_load:
+            self._update_configuration_settings_list()
+            if self.load_from_file:
+                logger.primary_logger.info("Saving Trigger Variance Configuration.")
+                self.save_config_to_file()
 
     def _disable_all_triggers(self):
         self.sensor_uptime_enabled = 0

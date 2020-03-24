@@ -27,7 +27,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     """ Creates the Primary Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.installed_sensors_config)
+        installed_sensors_config = file_locations.installed_sensors_config
+        CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 21
         self.config_settings_names = ["Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
@@ -141,7 +142,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         return "N/A"
 
     def _update_variables_from_settings_list(self):
-        if self.valid_setting_count == len(self.config_settings):
+        bad_load = 0
+        try:
             self.linux_system = int(self.config_settings[0])
             self.raspberry_pi = int(self.config_settings[1])
             self.raspberry_pi_sense_hat = int(self.config_settings[2])
@@ -163,9 +165,20 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_matrix_11x7 = int(self.config_settings[18])
             self.pimoroni_st7735 = int(self.config_settings[19])
             self.pimoroni_mono_oled_luma = int(self.config_settings[20])
-        else:
-            log_msg = "Invalid number of setting for "
-            logger.primary_logger.warning(log_msg + str(self.config_file_location))
+        except Exception as error:
+            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+            logger.primary_logger.error(log_msg + str(error))
+            bad_load += 100
+
+        if bad_load < 99:
+            # Add new Settings here.
+            pass
+
+        if bad_load:
+            self._update_configuration_settings_list()
+            if self.load_from_file:
+                logger.primary_logger.info("Saving Installed Sensors.")
+                self.save_config_to_file()
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
