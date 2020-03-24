@@ -13,5 +13,6 @@ chmod 755 ${CONFIG_DIR}
 chmod 744 ${CONFIG_DIR}/*
 chmod 755 /opt/kootnet-sensors -R
 # Make sure auth file exists to apply permissions to
-touch ${CONFIG_DIR}/auth.conf
-chmod 700 ${CONFIG_DIR}/auth.conf
+if [ -f ${CONFIG_DIR}/auth.conf ]; then
+  chmod 700 ${CONFIG_DIR}/auth.conf
+fi
