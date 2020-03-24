@@ -50,21 +50,22 @@ def run_tests():
         if test_http_server.get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
             test_http_server.bad_sensor_login = False
 
-    print("Sensor: " + str(test_http_server.sensor_address))
-    print("DateTime: " + strftime("%B %d, %Y %H:%M - %Z") + "\n")
-
+    print("Sensor: " + str(test_http_server.sensor_address) + "\n")
+    if test_http_server.bad_sensor_contact:
+        print("-- Sensor Offline --\n\n")
+        if test_http_server.sensor_address == "localhost":
+            print("\nLocal Primary Log\n" + logger.get_sensor_log(file_locations.primary_log))
+    elif test_http_server.bad_sensor_login:
+        print("-- Incorrect Sensor Login --")
     if not test_http_server.bad_sensor_login and not test_http_server.bad_sensor_contact:
+        print(" ------ Starting Tests ------")
+        print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
         suite = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp)
         suite.run(unittest.TestResult())
-    new_text = redirect_string.getvalue()
+    print("\n\n ------ End of Tests ------")
+    print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
     app_text_output.enable()
-    if test_http_server.bad_sensor_contact:
-        new_text += "-- Sensor Offline --\n\n"
-        if test_http_server.sensor_address == "localhost":
-            new_text += "\nLocal Primary Log\n" + logger.get_sensor_log(file_locations.primary_log)
-    elif test_http_server.bad_sensor_login:
-        new_text += "-- Incorrect Sensor Login --"
-    app_text_output.value = new_text
+    app_text_output.value = redirect_string.getvalue()
     app_button_test_sensor.enable()
     app_textbox_address.enable()
     redirect_string.truncate(0)
