@@ -264,8 +264,9 @@ trigger_thread_accelerometer = None
 trigger_thread_magnetometer = None
 trigger_thread_gyroscope = None
 
-# Checked before running OS upgrade. Is changed to False when OS upgrade started
-linux_os_upgrade_ready = True
+# Checked before running OS or pip3 upgrades
+# Set to False when stating a upgrade, returns to True after program restarts
+sensor_ready_for_upgrade = True
 
 # Variables to make sure Sensor Control is only creating a single copy at any given time
 creating_the_reports_zip = False

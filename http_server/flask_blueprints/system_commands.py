@@ -196,7 +196,7 @@ def upgrade_smb():
     return message_and_return("SMB Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-# TODO SMB needs to be setup before clean SMB upgrades can be done.  Disabling by default.
+# NOTE SMB needs to be setup before clean SMB upgrades can be done.  Disabling by default.
 # @html_system_commands_routes.route("/UpgradeSMBClean")
 # @auth.login_required
 # def upgrade_clean_smb():
@@ -258,16 +258,14 @@ def system_shutdown():
 @auth.login_required
 def upgrade_system_os():
     logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
-    message = "Upgrade is already running.  "
-    message2 = "The sensor will reboot when done. This will take awhile.  " + \
-               "You may continue to use the sensor during the upgrade process.  " + \
-               "There will be a loss of connectivity when the sensor reboots for up to 5 minutes."
-    if app_cached_variables.linux_os_upgrade_ready:
+    message = "An Upgrade is already running"
+    message2 = "Once complete, the sensor programs will be restarted.\n" + message_few_min
+    if app_cached_variables.sensor_ready_for_upgrade:
         message = "Operating System Upgrade Started"
-        app_cached_variables.linux_os_upgrade_ready = False
+        app_cached_variables.sensor_ready_for_upgrade = False
         app_generic_functions.thread_function(_upgrade_linux_os)
     else:
-        logger.network_logger.warning("* Operating System Upgrade Already Running")
+        logger.network_logger.warning("* Upgrades Already Running")
     return message_and_return(message, text_message2=message2, url="/SensorInformation")
 
 
@@ -275,7 +273,6 @@ def _upgrade_linux_os():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
         os.system("apt-get update && apt-get -y upgrade")
-        app_cached_variables.linux_os_upgrade_ready = True
         logger.primary_logger.warning("Linux OS Upgrade Done")
         os.system(os_cli_commands.bash_commands["RebootSystem"])
     except Exception as error:
@@ -286,11 +283,17 @@ def _upgrade_linux_os():
 @auth.login_required
 def upgrade_pip_modules():
     logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
-    message2 = "Once complete, the sensor programs will be restarted. " + message_few_min
-    with open(file_locations.program_root_dir + "/requirements.txt") as file:
-        requirements_text = file.readlines()
-        app_generic_functions.thread_function(_pip_upgrades, args=requirements_text)
-    return message_and_return("pip3 modules upgrade Started", text_message2=message2, url="/SensorInformation")
+    message = "An Upgrade is already running"
+    message2 = "Once complete, the sensor programs will be restarted.\n" + message_few_min
+    if app_cached_variables.sensor_ready_for_upgrade:
+        app_cached_variables.sensor_ready_for_upgrade = False
+        with open(file_locations.program_root_dir + "/requirements.txt") as file:
+            requirements_text = file.readlines()
+            app_generic_functions.thread_function(_pip_upgrades, args=requirements_text)
+            message = "Python3 module upgrades Started"
+    else:
+        logger.network_logger.warning("* Upgrades Already Running")
+    return message_and_return(message, text_message2=message2, url="/SensorInformation")
 
 
 def _pip_upgrades(requirements_text):
