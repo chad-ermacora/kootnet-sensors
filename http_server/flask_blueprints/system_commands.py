@@ -301,6 +301,7 @@ def _pip_upgrades(requirements_text):
         if line[0] != "#":
             command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
             os.system(command)
+    logger.primary_logger.info("Python3 Module Upgrades Complete")
     os.system("systemctl restart KootnetSensors.service")
 
 
