@@ -263,6 +263,16 @@ def reinstall_program_requirements():
     return message_and_return("Dependency Install Started", text_message2=message2, url="/SensorInformation")
 
 
+@html_system_commands_routes.route("/CreateNewSelfSignedSSL")
+@auth.login_required
+def create_new_self_signed_ssl():
+    logger.network_logger.info("** Create New Self-Signed SSL Initiated by " + str(request.remote_addr))
+    message2 = "Once complete, the sensor programs will be restarted. " + message_few_min
+    os.system("rm -f -r " + file_locations.http_ssl_folder)
+    app_generic_functions.thread_function(sensor_access.restart_services)
+    return message_and_return("Creating new Self-Signed SSL", text_message2=message2, url="/SensorInformation")
+
+
 @html_system_commands_routes.route("/DisplayText", methods=["PUT"])
 def display_text():
     max_length_text_message = 250

@@ -85,6 +85,7 @@ wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 display_font = program_root_dir + "/extras/DejaVuSans-Bold.ttf"
 dhcpcd_config_file_template = program_root_dir + "/extras/dhcpcd_template.conf"
 wifi_config_file_template = program_root_dir + "/extras/wpa_supplicant_template.conf"
+
 http_ssl_folder = program_root_dir + "/http_server/ssl_files"
 http_ssl_key = http_ssl_folder + "/kootnet_default.key"
 http_ssl_csr = http_ssl_folder + "/kootnet_default.csr"
