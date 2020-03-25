@@ -172,6 +172,14 @@ def upgrade_clean_http():
     return message_and_return("HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
+@html_system_commands_routes.route("/UpgradeOnlineCleanDEV")
+@auth.login_required
+def upgrade_clean_http_dev():
+    logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
+    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineCleanDEV"])
+    return message_and_return("DEV HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
+
+
 @html_system_commands_routes.route("/UpgradeOnlineDev")
 @auth.login_required
 def upgrade_http_dev():
@@ -188,12 +196,21 @@ def upgrade_smb():
     return message_and_return("SMB Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/UpgradeSMBClean")
-@auth.login_required
-def upgrade_clean_smb():
-    logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBClean"])
-    return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
+# TODO SMB needs to be setup before clean SMB upgrades can be done.  Disabling by default.
+# @html_system_commands_routes.route("/UpgradeSMBClean")
+# @auth.login_required
+# def upgrade_clean_smb():
+#     logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
+#     app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBClean"])
+#     return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
+#
+#
+# @html_system_commands_routes.route("/UpgradeSMBCleanDEV")
+# @auth.login_required
+# def upgrade_clean_smb_dev():
+#     logger.network_logger.info("** DEV Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
+#     app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBCleanDEV"])
+#     return message_and_return("DEV SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
 @html_system_commands_routes.route("/UpgradeSMBDev")
@@ -248,19 +265,40 @@ def upgrade_system_os():
     if app_cached_variables.linux_os_upgrade_ready:
         message = "Operating System Upgrade Started"
         app_cached_variables.linux_os_upgrade_ready = False
-        app_generic_functions.thread_function(sensor_access.upgrade_linux_os)
+        app_generic_functions.thread_function(_upgrade_linux_os)
     else:
         logger.network_logger.warning("* Operating System Upgrade Already Running")
     return message_and_return(message, text_message2=message2, url="/SensorInformation")
 
 
-@html_system_commands_routes.route("/ReInstallRequirements")
+def _upgrade_linux_os():
+    """ Runs a bash command to upgrade the Linux System with apt-get. """
+    try:
+        os.system("apt-get update && apt-get -y upgrade")
+        app_cached_variables.linux_os_upgrade_ready = True
+        logger.primary_logger.warning("Linux OS Upgrade Done")
+        os.system(os_cli_commands.bash_commands["RebootSystem"])
+    except Exception as error:
+        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
+
+
+@html_system_commands_routes.route("/UpdatePipModules")
 @auth.login_required
-def reinstall_program_requirements():
-    logger.network_logger.info("** Program Dependency Install Initiated by " + str(request.remote_addr))
+def upgrade_pip_modules():
+    logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
     message2 = "Once complete, the sensor programs will be restarted. " + message_few_min
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["ReInstallRequirements"])
-    return message_and_return("Dependency Install Started", text_message2=message2, url="/SensorInformation")
+    with open(file_locations.program_root_dir + "/requirements.txt") as file:
+        requirements_text = file.readlines()
+        app_generic_functions.thread_function(_pip_upgrades, args=requirements_text)
+    return message_and_return("pip3 modules upgrade Started", text_message2=message2, url="/SensorInformation")
+
+
+def _pip_upgrades(requirements_text):
+    for line in requirements_text:
+        if line[0] != "#":
+            command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
+            os.system(command)
+    os.system("systemctl restart KootnetSensors.service")
 
 
 @html_system_commands_routes.route("/CreateNewSelfSignedSSL")

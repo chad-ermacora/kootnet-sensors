@@ -7,7 +7,7 @@ werkzeug
 cryptography
 psutil
 requests
-plotly >= 4.0.0
+plotly
 numpy
 # Required for Testing GUI
 guizero

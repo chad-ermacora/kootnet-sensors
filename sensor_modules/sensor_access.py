@@ -580,13 +580,3 @@ def delete_db_note(note_datetime):
                 " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
     sqlite_database.write_to_sql_database(sql_query)
-
-
-def upgrade_linux_os():
-    """ Runs a bash command to upgrade the Linux System with apt-get. """
-    try:
-        os.system(os_cli_commands.bash_commands["UpgradeSystemOS"])
-        app_cached_variables.linux_os_upgrade_ready = True
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-    except Exception as error:
-        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
