@@ -105,3 +105,7 @@ venv.bak/
 /http_server/ssl_files/kootnet_default.crt
 /http_server/ssl_files/kootnet_default.csr
 /http_server/ssl_files/kootnet_default.key
+/http_server/ssl_files/old_cert.crt
+/http_server/ssl_files/custom_upload_certificate.crt
+/http_server/ssl_files/custom_upload_key.key
+/http_server/ssl_files/old_key.key
