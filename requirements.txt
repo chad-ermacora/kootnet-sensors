@@ -4,6 +4,7 @@ Flask-Compress
 Flask-HTTPAuth
 gevent
 werkzeug
+cryptography
 psutil
 requests
 plotly >= 4.0.0

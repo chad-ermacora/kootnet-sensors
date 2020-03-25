@@ -53,6 +53,8 @@ def _set_file_permissions():
 def _check_ssl_files():
     """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
+    if not os.path.isdir(file_locations.http_ssl_folder):
+        os.mkdir(file_locations.http_ssl_folder)
 
     if os.path.isfile(file_locations.http_ssl_key):
         logger.primary_logger.debug("SSL Key Found")

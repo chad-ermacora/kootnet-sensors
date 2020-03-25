@@ -2,6 +2,8 @@ import os
 import shutil
 from flask import Blueprint, render_template, request
 from werkzeug.security import generate_password_hash
+from cryptography import x509
+from cryptography.hazmat.backends import default_backend
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -153,6 +155,7 @@ def html_edit_configurations():
                                TriggerGyroscopeY=variances.gyroscope_y_variance,
                                TriggerGyroscopeZ=variances.gyroscope_z_variance,
                                SecondsGyroscope=variances.gyroscope_wait_seconds,
+                               SSLFileLocation=file_locations.http_ssl_folder,
                                WirelessCountryCode=app_cached_variables.wifi_country_code,
                                SSID1=app_cached_variables.wifi_ssid,
                                CheckedWiFiSecurityWPA1=wifi_security_type_wpa1,
@@ -228,6 +231,43 @@ def html_reset_trigger_variances():
     logger.network_logger.info("** Trigger Variances Reset - Source " + str(request.remote_addr))
     app_config_access.trigger_variances.reset_settings()
     return message_and_return("Trigger Variances Reset", url="/ConfigurationsHTML")
+
+
+@html_sensor_config_routes.route("/EditSSL", methods=["GET", "POST"])
+@auth.login_required
+def set_custom_ssl():
+    logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
+    return_message_ok = "SSL Certificate and Key files replaced.  Please reboot sensor for changes to take effect."
+    return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
+
+    try:
+        temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
+        temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
+        new_ssl_certificate = request.files["custom_crt"]
+        new_ssl_key = request.files["custom_key"]
+        new_ssl_certificate.save(temp_ssl_crt_location)
+        new_ssl_key.save(temp_ssl_key_location)
+        if _is_valid_ssl_certificate(app_generic_functions.get_file_content(temp_ssl_crt_location)):
+            os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
+            os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
+            os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
+            os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
+            logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
+            return message_and_return("Sensor SSL Certificate OK", text_message2=return_message_ok, url="/")
+        logger.network_logger.error("Invalid Uploaded SSL Certificate")
+        return message_and_return("Sensor SSL Certificate Failed", text_message2=return_message_fail, url="/")
+    except Exception as error:
+        logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
+    return message_and_return("Sensor SSL Certificate Failed", text_message2=return_message_fail, url="/")
+
+
+def _is_valid_ssl_certificate(cert):
+    try:
+        x509.load_pem_x509_certificate(str.encode(cert), default_backend())
+        return True
+    except Exception as error:
+        logger.network_logger.debug("Invalid SSL Certificate - " + str(error))
+    return False
 
 
 @html_sensor_config_routes.route("/EditConfigIPv4", methods=["POST"])

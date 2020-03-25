@@ -69,7 +69,7 @@ def get_sql_db_size():
 @html_system_commands_routes.route("/UploadSQLDatabase", methods=["GET", "POST"])
 @auth.login_required
 def put_sql_db():
-    logger.network_logger.info("* Sensor's Database Replaced by " + str(request.remote_addr))
+    logger.network_logger.info("* Sensor's Database Replacement accessed by " + str(request.remote_addr))
     return_message_ok = "The previous database was archived and replaced with the uploaded Database."
     return_message_fail = "Invalid SQLite3 Database File."
     return_backup_fail = "Upload cancelled due to failed database backup."
@@ -82,9 +82,12 @@ def put_sql_db():
             check_database_structure(database_location=temp_db_location)
             if _move_database():
                 os.system("mv -f " + temp_db_location + " " + file_locations.sensor_database)
+                logger.primary_logger.info(return_message_ok)
                 return message_and_return("Sensor Database Uploaded OK", text_message2=return_message_ok, url="/")
             else:
+                logger.primary_logger.error(return_backup_fail)
                 return message_and_return("Sensor Database Backup Failed", text_message2=return_backup_fail, url="/")
+    logger.primary_logger.error(return_message_fail)
     return message_and_return("Sensor Database Uploaded Failed", text_message2=return_message_fail, url="/")
 
 

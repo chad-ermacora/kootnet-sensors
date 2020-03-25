@@ -38,6 +38,13 @@
 
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="network-ssl-tab">
+                SSL
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="network-config-tab">
                 Networking
             </a>
@@ -879,6 +886,39 @@
                 </div>
                 <br>
                 <button type="submit" class="mui-btn mui-btn--raised" formaction="/EditTriggerVariances">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="network-ssl-tab">
+        <form class="mui-form" method="POST" enctype="multipart/form-data" style="max-width: 550px; min-height: 300px;"
+              action="/EditSSL">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Set Custom SSL Certificate</a></u></h2>
+                <p style="color: darkred;"><b>
+                    Warning: Invalid Certificate/Key pairs will prevent access to the Web Portal.
+                </b></p>
+                <p><b>
+                    To restore access from an Invalid Certificate or Key
+                    <br>
+                    delete ALL files located in the following folder on the local sensor
+                    <br>
+                    then restart the sensor software
+                    <br><br>
+                    {{ SSLFileLocation }}
+                </b></p>
+
+                <br>
+
+                <h4><u>Certificate File</u></h4>
+                <input type="file" name="custom_crt" accept=".crt,.pem" required>
+                <br><br>
+                <h4><u>Key File</u></h4>
+                <input type="file" name="custom_key" accept=".key,.pem" required>
+                <br><br>
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                    Upload Custom SSL Files
+                </button>
             </fieldset>
         </form>
     </div>
