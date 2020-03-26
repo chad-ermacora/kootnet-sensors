@@ -35,18 +35,14 @@
         <ul class="mui-dropdown__menu">
             <li><a href="/RestartServices">Restart Program</a></li>
             <li><a href="/RebootSystem">Reboot System</a></li>
+            <li><a>---------------</a></li>
             <li><a href="/ShutdownSystem">Shutdown System</a></li>
         </ul>
     </div>
 
     <br>
 
-    <h2 style="color: red;">Experimental & Advanced</h2>
-    <span style="color: darkorange">
-    CAUTION: Functions below may not work properly under all conditions.
-    </span>
-    <br>
-    <br>
+    <h2 style="color: red;">Advanced</h2>
     <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
             onclick="window.location.href = '/HTMLRawConfigurations';">
         View Raw Configuration Files
@@ -58,19 +54,6 @@
     <br>
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Clean Upgrades
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
-{#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
-            <li><a href="/UpgradeOnlineCleanDEV">DEV Clean - HTTP Upgrade</a></li>
-{#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
-        </ul>
-    </div>
-
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Developmental Upgrades
             <span class="mui-caret"></span>
         </button>
@@ -79,7 +62,6 @@
             <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
         </ul>
     </div>
-    <br>
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Other
@@ -88,6 +70,11 @@
         <ul class="mui-dropdown__menu">
             <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
             <li><a href="/UpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
+            <li><a>---------------</a></li>
+            <li><a href="/UpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
+            <li><a href="/UpgradeOnlineCleanDEV">DEV - Clean - HTTP Upgrade</a></li>
+{#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
+{#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
         </ul>
     </div>
 

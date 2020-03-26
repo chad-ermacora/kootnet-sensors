@@ -57,7 +57,9 @@ class CreateNetworkGetCommands:
 
     def __init__(self):
         self.check_online_status = "CheckOnlineStatus"
+        self.check_portal_login = "TestLogin"
         self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"
         self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
         self.sensor_configuration = "GetConfigurationReport"

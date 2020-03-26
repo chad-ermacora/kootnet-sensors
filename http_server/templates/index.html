@@ -45,10 +45,16 @@
         </div>
     </div>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/DownloadSQLDatabase';">
-        Download SQL Database
-    </button>
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Download SQL Database
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/DownloadSQLDatabase">Database Zipped</a></li>
+            <li><a href="/DownloadSQLDatabaseRAW">Database RAW</a></li>
+        </ul>
+    </div>
 
     <br>
 
