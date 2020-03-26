@@ -136,12 +136,14 @@ def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     raw_temp = sensor_access.get_sensor_temperature()
     temp_offset = app_config_access.current_config.temperature_offset
-    adjusted_temp = raw_temp
-    try:
-        if app_config_access.current_config.enable_custom_temp:
-            adjusted_temp = round(raw_temp + temp_offset, 2)
-    except Exception as error:
-        logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
+
+    adjusted_temp = app_cached_variables.no_sensor_present
+    if raw_temp != app_cached_variables.no_sensor_present:
+        try:
+            if app_config_access.current_config.enable_custom_temp:
+                adjusted_temp = round(raw_temp + temp_offset, 2)
+        except Exception as error:
+            logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
     red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
     return render_template("sensor_readings.html",
                            URLRedirect="SensorReadings",
