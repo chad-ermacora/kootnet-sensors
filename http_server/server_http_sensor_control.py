@@ -82,31 +82,62 @@ class CreateReplacementVariables:
             command_config_os_luftdaten = self.remote_sensor_commands.luftdaten_config_file
             command_config_os_osm = self.remote_sensor_commands.open_sense_map_config_file
 
+            wifi_ssid = ""
+            weather_underground_enabled = ""
+            open_sense_map_enabled = ""
+
+            if get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.check_portal_login) == "OK":
+                wifi_config_file = self.remote_sensor_commands.wifi_config_file
+                wifi_config_raw = get_http_sensor_reading(ip_address, command=wifi_config_file)
+                weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
+                open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
+
+                wifi_config_lines = wifi_config_raw.strip().split("\n")
+                if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
+                    wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
+
+                wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
+                wu_config.config_file_location = "Sensor Control's Weather Underground Config from " + ip_address
+                wu_config.set_config_with_str(weather_underground_config_raw)
+                weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
+
+                osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
+                osm_config.config_file_location = "Sensor Control's Open Sense Map Config from " + ip_address
+                osm_config.set_config_with_str(open_sense_map_config_raw)
+                open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
+
+                weather_underground_colour = "#F4A460"
+                if weather_underground_enabled:
+                    weather_underground_colour = "lightgreen"
+                if wu_config.bad_config_load:
+                    weather_underground_colour = "orangered"
+
+                open_sense_map_colour = "#F4A460"
+                if open_sense_map_enabled:
+                    open_sense_map_colour = "lightgreen"
+                if osm_config.bad_config_load:
+                    open_sense_map_colour = "orangered"
+            else:
+                weather_underground_colour = "orangered"
+                open_sense_map_colour = "orangered"
+
             sensor_date_time = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.system_date_time)
             sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
             installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            wifi_config_raw = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.wifi_config_file)
-            weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
-            open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
-
             sensors_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
             sensors_config.set_config_with_str(sensor_config_raw)
 
-            wifi_config_lines = wifi_config_raw.strip().split("\n")
-
-            end_log_msg = ip_address + " - Bad Login?"
-            wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
-            wu_config.config_file_location = "Sensor Control's Weather Underground Config from " + end_log_msg
-            wu_config.set_config_with_str(weather_underground_config_raw)
-
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + end_log_msg
+            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + ip_address
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
-
-            osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
-            osm_config.config_file_location = "Sensor Control's Open Sense Map Config from " + end_log_msg
-            osm_config.set_config_with_str(open_sense_map_config_raw)
+            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
+            luftdaten_colour = "#F4A460"
+            if luftdaten_config.luftdaten_enabled:
+                luftdaten_colour = "lightgreen"
+            if luftdaten_config.bad_config_load:
+                luftdaten_colour = "orangered"
+                luftdaten_enabled = ""
 
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
             installed_sensors_config.set_config_with_str(installed_sensors_raw)
@@ -117,14 +148,6 @@ class CreateReplacementVariables:
                 logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
                 rpi_model_name = "Raspberry Pi"
             installed_sensors_config.config_settings_names[1] = rpi_model_name
-
-            weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
-            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
-            open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
-
-            wifi_ssid = ""
-            if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
-                wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
             text_display = str(self.get_enabled_disabled_text(sensors_config.enable_display))
@@ -156,28 +179,6 @@ class CreateReplacementVariables:
             temp_offset_colour = "#F4A460"
             if sensors_config.enable_custom_temp:
                 temp_offset_colour = "lightgreen"
-
-            weather_underground_colour = "#F4A460"
-            if wu_config.weather_underground_enabled:
-                weather_underground_colour = "lightgreen"
-
-            luftdaten_colour = "#F4A460"
-            if luftdaten_config.luftdaten_enabled:
-                luftdaten_colour = "lightgreen"
-
-            open_sense_map_colour = "#F4A460"
-            if osm_config.open_sense_map_enabled:
-                open_sense_map_colour = "lightgreen"
-
-            if wu_config.bad_config_load:
-                weather_underground_colour = "orangered"
-                weather_underground_enabled = ""
-            if luftdaten_config.bad_config_load:
-                luftdaten_colour = "orangered"
-                luftdaten_enabled = ""
-            if osm_config.bad_config_load:
-                open_sense_map_colour = "orangered"
-                open_sense_map_enabled = ""
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],

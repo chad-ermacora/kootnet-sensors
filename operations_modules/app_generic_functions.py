@@ -79,11 +79,11 @@ class CreateGeneralConfiguration:
         if config_file_text is not None:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
-            if self.valid_setting_count == len(config_file_text):
+            if not self.valid_setting_count == len(config_file_text):
                 if self.load_from_file:
+                    self.bad_config_load = True
                     log_msg = "Invalid number of settings found in "
                     logger.primary_logger.warning(log_msg + str(self.config_file_location))
-                self.bad_config_load = True
 
             self.config_settings = []
             for line in config_file_text:
