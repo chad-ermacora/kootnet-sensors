@@ -106,16 +106,18 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_custom_temp = int(self.config_settings[5])
             self.temperature_offset = float(self.config_settings[6])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
+            if self.load_from_file:
+                log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
+                logger.primary_logger.error(log_msg + str(error))
             bad_load += 100
 
         if bad_load < 99:
             try:
                 self.web_portal_port = int(self.config_settings[7])
             except Exception as error:
-                logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
-                logger.primary_logger.debug(str(error))
+                if self.load_from_file:
+                    logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
+                    logger.primary_logger.debug(str(error))
                 bad_load += 1
 
         if bad_load:

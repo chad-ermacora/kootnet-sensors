@@ -80,8 +80,9 @@ class CreateGeneralConfiguration:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
             if self.valid_setting_count == len(config_file_text):
-                log_msg = "Invalid number of settings found in "
-                logger.primary_logger.debug(log_msg + str(self.config_file_location))
+                if self.load_from_file:
+                    log_msg = "Invalid number of settings found in "
+                    logger.primary_logger.warning(log_msg + str(self.config_file_location))
                 self.bad_config_load = True
 
             self.config_settings = []
@@ -90,12 +91,14 @@ class CreateGeneralConfiguration:
                     line_split = line.split("=")
                     setting = line_split[0].strip()
                 except Exception as error:
-                    logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                    if self.load_from_file:
+                        logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
                     self.bad_config_load = True
                     setting = "error"
                 self.config_settings.append(setting)
         else:
-            logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
+            if self.load_from_file:
+                logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
             self.bad_config_load = True
 
 
