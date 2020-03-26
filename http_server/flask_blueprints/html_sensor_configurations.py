@@ -1,14 +1,20 @@
 import os
 import shutil
-from flask import Blueprint, render_template, request
+from plotly import __version__ as plotly_version
+from gevent import __version__ as gevent_version
+from requests import __version__ as requests_version
+from werkzeug import __version__ as werkzeug_version
+from numpy import __version__ as numpy_version
+from flask import Blueprint, render_template, request, __version__ as flask_version
 from werkzeug.security import generate_password_hash
-from cryptography import x509
+from cryptography import x509, __version__ as cryptography_version
 from cryptography.hazmat.backends import default_backend
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
 from operations_modules import app_generic_functions
+from operations_modules import software_version
 from operations_modules import app_config_access
 from operations_modules import network_ip
 from operations_modules import network_wifi
@@ -410,13 +416,24 @@ def html_raw_configurations_view():
     weather_underground_config = app_generic_functions.get_file_content(file_locations.weather_underground_config)
     luftdaten_config = app_generic_functions.get_file_content(file_locations.luftdaten_config)
     open_sense_map_config = app_generic_functions.get_file_content(file_locations.osm_config)
+
+    module_version_text = "Kootnet Sensors: " + software_version.version + "\n"
+    module_version_text += "Flask: " + str(flask_version) + "\n"
+    module_version_text += "Gevent: " + str(gevent_version) + "\n"
+    module_version_text += "Cryptography: " + str(cryptography_version) + "\n"
+    module_version_text += "Werkzeug: " + str(werkzeug_version) + "\n"
+    module_version_text += "Requests: " + str(requests_version) + "\n"
+    module_version_text += "Plotly Graphing: " + str(plotly_version) + "\n"
+    module_version_text += "Numpy: " + str(numpy_version) + "\n"
+
     return render_template("view_raw_configurations.html",
                            MainConfiguration=primary_config,
                            InstalledSensorsConfiguration=installed_sensors,
-                           NetworkConfiguration=networking,
-                           WiFiConfiguration=wifi,
                            TriggerConfiguration=trigger_variances,
                            SensorControlConfiguration=sensor_control_config,
+                           NetworkConfiguration=networking,
+                           WiFiConfiguration=wifi,
+                           ModuleVersions=module_version_text,
                            WeatherUndergroundConfiguration=weather_underground_config,
                            LuftdatenConfiguration=luftdaten_config,
                            OpenSenseMapConfiguration=open_sense_map_config)
