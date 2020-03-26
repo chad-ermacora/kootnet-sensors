@@ -115,7 +115,6 @@ def _run_upgrade_checks():
         reset_installed_sensors()
         reset_primary_config()
 
-    # Since run_upgrade_checks is only run if there is a different version, show upgrade but no configuration changes
     if no_changes:
         msg = "Upgrade detected || No configuration changes || Old: "
         logger.primary_logger.info(msg + software_version.old_version + " New: " + software_version.version)

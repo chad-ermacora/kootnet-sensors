@@ -107,13 +107,13 @@ class CreateReplacementVariables:
                 open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
 
                 weather_underground_colour = "#F4A460"
-                if weather_underground_enabled:
+                if wu_config.weather_underground_enabled:
                     weather_underground_colour = "lightgreen"
                 if wu_config.bad_config_load:
                     weather_underground_colour = "orangered"
 
                 open_sense_map_colour = "#F4A460"
-                if open_sense_map_enabled:
+                if osm_config.open_sense_map_enabled:
                     open_sense_map_colour = "lightgreen"
                 if osm_config.bad_config_load:
                     open_sense_map_colour = "orangered"
