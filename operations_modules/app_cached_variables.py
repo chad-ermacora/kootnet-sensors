@@ -20,6 +20,28 @@ from platform import system
 from queue import Queue
 
 
+class CreateNetworkSystemCommands:
+    """ Create a object instance holding available network "System" commands (Mostly Upgrades). """
+
+    def __init__(self):
+        self.upgrade_system_os = "UpgradeSystemOS"
+        self.upgrade_pip_modules = "UpdatePipModules"
+
+        self.upgrade_http = "UpgradeOnline"
+        self.upgrade_http_dev = "UpgradeOnlineDev"
+        self.upgrade_http_clean = "UpgradeOnlineClean"
+        self.upgrade_http_clean_dev = "UpgradeOnlineCleanDEV"
+
+        self.upgrade_smb = "UpgradeSMB"
+        self.upgrade_smb_dev = "UpgradeSMBDev"
+        self.upgrade_smb_clean = "UpgradeSMBClean"
+        self.upgrade_smb_clean_dev = "UpgradeSMBCleanDEV"
+
+        self.restart_services = "RestartServices"
+        self.restart_system = "RebootSystem"
+        self.shutdown_system = "ShutdownSystem"
+
+
 class CreateNetworkSetCommands:
     """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
 
@@ -38,18 +60,6 @@ class CreateNetworkSetCommands:
         # self.put_sql_note = "PutDatabaseNote"
         # self.delete_sql_note = "DeleteDatabaseNote"
         # self.update_sql_note = "UpdateDatabaseNote"
-        #
-        # self.restart_services = "RestartServices"
-        # self.shutdown_system = "ShutdownSystem"
-        # self.reboot_system = "RebootSystem"
-        # self.upgrade_system_os = "UpgradeSystemOS"
-        # self.reinstall_requirements = "ReInstallRequirements"
-        # self.upgrade_online = "UpgradeOnline"
-        # self.upgrade_online_dev = "UpgradeOnlineDev"
-        # self.upgrade_smb = "UpgradeSMB"
-        # self.upgrade_smb_dev = "UpgradeSMBDev"
-        # self.clean_upgrade_online = "CleanOnline"
-        # self.clean_upgrade_smb = "CleanSMB"
 
 
 class CreateNetworkGetCommands:

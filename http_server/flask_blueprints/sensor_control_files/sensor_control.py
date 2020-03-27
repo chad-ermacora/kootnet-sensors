@@ -34,6 +34,10 @@ from http_server.flask_blueprints.sensor_control_files.sensor_control_functions 
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
 
+network_get_commands = app_cached_variables.CreateNetworkGetCommands()
+network_set_commands = app_cached_variables.CreateNetworkSetCommands()
+network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
+
 
 @html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
 def html_sensor_control_management():
@@ -206,7 +210,8 @@ def sc_edit_config_primary():
         new_config.update_with_html_request(request)
         send_config = new_config.get_config_as_str()
         for ip in ip_list:
-            app_generic_functions.send_http_command(ip, "SetPrimaryConfiguration", included_data=send_config)
+            set_primary_configuration = network_set_commands.set_primary_configuration
+            app_generic_functions.send_http_command(ip, set_primary_configuration, included_data=send_config)
     msg2 = "Primary configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -224,7 +229,8 @@ def sc_edit_config_installed_sensors():
         new_sensors.update_with_html_request(request)
         installed_sensors_text = new_sensors.get_config_as_str()
         for ip in ip_list:
-            app_generic_functions.send_http_command(ip, "SetInstalledSensors", included_data=installed_sensors_text)
+            set_installed_sensors = network_set_commands.set_installed_sensors
+            app_generic_functions.send_http_command(ip, set_installed_sensors, included_data=installed_sensors_text)
     msg2 = "Installed Sensors configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -239,7 +245,8 @@ def sc_edit_config_wifi():
             return _get_invalid_login_page()
         new_wifi = network_wifi.html_request_to_config_wifi(request)
         for ip in ip_list:
-            app_generic_functions.send_http_command(ip, "SetWifiConfiguration", included_data=new_wifi)
+            set_wifi_configuration = network_set_commands.set_wifi_configuration
+            app_generic_functions.send_http_command(ip, set_wifi_configuration, included_data=new_wifi)
     msg2 = "Wireless configuration sent to " + str(len(ip_list)) + " Sensors.  You must reboot the sensors for it to take effect."
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -257,7 +264,8 @@ def sc_edit_config_triggers():
         new_triggers.update_with_html_request(request)
         trigger_text_config = new_triggers.get_config_as_str()
         for ip in ip_list:
-            app_generic_functions.send_http_command(ip, "SetVarianceConfiguration", included_data=trigger_text_config)
+            set_variance_configuration = network_set_commands.set_variance_configuration
+            app_generic_functions.send_http_command(ip, set_variance_configuration, included_data=trigger_text_config)
     msg2 = "Trigger configuration sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
 
@@ -321,49 +329,63 @@ def set_active_online_services():
 @auth.login_required
 def sc_upgrade_online():
     logger.network_logger.debug("* Sensor Control 'HTTP Upgrade' Accessed by " + str(request.remote_addr))
-    return _run_system_command("UpgradeOnline")
+    return _run_system_command(network_system_commands.upgrade_http)
 
 
 @html_sensor_control_routes.route("/SCUpgradeSMB")
 @auth.login_required
 def sc_upgrade_smb():
     logger.network_logger.debug("* Sensor Control 'SMB Upgrade' Accessed by " + str(request.remote_addr))
-    return _run_system_command("UpgradeSMB")
+    return _run_system_command(network_system_commands.upgrade_smb)
 
 
 @html_sensor_control_routes.route("/SCUpgradeOnlineDev")
 @auth.login_required
 def sc_dev_upgrade_online():
     logger.network_logger.debug("* Sensor Control 'Dev HTTP Upgrade' Accessed by " + str(request.remote_addr))
-    return _run_system_command("UpgradeOnlineDev")
+    return _run_system_command(network_system_commands.upgrade_http_dev)
 
 
 @html_sensor_control_routes.route("/SCUpgradeSMBDev")
 @auth.login_required
 def sc_dev_upgrade_smb():
     logger.network_logger.debug("* Sensor Control 'Dev HTTP Upgrade' Accessed by " + str(request.remote_addr))
-    return _run_system_command("UpgradeSMBDev")
+    return _run_system_command(network_system_commands.upgrade_smb_dev)
 
 
 @html_sensor_control_routes.route("/SCRestartServices")
 @auth.login_required
 def sc_restart_service():
     logger.network_logger.debug("* Sensor Control 'Restart Service' Accessed by " + str(request.remote_addr))
-    return _run_system_command("RestartServices")
+    return _run_system_command(network_system_commands.restart_services)
 
 
 @html_sensor_control_routes.route("/SCRebootSystem")
 @auth.login_required
 def sc_reboot_system():
     logger.network_logger.debug("* Sensor Control 'Restart System' Accessed by " + str(request.remote_addr))
-    return _run_system_command("RebootSystem")
+    return _run_system_command(network_system_commands.restart_system)
 
 
-@html_sensor_control_routes.route("/SCReInstallRequirements")
+@html_sensor_control_routes.route("/SCUpgradeSystemOS")
 @auth.login_required
-def sc_reinstall_requirements():
-    logger.network_logger.debug("* Sensor Control 'Re-Install Requirements' Accessed by " + str(request.remote_addr))
-    return _run_system_command("ReInstallRequirements")
+def sc_upgrade_system_os():
+    logger.network_logger.debug("* Sensor Control 'Upgrade System OS' Accessed by " + str(request.remote_addr))
+    return _run_system_command(network_system_commands.upgrade_system_os)
+
+
+@html_sensor_control_routes.route("/SCUpdatePipModules")
+@auth.login_required
+def sc_upgrade_pip_modules():
+    logger.network_logger.debug("* Sensor Control 'Upgrade Python Modules' Accessed by " + str(request.remote_addr))
+    return _run_system_command(network_system_commands.upgrade_pip_modules)
+
+
+@html_sensor_control_routes.route("/SCUpgradeOnlineClean")
+@auth.login_required
+def sc_upgrade_http_clean():
+    logger.network_logger.debug("* Sensor Control 'HTTP Clean Upgrade' Accessed by " + str(request.remote_addr))
+    return _run_system_command(network_system_commands.upgrade_http_clean)
 
 
 def _run_system_command(command):
