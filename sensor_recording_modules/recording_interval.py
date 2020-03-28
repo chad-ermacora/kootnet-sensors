@@ -35,7 +35,7 @@ def start_interval_recording():
             sqlite_database.write_to_sql_database(interval_sql_execute_part1 + interval_sql_execute_part2)
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
-        sleep(app_config_access.current_config.sleep_duration_interval)
+        sleep(app_config_access.primary_config.sleep_duration_interval)
 
 
 def get_interval_sensor_readings():
@@ -60,8 +60,8 @@ def get_interval_sensor_readings():
         sensor_types.append(app_cached_variables.database_variables.env_temperature)
         sensor_types.append(app_cached_variables.database_variables.env_temperature_offset)
         sensor_readings.append(sensor_access.get_sensor_temperature())
-        if app_config_access.current_config.enable_custom_temp:
-            sensor_readings.append(app_config_access.current_config.temperature_offset)
+        if app_config_access.primary_config.enable_custom_temp:
+            sensor_readings.append(app_config_access.primary_config.temperature_offset)
         else:
             sensor_readings.append("0.0")
     if app_config_access.installed_sensors.has_pressure:

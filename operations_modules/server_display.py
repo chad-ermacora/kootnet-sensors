@@ -28,4 +28,4 @@ def scroll_interval_readings_on_display():
         message = "CPU: " + str(sensor_access.get_cpu_temperature()) + "°C "
         message += "ENV: " + str(sensor_access.get_sensor_temperature()) + "°C "
         sensor_access.display_message(message)
-        sleep(app_config_access.current_config.sleep_duration_interval)
+        sleep(app_config_access.primary_config.sleep_duration_interval)

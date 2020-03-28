@@ -319,7 +319,7 @@ def create_new_self_signed_ssl():
 @html_system_commands_routes.route("/DisplayText", methods=["PUT"])
 def display_text():
     max_length_text_message = 250
-    if app_config_access.current_config.enable_display and app_config_access.installed_sensors.has_display:
+    if app_config_access.primary_config.enable_display and app_config_access.installed_sensors.has_display:
         logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
         text_message = request.form.get("command_data")
         if len(text_message) > max_length_text_message:

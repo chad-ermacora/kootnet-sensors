@@ -253,8 +253,8 @@ def get_dew_point():
     variable_b = 237.7
 
     env_temp = get_sensor_temperature()
-    if app_config_access.current_config.enable_custom_temp:
-        env_temp = env_temp + app_config_access.current_config.temperature_offset
+    if app_config_access.primary_config.enable_custom_temp:
+        env_temp = env_temp + app_config_access.primary_config.temperature_offset
     humidity = get_humidity()
     if env_temp == no_sensor_present or humidity == no_sensor_present:
         return no_sensor_present
@@ -450,7 +450,7 @@ def display_message(text_msg):
     """ If a Supported Display is installed, shows provided text message on it. """
     text_msg = str(text_msg)
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_msg)
-    if app_config_access.installed_sensors.has_display and app_config_access.current_config.enable_display:
+    if app_config_access.installed_sensors.has_display and app_config_access.primary_config.enable_display:
         message_length = len(text_msg)
 
         thread_ready = True

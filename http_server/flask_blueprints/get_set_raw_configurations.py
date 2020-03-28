@@ -13,7 +13,7 @@ html_get_config_routes = Blueprint("html_get_config_routes", __name__)
 @html_get_config_routes.route("/GetConfiguration")
 def get_primary_configuration():
     logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.current_config.get_config_as_str()
+    return app_config_access.primary_config.get_config_as_str()
 
 
 @html_get_config_routes.route("/SetPrimaryConfiguration", methods=["PUT"])
@@ -22,10 +22,10 @@ def set_configuration():
     logger.network_logger.info("** Primary Sensor Configuration Set by " + str(request.remote_addr))
     try:
         if request.form.get("test_run"):
-            app_config_access.current_config.load_from_file = False
-        app_config_access.current_config.set_config_with_str(request.form.get("command_data"))
+            app_config_access.primary_config.load_from_file = False
+        app_config_access.primary_config.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
-            app_config_access.current_config.save_config_to_file()
+            app_config_access.primary_config.save_config_to_file()
             app_generic_functions.thread_function(sensor_access.restart_services)
         return "OK"
     except Exception as error:

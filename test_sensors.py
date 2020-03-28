@@ -23,7 +23,7 @@ from configuration_modules.config_installed_sensors import CreateInstalledSensor
 from operations_modules.app_cached_variables import CreateNetworkGetCommands, command_data_separator
 
 logging.captureWarnings(True)
-current_config = CreatePrimaryConfiguration()
+primary_config = CreatePrimaryConfiguration()
 installed_sensors = CreateInstalledSensorsConfiguration()
 remote_get = CreateNetworkGetCommands()
 
@@ -47,12 +47,12 @@ sensor_types = interval_data[0].split(",")
 sensor_readings = interval_data[1].split(",")
 
 print("*** Configuration Print || 0 = Disabled | 1 = Enabled ***\n" +
-      "Enable Debug Logging: " + str(current_config.enable_debug_logging) +
-      "  ||  Record Interval Sensors to SQL Database: " + str(current_config.enable_interval_recording) +
-      "\n  Record Trigger Sensors to SQL Database: " + str(current_config.enable_trigger_recording) +
-      "\n  Seconds between Interval recordings: " + str(current_config.sleep_duration_interval))
-print("\n  Enable Custom Temperature Offset: " + str(current_config.enable_custom_temp) +
-      " || Current Temperature Offset: " + str(current_config.temperature_offset))
+      "Enable Debug Logging: " + str(primary_config.enable_debug_logging) +
+      "  ||  Record Interval Sensors to SQL Database: " + str(primary_config.enable_interval_recording) +
+      "\n  Record Trigger Sensors to SQL Database: " + str(primary_config.enable_trigger_recording) +
+      "\n  Seconds between Interval recordings: " + str(primary_config.sleep_duration_interval))
+print("\n  Enable Custom Temperature Offset: " + str(primary_config.enable_custom_temp) +
+      " || Current Temperature Offset: " + str(primary_config.temperature_offset))
 print("\n*** Sensor Data test ***")
 str_message = ""
 count = 0

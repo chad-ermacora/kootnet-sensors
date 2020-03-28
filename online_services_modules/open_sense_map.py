@@ -20,7 +20,7 @@ import requests
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_config_access import current_config, installed_sensors, open_sense_map_config
+from operations_modules.app_config_access import primary_config, installed_sensors, open_sense_map_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
@@ -39,9 +39,9 @@ def start_open_sense_map():
                     if open_sense_map_config.temperature_id != "":
                         try:
                             env_temperature = sensor_access.get_sensor_temperature()
-                            if current_config.enable_custom_temp:
+                            if primary_config.enable_custom_temp:
                                 env_temperature = round(env_temperature +
-                                                        current_config.temperature_offset,
+                                                        primary_config.temperature_offset,
                                                         round_decimal_to)
                         except Exception as error:
                             logger.network_logger.warning("Open Sense Map - Env Temperature Error: " + str(error))

@@ -50,7 +50,7 @@ if running_with_root and app_config_access.installed_sensors.no_sensors is False
     sensor_access.start_special_sensor_interactive_services()
 
     # If there is a display installed, start up the display server
-    if app_config_access.current_config.enable_display:
+    if app_config_access.primary_config.enable_display:
         if app_config_access.installed_sensors.has_display:
             pass
             # This currently only displays sensor readings every interval recording. Disabled for now.
@@ -61,7 +61,7 @@ if running_with_root and app_config_access.installed_sensors.no_sensors is False
             logger.primary_logger.warning("No Compatible Displays Installed")
 
     # Start up Interval Sensor Recording
-    if app_config_access.current_config.enable_interval_recording:
+    if app_config_access.primary_config.enable_interval_recording:
         text_name = "Interval Recording"
         function = recording_interval.start_interval_recording
         app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
@@ -69,7 +69,7 @@ if running_with_root and app_config_access.installed_sensors.no_sensors is False
         logger.primary_logger.debug("Interval Recording Disabled in Config")
 
     # Start up Trigger Sensor Recording
-    if app_config_access.current_config.enable_trigger_recording:
+    if app_config_access.primary_config.enable_trigger_recording:
         app_cached_variables.trigger_recording_thread = thread_function(recording_triggers.start_trigger_recording)
     else:
         logger.primary_logger.debug("Trigger Recording Disabled in Config")

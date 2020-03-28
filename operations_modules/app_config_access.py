@@ -18,10 +18,10 @@
 """
 from os import geteuid
 from operations_modules import logger
-from configuration_modules import config_sensor_control
-from configuration_modules import config_primary
-from configuration_modules import config_installed_sensors
-from configuration_modules import config_trigger_variances
+from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
@@ -29,19 +29,19 @@ from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 if geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
-    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
-    current_config = config_primary.CreatePrimaryConfiguration()
-    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
-    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
+    installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
+    primary_config = CreatePrimaryConfiguration()
+    trigger_variances = CreateTriggerVariancesConfiguration()
+    sensor_control_config = CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
     luftdaten_config = CreateLuftdatenConfiguration()
     open_sense_map_config = CreateOpenSenseMapConfiguration()
 else:
     logger.primary_logger.debug("Initializing configurations")
-    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration()
-    current_config = config_primary.CreatePrimaryConfiguration()
-    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration()
-    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration()
+    installed_sensors = CreateInstalledSensorsConfiguration()
+    primary_config = CreatePrimaryConfiguration()
+    trigger_variances = CreateTriggerVariancesConfiguration()
+    sensor_control_config = CreateSensorControlConfiguration()
     weather_underground_config = CreateWeatherUndergroundConfiguration()
     luftdaten_config = CreateLuftdatenConfiguration()
     open_sense_map_config = CreateOpenSenseMapConfiguration()

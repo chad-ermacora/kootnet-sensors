@@ -19,7 +19,7 @@
 import requests
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_config_access import installed_sensors, current_config, luftdaten_config
+from operations_modules.app_config_access import installed_sensors, primary_config, luftdaten_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
@@ -113,8 +113,8 @@ def _pms5003():
 def _get_temperature():
     try:
         temp_c = sensor_access.get_sensor_temperature()
-        if valid_sensor_reading(temp_c) and current_config.enable_custom_temp:
-            temp_c = temp_c + current_config.temperature_offset
+        if valid_sensor_reading(temp_c) and primary_config.enable_custom_temp:
+            temp_c = temp_c + primary_config.temperature_offset
         return temp_c
     except Exception as error:
         logger.network_logger.warning("Luftdaten - Get Temperature Failed, returning 0.0: " + str(error))

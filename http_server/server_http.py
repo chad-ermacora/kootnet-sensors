@@ -83,8 +83,8 @@ class CreateSensorHTTP:
         thread_function(delayed_cache_update)
 
         try:
-            flask_http_ip = app_config_access.current_config.flask_http_ip
-            flask_port_number = app_config_access.current_config.web_portal_port
+            flask_http_ip = app_config_access.primary_config.flask_http_ip
+            flask_port_number = app_config_access.primary_config.web_portal_port
             http_server = WSGIServer((flask_http_ip, flask_port_number), app,
                                      keyfile=file_locations.http_ssl_key,
                                      certfile=file_locations.http_ssl_crt)

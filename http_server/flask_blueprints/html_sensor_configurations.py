@@ -13,12 +13,12 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
-from operations_modules import app_generic_functions
 from operations_modules import software_version
 from operations_modules import app_config_access
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules import app_validation_checks
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 from sensor_modules import sensor_access
@@ -34,14 +34,14 @@ def html_edit_configurations():
         variances = app_config_access.trigger_variances
         sensors_now = app_config_access.installed_sensors
 
-        debug_logging = get_html_checkbox_state(app_config_access.current_config.enable_debug_logging)
-        display = get_html_checkbox_state(app_config_access.current_config.enable_display)
-        interval_recording = get_html_checkbox_state(app_config_access.current_config.enable_interval_recording)
+        debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
+        display = get_html_checkbox_state(app_config_access.primary_config.enable_display)
+        interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
         interval_recording_disabled = "disabled"
         if interval_recording:
             interval_recording_disabled = ""
-        trigger_recording = get_html_checkbox_state(app_config_access.current_config.enable_trigger_recording)
-        custom_temp_offset = get_html_checkbox_state(app_config_access.current_config.enable_custom_temp)
+        trigger_recording = get_html_checkbox_state(app_config_access.primary_config.enable_trigger_recording)
+        custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
         custom_temp_offset_disabled = "disabled"
         if custom_temp_offset:
             custom_temp_offset_disabled = ""
@@ -55,7 +55,7 @@ def html_edit_configurations():
         wifi_security_type_none1 = ""
         wifi_security_type_wpa1 = ""
         if sensors_now.raspberry_pi:
-            dhcpcd_lines = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file).split("\n")
+            dhcpcd_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
             if network_ip.check_for_dhcp(dhcpcd_lines):
                 dhcp_checkbox = "checked"
                 ip_disabled = "disabled"
@@ -74,11 +74,11 @@ def html_edit_configurations():
                                CheckedDisplay=display,
                                CheckedInterval=interval_recording,
                                DisabledIntervalDelay=interval_recording_disabled,
-                               IntervalDelay=float(app_config_access.current_config.sleep_duration_interval),
+                               IntervalDelay=float(app_config_access.primary_config.sleep_duration_interval),
                                CheckedTrigger=trigger_recording,
                                CheckedCustomTempOffset=custom_temp_offset,
                                DisabledCustomTempOffset=custom_temp_offset_disabled,
-                               temperature_offset=float(app_config_access.current_config.temperature_offset),
+                               temperature_offset=float(app_config_access.primary_config.temperature_offset),
                                GnuLinux=get_html_checkbox_state(sensors_now.linux_system),
                                RaspberryPi=get_html_checkbox_state(sensors_now.raspberry_pi),
                                SenseHAT=get_html_checkbox_state(sensors_now.raspberry_pi_sense_hat),
@@ -168,7 +168,7 @@ def html_edit_configurations():
                                CheckedWiFiSecurityNone1=wifi_security_type_none1,
                                CheckedDHCP=dhcp_checkbox,
                                IPHostname=app_cached_variables.hostname,
-                               IPWebPort=app_config_access.current_config.web_portal_port,
+                               IPWebPort=app_config_access.primary_config.web_portal_port,
                                IPv4Address=app_cached_variables.ip,
                                IPv4AddressDisabled=ip_disabled,
                                IPv4Subnet=app_cached_variables.ip_subnet,
@@ -191,10 +191,10 @@ def html_set_config_main():
     logger.network_logger.debug("** HTML Apply - Main Configuration - Source: " + str(request.remote_addr))
     if request.method == "POST":
         try:
-            app_config_access.current_config.update_with_html_request(request)
-            app_config_access.current_config.save_config_to_file()
+            app_config_access.primary_config.update_with_html_request(request)
+            app_config_access.primary_config.save_config_to_file()
             return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            thread_function(sensor_access.restart_services)
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
@@ -210,7 +210,7 @@ def html_set_installed_sensors():
             app_config_access.installed_sensors.update_with_html_request(request)
             app_config_access.installed_sensors.save_config_to_file()
             return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            thread_function(sensor_access.restart_services)
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
@@ -253,7 +253,7 @@ def set_custom_ssl():
         new_ssl_key = request.files["custom_key"]
         new_ssl_certificate.save(temp_ssl_crt_location)
         new_ssl_key.save(temp_ssl_key_location)
-        if _is_valid_ssl_certificate(app_generic_functions.get_file_content(temp_ssl_crt_location)):
+        if _is_valid_ssl_certificate(get_file_content(temp_ssl_crt_location)):
             os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
             os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
             os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
@@ -284,11 +284,11 @@ def html_set_ipv4_config():
     if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
         if request.form.get("ip_dhcp") is not None:
             message = "You must reboot for all settings to take effect."
-            dhcpcd_template = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file_template)
+            dhcpcd_template = get_file_content(file_locations.dhcpcd_config_file_template)
             dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
             hostname = request.form.get("ip_hostname")
             os.system("hostnamectl set-hostname " + hostname)
-            app_generic_functions.write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
+            write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
             app_cached_variables_update.update_cached_variables()
             return message_and_return("IPv4 Configuration Updated", text_message2=message, url="/ConfigurationsHTML")
 
@@ -335,7 +335,7 @@ def html_set_ipv4_config():
 
 def check_html_config_ipv4(html_request):
     logger.network_logger.debug("Starting HTML IPv4 Configuration Update Check")
-    dhcpcd_template = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file_template)
+    dhcpcd_template = get_file_content(file_locations.dhcpcd_config_file_template)
 
     hostname = html_request.form.get("ip_hostname")
     os.system("hostnamectl set-hostname " + hostname)
@@ -379,7 +379,7 @@ def html_set_wifi_config():
             logger.network_logger.debug("HTML WiFi Configuration Update Failed")
             title_message = "Unable to Process Wireless Configuration"
             message = "Network Names cannot be blank and can only use " + \
-                             "Alphanumeric Characters, dashes, underscores and spaces."
+                      "Alphanumeric Characters, dashes, underscores and spaces."
             return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
     return message_and_return("Unable to Process WiFi Configuration", url="/ConfigurationsHTML")
 
@@ -396,8 +396,9 @@ def html_set_login_credentials():
                 app_cached_variables.http_flask_user = temp_username
                 app_cached_variables.http_flask_password = generate_password_hash(temp_password)
                 save_http_auth_to_file(temp_username, temp_password)
-                message = "The Username and Password has been updated"
-                return message_and_return("Username and Password Updated", text_message2=message, url="/ConfigurationsHTML")
+                msg1 = "Username and Password Updated"
+                msg2 = "The Username and Password has been updated"
+                return message_and_return(msg1, text_message2=msg2, url="/ConfigurationsHTML")
         message = "Username and Password must be 4 to 62 characters long and cannot be blank."
         return message_and_return("Invalid Username or Password", text_message2=message, url="/ConfigurationsHTML")
     return message_and_return("Unable to Process Login Credentials", url="/ConfigurationsHTML")
@@ -407,33 +408,23 @@ def html_set_login_credentials():
 @auth.login_required
 def html_raw_configurations_view():
     logger.network_logger.debug("** HTML Raw Configurations viewed by " + str(request.remote_addr))
-    primary_config = app_generic_functions.get_file_content(file_locations.primary_config)
-    installed_sensors = app_generic_functions.get_file_content(file_locations.installed_sensors_config)
-    networking = app_generic_functions.get_file_content(file_locations.dhcpcd_config_file)
-    wifi = app_generic_functions.get_file_content(file_locations.wifi_config_file)
-    trigger_variances = app_generic_functions.get_file_content(file_locations.trigger_variances_config)
-    sensor_control_config = app_generic_functions.get_file_content(file_locations.html_sensor_control_config)
-    weather_underground_config = app_generic_functions.get_file_content(file_locations.weather_underground_config)
-    luftdaten_config = app_generic_functions.get_file_content(file_locations.luftdaten_config)
-    open_sense_map_config = app_generic_functions.get_file_content(file_locations.osm_config)
-
-    module_version_text = "Kootnet Sensors: " + software_version.version + "\n"
-    module_version_text += "Flask: " + str(flask_version) + "\n"
-    module_version_text += "Gevent: " + str(gevent_version) + "\n"
-    module_version_text += "Cryptography: " + str(cryptography_version) + "\n"
-    module_version_text += "Werkzeug: " + str(werkzeug_version) + "\n"
-    module_version_text += "Requests: " + str(requests_version) + "\n"
-    module_version_text += "Plotly Graphing: " + str(plotly_version) + "\n"
-    module_version_text += "Numpy: " + str(numpy_version) + "\n"
+    module_version_text = "Kootnet Sensors: " + software_version.version + "\n" + \
+                          "Flask: " + str(flask_version) + "\n" + \
+                          "Gevent: " + str(gevent_version) + "\n" + \
+                          "Cryptography: " + str(cryptography_version) + "\n" + \
+                          "Werkzeug: " + str(werkzeug_version) + "\n" + \
+                          "Requests: " + str(requests_version) + "\n" + \
+                          "Plotly Graphing: " + str(plotly_version) + "\n" + \
+                          "Numpy: " + str(numpy_version) + "\n"
 
     return render_template("view_raw_configurations.html",
-                           MainConfiguration=primary_config,
-                           InstalledSensorsConfiguration=installed_sensors,
-                           TriggerConfiguration=trigger_variances,
-                           SensorControlConfiguration=sensor_control_config,
-                           NetworkConfiguration=networking,
-                           WiFiConfiguration=wifi,
+                           MainConfiguration=get_file_content(file_locations.primary_config),
+                           InstalledSensorsConfiguration=get_file_content(file_locations.installed_sensors_config),
+                           TriggerConfiguration=get_file_content(file_locations.trigger_variances_config),
+                           SensorControlConfiguration=get_file_content(file_locations.html_sensor_control_config),
+                           NetworkConfiguration=get_file_content(file_locations.dhcpcd_config_file),
+                           WiFiConfiguration=get_file_content(file_locations.wifi_config_file),
                            ModuleVersions=module_version_text,
-                           WeatherUndergroundConfiguration=weather_underground_config,
-                           LuftdatenConfiguration=luftdaten_config,
-                           OpenSenseMapConfiguration=open_sense_map_config)
+                           WeatherUndergroundConfiguration=get_file_content(file_locations.weather_underground_config),
+                           LuftdatenConfiguration=get_file_content(file_locations.luftdaten_config),
+                           OpenSenseMapConfiguration=get_file_content(file_locations.osm_config))

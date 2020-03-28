@@ -28,21 +28,21 @@ def index():
 @html_sensor_info_readings_routes.route("/SensorInformation")
 def html_system_information():
     debug_logging = "Disabled"
-    if app_config_access.current_config.enable_debug_logging:
+    if app_config_access.primary_config.enable_debug_logging:
         debug_logging = "Enabled"
 
-    display_enabled = get_text_running_thread_state(app_config_access.current_config.enable_display,
+    display_enabled = get_text_running_thread_state(app_config_access.primary_config.enable_display,
                                                     app_cached_variables.mini_display_thread)
 
-    interval_recording = get_text_running_thread_state(app_config_access.current_config.enable_interval_recording,
+    interval_recording = get_text_running_thread_state(app_config_access.primary_config.enable_interval_recording,
                                                        app_cached_variables.interval_recording_thread)
 
     trigger_recording = "Disabled"
     enable_trigger_button = "disabled"
-    if app_config_access.current_config.enable_trigger_recording:
+    if app_config_access.primary_config.enable_trigger_recording:
         trigger_recording = "Enabled"
         enable_trigger_button = ""
-    if app_config_access.current_config.enable_trigger_recording:
+    if app_config_access.primary_config.enable_trigger_recording:
         trigger_uptime = get_text_running_thread_state(app_config_access.trigger_variances.sensor_uptime_enabled,
                                                        app_cached_variables.trigger_thread_sensor_uptime)
         trigger_cpu_temp = get_text_running_thread_state(app_config_access.trigger_variances.cpu_temperature_enabled,
@@ -136,12 +136,12 @@ def html_system_information():
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     raw_temp = sensor_access.get_sensor_temperature()
-    temp_offset = app_config_access.current_config.temperature_offset
+    temp_offset = app_config_access.primary_config.temperature_offset
 
     adjusted_temp = app_cached_variables.no_sensor_present
     if raw_temp != app_cached_variables.no_sensor_present:
         try:
-            if app_config_access.current_config.enable_custom_temp:
+            if app_config_access.primary_config.enable_custom_temp:
                 adjusted_temp = round(raw_temp + temp_offset, 2)
         except Exception as error:
             logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))

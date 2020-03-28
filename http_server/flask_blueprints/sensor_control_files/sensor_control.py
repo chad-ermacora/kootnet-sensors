@@ -202,7 +202,7 @@ def download_sc_big_zip():
 @auth.login_required
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
-    config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
+    config = app_config_access.primary_config.CreatePrimaryConfiguration(load_from_file=False)
     config.update_with_html_request(request)
     return _run_system_command(network_set_commands.set_primary_configuration, include_data=config.get_config_as_str())
 
