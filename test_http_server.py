@@ -93,7 +93,6 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
 1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)"""
 
-
     def set_settings_for_test1(self):
         self.linux_system = 0
         self.raspberry_pi = 0

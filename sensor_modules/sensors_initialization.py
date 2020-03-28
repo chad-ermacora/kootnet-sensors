@@ -95,8 +95,3 @@ if geteuid() == 0:
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
         pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
     logger.primary_logger.info(" -- Sensors Initialized")
-else:
-    # Skip Sensor Initializations on upgrade
-    # They won't be used & program will be restarted when the upgrade is done.
-    if geteuid() == 0:
-        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Upgrade in progress")

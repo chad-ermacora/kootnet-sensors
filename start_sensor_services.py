@@ -33,11 +33,11 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
-from http_server import server_http
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import server_display
+from http_server import server_http
 from sensor_recording_modules import recording_interval
 from sensor_recording_modules import recording_triggers
 from online_services_modules.luftdaten import start_luftdaten

@@ -21,22 +21,13 @@ from operations_modules import logger
 from configuration_modules import config_sensor_control
 from configuration_modules import config_primary
 from configuration_modules import config_installed_sensors
-from operations_modules import software_version
 from configuration_modules import config_trigger_variances
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
-if software_version.old_version != software_version.version and geteuid() == 0:
-    logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
-    installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
-    current_config = config_primary.CreatePrimaryConfiguration(load_from_file=False)
-    trigger_variances = config_trigger_variances.CreateTriggerVariancesConfiguration(load_from_file=False)
-    sensor_control_config = config_sensor_control.CreateSensorControlConfiguration(load_from_file=False)
-    weather_underground_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
-    luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-    open_sense_map_config = CreateOpenSenseMapConfiguration(load_from_file=False)
-elif geteuid() != 0:
+
+if geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = config_installed_sensors.CreateInstalledSensorsConfiguration(load_from_file=False)
     current_config = config_primary.CreatePrimaryConfiguration()
