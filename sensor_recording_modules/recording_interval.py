@@ -18,7 +18,10 @@
 """
 import datetime
 from time import sleep
-from operations_modules import logger, app_config_access, app_cached_variables, sqlite_database
+from operations_modules import logger
+from operations_modules import app_cached_variables
+from operations_modules import app_config_access
+from operations_modules import sqlite_database
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
