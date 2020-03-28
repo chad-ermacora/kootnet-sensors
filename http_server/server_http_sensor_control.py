@@ -26,6 +26,7 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version
+from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
@@ -125,7 +126,7 @@ class CreateReplacementVariables:
             sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
             installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
-            sensors_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
+            sensors_config = CreatePrimaryConfiguration(load_from_file=False)
             sensors_config.set_config_with_str(sensor_config_raw)
 
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)

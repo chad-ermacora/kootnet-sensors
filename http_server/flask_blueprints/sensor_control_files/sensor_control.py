@@ -23,6 +23,7 @@ from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
 from operations_modules import network_wifi
+from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from http_server.server_http_auth import auth
@@ -202,7 +203,7 @@ def download_sc_big_zip():
 @auth.login_required
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
-    config = app_config_access.primary_config.CreatePrimaryConfiguration(load_from_file=False)
+    config = CreatePrimaryConfiguration(load_from_file=False)
     config.update_with_html_request(request)
     return _run_system_command(network_set_commands.set_primary_configuration, include_data=config.get_config_as_str())
 
