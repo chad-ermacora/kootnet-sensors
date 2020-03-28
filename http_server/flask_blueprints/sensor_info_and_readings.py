@@ -6,6 +6,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_text_running_thread_state
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
+from operations_modules import software_version
 from sensor_modules import sensor_access
 
 html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes", __name__)
@@ -98,7 +99,7 @@ def html_system_information():
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            OSVersion=app_cached_variables.operating_system_name,
-                           KootnetVersion=app_config_access.software_version.version,
+                           KootnetVersion=software_version.version,
                            LastUpdated=app_cached_variables.program_last_updated,
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),

@@ -8,6 +8,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import os_cli_commands
+from operations_modules import software_version
 from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
@@ -57,7 +58,7 @@ def get_operating_system_version():
 @html_system_commands_routes.route("/GetSensorVersion")
 def get_sensor_program_version():
     logger.network_logger.debug("* Sensor's Version sent to " + str(request.remote_addr))
-    return str(app_config_access.software_version.version)
+    return str(software_version.version)
 
 
 @html_system_commands_routes.route("/GetSQLDBSize")
