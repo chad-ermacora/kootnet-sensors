@@ -46,30 +46,42 @@ def html_edit_configurations():
         if custom_temp_offset:
             custom_temp_offset_disabled = ""
 
-        dhcp_checkbox = ""
-        ip_disabled = ""
-        subnet_disabled = ""
-        gateway_disabled = ""
-        dns1_disabled = ""
-        dns2_disabled = ""
-        wifi_security_type_none1 = ""
-        wifi_security_type_wpa1 = ""
-        if sensors_now.raspberry_pi:
-            dhcpcd_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
-            if network_ip.check_for_dhcp(dhcpcd_lines):
-                dhcp_checkbox = "checked"
-                ip_disabled = "disabled"
-                subnet_disabled = "disabled"
-                gateway_disabled = "disabled"
-                dns1_disabled = "disabled"
-                dns2_disabled = "disabled"
-        if app_cached_variables.wifi_security_type == "" or app_cached_variables.wifi_security_type == "WPA-PSK":
-            wifi_security_type_wpa1 = "checked"
-        else:
-            wifi_security_type_none1 = "checked"
+        wu_checked = get_html_checkbox_state(app_config_access.weather_underground_config.weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(
+            app_config_access.weather_underground_config.wu_rapid_fire_enabled)
+        wu_rapid_fire_disabled = "disabled"
+        wu_interval_seconds_disabled = "disabled"
+        wu_outdoor_disabled = "disabled"
+        wu_station_id_disabled = "disabled"
+        wu_station_key_disabled = "disabled"
+        if app_config_access.weather_underground_config.weather_underground_enabled:
+            wu_rapid_fire_disabled = ""
+            wu_interval_seconds_disabled = ""
+            wu_outdoor_disabled = ""
+            wu_station_id_disabled = ""
+            wu_station_key_disabled = ""
+
+        wu_interval_seconds = app_config_access.weather_underground_config.interval_seconds
+        wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
+        wu_station_id = app_config_access.weather_underground_config.station_id
+
+        luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
+        luftdaten_interval_seconds_disabled = "disabled"
+        if app_config_access.luftdaten_config.luftdaten_enabled:
+            luftdaten_interval_seconds_disabled = ""
+
+        luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
+        luftdaten_station_id = app_config_access.luftdaten_config.station_id
+
+        osm_disabled = "disabled"
+        osm_enable_checked = ""
+        if app_config_access.open_sense_map_config.open_sense_map_enabled:
+            osm_enable_checked = "checked"
+            osm_disabled = ""
 
         return render_template("edit_configurations.html",
                                PageURL="/ConfigurationsHTML",
+                               IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
                                CheckedDisplay=display,
                                CheckedInterval=interval_recording,
@@ -161,6 +173,79 @@ def html_edit_configurations():
                                TriggerGyroscopeY=variances.gyroscope_y_variance,
                                TriggerGyroscopeZ=variances.gyroscope_z_variance,
                                SecondsGyroscope=variances.gyroscope_wait_seconds,
+                               CheckedWUEnabled=wu_checked,
+                               CheckedWURapidFire=wu_rapid_fire_checked,
+                               DisabledWURapidFire=wu_rapid_fire_disabled,
+                               WUIntervalSeconds=wu_interval_seconds,
+                               DisabledWUInterval=wu_interval_seconds_disabled,
+                               CheckedWUOutdoor=wu_outdoor,
+                               DisabledWUOutdoor=wu_outdoor_disabled,
+                               DisabledStationID=wu_station_id_disabled,
+                               WUStationID=wu_station_id,
+                               DisabledStationKey=wu_station_key_disabled,
+                               CheckedLuftdatenEnabled=luftdaten_checked,
+                               LuftdatenIntervalSeconds=luftdaten_interval_seconds,
+                               DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
+                               LuftdatenStationID=luftdaten_station_id,
+                               CheckedOSMEnabled=osm_enable_checked,
+                               OSMDisabled=osm_disabled,
+                               OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
+                               OSMIntervalSeconds=app_config_access.open_sense_map_config.interval_seconds,
+                               OSMSEnvTempID=app_config_access.open_sense_map_config.temperature_id,
+                               OSMPressureID=app_config_access.open_sense_map_config.pressure_id,
+                               OSMAltitudeID=app_config_access.open_sense_map_config.altitude_id,
+                               OSMHumidityID=app_config_access.open_sense_map_config.humidity_id,
+                               OSMGasIndexID=app_config_access.open_sense_map_config.gas_voc_id,
+                               OSMGasNH3ID=app_config_access.open_sense_map_config.gas_nh3_id,
+                               OSMOxidisingID=app_config_access.open_sense_map_config.gas_oxidised_id,
+                               OSMGasReducingID=app_config_access.open_sense_map_config.gas_reduced_id,
+                               OSMPM1ID=app_config_access.open_sense_map_config.pm1_id,
+                               OSMPM25ID=app_config_access.open_sense_map_config.pm2_5_id,
+                               OSMPM10ID=app_config_access.open_sense_map_config.pm10_id,
+                               OSMLumenID=app_config_access.open_sense_map_config.lumen_id,
+                               OSMRedID=app_config_access.open_sense_map_config.red_id,
+                               OSMOrangeID=app_config_access.open_sense_map_config.orange_id,
+                               OSMYellowID=app_config_access.open_sense_map_config.yellow_id,
+                               OSMGreenID=app_config_access.open_sense_map_config.green_id,
+                               OSMBlueID=app_config_access.open_sense_map_config.blue_id,
+                               OSMVioletID=app_config_access.open_sense_map_config.violet_id,
+                               OSMUVIndexID=app_config_access.open_sense_map_config.ultra_violet_index_id,
+                               OSMUVAID=app_config_access.open_sense_map_config.ultra_violet_a_id,
+                               OSMUVBID=app_config_access.open_sense_map_config.ultra_violet_b_id)
+    except Exception as error:
+        logger.network_logger.error("HTML unable to display Configurations: " + str(error))
+        return render_template("message_return.html", message2="Unable to Display Configurations...")
+
+
+@html_sensor_config_routes.route("/NetworkConfigurationsHTML")
+@auth.login_required
+def html_edit_network_configurations():
+    logger.network_logger.debug("** HTML Network Configurations accessed from " + str(request.remote_addr))
+    try:
+        dhcp_checkbox = ""
+        ip_disabled = ""
+        subnet_disabled = ""
+        gateway_disabled = ""
+        dns1_disabled = ""
+        dns2_disabled = ""
+        wifi_security_type_none1 = ""
+        wifi_security_type_wpa1 = ""
+        if app_config_access.installed_sensors.raspberry_pi:
+            dhcpcd_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
+            if network_ip.check_for_dhcp(dhcpcd_lines):
+                dhcp_checkbox = "checked"
+                ip_disabled = "disabled"
+                subnet_disabled = "disabled"
+                gateway_disabled = "disabled"
+                dns1_disabled = "disabled"
+                dns2_disabled = "disabled"
+        if app_cached_variables.wifi_security_type == "" or app_cached_variables.wifi_security_type == "WPA-PSK":
+            wifi_security_type_wpa1 = "checked"
+        else:
+            wifi_security_type_none1 = "checked"
+
+        return render_template("network_configurations.html",
+                               PageURL="/NetworkConfigurationsHTML",
                                SSLFileLocation=file_locations.http_ssl_folder,
                                WirelessCountryCode=app_cached_variables.wifi_country_code,
                                SSID1=app_cached_variables.wifi_ssid,
@@ -168,7 +253,6 @@ def html_edit_configurations():
                                CheckedWiFiSecurityNone1=wifi_security_type_none1,
                                CheckedDHCP=dhcp_checkbox,
                                IPHostname=app_cached_variables.hostname,
-                               IPWebPort=app_config_access.primary_config.web_portal_port,
                                IPv4Address=app_cached_variables.ip,
                                IPv4AddressDisabled=ip_disabled,
                                IPv4Subnet=app_cached_variables.ip_subnet,
@@ -178,11 +262,10 @@ def html_edit_configurations():
                                IPDNS1=app_cached_variables.dns1,
                                IPDNS1Disabled=dns1_disabled,
                                IPDNS2=app_cached_variables.dns2,
-                               IPDNS2Disabled=dns2_disabled,
-                               LoginUserName=app_cached_variables.http_flask_user)
+                               IPDNS2Disabled=dns2_disabled)
     except Exception as error:
-        logger.network_logger.error("HTML unable to display Configurations: " + str(error))
-        return render_template("message_return.html", message2="Unable to Display Configurations...")
+        logger.network_logger.error("HTML unable to display Networking Configurations: " + str(error))
+        return render_template("message_return.html", message2="Unable to Display Networking Configurations...")
 
 
 @html_sensor_config_routes.route("/EditConfigMain", methods=["POST"])
@@ -290,7 +373,8 @@ def html_set_ipv4_config():
             os.system("hostnamectl set-hostname " + hostname)
             write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
             app_cached_variables_update.update_cached_variables()
-            return message_and_return("IPv4 Configuration Updated", text_message2=message, url="/ConfigurationsHTML")
+            msg = "IPv4 Configuration Updated"
+            return message_and_return(msg, text_message2=message, url="/NetworkConfigurationsHTML")
 
         ip_address = request.form.get("ip_address")
         ip_subnet = request.form.get("ip_subnet")
@@ -301,36 +385,36 @@ def html_set_ipv4_config():
         try:
             app_validation_checks.ip_address_is_valid(ip_address)
         except ValueError:
-            return message_and_return("Invalid IP Address", text_message2=message, url="/ConfigurationsHTML")
+            return message_and_return("Invalid IP Address", text_message2=message, url="/NetworkConfigurationsHTML")
         if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
-            return message_and_return("Invalid Subnet Mask", text_message2=message, url="/ConfigurationsHTML")
+            return message_and_return("Invalid Subnet Mask", text_message2=message, url="/NetworkConfigurationsHTML")
         if ip_gateway is not "":
             try:
                 app_validation_checks.ip_address_is_valid(ip_gateway)
             except ValueError:
-                return message_and_return("Invalid Gateway", text_message2=message, url="/ConfigurationsHTML")
+                return message_and_return("Invalid Gateway", text_message2=message, url="/NetworkConfigurationsHTML")
         if ip_dns1 is not "":
             try:
                 app_validation_checks.ip_address_is_valid(ip_dns1)
             except ValueError:
                 title_message = "Invalid Primary DNS Address"
-                return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
+                return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
         if ip_dns2 is not "":
             title_message = "Invalid Secondary DNS Address"
             try:
                 app_validation_checks.ip_address_is_valid(ip_dns2)
             except ValueError:
-                return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
+                return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
 
         check_html_config_ipv4(request)
         app_cached_variables_update.update_cached_variables()
         title_message = "IPv4 Configuration Updated"
         message = "You must reboot the sensor to take effect."
-        return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
+        return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
     else:
         title_message = "Unable to Process IPv4 Configuration"
         message = "Invalid or Missing Hostname.\n\nOnly Alphanumeric Characters, Dashes and Underscores may be used."
-        return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
+        return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
 
 
 def check_html_config_ipv4(html_request):
@@ -366,7 +450,7 @@ def html_set_wifi_config():
             pass
         else:
             message = "Do not use double quotes in the Wireless Key Sections."
-            return message_and_return("Invalid Wireless Key", text_message2=message, url="/ConfigurationsHTML")
+            return message_and_return("Invalid Wireless Key", text_message2=message, url="/NetworkConfigurationsHTML")
         if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
             new_wireless_config = network_wifi.html_request_to_config_wifi(request)
             if new_wireless_config is not "":
@@ -374,14 +458,14 @@ def html_set_wifi_config():
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
-                return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
+                return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
         else:
             logger.network_logger.debug("HTML WiFi Configuration Update Failed")
             title_message = "Unable to Process Wireless Configuration"
             message = "Network Names cannot be blank and can only use " + \
                       "Alphanumeric Characters, dashes, underscores and spaces."
-            return message_and_return(title_message, text_message2=message, url="/ConfigurationsHTML")
-    return message_and_return("Unable to Process WiFi Configuration", url="/ConfigurationsHTML")
+            return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
+    return message_and_return("Unable to Process WiFi Configuration", url="/NetworkConfigurationsHTML")
 
 
 @html_sensor_config_routes.route("/EditLogin", methods=["POST"])
@@ -398,10 +482,10 @@ def html_set_login_credentials():
                 save_http_auth_to_file(temp_username, temp_password)
                 msg1 = "Username and Password Updated"
                 msg2 = "The Username and Password has been updated"
-                return message_and_return(msg1, text_message2=msg2, url="/ConfigurationsHTML")
+                return message_and_return(msg1, text_message2=msg2, url="/SystemCommands")
         message = "Username and Password must be 4 to 62 characters long and cannot be blank."
-        return message_and_return("Invalid Username or Password", text_message2=message, url="/ConfigurationsHTML")
-    return message_and_return("Unable to Process Login Credentials", url="/ConfigurationsHTML")
+        return message_and_return("Invalid Username or Password", text_message2=message, url="/SystemCommands")
+    return message_and_return("Unable to Process Login Credentials", url="/SystemCommands")
 
 
 @html_sensor_config_routes.route("/HTMLRawConfigurations")

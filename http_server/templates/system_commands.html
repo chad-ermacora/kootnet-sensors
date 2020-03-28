@@ -3,19 +3,20 @@
 {% block content %}
 
     <h2><strong>
-        <a style="text-decoration: underline; color: red" href="/SystemCommands">Sensor Management</a>
+        <a style="text-decoration: underline; color: red" href="/SystemCommands">Advanced</a>
     </strong></h2>
 
     <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/ConfigurationsHTML';">
-        View & Edit Configurations
+            onclick="window.location.href = '/HTMLRawConfigurations';">
+        Raw Configurations & Versions
+    </button>
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.location.href = '/TestSensorLatency';">
+        Test Sensors Latency
     </button>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/GetLogsHTML';">
-        View Logs
-    </button>
     <br>
+
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Standard Upgrades
@@ -42,16 +43,6 @@
 
     <br>
 
-    <h2 style="color: red;">Advanced</h2>
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/HTMLRawConfigurations';">
-        Raw Configurations & Versions
-    </button>
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/TestSensorLatency';">
-        Test Sensors Latency
-    </button>
-    <br>
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Developmental Upgrades
@@ -76,6 +67,34 @@
 {#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
 {#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
         </ul>
+    </div>
+
+    <br>
+
+    <div>
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditLogin">
+            <h2><u><a style="color: lightblue;" href="{{ PageURL }}">Change Login</a></u></h2>
+
+            <div class="mui-textfield">
+                <label style="color: lightblue;">
+                    Username
+                    <br>
+                    <input style="width: 125px;" type="text" id="login_username" name="login_username" required
+                           placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: lightblue;">
+                    Password
+                    <br>
+                    <input style="width: 125px;" type="password" id="login_password" name="login_password" required
+                           placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
+                </label>
+            </div>
+            <br>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </form>
     </div>
 
 {% endblock %}
