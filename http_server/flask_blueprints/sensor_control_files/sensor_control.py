@@ -198,86 +198,51 @@ def download_sc_big_zip():
     return message_and_return("Problem loading Zip", url="/SensorControlManage")
 
 
-@html_sensor_control_routes.route("/SensorControlEditConfigMain", methods=["POST"])
+@html_sensor_control_routes.route("/SensorControlEditConfigMain", methods=["GET", "POST"])
 @auth.login_required
 def sc_edit_config_primary():
     logger.network_logger.debug("* Sensor Control Set 'Primary Config' Accessed by " + str(request.remote_addr))
-    new_config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
-    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
-        new_config.update_with_html_request(request)
-        send_config = new_config.get_config_as_str()
-        for ip in ip_list:
-            set_primary_configuration = network_set_commands.set_primary_configuration
-            app_generic_functions.send_http_command(ip, set_primary_configuration, included_data=send_config)
-    msg2 = "Primary configuration sent to " + str(len(ip_list)) + " Sensors"
-    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+    config = app_config_access.config_primary.CreatePrimaryConfiguration(load_from_file=False)
+    config.update_with_html_request(request)
+    return _run_system_command(network_set_commands.set_primary_configuration, include_data=config.get_config_as_str())
 
 
-@html_sensor_control_routes.route("/SensorControlEditInstalledSensors", methods=["POST"])
+@html_sensor_control_routes.route("/SensorControlEditInstalledSensors", methods=["GET", "POST"])
 @auth.login_required
 def sc_edit_config_installed_sensors():
     msg = "* Sensor Control Set 'Installed Sensors Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
-    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
-        new_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
-        new_sensors.update_with_html_request(request)
-        installed_sensors_text = new_sensors.get_config_as_str()
-        for ip in ip_list:
-            set_installed_sensors = network_set_commands.set_installed_sensors
-            app_generic_functions.send_http_command(ip, set_installed_sensors, included_data=installed_sensors_text)
-    msg2 = "Installed Sensors configuration sent to " + str(len(ip_list)) + " Sensors"
-    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+    config = CreateInstalledSensorsConfiguration(load_from_file=False)
+    config.update_with_html_request(request)
+    return _run_system_command(network_set_commands.set_installed_sensors, include_data=config.get_config_as_str())
 
 
-@html_sensor_control_routes.route("/SensorControlEditConfigWifi", methods=["POST"])
+@html_sensor_control_routes.route("/SensorControlEditConfigWifi", methods=["GET", "POST"])
 @auth.login_required
 def sc_edit_config_wifi():
     logger.network_logger.debug("* Sensor Control Set 'Wifi Config' Accessed by " + str(request.remote_addr))
-    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
-        new_wifi = network_wifi.html_request_to_config_wifi(request)
-        for ip in ip_list:
-            set_wifi_configuration = network_set_commands.set_wifi_configuration
-            app_generic_functions.send_http_command(ip, set_wifi_configuration, included_data=new_wifi)
-    msg2 = "Wireless configuration sent to " + str(len(ip_list)) + " Sensors.  You must reboot the sensors for it to take effect."
-    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+    new_wifi = network_wifi.html_request_to_config_wifi(request)
+    return _run_system_command(network_set_commands.set_wifi_configuration, include_data=new_wifi)
 
 
-@html_sensor_control_routes.route("/SensorControlEditTriggerVariances", methods=["POST"])
+@html_sensor_control_routes.route("/SensorControlEditTriggerVariances", methods=["GET", "POST"])
 @auth.login_required
 def sc_edit_config_triggers():
     msg = "* Sensor Control Set 'Trigger Variances Config' Accessed by "
     logger.network_logger.debug(msg + str(request.remote_addr))
-    ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
-        new_triggers = CreateTriggerVariancesConfiguration(load_from_file=False)
-        new_triggers.update_with_html_request(request)
-        trigger_text_config = new_triggers.get_config_as_str()
-        for ip in ip_list:
-            set_variance_configuration = network_set_commands.set_variance_configuration
-            app_generic_functions.send_http_command(ip, set_variance_configuration, included_data=trigger_text_config)
-    msg2 = "Trigger configuration sent to " + str(len(ip_list)) + " Sensors"
-    return message_and_return("Sensor Control - Configurations", url="/SensorControlManage", text_message2=msg2)
+    config = CreateTriggerVariancesConfiguration(load_from_file=False)
+    config.update_with_html_request(request)
+    return _run_system_command(network_set_commands.set_variance_configuration, include_data=config.get_config_as_str())
 
 
-@html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["POST"])
+@html_sensor_control_routes.route("/SCActiveOnlineServices", methods=["GET", "POST"])
 @auth.login_required
 def sc_active_online_services():
     logger.network_logger.debug("* Sensor Control 'Online Services' Accessed by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
+        if _missing_login_credentials():
+            return _get_missing_login_credentials_page()
         service_state = 0
         if request.form.get("enable_online_service") is not None:
             service_state = 1
@@ -388,27 +353,45 @@ def sc_upgrade_http_clean():
     return _run_system_command(network_system_commands.upgrade_http_clean)
 
 
-def _run_system_command(command):
+def _run_system_command(command, include_data=None):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        if _invalid_login_credentials():
-            return _get_invalid_login_page()
+        sent_ok = 0
+        sent_failed = 0
+        if _missing_login_credentials():
+            return _get_missing_login_credentials_page()
         for ip in ip_list:
-            app_generic_functions.get_http_sensor_reading(ip, command=command)
-        msg2 = "System Command '" + command + "' sent to " + str(len(ip_list)) + " Sensors"
-        return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+            if _login_successful(ip):
+                if include_data is not None:
+                    app_generic_functions.send_http_command(ip, command, included_data=include_data)
+                else:
+                    app_generic_functions.get_http_sensor_reading(ip, command=command)
+                sent_ok += 1
+            else:
+                sent_failed += 1
+        msg2 = "Successfully sent: " + str(sent_ok) + "  ||  Bad Login: " + str(sent_failed)
+        msg1 = command + " sent to " + str(len(ip_list)) + " Sensors"
+        return message_and_return(msg1, url="/SensorControlManage", text_message2=msg2)
     msg2 = "Error sending System Command '" + command + "' to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
 
 
-def _invalid_login_credentials():
+def _missing_login_credentials():
     if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
         return True
     return False
 
 
-def _get_invalid_login_page():
+def _get_missing_login_credentials_page():
     msg1 = "Warning - Sensor Control - Configurations"
-    msg2 = "You must enter the Sensor Login Credentials to update Configurations"
+    msg2 = "Login Credentials cannot be blank"
     return message_and_return(msg1, url="/SensorControlManage", text_message2=msg2)
+
+
+def _login_successful(ip):
+    check_portal_login = network_get_commands.check_portal_login
+    if app_generic_functions.get_http_sensor_reading(ip, command=check_portal_login) == "OK":
+        return True
+    logger.network_logger.warning("The Sensor " + str(ip) + " did not accept provided Login Credentials")
+    return False

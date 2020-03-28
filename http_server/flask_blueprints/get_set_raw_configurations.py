@@ -20,13 +20,18 @@ def get_primary_configuration():
 @auth.login_required
 def set_configuration():
     logger.network_logger.info("** Primary Sensor Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.current_config.load_from_file = False
-    app_config_access.current_config.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.current_config.save_config_to_file()
-        app_generic_functions.thread_function(sensor_access.restart_services)
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.current_config.load_from_file = False
+        app_config_access.current_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.current_config.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetInstalledSensors")
@@ -39,13 +44,20 @@ def get_installed_sensors():
 @auth.login_required
 def set_installed_sensors():
     logger.network_logger.info("** Installed Sensors Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.installed_sensors.load_from_file = False
-    app_config_access.installed_sensors.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.installed_sensors.save_config_to_file()
-        app_generic_functions.thread_function(sensor_access.restart_services)
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.installed_sensors.load_from_file = False
+
+        app_config_access.installed_sensors.set_config_with_str(request.form.get("command_data"))
+
+        if request.form.get("test_run") is None:
+            app_config_access.installed_sensors.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Installed Sensors from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetVarianceConfiguration")
@@ -58,13 +70,18 @@ def get_variance_config():
 @auth.login_required
 def set_variance_config():
     logger.network_logger.debug("* Variance Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.trigger_variances.load_from_file = False
-    app_config_access.trigger_variances.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.trigger_variances.save_config_to_file()
-        app_generic_functions.thread_function(sensor_access.restart_services)
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.trigger_variances.load_from_file = False
+        app_config_access.trigger_variances.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.trigger_variances.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Trigger Variances from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetSensorControlConfiguration")
@@ -77,12 +94,17 @@ def get_sensor_control_config():
 @auth.login_required
 def set_sensor_control_config():
     logger.network_logger.debug("* Sensor Control Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.sensor_control_config.load_from_file = False
-    app_config_access.sensor_control_config.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.sensor_control_config.save_config_to_file()
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.sensor_control_config.load_from_file = False
+        app_config_access.sensor_control_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.sensor_control_config.save_config_to_file()
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Sensor Control Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetWeatherUndergroundConfiguration")
@@ -96,12 +118,17 @@ def get_weather_underground_config():
 @auth.login_required
 def set_weather_underground_config():
     logger.network_logger.debug("* Weather Underground Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.weather_underground_config.load_from_file = False
-    app_config_access.weather_underground_config.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.weather_underground_config.save_config_to_file()
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.weather_underground_config.load_from_file = False
+        app_config_access.weather_underground_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.weather_underground_config.save_config_to_file()
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Weather Underground Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetOnlineServicesLuftdaten")
@@ -114,12 +141,17 @@ def get_luftdaten_config():
 @auth.login_required
 def set_luftdaten_config():
     logger.network_logger.debug("* Luftdaten Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.luftdaten_config.load_from_file = False
-    app_config_access.luftdaten_config.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.luftdaten_config.save_config_to_file()
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.luftdaten_config.load_from_file = False
+        app_config_access.luftdaten_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.luftdaten_config.save_config_to_file()
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Luftdaten Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetOnlineServicesOpenSenseMap")
@@ -133,12 +165,17 @@ def get_open_sense_map_config():
 @auth.login_required
 def set_open_sense_map_config():
     logger.network_logger.debug("* OpenSenseMap Configuration Set by " + str(request.remote_addr))
-    if request.form["test_run"]:
-        app_config_access.open_sense_map_config.load_from_file = False
-    app_config_access.open_sense_map_config.set_config_with_str(request.form["command_data"])
-    if request.form["test_run"] is None:
-        app_config_access.open_sense_map_config.save_config_to_file()
-    return "OK"
+    try:
+        if request.form.get("test_run"):
+            app_config_access.open_sense_map_config.load_from_file = False
+        app_config_access.open_sense_map_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.open_sense_map_config.save_config_to_file()
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Open Sense Map Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
 
 
 @html_get_config_routes.route("/GetWifiConfiguration")
@@ -153,8 +190,10 @@ def get_wifi_config():
 def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))
     try:
-        new_wifi_config = request.form["command_data"]
+        new_wifi_config = request.form.get("command_data")
         network_wifi.write_wifi_config_to_file(new_wifi_config)
+        return "OK"
     except Exception as error:
-        logger.network_logger.error("* Wifi Set from " + str(request.remote_addr) + " Failed: " + str(error))
-    return "OK"
+        log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"

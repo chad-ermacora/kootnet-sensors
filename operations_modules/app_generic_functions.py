@@ -237,7 +237,7 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
     except Exception as error:
         log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
+        logger.network_logger.error(log_msg)
 
 
 def get_http_sensor_file(sensor_address, command, http_port="10065"):

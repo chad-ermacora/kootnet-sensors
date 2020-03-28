@@ -43,8 +43,8 @@ def sensor_notes():
     selected_note_sql_query = "SELECT " + str(app_cached_variables.database_variables.other_table_column_notes) + \
                               " FROM " + str(app_cached_variables.database_variables.table_other)
     if request.method == "POST":
-        if request.form["button_function"]:
-            button_operation = request.form["button_function"]
+        if request.form.get("button_function"):
+            button_operation = request.form.get("button_function")
             if button_operation == "new":
                 app_cached_variables.notes_total_count += 1
                 app_cached_variables.note_current = app_cached_variables.notes_total_count
@@ -55,7 +55,7 @@ def sensor_notes():
                     app_cached_variables.note_current = 1
             elif button_operation == "save_note":
                 if app_cached_variables.notes_total_count > 0:
-                    note_text = translate_note_text(request.form["note_text"], translate_type="encode")
+                    note_text = translate_note_text(request.form.get("note_text"), translate_type="encode")
                     note_auto_date_times = get_db_note_dates().split(",")
                     note_custom_date_times = get_db_note_user_dates().split(",")
                     primary_note_date_time = note_auto_date_times[app_cached_variables.note_current - 1]
@@ -74,7 +74,7 @@ def sensor_notes():
                 if app_cached_variables.note_current < 1:
                     app_cached_variables.note_current = app_cached_variables.notes_total_count
             elif button_operation == "custom_note_number":
-                custom_current_note = request.form["current_note_num"]
+                custom_current_note = request.form.get("current_note_num")
                 if app_cached_variables.notes_total_count > 0:
                     app_cached_variables.note_current = int(custom_current_note)
             elif button_operation == "delete":

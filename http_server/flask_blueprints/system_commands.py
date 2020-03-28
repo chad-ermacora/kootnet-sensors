@@ -320,7 +320,7 @@ def display_text():
     max_length_text_message = 250
     if app_config_access.current_config.enable_display and app_config_access.installed_sensors.has_display:
         logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
-        text_message = request.form['command_data']
+        text_message = request.form.get("command_data")
         if len(text_message) > max_length_text_message:
             logger.network_logger.warning("Message sent to Display is longer then " + str(max_length_text_message) +
                                           ". Truncating to " + str(max_length_text_message) + " Character")
