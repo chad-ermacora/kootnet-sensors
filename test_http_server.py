@@ -34,6 +34,15 @@ from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfig
 class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def __init__(self):
         CreatePrimaryConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Enable = 1 & Disable = 0
+0 = Enable Debug Logging
+1 = Enable Mini Display
+1 = Interval Recording to SQL Database
+1 = Trigger Recording to SQL Database
+227.27 = Recording Interval in Seconds ** Caution **
+1 = Enable Custom Temperature Offset
+-11.23 = Current Temperature Offset
+10165 = HTTPS Port Number (Default is 10065)"""
 
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
@@ -61,6 +70,29 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
 class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguration):
     def __init__(self):
         CreateInstalledSensorsConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Enable = 1 & Disable = 0
+1 = Gnu/Linux
+0 = Raspberry Pi
+1 = Raspberry Pi Sense HAT
+0 = Pimoroni BH1745
+1 = Pimoroni AS7262
+0 = Pimoroni MCP9600
+1 = Pimoroni BMP280
+0 = Pimoroni BME680
+1 = Pimoroni EnviroPHAT
+0 = Pimoroni Enviro+
+1 = Pimoroni SGP30
+0 = Pimoroni PMS5003
+1 = Pimoroni MSA301
+0 = Pimoroni LSM303D
+1 = Pimoroni ICM20948
+0 = Pimoroni VL53L1X
+1 = Pimoroni LTR-559
+0 = Pimoroni VEML6075
+1 = Pimoroni 11x7 LED Matrix
+0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
+1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)"""
+
 
     def set_settings_for_test1(self):
         self.linux_system = 0
@@ -118,6 +150,70 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguration):
     def __init__(self):
         CreateTriggerVariancesConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Configure Variance Settings.  0 = Disabled, 1 = Enabled
+1 = Enable Sensor Uptime
+22.12 = Seconds between SQL Writes of Sensor Uptime
+1 = Enable CPU Temperature
+345.0 = CPU Temperature variance
+122.0 = Seconds between 'CPU Temperature' readings
+1 = Enable Environmental Temperature
+134.5 = Environmental Temperature variance
+332.0 = Seconds between 'Env Temperature' readings
+0 = Enable Pressure
+122.64 = Pressure variance
+121.56 = Seconds between 'Pressure' readings
+0 = Enable Altitude
+130.0 = Altitude variance
+131.0 = Seconds between 'Altitude' readings
+0 = Enable Humidity
+53.0 = Humidity variance
+602.0 = Seconds between 'Humidity' readings
+0 = Enable Distance
+6200.0 = Distance variance
+331.0 = Seconds between 'Distance' readings
+0 = Enable Gas
+1030.0 = Gas Resistance Index variance
+1030.0 = Gas Oxidising variance
+1050.0 = Gas Reducing variance
+1800.0 = Gas NH3 variance
+308.0 = Seconds between 'Gas' readings
+0 = Enable Particulate Matter (PM)
+433.0 = Particulate Matter 1 (PM1) variance
+44.0 = Particulate Matter 2.5 (PM2.5) variance
+674.0 = Particulate Matter 10 (PM10) variance
+650.0 = Seconds between 'PM' readings
+1 = Enable Lumen
+5100.0 = Lumen variance
+150.0 = Seconds between 'Lumen' readings
+0 = Enable Colour
+1555.0 = Red variance
+1665.0 = Orange variance
+1775.0 = Yellow variance
+1785.0 = Green variance
+1995.0 = Blue variance
+1885.0 = Violet variance
+1044.0 = Seconds between 'Colour' readings
+0 = Enable Ultra Violet
+335.0 = Ultra Violet Index variance
+104.32 = Ultra Violet A variance
+3210.3 = Ultra Violet B variance
+533.0 = Seconds between 'Ultra Violet' readings
+1 = Enable Accelerometer
+110.1 = Accelerometer X variance
+30.1 = Accelerometer Y variance
+40.1 = Accelerometer Z variance
+2350.3 = Seconds between 'Accelerometer' readings
+0 = Enable Magnetometer
+2522.0 = Magnetometer X variance
+325.0 = Magnetometer Y variance
+5245.0 = Magnetometer Z variance
+660.3 = Seconds between 'Magnetometer' readings
+0 = Enable Gyroscope
+252.0 = Gyroscope X variance
+275.0 = Gyroscope Y variance
+285.0 = Gyroscope Z variance
+1202.3 = Seconds between 'Gyroscope' readings
+"""
 
     def set_settings_for_test1(self):
         self.sensor_uptime_enabled = 0
@@ -281,6 +377,29 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
 class CreateSensorControlConfigurationTest(CreateSensorControlConfiguration):
     def __init__(self):
         CreateSensorControlConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """This contains saved values for HTML Sensor Control
+combo_report = selected_action
+None = selected_send_type
+192.168.7.216 = senor_ip_1
+223.222.44.5 = senor_ip_2
+223.222.44.5 = senor_ip_3
+223.222.44.5 = senor_ip_4
+223.222.44.5 = senor_ip_5
+223.222.44.5 = senor_ip_6
+223.222.44.5 = senor_ip_7
+ = senor_ip_8
+223.222.44.5 = senor_ip_9
+223.222.44.5 = senor_ip_10
+server2.dsomethin.krack.net:22344 = senor_ip_11
+ = senor_ip_12
+223.222.44.5 = senor_ip_13
+ = senor_ip_14
+223.222.44.5 = senor_ip_15
+223.222.44.5 = senor_ip_16
+ = senor_ip_17
+ = senor_ip_18
+server.dsomethin.krack:33344 = senor_ip_19
+ = senor_ip_20"""
 
     def set_settings_for_test1(self):
         self.selected_action = self.radio_download_reports
@@ -336,6 +455,13 @@ class CreateSensorControlConfigurationTest(CreateSensorControlConfiguration):
 class CreateWeatherUndergroundConfigurationTest(CreateWeatherUndergroundConfiguration):
     def __init__(self):
         CreateWeatherUndergroundConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Enable = 1 & Disable = 0
+0 = Enable Weather Underground
+9332.0 = Send to Server in Seconds
+1 = Sensor is Outdoors
+SOMETHING = Weather Underground Station ID
+SOMETHINGELSE = Weather Underground Station Key
+1 = Enable Rapid Fire Updates"""
 
     def set_settings_for_test1(self):
         self.weather_underground_enabled = 0
@@ -359,6 +485,9 @@ class CreateWeatherUndergroundConfigurationTest(CreateWeatherUndergroundConfigur
 class CreateLuftdatenConfigurationTest(CreateLuftdatenConfiguration):
     def __init__(self):
         CreateLuftdatenConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Enable = 1 & Disable = 0
+0 = Enable Luftdaten
+3333.3 = Send to Server in Seconds"""
 
     def set_settings_for_test1(self):
         self.luftdaten_enabled = 0
@@ -374,6 +503,31 @@ class CreateLuftdatenConfigurationTest(CreateLuftdatenConfiguration):
 class CreateOpenSenseMapConfigurationTest(CreateOpenSenseMapConfiguration):
     def __init__(self):
         CreateOpenSenseMapConfiguration.__init__(self, load_from_file=False)
+        self.static_config_test = """Enable = 1 & Disable = 0
+0 = Enable Open Sense Map
+Mega2311kk = SenseBox ID
+9023.1 = Send to Server in Seconds
+234kjh25asdgfh = Temperature Sensor ID
+234kjh25h23sdgd = Pressure Sensor ID
+234kjh444 = Altitude Sensor ID
+234kjh25h3dd = Humidity Sensor ID
+234kjh25hddd = Gas VOC Sensor ID
+234kjh254hfs234 = Gas NH3 Sensor ID
+2344kjh25h235 = Gas Oxidised Sensor ID
+234kj44h234234 = Gas Reduced Sensor ID
+2344kjh25h = PM 1.0 Sensor ID
+234kjh425h = PM 2.5 Sensor ID
+234kjerh25h = PM 10 Sensor ID
+234kjah25h = Lumen Sensor ID
+234kjsh25h = Red Sensor ID
+234kjdh25h = Orange Sensor ID
+234kjvh25h = Yellow Sensor ID
+234kjh25h = Green Sensor ID
+234kjhag25h = Blue Sensor ID
+234kjh5225h = Violet Sensor ID
+234kjhsadgf25h = Ultra Violet Index Sensor ID
+234kjh2ags5h = Ultra Violet A Sensor ID
+234kjsdfh25h = Ultra Violet B Sensor ID"""
 
     def set_settings_for_test1(self):
         self.open_sense_map_enabled = 0
@@ -493,6 +647,13 @@ class TestApp(unittest.TestCase):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
+        send_config = config_instance.static_config_test
+        send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
+        second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        if self._bad_config(config_instance.static_config_test, second_set_config):
+            send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
+            return False
+
         send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
 
         original_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
@@ -503,7 +664,7 @@ class TestApp(unittest.TestCase):
 
     @staticmethod
     def _bad_config(sent_config, received_config):
-        if sent_config == received_config:
+        if sent_config.strip() == received_config.strip():
             print("Info: Configuration Check OK.")
             return False
         print("Error: Sent Configuration is different from Received Configuration\n")
