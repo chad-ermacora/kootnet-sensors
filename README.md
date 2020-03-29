@@ -64,7 +64,7 @@ from any device with a web browser on the same network.
 
 Configurations can also be changed using the terminal by running the following command.
 ```
-sudo bash /opt/kootnet-sensors/scripts/edit_sensor_config.sh
+sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
 ```
 
 Sensor System Service

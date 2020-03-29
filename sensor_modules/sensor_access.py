@@ -23,7 +23,6 @@ from datetime import datetime
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import os_cli_commands
 from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content, write_file_to_disk
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
@@ -487,7 +486,7 @@ def start_special_sensor_interactive_services():
 def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
     time.sleep(sleep_before_restart)
-    os.system(os_cli_commands.restart_sensor_services_command)
+    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
 def get_db_notes():

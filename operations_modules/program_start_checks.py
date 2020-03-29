@@ -21,7 +21,7 @@ import time
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
-from operations_modules import os_cli_commands
+from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.sqlite_database import check_database_structure
 from configuration_modules.config_primary import CreatePrimaryConfiguration
@@ -50,7 +50,25 @@ def run_program_start_checks():
 def _set_file_permissions():
     """ Re-sets program file permissions. """
     if os.geteuid() == 0:
-        os.system(os_cli_commands.bash_commands["SetPermissions"])
+        _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o744)
+        _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o744)
+        _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
+        if os.path.isfile(file_locations.http_auth):
+            os.chmod(file_locations.http_auth, 0o700)
+
+
+def _change_permissions_recursive(path, folder_mode, files_mode):
+    root = ""
+    files = []
+    try:
+        os.chmod(path, folder_mode)
+        for root, dirs, files in os.walk(path, topdown=False):
+            for directory in [os.path.join(root, d) for d in dirs]:
+                os.chmod(directory, folder_mode)
+        for file in [os.path.join(root, f) for f in files]:
+            os.chmod(file, files_mode)
+    except Exception as error:
+        logger.primary_logger.error("Error setting permissions: " + str(error))
 
 
 def _check_ssl_files():
@@ -121,7 +139,7 @@ def _run_upgrade_checks():
     software_version.write_program_version_to_file()
     if file_locations.program_root_dir == "/opt/kootnet-sensors":
         logger.primary_logger.info("Upgrade Complete - Restarting the Sensor service")
-        os.system(os_cli_commands.restart_sensor_services_command)
+        os.system(app_cached_variables.bash_commands["RestartService"])
     else:
         logger.primary_logger.info("Upgrade Complete - Please restart the Sensor program")
 

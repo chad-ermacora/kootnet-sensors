@@ -7,7 +7,6 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from operations_modules import os_cli_commands
 from operations_modules import software_version
 from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
 from http_server.server_http_auth import auth
@@ -161,7 +160,7 @@ def get_sensor_program_last_updated():
 @auth.login_required
 def upgrade_http():
     logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnline"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
     return message_and_return("HTTP Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -169,7 +168,7 @@ def upgrade_http():
 @auth.login_required
 def upgrade_clean_http():
     logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineClean"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineClean"])
     return message_and_return("HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -177,7 +176,7 @@ def upgrade_clean_http():
 @auth.login_required
 def upgrade_clean_http_dev():
     logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineCleanDEV"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineCleanDEV"])
     return message_and_return("DEV HTTP Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -185,7 +184,7 @@ def upgrade_clean_http_dev():
 @auth.login_required
 def upgrade_http_dev():
     logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeOnlineDEV"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
     return message_and_return("HTTP Developer Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -193,7 +192,7 @@ def upgrade_http_dev():
 @auth.login_required
 def upgrade_smb():
     logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMB"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMB"])
     return message_and_return("SMB Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -202,7 +201,7 @@ def upgrade_smb():
 # @auth.login_required
 # def upgrade_clean_smb():
 #     logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-#     app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBClean"])
+#     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBClean"])
 #     return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 #
 #
@@ -210,7 +209,7 @@ def upgrade_smb():
 # @auth.login_required
 # def upgrade_clean_smb_dev():
 #     logger.network_logger.info("** DEV Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-#     app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBCleanDEV"])
+#     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBCleanDEV"])
 #     return message_and_return("DEV SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -218,7 +217,7 @@ def upgrade_smb():
 @auth.login_required
 def upgrade_smb_dev():
     logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["UpgradeSMBDEV"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBDEV"])
     return message_and_return("SMB Developer Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -226,7 +225,7 @@ def upgrade_smb_dev():
 @auth.login_required
 def upgrade_rp_controller():
     logger.network_logger.info("* Upgrade - E-Ink Mobile Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["inkupg"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["inkupg"])
     return "OK"
 
 
@@ -242,7 +241,7 @@ def services_restart():
 @auth.login_required
 def system_reboot():
     logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["RebootSystem"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["RebootSystem"])
     return message_and_return("Sensor Rebooting", text_message2=message_few_min, url="/SensorInformation")
 
 
@@ -251,7 +250,7 @@ def system_reboot():
 def system_shutdown():
     logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
     message2 = "You will be unable to access it until some one turns it back on."
-    app_generic_functions.thread_function(os.system, args=os_cli_commands.bash_commands["ShutdownSystem"])
+    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["ShutdownSystem"])
     return message_and_return("Sensor Shutting Down", text_message2=message2, url="/")
 
 
@@ -273,9 +272,10 @@ def upgrade_system_os():
 def _upgrade_linux_os():
     """ Runs a bash command to upgrade the Linux System with apt-get. """
     try:
-        os.system("apt-get update && apt-get -y upgrade")
+        os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
         logger.primary_logger.warning("Linux OS Upgrade Done")
-        os.system(os_cli_commands.bash_commands["RebootSystem"])
+        logger.primary_logger.info("Rebooting System")
+        os.system(app_cached_variables.bash_commands["RebootSystem"])
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
 
@@ -303,7 +303,7 @@ def _pip_upgrades(requirements_text):
             command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
             os.system(command)
     logger.primary_logger.info("Python3 Module Upgrades Complete")
-    os.system("systemctl restart KootnetSensors.service")
+    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
 @html_system_commands_routes.route("/CreateNewSelfSignedSSL")

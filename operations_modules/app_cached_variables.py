@@ -221,6 +221,25 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+# Dictionary of Terminal commands
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
+                 "RestartService": "systemctl daemon-reload ; systemctl restart KootnetSensors.service",
+                 "EnableService": "systemctl enable KootnetSensors.service",
+                 "StartService": "systemctl start KootnetSensors.service",
+                 "DisableService": "systemctl disable KootnetSensors.service",
+                 "StopService": "systemctl stop KootnetSensors.service",
+                 "UpgradeOnline": "systemctl start SensorUpgradeOnline.service",
+                 "UpgradeOnlineClean": "systemctl start SensorUpgradeOnlineClean.service",
+                 "UpgradeOnlineCleanDEV": "systemctl start SensorUpgradeOnlineCleanDEV.service",
+                 "UpgradeOnlineDEV": "systemctl start SensorUpgradeOnlineDEV.service",
+                 "UpgradeSMB": "systemctl start SensorUpgradeSMB.service",
+                 "UpgradeSMBClean": "systemctl start SensorUpgradeSMBClean.service",
+                 "UpgradeSMBCleanDEV": "systemctl start SensorUpgradeSMBCleanDEV.service",
+                 "UpgradeSMBDEV": "systemctl start SensorUpgradeSMBDEV.service",
+                 "UpgradeSystemOS": "apt-get update && apt-get -y upgrade",
+                 "RebootSystem": "reboot",
+                 "ShutdownSystem": "shutdown -h now"}
+
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()

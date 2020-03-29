@@ -22,7 +22,6 @@ cp -f -R /root/eInkUpgrade/* /opt/kootnet-sensors/
 bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_fake_hw_clock.sh
-bash /opt/kootnet-sensors/scripts/set_permissions.sh
 # Save datetime to last updated file
 date > ${CONFIG_DIR}/last_updated.txt
 echo ' - EInk' >> ${CONFIG_DIR}/last_updated.txt

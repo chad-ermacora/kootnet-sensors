@@ -58,13 +58,16 @@ def set_http_auth_from_file():
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
     """ Saves Web Portal (flask app) login credentials to file. """
     try:
-        if len(new_http_flask_user) < min_length_username:
-            new_http_flask_user = default_http_flask_user
-        if len(new_http_flask_password) < min_length_password:
-            new_http_flask_password = default_http_flask_password
-        save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
-        with open(file_locations.http_auth, "w") as auth_file:
-            auth_file.write(save_data)
+        if len(new_http_flask_user) < min_length_username or len(new_http_flask_password) < min_length_password:
+            logger.primary_logger.error("Unable to change Web Portal Credentials")
+            if len(new_http_flask_user) < min_length_username:
+                logger.primary_logger.warning("Web Login user provided is too short")
+            if len(new_http_flask_password) < min_length_password:
+                logger.primary_logger.warning("Web Login Password provided is too short")
+        else:
+            save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
+            with open(file_locations.http_auth, "w") as auth_file:
+                auth_file.write(save_data)
     except Exception as error:
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 
