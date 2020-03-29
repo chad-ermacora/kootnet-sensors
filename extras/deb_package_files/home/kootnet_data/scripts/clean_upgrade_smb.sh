@@ -26,6 +26,12 @@ mkdir /mnt/supernas 2>/dev/null
 rm -f /tmp${DEB_INSTALLER} 2>/dev/null
 rm -R -f /home/kootnet_data/env 2>/dev/null
 rm -R -f /opt/kootnet-sensors 2>/dev/null
+rm -f /usr/share/applications/KootNet*.desktop 2>/dev/null
+rm -f /etc/systemd/system/Kootnet*.service 2>/dev/null
+rm -f /etc/systemd/system/SensorU*.service 2>/dev/null
+# SensorC* and SensorR* are for legacy service files (Much older versions)
+rm -f /etc/systemd/system/SensorC*.service 2>/dev/null
+rm -f /etc/systemd/system/SensorR*.service 2>/dev/null
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
 cp /mnt/supernas${DEB_INSTALLER} /tmp
