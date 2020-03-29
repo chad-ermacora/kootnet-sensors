@@ -44,6 +44,7 @@ open_sense_map_config = CreateOpenSenseMapConfiguration()
 def start_script():
     running = True
     while running:
+        os.system("clear")
         print("Please Select an Option\n")
         print("1. View/Edit Primary/Installed Sensors/Trigger Variance Configurations")
         print("2. Change Web Login Credentials")
