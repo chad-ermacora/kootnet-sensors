@@ -68,6 +68,7 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
             save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
             with open(file_locations.http_auth, "w") as auth_file:
                 auth_file.write(save_data)
+            logger.primary_logger.info("New Web Portal Username & Password Set")
     except Exception as error:
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 
