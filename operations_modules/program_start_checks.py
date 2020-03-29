@@ -39,7 +39,6 @@ def run_program_start_checks():
     check_database_structure()
     _check_ssl_files()
     if software_version.old_version != software_version.version:
-        logger.primary_logger.info(" -- Starting Upgrade Checks ...")
         thread_function(_run_upgrade_checks)
         # Sleep before loading anything due to needed updates
         # The update function will automatically restart the service
@@ -106,36 +105,37 @@ def _run_upgrade_checks():
      Checks previous written version of the program to the current version.
      If the current version is different, start upgrade functions.
     """
-    msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
-    logger.primary_logger.debug(msg)
+    logger.primary_logger.info(" -- Starting Upgrade Checks ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
     no_changes = True
 
     if previous_version.major_version == "New_Install":
         logger.primary_logger.info("New Install Detected")
         no_changes = False
-    elif previous_version.major_version == "Beta":
-        if previous_version.feature_version == 29:
-            if previous_version.minor_version < 13:
-                reset_installed_sensors()
-                reset_variance_config()
-    elif previous_version.major_version == "Alpha":
-        msg = "Upgraded: " + software_version.old_version + " || New: " + software_version.version
-        logger.primary_logger.info(msg)
-        no_changes = False
-        reset_installed_sensors()
-        reset_primary_config()
-        reset_variance_config()
     else:
-        no_changes = False
-        msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
-        logger.primary_logger.error(msg)
-        reset_installed_sensors()
-        reset_primary_config()
+        msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
+        logger.primary_logger.info(msg)
+        if previous_version.major_version == "Beta":
+            if previous_version.feature_version == 29:
+                if previous_version.minor_version < 13:
+                    no_changes = False
+                    reset_installed_sensors()
+                    reset_variance_config()
+        elif previous_version.major_version == "Alpha":
+            no_changes = False
+            reset_installed_sensors()
+            reset_primary_config()
+            reset_variance_config()
+        else:
+            no_changes = False
+            msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
+            logger.primary_logger.error(msg)
+            reset_installed_sensors()
+            reset_primary_config()
 
     if no_changes:
-        msg = "Upgrade detected || No configuration changes || Old: "
-        logger.primary_logger.info(msg + software_version.old_version + " New: " + software_version.version)
+        logger.primary_logger.info("No configuration changes detected")
+
     software_version.write_program_version_to_file()
     if file_locations.program_root_dir == "/opt/kootnet-sensors":
         logger.primary_logger.info("Upgrade Complete - Restarting the Sensor service")
