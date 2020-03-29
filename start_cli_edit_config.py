@@ -65,6 +65,7 @@ def start_script():
 
         try:
             selection = int(selection)
+            os.system("clear")
             if selection == 1:
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
@@ -73,7 +74,7 @@ def start_script():
             elif selection == 2:
                 change_https_auth()
             elif selection == 3:
-                print("\nUpgrading all Python pip modules can take awhile.  Please wait ...")
+                print("Upgrading all Python pip modules can take awhile.  Please wait ...\n")
                 _pip_upgrades()
                 logger.primary_logger.info("Python3 Module Upgrades Complete")
                 print("Restart KootnetSensors service for changes to take effect")
@@ -129,8 +130,7 @@ def _pip_upgrades():
 
 
 def _test_sensors():
-    os.system("clear")
-    print("\n*** Starting Sensor Data test ***\n")
+    print("*** Starting Sensor Data test ***\n")
     interval_data = get_interval_sensor_data()
     sensor_types = interval_data[0].split(",")
     sensor_readings = interval_data[1].split(",")
