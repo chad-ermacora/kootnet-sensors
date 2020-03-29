@@ -17,6 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import logging
+import requests
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
@@ -30,7 +32,7 @@ from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from http_server import server_http_auth
 
-
+logging.captureWarnings(True)
 logger.primary_logger.debug("CLI Edit Configurations Starting")
 installed_sensors = CreateInstalledSensorsConfiguration()
 primary_config = CreatePrimaryConfiguration()
@@ -39,6 +41,8 @@ sensor_control_config = CreateSensorControlConfiguration()
 weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()
+
+remote_get = app_cached_variables.CreateNetworkGetCommands()
 
 
 def start_script():
@@ -55,7 +59,8 @@ def start_script():
         print("7. Enable & Start KootnetSensors")
         print("8. Disable & Start KootnetSensors")
         print("9. Restart KootnetSensors Service")
-        print("10. Exit")
+        print("10. Run Sensor Local Tests")
+        print("11. Exit")
 
         selection = input("Enter Number: ")
 
@@ -89,6 +94,8 @@ def start_script():
             elif selection == 9:
                 os.system(app_cached_variables.bash_commands["RestartService"])
             elif selection == 10:
+                _test_sensors()
+            elif selection == 11:
                 print("\nYou will have to restart KootnetSensors for changes to take effect.")
                 running = False
         except Exception as error:
@@ -112,6 +119,59 @@ def _pip_upgrades():
             command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
             os.system(command)
     logger.primary_logger.info("Python3 Module Upgrades Complete")
+
+
+def _test_sensors():
+    os.system("clear")
+    print("\n*** Starting Sensor Data test ***\n")
+    interval_data = get_interval_sensor_data()
+    sensor_types = interval_data[0].split(",")
+    sensor_readings = interval_data[1].split(",")
+
+    str_message = ""
+    color_readings1 = ""
+    color_readings2 = ""
+    acc_readings = ""
+    mag_readings = ""
+    gyro_readings = ""
+    for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
+        if sensor_type[:3] == "Red" or sensor_type[:5] == "Green" or sensor_type[:4] == "Blue":
+            color_readings1 += str(sensor_type) + ": " + str(sensor_reading) + " || "
+        elif sensor_type[:6] == "Orange" or sensor_type[:6] == "Yellow" or sensor_type[:6] == "Violet":
+            color_readings2 += str(sensor_type) + ": " + str(sensor_reading) + " || "
+        elif sensor_type[:4] == "Acc_":
+            acc_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+        elif sensor_type[:4] == "Mag_":
+            mag_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+        elif sensor_type[:4] == "Gyro":
+            gyro_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+        else:
+            str_message = str_message + str(sensor_type) + ": " + str(sensor_reading) + "\n"
+    for tmp_readings in [color_readings1, color_readings2, acc_readings, mag_readings, gyro_readings]:
+        if len(tmp_readings) > 4:
+            str_message += tmp_readings[:-4] + "\n"
+
+    print(str_message)
+
+    if installed_sensors.has_display:
+        print("Showing Test Message on Installed Display")
+        display_text_on_sensor("Display Test Message")
+
+    input("\nTesting Complete.  Press enter to continue.")
+
+
+def get_interval_sensor_data():
+    """ Returns local sensor Interval data. """
+    url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
+    tmp_return_data = requests.get(url=url, verify=False)
+    return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
+    return [str(return_data[0]), str(return_data[1])]
+
+
+def display_text_on_sensor(text_message):
+    """ Displays text on local sensors display (if any). """
+    url = "https://127.0.0.1:10065/DisplayText"
+    requests.put(url=url, data={'command_data': text_message}, verify=False)
 
 
 if __name__ == '__main__':
