@@ -49,7 +49,7 @@ def start_script():
     while running:
         os.system("clear")
         print("Please Select an Option\n")
-        print("1. View/Edit Primary/Installed Sensors/Trigger Variance Configurations")
+        print("1. View/Edit Primary, Installed Sensors & Trigger Variance Configurations")
         print("2. Change Web Login Credentials")
         print("3. Update Python Modules")
         print("4. Upgrade Kootnet Sensors (Standard HTTP)")
@@ -57,7 +57,7 @@ def start_script():
         print("6. Upgrade Kootnet Sensors (Clean HTTP)")
         print("7. Create New Self Signed SSL Certificate")
         print("8. Enable & Start KootnetSensors")
-        print("9. Disable & Start KootnetSensors")
+        print("9. Disable & Stop KootnetSensors")
         print("10. Restart KootnetSensors Service")
         print("11. Run Sensor Local Tests")
         print("12. Exit")

@@ -8,7 +8,6 @@ color, ultra violet, acceleration, electromagnetic fields and angular velocity (
 Features include a Web Portal to graph, view live readings, generate reports, upload data to 3rd party weather services and more!  
 
 [Project Website](http://kootenay-networks.com/?page_id=170)  
-[KootNet Sensors - Control Center](https://github.com/chad-ermacora/sensor-control-center) - GUI Companion App (Depreciated)
 
 Installing, Updating & Removing
 -------------------------
