@@ -1,0 +1,178 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.4.2.2 (Linux)"/>
+	<meta name="created" content="2018-10-01T11:14:17.608000000"/>
+	<meta name="changed" content="2020-03-29T12:09:01.240527291"/>
+	<style type="text/css">
+		@page { size: 21.59cm 27.94cm; margin: 2.01cm }
+		p { margin-bottom: 0.25cm; background: transparent; line-height: 100%; background: transparent; page-break-before: auto; page-break-after: auto }
+		em { font-style: italic }
+		a:link { color: #000080; so-language: zxx; text-decoration: underline }
+		a:visited { color: #800000; so-language: zxx; text-decoration: underline }
+	</style>
+</head>
+<body lang="en-US" link="#000080" vlink="#800000" dir="ltr"><p align="left" style="margin-bottom: 0cm; line-height: 100%">
+<font size="4" style="font-size: 16pt"><u><b>Help Document for
+KootNet Sensor Units</b></u></font></p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; font-style: normal; font-weight: normal; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt">KootNet Sensors requires a
+Raspberry Pi to utilize Sensors but can be installed on Ubuntu or
+Debian in<br/>
+order to use the “Sensor Control” web interface
+for managing up to 20 other remote Kootnet Sensors. </font>
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">To
+make your own sensor, find the instructions on the </span></span></font></span></span><a href="http://kootenay-networks.com/?page_id=236" target="_blank">Programs
+Website</a><span style="font-variant: normal"><span style="text-decoration: none">.<br/>
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">**
+Note: Additional hardware sensors for the Raspberry Pi are optional
+**</span></i></font></span></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b><br/>
+</b></u></font><font size="3" style="font-size: 12pt"><u><b>Manage
+the Sensor using a Terminal or SSH connection</b></u></font></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%">The
+installer creates the following shortcuts in your system programs
+menu.<br/>
+<br/>
+“Terminal Config - Kootnet Sensors” – Used to
+adjusting configurations, run system commands, test the sensors and
+change the username and password for logging into the Web Portal. 
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><i>It
+can be accessed directly by running the following command in a
+terminal.</i></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">sudo
+/home/kootnet_data/env/bin/python
+/opt/kootnet-sensors/start_cli_edit_config.py<br/>
+</span></span></span></font></span></span><br/>
+
+</p>
+<p>“Sensor Tests - Kootnet Sensors” – Gui application to test a
+sensors functionality. 
+</p>
+<p>“Web Portal - Kootnet Sensors” – Shortcut to open the local
+HTTPS web server in your default browser. 
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><i>**
+Note: It is recommended to use the Web Portal for configuring the
+sensor, due to its ease of use **</i></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><font size="3" style="font-size: 12pt"><u><b>Manage
+the Sensor using the built in </b></u></font><font size="3" style="font-size: 12pt"><u><b>HTTPS
+Web Portal<br/>
+</b></u></font><span style="text-decoration: none"><span style="font-weight: normal">The
+sensor’s</span></span><span style="text-decoration: none"> </span><span style="text-decoration: none"><span style="font-weight: normal">web
+portal allows</span></span><span style="text-decoration: none"> </span><span style="text-decoration: none"><span style="font-weight: normal">you
+to interact with the local sensor, manage up to 20 remote sensors and
+configure it’s settings. You can access the portal from any web
+browser (Chrome recommended)</span></span><span style="text-decoration: none">
+</span><span style="text-decoration: none"><span style="font-weight: normal">by
+going to <a href="https://IP-Address:10065/">https://IP-Address:10065</a>
+on the local network. Replace “IP-Address” with the sensor’s
+actual IP. If you are accessing the web portal from the sensor
+itself, there is a shortcut in the accessories menu or you can go to</span></span><span style="text-decoration: none">
+</span><span style="text-decoration: none"><span style="font-weight: normal"><a href="https://localhost:10065/">https://localhost:10065</a>
+in the local web browser.</span></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="background: #dddddd"><br/>
+</span><font size="4" style="font-size: 14pt"><u><b>Locations<br/>
+</b></u></font><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>KootNet
+sensor program</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+– </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">/opt/kootnet-sensors/<br/>
+</span></span></span></font></span></span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><b>SQLite3
+Database</b></font></span><span style="text-decoration: none"> </span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><i><span style="font-weight: normal">(Holds
+all recorded data)</span></i></font></span><span style="text-decoration: none">
+</span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal">-
+</span></font></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #cccccc">/home/kootnet_data/SensorRecordingDatabase.sqlite<br/>
+</span></span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>Configuration
+Files</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">-
+</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #cccccc">/etc/kootnet/</span></span></span></font></span></span></p>
+<ul>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="background: transparent"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>installed_sensors.conf</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+	– </span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Supported
+	&amp; enabled sensors</span></span></font></span></span></span></p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">main_config.conf</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+	– </span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">G</span></span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">eneral
+	</span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">configuration</span></span></span></font></span></span></p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">trigger_variances.conf</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+	– </span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Trigger
+	Variance configuration</span></span></span></font></span></span></p>
+</ul>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><br/>
+SSL
+Files for HTTPS</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">
+</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">-
+</span></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">/opt/kootnet-sensors/http_server/ssl_files/</span></span></span></font></span></span></p>
+<ul>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">kootnet_default.key</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+	– </span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Private
+	Key</span></span></span></font></span></span></p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">kootnet_default.csr</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+	– </span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Certificate
+	Signing Request</span></span></span></font></span></span></p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b><span style="background: transparent">kootnet_default.crt</span></b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+	– </span></span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Certificate</span></span></span></font></span></span></p>
+</ul>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><b><br/>
+Log
+Files -</b></font></span><span style="text-decoration: none">
+</span><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-weight: normal"><span style="background: #cccccc">/home/kootnet_data/logs/</span></span></font></span></p>
+<ul>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="text-decoration: none"><b>Primary_log.txt
+	</b></span><span style="text-decoration: none">– P</span>rogram
+	logs</p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>Network_log.txt
+	</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">–
+	N</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">etwork
+	related logs</span></span></font></span></span></p>
+	<li><p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><b>Sensors_log.txt
+	</b></span></font></span></span><span style="font-variant: normal"><span style="text-decoration: none">–
+	</span></span><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal">Sensor
+	hardware logs</span></span></font></span></span></p>
+</ul>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><font size="4" style="font-size: 14pt"><u><b><br/>
+Clean
+Upgrade Service Scripts</b></u></font></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><span style="font-variant: normal"><span style="font-style: normal">These
+2x Upgrade scripts uninstall the systemd service, deletes Kootnet
+Sensors program &amp; shortcuts then finally re-installs the program
+by the chosen method. The configuration and data files remain
+untouched. </span></span><span style="font-variant: normal"><font color="#c9211e"><i>**
+Note: If the script is unable to access the location it is installing
+from </i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>(The
+HTTP Server in most cases)</i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>,
+</i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>you
+will have to manually </i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>run
+the regular installer </i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>on
+the local sensor </i></font></span><span style="font-variant: normal"><font color="#c9211e"><i>**</i></font></span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; text-decoration: none">
+<font size="3" style="font-size: 12pt"><b>HTTPS Clean Upgrade</b></font></p>
+<p align="left" style="margin-bottom: 0cm; font-variant: normal; font-style: normal; line-height: 100%">
+<span style="background: #dddddd">sudo bash
+/home/kootnet_data/scripts/clean_upgrade_http.sh</span></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; background: transparent">
+<font size="4" style="font-size: 14pt"><u><b><br/>
+Uninstall Sensor
+Software<br/>
+</b></u></font><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">Sensor
+data, </span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">configurations</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">
+&amp;</span></span></span></font></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><span style="background: transparent">
+</span></span></span></em><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: transparent">logs
+are left on the system.</span></span></span></font></span></span></em></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%"><em><span style="font-variant: normal"><span style="text-decoration: none"><font size="3" style="font-size: 12pt"><span style="font-style: normal"><span style="font-weight: normal"><span style="background: #dddddd">sudo
+apt-get remove kootnet-sensors</span></span></span></font></span></span></em></p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; background: transparent">
+<br/>
+
+</p>
+<p align="left" style="margin-bottom: 0cm; line-height: 100%; background: transparent">
+<br/>
+
+</p>
+</body>
+</html>

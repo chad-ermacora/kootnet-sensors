@@ -23,8 +23,7 @@ from datetime import datetime
 from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import os_cli_commands
-from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content
+from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content, write_file_to_disk
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
@@ -128,11 +127,15 @@ def get_last_updated():
     """ Returns when the sensor programs were last updated and how in a String. """
     last_updated = ""
     if not os.path.isfile(file_locations.program_last_updated):
-        return "Unknown"
+        logger.sensors_logger.debug("Previous version file not found - Creating version file")
+        last_updated_text = "No Update Detected"
+        write_file_to_disk(file_locations.program_last_updated, last_updated_text)
+        return last_updated_text
     last_updated_file = get_file_content(file_locations.program_last_updated)
     try:
         last_updated_lines = last_updated_file.split("\n")
-        last_updated += str(last_updated_lines[0]) + str(last_updated_lines[1])
+        for line in last_updated_lines:
+            last_updated += str(line)
     except Exception as error:
         logger.sensors_logger.warning("Invalid Kootnet Sensor's Last Updated File: " + str(error))
     return last_updated.strip()
@@ -145,6 +148,11 @@ def get_sensors_latency():
                             get_particulate_matter_1, get_particulate_matter_2_5, get_particulate_matter_10,
                             get_lumen, get_ems, get_ultra_violet_index, get_ultra_violet_a, get_ultra_violet_b,
                             get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+    sensor_names_list = ["cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
+                         "distance", "gas_resistance_index", "gas_oxidised", "gas_reduced", "gas_nh3",
+                         "particulate_matter_1", "particulate_matter_2_5", "particulate_matter_10",
+                         "lumen", "colours", "ultra_violet_index", "ultra_violet_a", "ultra_violet_b",
+                         "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
 
     sensor_latency_list = []
     for sensor_function in sensor_function_list:
@@ -153,7 +161,7 @@ def get_sensors_latency():
             sensor_latency_list.append(None)
         else:
             sensor_latency_list.append(round(thing, 6))
-    return sensor_latency_list
+    return [sensor_names_list, sensor_latency_list]
 
 
 def _get_sensor_latency(sensor_function):
@@ -184,6 +192,8 @@ def get_sensor_temperature():
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_mcp9600:
+        temperature = sensors_direct.pimoroni_mcp9600_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         temperature = sensors_direct.pimoroni_bmp280_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bme680:
@@ -242,8 +252,8 @@ def get_dew_point():
     variable_b = 237.7
 
     env_temp = get_sensor_temperature()
-    if app_config_access.current_config.enable_custom_temp:
-        env_temp = env_temp + app_config_access.current_config.temperature_offset
+    if app_config_access.primary_config.enable_custom_temp:
+        env_temp = env_temp + app_config_access.primary_config.temperature_offset
     humidity = get_humidity()
     if env_temp == no_sensor_present or humidity == no_sensor_present:
         return no_sensor_present
@@ -270,9 +280,11 @@ def get_distance():
 
 
 def get_gas_resistance_index():
-    """ Returns sensors gas resistance index. """
+    """ Returns sensors gas resistance index for VOC. """
     if app_config_access.installed_sensors.pimoroni_bme680:
         index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
+    elif app_config_access.installed_sensors.pimoroni_sgp30:
+        index = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
     else:
         index = no_sensor_present
     return index
@@ -396,6 +408,8 @@ def get_accelerometer_xyz():
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
         xyz = sensors_direct.pimoroni_enviro_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.pimoroni_msa301:
+        xyz = sensors_direct.pimoroni_msa301_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_lsm303d:
         xyz = sensors_direct.pimoroni_lsm303d_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
@@ -435,7 +449,7 @@ def display_message(text_msg):
     """ If a Supported Display is installed, shows provided text message on it. """
     text_msg = str(text_msg)
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_msg)
-    if app_config_access.installed_sensors.has_display and app_config_access.current_config.enable_display:
+    if app_config_access.installed_sensors.has_display and app_config_access.primary_config.enable_display:
         message_length = len(text_msg)
 
         thread_ready = True
@@ -472,7 +486,7 @@ def start_special_sensor_interactive_services():
 def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
     time.sleep(sleep_before_restart)
-    os.system(os_cli_commands.restart_sensor_services_command)
+    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
 def get_db_notes():
@@ -565,13 +579,3 @@ def delete_db_note(note_datetime):
                 " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
     sqlite_database.write_to_sql_database(sql_query)
-
-
-def upgrade_linux_os():
-    """ Runs a bash command to upgrade the Linux System with apt-get. """
-    try:
-        os.system(os_cli_commands.bash_commands["UpgradeSystemOS"])
-        app_cached_variables.linux_os_upgrade_ready = True
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-    except Exception as error:
-        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))

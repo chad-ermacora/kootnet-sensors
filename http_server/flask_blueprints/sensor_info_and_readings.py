@@ -1,3 +1,4 @@
+from os import geteuid
 from time import strftime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
@@ -5,6 +6,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_text_running_thread_state
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
+from operations_modules import software_version
 from sensor_modules import sensor_access
 
 html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes", __name__)
@@ -26,21 +28,21 @@ def index():
 @html_sensor_info_readings_routes.route("/SensorInformation")
 def html_system_information():
     debug_logging = "Disabled"
-    if app_config_access.current_config.enable_debug_logging:
+    if app_config_access.primary_config.enable_debug_logging:
         debug_logging = "Enabled"
 
-    display_enabled = get_text_running_thread_state(app_config_access.current_config.enable_display,
+    display_enabled = get_text_running_thread_state(app_config_access.primary_config.enable_display,
                                                     app_cached_variables.mini_display_thread)
 
-    interval_recording = get_text_running_thread_state(app_config_access.current_config.enable_interval_recording,
+    interval_recording = get_text_running_thread_state(app_config_access.primary_config.enable_interval_recording,
                                                        app_cached_variables.interval_recording_thread)
 
     trigger_recording = "Disabled"
     enable_trigger_button = "disabled"
-    if app_config_access.current_config.enable_trigger_recording:
+    if app_config_access.primary_config.enable_trigger_recording:
         trigger_recording = "Enabled"
         enable_trigger_button = ""
-    if app_config_access.current_config.enable_trigger_recording:
+    if app_config_access.primary_config.enable_trigger_recording:
         trigger_uptime = get_text_running_thread_state(app_config_access.trigger_variances.sensor_uptime_enabled,
                                                        app_cached_variables.trigger_thread_sensor_uptime)
         trigger_cpu_temp = get_text_running_thread_state(app_config_access.trigger_variances.cpu_temperature_enabled,
@@ -89,11 +91,15 @@ def html_system_information():
                                                    app_cached_variables.open_sense_map_thread)
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
+
+    installed_sensors_text = "Sensors Disabled - Not running with root"
+    if geteuid() == 0:
+        installed_sensors_text = app_config_access.installed_sensors.get_installed_names_str()
     return render_template("sensor_information.html",
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            OSVersion=app_cached_variables.operating_system_name,
-                           KootnetVersion=app_config_access.software_version.version,
+                           KootnetVersion=software_version.version,
                            LastUpdated=app_cached_variables.program_last_updated,
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),
@@ -122,7 +128,7 @@ def html_system_information():
                            WeatherUndergroundService=weather_underground,
                            LuftdatenService=luftdaten,
                            OpenSenseMapService=open_sense_map,
-                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
+                           InstalledSensors=installed_sensors_text)
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")
@@ -130,13 +136,15 @@ def html_system_information():
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     raw_temp = sensor_access.get_sensor_temperature()
-    temp_offset = app_config_access.current_config.temperature_offset
-    adjusted_temp = raw_temp
-    try:
-        if app_config_access.current_config.enable_custom_temp:
-            adjusted_temp = round(raw_temp + temp_offset, 2)
-    except Exception as error:
-        logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
+    temp_offset = app_config_access.primary_config.temperature_offset
+
+    adjusted_temp = app_cached_variables.no_sensor_present
+    if raw_temp != app_cached_variables.no_sensor_present:
+        try:
+            if app_config_access.primary_config.enable_custom_temp:
+                adjusted_temp = round(raw_temp + temp_offset, 2)
+        except Exception as error:
+            logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
     red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
     return render_template("sensor_readings.html",
                            URLRedirect="SensorReadings",
@@ -210,30 +218,30 @@ def html_sensors_latency():
                            IPAddress=app_cached_variables.ip,
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),
-                           CPUTemperature=str(sensors_latency[0]) + " Seconds",
-                           RAWEnvTemperature=str(sensors_latency[1]) + " Seconds",
+                           CPUTemperature=str(sensors_latency[1][0]) + " Seconds",
+                           RAWEnvTemperature=str(sensors_latency[1][1]) + " Seconds",
                            AdjustedEnvTemperature="",
                            EnvTemperatureOffset="",
-                           Pressure=str(sensors_latency[2]) + " Seconds",
-                           Altitude=str(sensors_latency[3]) + " Seconds",
-                           Humidity=str(sensors_latency[4]) + " Seconds",
-                           Distance=str(sensors_latency[5]) + " Seconds",
-                           GasResistanceIndex=str(sensors_latency[6]) + " Seconds",
-                           GasOxidising=str(sensors_latency[7]) + " Seconds",
-                           GasReducing=str(sensors_latency[8]) + " Seconds",
-                           GasNH3=str(sensors_latency[9]) + " Seconds",
-                           PM1=str(sensors_latency[10]) + " Seconds",
-                           PM25=str(sensors_latency[11]) + " Seconds",
-                           PM10=str(sensors_latency[12]) + " Seconds",
-                           Lumen=str(sensors_latency[13]) + " Seconds",
-                           Red="All Colours: " + str(sensors_latency[14]) + " Seconds",
+                           Pressure=str(sensors_latency[1][2]) + " Seconds",
+                           Altitude=str(sensors_latency[1][3]) + " Seconds",
+                           Humidity=str(sensors_latency[1][4]) + " Seconds",
+                           Distance=str(sensors_latency[1][5]) + " Seconds",
+                           GasResistanceIndex=str(sensors_latency[1][6]) + " Seconds",
+                           GasOxidising=str(sensors_latency[1][7]) + " Seconds",
+                           GasReducing=str(sensors_latency[1][8]) + " Seconds",
+                           GasNH3=str(sensors_latency[1][9]) + " Seconds",
+                           PM1=str(sensors_latency[1][10]) + " Seconds",
+                           PM25=str(sensors_latency[1][11]) + " Seconds",
+                           PM10=str(sensors_latency[1][12]) + " Seconds",
+                           Lumen=str(sensors_latency[1][13]) + " Seconds",
+                           Red="All Colours: " + str(sensors_latency[1][14]) + " Seconds",
                            Orange="",
                            Yellow="",
                            Green="",
                            Blue="",
                            Violet="",
-                           UVA=str(sensors_latency[16]) + " Seconds",
-                           UVB=str(sensors_latency[17]) + " Seconds",
-                           Acc=str(sensors_latency[18]) + " Seconds",
-                           Mag=str(sensors_latency[19]) + " Seconds",
-                           Gyro=str(sensors_latency[20]) + " Seconds")
+                           UVA=str(sensors_latency[1][16]) + " Seconds",
+                           UVB=str(sensors_latency[1][17]) + " Seconds",
+                           Acc=str(sensors_latency[1][18]) + " Seconds",
+                           Mag=str(sensors_latency[1][19]) + " Seconds",
+                           Gyro=str(sensors_latency[1][20]) + " Seconds")

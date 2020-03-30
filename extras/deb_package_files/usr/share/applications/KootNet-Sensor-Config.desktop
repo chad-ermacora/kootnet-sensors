@@ -1,8 +1,8 @@
 [Desktop Entry]
-Name=Kootnet Sensors - CLI Configuration & Test
-Comment=Reconfigure sensor & display sensor readings
+Name=Terminal Config - Kootnet Sensors
+Comment=Reconfigure Kootnet Sensors through a Terminal & Test
 Icon=/usr/share/icons/PiX/128x128/mimetypes/shellscript.png
-Exec=/bin/bash /opt/kootnet-sensors/scripts/edit_sensor_config.sh
+Exec=sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py
 Type=Application
 Encoding=UTF-8
 Terminal=true

@@ -18,36 +18,33 @@
 """
 from os import geteuid
 from operations_modules import logger
-from operations_modules import config_sensor_control
-from operations_modules import config_primary
-from operations_modules import config_installed_sensors
-from operations_modules import software_version
-from operations_modules import config_trigger_variances
-from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
-from operations_modules.config_luftdaten import CreateLuftdatenConfig
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
+from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
+from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
+from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
+from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
-# Creates and loads primary configurations and variables used throughout the program.
-sensor_control_config = config_sensor_control.CreateSensorControlConfig()
-weather_underground_config = CreateWeatherUndergroundConfig()
-luftdaten_config = CreateLuftdatenConfig()
-open_sense_map_config = CreateOpenSenseMapConfig()
 
-if software_version.old_version != software_version.version and geteuid() == 0:
-    logger.primary_logger.debug("Upgrade detected, Loading default values until upgrade complete")
-    installed_sensors = config_installed_sensors.CreateInstalledSensors()
-    current_config = config_primary.CreateConfig()
-    trigger_variances = config_trigger_variances.CreateTriggerVariances()
+if geteuid() != 0:
+    logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
+    installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
+    primary_config = CreatePrimaryConfiguration()
+    trigger_variances = CreateTriggerVariancesConfiguration()
+    sensor_control_config = CreateSensorControlConfiguration()
+    weather_underground_config = CreateWeatherUndergroundConfiguration()
+    luftdaten_config = CreateLuftdatenConfiguration()
+    open_sense_map_config = CreateOpenSenseMapConfiguration()
 else:
     logger.primary_logger.debug("Initializing configurations")
-    installed_sensors = config_installed_sensors.get_installed_sensors_from_file()
-    installed_sensors.raspberry_pi_name = installed_sensors.get_raspberry_pi_model()
-    current_config = config_primary.get_config_from_file()
-    trigger_variances = config_trigger_variances.get_triggers_variances_from_file()
-    sensor_control_config.set_from_disk()
-    weather_underground_config.update_settings_from_file()
-    luftdaten_config.update_settings_from_file()
-    open_sense_map_config.update_settings_from_file()
+    installed_sensors = CreateInstalledSensorsConfiguration()
+    primary_config = CreatePrimaryConfiguration()
+    trigger_variances = CreateTriggerVariancesConfiguration()
+    sensor_control_config = CreateSensorControlConfiguration()
+    weather_underground_config = CreateWeatherUndergroundConfiguration()
+    luftdaten_config = CreateLuftdatenConfiguration()
+    open_sense_map_config = CreateOpenSenseMapConfiguration()
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

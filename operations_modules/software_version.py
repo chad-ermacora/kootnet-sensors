@@ -44,7 +44,7 @@ def _get_old_version():
             return old_version_content.strip()
     else:
         write_program_version_to_file()
-        return "New_Install.99.999"
+        return _new_install_version
 
 
 def write_program_version_to_file():
@@ -55,7 +55,8 @@ def write_program_version_to_file():
 
 # Current Version of the program
 new_install = False
-version = "Alpha.28.161"
+_new_install_version = "New_Install.99.999"
+version = "Beta.29.110"
 old_version = _get_old_version()
-if old_version == "New_Install.99.999":
+if old_version == _new_install_version:
     new_install = True

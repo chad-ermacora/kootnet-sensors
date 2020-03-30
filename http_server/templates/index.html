@@ -45,15 +45,25 @@
         </div>
     </div>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/DownloadSQLDatabase';">
-        Download SQL Database
-    </button>
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Download SQL Database
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/DownloadSQLDatabase">Database Zipped</a></li>
+            <li><a href="/DownloadSQLDatabaseRAW">Database RAW</a></li>
+        </ul>
+    </div>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/UploadSQLDatabase';" disabled>
-        Upload SQL Database
-    </button>
+    <br>
+
+    <form method="post" enctype="multipart/form-data" action="/UploadSQLDatabase">
+        <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+            Upload SQL Database
+        </button>
+        <input style="color: #00B0FF;" type="file" name="command_data" accept=".database,.sql,.sqlite,.sqlite3" required>
+    </form>
 
     <br><br>
 

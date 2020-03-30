@@ -50,6 +50,7 @@ class CreateVL53L1X:
             self.time_of_flight.start_ranging(2)
             distance_in_mm = self.time_of_flight.get_distance()
             self.time_of_flight.stop_ranging()
+            self.time_of_flight.close()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VL53L1X Distance Sensor - Failed: " + str(error))
             distance_in_mm = 0.0

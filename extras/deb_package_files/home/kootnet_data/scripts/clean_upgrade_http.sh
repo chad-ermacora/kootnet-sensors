@@ -21,6 +21,12 @@ printf '\nLeaving configurations and data, removing program folder and Python Vi
 rm -f /tmp${DEB_INSTALLER} 2>/dev/null
 rm -R -f /home/kootnet_data/env 2>/dev/null
 rm -R -f /opt/kootnet-sensors 2>/dev/null
+rm -f /usr/share/applications/KootNet*.desktop 2>/dev/null
+rm -f /etc/systemd/system/Kootnet*.service 2>/dev/null
+rm -f /etc/systemd/system/SensorU*.service 2>/dev/null
+# SensorC* and SensorR* are for legacy service files (Much older versions)
+rm -f /etc/systemd/system/SensorC*.service 2>/dev/null
+rm -f /etc/systemd/system/SensorR*.service 2>/dev/null
 wget -O /tmp${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
 apt-get -y --allow-downgrades --reinstall install /tmp${DEB_INSTALLER}
 # Save DateTime and Update type to file (Used in program to show last updated)

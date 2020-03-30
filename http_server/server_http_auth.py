@@ -26,6 +26,9 @@ from operations_modules import app_cached_variables
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
 
+min_length_username = 4
+min_length_password = 4
+
 
 def set_http_auth_from_file():
     """ Loads Web Portal (flask app) login credentials from file and updates them in the configuration. """
@@ -38,34 +41,34 @@ def set_http_auth_from_file():
                 app_cached_variables.http_flask_user = auth_file_lines[0].strip()
                 app_cached_variables.http_flask_password = auth_file_lines[1].strip()
         except Exception as error:
-            logger.primary_logger.error("Unable to load config file, using defaults: " + str(error))
+            logger.primary_logger.error("Problem loading Web Login Credentials - Using Defaults: " + str(error))
+            logger.primary_logger.warning("It is Recommended to change default Login Credentials")
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
             app_cached_variables.http_flask_user = default_http_flask_user
             app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
     else:
-        logger.primary_logger.warning("Configuration file not found, using and saving default")
+        log_msg = "Web Login Credentials not found, using and saving default of Kootnet/sensors"
+        logger.primary_logger.warning(log_msg)
+        logger.primary_logger.warning("It is Recommended to change default Login Credentials")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
         app_cached_variables.http_flask_user = default_http_flask_user
         app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
-def _verify_http_credentials(new_http_flask_user, new_http_flask_password):
-    if len(new_http_flask_user) > 2 and len(new_http_flask_password) > 2:
-        new_http_flask_user = new_http_flask_user
-        new_http_flask_password = new_http_flask_password
-        return new_http_flask_user, new_http_flask_password
-    else:
-        logger.primary_logger.warning("HTTP Authentication User or Password are less then 4 chars.  Using default.")
-        return default_http_flask_user, default_http_flask_password
-
-
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
     """ Saves Web Portal (flask app) login credentials to file. """
     try:
-        verified_user, verified_password = _verify_http_credentials(new_http_flask_user, new_http_flask_password)
-        save_data = verified_user + "\n" + generate_password_hash(verified_password)
-        with open(file_locations.http_auth, "w") as auth_file:
-            auth_file.write(save_data)
+        if len(new_http_flask_user) < min_length_username or len(new_http_flask_password) < min_length_password:
+            logger.primary_logger.error("Unable to change Web Portal Credentials")
+            if len(new_http_flask_user) < min_length_username:
+                logger.primary_logger.warning("Web Login user provided is too short")
+            if len(new_http_flask_password) < min_length_password:
+                logger.primary_logger.warning("Web Login Password provided is too short")
+        else:
+            save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
+            with open(file_locations.http_auth, "w") as auth_file:
+                auth_file.write(save_data)
+            logger.primary_logger.info("New Web Portal Username & Password Set")
     except Exception as error:
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 

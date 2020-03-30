@@ -32,10 +32,13 @@ if geteuid() == 0:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
     from sensor_modules import pimoroni_as7262
     from sensor_modules import pimoroni_bh1745
-    from sensor_modules import pimoroni_bme680
+    from sensor_modules import pimoroni_mcp9600
     from sensor_modules import pimoroni_bmp280
+    from sensor_modules import pimoroni_bme680
     from sensor_modules import pimoroni_enviro
     from sensor_modules import pimoroni_enviroplus
+    from sensor_modules import pimoroni_sgp30
+    from sensor_modules import pimoroni_msa301
     from sensor_modules import pimoroni_lsm303d
     from sensor_modules import pimoroni_icm20948
     from sensor_modules import pimoroni_ltr_559
@@ -63,12 +66,18 @@ if geteuid() == 0:
             app_config_access.installed_sensors.pimoroni_bmp280 = 0
         else:
             pimoroni_bme680_a = pimoroni_bme680.CreateBME680()
+    if app_config_access.installed_sensors.pimoroni_mcp9600:
+        pimoroni_mcp9600_a = pimoroni_mcp9600.CreateMCP9600()
     if app_config_access.installed_sensors.pimoroni_bmp280:
         pimoroni_bmp280_a = pimoroni_bmp280.CreateBMP280()
     if app_config_access.installed_sensors.pimoroni_enviro:
         pimoroni_enviro_a = pimoroni_enviro.CreateEnviro()
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         pimoroni_enviroplus_a = pimoroni_enviroplus.CreateEnviroPlus()
+    if app_config_access.installed_sensors.pimoroni_sgp30:
+        pimoroni_sgp30_a = pimoroni_sgp30.CreateSGP30()
+    if app_config_access.installed_sensors.pimoroni_msa301:
+        pimoroni_msa301_a = pimoroni_msa301.CreateMSA301()
     if app_config_access.installed_sensors.pimoroni_lsm303d:
         pimoroni_lsm303d_a = pimoroni_lsm303d.CreateLSM303D()
     if app_config_access.installed_sensors.pimoroni_icm20948:
@@ -86,10 +95,3 @@ if geteuid() == 0:
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
         pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
     logger.primary_logger.info(" -- Sensors Initialized")
-else:
-    # Skip Sensor Initializations on upgrade
-    # They won't be used & program will be restarted when the upgrade is done.
-    if geteuid() == 0:
-        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Upgrade in progress")
-    else:
-        logger.primary_logger.warning(" -- Sensors Initialization Skipped - Not running with root permissions")

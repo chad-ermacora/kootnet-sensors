@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script src="/tinymce.min.js"></script>
+    <script src="/jquery.tinymce.min.js"></script>
+
+    <h2><u><strong><a style="text-decoration: underline; color: red;" href="/SensorNotes">
+        Sensor Notes
+    </a></strong></u></h2>
+    <div style="display: inline-block;">
+        <form style="display: inline-block;" method="POST" action="/SensorNotes">
+            <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-light-blue mui--color-white">
+                Back
+            </button>
+            <input type="hidden" name="button_function" value="back">
+        </form>
+        <form style="display: inline-block;" method="POST" action="/SensorNotes">
+            <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-light-blue mui--color-white">
+                Next
+            </button>
+            <input type="hidden" name="button_function" value="next">
+        </form>
+    </div>
+    <div style="display: inline-block; padding-left: 75px;">
+        <label>
+            <input style="width: 40px;" type="number" name="current_note_num" form="custom_note"
+                   value="{{ CurrentNoteNumber }}" min="1" max="{{ LastNoteNumber }}">
+        </label>
+        <label style="color: white;">
+            out of
+            <input style="width: 40px" type="number" name="last_note_num"
+                   value="{{ LastNoteNumber }}" disabled>
+        </label>
+        <div style=" display: inline-block;">
+            <form style="padding-left: 25px; display: inline-block;" id="custom_note"
+                  method="POST" action="/SensorNotes">
+                <button class="mui-btn mui-btn--raised mui--bg-color-light-blue mui--color-white"
+                        type="submit">
+                    Go
+                </button>
+                <input type="hidden" name="button_function" value="custom_note_number">
+            </form>
+        </div>
+    </div>
+
+    <br>
+
+    <div style="max-width: 750px;">
+        <textarea id="tiny" form="update_note" name="note_text">{{ DisplayedNote }}</textarea>
+    </div>
+
+    <br>
+
+    <form style="display: inline-block;" method="POST" action="/SensorNotes">
+        <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-green mui--color-white">
+            New Note
+        </button>
+        <input type="hidden" name="button_function" value="new">
+    </form>
+
+    <form style="display: inline-block; padding-left: 75px;" method="POST" action="/SensorNotes">
+        <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-red mui--color-white">
+            Delete Note
+        </button>
+        <input type="hidden" name="button_function" value="delete">
+    </form>
+
+    <form style="display: inline-block; padding-left: 75px;" id="update_note" method="POST" action="/SensorNotes">
+        <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-blue-900 mui--color-white">
+            Save Note
+        </button>
+        <input type="hidden" name="button_function" value="save_note">
+    </form>
+
+    <script>
+        $('textarea#tiny').tinymce({
+            resize: "both",
+            height: 550,
+            min_height: 300,
+            width: "auto",
+            min_width: 300,
+            menubar: 'file edit view insert format help',
+            plugins: ['autolink link lists print code insertdatetime wordcount fullscreen help'],
+            toolbar: 'undo redo | removeformat formatselect | bold italic underline forecolor | bullist numlist outdent indent | link print',
+            insertdatetime_formats: ["%B %d, %Y - %H:%M:%S"]
+        });
+    </script>
+
+{% endblock %}

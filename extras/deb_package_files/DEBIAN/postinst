@@ -4,10 +4,14 @@ INSTALL_DIR="/opt/kootnet-sensors"
 CONFIG_DIR="/etc/kootnet"
 if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   python3 -m venv --system-site-packages ${PYTHON_VENV_DIR}
-  ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
   date >${CONFIG_DIR}/installed_datetime.txt
 fi
+${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
 ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
+OS=$(awk '/^ID=/' /etc/os-release | sed 's/ID=//')
+if [ "${OS}" == "raspbian" ]; then
+  ${PYTHON_VENV_DIR}/bin/pip3 install gpiozero pyserial spidev smbus smbus2 luma.core luma.oled
+fi
 echo '*/1 * * * * fake-hwclock' >>/tmp/tmp34441.txt
 crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt

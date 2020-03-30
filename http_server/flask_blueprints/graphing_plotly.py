@@ -15,7 +15,6 @@ html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
 @html_plotly_graphing_routes.route("/PlotlyGraph")
 def html_plotly_graphing():
     logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
-    save_to_folder = file_locations.plotly_save_folder
 
     extra_message = ""
     button_disabled = ""
@@ -24,15 +23,13 @@ def html_plotly_graphing():
         button_disabled = "disabled"
 
     try:
-        plotly_filename_interval = file_locations.plotly_filename_interval
-        unix_creation_date = os.path.getmtime(save_to_folder + plotly_filename_interval)
+        unix_creation_date = os.path.getmtime(file_locations.plotly_graph_interval)
         interval_creation_date = str(datetime.fromtimestamp(unix_creation_date))[:-7]
     except FileNotFoundError:
         interval_creation_date = "No Plotly Graph Found"
 
     try:
-        plotly_filename_triggers = file_locations.plotly_filename_triggers
-        triggers_plotly_file_creation_date_unix = os.path.getmtime(save_to_folder + plotly_filename_triggers)
+        triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.plotly_graph_triggers)
         triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
     except FileNotFoundError:
         triggers_creation_date = "No Plotly Graph Found"
@@ -78,8 +75,8 @@ def html_create_plotly_graph():
 @html_plotly_graphing_routes.route("/ViewIntervalPlotlyGraph")
 def html_view_interval_graph_plotly():
     logger.network_logger.info("* Interval Plotly Graph Viewed from " + str(request.remote_addr))
-    if os.path.isfile(file_locations.plotly_save_folder + file_locations.plotly_filename_interval):
-        return send_file(file_locations.plotly_save_folder + file_locations.plotly_filename_interval)
+    if os.path.isfile(file_locations.plotly_graph_interval):
+        return send_file(file_locations.plotly_graph_interval)
     else:
         message_title = "No Interval Plotly Graph Generated - Click to Close Tab"
         return message_and_return(message_title, special_command="JavaScript:window.close()", url="")
@@ -88,8 +85,8 @@ def html_view_interval_graph_plotly():
 @html_plotly_graphing_routes.route("/ViewTriggerPlotlyGraph")
 def html_view_triggers_graph_plotly():
     logger.network_logger.info("* Triggers Plotly Graph Viewed from " + str(request.remote_addr))
-    if os.path.isfile(file_locations.plotly_save_folder + file_locations.plotly_filename_triggers):
-        return send_file(file_locations.plotly_save_folder + file_locations.plotly_filename_triggers)
+    if os.path.isfile(file_locations.plotly_graph_triggers):
+        return send_file(file_locations.plotly_graph_triggers)
     else:
         message1 = "No Triggers Plotly Graph Generated - Click to Close Tab"
         special_command = "JavaScript:window.close()"

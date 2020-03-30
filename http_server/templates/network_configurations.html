@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-form {
+            background-color: #00B0FF;
+        }
+    </style>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active">
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="network-config-tab">
+                Networking
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="wifi-config-tab">
+                WiFi
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="network-ssl-tab">
+                SSL
+            </a>
+        </li>
+    </ul>
+
+    <br>
+
+    <div class="mui-tabs__pane mui--is-active" id="network-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigIPv4">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Network Configuration</a></u></h2>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        HostName
+                        <br>
+                        <input style="width: 125px;" type="text" id="ip_hostname" name="ip_hostname" required
+                               placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
+                               value="{{ IPHostname }}">
+                    </label>
+                </div>
+
+                <br>
+                <h4><u>Wireless IP Settings</u></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" id="IP_DHCP" name="ip_dhcp" value="" {{ CheckedDHCP }}>
+                        DHCP
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        IPv4 Address
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_address"
+                               placeholder="eg. 192.168.10.11" minlength="7"
+                               value="{{ IPv4Address }}" {{ IPv4AddressDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield" style="inset-inline-end: auto">
+                    <label style="color: black">
+                        <a style="color: black" target="_blank"
+                           href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                            Subnet mask
+                        </a>
+                        <br>
+                        <input style="width: 50px" type="text" name="ip_subnet"
+                               placeholder="eg. /24" minlength="2" maxlength="3"
+                               value="{{ IPv4Subnet }}" {{ IPv4SubnetDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Gateway
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_gateway"
+                               placeholder="eg. 192.168.10.1" minlength="7" maxlength="15"
+                               value="{{ IPGateway }}" {{ IPGatewayDisabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Primary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns1"
+                               placeholder="eg. 8.8.8.8" minlength="7" maxlength="15"
+                               value="{{ IPDNS1 }}" {{ IPDNS1Disabled }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Secondary DNS
+                        <br>
+                        <input style="width: 125px" type="text" name="ip_dns2"
+                               placeholder="eg. 8.8.4.4" minlength="7" maxlength="15"
+                               value="{{ IPDNS2 }}" {{ IPDNS2Disabled }}>
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="wifi-config-tab">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditConfigWifi">
+            <fieldset style="text-align: center">
+                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
+
+                <label>
+                    <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
+                        Two Character Country Code
+                    </a>
+                    <br>
+                    <input type="text" style="width: 25px" maxlength="2" minlength="2"
+                           name="country_code" value="{{ WirelessCountryCode }}" required>
+                </label>
+
+                <br>
+                <br>
+
+                <label>Wireless Security</label>
+                <div class="mui-radio">
+                    <label class="container_radio">Secured (WEP/WPA/WPA2)
+                        <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                        <span class="checkmark_radio"></span>
+                    </label>
+                    <label class="container_radio">Open (None)
+                        <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                        <span class="checkmark_radio"></span>
+                    </label>
+                </div>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Network Name (SSID)
+                        <br>
+                        <input style="width: 150px" type="text" name="ssid1" maxlength="32"
+                               placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                    </label>
+                </div>
+                <br>
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Wireless Key
+                        <br>
+                        <input style="width: 175px" type="password" name="wifi_key1"
+                               placeholder="Leave blank to use previous Key" minlength="8" maxlength="63"
+                               value="">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="network-ssl-tab">
+        <form class="mui-form" method="POST" enctype="multipart/form-data" style="max-width: 550px; min-height: 300px;"
+              action="/EditSSL">
+            <fieldset style="text-align: center;">
+                <h2><u><a style="color: black;" href="{{ PageURL }}">Set Custom SSL Certificate</a></u></h2>
+                <p style="color: darkred;"><b>
+                    Warning: Invalid Certificate/Key pairs will prevent access to the Web Portal.
+                </b></p>
+                <p><b>
+                    To restore access from an Invalid Certificate or Key
+                    <br>
+                    delete ALL files located in the following folder on the local sensor
+                    <br>
+                    then restart the sensor software
+                    <br><br>
+                    {{ SSLFileLocation }}
+                </b></p>
+
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        type="button" onclick="window.location.href = '/CreateNewSelfSignedSSL';">
+                    Create New Self-Signed SSL Certificate & Key
+                </button>
+
+                <br>
+
+                <h4><u>Certificate File</u></h4>
+                <input type="file" name="custom_crt" accept=".crt,.pem" required>
+                <br><br>
+                <h4><u>Key File</u></h4>
+                <input type="file" name="custom_key" accept=".key,.pem" required>
+                <br><br>
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                    Upload Custom SSL Files
+                </button>
+            </fieldset>
+        </form>
+    </div>
+
+    <script>
+        jQuery('#IP_DHCP').change(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementsByName("ip_address")[0].disabled = true;
+                document.getElementsByName("ip_subnet")[0].disabled = true;
+                document.getElementsByName("ip_gateway")[0].disabled = true;
+                document.getElementsByName("ip_dns1")[0].disabled = true;
+                document.getElementsByName("ip_dns2")[0].disabled = true;
+            } else {
+                document.getElementsByName("ip_address")[0].disabled = false;
+                document.getElementsByName("ip_subnet")[0].disabled = false;
+                document.getElementsByName("ip_gateway")[0].disabled = false;
+                document.getElementsByName("ip_dns1")[0].disabled = false;
+                document.getElementsByName("ip_dns2")[0].disabled = false;
+            }
+        });
+    </script>
+
+{% endblock %}

@@ -20,19 +20,65 @@ from platform import system
 from queue import Queue
 
 
+class CreateNetworkSystemCommands:
+    """ Create a object instance holding available network "System" commands (Mostly Upgrades). """
+
+    def __init__(self):
+        self.upgrade_system_os = "UpgradeSystemOS"
+        self.upgrade_pip_modules = "UpdatePipModules"
+
+        self.upgrade_http = "UpgradeOnline"
+        self.upgrade_http_dev = "UpgradeOnlineDev"
+        self.upgrade_http_clean = "UpgradeOnlineClean"
+        self.upgrade_http_clean_dev = "UpgradeOnlineCleanDEV"
+
+        self.upgrade_smb = "UpgradeSMB"
+        self.upgrade_smb_dev = "UpgradeSMBDev"
+        self.upgrade_smb_clean = "UpgradeSMBClean"
+        self.upgrade_smb_clean_dev = "UpgradeSMBCleanDEV"
+
+        self.restart_services = "RestartServices"
+        self.restart_system = "RebootSystem"
+        self.shutdown_system = "ShutdownSystem"
+
+
+class CreateNetworkSetCommands:
+    """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
+
+    def __init__(self):
+        self.set_host_name = "SetHostName"
+        self.set_datetime = "SetDateTime"
+        self.set_primary_configuration = "SetPrimaryConfiguration"
+        self.set_installed_sensors = "SetInstalledSensors"
+        self.set_variance_configuration = "SetVarianceConfiguration"
+        self.set_sensor_control_configuration = "SetSensorControlConfiguration"
+        self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
+        self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
+        self.set_open_sense_map_configuration = "SetOpenSenseMapConfiguration"
+        self.set_wifi_configuration = "SetWifiConfiguration"
+
+        # self.put_sql_note = "PutDatabaseNote"
+        # self.delete_sql_note = "DeleteDatabaseNote"
+        # self.update_sql_note = "UpdateDatabaseNote"
+
+
 class CreateNetworkGetCommands:
     """ Create a object instance holding available network "Get" commands (AKA get data from remote sensor). """
 
     def __init__(self):
+        self.check_online_status = "CheckOnlineStatus"
+        self.check_portal_login = "TestLogin"
         self.sensor_sql_database = "DownloadSQLDatabase"
+        self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"
         self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
+        self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.variance_config = "GetVarianceConfiguration"
-        self.weather_underground_config_file = "GetOnlineServicesWeatherUnderground"
+        self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
         self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
         self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
         self.system_data = "GetSystemData"
@@ -43,6 +89,7 @@ class CreateNetworkGetCommands:
         self.download_zipped_logs_size = "GetZippedLogsSize"
         self.download_zipped_everything = "DownloadZippedEverything"
         self.sensor_readings = "GetIntervalSensorReadings"
+        self.sensors_latency = "GetSensorsLatency"
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
@@ -53,15 +100,18 @@ class CreateNetworkGetCommands:
         self.altitude = "GetAltitude"
         self.humidity = "GetHumidity"
         self.distance = "GetDistance"
+        self.all_gas = "GetAllGas"
         self.gas_index = "GetGasResistanceIndex"
         self.gas_oxidised = "GetGasOxidised"
         self.gas_reduced = "GetGasReduced"
         self.gas_nh3 = "GetGasNH3"
+        self.all_particulate_matter = "GetAllParticulateMatter"
         self.pm_1 = "GetParticulateMatter1"
         self.pm_2_5 = "GetParticulateMatter2_5"
         self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
         self.electromagnetic_spectrum = "GetEMS"
+        self.all_ultra_violet = "GetAllUltraViolet"
         self.ultra_violet_index = "GetUltraVioletA"
         self.ultra_violet_a = "GetUltraVioletA"
         self.ultra_violet_b = "GetUltraVioletB"
@@ -171,6 +221,25 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+# Dictionary of Terminal commands
+bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
+                 "RestartService": "systemctl daemon-reload ; systemctl restart KootnetSensors.service",
+                 "EnableService": "systemctl enable KootnetSensors.service",
+                 "StartService": "systemctl start KootnetSensors.service",
+                 "DisableService": "systemctl disable KootnetSensors.service",
+                 "StopService": "systemctl stop KootnetSensors.service",
+                 "UpgradeOnline": "systemctl start SensorUpgradeOnline.service",
+                 "UpgradeOnlineClean": "systemctl start SensorUpgradeOnlineClean.service",
+                 "UpgradeOnlineCleanDEV": "systemctl start SensorUpgradeOnlineCleanDEV.service",
+                 "UpgradeOnlineDEV": "systemctl start SensorUpgradeOnlineDEV.service",
+                 "UpgradeSMB": "systemctl start SensorUpgradeSMB.service",
+                 "UpgradeSMBClean": "systemctl start SensorUpgradeSMBClean.service",
+                 "UpgradeSMBCleanDEV": "systemctl start SensorUpgradeSMBCleanDEV.service",
+                 "UpgradeSMBDEV": "systemctl start SensorUpgradeSMBDEV.service",
+                 "UpgradeSystemOS": "apt-get update && apt-get -y upgrade",
+                 "RebootSystem": "reboot",
+                 "ShutdownSystem": "shutdown -h now"}
+
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
@@ -226,8 +295,9 @@ trigger_thread_accelerometer = None
 trigger_thread_magnetometer = None
 trigger_thread_gyroscope = None
 
-# Checked before running OS upgrade. Is changed to False when OS upgrade started
-linux_os_upgrade_ready = True
+# Checked before running OS or pip3 upgrades
+# Set to False when stating a upgrade, returns to True after program restarts
+sensor_ready_for_upgrade = True
 
 # Variables to make sure Sensor Control is only creating a single copy at any given time
 creating_the_reports_zip = False
@@ -274,3 +344,7 @@ sc_big_zip_name = ""
 sc_databases_zip_in_memory = False
 sc_big_zip_in_memory = False
 sc_in_memory_zip = b''
+
+# HTML Sensor Notes Variables
+notes_total_count = 0
+note_current = 1

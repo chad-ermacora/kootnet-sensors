@@ -5,7 +5,7 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
 from operations_modules import software_version
-from operations_modules.recording_interval import get_interval_sensor_readings
+from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from http_server.server_http_generic_functions import message_and_return
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
@@ -47,7 +47,7 @@ def cc_get_system_data():
 def cc_set_hostname():
     logger.network_logger.debug("** CC Set Hostname Initiated by " + str(request.remote_addr))
     try:
-        new_host = request.form['command_data']
+        new_host = request.form.get("command_data")
         os.system("hostnamectl set-hostname " + new_host)
         message = "Hostname Changed to " + new_host
         app_cached_variables_update.update_cached_variables()
@@ -63,7 +63,7 @@ def cc_set_hostname():
 def cc_set_date_time():
     logger.network_logger.debug("** CC Set DateTime Initiated by " + str(request.remote_addr))
     try:
-        new_datetime = request.form['command_data']
+        new_datetime = request.form.get("command_data")
         os.system("date --set " + new_datetime[:10] + " && date --set " + new_datetime[11:])
         log_msg = "** CC System DateTime Set by " + str(request.remote_addr) + " to " + new_datetime
         logger.network_logger.info(log_msg)
@@ -75,7 +75,12 @@ def cc_set_date_time():
 @html_legacy_cc_routes.route("/GetConfigurationReport")
 def cc_get_configuration_report():
     logger.network_logger.debug("* CC Sensor Configuration Data Sent to " + str(request.remote_addr))
-    cvs_config_and_installed_sensors = app_config_access.current_config.get_config_as_csv() + ","
+    config_str_csv = str(app_config_access.primary_config.enable_interval_recording) + "," + \
+                     str(app_config_access.primary_config.enable_trigger_recording) + "," + \
+                     str(app_config_access.primary_config.sleep_duration_interval) + "," + \
+                     str(app_config_access.primary_config.enable_custom_temp) + "," + \
+                     str(app_config_access.primary_config.temperature_offset)
+    cvs_config_and_installed_sensors = config_str_csv + ","
     cvs_config_and_installed_sensors += app_config_access.installed_sensors.get_installed_names_str()
     return cvs_config_and_installed_sensors.strip()
 
@@ -102,7 +107,7 @@ def cc_get_db_note_user_dates():
 @auth.login_required
 def cc_del_db_note():
     logger.network_logger.debug("* CC Delete Sensor Note Accessed by " + str(request.remote_addr))
-    note_datetime = request.form['command_data']
+    note_datetime = request.form.get("command_data")
     logger.network_logger.info("** CC - " + str(request.remote_addr) + " Deleted Note " + str(note_datetime))
     sensor_access.delete_db_note(note_datetime)
 
@@ -110,7 +115,7 @@ def cc_del_db_note():
 @html_legacy_cc_routes.route("/PutDatabaseNote", methods=["PUT"])
 @auth.login_required
 def cc_put_sql_note():
-    new_note = request.form['command_data']
+    new_note = request.form.get("command_data")
     sensor_access.add_note_to_database(new_note)
     logger.network_logger.info("** SQL Note Inserted by " + str(request.remote_addr))
     return "OK"
@@ -119,7 +124,7 @@ def cc_put_sql_note():
 @html_legacy_cc_routes.route("/UpdateDatabaseNote", methods=["PUT"])
 @auth.login_required
 def cc_update_sql_note():
-    datetime_entry_note_csv = request.form['command_data']
+    datetime_entry_note_csv = request.form.get("command_data")
     sensor_access.update_note_in_database(datetime_entry_note_csv)
     logger.network_logger.debug("** Updated Note in Database from " + str(request.remote_addr))
     return "OK"

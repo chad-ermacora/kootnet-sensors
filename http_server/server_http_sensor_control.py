@@ -26,9 +26,11 @@ from operations_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version
-from operations_modules.config_weather_underground import CreateWeatherUndergroundConfig
-from operations_modules.config_luftdaten import CreateLuftdatenConfig
-from operations_modules.config_open_sense_map import CreateOpenSenseMapConfig
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
+from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
+from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
 if software_version.old_version == software_version.version or geteuid() != 0:
     try:
@@ -43,6 +45,9 @@ if software_version.old_version == software_version.version or geteuid() != 0:
         html_report_sensors_test_start = get_file_content(file_locations.html_report_sensors_test1_start).strip()
         html_report_sensors_test_end = get_file_content(file_locations.html_report_sensors_test3_end).strip()
         html_report_sensors_test_sensor = get_file_content(file_locations.html_report_sensors_test2_sensor).strip()
+
+        html_report_sensors_latency_start = get_file_content(file_locations.html_report_sensors_latency1_start).strip()
+        html_report_sensors_latency_sensor = get_file_content(file_locations.html_report_sensors_latency2_sensor).strip()
     except Exception as init_error:
         logger.primary_logger.warning("Problem loading Report Templates: " + str(init_error))
 
@@ -78,53 +83,72 @@ class CreateReplacementVariables:
             command_config_os_luftdaten = self.remote_sensor_commands.luftdaten_config_file
             command_config_os_osm = self.remote_sensor_commands.open_sense_map_config_file
 
+            wifi_ssid = ""
+            weather_underground_enabled = ""
+            open_sense_map_enabled = ""
+
+            if get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.check_portal_login) == "OK":
+                wifi_config_file = self.remote_sensor_commands.wifi_config_file
+                wifi_config_raw = get_http_sensor_reading(ip_address, command=wifi_config_file)
+                weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
+                open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
+
+                wifi_config_lines = wifi_config_raw.strip().split("\n")
+                if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
+                    wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
+
+                wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
+                wu_config.config_file_location = "Sensor Control's Weather Underground Config from " + ip_address
+                wu_config.set_config_with_str(weather_underground_config_raw)
+                weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
+
+                osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
+                osm_config.config_file_location = "Sensor Control's Open Sense Map Config from " + ip_address
+                osm_config.set_config_with_str(open_sense_map_config_raw)
+                open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
+
+                weather_underground_colour = "#F4A460"
+                if wu_config.weather_underground_enabled:
+                    weather_underground_colour = "lightgreen"
+                if wu_config.bad_config_load:
+                    weather_underground_colour = "orangered"
+
+                open_sense_map_colour = "#F4A460"
+                if osm_config.open_sense_map_enabled:
+                    open_sense_map_colour = "lightgreen"
+                if osm_config.bad_config_load:
+                    open_sense_map_colour = "orangered"
+            else:
+                weather_underground_colour = "orangered"
+                open_sense_map_colour = "orangered"
+
             sensor_date_time = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.system_date_time)
             sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
             installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            wifi_config_raw = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.wifi_config_file)
-            weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
-            open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
+            sensors_config = CreatePrimaryConfiguration(load_from_file=False)
+            sensors_config.set_config_with_str(sensor_config_raw)
 
-            sensor_config_lines = sensor_config_raw.strip().split("\n")
-            installed_sensors_lines = installed_sensors_raw.strip().split("\n")
+            luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
+            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + ip_address
+            luftdaten_config.set_config_with_str(luftdaten_config_raw)
+            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
+            luftdaten_colour = "#F4A460"
+            if luftdaten_config.luftdaten_enabled:
+                luftdaten_colour = "lightgreen"
+            if luftdaten_config.bad_config_load:
+                luftdaten_colour = "orangered"
+                luftdaten_enabled = ""
+
+            installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
+            installed_sensors_config.set_config_with_str(installed_sensors_raw)
             try:
+                installed_sensors_lines = installed_sensors_raw.strip().split("\n")
                 rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
             except Exception as error:
                 logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
                 rpi_model_name = "Raspberry Pi"
-            wifi_config_lines = wifi_config_raw.strip().split("\n")
-
-            wu_config = CreateWeatherUndergroundConfig()
-            wu_config.update_settings_from_file(file_content=weather_underground_config_raw, skip_write=True)
-
-            luftdaten_config = CreateLuftdatenConfig()
-            luftdaten_config.update_settings_from_file(file_content=luftdaten_config_raw.strip(), skip_write=True)
-
-            osm_config = CreateOpenSenseMapConfig()
-            osm_config.update_settings_from_file(file_content=open_sense_map_config_raw.strip(), skip_write=True)
-
-            convert_config = app_config_access.config_primary.convert_config_lines_to_obj
-            convert_installed_sensors = app_config_access.config_installed_sensors.convert_lines_to_obj
-            sensors_config = convert_config(sensor_config_lines, skip_write=True)
-            installed_sensors_config = convert_installed_sensors(installed_sensors_lines, skip_write=True)
-
-            installed_sensors_config.raspberry_pi_name = rpi_model_name
-
-            weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
-            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
-            open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
-
-            if wu_config.bad_config_load:
-                weather_underground_enabled = ""
-            if luftdaten_config.bad_load:
-                luftdaten_enabled = ""
-            if osm_config.bad_load:
-                open_sense_map_enabled = ""
-
-            wifi_ssid = ""
-            if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
-                wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
+            installed_sensors_config.config_settings_names[1] = rpi_model_name
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
             text_display = str(self.get_enabled_disabled_text(sensors_config.enable_display))
@@ -134,38 +158,28 @@ class CreateReplacementVariables:
             text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
 
             wifi_network_colour = "orangered"
-            debug_colour = "#F4A460"
-            display_colour = "#F4A460"
-            interval_recording_colour = "#F4A460"
-            trigger_recording_colour = "#F4A460"
-            temp_offset_colour = "#F4A460"
-            weather_underground_colour = "orangered"
-            luftdaten_colour = "#F4A460"
-            open_sense_map_colour = "orangered"
             if len(wifi_ssid) > 0:
                 wifi_network_colour = "#0099ff"
+
+            debug_colour = "#F4A460"
             if sensors_config.enable_debug_logging:
                 debug_colour = "lightgreen"
+
+            display_colour = "#F4A460"
             if sensors_config.enable_display:
                 display_colour = "lightgreen"
+
+            interval_recording_colour = "#F4A460"
             if sensors_config.enable_interval_recording:
                 interval_recording_colour = "lightgreen"
+
+            trigger_recording_colour = "#F4A460"
             if sensors_config.enable_trigger_recording:
                 trigger_recording_colour = "lightgreen"
+
+            temp_offset_colour = "#F4A460"
             if sensors_config.enable_custom_temp:
                 temp_offset_colour = "lightgreen"
-            if wu_config.weather_underground_enabled:
-                weather_underground_colour = "lightgreen"
-            else:
-                if not wu_config.bad_config_load:
-                    weather_underground_colour = "#F4A460"
-            if luftdaten_config.luftdaten_enabled:
-                luftdaten_colour = "lightgreen"
-            if osm_config.open_sense_map_enabled:
-                open_sense_map_colour = "lightgreen"
-            else:
-                if not wu_config.bad_config_load:
-                    open_sense_map_colour = "#F4A460"
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
@@ -195,9 +209,12 @@ class CreateReplacementVariables:
             logger.network_logger.warning(log_msg)
             return []
 
-    def report_test_sensors(self, ip_address):
+    def report_sensors_choice(self, ip_address, report_type="sensors_test"):
         try:
-            get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
+            if report_type == "sensors_test":
+                get_sensors_readings_command = self.remote_sensor_commands.sensor_readings
+            else:
+                get_sensors_readings_command = self.remote_sensor_commands.sensors_latency
             sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command, timeout=20)
             sensor_readings_raw = sensor_readings_raw.strip()
             sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
@@ -234,6 +251,7 @@ class CreateReplacementVariables:
 def get_online_report(ip_address, report_type="systems_report"):
     report_type_config = app_config_access.sensor_control_config.radio_report_config
     report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
+    report_type_latency_sensors = app_config_access.sensor_control_config.radio_report_sensors_latency
 
     sensor_report = html_report_system_sensor
     command_and_replacements = CreateReplacementVariables().report_system()
@@ -242,7 +260,10 @@ def get_online_report(ip_address, report_type="systems_report"):
         command_and_replacements = CreateReplacementVariables().report_config(ip_address)
     elif report_type == report_type_test_sensors:
         sensor_report = html_report_sensors_test_sensor
-        command_and_replacements = CreateReplacementVariables().report_test_sensors(ip_address)
+        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address)
+    elif report_type == report_type_latency_sensors:
+        sensor_report = html_report_sensors_latency_sensor
+        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address, report_type="Latency")
 
     try:
         if check_for_port_in_address(ip_address):
@@ -267,7 +288,7 @@ def get_online_report(ip_address, report_type="systems_report"):
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
             if report_type == report_type_config:
                 app_cached_variables.data_queue2.put([sensor_name, sensor_report])
-            elif report_type == report_type_test_sensors:
+            elif report_type == report_type_latency_sensors or report_type == report_type_test_sensors:
                 app_cached_variables.data_queue3.put([sensor_name, sensor_report])
             else:
                 app_cached_variables.data_queue.put([sensor_name, sensor_report])

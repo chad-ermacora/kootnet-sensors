@@ -18,12 +18,15 @@
 """
 import os
 import time
-import sqlite3
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules import os_cli_commands
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.sqlite_database import check_database_structure
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 
 
 def run_program_start_checks():
@@ -33,90 +36,45 @@ def run_program_start_checks():
     """
     logger.primary_logger.info(" -- Starting Programs Checks ...")
     _set_file_permissions()
+    check_database_structure()
+    _check_ssl_files()
     if software_version.old_version != software_version.version:
-        logger.primary_logger.info(" -- Starting Programs Upgrade Checks ...")
-        os.system("systemctl start SensorUpgradeChecks")
+        thread_function(_run_upgrade_checks)
         # Sleep before loading anything due to needed updates
-        # The update service will automatically restart this app when it's done
+        # The update function will automatically restart the service
         while True:
             time.sleep(30)
-    _check_database_structure()
-    _check_ssl_files()
 
 
 def _set_file_permissions():
     """ Re-sets program file permissions. """
     if os.geteuid() == 0:
-        os.system(os_cli_commands.bash_commands["SetPermissions"])
+        _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o744)
+        _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o744)
+        _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
+        if os.path.isfile(file_locations.http_auth):
+            os.chmod(file_locations.http_auth, 0o700)
 
 
-def _check_database_structure():
-    """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
-    logger.primary_logger.debug("Running DB Checks")
-    database_variables = app_cached_variables.CreateDatabaseVariables()
-
-    columns_created = 0
-    columns_already_made = 0
-
+def _change_permissions_recursive(path, folder_mode, files_mode):
+    root = ""
+    files = []
     try:
-        db_connection = sqlite3.connect(file_locations.sensor_database)
-        db_cursor = db_connection.cursor()
-
-        _create_table_and_datetime(database_variables.table_interval, db_cursor)
-        _create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
-                                                    database_variables.get_sensor_columns_list()):
-            interval_response = _check_sql_table_and_column(database_variables.table_interval, column_intervals,
-                                                            db_cursor)
-            trigger_response = _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
-            if interval_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if trigger_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-
-        _create_table_and_datetime(database_variables.table_other, db_cursor)
-        for column_other in database_variables.get_other_columns_list():
-            other_response = _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
-            if other_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-
-        db_connection.commit()
-        db_connection.close()
-        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
-        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
+        os.chmod(path, folder_mode)
+        for root, dirs, files in os.walk(path, topdown=False):
+            for directory in [os.path.join(root, d) for d in dirs]:
+                os.chmod(directory, folder_mode)
+        for file in [os.path.join(root, f) for f in files]:
+            os.chmod(file, files_mode)
     except Exception as error:
-        logger.primary_logger.error("DB Connection Failed: " + str(error))
-
-
-def _create_table_and_datetime(table, db_cursor):
-    """ Add's or verifies provided table and DateTime column in the SQLite Database. """
-    try:
-        # Create or update table
-        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-        logger.primary_logger.debug("Table '" + table + "' - Created")
-    except Exception as error:
-        logger.primary_logger.debug(table + " - " + str(error))
-
-
-def _check_sql_table_and_column(table_name, column_name, db_cursor):
-    """ Add's or verifies provided table and column in the SQLite Database. """
-    try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
-        return True
-    except Exception as error:
-        print(str(error))
-        return False
+        logger.primary_logger.error("Error setting permissions: " + str(error))
 
 
 def _check_ssl_files():
     """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
+    if not os.path.isdir(file_locations.http_ssl_folder):
+        os.mkdir(file_locations.http_ssl_folder)
 
     if os.path.isfile(file_locations.http_ssl_key):
         logger.primary_logger.debug("SSL Key Found")
@@ -140,3 +98,68 @@ def _check_ssl_files():
         terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
         terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
         os.system(terminal_command_part1 + terminal_command_part2)
+
+
+def _run_upgrade_checks():
+    """
+     Checks previous written version of the program to the current version.
+     If the current version is different, start upgrade functions.
+    """
+    logger.primary_logger.info(" -- Starting Upgrade Checks ...")
+    previous_version = software_version.CreateRefinedVersion(software_version.old_version)
+    no_changes = True
+
+    if previous_version.major_version == "New_Install":
+        logger.primary_logger.info("New Install Detected")
+        no_changes = False
+    else:
+        msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
+        logger.primary_logger.info(msg)
+        if previous_version.major_version == "Beta":
+            if previous_version.feature_version == 29:
+                if previous_version.minor_version < 13:
+                    no_changes = False
+                    reset_installed_sensors()
+                    reset_variance_config()
+        elif previous_version.major_version == "Alpha":
+            no_changes = False
+            reset_installed_sensors()
+            reset_primary_config()
+            reset_variance_config()
+        else:
+            no_changes = False
+            msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
+            logger.primary_logger.error(msg)
+            reset_installed_sensors()
+            reset_primary_config()
+
+    if no_changes:
+        logger.primary_logger.info("No configuration changes detected")
+
+    software_version.write_program_version_to_file()
+    if file_locations.program_root_dir == "/opt/kootnet-sensors":
+        logger.primary_logger.info("Upgrade Complete - Restarting the Sensor service")
+        os.system(app_cached_variables.bash_commands["RestartService"])
+    else:
+        logger.primary_logger.info("Upgrade Complete - Please restart the Sensor program")
+
+
+def reset_installed_sensors():
+    """ Writes a default installed sensor configuration file. """
+    logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
+    default_installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
+    default_installed_sensors.save_config_to_file()
+
+
+def reset_primary_config():
+    """ Writes a default main configuration file. """
+    logger.primary_logger.warning(" **** Main Configuration Reset ****")
+    default_primary_config = CreatePrimaryConfiguration(load_from_file=False)
+    default_primary_config.save_config_to_file()
+
+
+def reset_variance_config():
+    """ Writes a default Trigger Variance configuration file. """
+    logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
+    default_variance = CreateTriggerVariancesConfiguration(load_from_file=False)
+    default_variance.save_config_to_file()

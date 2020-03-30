@@ -30,6 +30,18 @@ def download_sensors_sql_database_zipped():
         return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
 
 
+@html_local_download_routes.route("/DownloadSQLDatabaseRAW")
+def download_sensors_sql_database_raw():
+    logger.network_logger.debug("* Download RAW SQL Database Accessed by " + str(request.remote_addr))
+    try:
+        file_name_part1 = app_cached_variables.ip.split(".")[-1] + "-" + app_cached_variables.hostname
+        sql_filename = file_name_part1 + "SensorDatabase.sqlite"
+        return send_file(file_locations.sensor_database, as_attachment=True, attachment_filename=sql_filename)
+    except Exception as error:
+        logger.primary_logger.error("* Unable to Send Database to " + str(request.remote_addr) + ": " + str(error))
+        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
 @html_local_download_routes.route("/DownloadZippedEverything")
 def download_zipped_everything():
     logger.network_logger.debug("* Download Zip of Everything Accessed by " + str(request.remote_addr))

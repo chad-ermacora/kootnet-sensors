@@ -22,12 +22,14 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import delayed_cache_update
+from operations_modules import app_config_access
 
 https_import_error_msg = ""
 https_import_errors = True
 try:
     from http_server import server_http_auth
     from http_server.flask_blueprints.html_functional import html_functional_routes
+    from http_server.flask_blueprints.html_notes import html_notes_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
@@ -47,15 +49,12 @@ try:
     https_import_errors = False
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
-    server_http_auth, html_functional_routes, html_basic_routes, = None, None, None
+    server_http_auth, html_functional_routes, html_basic_routes, html_notes_routes = None, None, None, None
     html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     Flask, Compress, WSGIServer = None, None, None
-
-flask_http_ip = ""
-flask_http_port = 10065
 
 
 class CreateSensorHTTP:
@@ -67,6 +66,7 @@ class CreateSensorHTTP:
         server_http_auth.set_http_auth_from_file()
 
         app.register_blueprint(html_functional_routes)
+        app.register_blueprint(html_notes_routes)
         app.register_blueprint(html_basic_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)
@@ -83,10 +83,12 @@ class CreateSensorHTTP:
         thread_function(delayed_cache_update)
 
         try:
-            http_server = WSGIServer((flask_http_ip, flask_http_port), app,
+            flask_http_ip = app_config_access.primary_config.flask_http_ip
+            flask_port_number = app_config_access.primary_config.web_portal_port
+            http_server = WSGIServer((flask_http_ip, flask_port_number), app,
                                      keyfile=file_locations.http_ssl_key,
                                      certfile=file_locations.http_ssl_crt)
-            logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_http_port))
+            logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_port_number))
             http_server.serve_forever()
         except Exception as error:
             logger.primary_logger.critical("--- Failed to Start HTTPS Server: " + str(error))

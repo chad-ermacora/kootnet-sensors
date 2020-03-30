@@ -30,6 +30,78 @@ from operations_modules import app_cached_variables
 logging.captureWarnings(True)
 
 
+class CreateGeneralConfiguration:
+    """ Base Configuration Template Class """
+
+    def __init__(self, config_file_location, load_from_file=True):
+        self.load_from_file = load_from_file
+        self.config_file_location = config_file_location
+        self.config_file_header = "General Configuration File"
+        self.valid_setting_count = 0
+        self.config_settings = []
+        self.config_settings_names = []
+
+        self.bad_config_load = False
+
+    def _init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+        try:
+            if self.check_config_file_exists():
+                self.set_config_with_str(get_file_content(self.config_file_location))
+        except Exception as error:
+            log_msg = "Error setting variables from "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+
+    def check_config_file_exists(self):
+        if not os.path.isfile(self.config_file_location):
+            logger.primary_logger.info(self.config_file_location + " Not found, saving default")
+            self.save_config_to_file()
+            return False
+        return True
+
+    def save_config_to_file(self):
+        """ Saves configuration to file. """
+        logger.primary_logger.debug("Saving Configuration to " + str(self.config_file_location))
+        write_file_to_disk(self.config_file_location, self.get_config_as_str())
+
+    def get_config_as_str(self):
+        """ Returns configuration as a String. """
+        logger.primary_logger.debug("Returning Configuration as string for " + str(self.config_file_location))
+        new_file_content = self.config_file_header + "\n"
+        for setting, setting_name in zip(self.config_settings, self.config_settings_names):
+            new_file_content += str(setting) + " = " + str(setting_name) + "\n"
+        return new_file_content
+
+    def set_config_with_str(self, config_file_text):
+        if config_file_text is not None:
+            config_file_text = config_file_text.strip().split("\n")
+            config_file_text = config_file_text[1:]  # Remove the header that's not a setting
+            if not self.valid_setting_count == len(config_file_text):
+                if self.load_from_file:
+                    self.bad_config_load = True
+                    log_msg = "Invalid number of settings found in "
+                    logger.primary_logger.warning(log_msg + str(self.config_file_location))
+
+            self.config_settings = []
+            for line in config_file_text:
+                try:
+                    line_split = line.split("=")
+                    setting = line_split[0].strip()
+                except Exception as error:
+                    if self.load_from_file:
+                        logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                    self.bad_config_load = True
+                    setting = "error"
+                self.config_settings.append(setting)
+        else:
+            if self.load_from_file:
+                logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
+            self.bad_config_load = True
+
+
 class CreateMonitoredThread:
     """
     Creates a thread and checks every 30 seconds to make sure its still running.
@@ -42,42 +114,35 @@ class CreateMonitoredThread:
         self.function = function
         self.args = args
         self.thread_name = thread_name
-
         self.current_restart_count = 0
         self.max_restart_count = max_restart_tries
 
-        self._thread_and_monitor()
+        if self.args is not None:
+            self.monitored_thread = Thread(target=self.function, args=self.args)
+        else:
+            self.monitored_thread = Thread(target=self.function)
+        self.monitored_thread.daemon = True
+
+        self.watch_thread = Thread(target=self._thread_and_monitor)
+        self.watch_thread.daemon = True
+        self.watch_thread.start()
 
     def _thread_and_monitor(self):
-        try:
-            monitored_thread = Thread(target=self._worker_thread_and_monitor)
-            monitored_thread.daemon = True
-            monitored_thread.start()
-        except Exception as error:
-            logger.primary_logger.error("--- " + self.thread_name + " Thread Failed: " + str(error))
-
-    def _worker_thread_and_monitor(self):
         logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
-        if self.args is not None:
-            monitored_thread = Thread(target=self.function, args=self.args)
-        else:
-            monitored_thread = Thread(target=self.function)
-        monitored_thread.daemon = True
-        monitored_thread.start()
-
+        self.monitored_thread.start()
         while True:
             time.sleep(30)
-            if not monitored_thread.is_alive():
+            if not self.monitored_thread.is_alive():
                 logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
                 self.is_running = False
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
                     if self.args is not None:
-                        monitored_thread = Thread(target=self.function, args=self.args)
+                        self.monitored_thread = Thread(target=self.function, args=self.args)
                     else:
-                        monitored_thread = Thread(target=self.function)
-                    monitored_thread.daemon = True
-                    monitored_thread.start()
+                        self.monitored_thread = Thread(target=self.function)
+                    self.monitored_thread.daemon = True
+                    self.monitored_thread.start()
                     self.is_running = True
                 else:
                     log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
@@ -159,7 +224,7 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         return "Error"
 
 
-def send_http_command(sensor_address, command, included_data=None, http_port="10065", timeout=10):
+def send_http_command(sensor_address, command, included_data=None, test_run=None, http_port="10065", timeout=10):
     """ Sends command and data (if any) to a remote sensor. """
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
@@ -168,11 +233,11 @@ def send_http_command(sensor_address, command, included_data=None, http_port="10
     try:
         url = "https://" + sensor_address + ":" + http_port + "/" + command
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        command_data = {'command_data': included_data}
+        command_data = {"command_data": included_data, "test_run": test_run}
         requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
     except Exception as error:
         log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
+        logger.network_logger.error(log_msg)
 
 
 def get_http_sensor_file(sensor_address, command, http_port="10065"):
@@ -201,9 +266,13 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
     try:
         url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        requests.put(url=url, timeout=4, data={'command_data': text_message}, verify=False, auth=login_credentials)
+        send_data = {'command_data': text_message}
+        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
+        if tmp_return_data.text == "OK":
+            return True
     except Exception as error:
         logger.network_logger.error("Unable to display text on Sensor: " + str(error))
+    return False
 
 
 def check_for_port_in_address(address):

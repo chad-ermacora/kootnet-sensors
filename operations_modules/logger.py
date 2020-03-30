@@ -47,33 +47,25 @@ def initialize_logger(logger, log_location, formatter):
 
 
 def set_logging_level():
-    debug_logging = check_debug_logging()
-    if debug_logging:
+    if _debug_enabled():
         primary_logger.setLevel(logging.DEBUG)
         network_logger.setLevel(logging.DEBUG)
         sensors_logger.setLevel(logging.DEBUG)
-
     else:
         primary_logger.setLevel(logging.INFO)
         network_logger.setLevel(logging.INFO)
         sensors_logger.setLevel(logging.INFO)
 
 
-def check_debug_logging():
-    """ Check to see if debug logging is enabled and apply if necessary. """
-    if os.path.isfile(file_locations.debug_logging_config):
-        with open(file_locations.debug_logging_config, "r") as debug_file:
-            debug = debug_file.read().strip()
-            try:
-                if int(debug):
-                    return 1
-            except Exception as error:
-                print("Error checking Debug logging: " + str(error))
-        return 0
-    else:
-        with open(file_locations.debug_logging_config, 'w') as enable_debug:
-            enable_debug.write("0")
-        return 0
+def _debug_enabled():
+    if os.path.isfile(file_locations.primary_config):
+        with open(file_locations.primary_config, "r") as loaded_file:
+            file_lines_list = loaded_file.read().split("\n")
+            if len(file_lines_list) > 1:
+                debug_setting = file_lines_list[1].split("=")[0].strip()
+                if int(debug_setting):
+                    return True
+    return False
 
 
 def get_number_of_log_entries(log_file):
@@ -115,7 +107,6 @@ def clear_sensor_log():
         log_content.write("")
 
 
-check_debug_logging()
 # Initialize 3 Logs, Primary, Network and Sensors
 primary_logger = logging.getLogger("PrimaryLog")
 network_logger = logging.getLogger("NetworkLog")
