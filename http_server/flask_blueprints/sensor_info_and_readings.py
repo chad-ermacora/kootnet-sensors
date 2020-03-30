@@ -136,15 +136,19 @@ def html_system_information():
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     raw_temp = sensor_access.get_sensor_temperature()
-    temp_offset = app_config_access.primary_config.temperature_offset
 
-    adjusted_temp = app_cached_variables.no_sensor_present
+    adjusted_temp = "NA"
     if raw_temp != app_cached_variables.no_sensor_present:
         try:
             if app_config_access.primary_config.enable_custom_temp:
-                adjusted_temp = round(raw_temp + temp_offset, 2)
+                adjusted_temp = round(raw_temp + app_config_access.primary_config.temperature_offset, 2)
+                adjusted_temp = str(adjusted_temp) + " °C"
         except Exception as error:
             logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
+
+    temp_offset = "Disabled"
+    if app_config_access.primary_config.enable_custom_temp:
+        temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"
     red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
     return render_template("sensor_readings.html",
                            URLRedirect="SensorReadings",
@@ -154,8 +158,8 @@ def html_sensors_readings():
                            SystemUptime=sensor_access.get_uptime_str(),
                            CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
                            RAWEnvTemperature=str(raw_temp) + " °C",
-                           AdjustedEnvTemperature=str(adjusted_temp) + " °C",
-                           EnvTemperatureOffset=str(temp_offset) + " °C",
+                           AdjustedEnvTemperature=str(adjusted_temp),
+                           EnvTemperatureOffset=temp_offset,
                            Pressure=str(sensor_access.get_pressure()) + " hPa",
                            Altitude=str(sensor_access.get_altitude()) + " Meters",
                            Humidity=str(sensor_access.get_humidity()) + " %RH",
