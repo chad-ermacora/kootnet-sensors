@@ -203,7 +203,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self.particulate_matter_1_variance = float(html_request.form.get("trigger_pm1"))
         self.particulate_matter_2_5_variance = float(html_request.form.get("trigger_pm2_5"))
         self.particulate_matter_10_variance = float(html_request.form.get("trigger_pm10"))
-        self.humidity_wait_seconds = float(html_request.form.get("seconds_pm"))
+        self.particulate_matter_wait_seconds = float(html_request.form.get("seconds_pm"))
 
         if html_request.form.get("accelerometer") is not None:
             self.accelerometer_enabled = 1

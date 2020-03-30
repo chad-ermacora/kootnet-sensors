@@ -264,7 +264,7 @@ def set_active_online_services():
     logger.network_logger.debug("* Set 'Active Online Services' Accessed by " + str(request.remote_addr))
 
     active_state = 0
-    if request.form.get("service_state") is not None:
+    if request.form.get("service_state") == "1":
         active_state = 1
 
     send_interval = 10.0
