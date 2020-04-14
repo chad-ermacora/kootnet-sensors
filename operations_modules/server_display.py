@@ -24,6 +24,8 @@ from sensor_modules import sensor_access
 
 def scroll_interval_readings_on_display():
     logger.primary_logger.info(" -- Sensor Display Server Started")
+    sensor_access.display_message("KS-Sensors Recording Started")
+    sleep(app_config_access.primary_config.sleep_duration_interval)
     while True:
         message = "CPU: " + str(sensor_access.get_cpu_temperature()) + "°C "
         message += "ENV: " + str(sensor_access.get_sensor_temperature()) + "°C "

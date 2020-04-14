@@ -109,3 +109,4 @@ venv.bak/
 /http_server/ssl_files/custom_upload_certificate.crt
 /http_server/ssl_files/custom_upload_key.key
 /http_server/ssl_files/old_key.key
+/.idea/statistic.xml

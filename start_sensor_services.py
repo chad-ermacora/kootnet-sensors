@@ -84,7 +84,6 @@ if running_with_root and app_config_access.installed_sensors.no_sensors is False
     if app_config_access.open_sense_map_config.open_sense_map_enabled:
         text_name = "Open Sense Map"
         app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_open_sense_map, thread_name=text_name)
-    sensor_access.display_message("KS-Sensors Recording Started")
 else:
     if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
