@@ -20,31 +20,24 @@ from os import geteuid
 from operations_modules import logger
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
-
 if geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
-    primary_config = CreatePrimaryConfiguration()
-    trigger_variances = CreateTriggerVariancesConfiguration()
-    sensor_control_config = CreateSensorControlConfiguration()
-    weather_underground_config = CreateWeatherUndergroundConfiguration()
-    luftdaten_config = CreateLuftdatenConfiguration()
-    open_sense_map_config = CreateOpenSenseMapConfiguration()
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = CreateInstalledSensorsConfiguration()
-    primary_config = CreatePrimaryConfiguration()
-    trigger_variances = CreateTriggerVariancesConfiguration()
-    sensor_control_config = CreateSensorControlConfiguration()
-    weather_underground_config = CreateWeatherUndergroundConfiguration()
-    luftdaten_config = CreateLuftdatenConfiguration()
-    open_sense_map_config = CreateOpenSenseMapConfiguration()
 
-# Plotly Configuration Variables
-plotly_theme = "plotly_dark"
+primary_config = CreatePrimaryConfiguration()
+display_config = CreateDisplayConfiguration()
+trigger_variances = CreateTriggerVariancesConfiguration()
+sensor_control_config = CreateSensorControlConfiguration()
+weather_underground_config = CreateWeatherUndergroundConfiguration()
+luftdaten_config = CreateLuftdatenConfiguration()
+open_sense_map_config = CreateOpenSenseMapConfiguration()

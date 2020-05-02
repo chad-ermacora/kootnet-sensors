@@ -221,6 +221,31 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+class CreateDisplaySensorsVariables:
+    """ Create a object instance holding Sensor Display Variables (Such as sensor types to display). """
+
+    def __init__(self):
+        self.display_type_numerical = "Numerical"
+        self.display_type_graph = "Graph"
+
+        self.sensor_uptime = "SensorUpTime"
+        self.system_temperature = "SystemTemp"
+        self.env_temperature = "EnvironmentTemp"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "Gas"
+        self.particulate_matter = "Particulate_Matter"
+        self.lumen = "Lumen"
+        self.color = "Color"
+        self.ultra_violet = "Ultra_Violet"
+
+        self.accelerometer = "Acc"
+        self.magnetometer = "Mag"
+        self.gyroscope = "Gyro"
+
+
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
                  "RestartService": "systemctl daemon-reload ; systemctl restart KootnetSensors.service",
@@ -253,6 +278,9 @@ total_ram_memory_size_type = " MB"
 # Static variables
 command_data_separator = "[new_data_section]"
 no_sensor_present = "NoSensor"
+
+# Plotly Configuration Variables
+plotly_theme = "plotly_dark"
 
 # Network Variables
 hostname = ""

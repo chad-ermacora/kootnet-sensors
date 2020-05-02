@@ -21,7 +21,6 @@ from multiprocessing import Process
 from operations_modules import app_cached_variables
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_config_access
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
 try:
@@ -31,7 +30,7 @@ except ImportError as import_error:
     log_message = "**** Missing Plotly Graph Dependencies - There may be unintended side effects as a result: "
     logger.primary_logger.error(log_message + str(import_error))
 
-plotly_io.templates.default = app_config_access.plotly_theme
+plotly_io.templates.default = app_cached_variables.plotly_theme
 
 
 def create_plotly_graph(new_graph_data):
