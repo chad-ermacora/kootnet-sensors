@@ -28,14 +28,15 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 1
-        self.config_settings_names = ["Enable Display"]
+        self.valid_setting_count = 3
+        self.config_settings_names = ["Display every X Minutes", "Display Type", "Sensors to Display"]
 
         self.display_variables = CreateDisplaySensorsVariables()
 
         self.minutes_between_display = 60
         self.display_type = self.display_variables.display_type_numerical
 
+        self.sensors_to_display = [self.display_variables.sensor_uptime]
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -53,50 +54,83 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.minutes_between_display = 60
         if html_request.form.get("display_interval_delay_min") is not None:
             try:
-                new_minutes = html_request.form.get("display_interval_delay_min")
-                if type(new_minutes) is int:
-                    print("Interval is a int")
-                    self.minutes_between_display = new_minutes
+                self.minutes_between_display = int(html_request.form.get("display_interval_delay_min"))
             except Exception as error:
                 logger.network_logger.error("Error setting Display delay minutes: " + str(error))
                 self.minutes_between_display = 60
 
+        if html_request.form.get("display_type") is not None:
+            self.display_type = html_request.form.get("display_type")
+
+        sensors_to_display = []
+
+        if html_request.form.get("DisplaySensorUptime") is not None:
+            sensors_to_display.append(self.display_variables.sensor_uptime)
+        if html_request.form.get("DisplayCPUTemp") is not None:
+            sensors_to_display.append(self.display_variables.system_temperature)
+        if html_request.form.get("DisplayEnvTemp") is not None:
+            sensors_to_display.append(self.display_variables.env_temperature)
+        if html_request.form.get("DisplayPressure") is not None:
+            sensors_to_display.append(self.display_variables.pressure)
+        if html_request.form.get("DisplayAltitude") is not None:
+            sensors_to_display.append(self.display_variables.altitude)
+        if html_request.form.get("DisplayHumidity") is not None:
+            sensors_to_display.append(self.display_variables.humidity)
+        if html_request.form.get("DisplayDistance") is not None:
+            sensors_to_display.append(self.display_variables.distance)
+        if html_request.form.get("DisplayGas") is not None:
+            sensors_to_display.append(self.display_variables.gas)
+        if html_request.form.get("DisplayParticulateMatter") is not None:
+            sensors_to_display.append(self.display_variables.particulate_matter)
+        if html_request.form.get("DisplayLumen") is not None:
+            sensors_to_display.append(self.display_variables.lumen)
+        if html_request.form.get("DisplayColours") is not None:
+            sensors_to_display.append(self.display_variables.color)
+        if html_request.form.get("DisplayUltraViolet") is not None:
+            sensors_to_display.append(self.display_variables.ultra_violet)
+        if html_request.form.get("DisplayAccelerometer") is not None:
+            sensors_to_display.append(self.display_variables.accelerometer)
+        if html_request.form.get("DisplayMagnetometer") is not None:
+            sensors_to_display.append(self.display_variables.magnetometer)
+        if html_request.form.get("DisplayGyroscope") is not None:
+            sensors_to_display.append(self.display_variables.gyroscope)
+        self.sensors_to_display = sensors_to_display
         self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
-                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
-                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
-                                str(self.temperature_offset), str(self.web_portal_port)]
+        sensors_str = ""
+        for config in self.sensors_to_display:
+            sensors_str += str(config) + ","
+        sensors_str = sensors_str[:-1].strip()
+        self.config_settings = [str(self.minutes_between_display), str(self.display_type), sensors_str]
 
     def _update_variables_from_settings_list(self):
         bad_load = 0
         try:
-            self.enable_debug_logging = int(self.config_settings[0])
-            self.enable_display = int(self.config_settings[1])
-            self.enable_interval_recording = int(self.config_settings[2])
-            self.enable_trigger_recording = int(self.config_settings[3])
-            self.sleep_duration_interval = float(self.config_settings[4])
-            self.enable_custom_temp = int(self.config_settings[5])
-            self.temperature_offset = float(self.config_settings[6])
+            self.minutes_between_display = int(self.config_settings[0])
+            self.display_type = self.config_settings[1]
+            temp_sensors_list = self.config_settings[2].split(",")
+            self.sensors_to_display = []
+            for sensor in temp_sensors_list:
+                self.sensors_to_display.append(sensor)
         except Exception as error:
             if self.load_from_file:
                 log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
                 logger.primary_logger.error(log_msg + str(error))
             bad_load += 100
 
-        if bad_load < 99:
-            try:
-                self.web_portal_port = int(self.config_settings[7])
-            except Exception as error:
-                if self.load_from_file:
-                    logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
-                    logger.primary_logger.debug(str(error))
-                bad_load += 1
+        # if bad_load < 99:
+        #     try:
+        #         self.web_portal_port = int(self.config_settings[7])
+        #     except Exception as error:
+        #         if self.load_from_file:
+        #             logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
+        #             logger.primary_logger.debug(str(error))
+        #         bad_load += 1
 
         if bad_load:
             self._update_configuration_settings_list()
             if self.load_from_file:
-                logger.primary_logger.info("Saving Primary Configuration.")
+                logger.primary_logger.info("Saving Display Configuration.")
                 self.save_config_to_file()

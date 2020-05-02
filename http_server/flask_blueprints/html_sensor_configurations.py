@@ -25,6 +25,8 @@ from sensor_modules import sensor_access
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 
+display_variables = app_cached_variables.CreateDisplaySensorsVariables()
+
 
 @html_sensor_config_routes.route("/ConfigurationsHTML")
 @auth.login_required
@@ -79,6 +81,59 @@ def html_edit_configurations():
             osm_enable_checked = "checked"
             osm_disabled = ""
 
+        display_numerical_checked = ""
+        display_graph_checked = ""
+        if app_config_access.display_config.display_type == display_variables.display_type_numerical:
+            display_numerical_checked = "checked"
+        else:
+            display_graph_checked = "checked"
+
+        display_sensor_uptime = ""
+        if display_variables.sensor_uptime in app_config_access.display_config.sensors_to_display:
+            display_sensor_uptime = "checked"
+        display_sensor_cpu_temperature = ""
+        if display_variables.system_temperature in app_config_access.display_config.sensors_to_display:
+            display_sensor_cpu_temperature = "checked"
+        display_sensor_env_temperature = ""
+        if display_variables.env_temperature in app_config_access.display_config.sensors_to_display:
+            display_sensor_env_temperature = "checked"
+        display_sensor_pressure = ""
+        if display_variables.pressure in app_config_access.display_config.sensors_to_display:
+            display_sensor_pressure = "checked"
+        display_sensor_altitude = ""
+        if display_variables.altitude in app_config_access.display_config.sensors_to_display:
+            display_sensor_altitude = "checked"
+        display_sensor_humidity = ""
+        if display_variables.humidity in app_config_access.display_config.sensors_to_display:
+            display_sensor_humidity = "checked"
+        display_sensor_distance = ""
+        if display_variables.distance in app_config_access.display_config.sensors_to_display:
+            display_sensor_distance = "checked"
+        display_sensor_gas = ""
+        if display_variables.gas in app_config_access.display_config.sensors_to_display:
+            display_sensor_gas = "checked"
+        display_sensor_particulate_matter = ""
+        if display_variables.particulate_matter in app_config_access.display_config.sensors_to_display:
+            display_sensor_particulate_matter = "checked"
+        display_sensor_lumen = ""
+        if display_variables.lumen in app_config_access.display_config.sensors_to_display:
+            display_sensor_lumen = "checked"
+        display_sensor_colors = ""
+        if display_variables.color in app_config_access.display_config.sensors_to_display:
+            display_sensor_colors = "checked"
+        display_sensor_ultra_violet = ""
+        if display_variables.ultra_violet in app_config_access.display_config.sensors_to_display:
+            display_sensor_ultra_violet = "checked"
+        display_sensor_acc = ""
+        if display_variables.accelerometer in app_config_access.display_config.sensors_to_display:
+            display_sensor_acc = "checked"
+        display_sensor_mag = ""
+        if display_variables.magnetometer in app_config_access.display_config.sensors_to_display:
+            display_sensor_mag = "checked"
+        display_sensor_gyro = ""
+        if display_variables.gyroscope in app_config_access.display_config.sensors_to_display:
+            display_sensor_gyro = "checked"
+
         return render_template("edit_configurations.html",
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
@@ -112,6 +167,24 @@ def html_edit_configurations():
                                Pimoroni11x7LEDMatrix=get_html_checkbox_state(sensors_now.pimoroni_matrix_11x7),
                                PimoroniSPILCD10_96=get_html_checkbox_state(sensors_now.pimoroni_st7735),
                                PimoroniMonoOLED128x128BW=get_html_checkbox_state(sensors_now.pimoroni_mono_oled_luma),
+                               DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
+                               DisplayNumericalChecked=display_numerical_checked,
+                               DisplayGraphChecked=display_graph_checked,
+                               DisplayUptimeChecked=display_sensor_uptime,
+                               DisplayCPUTempChecked=display_sensor_cpu_temperature,
+                               DisplayEnvTempChecked=display_sensor_env_temperature,
+                               DisplayPressureChecked=display_sensor_pressure,
+                               DisplayAltitudeChecked=display_sensor_altitude,
+                               DisplayHumidityChecked=display_sensor_humidity,
+                               DisplayDistanceChecked=display_sensor_distance,
+                               DisplayGASChecked=display_sensor_gas,
+                               DisplayPMChecked=display_sensor_particulate_matter,
+                               DisplayLumenChecked=display_sensor_lumen,
+                               DisplayColoursChecked=display_sensor_colors,
+                               DisplayUltraVioletChecked=display_sensor_ultra_violet,
+                               DisplayAccChecked=display_sensor_acc,
+                               DisplayMagChecked=display_sensor_mag,
+                               DisplayGyroChecked=display_sensor_gyro,
                                CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
                                DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
                                CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
@@ -298,6 +371,22 @@ def html_set_installed_sensors():
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
             return message_and_return("Bad Installed Sensors POST Request", url="/ConfigurationsHTML")
+
+
+@html_sensor_config_routes.route("/EditDisplayConfiguration", methods=["POST"])
+@auth.login_required
+def html_set_display_config():
+    logger.network_logger.debug("** HTML Apply - Display Configuration - Source " + str(request.remote_addr))
+    if request.method == "POST":
+        try:
+            app_config_access.display_config.update_with_html_request(request)
+            app_config_access.display_config.save_config_to_file()
+            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
+            # thread_function(sensor_access.restart_services)
+            return return_page
+        except Exception as error:
+            logger.primary_logger.error("HTML Apply - Display Configuration - Error: " + str(error))
+            return message_and_return("Bad Display Configuration POST Request", url="/ConfigurationsHTML")
 
 
 @html_sensor_config_routes.route("/EditTriggerVariances", methods=["POST"])

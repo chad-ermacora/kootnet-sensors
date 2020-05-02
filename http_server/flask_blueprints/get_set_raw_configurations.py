@@ -60,6 +60,31 @@ def set_installed_sensors():
     return "Failed"
 
 
+@html_get_config_routes.route("/GetDisplayConfiguration")
+def get_display_config():
+    logger.network_logger.debug("* Display Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.display_config.get_config_as_str()
+
+
+@html_get_config_routes.route("/SetDisplayConfiguration", methods=["PUT"])
+@auth.login_required
+def set_display_config():
+    logger.network_logger.info("** Display Configuration Set by " + str(request.remote_addr))
+    try:
+        if request.form.get("test_run"):
+            app_config_access.display_config.load_from_file = False
+
+        app_config_access.display_config.set_config_with_str(request.form.get("command_data"))
+
+        if request.form.get("test_run") is None:
+            app_config_access.display_config.save_config_to_file()
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Display Configuration from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
+
+
 @html_get_config_routes.route("/GetVarianceConfiguration")
 def get_variance_config():
     logger.network_logger.debug("* Variance Configuration Sent to " + str(request.remote_addr))

@@ -225,8 +225,8 @@ class CreateDisplaySensorsVariables:
     """ Create a object instance holding Sensor Display Variables (Such as sensor types to display). """
 
     def __init__(self):
-        self.display_type_numerical = "Numerical"
-        self.display_type_graph = "Graph"
+        self.display_type_numerical = "numerical"
+        self.display_type_graph = "graph"
 
         self.sensor_uptime = "SensorUpTime"
         self.system_temperature = "SystemTemp"
