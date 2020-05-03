@@ -36,7 +36,21 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.minutes_between_display = 60
         self.display_type = self.display_variables.display_type_numerical
 
-        self.sensors_to_display = [self.display_variables.sensor_uptime]
+        self.sensors_to_display = {self.display_variables.sensor_uptime: False,
+                                   self.display_variables.system_temperature: False,
+                                   self.display_variables.env_temperature: False,
+                                   self.display_variables.pressure: False,
+                                   self.display_variables.altitude: False,
+                                   self.display_variables.humidity: False,
+                                   self.display_variables.distance: False,
+                                   self.display_variables.gas: False,
+                                   self.display_variables.particulate_matter: False,
+                                   self.display_variables.lumen: False,
+                                   self.display_variables.color: False,
+                                   self.display_variables.ultra_violet: False,
+                                   self.display_variables.accelerometer: False,
+                                   self.display_variables.magnetometer: False,
+                                   self.display_variables.gyroscope: False}
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -50,58 +64,53 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Display configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Display Configuration Update Check")
-
-        self.minutes_between_display = 60
+        self.__init__(load_from_file=False)
         if html_request.form.get("display_interval_delay_min") is not None:
             try:
                 self.minutes_between_display = int(html_request.form.get("display_interval_delay_min"))
             except Exception as error:
                 logger.network_logger.error("Error setting Display delay minutes: " + str(error))
-                self.minutes_between_display = 60
 
         if html_request.form.get("display_type") is not None:
             self.display_type = html_request.form.get("display_type")
 
-        sensors_to_display = []
-
         if html_request.form.get("DisplaySensorUptime") is not None:
-            sensors_to_display.append(self.display_variables.sensor_uptime)
+            self.sensors_to_display[self.display_variables.sensor_uptime] = True
         if html_request.form.get("DisplayCPUTemp") is not None:
-            sensors_to_display.append(self.display_variables.system_temperature)
+            self.sensors_to_display[self.display_variables.system_temperature] = True
         if html_request.form.get("DisplayEnvTemp") is not None:
-            sensors_to_display.append(self.display_variables.env_temperature)
+            self.sensors_to_display[self.display_variables.env_temperature] = True
         if html_request.form.get("DisplayPressure") is not None:
-            sensors_to_display.append(self.display_variables.pressure)
+            self.sensors_to_display[self.display_variables.pressure] = True
         if html_request.form.get("DisplayAltitude") is not None:
-            sensors_to_display.append(self.display_variables.altitude)
+            self.sensors_to_display[self.display_variables.altitude] = True
         if html_request.form.get("DisplayHumidity") is not None:
-            sensors_to_display.append(self.display_variables.humidity)
+            self.sensors_to_display[self.display_variables.humidity] = True
         if html_request.form.get("DisplayDistance") is not None:
-            sensors_to_display.append(self.display_variables.distance)
+            self.sensors_to_display[self.display_variables.distance] = True
         if html_request.form.get("DisplayGas") is not None:
-            sensors_to_display.append(self.display_variables.gas)
+            self.sensors_to_display[self.display_variables.gas] = True
         if html_request.form.get("DisplayParticulateMatter") is not None:
-            sensors_to_display.append(self.display_variables.particulate_matter)
+            self.sensors_to_display[self.display_variables.particulate_matter] = True
         if html_request.form.get("DisplayLumen") is not None:
-            sensors_to_display.append(self.display_variables.lumen)
+            self.sensors_to_display[self.display_variables.lumen] = True
         if html_request.form.get("DisplayColours") is not None:
-            sensors_to_display.append(self.display_variables.color)
+            self.sensors_to_display[self.display_variables.color] = True
         if html_request.form.get("DisplayUltraViolet") is not None:
-            sensors_to_display.append(self.display_variables.ultra_violet)
+            self.sensors_to_display[self.display_variables.ultra_violet] = True
         if html_request.form.get("DisplayAccelerometer") is not None:
-            sensors_to_display.append(self.display_variables.accelerometer)
+            self.sensors_to_display[self.display_variables.accelerometer] = True
         if html_request.form.get("DisplayMagnetometer") is not None:
-            sensors_to_display.append(self.display_variables.magnetometer)
+            self.sensors_to_display[self.display_variables.magnetometer] = True
         if html_request.form.get("DisplayGyroscope") is not None:
-            sensors_to_display.append(self.display_variables.gyroscope)
-        self.sensors_to_display = sensors_to_display
+            self.sensors_to_display[self.display_variables.gyroscope] = True
         self._update_configuration_settings_list()
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         sensors_str = ""
         for config in self.sensors_to_display:
-            sensors_str += str(config) + ","
+            sensors_str += str(config) + ":" + str(self.sensors_to_display[config]) + ","
         sensors_str = sensors_str[:-1].strip()
         self.config_settings = [str(self.minutes_between_display), str(self.display_type), sensors_str]
 
@@ -111,9 +120,12 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             self.minutes_between_display = int(self.config_settings[0])
             self.display_type = self.config_settings[1]
             temp_sensors_list = self.config_settings[2].split(",")
-            self.sensors_to_display = []
             for sensor in temp_sensors_list:
-                self.sensors_to_display.append(sensor)
+                sensor_split = sensor.split(":")
+                if str(sensor_split[1]).strip() == "True":
+                    self.sensors_to_display[str(sensor_split[0]).strip()] = True
+                else:
+                    self.sensors_to_display[str(sensor_split[0]).strip()] = False
         except Exception as error:
             if self.load_from_file:
                 log_msg = "Invalid Settings detected for " + self.config_file_location + ": "

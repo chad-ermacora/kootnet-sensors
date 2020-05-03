@@ -40,36 +40,36 @@ def scroll_interval_readings_on_display():
 def get_numerical_display_text():
     text_message = ""
 
-    if display_variables.sensor_uptime in app_config_access.display_config.sensors_to_display:
+    if app_config_access.display_config.sensors_to_display[display_variables.sensor_uptime]:
         text_message += "Uptime: " + str(sensor_access.get_uptime_minutes())
-    if display_variables.system_temperature in app_config_access.display_config.sensors_to_display:
-        text_message += "CPU Temp: " + str(sensor_access.get_cpu_temperature())
-    if display_variables.env_temperature in app_config_access.display_config.sensors_to_display:
-        text_message += "Env Temp: " + str(sensor_access.get_sensor_temperature())
-    if display_variables.pressure in app_config_access.display_config.sensors_to_display:
-        text_message += "Pressure: " + str(sensor_access.get_pressure())
-    if display_variables.altitude in app_config_access.display_config.sensors_to_display:
-        text_message += "Altitude: " + str(sensor_access.get_altitude())
-    if display_variables.humidity in app_config_access.display_config.sensors_to_display:
-        text_message += "Humidity: " + str(sensor_access.get_humidity())
-    if display_variables.distance in app_config_access.display_config.sensors_to_display:
-        text_message += "Distance: " + str(sensor_access.get_distance())
-    if display_variables.gas in app_config_access.display_config.sensors_to_display:
-        text_message += "GAS: " + str(sensor_access.get_gas_resistance_index())
-    if display_variables.particulate_matter in app_config_access.display_config.sensors_to_display:
-        text_message += "PM: " + str(sensor_access.get_particulate_matter_1())
-    if display_variables.lumen in app_config_access.display_config.sensors_to_display:
-        text_message += "Lumen: " + str(sensor_access.get_lumen())
-    if display_variables.color in app_config_access.display_config.sensors_to_display:
-        text_message += "Color: " + str(sensor_access.get_ems())
-    if display_variables.ultra_violet in app_config_access.display_config.sensors_to_display:
-        text_message += "UV: " + str(sensor_access.get_ultra_violet_index())
-    if display_variables.accelerometer in app_config_access.display_config.sensors_to_display:
-        text_message += "Acc: " + str(sensor_access.get_accelerometer_xyz())
-    if display_variables.magnetometer in app_config_access.display_config.sensors_to_display:
-        text_message += "Mag: " + str(sensor_access.get_magnetometer_xyz())
-    if display_variables.gyroscope in app_config_access.display_config.sensors_to_display:
-        text_message += "Gyro: " + str(sensor_access.get_gyroscope_xyz())
+    if app_config_access.display_config.sensors_to_display[display_variables.system_temperature]:
+        text_message += " CPU Temp: " + str(sensor_access.get_cpu_temperature())
+    if app_config_access.display_config.sensors_to_display[display_variables.env_temperature]:
+        text_message += " Env Temp: " + str(sensor_access.get_sensor_temperature())
+    if app_config_access.display_config.sensors_to_display[display_variables.pressure]:
+        text_message += " Pressure: " + str(sensor_access.get_pressure())
+    if app_config_access.display_config.sensors_to_display[display_variables.altitude]:
+        text_message += " Altitude: " + str(sensor_access.get_altitude())
+    if app_config_access.display_config.sensors_to_display[display_variables.humidity]:
+        text_message += " Humidity: " + str(sensor_access.get_humidity())
+    if app_config_access.display_config.sensors_to_display[display_variables.distance]:
+        text_message += " Distance: " + str(sensor_access.get_distance())
+    if app_config_access.display_config.sensors_to_display[display_variables.gas]:
+        text_message += " GAS: " + str(sensor_access.get_gas_resistance_index())
+    if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
+        text_message += " PM: " + str(sensor_access.get_particulate_matter_1())
+    if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
+        text_message += " Lumen: " + str(sensor_access.get_lumen())
+    if app_config_access.display_config.sensors_to_display[display_variables.color]:
+        text_message += " Color: " + str(sensor_access.get_ems())
+    if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
+        text_message += " UV: " + str(sensor_access.get_ultra_violet_index())
+    if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
+        text_message += " Acc: " + str(sensor_access.get_accelerometer_xyz())
+    if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:
+        text_message += " Mag: " + str(sensor_access.get_magnetometer_xyz())
+    if app_config_access.display_config.sensors_to_display[display_variables.gyroscope]:
+        text_message += " Gyro: " + str(sensor_access.get_gyroscope_xyz())
     return text_message
 
 

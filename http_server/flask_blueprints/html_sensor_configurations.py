@@ -89,49 +89,49 @@ def html_edit_configurations():
             display_graph_checked = "checked"
 
         display_sensor_uptime = ""
-        if display_variables.sensor_uptime in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.sensor_uptime]:
             display_sensor_uptime = "checked"
         display_sensor_cpu_temperature = ""
-        if display_variables.system_temperature in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.system_temperature]:
             display_sensor_cpu_temperature = "checked"
         display_sensor_env_temperature = ""
-        if display_variables.env_temperature in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.env_temperature]:
             display_sensor_env_temperature = "checked"
         display_sensor_pressure = ""
-        if display_variables.pressure in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.pressure]:
             display_sensor_pressure = "checked"
         display_sensor_altitude = ""
-        if display_variables.altitude in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.altitude]:
             display_sensor_altitude = "checked"
         display_sensor_humidity = ""
-        if display_variables.humidity in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.humidity]:
             display_sensor_humidity = "checked"
         display_sensor_distance = ""
-        if display_variables.distance in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.distance]:
             display_sensor_distance = "checked"
         display_sensor_gas = ""
-        if display_variables.gas in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.gas]:
             display_sensor_gas = "checked"
         display_sensor_particulate_matter = ""
-        if display_variables.particulate_matter in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
             display_sensor_particulate_matter = "checked"
         display_sensor_lumen = ""
-        if display_variables.lumen in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
             display_sensor_lumen = "checked"
         display_sensor_colors = ""
-        if display_variables.color in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.color]:
             display_sensor_colors = "checked"
         display_sensor_ultra_violet = ""
-        if display_variables.ultra_violet in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
             display_sensor_ultra_violet = "checked"
         display_sensor_acc = ""
-        if display_variables.accelerometer in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
             display_sensor_acc = "checked"
         display_sensor_mag = ""
-        if display_variables.magnetometer in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:
             display_sensor_mag = "checked"
         display_sensor_gyro = ""
-        if display_variables.gyroscope in app_config_access.display_config.sensors_to_display:
+        if app_config_access.display_config.sensors_to_display[display_variables.gyroscope]:
             display_sensor_gyro = "checked"
 
         return render_template("edit_configurations.html",
@@ -593,6 +593,7 @@ def html_raw_configurations_view():
     return render_template("view_raw_configurations.html",
                            MainConfiguration=get_file_content(file_locations.primary_config),
                            InstalledSensorsConfiguration=get_file_content(file_locations.installed_sensors_config),
+                           DisplayConfiguration=get_file_content(file_locations.display_config),
                            TriggerConfiguration=get_file_content(file_locations.trigger_variances_config),
                            SensorControlConfiguration=get_file_content(file_locations.html_sensor_control_config),
                            NetworkConfiguration=get_file_content(file_locations.dhcpcd_config_file),
