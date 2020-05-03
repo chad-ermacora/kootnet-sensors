@@ -20,7 +20,7 @@ import requests
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_config_access import primary_config, installed_sensors, open_sense_map_config
+from operations_modules.app_config_access import installed_sensors, open_sense_map_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
@@ -31,21 +31,12 @@ def start_open_sense_map():
         url = open_sense_map_config.open_sense_map_main_url_start + "/" + open_sense_map_config.sense_box_id + "/data"
         url_header = {"content-type": "application/json"}
 
-        round_decimal_to = 5
         while True:
             body_json = {}
             try:
                 if installed_sensors.has_env_temperature:
                     if open_sense_map_config.temperature_id != "":
-                        try:
-                            env_temperature = sensor_access.get_sensor_temperature()
-                            if primary_config.enable_custom_temp:
-                                env_temperature = round(env_temperature +
-                                                        primary_config.temperature_offset,
-                                                        round_decimal_to)
-                        except Exception as error:
-                            logger.network_logger.warning("Open Sense Map - Env Temperature Error: " + str(error))
-                            env_temperature = 0.0
+                        env_temperature = sensor_access.get_sensor_temperature()
                         body_json[open_sense_map_config.temperature_id] = str(env_temperature)
 
                 if installed_sensors.has_pressure:

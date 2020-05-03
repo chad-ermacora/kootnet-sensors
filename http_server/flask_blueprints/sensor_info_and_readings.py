@@ -135,17 +135,7 @@ def html_system_information():
 @html_sensor_info_readings_routes.route("/SensorReadings")
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
-    raw_temp = sensor_access.get_sensor_temperature()
-
-    adjusted_temp = "NA"
-    if raw_temp != app_cached_variables.no_sensor_present:
-        try:
-            if app_config_access.primary_config.enable_custom_temp:
-                adjusted_temp = round(raw_temp + app_config_access.primary_config.temperature_offset, 2)
-                adjusted_temp = str(adjusted_temp) + " °C"
-        except Exception as error:
-            logger.network_logger.error("Failed to calculate Adjusted Env Temp: " + str(error))
-
+    raw_temp = str(sensor_access.get_sensor_temperature(temperature_offset=False))
     temp_offset = "Disabled"
     if app_config_access.primary_config.enable_custom_temp:
         temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"
@@ -157,8 +147,8 @@ def html_sensors_readings():
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),
                            CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
-                           RAWEnvTemperature=str(raw_temp) + " °C",
-                           AdjustedEnvTemperature=str(adjusted_temp),
+                           RAWEnvTemperature=raw_temp + " °C",
+                           AdjustedEnvTemperature=str(sensor_access.get_sensor_temperature()) + " °C",
                            EnvTemperatureOffset=temp_offset,
                            Pressure=str(sensor_access.get_pressure()) + " hPa",
                            Altitude=str(sensor_access.get_altitude()) + " Meters",

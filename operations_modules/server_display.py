@@ -32,7 +32,7 @@ def scroll_interval_readings_on_display():
             sensor_access.display_message(get_numerical_display_text())
         else:
             sensor_access.display_message(get_graphed_sensors())
-        sleep(app_config_access.display_config.minutes_between_display)
+        sleep(app_config_access.display_config.minutes_between_display * 60)
 
 
 # TODO: Set multi sensor

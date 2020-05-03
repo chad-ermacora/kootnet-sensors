@@ -19,8 +19,7 @@
 import requests
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_config_access import installed_sensors, primary_config, luftdaten_config
-from operations_modules.app_validation_checks import valid_sensor_reading
+from operations_modules.app_config_access import installed_sensors, luftdaten_config
 from sensor_modules import sensor_access
 
 
@@ -50,7 +49,7 @@ def start_luftdaten():
 
 
 def _bmp280():
-    temperature = float(_get_temperature())
+    temperature = float(sensor_access.get_sensor_temperature())
     pressure = float(sensor_access.get_pressure()) * 100.0
 
     headers = {"X-PIN": "3",
@@ -70,7 +69,7 @@ def _bmp280():
 
 
 def _bme280():
-    temperature = _get_temperature()
+    temperature = sensor_access.get_sensor_temperature()
     pressure = sensor_access.get_pressure() * 100
 
     headers = {"X-PIN": "11",
@@ -108,14 +107,3 @@ def _pms5003():
         logger.network_logger.debug("Luftdaten - PMS5003 OK - Status Code: " + str(post_reply.status_code))
     else:
         logger.network_logger.warning("Luftdaten - PMS5003 Failed - Status Code: " + str(post_reply.status_code))
-
-
-def _get_temperature():
-    try:
-        temp_c = sensor_access.get_sensor_temperature()
-        if valid_sensor_reading(temp_c) and primary_config.enable_custom_temp:
-            temp_c = temp_c + primary_config.temperature_offset
-        return temp_c
-    except Exception as error:
-        logger.network_logger.warning("Luftdaten - Get Temperature Failed, returning 0.0: " + str(error))
-        return 0.0

@@ -186,7 +186,7 @@ def get_cpu_temperature():
     return temperature
 
 
-def get_sensor_temperature():
+def get_sensor_temperature(temperature_offset=True):
     """ Returns sensors Environmental temperature. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
@@ -202,6 +202,14 @@ def get_sensor_temperature():
         temperature = sensors_direct.rp_sense_hat_a.temperature()
     else:
         temperature = no_sensor_present
+
+    if temperature_offset and temperature != app_cached_variables.no_sensor_present:
+        if app_config_access.primary_config.enable_custom_temp:
+            try:
+                return temperature + app_config_access.primary_config.temperature_offset
+            except Exception as error:
+                logger.sensors_logger.warning("Invalid Temperature Offset")
+                logger.sensors_logger.debug(str(error))
     return temperature
 
 
@@ -252,8 +260,6 @@ def get_dew_point():
     variable_b = 237.7
 
     env_temp = get_sensor_temperature()
-    if app_config_access.primary_config.enable_custom_temp:
-        env_temp = env_temp + app_config_access.primary_config.temperature_offset
     humidity = get_humidity()
     if env_temp == no_sensor_present or humidity == no_sensor_present:
         return no_sensor_present

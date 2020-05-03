@@ -19,7 +19,7 @@
 import requests
 from time import sleep
 from operations_modules import logger, software_version
-from operations_modules.app_config_access import weather_underground_config, primary_config
+from operations_modules.app_config_access import weather_underground_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
@@ -82,9 +82,6 @@ def get_weather_underground_readings():
     return_readings_str = ""
 
     temp_c = sensor_access.get_sensor_temperature()
-    if primary_config.enable_custom_temp:
-        temp_c = temp_c + primary_config.temperature_offset
-
     if valid_sensor_reading(temp_c):
         try:
             temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
