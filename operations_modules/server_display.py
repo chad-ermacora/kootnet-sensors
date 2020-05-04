@@ -36,7 +36,6 @@ def scroll_interval_readings_on_display():
 
 
 # TODO: Set multi sensor
-# TODO: Add sensor check
 def get_numerical_display_text():
     text_message = ""
 
