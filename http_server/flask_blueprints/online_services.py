@@ -49,11 +49,12 @@ def html_edit_online_services_wu():
                 main_message += "Restarting Sensor Software"
                 thread_function(sensor_access.restart_services)
         else:
-            text_name = "Weather Underground"
-            function = start_weather_underground
-            app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
-            if request.form.get("enable_weather_underground") is not None:
-                main_message += "Starting Weather Underground"
+            if running_with_root:
+                text_name = "Weather Underground"
+                function = start_weather_underground
+                app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
+                if request.form.get("enable_weather_underground") is not None:
+                    main_message += "Starting Weather Underground"
     else:
         logger.primary_logger.error("HTML Edit Weather Underground set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
@@ -75,11 +76,12 @@ def html_edit_online_services_luftdaten():
                 main_message += "Restarting Sensor Software"
                 thread_function(sensor_access.restart_services)
         else:
-            text_name = "Luftdaten"
-            function = start_luftdaten
-            app_cached_variables.luftdaten_thread = CreateMonitoredThread(function, thread_name=text_name)
-            if request.form.get("enable_luftdaten") is not None:
-                main_message += "Starting Luftdaten"
+            if running_with_root:
+                text_name = "Luftdaten"
+                function = start_luftdaten
+                app_cached_variables.luftdaten_thread = CreateMonitoredThread(function, thread_name=text_name)
+                if request.form.get("enable_luftdaten") is not None:
+                    main_message += "Starting Luftdaten"
     else:
         logger.primary_logger.error("HTML Edit Luftdaten set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
@@ -101,11 +103,12 @@ def html_edit_online_services_open_sense_map():
                 main_message += "Restarting Sensor Software"
                 thread_function(sensor_access.restart_services)
         else:
-            text_name = "Open Sense Map"
-            function = start_open_sense_map
-            app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
-            if request.form.get("enable_open_sense_map") is not None:
-                main_message += "Starting Open Sense Map"
+            if running_with_root:
+                text_name = "Open Sense Map"
+                function = start_open_sense_map
+                app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
+                if request.form.get("enable_open_sense_map") is not None:
+                    main_message += "Starting Open Sense Map"
     else:
         logger.primary_logger.error("HTML Edit Open Sense Map set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
