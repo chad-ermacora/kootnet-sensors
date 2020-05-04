@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from os import geteuid
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
@@ -30,17 +31,20 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         installed_sensors_config = file_locations.installed_sensors_config
         CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 21
+        self.valid_setting_count = 22
         self.config_settings_names = ["Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
                                       "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680",
                                       "Pimoroni EnviroPHAT", "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003",
                                       "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948", "Pimoroni VL53L1X",
                                       "Pimoroni LTR-559", "Pimoroni VEML6075", "Pimoroni 11x7 LED Matrix",
                                       "Pimoroni 10.96'' SPI Colour LCD (160x80)",
-                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)"]
+                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Kootnet Dummy Sensors"]
 
         self.no_sensors = True
-        self.linux_system = 0
+
+        self.kootnet_dummy_sensor = 0
+
+        self.linux_system = 1
         self.raspberry_pi = 0
 
         self.raspberry_pi_sense_hat = 0
@@ -122,6 +126,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.pimoroni_st7735 = 1
             if html_request.form.get("pimoroni_mono_oled_luma") is not None:
                 self.pimoroni_mono_oled_luma = 1
+            if html_request.form.get("kootnet_dummy_sensor") is not None:
+                self.kootnet_dummy_sensor = 1
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self._update_configuration_settings_list()
@@ -138,6 +144,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 else:
                     new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
+            if geteuid():
+                return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
             return new_file_content[:-4]
         return "N/A"
 
@@ -165,6 +173,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_matrix_11x7 = int(self.config_settings[18])
             self.pimoroni_st7735 = int(self.config_settings[19])
             self.pimoroni_mono_oled_luma = int(self.config_settings[20])
+            self.kootnet_dummy_sensor = int(self.config_settings[21])
         except Exception as error:
             log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
             logger.primary_logger.error(log_msg + str(error))
@@ -189,10 +198,13 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                                 str(self.pimoroni_msa301), str(self.pimoroni_lsm303d), str(self.pimoroni_icm20948),
                                 str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
                                 str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
-                                str(self.pimoroni_mono_oled_luma)]
+                                str(self.pimoroni_mono_oled_luma), str(self.kootnet_dummy_sensor)]
 
     def _update_has_sensor_variables(self):
-        self._set_default_has_sensor_variables()
+        self._set_all_has_sensor_states(0)
+        if self.kootnet_dummy_sensor:
+            self._set_all_has_sensor_states(1)
+            self.has_real_time_clock = 0
         if self.raspberry_pi:
             self.has_cpu_temperature = 1
         if self.raspberry_pi_sense_hat:
@@ -276,29 +288,29 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.no_sensors = False
                 break
 
-    def _set_default_has_sensor_variables(self):
-        self.has_display = 0
-        self.has_real_time_clock = 0
-        self.has_cpu_temperature = 0
-        self.has_env_temperature = 0
-        self.has_pressure = 0
-        self.has_altitude = 0
-        self.has_humidity = 0
-        self.has_distance = 0
-        self.has_gas = 0
-        self.has_particulate_matter = 0
-        self.has_ultra_violet = 0
-        self.has_ultra_violet_comparator = 0
-        self.has_lumen = 0
-        self.has_red = 0
-        self.has_orange = 0
-        self.has_yellow = 0
-        self.has_green = 0
-        self.has_blue = 0
-        self.has_violet = 0
-        self.has_acc = 0
-        self.has_mag = 0
-        self.has_gyro = 0
+    def _set_all_has_sensor_states(self, set_sensor_state_as):
+        self.has_display = set_sensor_state_as
+        self.has_real_time_clock = set_sensor_state_as
+        self.has_cpu_temperature = set_sensor_state_as
+        self.has_env_temperature = set_sensor_state_as
+        self.has_pressure = set_sensor_state_as
+        self.has_altitude = set_sensor_state_as
+        self.has_humidity = set_sensor_state_as
+        self.has_distance = set_sensor_state_as
+        self.has_gas = set_sensor_state_as
+        self.has_particulate_matter = set_sensor_state_as
+        self.has_ultra_violet = set_sensor_state_as
+        self.has_ultra_violet_comparator = set_sensor_state_as
+        self.has_lumen = set_sensor_state_as
+        self.has_red = set_sensor_state_as
+        self.has_orange = set_sensor_state_as
+        self.has_yellow = set_sensor_state_as
+        self.has_green = set_sensor_state_as
+        self.has_blue = set_sensor_state_as
+        self.has_violet = set_sensor_state_as
+        self.has_acc = set_sensor_state_as
+        self.has_mag = set_sensor_state_as
+        self.has_gyro = set_sensor_state_as
 
     def get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """

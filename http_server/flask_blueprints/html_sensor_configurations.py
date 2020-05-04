@@ -1,5 +1,6 @@
 import os
 import shutil
+from os import geteuid
 from plotly import __version__ as plotly_version
 from gevent import __version__ as gevent_version
 from requests import __version__ as requests_version
@@ -26,6 +27,9 @@ from sensor_modules import sensor_access
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 
 display_variables = app_cached_variables.CreateDisplaySensorsVariables()
+running_with_root = True
+if geteuid():
+    running_with_root = False
 
 
 @html_sensor_config_routes.route("/ConfigurationsHTML")
@@ -147,6 +151,7 @@ def html_edit_configurations():
                                DisabledCustomTempOffset=custom_temp_offset_disabled,
                                temperature_offset=float(app_config_access.primary_config.temperature_offset),
                                GnuLinux=get_html_checkbox_state(sensors_now.linux_system),
+                               KootnetDummySensors=get_html_checkbox_state(sensors_now.kootnet_dummy_sensor),
                                RaspberryPi=get_html_checkbox_state(sensors_now.raspberry_pi),
                                SenseHAT=get_html_checkbox_state(sensors_now.raspberry_pi_sense_hat),
                                PimoroniBH1745=get_html_checkbox_state(sensors_now.pimoroni_bh1745),
@@ -349,8 +354,11 @@ def html_set_config_main():
         try:
             app_config_access.primary_config.update_with_html_request(request)
             app_config_access.primary_config.save_config_to_file()
-            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-            thread_function(sensor_access.restart_services)
+            page_msg = "Config Set, Please Restart Program"
+            if running_with_root:
+                page_msg = "Restarting Service, Please Wait ..."
+                thread_function(sensor_access.restart_services)
+            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
@@ -365,8 +373,11 @@ def html_set_installed_sensors():
         try:
             app_config_access.installed_sensors.update_with_html_request(request)
             app_config_access.installed_sensors.save_config_to_file()
-            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-            thread_function(sensor_access.restart_services)
+            page_msg = "Installed Sensors Set, Please Restart Program"
+            if running_with_root:
+                page_msg = "Restarting Service, Please Wait ..."
+                thread_function(sensor_access.restart_services)
+            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
@@ -381,8 +392,11 @@ def html_set_display_config():
         try:
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
-            return_page = message_and_return("Restarting Service, Please Wait ...", url="/ConfigurationsHTML")
-            # thread_function(sensor_access.restart_services)
+            page_msg = "Config Set, Please Restart Program"
+            if running_with_root:
+                page_msg = "Restarting Service, Please Wait ..."
+                thread_function(sensor_access.restart_services)
+            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Display Configuration - Error: " + str(error))

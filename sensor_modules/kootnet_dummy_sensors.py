@@ -1,5 +1,5 @@
 """"
-This module is a 'dummy' sensor of all sensors for testing
+This module is a 'dummy' sensor for testing
 It Returns randomly generated data that resembles real sensor data of it's type
 
 Created on Mon May 4 09:34:56 2020
@@ -9,7 +9,6 @@ Created on Mon May 4 09:34:56 2020
 import time
 import random
 from operations_modules import logger
-from operations_modules import app_config_access
 
 round_decimal_to = 5
 pause_sensor_during_access_sec = 0.005
@@ -24,28 +23,6 @@ class CreateDummySensors:
     def __init__(self):
         self.sensor_in_use = False
         self.display_in_use = False
-        app_config_access.installed_sensors.has_display = 1
-        app_config_access.installed_sensors.has_real_time_clock = 0
-        app_config_access.installed_sensors.has_cpu_temperature = 1
-        app_config_access.installed_sensors.has_env_temperature = 1
-        app_config_access.installed_sensors.has_pressure = 1
-        app_config_access.installed_sensors.has_altitude = 1
-        app_config_access.installed_sensors.has_humidity = 1
-        app_config_access.installed_sensors.has_distance = 1
-        app_config_access.installed_sensors.has_gas = 1
-        app_config_access.installed_sensors.has_particulate_matter = 1
-        app_config_access.installed_sensors.has_ultra_violet = 1
-        app_config_access.installed_sensors.has_ultra_violet_comparator = 1
-        app_config_access.installed_sensors.has_lumen = 1
-        app_config_access.installed_sensors.has_red = 1
-        app_config_access.installed_sensors.has_orange = 1
-        app_config_access.installed_sensors.has_yellow = 1
-        app_config_access.installed_sensors.has_green = 1
-        app_config_access.installed_sensors.has_blue = 1
-        app_config_access.installed_sensors.has_violet = 1
-        app_config_access.installed_sensors.has_acc = 1
-        app_config_access.installed_sensors.has_mag = 1
-        app_config_access.installed_sensors.has_gyro = 1
         logger.sensors_logger.debug("Kootnet Dummy Sensors Initialization - OK")
 
     def display_text(self, message):
@@ -63,7 +40,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=25, max_number=85)
 
@@ -72,7 +49,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=-20, max_number=65)
 
@@ -81,7 +58,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_int(min_number=650, max_number=1200)
 
@@ -90,7 +67,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=780, max_number=980)
 
@@ -99,7 +76,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=35, max_number=65)
 
@@ -108,7 +85,16 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
+        self.sensor_in_use = False
+        return self._get_random_float(min_number=25, max_number=133)
+
+    def gas_resistance_index(self):
+        """ Returns Gas Resistance Index as a float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=25, max_number=133)
 
@@ -117,7 +103,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=200, max_number=2200)
 
@@ -126,7 +112,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=10, max_number=135)
 
@@ -135,7 +121,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         ultra_a = self._get_random_float(min_number=0, max_number=65)
         ultra_b = self._get_random_float(min_number=0, max_number=65)
@@ -146,7 +132,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         ultra_a = self._get_random_float(min_number=0, max_number=65)
         ultra_b = self._get_random_float(min_number=0, max_number=65)
@@ -157,7 +143,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_float(min_number=5, max_number=1700)
 
@@ -166,7 +152,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return_six = self._get_random_tri_float(min_number=10, max_number=135) + \
                      self._get_random_tri_float(min_number=10, max_number=135)
@@ -177,7 +163,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=0, max_number=0)
 
@@ -186,7 +172,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=35, max_number=85)
 
@@ -195,7 +181,7 @@ class CreateDummySensors:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
-        time.sleep(random.randrange(senor_delay_min, sensor_delay_max))
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=0, max_number=135)
 

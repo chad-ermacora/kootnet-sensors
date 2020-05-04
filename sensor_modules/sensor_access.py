@@ -181,6 +181,8 @@ def get_cpu_temperature():
     """ Returns sensors CPU temperature. """
     if app_config_access.installed_sensors.raspberry_pi:
         temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        temperature = sensors_direct.dummy_sensors.cpu_temperature()
     else:
         temperature = no_sensor_present
     return temperature
@@ -200,6 +202,8 @@ def get_sensor_temperature(temperature_offset=True):
         temperature = sensors_direct.pimoroni_bme680_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         temperature = sensors_direct.rp_sense_hat_a.temperature()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        temperature = sensors_direct.dummy_sensors.temperature()
     else:
         temperature = no_sensor_present
 
@@ -225,6 +229,8 @@ def get_pressure():
         pressure = sensors_direct.pimoroni_bme680_a.pressure()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         pressure = sensors_direct.rp_sense_hat_a.pressure()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        pressure = sensors_direct.dummy_sensors.pressure()
     else:
         pressure = no_sensor_present
     return pressure
@@ -236,6 +242,8 @@ def get_altitude():
         altitude = sensors_direct.pimoroni_bmp280_a.altitude()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         altitude = sensors_direct.pimoroni_enviroplus_a.altitude()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        altitude = sensors_direct.dummy_sensors.altitude()
     else:
         altitude = no_sensor_present
     return altitude
@@ -249,6 +257,8 @@ def get_humidity():
         humidity = sensors_direct.pimoroni_bme680_a.humidity()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         humidity = sensors_direct.rp_sense_hat_a.humidity()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        humidity = sensors_direct.dummy_sensors.humidity()
     else:
         humidity = no_sensor_present
     return humidity
@@ -280,6 +290,8 @@ def get_distance():
         distance = sensors_direct.pimoroni_vl53l1x_a.distance()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
         distance = sensors_direct.pimoroni_ltr_559_a.distance()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        distance = sensors_direct.dummy_sensors.distance()
     else:
         distance = no_sensor_present
     return distance
@@ -291,6 +303,8 @@ def get_gas_resistance_index():
         index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
     elif app_config_access.installed_sensors.pimoroni_sgp30:
         index = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        index = sensors_direct.dummy_sensors.gas_resistance_index()
     else:
         index = no_sensor_present
     return index
@@ -300,6 +314,8 @@ def get_gas_oxidised():
     """ Returns sensors gas reading for oxidising. """
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         oxidising = sensors_direct.pimoroni_enviroplus_a.gas_data()[0]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        oxidising = sensors_direct.dummy_sensors.gas_data()[0]
     else:
         oxidising = no_sensor_present
     return oxidising
@@ -309,6 +325,8 @@ def get_gas_reduced():
     """ Returns sensors gas reading for reducing. """
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         reducing = sensors_direct.pimoroni_enviroplus_a.gas_data()[1]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        reducing = sensors_direct.dummy_sensors.gas_data()[1]
     else:
         reducing = no_sensor_present
     return reducing
@@ -318,6 +336,8 @@ def get_gas_nh3():
     """ Returns sensors gas reading for NH3. """
     if app_config_access.installed_sensors.pimoroni_enviroplus:
         nh3_reading = sensors_direct.pimoroni_enviroplus_a.gas_data()[2]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        nh3_reading = sensors_direct.dummy_sensors.gas_data()[2]
     else:
         nh3_reading = no_sensor_present
     return nh3_reading
@@ -328,6 +348,8 @@ def get_particulate_matter_1():
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm1_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[0]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        pm1_reading = sensors_direct.dummy_sensors.particulate_matter_data()[0]
     else:
         pm1_reading = no_sensor_present
     return pm1_reading
@@ -338,6 +360,8 @@ def get_particulate_matter_2_5():
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm2_5_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[1]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        pm2_5_reading = sensors_direct.dummy_sensors.particulate_matter_data()[1]
     else:
         pm2_5_reading = no_sensor_present
     return pm2_5_reading
@@ -348,6 +372,8 @@ def get_particulate_matter_10():
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm10_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[2]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        pm10_reading = sensors_direct.dummy_sensors.particulate_matter_data()[2]
     else:
         pm10_reading = no_sensor_present
     return pm10_reading
@@ -363,6 +389,8 @@ def get_lumen():
         lumen = sensors_direct.pimoroni_bh1745_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_ltr_559:
         lumen = sensors_direct.pimoroni_ltr_559_a.lumen()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        lumen = sensors_direct.dummy_sensors.lumen()
     else:
         lumen = no_sensor_present
     return lumen
@@ -376,6 +404,8 @@ def get_ems():
         colours = sensors_direct.pimoroni_enviro_a.ems()
     elif app_config_access.installed_sensors.pimoroni_bh1745:
         colours = sensors_direct.pimoroni_bh1745_a.ems()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        colours = sensors_direct.dummy_sensors.spectral_six_channel()
     else:
         colours = no_sensor_present
     return colours
@@ -394,6 +424,8 @@ def get_ultra_violet_a():
     """ Returns Ultra Violet A (UVA). """
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uva_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[0]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        uva_reading = sensors_direct.dummy_sensors.ultra_violet()[0]
     else:
         uva_reading = no_sensor_present
     return uva_reading
@@ -403,6 +435,8 @@ def get_ultra_violet_b():
     """ Returns Ultra Violet B (UVB). """
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uvb_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[1]
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        uvb_reading = sensors_direct.dummy_sensors.ultra_violet()[1]
     else:
         uvb_reading = no_sensor_present
     return uvb_reading
@@ -420,6 +454,8 @@ def get_accelerometer_xyz():
         xyz = sensors_direct.pimoroni_lsm303d_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
         xyz = sensors_direct.pimoroni_icm20948_a.accelerometer_xyz()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        xyz = sensors_direct.dummy_sensors.accelerometer_xyz()
     else:
         xyz = no_sensor_present
     return xyz
@@ -435,6 +471,8 @@ def get_magnetometer_xyz():
         xyz = sensors_direct.pimoroni_lsm303d_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
         xyz = sensors_direct.pimoroni_icm20948_a.magnetometer_xyz()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        xyz = sensors_direct.dummy_sensors.magnetometer_xyz()
     else:
         xyz = no_sensor_present
     return xyz
@@ -446,6 +484,8 @@ def get_gyroscope_xyz():
         xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
         xyz = sensors_direct.pimoroni_icm20948_a.gyroscope_xyz()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        xyz = sensors_direct.dummy_sensors.gyroscope_xyz()
     else:
         xyz = no_sensor_present
     return xyz
@@ -471,6 +511,8 @@ def display_message(text_msg):
                 display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
             elif app_config_access.installed_sensors.pimoroni_enviroplus:
                 display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
+            elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+                display_thread = Thread(target=sensors_direct.dummy_sensors.display_text, args=[text_msg])
             else:
                 display_thread = None
                 thread_ready = False

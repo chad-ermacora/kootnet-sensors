@@ -1,4 +1,3 @@
-from os import geteuid
 from time import strftime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
@@ -92,9 +91,6 @@ def html_system_information():
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
 
-    installed_sensors_text = "Sensors Disabled - Not running with root"
-    if geteuid() == 0:
-        installed_sensors_text = app_config_access.installed_sensors.get_installed_names_str()
     return render_template("sensor_information.html",
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
@@ -128,7 +124,7 @@ def html_system_information():
                            WeatherUndergroundService=weather_underground,
                            LuftdatenService=luftdaten,
                            OpenSenseMapService=open_sense_map,
-                           InstalledSensors=installed_sensors_text)
+                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")
@@ -136,9 +132,12 @@ def html_system_information():
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     raw_temp = str(sensor_access.get_sensor_temperature(temperature_offset=False))
+    adjusted_temp = raw_temp
     temp_offset = "Disabled"
     if app_config_access.primary_config.enable_custom_temp:
         temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"
+        if adjusted_temp != app_cached_variables.no_sensor_present:
+            adjusted_temp = round(float(adjusted_temp) + float(app_config_access.primary_config.temperature_offset), 5)
     red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
     return render_template("sensor_readings.html",
                            URLRedirect="SensorReadings",
@@ -148,7 +147,7 @@ def html_sensors_readings():
                            SystemUptime=sensor_access.get_uptime_str(),
                            CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
                            RAWEnvTemperature=raw_temp + " °C",
-                           AdjustedEnvTemperature=str(sensor_access.get_sensor_temperature()) + " °C",
+                           AdjustedEnvTemperature=str(adjusted_temp) + " °C",
                            EnvTemperatureOffset=temp_offset,
                            Pressure=str(sensor_access.get_pressure()) + " hPa",
                            Altitude=str(sensor_access.get_altitude()) + " Meters",

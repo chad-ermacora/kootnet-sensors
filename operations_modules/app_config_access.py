@@ -30,6 +30,11 @@ from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfig
 if geteuid() != 0:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
+    if CreateInstalledSensorsConfiguration().kootnet_dummy_sensor:
+        installed_sensors.kootnet_dummy_sensor = 1
+        installed_sensors.no_sensors = False
+        installed_sensors._update_configuration_settings_list()
+        installed_sensors._update_has_sensor_variables()
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = CreateInstalledSensorsConfiguration()

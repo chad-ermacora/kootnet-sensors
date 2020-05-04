@@ -20,6 +20,7 @@ from os import geteuid
 from operations_modules import logger
 from operations_modules import app_config_access
 from sensor_modules import linux_os
+from sensor_modules import kootnet_dummy_sensors
 
 operating_system_a = linux_os.CreateLinuxSystem()
 
@@ -27,9 +28,9 @@ if geteuid() == 0:
     # Raspberry Pi System is created first to enable I2C, SPI & Wifi
     # This is to ensure they are enabled for the other hardware Sensors
     from sensor_modules import raspberry_pi_system
-
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = raspberry_pi_system.CreateRPSystem()
+
     from sensor_modules import pimoroni_as7262
     from sensor_modules import pimoroni_bh1745
     from sensor_modules import pimoroni_mcp9600
@@ -95,3 +96,6 @@ if geteuid() == 0:
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
         pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
     logger.primary_logger.info(" -- Sensors Initialized")
+if app_config_access.installed_sensors.kootnet_dummy_sensor:
+    dummy_sensors = kootnet_dummy_sensors.CreateDummySensors()
+    logger.primary_logger.warning(" -- Dummy Sensor is being used")

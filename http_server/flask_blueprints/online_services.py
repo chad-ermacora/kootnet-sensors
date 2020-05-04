@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from os import geteuid
 from flask import Blueprint, request
 from operations_modules import logger, app_config_access, app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
@@ -28,6 +29,10 @@ from sensor_modules import sensor_access
 
 html_online_services_routes = Blueprint("html_online_services_routes", __name__)
 
+running_with_root = True
+if geteuid():
+    running_with_root = False
+
 
 @html_online_services_routes.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])
 @auth.login_required
@@ -39,9 +44,10 @@ def html_edit_online_services_wu():
         app_config_access.weather_underground_config.update_with_html_request(request)
         app_config_access.weather_underground_config.save_config_to_file()
         if app_cached_variables.weather_underground_thread is not None:
-            main_message += "Restarting Sensor Software"
             message2 = "New Weather Underground settings will take effect after the sensor software restarts"
-            thread_function(sensor_access.restart_services)
+            if running_with_root:
+                main_message += "Restarting Sensor Software"
+                thread_function(sensor_access.restart_services)
         else:
             text_name = "Weather Underground"
             function = start_weather_underground
@@ -64,9 +70,10 @@ def html_edit_online_services_luftdaten():
         app_config_access.luftdaten_config.update_with_html_request(request)
         app_config_access.luftdaten_config.save_config_to_file()
         if app_cached_variables.luftdaten_thread is not None:
-            main_message += "Restarting Sensor Software"
             message2 = "New Luftdaten settings will take effect after the sensor software restarts"
-            thread_function(sensor_access.restart_services)
+            if running_with_root:
+                main_message += "Restarting Sensor Software"
+                thread_function(sensor_access.restart_services)
         else:
             text_name = "Luftdaten"
             function = start_luftdaten
@@ -89,9 +96,10 @@ def html_edit_online_services_open_sense_map():
         app_config_access.open_sense_map_config.update_with_html_request(request)
         app_config_access.open_sense_map_config.save_config_to_file()
         if app_cached_variables.open_sense_map_thread is not None:
-            main_message += "Restarting Sensor Software"
             message2 = "New Open Sense Map settings will take effect after the sensor software restarts"
-            thread_function(sensor_access.restart_services)
+            if running_with_root:
+                main_message += "Restarting Sensor Software"
+                thread_function(sensor_access.restart_services)
         else:
             text_name = "Open Sense Map"
             function = start_open_sense_map
