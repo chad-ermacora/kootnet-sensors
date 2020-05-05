@@ -495,32 +495,33 @@ def display_message(text_msg):
     """ If a Supported Display is installed, shows provided text message on it. """
     text_msg = str(text_msg)
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + text_msg)
-    if app_config_access.installed_sensors.has_display and app_config_access.primary_config.enable_display:
-        message_length = len(text_msg)
+    message_length = len(text_msg)
 
-        thread_ready = True
-        if message_length > 0:
-            text_msg = "-- " + text_msg
-            if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_msg])
-            elif app_config_access.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text, args=[text_msg])
-            elif app_config_access.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text, args=[text_msg])
-            elif app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
-            elif app_config_access.installed_sensors.pimoroni_enviroplus:
-                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
-            elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-                display_thread = Thread(target=sensors_direct.dummy_sensors.display_text, args=[text_msg])
-            else:
-                display_thread = None
-                thread_ready = False
-            if thread_ready:
-                display_thread.daemon = True
-                display_thread.start()
-    else:
-        logger.primary_logger.debug("* Display Text: Sensor Display Disabled or not installed")
+    if message_length > 0:
+        text_msg = "-- " + text_msg
+        if app_config_access.installed_sensors.kootnet_dummy_sensor:
+            display_thread = Thread(target=sensors_direct.dummy_sensors.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+        if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+            display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+        if app_config_access.installed_sensors.pimoroni_matrix_11x7:
+            display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+        if app_config_access.installed_sensors.pimoroni_st7735:
+            display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+        if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
+            display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+        if app_config_access.installed_sensors.pimoroni_enviroplus:
+            display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
+            _start_daemon_thread(display_thread)
+
+
+def _start_daemon_thread(thread):
+    thread.daemon = True
+    thread.start()
 
 
 def start_special_sensor_interactive_services():
