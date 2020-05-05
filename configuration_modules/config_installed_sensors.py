@@ -68,16 +68,16 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
-        self._update_has_sensor_variables()
+        self.update_has_sensor_variables()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
-        self._update_has_sensor_variables()
+        self.update_has_sensor_variables()
 
     def update_with_html_request(self, html_request):
         """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
@@ -130,8 +130,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.kootnet_dummy_sensor = 1
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-        self._update_configuration_settings_list()
-        self._update_has_sensor_variables()
+        self.update_configuration_settings_list()
+        self.update_has_sensor_variables()
 
     def get_installed_names_str(self):
         """ Returns Installed Sensors as a String. """
@@ -184,12 +184,12 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             pass
 
         if bad_load:
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.linux_system), str(self.raspberry_pi), str(self.raspberry_pi_sense_hat),
                                 str(self.pimoroni_bh1745), str(self.pimoroni_as7262), str(self.pimoroni_mcp9600),
@@ -200,7 +200,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                                 str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
                                 str(self.pimoroni_mono_oled_luma), str(self.kootnet_dummy_sensor)]
 
-    def _update_has_sensor_variables(self):
+    def update_has_sensor_variables(self):
         self._set_all_has_sensor_states(0)
         if self.kootnet_dummy_sensor:
             self._set_all_has_sensor_states(1)

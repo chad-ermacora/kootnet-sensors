@@ -91,7 +91,8 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 0 = Pimoroni VEML6075
 1 = Pimoroni 11x7 LED Matrix
 0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
-1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)"""
+1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
+1 = Kootnet Dummy Sensors"""
 
     def set_settings_for_test1(self):
         self.linux_system = 0
@@ -117,7 +118,7 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 0
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.linux_system = 1
@@ -143,7 +144,7 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 1
         self.pimoroni_st7735 = 1
         self.pimoroni_mono_oled_luma = 1
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguration):
