@@ -45,15 +45,14 @@ from online_services_modules.weather_underground import start_weather_undergroun
 from online_services_modules.open_sense_map import start_open_sense_map as start_osm
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
-if running_with_root and app_config_access.installed_sensors.no_sensors is False:
+if app_config_access.installed_sensors.kootnet_dummy_sensor or \
+        running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up special Sensor Access Service like SenseHat Joystick
     sensor_access.start_special_sensor_interactive_services()
 
     # If there is a display installed, start up the display server
     if app_config_access.primary_config.enable_display:
         if app_config_access.installed_sensors.has_display:
-            pass
-            # This currently only displays sensor readings every interval recording. Disabled for now.
             text_name = "Display"
             function = server_display.scroll_interval_readings_on_display
             app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
