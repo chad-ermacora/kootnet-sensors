@@ -83,7 +83,7 @@ def start_trigger_recording():
                               trigger_variances.green_variance,
                               trigger_variances.blue_variance]
         number_of_readings = 3
-        if installed_sensors.has_violet:
+        if installed_sensors.pimoroni_as7262:
             number_of_readings = 6
             ems_database_sensor_variable = database_variables.red + "," + \
                                            database_variables.orange + "," + \

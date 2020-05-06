@@ -24,7 +24,6 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
-from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
@@ -33,7 +32,6 @@ from http_server import server_http_auth
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("CLI Edit Configurations Starting")
-installed_sensors = CreateInstalledSensorsConfiguration()
 primary_config = CreatePrimaryConfiguration()
 trigger_variances = CreateTriggerVariancesConfiguration()
 sensor_control_config = CreateSensorControlConfiguration()
@@ -159,10 +157,8 @@ def _test_sensors():
             str_message += tmp_readings[:-4] + "\n"
 
     print(str_message)
-
-    if installed_sensors.has_display:
-        print("Showing Test Message on Installed Display")
-        display_text_on_sensor("Display Test Message")
+    print("Showing Test Message on Installed Display (If Installed)")
+    display_text_on_sensor("Display Test Message")
 
 
 def get_interval_sensor_data():

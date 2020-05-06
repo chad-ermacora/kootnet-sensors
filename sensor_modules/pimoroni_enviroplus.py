@@ -81,7 +81,7 @@ class CreateEnviroPlus:
             app_config_access.installed_sensors.has_gas = 0
             app_config_access.installed_sensors.has_particulate_matter = 0
 
-        if app_config_access.installed_sensors.has_particulate_matter:
+        if app_config_access.installed_sensors.pimoroni_pms5003:
             try:
                 pms5003_import = __import__("sensor_modules.drivers.pms5003", fromlist=["PMS5003"])
                 self._enable_psm5003_serial()
