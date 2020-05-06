@@ -210,7 +210,7 @@ def get_sensor_temperature(temperature_offset=True):
     if temperature_offset and temperature != app_cached_variables.no_sensor_present:
         if app_config_access.primary_config.enable_custom_temp:
             try:
-                return temperature + app_config_access.primary_config.temperature_offset
+                return round(temperature + app_config_access.primary_config.temperature_offset, 6)
             except Exception as error:
                 logger.sensors_logger.warning("Invalid Temperature Offset")
                 logger.sensors_logger.debug(str(error))

@@ -28,9 +28,6 @@ from sensor_modules import sensor_access
 
 class CreateHasSensorVariables:
     def __init__(self):
-        self._update_has_sensor_variables()
-
-    def _update_has_sensor_variables(self):
         self._set_all_has_sensor_states(0)
         if app_config_access.installed_sensors.kootnet_dummy_sensor:
             self._set_all_has_sensor_states(1)

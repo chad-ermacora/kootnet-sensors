@@ -171,6 +171,10 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_st7735 = int(self.config_settings[19])
             self.pimoroni_mono_oled_luma = int(self.config_settings[20])
             self.kootnet_dummy_sensor = int(self.config_settings[21])
+            for sensor in self.config_settings:
+                if sensor:
+                    self.no_sensors = False
+                    break
         except Exception as error:
             log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
             logger.primary_logger.error(log_msg + str(error))
