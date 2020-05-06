@@ -52,12 +52,11 @@ if app_config_access.installed_sensors.kootnet_dummy_sensor or \
 
     # If there is a display installed, start up the display server
     if app_config_access.primary_config.enable_display:
-        if app_config_access.installed_sensors.has_display:
-            text_name = "Display"
-            function = server_display.scroll_interval_readings_on_display
-            app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
-        else:
-            logger.primary_logger.warning("No Compatible Displays Installed")
+        text_name = "Display"
+        function = server_display.scroll_interval_readings_on_display
+        app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Display Disabled in Primary Configuration")
 
     # Start up Interval Sensor Recording
     if app_config_access.primary_config.enable_interval_recording:
@@ -65,13 +64,13 @@ if app_config_access.installed_sensors.kootnet_dummy_sensor or \
         function = recording_interval.start_interval_recording
         app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
     else:
-        logger.primary_logger.debug("Interval Recording Disabled in Config")
+        logger.primary_logger.debug("Interval Recording Disabled in Primary Configuration")
 
     # Start up Trigger Sensor Recording
     if app_config_access.primary_config.enable_trigger_recording:
         app_cached_variables.trigger_recording_thread = thread_function(recording_triggers.start_trigger_recording)
     else:
-        logger.primary_logger.debug("Trigger Recording Disabled in Config")
+        logger.primary_logger.debug("Trigger Recording Disabled in Primary Configuration")
 
     # Start up all enabled Online Services
     if not app_config_access.installed_sensors.kootnet_dummy_sensor:
