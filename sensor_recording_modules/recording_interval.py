@@ -26,6 +26,119 @@ from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
 
+class CreateHasSensorVariables:
+    def __init__(self):
+        self._update_has_sensor_variables()
+
+    def _update_has_sensor_variables(self):
+        self._set_all_has_sensor_states(0)
+        if app_config_access.installed_sensors.kootnet_dummy_sensor:
+            self._set_all_has_sensor_states(1)
+            self.has_real_time_clock = 0
+        if app_config_access.installed_sensors.raspberry_pi:
+            self.has_cpu_temperature = 1
+        if app_config_access.installed_sensors.raspberry_pi_sense_hat:
+            self.has_display = 1
+            self.has_env_temperature = 1
+            self.has_pressure = 1
+            self.has_humidity = 1
+            self.has_acc = 1
+            self.has_mag = 1
+            self.has_gyro = 1
+        if app_config_access.installed_sensors.pimoroni_bh1745:
+            self.has_lumen = 1
+            self.has_red = 1
+            self.has_green = 1
+            self.has_blue = 1
+        if app_config_access.installed_sensors.pimoroni_as7262:
+            self.has_red = 1
+            self.has_orange = 1
+            self.has_yellow = 1
+            self.has_green = 1
+            self.has_blue = 1
+            self.has_violet = 1
+        if app_config_access.installed_sensors.pimoroni_bmp280:
+            self.has_env_temperature = 1
+            self.has_pressure = 1
+            self.has_altitude = 1
+        if app_config_access.installed_sensors.pimoroni_bme680:
+            self.has_env_temperature = 1
+            self.has_pressure = 1
+            self.has_humidity = 1
+            self.has_gas = 1
+        if app_config_access.installed_sensors.pimoroni_enviro:
+            self.has_env_temperature = 1
+            self.has_pressure = 1
+            self.has_lumen = 1
+            self.has_red = 1
+            self.has_green = 1
+            self.has_blue = 1
+            self.has_acc = 1
+            self.has_mag = 1
+        if app_config_access.installed_sensors.pimoroni_enviroplus:
+            self.has_display = 1
+            self.has_env_temperature = 1
+            self.has_pressure = 1
+            self.has_altitude = 1
+            self.has_humidity = 1
+            self.has_distance = 1
+            self.has_lumen = 1
+            self.has_gas = 1
+        if app_config_access.installed_sensors.pimoroni_pms5003:
+            self.has_particulate_matter = 1
+        if app_config_access.installed_sensors.pimoroni_lsm303d:
+            self.has_acc = 1
+            self.has_mag = 1
+        if app_config_access.installed_sensors.pimoroni_icm20948:
+            self.has_acc = 1
+            self.has_mag = 1
+            self.has_gyro = 1
+        if app_config_access.installed_sensors.pimoroni_vl53l1x:
+            self.has_distance = 1
+        if app_config_access.installed_sensors.pimoroni_ltr_559:
+            self.has_lumen = 1
+            self.has_distance = 1
+        if app_config_access.installed_sensors.pimoroni_veml6075:
+            self.has_ultra_violet = 1
+            self.has_ultra_violet_comparator = 1
+        if app_config_access.installed_sensors.pimoroni_matrix_11x7:
+            self.has_display = 1
+        if app_config_access.installed_sensors.pimoroni_st7735:
+            self.has_display = 1
+        if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
+            self.has_display = 1
+        if app_config_access.installed_sensors.pimoroni_msa301:
+            self.has_acc = 1
+        if app_config_access.installed_sensors.pimoroni_sgp30:
+            self.has_gas = 1
+        if app_config_access.installed_sensors.pimoroni_mcp9600:
+            self.has_env_temperature = 1
+
+    def _set_all_has_sensor_states(self, set_sensor_state_as):
+        self.has_display = set_sensor_state_as
+        self.has_real_time_clock = set_sensor_state_as
+        self.has_cpu_temperature = set_sensor_state_as
+        self.has_env_temperature = set_sensor_state_as
+        self.has_pressure = set_sensor_state_as
+        self.has_altitude = set_sensor_state_as
+        self.has_humidity = set_sensor_state_as
+        self.has_distance = set_sensor_state_as
+        self.has_gas = set_sensor_state_as
+        self.has_particulate_matter = set_sensor_state_as
+        self.has_ultra_violet = set_sensor_state_as
+        self.has_ultra_violet_comparator = set_sensor_state_as
+        self.has_lumen = set_sensor_state_as
+        self.has_red = set_sensor_state_as
+        self.has_orange = set_sensor_state_as
+        self.has_yellow = set_sensor_state_as
+        self.has_green = set_sensor_state_as
+        self.has_blue = set_sensor_state_as
+        self.has_violet = set_sensor_state_as
+        self.has_acc = set_sensor_state_as
+        self.has_mag = set_sensor_state_as
+        self.has_gyro = set_sensor_state_as
+
+
 def start_interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
     logger.primary_logger.info(" -- Interval Recording Started")
@@ -59,7 +172,7 @@ def get_interval_sensor_readings():
     if app_config_access.installed_sensors.raspberry_pi:
         sensor_types.append(app_cached_variables.database_variables.system_temperature)
         sensor_readings.append(sensor_access.get_cpu_temperature())
-    if app_config_access.installed_sensors.has_env_temperature:
+    if available_sensors.has_env_temperature:
         sensor_types.append(app_cached_variables.database_variables.env_temperature)
         sensor_types.append(app_cached_variables.database_variables.env_temperature_offset)
         sensor_readings.append(sensor_access.get_sensor_temperature())
@@ -67,19 +180,19 @@ def get_interval_sensor_readings():
             sensor_readings.append(app_config_access.primary_config.temperature_offset)
         else:
             sensor_readings.append("0.0")
-    if app_config_access.installed_sensors.has_pressure:
+    if available_sensors.has_pressure:
         sensor_types.append(app_cached_variables.database_variables.pressure)
         sensor_readings.append(sensor_access.get_pressure())
-    if app_config_access.installed_sensors.has_altitude:
+    if available_sensors.has_altitude:
         sensor_types.append(app_cached_variables.database_variables.altitude)
         sensor_readings.append(sensor_access.get_altitude())
-    if app_config_access.installed_sensors.has_humidity:
+    if available_sensors.has_humidity:
         sensor_types.append(app_cached_variables.database_variables.humidity)
         sensor_readings.append(sensor_access.get_humidity())
-    if app_config_access.installed_sensors.has_distance:
+    if available_sensors.has_distance:
         sensor_types.append(app_cached_variables.database_variables.distance)
         sensor_readings.append(sensor_access.get_distance())
-    if app_config_access.installed_sensors.has_gas:
+    if available_sensors.has_gas:
         gas_index = sensor_access.get_gas_resistance_index()
         gas_oxidised = sensor_access.get_gas_oxidised()
         gas_reduced = sensor_access.get_gas_reduced()
@@ -97,7 +210,7 @@ def get_interval_sensor_readings():
         if valid_sensor_reading(gas_nh3):
             sensor_types.append(app_cached_variables.database_variables.gas_nh3)
             sensor_readings.append(gas_nh3)
-    if app_config_access.installed_sensors.has_particulate_matter:
+    if available_sensors.has_particulate_matter:
         pm1_reading = sensor_access.get_particulate_matter_1()
         pm2_5_reading = sensor_access.get_particulate_matter_2_5()
         pm10_reading = sensor_access.get_particulate_matter_10()
@@ -111,10 +224,10 @@ def get_interval_sensor_readings():
         if valid_sensor_reading(pm10_reading):
             sensor_types.append(app_cached_variables.database_variables.particulate_matter_10)
             sensor_readings.append(pm10_reading)
-    if app_config_access.installed_sensors.has_lumen:
+    if available_sensors.has_lumen:
         sensor_types.append(app_cached_variables.database_variables.lumen)
         sensor_readings.append(sensor_access.get_lumen())
-    if app_config_access.installed_sensors.has_red:
+    if available_sensors.has_red:
         ems_colours = sensor_access.get_ems()
 
         if len(ems_colours) == 3:
@@ -137,7 +250,7 @@ def get_interval_sensor_readings():
                                 ems_colours[3],
                                 ems_colours[4],
                                 ems_colours[5]]
-    if app_config_access.installed_sensors.has_ultra_violet:
+    if available_sensors.has_ultra_violet:
         uva_reading = sensor_access.get_ultra_violet_a()
         uvb_reading = sensor_access.get_ultra_violet_b()
 
@@ -147,7 +260,7 @@ def get_interval_sensor_readings():
         if valid_sensor_reading(uvb_reading):
             sensor_types.append(app_cached_variables.database_variables.ultra_violet_b)
             sensor_readings.append(sensor_access.get_ultra_violet_b())
-    if app_config_access.installed_sensors.has_acc:
+    if available_sensors.has_acc:
         accelerometer_readings = sensor_access.get_accelerometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.acc_x,
@@ -156,7 +269,7 @@ def get_interval_sensor_readings():
         sensor_readings += [accelerometer_readings[0],
                             accelerometer_readings[1],
                             accelerometer_readings[2]]
-    if app_config_access.installed_sensors.has_mag:
+    if available_sensors.has_mag:
         magnetometer_readings = sensor_access.get_magnetometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.mag_x,
@@ -165,7 +278,7 @@ def get_interval_sensor_readings():
         sensor_readings += [magnetometer_readings[0],
                             magnetometer_readings[1],
                             magnetometer_readings[2]]
-    if app_config_access.installed_sensors.has_gyro:
+    if available_sensors.has_gyro:
         gyroscope_readings = sensor_access.get_gyroscope_xyz()
 
         sensor_types += [app_cached_variables.database_variables.gyro_x,
@@ -197,3 +310,6 @@ def _list_to_csv_string_quoted(list_to_add):
             text_string += "'" + str(entry) + "',"
         return text_string[:-1]
     return ""
+
+
+available_sensors = CreateHasSensorVariables()

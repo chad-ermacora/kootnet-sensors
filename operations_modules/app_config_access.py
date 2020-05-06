@@ -34,7 +34,6 @@ if geteuid() != 0:
         installed_sensors.kootnet_dummy_sensor = 1
         installed_sensors.no_sensors = False
         installed_sensors.update_configuration_settings_list()
-        installed_sensors.update_has_sensor_variables()
 else:
     logger.primary_logger.debug("Initializing configurations")
     installed_sensors = CreateInstalledSensorsConfiguration()

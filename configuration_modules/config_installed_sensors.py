@@ -72,12 +72,10 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
-        self.update_has_sensor_variables()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
-        self.update_has_sensor_variables()
 
     def update_with_html_request(self, html_request):
         """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
@@ -131,7 +129,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self.update_configuration_settings_list()
-        self.update_has_sensor_variables()
 
     def get_installed_names_str(self):
         """ Returns Installed Sensors as a String. """
@@ -199,118 +196,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                                 str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
                                 str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
                                 str(self.pimoroni_mono_oled_luma), str(self.kootnet_dummy_sensor)]
-
-    def update_has_sensor_variables(self):
-        self._set_all_has_sensor_states(0)
-        if self.kootnet_dummy_sensor:
-            self._set_all_has_sensor_states(1)
-            self.has_real_time_clock = 0
-        if self.raspberry_pi:
-            self.has_cpu_temperature = 1
-        if self.raspberry_pi_sense_hat:
-            self.has_display = 1
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_humidity = 1
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if self.pimoroni_bh1745:
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-        if self.pimoroni_as7262:
-            self.has_red = 1
-            self.has_orange = 1
-            self.has_yellow = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_violet = 1
-        if self.pimoroni_bmp280:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_altitude = 1
-        if self.pimoroni_bme680:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_humidity = 1
-            self.has_gas = 1
-        if self.pimoroni_enviro:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_acc = 1
-            self.has_mag = 1
-        if self.pimoroni_enviroplus:
-            self.has_display = 1
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_altitude = 1
-            self.has_humidity = 1
-            self.has_distance = 1
-            self.has_lumen = 1
-            self.has_gas = 1
-        if self.pimoroni_pms5003:
-            self.has_particulate_matter = 1
-        if self.pimoroni_lsm303d:
-            self.has_acc = 1
-            self.has_mag = 1
-        if self.pimoroni_icm20948:
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if self.pimoroni_vl53l1x:
-            self.has_distance = 1
-        if self.pimoroni_ltr_559:
-            self.has_lumen = 1
-            self.has_distance = 1
-        if self.pimoroni_veml6075:
-            self.has_ultra_violet = 1
-            self.has_ultra_violet_comparator = 1
-        if self.pimoroni_matrix_11x7:
-            self.has_display = 1
-        if self.pimoroni_st7735:
-            self.has_display = 1
-        if self.pimoroni_mono_oled_luma:
-            self.has_display = 1
-        if self.pimoroni_msa301:
-            self.has_acc = 1
-        if self.pimoroni_sgp30:
-            self.has_gas = 1
-        if self.pimoroni_mcp9600:
-            self.has_env_temperature = 1
-        for sensor in self.config_settings:
-            if sensor:
-                self.no_sensors = False
-                break
-
-    def _set_all_has_sensor_states(self, set_sensor_state_as):
-        self.has_display = set_sensor_state_as
-        self.has_real_time_clock = set_sensor_state_as
-        self.has_cpu_temperature = set_sensor_state_as
-        self.has_env_temperature = set_sensor_state_as
-        self.has_pressure = set_sensor_state_as
-        self.has_altitude = set_sensor_state_as
-        self.has_humidity = set_sensor_state_as
-        self.has_distance = set_sensor_state_as
-        self.has_gas = set_sensor_state_as
-        self.has_particulate_matter = set_sensor_state_as
-        self.has_ultra_violet = set_sensor_state_as
-        self.has_ultra_violet_comparator = set_sensor_state_as
-        self.has_lumen = set_sensor_state_as
-        self.has_red = set_sensor_state_as
-        self.has_orange = set_sensor_state_as
-        self.has_yellow = set_sensor_state_as
-        self.has_green = set_sensor_state_as
-        self.has_blue = set_sensor_state_as
-        self.has_violet = set_sensor_state_as
-        self.has_acc = set_sensor_state_as
-        self.has_mag = set_sensor_state_as
-        self.has_gyro = set_sensor_state_as
 
     def get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """
