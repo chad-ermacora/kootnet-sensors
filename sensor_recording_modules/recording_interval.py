@@ -29,101 +29,73 @@ from sensor_modules import sensor_access
 class CreateHasSensorVariables:
     def __init__(self):
         self._set_all_has_sensor_states(0)
-        if app_config_access.installed_sensors.kootnet_dummy_sensor:
-            self._set_all_has_sensor_states(1)
-            self.has_real_time_clock = 0
-        if app_config_access.installed_sensors.raspberry_pi:
+        if sensor_access.get_cpu_temperature() != app_cached_variables.no_sensor_present:
             self.has_cpu_temperature = 1
-        if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-            self.has_display = 1
+        if sensor_access.get_sensor_temperature() != app_cached_variables.no_sensor_present:
             self.has_env_temperature = 1
+        if sensor_access.get_pressure() != app_cached_variables.no_sensor_present:
             self.has_pressure = 1
-            self.has_humidity = 1
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if app_config_access.installed_sensors.pimoroni_bh1745:
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-        if app_config_access.installed_sensors.pimoroni_as7262:
-            self.has_red = 1
-            self.has_orange = 1
-            self.has_yellow = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_violet = 1
-        if app_config_access.installed_sensors.pimoroni_bmp280:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
+        if sensor_access.get_altitude() != app_cached_variables.no_sensor_present:
             self.has_altitude = 1
-        if app_config_access.installed_sensors.pimoroni_bme680:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
+        if sensor_access.get_humidity() != app_cached_variables.no_sensor_present:
             self.has_humidity = 1
-            self.has_gas = 1
-        if app_config_access.installed_sensors.pimoroni_enviro:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_acc = 1
-            self.has_mag = 1
-        if app_config_access.installed_sensors.pimoroni_enviroplus:
-            self.has_display = 1
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_altitude = 1
-            self.has_humidity = 1
+        if sensor_access.get_distance() != app_cached_variables.no_sensor_present:
             self.has_distance = 1
-            self.has_lumen = 1
+        if sensor_access.get_gas_resistance_index() != app_cached_variables.no_sensor_present or \
+                sensor_access.get_gas_oxidised() != app_cached_variables.no_sensor_present or \
+                sensor_access.get_gas_reduced() != app_cached_variables.no_sensor_present or \
+                sensor_access.get_gas_nh3() != app_cached_variables.no_sensor_present:
             self.has_gas = 1
-        if app_config_access.installed_sensors.pimoroni_pms5003:
+        if sensor_access.get_particulate_matter_1() != app_cached_variables.no_sensor_present or \
+                sensor_access.get_particulate_matter_2_5() != app_cached_variables.no_sensor_present or \
+                sensor_access.get_particulate_matter_10() != app_cached_variables.no_sensor_present:
             self.has_particulate_matter = 1
-        if app_config_access.installed_sensors.pimoroni_lsm303d:
-            self.has_acc = 1
-            self.has_mag = 1
-        if app_config_access.installed_sensors.pimoroni_icm20948:
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if app_config_access.installed_sensors.pimoroni_vl53l1x:
-            self.has_distance = 1
-        if app_config_access.installed_sensors.pimoroni_ltr_559:
-            self.has_lumen = 1
-            self.has_distance = 1
-        if app_config_access.installed_sensors.pimoroni_veml6075:
+        if sensor_access.get_ultra_violet_a() != app_cached_variables.no_sensor_present:
             self.has_ultra_violet = 1
             self.has_ultra_violet_comparator = 1
-        if app_config_access.installed_sensors.pimoroni_matrix_11x7:
-            self.has_display = 1
-        if app_config_access.installed_sensors.pimoroni_st7735:
-            self.has_display = 1
-        if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-            self.has_display = 1
-        if app_config_access.installed_sensors.pimoroni_msa301:
+        if sensor_access.get_lumen() != app_cached_variables.no_sensor_present:
+            self.has_lumen = 1
+        if sensor_access.get_ems() != app_cached_variables.no_sensor_present:
+            self.has_red = 1
+            self.has_green = 1
+            self.has_blue = 1
+            if len(sensor_access.get_ems()) == 6:
+                self.has_orange = 1
+                self.has_yellow = 1
+                self.has_violet = 1
+        if sensor_access.get_accelerometer_xyz() != app_cached_variables.no_sensor_present:
             self.has_acc = 1
-        if app_config_access.installed_sensors.pimoroni_sgp30:
-            self.has_gas = 1
-        if app_config_access.installed_sensors.pimoroni_mcp9600:
-            self.has_env_temperature = 1
+        if sensor_access.get_magnetometer_xyz() != app_cached_variables.no_sensor_present:
+            self.has_mag = 1
+        if sensor_access.get_gyroscope_xyz() != app_cached_variables.no_sensor_present:
+            self.has_gyro = 1
 
+    # TODO: Break up multi-sensors like PM & GAS as started below
     def _set_all_has_sensor_states(self, set_sensor_state_as):
-        self.has_display = set_sensor_state_as
-        self.has_real_time_clock = set_sensor_state_as
         self.has_cpu_temperature = set_sensor_state_as
         self.has_env_temperature = set_sensor_state_as
         self.has_pressure = set_sensor_state_as
         self.has_altitude = set_sensor_state_as
         self.has_humidity = set_sensor_state_as
         self.has_distance = set_sensor_state_as
-        self.has_gas = set_sensor_state_as
-        self.has_particulate_matter = set_sensor_state_as
-        self.has_ultra_violet = set_sensor_state_as
-        self.has_ultra_violet_comparator = set_sensor_state_as
+
+        self.has_gas = set_sensor_state_as  # Old
+        self.has_gas_index = set_sensor_state_as
+        self.has_gas_oxidised = set_sensor_state_as
+        self.has_gas_reduced = set_sensor_state_as
+        self.has_gas_nh3 = set_sensor_state_as
+
+        self.has_particulate_matter = set_sensor_state_as  # Old
+        self.has_particulate_matter_1 = set_sensor_state_as
+        self.has_particulate_matter_2_5 = set_sensor_state_as
+        self.has_particulate_matter_10 = set_sensor_state_as
+
+        self.has_ultra_violet = set_sensor_state_as  # Old
+        self.has_ultra_violet_comparator = set_sensor_state_as  # Old
+        self.has_ultra_violet_a = set_sensor_state_as
+        self.has_ultra_violet_b = set_sensor_state_as
+        self.has_ultra_violet_index = set_sensor_state_as
+
         self.has_lumen = set_sensor_state_as
         self.has_red = set_sensor_state_as
         self.has_orange = set_sensor_state_as
