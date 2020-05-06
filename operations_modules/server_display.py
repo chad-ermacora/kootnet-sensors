@@ -26,13 +26,16 @@ display_variables = app_cached_variables.CreateDisplaySensorsVariables()
 
 
 def scroll_interval_readings_on_display():
-    logger.primary_logger.info(" -- Sensor Display Server Started")
-    while True:
-        if app_config_access.display_config.display_type == display_variables.display_type_numerical:
-            sensor_access.display_message(get_numerical_display_text())
-        else:
-            sensor_access.display_message(get_graphed_sensors())
-        sleep(app_config_access.display_config.minutes_between_display * 60)
+    if sensor_access.display_message("init"):
+        logger.primary_logger.info(" -- Sensor Display Server Started")
+        while True:
+            if app_config_access.display_config.display_type == display_variables.display_type_numerical:
+                sensor_access.display_message(get_numerical_display_text())
+            else:
+                sensor_access.display_message(get_graphed_sensors())
+            sleep(app_config_access.display_config.minutes_between_display * 60)
+    else:
+        logger.primary_logger.error(" -- Sensor Display Server Failed to Start: No Compatible Display Found")
 
 
 # TODO: Set multi sensor
