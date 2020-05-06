@@ -21,7 +21,7 @@ from datetime import datetime
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_config_access
-from operations_modules.app_cached_variables import normal_state, low_state, high_state, no_sensor_present
+from operations_modules.app_cached_variables import normal_state, low_state, high_state
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
@@ -31,10 +31,7 @@ class CreateTriggerVarianceData:
                  thread_name="GenericTriggerThread", variance=99999.99, sensor_wait_seconds=10,
                  num_of_readings=1, number_of_reading_sets=3):
         self.get_sensor_data_function = get_sensor_data_function
-        self.has_sensor = 1
         test_sensor_reading = self.get_sensor_data_function()
-        if test_sensor_reading == no_sensor_present:
-            self.has_sensor = 0
         self.enabled = enabled
         self.thread_name = thread_name
         self.num_of_readings = num_of_readings
@@ -50,7 +47,7 @@ class CreateTriggerVarianceData:
         self.reset_errors_after = 60.0
         if self.enabled:
             logger.primary_logger.debug(thread_name + " - Enabled: " + str(self.enabled) +
-                                        " Has Sensor: " + str(self.has_sensor) +
+                                        " No Sensors: " + str(app_config_access.installed_sensors.no_sensors) +
                                         " Test Reading: " + str(test_sensor_reading) +
                                         " DB Variable: " + str(sensor_database_variable) +
                                         " # Readings: " + str(self.num_of_readings) +
@@ -73,7 +70,7 @@ class CreateTriggerVarianceThread:
             self.sql_columns_str_start = "DateTime," + trigger_data.sensor_database_variable
 
         self.reading_and_datetime_stamps = []
-        if self.trigger_data.enabled and self.trigger_data.has_sensor:
+        if self.trigger_data.enabled and not app_config_access.installed_sensors.no_sensors:
             if sensor_uptime:
                 self.monitored_thread = CreateMonitoredThread(self._sensor_uptime_check,
                                                               thread_name=self.trigger_data.thread_name)
