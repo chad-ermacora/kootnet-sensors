@@ -45,7 +45,6 @@ class CreateSGP30:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni SGP30 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_sgp30 = 0
-            app_config_access.installed_sensors.has_gas = 0
 
     def _gas_readings_keep_alive(self):
         logger.sensors_logger.debug("Pimoroni SGP30 Gas keep alive started")

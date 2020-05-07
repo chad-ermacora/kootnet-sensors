@@ -39,8 +39,6 @@ class CreateLSM303D:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LSM303D Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_lsm303d = 0
-            app_config_access.installed_sensors.has_acc = 0
-            app_config_access.installed_sensors.has_mag = 0
 
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """

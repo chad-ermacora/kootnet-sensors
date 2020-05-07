@@ -40,12 +40,6 @@ class CreateAS7262:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_as7262 = 0
-            app_config_access.installed_sensors.has_red = 0
-            app_config_access.installed_sensors.has_orange = 0
-            app_config_access.installed_sensors.has_yellow = 0
-            app_config_access.installed_sensors.has_green = 0
-            app_config_access.installed_sensors.has_blue = 0
-            app_config_access.installed_sensors.has_violet = 0
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """

@@ -38,9 +38,6 @@ class CreateBMP280:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni BMP280 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_bmp280 = 0
-            app_config_access.installed_sensors.has_env_temperature = 0
-            app_config_access.installed_sensors.has_pressure = 0
-            app_config_access.installed_sensors.has_altitude = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

@@ -40,13 +40,6 @@ class CreateRPSenseHAT:
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi Sense HAT Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.raspberry_pi_sense_hat = 0
-            app_config_access.installed_sensors.has_display = 0
-            app_config_access.installed_sensors.has_env_temperature = 0
-            app_config_access.installed_sensors.has_pressure = 0
-            app_config_access.installed_sensors.has_humidity = 0
-            app_config_access.installed_sensors.has_acc = 0
-            app_config_access.installed_sensors.has_mag = 0
-            app_config_access.installed_sensors.has_gyro = 0
 
     def temperature(self):
         """ Returns Temperature as a Float. """

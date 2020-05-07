@@ -36,9 +36,6 @@ class CreateICM20948:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni ICM20948 Initialization Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_icm20948 = 0
-            app_config_access.installed_sensors.has_acc = 0
-            app_config_access.installed_sensors.has_mag = 0
-            app_config_access.installed_sensors.has_gyro = 0
 
     def magnetometer_xyz(self):
         """ Returns Magnetometer X, Y, Z as Floats. """
