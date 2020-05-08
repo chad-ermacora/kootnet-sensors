@@ -19,87 +19,99 @@
 import requests
 from time import sleep
 from operations_modules import logger
-from operations_modules import app_cached_variables
-from operations_modules.app_config_access import installed_sensors, open_sense_map_config
-from operations_modules.app_validation_checks import valid_sensor_reading
+from operations_modules.app_cached_variables import no_sensor_present, database_variables, hostname
+from operations_modules.app_config_access import installed_sensors, open_sense_map_config as osm_config
 from sensor_modules import sensor_access
 
 
 def start_open_sense_map():
     """ Sends compatible sensor readings to Open Sense Map every X seconds based on set Interval. """
-    if open_sense_map_config.sense_box_id != "":
-        url = open_sense_map_config.open_sense_map_main_url_start + "/" + open_sense_map_config.sense_box_id + "/data"
+    if osm_config.sense_box_id != "":
+        url = osm_config.open_sense_map_main_url_start + "/" + osm_config.sense_box_id + "/data"
         url_header = {"content-type": "application/json"}
 
         while True:
             body_json = {}
             try:
-                if installed_sensors.has_env_temperature:
-                    if open_sense_map_config.temperature_id != "":
-                        env_temperature = sensor_access.get_sensor_temperature()
-                        body_json[open_sense_map_config.temperature_id] = str(env_temperature)
+                env_temperature = str(sensor_access.get_sensor_temperature())
+                if env_temperature != no_sensor_present and osm_config.temperature_id != "":
+                    body_json[osm_config.temperature_id] = env_temperature
 
-                if installed_sensors.has_pressure:
-                    if open_sense_map_config.pressure_id != "":
-                        body_json[open_sense_map_config.pressure_id] = str(sensor_access.get_pressure())
-                if installed_sensors.has_altitude:
-                    if open_sense_map_config.altitude_id != "":
-                        body_json[open_sense_map_config.altitude_id] = str(sensor_access.get_altitude())
-                if installed_sensors.has_humidity:
-                    if open_sense_map_config.humidity_id != "":
-                        body_json[open_sense_map_config.humidity_id] = str(sensor_access.get_humidity())
-                if installed_sensors.has_gas:
-                    gas_voc = sensor_access.get_gas_resistance_index()
-                    gas_oxidised = sensor_access.get_gas_oxidised()
-                    gas_reduced = sensor_access.get_gas_reduced()
-                    gas_nh3 = sensor_access.get_gas_nh3()
-                    if open_sense_map_config.gas_voc_id != "" and valid_sensor_reading(gas_voc):
-                        body_json[open_sense_map_config.gas_voc_id] = str(gas_voc)
-                    if open_sense_map_config.gas_oxidised_id != "" and valid_sensor_reading(gas_oxidised):
-                        body_json[open_sense_map_config.gas_oxidised_id] = str(gas_oxidised)
-                    if open_sense_map_config.gas_reduced_id != "" and valid_sensor_reading(gas_reduced):
-                        body_json[open_sense_map_config.gas_reduced_id] = str(gas_reduced)
-                    if open_sense_map_config.gas_nh3_id != "" and valid_sensor_reading(gas_nh3):
-                        body_json[open_sense_map_config.gas_nh3_id] = str(gas_nh3)
-                if installed_sensors.has_lumen:
-                    if open_sense_map_config.lumen_id != "":
-                        body_json[open_sense_map_config.lumen_id] = str(sensor_access.get_lumen())
-                if installed_sensors.has_particulate_matter:
-                    pm1 = sensor_access.get_particulate_matter_1()
-                    pm2_5 = sensor_access.get_particulate_matter_2_5()
-                    pm10 = sensor_access.get_particulate_matter_10()
-                    if open_sense_map_config.pm1_id != "" and valid_sensor_reading(pm1):
-                        body_json[open_sense_map_config.pm1_id] = str(pm1)
-                    if open_sense_map_config.pm2_5_id != "" and valid_sensor_reading(pm2_5):
-                        body_json[open_sense_map_config.pm2_5_id] = str(pm2_5)
-                    if open_sense_map_config.pm10_id != "" and valid_sensor_reading(pm10):
-                        body_json[open_sense_map_config.pm10_id] = str(pm10)
-                colours = sensor_access.get_ems()
-                if installed_sensors.has_red:
-                    if open_sense_map_config.red_id != "":
-                        body_json[open_sense_map_config.red_id] = str(colours[0])
-                if installed_sensors.has_orange:
-                    if open_sense_map_config.orange_id != "":
-                        body_json[open_sense_map_config.orange_id] = str(colours[1])
-                if installed_sensors.has_yellow:
-                    if open_sense_map_config.yellow_id != "":
-                        body_json[open_sense_map_config.yellow_id] = str(colours[2])
-                if installed_sensors.has_green:
-                    if open_sense_map_config.green_id != "":
-                        body_json[open_sense_map_config.green_id] = str(colours[3])
-                if installed_sensors.has_blue:
-                    if open_sense_map_config.blue_id != "":
-                        body_json[open_sense_map_config.blue_id] = str(colours[4])
-                if installed_sensors.has_violet:
-                    if open_sense_map_config.violet_id != "":
-                        body_json[open_sense_map_config.violet_id] = str(colours[5])
-                if installed_sensors.has_ultra_violet:
-                    if open_sense_map_config.ultra_violet_index_id != "":
-                        body_json[open_sense_map_config.ultra_violet_index_id] = str(sensor_access.get_ultra_violet_index())
-                    if open_sense_map_config.ultra_violet_a_id != "":
-                        body_json[open_sense_map_config.ultra_violet_a_id] = str(sensor_access.get_ultra_violet_a())
-                    if open_sense_map_config.ultra_violet_b_id != "":
-                        body_json[open_sense_map_config.ultra_violet_b_id] = str(sensor_access.get_ultra_violet_b())
+                pressure_reading = str(sensor_access.get_pressure())
+                if pressure_reading != no_sensor_present and osm_config.pressure_id != "":
+                    body_json[osm_config.pressure_id] = pressure_reading
+
+                altitude_reading = str(sensor_access.get_altitude())
+                if altitude_reading != no_sensor_present and osm_config.altitude_id != "":
+                    body_json[osm_config.altitude_id] = altitude_reading
+
+                humidity_reading = str(sensor_access.get_humidity())
+                if humidity_reading != no_sensor_present and osm_config.humidity_id != "":
+                    body_json[osm_config.humidity_id] = str(sensor_access.get_humidity())
+
+                gas_readings = sensor_access.get_gas(return_as_dictionary=True)
+                if gas_readings != no_sensor_present:
+                    if database_variables.gas_resistance_index in gas_readings and osm_config.gas_voc_id != "":
+                        gas_voc = gas_readings[database_variables.gas_resistance_index]
+                        body_json[osm_config.gas_voc_id] = str(gas_voc)
+                    if database_variables.gas_oxidising in gas_readings and osm_config.gas_oxidised_id != "":
+                        gas_oxidised = gas_readings[database_variables.gas_oxidising]
+                        body_json[osm_config.gas_oxidised_id] = str(gas_oxidised)
+                    if database_variables.gas_reducing in gas_readings and osm_config.gas_reduced_id != "":
+                        gas_reduced = gas_readings[database_variables.gas_reducing]
+                        body_json[osm_config.gas_reduced_id] = str(gas_reduced)
+                    if database_variables.gas_nh3 in gas_readings and osm_config.gas_nh3_id != "":
+                        gas_nh3 = gas_readings[database_variables.gas_nh3]
+                        body_json[osm_config.gas_nh3_id] = str(gas_nh3)
+
+                lumen_reading = str(sensor_access.get_lumen())
+                if lumen_reading != no_sensor_present and osm_config.lumen_id != "":
+                    body_json[osm_config.lumen_id] = lumen_reading
+
+                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+                if pm_readings != no_sensor_present:
+                    if database_variables.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
+                        pm1 = pm_readings[database_variables.particulate_matter_1]
+                        body_json[osm_config.pm1_id] = str(pm1)
+                    if database_variables.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
+                        pm2_5 = pm_readings[database_variables.particulate_matter_2_5]
+                        body_json[osm_config.pm2_5_id] = str(pm2_5)
+                    if database_variables.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
+                        pm10 = pm_readings[database_variables.particulate_matter_10]
+                        body_json[osm_config.pm10_id] = str(pm10)
+
+                colors = sensor_access.get_ems_colors(return_as_dictionary=True)
+                if colors != no_sensor_present:
+                    if database_variables.red in colors and osm_config.red_id != "":
+                        red = colors[database_variables.red]
+                        body_json[osm_config.red_id] = str(red)
+                    if database_variables.orange in colors and osm_config.orange_id != "":
+                        orange = colors[database_variables.orange]
+                        body_json[osm_config.orange_id] = str(orange)
+                    if database_variables.yellow in colors and osm_config.yellow_id != "":
+                        yellow = colors[database_variables.yellow]
+                        body_json[osm_config.yellow_id] = str(yellow)
+                    if database_variables.green in colors and osm_config.green_id != "":
+                        green = colors[database_variables.green]
+                        body_json[osm_config.green_id] = str(green)
+                    if database_variables.blue in colors and osm_config.blue_id != "":
+                        blue = colors[database_variables.blue]
+                        body_json[osm_config.blue_id] = str(blue)
+                    if database_variables.violet in colors and osm_config.violet_id != "":
+                        violet = colors[database_variables.violet]
+                        body_json[osm_config.violet_id] = str(violet)
+
+                uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
+                if uv_readings != no_sensor_present:
+                    if database_variables.ultra_violet_index in uv_readings and osm_config.ultra_violet_index_id != "":
+                        uv_index = uv_readings[database_variables.ultra_violet_index]
+                        body_json[osm_config.ultra_violet_index_id] = str(uv_index)
+                    if database_variables.ultra_violet_a in uv_readings and osm_config.ultra_violet_a_id != "":
+                        uv_a = uv_readings[database_variables.ultra_violet_a]
+                        body_json[osm_config.ultra_violet_a_id] = str(uv_a)
+                    if database_variables.ultra_violet_b in uv_readings and osm_config.ultra_violet_b_id != "":
+                        uv_b = uv_readings[database_variables.ultra_violet_b]
+                        body_json[osm_config.ultra_violet_b_id] = str(uv_b)
 
                 if len(body_json) > 0:
                     html_get_response = requests.post(url=url, headers=url_header, json=body_json)
@@ -121,11 +133,11 @@ def start_open_sense_map():
             except Exception as error:
                 logger.network_logger.error("Open Sense Map - Error sending data")
                 logger.network_logger.debug("Open Sense Map - Detailed Error: " + str(error))
-            sleep(open_sense_map_config.interval_seconds)
+            sleep(osm_config.interval_seconds)
 
 
 def add_sensor_to_account(html_request):
-    url = open_sense_map_config.open_sense_map_main_url_start
+    url = osm_config.open_sense_map_main_url_start
     bad_location_message = "Open Sense Map - Sensor Registration: Invalid Location Setting"
     try:
         username = html_request.form.get("osm_account_username").strip()
@@ -134,7 +146,7 @@ def add_sensor_to_account(html_request):
         if login_token is not None:
             url_header = {"Authorization": "Bearer " + login_token,
                           "content-type": "application/json"}
-            body_json = {"name": app_cached_variables.hostname,
+            body_json = {"name": hostname,
                          "exposure": html_request.form.get("osm_location_type").strip()}
 
             grouptag = html_request.form.get("osm_grouptag").strip()
@@ -427,7 +439,7 @@ def _get_osm_registration_sensors():
 
 
 def get_json_web_login_token(account_email, account_password):
-    response = requests.post(url=open_sense_map_config.open_sense_map_login_url,
+    response = requests.post(url=osm_config.open_sense_map_login_url,
                              json={"email": account_email, "password": account_password})
     if response.status_code == 200:
         try:

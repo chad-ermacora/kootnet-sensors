@@ -292,7 +292,8 @@ def html_edit_configurations():
                                OSMUVBID=app_config_access.open_sense_map_config.ultra_violet_b_id)
     except Exception as error:
         logger.network_logger.error("HTML unable to display Configurations: " + str(error))
-        return render_template("message_return.html", message2="Unable to Display Configurations...")
+        msg2 = "Unable to Display Configurations..."
+        return message_and_return("Unable to display Configurations", text_message2=msg2)
 
 
 @html_sensor_config_routes.route("/NetworkConfigurationsHTML")
@@ -343,7 +344,8 @@ def html_edit_network_configurations():
                                IPDNS2Disabled=dns2_disabled)
     except Exception as error:
         logger.network_logger.error("HTML unable to display Networking Configurations: " + str(error))
-        return render_template("message_return.html", message2="Unable to Display Networking Configurations...")
+        msg2 = "Unable to Display Networking Configurations..."
+        return message_and_return("Unable to display Network Configurations", text_message2=msg2)
 
 
 @html_sensor_config_routes.route("/EditConfigMain", methods=["POST"])

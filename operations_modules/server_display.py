@@ -57,15 +57,23 @@ def get_numerical_display_text():
     if app_config_access.display_config.sensors_to_display[display_variables.distance]:
         text_message += " Distance: " + str(sensor_access.get_distance())
     if app_config_access.display_config.sensors_to_display[display_variables.gas]:
-        text_message += " GAS: " + str(sensor_access.get_gas_resistance_index())
+        gas_readings = sensor_access.get_gas(return_as_dictionary=True)
+        for text_name, item_value in gas_readings.items():
+            text_message += " " + str(text_name) + ": " + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
-        text_message += " PM: " + str(sensor_access.get_particulate_matter_1())
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+        for text_name, item_value in pm_readings.items():
+            text_message += " " + str(text_name) + ": " + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
         text_message += " Lumen: " + str(sensor_access.get_lumen())
     if app_config_access.display_config.sensors_to_display[display_variables.color]:
-        text_message += " Color: " + str(sensor_access.get_ems())
+        ems_color_readings = sensor_access.get_ems_colors(return_as_dictionary=True)
+        for text_name, item_value in ems_color_readings.items():
+            text_message += " " + str(text_name) + ": " + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
-        text_message += " UV: " + str(sensor_access.get_ultra_violet_index())
+        uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
+        for text_name, item_value in uv_readings.items():
+            text_message += " " + str(text_name) + ": " + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
         text_message += " Acc: " + str(sensor_access.get_accelerometer_xyz())
     if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:

@@ -110,7 +110,7 @@ class CreateNetworkGetCommands:
         self.pm_2_5 = "GetParticulateMatter2_5"
         self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
-        self.electromagnetic_spectrum = "GetEMS"
+        self.electromagnetic_spectrum = "GetEMSColors"
         self.all_ultra_violet = "GetAllUltraViolet"
         self.ultra_violet_index = "GetUltraVioletA"
         self.ultra_violet_a = "GetUltraVioletA"

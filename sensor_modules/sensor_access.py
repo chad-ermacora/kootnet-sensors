@@ -144,14 +144,11 @@ def get_last_updated():
 def get_sensors_latency():
     """ Returns sensors latency in seconds as a dictionary. """
     sensor_function_list = [get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
-                            get_distance, get_gas_resistance_index, get_gas_oxidised, get_gas_reduced, get_gas_nh3,
-                            get_particulate_matter_1, get_particulate_matter_2_5, get_particulate_matter_10,
-                            get_lumen, get_ems, get_ultra_violet_index, get_ultra_violet_a, get_ultra_violet_b,
-                            get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+                            get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
+                            get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz,
+                            get_gyroscope_xyz]
     sensor_names_list = ["cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
-                         "distance", "gas_resistance_index", "gas_oxidised", "gas_reduced", "gas_nh3",
-                         "particulate_matter_1", "particulate_matter_2_5", "particulate_matter_10",
-                         "lumen", "colours", "ultra_violet_index", "ultra_violet_a", "ultra_violet_b",
+                         "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
                          "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
 
     sensor_latency_list = []
@@ -184,7 +181,7 @@ def get_cpu_temperature():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.cpu_temperature()
     else:
-        temperature = no_sensor_present
+        return no_sensor_present
     return temperature
 
 
@@ -205,7 +202,7 @@ def get_sensor_temperature(temperature_offset=True):
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.temperature()
     else:
-        temperature = no_sensor_present
+        return no_sensor_present
 
     if temperature_offset and temperature != app_cached_variables.no_sensor_present:
         if app_config_access.primary_config.enable_custom_temp:
@@ -232,7 +229,7 @@ def get_pressure():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pressure = sensors_direct.dummy_sensors.pressure()
     else:
-        pressure = no_sensor_present
+        return no_sensor_present
     return pressure
 
 
@@ -245,7 +242,7 @@ def get_altitude():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         altitude = sensors_direct.dummy_sensors.altitude()
     else:
-        altitude = no_sensor_present
+        return no_sensor_present
     return altitude
 
 
@@ -260,7 +257,7 @@ def get_humidity():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         humidity = sensors_direct.dummy_sensors.humidity()
     else:
-        humidity = no_sensor_present
+        return no_sensor_present
     return humidity
 
 
@@ -293,90 +290,58 @@ def get_distance():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         distance = sensors_direct.dummy_sensors.distance()
     else:
-        distance = no_sensor_present
+        return no_sensor_present
     return distance
 
 
-def get_gas_resistance_index():
-    """ Returns sensors gas resistance index for VOC. """
+def get_gas(return_as_dictionary=False):
+    """ Returns sensors gas readings as a list. """
     if app_config_access.installed_sensors.pimoroni_bme680:
-        index = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
+        gas_readings = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings}
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
+        gas_readings = sensors_direct.pimoroni_enviroplus_a.gas_data()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.gas_oxidising: gas_readings[0],
+                    app_cached_variables.database_variables.gas_reducing: gas_readings[1],
+                    app_cached_variables.database_variables.gas_nh3: gas_readings[2]}
     elif app_config_access.installed_sensors.pimoroni_sgp30:
-        index = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
+        # TODO: Add e-co2 this sensor can do into program (In DB?)
+        gas_readings = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        index = sensors_direct.dummy_sensors.gas_resistance_index()
+        gas_readings = [sensors_direct.dummy_sensors.gas_resistance_index()]
+        gas_readings += sensors_direct.dummy_sensors.gas_data()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings[0],
+                    app_cached_variables.database_variables.gas_oxidising: gas_readings[1],
+                    app_cached_variables.database_variables.gas_reducing: gas_readings[2],
+                    app_cached_variables.database_variables.gas_nh3: gas_readings[3]}
     else:
-        index = no_sensor_present
-    return index
+        return no_sensor_present
+    return gas_readings
 
 
-def get_gas_oxidised():
-    """ Returns sensors gas reading for oxidising. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus:
-        oxidising = sensors_direct.pimoroni_enviroplus_a.gas_data()[0]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        oxidising = sensors_direct.dummy_sensors.gas_data()[0]
-    else:
-        oxidising = no_sensor_present
-    return oxidising
-
-
-def get_gas_reduced():
-    """ Returns sensors gas reading for reducing. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus:
-        reducing = sensors_direct.pimoroni_enviroplus_a.gas_data()[1]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        reducing = sensors_direct.dummy_sensors.gas_data()[1]
-    else:
-        reducing = no_sensor_present
-    return reducing
-
-
-def get_gas_nh3():
-    """ Returns sensors gas reading for NH3. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus:
-        nh3_reading = sensors_direct.pimoroni_enviroplus_a.gas_data()[2]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        nh3_reading = sensors_direct.dummy_sensors.gas_data()[2]
-    else:
-        nh3_reading = no_sensor_present
-    return nh3_reading
-
-
-def get_particulate_matter_1():
-    """ Returns sensor reading for PM1. """
+def get_particulate_matter(return_as_dictionary=False):
+    """ Returns selected Particulate Matter readings as a list (Default: Send All) """
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
-        pm1_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[0]
+        pm_readings = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
+                    app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
+                    app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        pm1_reading = sensors_direct.dummy_sensors.particulate_matter_data()[0]
+        pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
+                    app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
+                    app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
     else:
-        pm1_reading = no_sensor_present
-    return pm1_reading
-
-
-def get_particulate_matter_2_5():
-    """ Returns sensor reading for PM2.5. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus and \
-            app_config_access.installed_sensors.pimoroni_pms5003:
-        pm2_5_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[1]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        pm2_5_reading = sensors_direct.dummy_sensors.particulate_matter_data()[1]
-    else:
-        pm2_5_reading = no_sensor_present
-    return pm2_5_reading
-
-
-def get_particulate_matter_10():
-    """ Returns sensor reading for PM10. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus and \
-            app_config_access.installed_sensors.pimoroni_pms5003:
-        pm10_reading = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()[2]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        pm10_reading = sensors_direct.dummy_sensors.particulate_matter_data()[2]
-    else:
-        pm10_reading = no_sensor_present
-    return pm10_reading
+        return no_sensor_present
+    return pm_readings
 
 
 def get_lumen():
@@ -392,54 +357,66 @@ def get_lumen():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         lumen = sensors_direct.dummy_sensors.lumen()
     else:
-        lumen = no_sensor_present
+        return no_sensor_present
     return lumen
 
 
-def get_ems():
+def get_ems_colors(return_as_dictionary=False):
     """ Returns Electromagnetic Spectrum Wavelengths in the form of Red, Orange, Yellow, Green, Cyan, Blue, Violet. """
     if app_config_access.installed_sensors.pimoroni_as7262:
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.red: colours[0],
+                    app_cached_variables.database_variables.orange: colours[1],
+                    app_cached_variables.database_variables.yellow: colours[2],
+                    app_cached_variables.database_variables.green: colours[3],
+                    app_cached_variables.database_variables.blue: colours[4],
+                    app_cached_variables.database_variables.violet: colours[5]}
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.red: colours[0],
+                    app_cached_variables.database_variables.green: colours[1],
+                    app_cached_variables.database_variables.blue: colours[2]}
     elif app_config_access.installed_sensors.pimoroni_bh1745:
         colours = sensors_direct.pimoroni_bh1745_a.ems()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.red: colours[0],
+                    app_cached_variables.database_variables.green: colours[1],
+                    app_cached_variables.database_variables.blue: colours[2]}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         colours = sensors_direct.dummy_sensors.spectral_six_channel()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.red: colours[0],
+                    app_cached_variables.database_variables.orange: colours[1],
+                    app_cached_variables.database_variables.yellow: colours[2],
+                    app_cached_variables.database_variables.green: colours[3],
+                    app_cached_variables.database_variables.blue: colours[4],
+                    app_cached_variables.database_variables.violet: colours[5]}
     else:
-        colours = no_sensor_present
+        return no_sensor_present
     return colours
 
 
-def get_ultra_violet_index():
+def get_ultra_violet(return_as_dictionary=False):
     """ Returns Ultra Violet Index. """
     if app_config_access.installed_sensors.pimoroni_veml6075:
-        uv_index_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
-    else:
-        uv_index_reading = no_sensor_present
-    return uv_index_reading
-
-
-def get_ultra_violet_a():
-    """ Returns Ultra Violet A (UVA). """
-    if app_config_access.installed_sensors.pimoroni_veml6075:
-        uva_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[0]
+        uv_index = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
+        uv_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.ultra_violet_index: uv_index,
+                    app_cached_variables.database_variables.ultra_violet_a: uv_reading[0],
+                    app_cached_variables.database_variables.ultra_violet_b: uv_reading[1]}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        uva_reading = sensors_direct.dummy_sensors.ultra_violet()[0]
+        uv_index = sensors_direct.dummy_sensors.ultra_violet_index()
+        uv_reading = sensors_direct.dummy_sensors.ultra_violet()
+        if return_as_dictionary:
+            return {app_cached_variables.database_variables.ultra_violet_index: uv_index,
+                    app_cached_variables.database_variables.ultra_violet_a: uv_reading[0],
+                    app_cached_variables.database_variables.ultra_violet_b: uv_reading[1]}
     else:
-        uva_reading = no_sensor_present
-    return uva_reading
-
-
-def get_ultra_violet_b():
-    """ Returns Ultra Violet B (UVB). """
-    if app_config_access.installed_sensors.pimoroni_veml6075:
-        uvb_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()[1]
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        uvb_reading = sensors_direct.dummy_sensors.ultra_violet()[1]
-    else:
-        uvb_reading = no_sensor_present
-    return uvb_reading
+        return no_sensor_present
+    return uv_reading
 
 
 def get_accelerometer_xyz():
@@ -457,7 +434,7 @@ def get_accelerometer_xyz():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         xyz = sensors_direct.dummy_sensors.accelerometer_xyz()
     else:
-        xyz = no_sensor_present
+        return no_sensor_present
     return xyz
 
 
@@ -474,7 +451,7 @@ def get_magnetometer_xyz():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         xyz = sensors_direct.dummy_sensors.magnetometer_xyz()
     else:
-        xyz = no_sensor_present
+        return no_sensor_present
     return xyz
 
 
@@ -487,7 +464,7 @@ def get_gyroscope_xyz():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         xyz = sensors_direct.dummy_sensors.gyroscope_xyz()
     else:
-        xyz = no_sensor_present
+        return no_sensor_present
     return xyz
 
 

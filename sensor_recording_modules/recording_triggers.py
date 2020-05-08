@@ -97,7 +97,7 @@ def start_trigger_recording():
                                   trigger_variances.green_variance,
                                   trigger_variances.blue_variance,
                                   trigger_variances.violet_variance]
-        visible_ems_data = CreateTriggerVarianceData(sensor_access.get_ems,
+        visible_ems_data = CreateTriggerVarianceData(sensor_access.get_ems_colors,
                                                      ems_database_sensor_variable,
                                                      thread_name="Trigger - Visible Electromagnetic Spectrum",
                                                      enabled=trigger_variances.colour_enabled,

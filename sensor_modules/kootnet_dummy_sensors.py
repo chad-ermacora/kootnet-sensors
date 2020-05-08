@@ -116,19 +116,18 @@ class CreateDummySensors:
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=10, max_number=135)
 
-    def ultra_violet(self):
-        """ Returns Ultra Violet (A,B) as floats in a list. """
+    def ultra_violet_index(self):
+        """ Returns Ultra Violet (A,B) comparators as floats in a list. """
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
         time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
+        uv_index = self._get_random_float(min_number=0, max_number=65)
         self.sensor_in_use = False
-        ultra_a = self._get_random_float(min_number=0, max_number=65)
-        ultra_b = self._get_random_float(min_number=0, max_number=65)
-        return [ultra_a, ultra_b]
+        return uv_index
 
-    def ultra_violet_comparator(self):
-        """ Returns Ultra Violet (A,B) comparators as floats in a list. """
+    def ultra_violet(self):
+        """ Returns Ultra Violet (A,B) as floats in a list. """
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True

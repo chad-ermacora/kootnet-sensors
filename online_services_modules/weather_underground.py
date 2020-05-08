@@ -18,7 +18,9 @@
 """
 import requests
 from time import sleep
-from operations_modules import logger, software_version
+from operations_modules import logger
+from operations_modules import software_version
+from operations_modules.app_cached_variables import no_sensor_present, database_variables
 from operations_modules.app_config_access import weather_underground_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
@@ -117,15 +119,18 @@ def get_weather_underground_readings():
         except Exception as error:
             logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure inhg: " + str(error))
 
-    ultra_violet_index = sensor_access.get_ultra_violet_index()
-    if valid_sensor_reading(ultra_violet_index):
-        return_readings_str += "&UV=" + str(round(ultra_violet_index, round_decimal_to))
+    ultra_violet = sensor_access.get_ultra_violet(return_as_dictionary=True)
+    if ultra_violet != no_sensor_present:
+        if database_variables.ultra_violet_index in ultra_violet:
+            uv_index = ultra_violet[database_variables.ultra_violet_index]
+            return_readings_str += "&UV=" + str(round(uv_index, round_decimal_to))
 
-    pm_2_5 = sensor_access.get_particulate_matter_2_5()
-    if valid_sensor_reading(pm_2_5):
-        return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
-
-    pm_10 = sensor_access.get_particulate_matter_10()
-    if valid_sensor_reading(pm_10):
-        return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
+    pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+    if pm_readings != no_sensor_present:
+        if database_variables.particulate_matter_2_5 in pm_readings:
+            pm_2_5 = pm_readings[database_variables.particulate_matter_2_5]
+            return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
+        if database_variables.particulate_matter_10 in pm_readings:
+            pm_10 = pm_readings[database_variables.particulate_matter_10]
+            return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
     return return_readings_str

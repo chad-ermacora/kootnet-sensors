@@ -22,7 +22,6 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import sqlite_database
-from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
 
@@ -41,28 +40,16 @@ class CreateHasSensorVariables:
             self.has_humidity = 1
         if sensor_access.get_distance() != app_cached_variables.no_sensor_present:
             self.has_distance = 1
-        if sensor_access.get_gas_resistance_index() != app_cached_variables.no_sensor_present or \
-                sensor_access.get_gas_oxidised() != app_cached_variables.no_sensor_present or \
-                sensor_access.get_gas_reduced() != app_cached_variables.no_sensor_present or \
-                sensor_access.get_gas_nh3() != app_cached_variables.no_sensor_present:
+        if sensor_access.get_gas() != app_cached_variables.no_sensor_present:
             self.has_gas = 1
-        if sensor_access.get_particulate_matter_1() != app_cached_variables.no_sensor_present or \
-                sensor_access.get_particulate_matter_2_5() != app_cached_variables.no_sensor_present or \
-                sensor_access.get_particulate_matter_10() != app_cached_variables.no_sensor_present:
+        if sensor_access.get_particulate_matter() != app_cached_variables.no_sensor_present:
             self.has_particulate_matter = 1
-        if sensor_access.get_ultra_violet_a() != app_cached_variables.no_sensor_present:
+        if sensor_access.get_ultra_violet() != app_cached_variables.no_sensor_present:
             self.has_ultra_violet = 1
-            self.has_ultra_violet_comparator = 1
         if sensor_access.get_lumen() != app_cached_variables.no_sensor_present:
             self.has_lumen = 1
-        if sensor_access.get_ems() != app_cached_variables.no_sensor_present:
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-            if len(sensor_access.get_ems()) == 6:
-                self.has_orange = 1
-                self.has_yellow = 1
-                self.has_violet = 1
+        if sensor_access.get_ems_colors() != app_cached_variables.no_sensor_present:
+            self.has_color = 1
         if sensor_access.get_accelerometer_xyz() != app_cached_variables.no_sensor_present:
             self.has_acc = 1
         if sensor_access.get_magnetometer_xyz() != app_cached_variables.no_sensor_present:
@@ -78,31 +65,11 @@ class CreateHasSensorVariables:
         self.has_altitude = set_sensor_state_as
         self.has_humidity = set_sensor_state_as
         self.has_distance = set_sensor_state_as
-
-        self.has_gas = set_sensor_state_as  # Old
-        self.has_gas_index = set_sensor_state_as
-        self.has_gas_oxidised = set_sensor_state_as
-        self.has_gas_reduced = set_sensor_state_as
-        self.has_gas_nh3 = set_sensor_state_as
-
-        self.has_particulate_matter = set_sensor_state_as  # Old
-        self.has_particulate_matter_1 = set_sensor_state_as
-        self.has_particulate_matter_2_5 = set_sensor_state_as
-        self.has_particulate_matter_10 = set_sensor_state_as
-
-        self.has_ultra_violet = set_sensor_state_as  # Old
-        self.has_ultra_violet_comparator = set_sensor_state_as  # Old
-        self.has_ultra_violet_a = set_sensor_state_as
-        self.has_ultra_violet_b = set_sensor_state_as
-        self.has_ultra_violet_index = set_sensor_state_as
-
+        self.has_gas = set_sensor_state_as
+        self.has_particulate_matter = set_sensor_state_as
+        self.has_ultra_violet = set_sensor_state_as
         self.has_lumen = set_sensor_state_as
-        self.has_red = set_sensor_state_as
-        self.has_orange = set_sensor_state_as
-        self.has_yellow = set_sensor_state_as
-        self.has_green = set_sensor_state_as
-        self.has_blue = set_sensor_state_as
-        self.has_violet = set_sensor_state_as
+        self.has_color = set_sensor_state_as
         self.has_acc = set_sensor_state_as
         self.has_mag = set_sensor_state_as
         self.has_gyro = set_sensor_state_as
@@ -128,7 +95,6 @@ def get_interval_sensor_readings():
     Returns Interval formatted sensor readings based on installed sensors.
     Format = 'CSV String Installed Sensor Types' + special separator + 'CSV String Sensor Readings'
     """
-
     sensor_types = [app_cached_variables.database_variables.all_tables_datetime]
     sensor_readings = [datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
     if app_config_access.installed_sensors.linux_system:
@@ -138,7 +104,7 @@ def get_interval_sensor_readings():
         sensor_readings += [sensor_access.get_hostname(),
                             sensor_access.get_ip(),
                             sensor_access.get_uptime_minutes()]
-    if app_config_access.installed_sensors.raspberry_pi:
+    if available_sensors.has_cpu_temperature:
         sensor_types.append(app_cached_variables.database_variables.system_temperature)
         sensor_readings.append(sensor_access.get_cpu_temperature())
     if available_sensors.has_env_temperature:
@@ -162,73 +128,28 @@ def get_interval_sensor_readings():
         sensor_types.append(app_cached_variables.database_variables.distance)
         sensor_readings.append(sensor_access.get_distance())
     if available_sensors.has_gas:
-        gas_index = sensor_access.get_gas_resistance_index()
-        gas_oxidised = sensor_access.get_gas_oxidised()
-        gas_reduced = sensor_access.get_gas_reduced()
-        gas_nh3 = sensor_access.get_gas_nh3()
-
-        if valid_sensor_reading(gas_index):
-            sensor_types.append(app_cached_variables.database_variables.gas_resistance_index)
-            sensor_readings.append(gas_index)
-        if valid_sensor_reading(gas_oxidised):
-            sensor_types.append(app_cached_variables.database_variables.gas_oxidising)
-            sensor_readings.append(gas_oxidised)
-        if valid_sensor_reading(gas_reduced):
-            sensor_types.append(app_cached_variables.database_variables.gas_reducing)
-            sensor_readings.append(gas_reduced)
-        if valid_sensor_reading(gas_nh3):
-            sensor_types.append(app_cached_variables.database_variables.gas_nh3)
-            sensor_readings.append(gas_nh3)
+        gas_readings = sensor_access.get_gas(return_as_dictionary=True)
+        for text_name, item_value in gas_readings.items():
+            sensor_types.append(text_name)
+            sensor_readings.append(item_value)
     if available_sensors.has_particulate_matter:
-        pm1_reading = sensor_access.get_particulate_matter_1()
-        pm2_5_reading = sensor_access.get_particulate_matter_2_5()
-        pm10_reading = sensor_access.get_particulate_matter_10()
-
-        if valid_sensor_reading(pm1_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_1)
-            sensor_readings.append(pm1_reading)
-        if valid_sensor_reading(pm2_5_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_2_5)
-            sensor_readings.append(pm2_5_reading)
-        if valid_sensor_reading(pm10_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_10)
-            sensor_readings.append(pm10_reading)
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+        for text_name, item_value in pm_readings.items():
+            sensor_types.append(text_name)
+            sensor_readings.append(item_value)
     if available_sensors.has_lumen:
         sensor_types.append(app_cached_variables.database_variables.lumen)
         sensor_readings.append(sensor_access.get_lumen())
-    if available_sensors.has_red:
-        ems_colours = sensor_access.get_ems()
-
-        if len(ems_colours) == 3:
-            sensor_types += [app_cached_variables.database_variables.red,
-                             app_cached_variables.database_variables.green,
-                             app_cached_variables.database_variables.blue]
-            sensor_readings += [ems_colours[0],
-                                ems_colours[1],
-                                ems_colours[2]]
-        elif len(ems_colours) == 6:
-            sensor_types += [app_cached_variables.database_variables.red,
-                             app_cached_variables.database_variables.orange,
-                             app_cached_variables.database_variables.yellow,
-                             app_cached_variables.database_variables.green,
-                             app_cached_variables.database_variables.blue,
-                             app_cached_variables.database_variables.violet]
-            sensor_readings += [ems_colours[0],
-                                ems_colours[1],
-                                ems_colours[2],
-                                ems_colours[3],
-                                ems_colours[4],
-                                ems_colours[5]]
+    if available_sensors.has_color:
+        ems_colours = sensor_access.get_ems_colors(return_as_dictionary=True)
+        for text_name, item_value in ems_colours.items():
+            sensor_types.append(text_name)
+            sensor_readings.append(item_value)
     if available_sensors.has_ultra_violet:
-        uva_reading = sensor_access.get_ultra_violet_a()
-        uvb_reading = sensor_access.get_ultra_violet_b()
-
-        if valid_sensor_reading(uva_reading):
-            sensor_types.append(app_cached_variables.database_variables.ultra_violet_a)
-            sensor_readings.append(sensor_access.get_ultra_violet_a())
-        if valid_sensor_reading(uvb_reading):
-            sensor_types.append(app_cached_variables.database_variables.ultra_violet_b)
-            sensor_readings.append(sensor_access.get_ultra_violet_b())
+        uv_reading = sensor_access.get_ultra_violet(return_as_dictionary=True)
+        for text_name, item_value in uv_reading.items():
+            sensor_types.append(text_name)
+            sensor_readings.append(item_value)
     if available_sensors.has_acc:
         accelerometer_readings = sensor_access.get_accelerometer_xyz()
 
