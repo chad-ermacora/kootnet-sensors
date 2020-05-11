@@ -1,0 +1,191 @@
+<div class="mui-tabs__pane" id="displays-tab">
+    <form id="display-form" class="mui-form" method="POST" style="width: 575px; min-height: 300px;"
+          action="/EditDisplayConfiguration">
+        <fieldset style="text-align: center;">
+            <h2><u><a style="color: black;" href="{{ PageURL }}">Display Settings</a></u></h2>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    Minutes between displaying sensor readings
+                    <br>
+                    <br>
+                    <input style="width: 75px;" type="number" step="1" min="1" name="display_interval_delay_min"
+                           value="{{ DisplayIntervalDelay }}">
+                </label>
+            </div>
+
+            <br>
+
+            <h4><u>Display Type</u></h4>
+            <div class="mui-radio">
+                <label class="container_radio">
+                    <input type="radio" name="display_type" value="numerical" {{ DisplayNumericalChecked }}>
+                    Numerical
+                    <span class="checkmark_radio"></span>
+                </label>
+                <label class="container_radio">
+                    <input type="radio" name="display_type" value="graph" {{ DisplayGraphChecked }} disabled>
+                    Graph
+                    <span class="checkmark_radio"></span>
+                </label>
+            </div>
+
+            <hr>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
+                    Select All
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplaySensorUptime" value="" {{ DisplayUptimeChecked }}>
+                    Sensor Uptime
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayCPUTemp" value="" {{ DisplayCPUTempChecked }}>
+                    CPU Temperature
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayEnvTemp" value="" {{ DisplayEnvTempChecked }}>
+                    Environmental Temperature
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayPressure" value="" {{ DisplayPressureChecked }}>
+                    Pressure
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayAltitude" value="" {{ DisplayAltitudeChecked }}>
+                    Altitude
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayHumidity" value="" {{ DisplayHumidityChecked }}>
+                    Humidity
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayDistance" value="" {{ DisplayDistanceChecked }}>
+                    Distance
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayGas" value="" {{ DisplayGASChecked }}>
+                    Gas
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayParticulateMatter" value="" {{ DisplayPMChecked }}>
+                    Particulate Matter
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayLumen" value="" {{ DisplayLumenChecked }}>
+                    Lumen
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayColours" value="" {{ DisplayColoursChecked }}>
+                    Colours
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayUltraViolet" value="" {{ DisplayUltraVioletChecked }}>
+                    Ultra Violet
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayAccelerometer" value="" {{ DisplayAccChecked }}>
+                    Accelerometer
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayMagnetometer" value="" {{ DisplayMagChecked }}>
+                    Magnetometer
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="DisplayGyroscope" value="" {{ DisplayGyroChecked }}>
+                    Gyroscope
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+            <br>
+
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    jQuery('#SelectAllCheckboxes').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("form[id=display-form] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("form[id=display-form] input:checkbox").prop('checked', false);
+        }
+    });
+</script>

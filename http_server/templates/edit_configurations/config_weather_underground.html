@@ -1,0 +1,96 @@
+<div class="mui-tabs__pane" id="weather-underground-tab">
+    <br>
+    <div class="mui-container-fluid">
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/EditOnlineServicesWeatherUnderground">
+            <fieldset style="text-align: center">
+                <h3><u><strong><a style="color: black" href="https://www.wunderground.com" target="_blank">
+                    Weather Underground
+                </a></strong></u></h3>
+
+                <h5><b>This will upload all compatible sensor readings to Weather Underground</b></h5>
+
+                <div class="mui-checkbox">
+                    <label class="container_checkbox">
+                        <input type="checkbox" id="wu_enabled" name="enable_weather_underground"
+                               value="" {{ CheckedWUEnabled }}>
+                        Enable Weather UnderGround
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox">
+                    <label class="container_checkbox">
+                        <input type="checkbox" id="wu_rapid_fire_enabled" name="enable_wu_rapid_fire"
+                               value="" {{ CheckedWURapidFire }} {{ DisabledWURapidFire }}>
+                        Enable RapidFire Updates (Updating every 2-10 seconds)
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between Updates
+                        <br>
+                        <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
+                               value="{{ WUIntervalSeconds }}" {{ DisabledWUInterval }}>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="weather_underground_outdoor"
+                               value="" {{ CheckedWUOutdoor }} {{ DisabledWUOutdoor }}>
+                        Outdoor Sensor
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Station ID
+                        <br>
+                        <input style="width: 125px" type="text" maxlength="15" name="station_id"
+                               value="{{ WUStationID }}" {{ DisabledStationID }}>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Station Key
+                        <br>
+                        <input style="width: 175px" type="password" maxlength="15" name="station_key"
+                               placeholder="Leave blank to use previous Key"
+                               value="" {{ DisabledStationKey }}>
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+</div>
+
+<script>
+    jQuery('#wu_enabled').change(function () {
+        if (jQuery(this).prop('checked')) {
+            document.getElementsByName("weather_underground_interval")[0].disabled = false;
+            document.getElementsByName("enable_wu_rapid_fire")[0].disabled = false;
+            document.getElementsByName("weather_underground_outdoor")[0].disabled = false;
+            document.getElementsByName("station_id")[0].disabled = false;
+            document.getElementsByName("station_key")[0].disabled = false;
+        } else {
+            document.getElementsByName("weather_underground_interval")[0].disabled = true;
+            document.getElementsByName("enable_wu_rapid_fire")[0].disabled = true;
+            document.getElementsByName("weather_underground_outdoor")[0].disabled = true;
+            document.getElementsByName("station_id")[0].disabled = true;
+            document.getElementsByName("station_key")[0].disabled = true;
+        }
+    });
+
+    jQuery('#luftdaten_enabled').change(function () {
+        document.getElementsByName("station_interval")[0].disabled = !jQuery(this).prop('checked');
+    });
+</script>
