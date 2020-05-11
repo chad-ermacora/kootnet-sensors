@@ -468,6 +468,12 @@ def get_gyroscope_xyz():
     return xyz
 
 
+# TODO: Send all sensors in JSON format
+def get_all_sensors_as_json():
+    """ Returns all sensor readings in JSON format. """
+    return "WIP"
+
+
 def display_message(text_msg):
     """ If a Supported Display is installed, shows provided text message on it. """
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
@@ -593,7 +599,7 @@ def add_note_to_database(datetime_note):
 
         sqlite_database.write_to_sql_database(sql_execute)
     else:
-        logger.sensors_logger.error("Unable to add bad Note")
+        logger.network_logger.error("Unable to add Note to DB: Bad Note")
 
 
 def update_note_in_database(datetime_note):

@@ -76,6 +76,7 @@ class CreateGeneralConfiguration:
         return new_file_content
 
     def set_config_with_str(self, config_file_text):
+        """ Sets configuration with the provided Text. """
         if config_file_text is not None:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting

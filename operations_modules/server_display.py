@@ -26,7 +26,7 @@ display_variables = app_cached_variables.CreateDisplaySensorsVariables()
 
 
 def scroll_interval_readings_on_display():
-    if sensor_access.display_message("Kootnet Sensors Started"):
+    if sensor_access.display_message("KS init: " + get_numerical_display_text()):
         logger.primary_logger.info(" -- Sensor Display Server Started")
         while True:
             sleep(app_config_access.display_config.minutes_between_display * 60)
@@ -59,11 +59,25 @@ def get_numerical_display_text():
     if app_config_access.display_config.sensors_to_display[display_variables.gas]:
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         for text_name, item_value in gas_readings.items():
-            text_message += " " + str(text_name) + ": " + str(item_value)
+            if text_name == app_cached_variables.database_variables.gas_resistance_index:
+                text_name = " Gas Index:"
+            elif text_name == app_cached_variables.database_variables.gas_oxidising:
+                text_name = " Gas Ox:"
+            elif text_name == app_cached_variables.database_variables.gas_reducing:
+                text_name = " Gas Re:"
+            elif text_name == app_cached_variables.database_variables.gas_nh3:
+                text_name = " Gas NH3:"
+            text_message += str(text_name) + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
         pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         for text_name, item_value in pm_readings.items():
-            text_message += " " + str(text_name) + ": " + str(item_value)
+            if text_name == app_cached_variables.database_variables.particulate_matter_1:
+                text_name = " PM1:"
+            elif text_name == app_cached_variables.database_variables.particulate_matter_2_5:
+                text_name = " PM2:"
+            elif text_name == app_cached_variables.database_variables.particulate_matter_10:
+                text_name = " PM10:"
+            text_message += str(text_name) + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
         text_message += " Lumen: " + str(sensor_access.get_lumen())
     if app_config_access.display_config.sensors_to_display[display_variables.color]:
@@ -73,13 +87,22 @@ def get_numerical_display_text():
     if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
         uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
         for text_name, item_value in uv_readings.items():
-            text_message += " " + str(text_name) + ": " + str(item_value)
+            if text_name == app_cached_variables.database_variables.ultra_violet_index:
+                text_name = " UV Index:"
+            elif text_name == app_cached_variables.database_variables.ultra_violet_a:
+                text_name = " UVA:"
+            elif text_name == app_cached_variables.database_variables.ultra_violet_b:
+                text_name = " UVB:"
+            text_message += str(text_name) + str(item_value)
     if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
-        text_message += " Acc: " + str(sensor_access.get_accelerometer_xyz())
+        xzy = sensor_access.get_accelerometer_xyz()
+        text_message += " |Acc X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
     if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:
-        text_message += " Mag: " + str(sensor_access.get_magnetometer_xyz())
+        xzy = sensor_access.get_magnetometer_xyz()
+        text_message += " |Mag X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
     if app_config_access.display_config.sensors_to_display[display_variables.gyroscope]:
-        text_message += " Gyro: " + str(sensor_access.get_gyroscope_xyz())
+        xzy = sensor_access.get_gyroscope_xyz()
+        text_message += " |Gyro X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
     return text_message
 
 

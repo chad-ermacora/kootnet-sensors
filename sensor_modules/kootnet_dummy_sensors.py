@@ -197,7 +197,7 @@ class CreateDummySensors:
             whole_numbers = random.randint(min_number, max_number)
             decimal_numbers = random.random()
             tri_return.append(round(whole_numbers + decimal_numbers, round_decimal_to))
-        return tri_return
+        return tri_return[0], tri_return[1], tri_return[2]
 
     @staticmethod
     def _get_random_int(min_number=1, max_number=100):
