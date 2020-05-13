@@ -10,6 +10,7 @@ from flask import Blueprint, render_template, request, __version__ as flask_vers
 from werkzeug.security import generate_password_hash
 from cryptography import x509, __version__ as cryptography_version
 from cryptography.hazmat.backends import default_backend
+from configuration_modules.config_display import CreateDisplaySensorsVariables
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -22,24 +23,58 @@ from operations_modules import app_validation_checks
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
+from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, mqtt_base_topic
 from sensor_modules import sensor_access
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 
-display_variables = app_cached_variables.CreateDisplaySensorsVariables()
+display_variables = CreateDisplaySensorsVariables()
+mqtt_topics = CreateMQTTSensorTopics()
 running_with_root = True
 if geteuid():
     running_with_root = False
+
+
+@html_sensor_config_routes.route("/GetMQTTTopics")
+def html_get_mqtt_topics():
+    logger.network_logger.debug("** HTML Get MQTT Topics accessed from " + str(request.remote_addr))
+    return render_template("non-flask/mqtt_help.html",
+                           SystemUpTime=mqtt_base_topic + mqtt_topics.system_uptime,
+                           SystemTemperature=mqtt_base_topic + mqtt_topics.system_temperature,
+                           EnvironmentTemperature=mqtt_base_topic + mqtt_topics.env_temperature,
+                           Pressure=mqtt_base_topic + mqtt_topics.pressure,
+                           Altitude=mqtt_base_topic + mqtt_topics.altitude,
+                           Humidity=mqtt_base_topic + mqtt_topics.humidity,
+                           Distance=mqtt_base_topic + mqtt_topics.distance,
+                           Gas=mqtt_base_topic + mqtt_topics.gas,
+                           ParticulateMatter=mqtt_base_topic + mqtt_topics.particulate_matter,
+                           Lumen=mqtt_base_topic + mqtt_topics.lumen,
+                           Color=mqtt_base_topic + mqtt_topics.color,
+                           UltraViolet=mqtt_base_topic + mqtt_topics.ultra_violet,
+                           Accelerometer=mqtt_base_topic + mqtt_topics.accelerometer,
+                           Magnetometer=mqtt_base_topic + mqtt_topics.magnetometer,
+                           Gyroscope=mqtt_base_topic + mqtt_topics.gyroscope)
 
 
 @html_sensor_config_routes.route("/ConfigurationsHTML")
 @auth.login_required
 def html_edit_configurations():
     logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
-    try:
-        variances = app_config_access.trigger_variances
-        sensors_now = app_config_access.installed_sensors
+    return render_template("edit_configurations.html",
+                           PageURL="/ConfigurationsHTML",
+                           ConfigPrimaryTab=_get_config_primary_tab(),
+                           ConfigInstalledSensorsTab=_get_config_installed_sensors_tab(),
+                           ConfigDisplayTab=_get_config_display_tab(),
+                           ConfigTriggerVariancesTab=_get_config_trigger_variances_tab(),
+                           ConfigMQTTBrokerTab=_get_config_mqtt_broker_tab(),
+                           ConfigMQTTPublisherTab=_get_config_mqtt_publisher_tab(),
+                           ConfigWUTab=_get_config_weather_underground_tab(),
+                           ConfigLuftdatenTab=_get_config_luftdaten_tab(),
+                           ConfigOSMTab=_get_config_osm_tab())
 
+
+def _get_config_primary_tab():
+    try:
         debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
         display = get_html_checkbox_state(app_config_access.primary_config.enable_display)
         interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
@@ -51,94 +86,7 @@ def html_edit_configurations():
         custom_temp_offset_disabled = "disabled"
         if custom_temp_offset:
             custom_temp_offset_disabled = ""
-
-        wu_checked = get_html_checkbox_state(app_config_access.weather_underground_config.weather_underground_enabled)
-        wu_rapid_fire_checked = get_html_checkbox_state(
-            app_config_access.weather_underground_config.wu_rapid_fire_enabled)
-        wu_rapid_fire_disabled = "disabled"
-        wu_interval_seconds_disabled = "disabled"
-        wu_outdoor_disabled = "disabled"
-        wu_station_id_disabled = "disabled"
-        wu_station_key_disabled = "disabled"
-        if app_config_access.weather_underground_config.weather_underground_enabled:
-            wu_rapid_fire_disabled = ""
-            wu_interval_seconds_disabled = ""
-            wu_outdoor_disabled = ""
-            wu_station_id_disabled = ""
-            wu_station_key_disabled = ""
-
-        wu_interval_seconds = app_config_access.weather_underground_config.interval_seconds
-        wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
-        wu_station_id = app_config_access.weather_underground_config.station_id
-
-        luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
-        luftdaten_interval_seconds_disabled = "disabled"
-        if app_config_access.luftdaten_config.luftdaten_enabled:
-            luftdaten_interval_seconds_disabled = ""
-
-        luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
-        luftdaten_station_id = app_config_access.luftdaten_config.station_id
-
-        osm_disabled = "disabled"
-        osm_enable_checked = ""
-        if app_config_access.open_sense_map_config.open_sense_map_enabled:
-            osm_enable_checked = "checked"
-            osm_disabled = ""
-
-        display_numerical_checked = ""
-        display_graph_checked = ""
-        if app_config_access.display_config.display_type == display_variables.display_type_numerical:
-            display_numerical_checked = "checked"
-        else:
-            display_graph_checked = "checked"
-
-        display_sensor_uptime = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.sensor_uptime]:
-            display_sensor_uptime = "checked"
-        display_sensor_cpu_temperature = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.system_temperature]:
-            display_sensor_cpu_temperature = "checked"
-        display_sensor_env_temperature = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.env_temperature]:
-            display_sensor_env_temperature = "checked"
-        display_sensor_pressure = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.pressure]:
-            display_sensor_pressure = "checked"
-        display_sensor_altitude = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.altitude]:
-            display_sensor_altitude = "checked"
-        display_sensor_humidity = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.humidity]:
-            display_sensor_humidity = "checked"
-        display_sensor_distance = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.distance]:
-            display_sensor_distance = "checked"
-        display_sensor_gas = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.gas]:
-            display_sensor_gas = "checked"
-        display_sensor_particulate_matter = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
-            display_sensor_particulate_matter = "checked"
-        display_sensor_lumen = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
-            display_sensor_lumen = "checked"
-        display_sensor_colors = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.color]:
-            display_sensor_colors = "checked"
-        display_sensor_ultra_violet = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
-            display_sensor_ultra_violet = "checked"
-        display_sensor_acc = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
-            display_sensor_acc = "checked"
-        display_sensor_mag = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:
-            display_sensor_mag = "checked"
-        display_sensor_gyro = ""
-        if app_config_access.display_config.sensors_to_display[display_variables.gyroscope]:
-            display_sensor_gyro = "checked"
-
-        return render_template("edit_configurations.html",
+        return render_template("edit_configurations/config_primary.html",
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
@@ -149,7 +97,17 @@ def html_edit_configurations():
                                CheckedTrigger=trigger_recording,
                                CheckedCustomTempOffset=custom_temp_offset,
                                DisabledCustomTempOffset=custom_temp_offset_disabled,
-                               temperature_offset=float(app_config_access.primary_config.temperature_offset),
+                               temperature_offset=float(app_config_access.primary_config.temperature_offset))
+    except Exception as error:
+        logger.network_logger.error("Error building Primary configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="primary-config-tab")
+
+
+def _get_config_installed_sensors_tab():
+    try:
+        sensors_now = app_config_access.installed_sensors
+        return render_template("edit_configurations/config_installed_sensors.html",
+                               PageURL="/ConfigurationsHTML",
                                GnuLinux=get_html_checkbox_state(sensors_now.linux_system),
                                KootnetDummySensors=get_html_checkbox_state(sensors_now.kootnet_dummy_sensor),
                                RaspberryPi=get_html_checkbox_state(sensors_now.raspberry_pi),
@@ -171,25 +129,52 @@ def html_edit_configurations():
                                PimoroniVEML6075=get_html_checkbox_state(sensors_now.pimoroni_veml6075),
                                Pimoroni11x7LEDMatrix=get_html_checkbox_state(sensors_now.pimoroni_matrix_11x7),
                                PimoroniSPILCD10_96=get_html_checkbox_state(sensors_now.pimoroni_st7735),
-                               PimoroniMonoOLED128x128BW=get_html_checkbox_state(sensors_now.pimoroni_mono_oled_luma),
+                               PimoroniMonoOLED128x128BW=get_html_checkbox_state(sensors_now.pimoroni_mono_oled_luma))
+    except Exception as error:
+        logger.network_logger.error("Error building Installed Sensors configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="installed-sensors-tab")
+
+
+def _get_config_display_tab():
+    try:
+        display_numerical_checked = ""
+        display_graph_checked = ""
+        display_type_numerical = app_config_access.display_config.display_type_numerical
+        if app_config_access.display_config.display_type == display_type_numerical:
+            display_numerical_checked = "checked"
+        else:
+            display_graph_checked = "checked"
+        sensors_to_display = app_config_access.display_config.sensors_to_display
+        return render_template("edit_configurations/config_display.html",
+                               PageURL="/ConfigurationsHTML",
                                DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
                                DisplayNumericalChecked=display_numerical_checked,
                                DisplayGraphChecked=display_graph_checked,
-                               DisplayUptimeChecked=display_sensor_uptime,
-                               DisplayCPUTempChecked=display_sensor_cpu_temperature,
-                               DisplayEnvTempChecked=display_sensor_env_temperature,
-                               DisplayPressureChecked=display_sensor_pressure,
-                               DisplayAltitudeChecked=display_sensor_altitude,
-                               DisplayHumidityChecked=display_sensor_humidity,
-                               DisplayDistanceChecked=display_sensor_distance,
-                               DisplayGASChecked=display_sensor_gas,
-                               DisplayPMChecked=display_sensor_particulate_matter,
-                               DisplayLumenChecked=display_sensor_lumen,
-                               DisplayColoursChecked=display_sensor_colors,
-                               DisplayUltraVioletChecked=display_sensor_ultra_violet,
-                               DisplayAccChecked=display_sensor_acc,
-                               DisplayMagChecked=display_sensor_mag,
-                               DisplayGyroChecked=display_sensor_gyro,
+                               DisplayUptimeChecked=sensors_to_display[display_variables.sensor_uptime],
+                               DisplayCPUTempChecked=sensors_to_display[display_variables.system_temperature],
+                               DisplayEnvTempChecked=sensors_to_display[display_variables.env_temperature],
+                               DisplayPressureChecked=sensors_to_display[display_variables.pressure],
+                               DisplayAltitudeChecked=sensors_to_display[display_variables.altitude],
+                               DisplayHumidityChecked=sensors_to_display[display_variables.humidity],
+                               DisplayDistanceChecked=sensors_to_display[display_variables.distance],
+                               DisplayGASChecked=sensors_to_display[display_variables.gas],
+                               DisplayPMChecked=sensors_to_display[display_variables.particulate_matter],
+                               DisplayLumenChecked=sensors_to_display[display_variables.lumen],
+                               DisplayColoursChecked=sensors_to_display[display_variables.color],
+                               DisplayUltraVioletChecked=sensors_to_display[display_variables.ultra_violet],
+                               DisplayAccChecked=sensors_to_display[display_variables.accelerometer],
+                               DisplayMagChecked=sensors_to_display[display_variables.magnetometer],
+                               DisplayGyroChecked=sensors_to_display[display_variables.gyroscope])
+    except Exception as error:
+        logger.network_logger.error("Error building Display configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="displays-tab")
+
+
+def _get_config_trigger_variances_tab():
+    try:
+        variances = app_config_access.trigger_variances
+        return render_template("edit_configurations/config_trigger_variances.html",
+                               PageURL="/ConfigurationsHTML",
                                CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
                                DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
                                CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
@@ -250,7 +235,86 @@ def html_edit_configurations():
                                TriggerGyroscopeX=variances.gyroscope_x_variance,
                                TriggerGyroscopeY=variances.gyroscope_y_variance,
                                TriggerGyroscopeZ=variances.gyroscope_z_variance,
-                               SecondsGyroscope=variances.gyroscope_wait_seconds,
+                               SecondsGyroscope=variances.gyroscope_wait_seconds)
+    except Exception as error:
+        logger.network_logger.error("Error building Trigger Variances configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="trigger-variances-tab")
+
+
+def _get_config_mqtt_broker_tab():
+    try:
+        enable_broker_server = app_config_access.mqtt_broker_config.enable_mqtt_broker
+        return render_template("edit_configurations/config_mqtt_broker.html",
+                               PageURL="/ConfigurationsHTML",
+                               MQTTBrokerServerChecked=_get_checked_text(enable_broker_server),
+                               MQTTBrokerUsername=app_config_access.mqtt_broker_config.username)
+    except Exception as error:
+        logger.network_logger.error("Error building MQTT Broker configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="mqtt-broker-tab")
+
+
+def _get_config_mqtt_publisher_tab():
+    try:
+        base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic + sensor_access.get_hostname() + "/"
+        enable_mqtt_publisher = app_config_access.mqtt_publisher_config.enable_mqtt_publisher
+        enable_broker_auth = app_config_access.mqtt_publisher_config.enable_broker_auth
+        return render_template("edit_configurations/config_mqtt_publisher.html",
+                               PageURL="/ConfigurationsHTML",
+                               MQTTBaseTopic=base_topic,
+                               MQTTPublisherChecked=_get_checked_text(enable_mqtt_publisher),
+                               MQTTBrokerAddress=app_config_access.mqtt_publisher_config.broker_address,
+                               MQTTBrokerPort=str(app_config_access.mqtt_publisher_config.broker_server_port),
+                               MQTTPublishSecondsWait=str(app_config_access.mqtt_publisher_config.seconds_to_wait),
+                               MQTTPublisherAuthChecked=_get_checked_text(enable_broker_auth),
+                               MQTTPublisherUsername=app_config_access.mqtt_publisher_config.broker_user,
+                               MQTTUptimeChecked=_get_checked_text(app_config_access.mqtt_publisher_config.sensor_uptime),
+                               MQTTCPUTempChecked=_get_checked_text(app_config_access.mqtt_publisher_config.system_temperature),
+                               MQTTEnvTempChecked=_get_checked_text(app_config_access.mqtt_publisher_config.env_temperature),
+                               MQTTPressureChecked=_get_checked_text(app_config_access.mqtt_publisher_config.pressure),
+                               MQTTAltitudeChecked=_get_checked_text(app_config_access.mqtt_publisher_config.altitude),
+                               MQTTHumidityChecked=_get_checked_text(app_config_access.mqtt_publisher_config.humidity),
+                               MQTTDistanceChecked=_get_checked_text(app_config_access.mqtt_publisher_config.distance),
+                               MQTTGASChecked=_get_checked_text(app_config_access.mqtt_publisher_config.gas),
+                               MQTTPMChecked=_get_checked_text(app_config_access.mqtt_publisher_config.particulate_matter),
+                               MQTTLumenChecked=_get_checked_text(app_config_access.mqtt_publisher_config.lumen),
+                               MQTTColoursChecked=_get_checked_text(app_config_access.mqtt_publisher_config.color),
+                               MQTTUltraVioletChecked=_get_checked_text(app_config_access.mqtt_publisher_config.ultra_violet),
+                               MQTTAccChecked=_get_checked_text(app_config_access.mqtt_publisher_config.accelerometer),
+                               MQTTMagChecked=_get_checked_text(app_config_access.mqtt_publisher_config.magnetometer),
+                               MQTTGyroChecked=_get_checked_text(app_config_access.mqtt_publisher_config.gyroscope))
+    except Exception as error:
+        logger.network_logger.error("Error building MQTT configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="mqtt-publisher-tab")
+
+
+def _get_checked_text(setting):
+    if setting:
+        return "checked"
+    return ""
+
+
+def _get_config_weather_underground_tab():
+    try:
+        wu_checked = get_html_checkbox_state(app_config_access.weather_underground_config.weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(
+            app_config_access.weather_underground_config.wu_rapid_fire_enabled)
+        wu_rapid_fire_disabled = "disabled"
+        wu_interval_seconds_disabled = "disabled"
+        wu_outdoor_disabled = "disabled"
+        wu_station_id_disabled = "disabled"
+        wu_station_key_disabled = "disabled"
+        if app_config_access.weather_underground_config.weather_underground_enabled:
+            wu_rapid_fire_disabled = ""
+            wu_interval_seconds_disabled = ""
+            wu_outdoor_disabled = ""
+            wu_station_id_disabled = ""
+            wu_station_key_disabled = ""
+
+        wu_interval_seconds = app_config_access.weather_underground_config.interval_seconds
+        wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
+        wu_station_id = app_config_access.weather_underground_config.station_id
+        return render_template("edit_configurations/config_weather_underground.html",
+                               PageURL="/ConfigurationsHTML",
                                CheckedWUEnabled=wu_checked,
                                CheckedWURapidFire=wu_rapid_fire_checked,
                                DisabledWURapidFire=wu_rapid_fire_disabled,
@@ -260,11 +324,41 @@ def html_edit_configurations():
                                DisabledWUOutdoor=wu_outdoor_disabled,
                                DisabledStationID=wu_station_id_disabled,
                                WUStationID=wu_station_id,
-                               DisabledStationKey=wu_station_key_disabled,
+                               DisabledStationKey=wu_station_key_disabled)
+    except Exception as error:
+        logger.network_logger.error("Error building Weather Underground configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="weather-underground-tab")
+
+
+def _get_config_luftdaten_tab():
+    try:
+        luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
+        luftdaten_interval_seconds_disabled = "disabled"
+        if app_config_access.luftdaten_config.luftdaten_enabled:
+            luftdaten_interval_seconds_disabled = ""
+
+        luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
+        luftdaten_station_id = app_config_access.luftdaten_config.station_id
+        return render_template("edit_configurations/config_luftdaten.html",
+                               PageURL="/ConfigurationsHTML",
                                CheckedLuftdatenEnabled=luftdaten_checked,
                                LuftdatenIntervalSeconds=luftdaten_interval_seconds,
                                DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
-                               LuftdatenStationID=luftdaten_station_id,
+                               LuftdatenStationID=luftdaten_station_id)
+    except Exception as error:
+        logger.network_logger.error("Error building Luftdaten configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="luftdaten-tab")
+
+
+def _get_config_osm_tab():
+    try:
+        osm_disabled = "disabled"
+        osm_enable_checked = ""
+        if app_config_access.open_sense_map_config.open_sense_map_enabled:
+            osm_enable_checked = "checked"
+            osm_disabled = ""
+        return render_template("edit_configurations/config_open_sense_map.html",
+                               PageURL="/ConfigurationsHTML",
                                CheckedOSMEnabled=osm_enable_checked,
                                OSMDisabled=osm_disabled,
                                OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
@@ -291,9 +385,8 @@ def html_edit_configurations():
                                OSMUVAID=app_config_access.open_sense_map_config.ultra_violet_a_id,
                                OSMUVBID=app_config_access.open_sense_map_config.ultra_violet_b_id)
     except Exception as error:
-        logger.network_logger.error("HTML unable to display Configurations: " + str(error))
-        msg2 = "Unable to Display Configurations..."
-        return message_and_return("Unable to display Configurations", text_message2=msg2)
+        logger.network_logger.error("Error building Open Sense Map configuration page: " + str(error))
+        return render_template("edit_configurations/config_load_error.html", TabID="open-sense-map-tab")
 
 
 @html_sensor_config_routes.route("/NetworkConfigurationsHTML")
@@ -425,6 +518,25 @@ def html_reset_trigger_variances():
     logger.network_logger.info("** Trigger Variances Reset - Source " + str(request.remote_addr))
     app_config_access.trigger_variances.reset_settings()
     return message_and_return("Trigger Variances Reset", url="/ConfigurationsHTML")
+
+
+@html_sensor_config_routes.route("/EditConfigMQTTPublisher", methods=["POST"])
+@auth.login_required
+def html_set_config_mqtt_publisher():
+    logger.network_logger.debug("** HTML Apply - MQTT Publisher Configuration - Source: " + str(request.remote_addr))
+    if request.method == "POST":
+        try:
+            app_config_access.mqtt_publisher_config.update_with_html_request(request)
+            app_config_access.mqtt_publisher_config.save_config_to_file()
+            page_msg = "Config Set, Please Restart Program"
+            if running_with_root:
+                page_msg = "Restarting Service, Please Wait ..."
+                thread_function(sensor_access.restart_services)
+            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return return_page
+        except Exception as error:
+            logger.primary_logger.error("HTML MQTT Publisher Configuration set Error: " + str(error))
+            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
 
 
 @html_sensor_config_routes.route("/EditSSL", methods=["GET", "POST"])

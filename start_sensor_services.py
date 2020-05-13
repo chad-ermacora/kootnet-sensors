@@ -37,9 +37,11 @@ from operations_modules.app_generic_functions import CreateMonitoredThread, thre
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import server_display
+from operations_modules import server_hardware_interactive
 from http_server import server_http
 from sensor_recording_modules import recording_interval
 from sensor_recording_modules import recording_triggers
+from online_services_modules.mqtt_publisher import start_mqtt_publisher
 from online_services_modules.luftdaten import start_luftdaten
 from online_services_modules.weather_underground import start_weather_underground as start_wu
 from online_services_modules.open_sense_map import start_open_sense_map as start_osm
@@ -48,7 +50,9 @@ logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 if app_config_access.installed_sensors.kootnet_dummy_sensor or \
         running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up special Sensor Access Service like SenseHat Joystick
-    sensor_access.start_special_sensor_interactive_services()
+    text_name = "Sensor Interactive Service"
+    function = server_hardware_interactive.start_hardware_interactive_server
+    app_cached_variables.interactive_sensor_thread = CreateMonitoredThread(function, thread_name=text_name)
 
     # If there is a display installed, start up the display server
     if app_config_access.primary_config.enable_display:
@@ -73,18 +77,18 @@ if app_config_access.installed_sensors.kootnet_dummy_sensor or \
         logger.primary_logger.debug("Trigger Recording Disabled in Primary Configuration")
 
     # Start up all enabled Online Services
-    if not app_config_access.installed_sensors.kootnet_dummy_sensor:
-        if app_config_access.weather_underground_config.weather_underground_enabled:
-            text_name = "Weather Underground"
-            app_cached_variables.weather_underground_thread = CreateMonitoredThread(start_wu, thread_name=text_name)
-        if app_config_access.luftdaten_config.luftdaten_enabled:
-            text_name = "Luftdaten"
-            app_cached_variables.luftdaten_thread = CreateMonitoredThread(start_luftdaten, thread_name=text_name)
-        if app_config_access.open_sense_map_config.open_sense_map_enabled:
-            text_name = "Open Sense Map"
-            app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_osm, thread_name=text_name)
-    else:
-        logger.primary_logger.warning("Online Services Skipped - Dummy Sensors Detected")
+    if app_config_access.weather_underground_config.weather_underground_enabled:
+        text_name = "Weather Underground"
+        app_cached_variables.weather_underground_thread = CreateMonitoredThread(start_wu, thread_name=text_name)
+    if app_config_access.luftdaten_config.luftdaten_enabled:
+        text_name = "Luftdaten"
+        app_cached_variables.luftdaten_thread = CreateMonitoredThread(start_luftdaten, thread_name=text_name)
+    if app_config_access.open_sense_map_config.open_sense_map_enabled:
+        text_name = "Open Sense Map"
+        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_osm, thread_name=text_name)
+    if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
+        text_name = "MQTT Publisher"
+        app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(start_mqtt_publisher, thread_name=text_name)
 else:
     if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")

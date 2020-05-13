@@ -1,0 +1,247 @@
+<div class="mui-tabs__pane" id="mqtt-publisher-tab">
+    <form id="mqtt-form" class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+          action="/EditConfigMQTTPublisher">
+        <fieldset style="text-align: center;">
+            <h3><u><strong><a style="color: black;" href="{{ PageURL }}">MQTT Publisher Configuration</a></strong></u></h3>
+
+
+
+            <hr>
+
+            <h5><b>
+                Use this to Publish Sensor readings to a
+                <a style="color: black;" href="http://mqtt.org/" target="_blank"><u>
+                    MQTT
+                </u></a>
+                    Broker
+            </b></h5>
+
+            <i><a style="color: #4A148C; font-size: small;" href="/GetMQTTTopics" target="_blank">
+                Click Here to see Available Topics
+            </a></i>
+
+            <br>
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="enable_mqtt_publisher" value="" {{ MQTTPublisherChecked }}>
+                    Enable MQTT Publisher
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Broker Address or IP
+                    <br>
+                    <input style="width: 200px;" type="text" maxlength="250" name="publish_broker_address"
+                           value="{{ MQTTBrokerAddress }}" {{ DisabledMQTTBrokerAddress }}>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Broker Port #
+                    <br>
+                    <input style="width: 75px;" type="number" min="1" max="65535" name="publish_broker_port"
+                           value="{{ MQTTBrokerPort }}" {{ DisabledMQTTBrokerPort }}>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Seconds between Publishing
+                    <br>
+                    <input style="width: 75px;" type="number" min="1" name="publish_seconds_wait"
+                           value="{{ MQTTPublishSecondsWait }}" {{ DisabledMQTTPublishSecondsWait }}>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="enable_broker_auth" value="" {{ MQTTPublisherAuthChecked }}>
+                    Enable MQTT Topic Authentication
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Username
+                    <br>
+                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                           value="{{ MQTTPublisherUsername }}" {{ DisabledMQTTPublisherUsername }}>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Password
+                    <br>
+                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password"
+                            {{ DisabledMQTTPublisherPassword }}>
+                </label>
+            </div>
+
+            <br>
+
+            <h3><u><strong>Sensors to Publish</strong></u></h3>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" id="SelectAllCheckboxesMQTT" value="">
+                    Select All
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+            <div id="sensor-checkboxes">
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTSensorUptime" value="" {{ MQTTUptimeChecked }}>
+                        Sensor Uptime
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTCPUTemp" value="" {{ MQTTCPUTempChecked }}>
+                        CPU Temperature
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTEnvTemp" value="" {{ MQTTEnvTempChecked }}>
+                        Environmental Temperature
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTPressure" value="" {{ MQTTPressureChecked }}>
+                        Pressure
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTAltitude" value="" {{ MQTTAltitudeChecked }}>
+                        Altitude
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTHumidity" value="" {{ MQTTHumidityChecked }}>
+                        Humidity
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTDistance" value="" {{ MQTTDistanceChecked }}>
+                        Distance
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTGas" value="" {{ MQTTGASChecked }}>
+                        Gas
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTParticulateMatter" value="" {{ MQTTPMChecked }}>
+                        Particulate Matter
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTLumen" value="" {{ MQTTLumenChecked }}>
+                        Lumen
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTColours" value="" {{ MQTTColoursChecked }}>
+                        Colours
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTUltraViolet" value="" {{ MQTTUltraVioletChecked }}>
+                        Ultra Violet
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTAccelerometer" value="" {{ MQTTAccChecked }}>
+                        Accelerometer
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTMagnetometer" value="" {{ MQTTMagChecked }}>
+                        Magnetometer
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="MQTTGyroscope" value="" {{ MQTTGyroChecked }}>
+                        Gyroscope
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    jQuery('#SelectAllCheckboxesMQTT').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
+        }
+    });
+</script>

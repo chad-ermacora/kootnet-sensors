@@ -20,6 +20,8 @@ from os import geteuid
 from operations_modules import logger
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
+from configuration_modules.config_mqtt_publisher import CreateMQTTPublisherConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -39,6 +41,8 @@ else:
     installed_sensors = CreateInstalledSensorsConfiguration()
 
 primary_config = CreatePrimaryConfiguration()
+mqtt_broker_config = CreateMQTTBrokerConfiguration()
+mqtt_publisher_config = CreateMQTTPublisherConfiguration()
 display_config = CreateDisplayConfiguration()
 trigger_variances = CreateTriggerVariancesConfiguration()
 sensor_control_config = CreateSensorControlConfiguration()

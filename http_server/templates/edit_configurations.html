@@ -38,6 +38,8 @@
             </a>
         </li>
 
+        <br>
+
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="trigger-variances-tab">
@@ -45,12 +47,17 @@
             </a>
         </li>
 
-        <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="mqtt-broker-tab">
+            MQTT Broker
+        </a></li>
 
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-               data-mui-controls="mqtt-tab">
-            MQTT
+               data-mui-controls="mqtt-publisher-tab">
+            MQTT Publisher
         </a></li>
+
+        <br>
 
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                                       data-mui-controls="weather-underground-tab">
@@ -73,7 +80,8 @@
     {{ ConfigInstalledSensorsTab|safe }}
     {{ ConfigDisplayTab|safe }}
     {{ ConfigTriggerVariancesTab|safe }}
-    {{ ConfigMQTTTab|safe }}
+    {{ ConfigMQTTBrokerTab|safe }}
+    {{ ConfigMQTTPublisherTab|safe }}
     {{ ConfigWUTab|safe }}
     {{ ConfigLuftdatenTab|safe }}
     {{ ConfigOSMTab|safe }}
