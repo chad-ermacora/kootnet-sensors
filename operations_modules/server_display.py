@@ -20,9 +20,10 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
+from configuration_modules.config_display import CreateDisplaySensorsVariables
 from sensor_modules import sensor_access
 
-display_variables = app_cached_variables.CreateDisplaySensorsVariables()
+display_variables = CreateDisplaySensorsVariables()
 
 
 def scroll_interval_readings_on_display():
@@ -30,7 +31,8 @@ def scroll_interval_readings_on_display():
         logger.primary_logger.info(" -- Sensor Display Server Started")
         while True:
             sleep(app_config_access.display_config.minutes_between_display * 60)
-            if app_config_access.display_config.display_type == display_variables.display_type_numerical:
+            display_type_numerical = app_config_access.display_config.display_type_numerical
+            if app_config_access.display_config.display_type == display_type_numerical:
                 sensor_access.display_message(get_numerical_display_text())
             else:
                 sensor_access.display_message(get_graphed_sensors())
