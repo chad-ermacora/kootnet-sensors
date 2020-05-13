@@ -34,7 +34,7 @@
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
-                    <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
+                    <input type="checkbox" id="SelectAllCheckboxesDisplay" value="" checked>
                     Select All
                     <span class="checkmark_checkbox"></span>
                 </label>
@@ -181,7 +181,7 @@
 </div>
 
 <script>
-    jQuery('#SelectAllCheckboxes').change(function () {
+    jQuery('#SelectAllCheckboxesDisplay').change(function () {
         if (jQuery(this).prop('checked')) {
             jQuery("form[id=display-form] input:checkbox").prop('checked', true);
         } else {
