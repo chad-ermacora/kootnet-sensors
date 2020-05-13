@@ -19,7 +19,7 @@
 import sqlite3
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables import database_variables
 
 
 class CreateOtherDataEntry:
@@ -65,7 +65,6 @@ def sql_execute_get_data(sql_query):
 def check_database_structure(database_location=file_locations.sensor_database):
     """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running DB Checks")
-    database_variables = app_cached_variables.CreateDatabaseVariables()
 
     columns_created = 0
     columns_already_made = 0
@@ -129,7 +128,7 @@ def _check_sql_table_and_column(table_name, column_name, db_cursor):
 
 
 def validate_sqlite_database(database_location):
-    table_to_check = app_cached_variables.database_variables.table_interval
+    table_to_check = database_variables.table_interval
     sql_table_check_query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table_to_check + "';"
     try:
         database_connection = sqlite3.connect(database_location)

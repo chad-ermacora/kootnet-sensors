@@ -12,7 +12,7 @@ import os
 import socket
 import psutil
 from time import strftime
-from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables import database_variables, current_platform
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
@@ -25,7 +25,6 @@ class CreateLinuxSystem:
     """ Creates Function access to Linux System Information. """
 
     def __init__(self):
-        self.database_variables = app_cached_variables.CreateDatabaseVariables()
         logger.sensors_logger.debug("Linux System Module Initialization - OK")
 
     @staticmethod
@@ -80,7 +79,7 @@ class CreateLinuxSystem:
 
     def get_uptime_str(self):
         """ Returns System UpTime as a human readable String. """
-        if app_cached_variables.current_platform == "Linux":
+        if current_platform == "Linux":
             var_minutes = self.get_uptime_raw()
             str_day_hour_min = ""
             try:
@@ -152,12 +151,13 @@ class CreateLinuxSystem:
             db_size_mb = 0.0
         return round(db_size_mb, round_decimal_to)
 
-    def get_db_notes_count(self):
+    @staticmethod
+    def get_db_notes_count():
         """ Returns the number of notes stored in the database as a str. """
         sql_query = "SELECT count(" + \
-                    str(self.database_variables.other_table_column_notes) + \
+                    str(database_variables.other_table_column_notes) + \
                     ") FROM " + \
-                    str(self.database_variables.table_other)
+                    str(database_variables.table_other)
 
         number_of_notes = str(sqlite_database.sql_execute_get_data(sql_query))
 
@@ -168,14 +168,15 @@ class CreateLinuxSystem:
             return_notes_count = "Error"
         return return_notes_count
 
-    def get_db_first_last_date(self):
+    @staticmethod
+    def get_db_first_last_date():
         """ Returns the first and last date stored in the database as a string. """
         sql_query = "SELECT Min(" + \
-                    str(self.database_variables.all_tables_datetime) + \
+                    str(database_variables.all_tables_datetime) + \
                     ") AS First, Max(" + \
-                    str(self.database_variables.all_tables_datetime) + \
+                    str(database_variables.all_tables_datetime) + \
                     ") AS Last FROM " + \
-                    str(self.database_variables.table_interval)
+                    str(database_variables.table_interval)
 
         db_datetime_column = str(sqlite_database.sql_execute_get_data(sql_query))
 
@@ -191,14 +192,15 @@ class CreateLinuxSystem:
             textbox_db_dates = "DataBase Error"
         return textbox_db_dates
 
-    def get_sensor_reboot_count(self):
+    @staticmethod
+    def get_sensor_reboot_count():
         """
         Returns the number of times the sensor has rebooted as a str.
         Reboot count is calculated by uptime values stored in the Database.
         """
-        sql_query = "SELECT " + str(self.database_variables.sensor_uptime) + \
-                    " FROM " + str(self.database_variables.table_interval) + \
-                    " WHERE length(" + str(self.database_variables.sensor_uptime) + \
+        sql_query = "SELECT " + str(database_variables.sensor_uptime) + \
+                    " FROM " + str(database_variables.table_interval) + \
+                    " WHERE length(" + str(database_variables.sensor_uptime) + \
                     ") < 2"
 
         sql_column_data = sqlite_database.sql_execute_get_data(sql_query)
