@@ -3,12 +3,17 @@
     <div class="mui-container-fluid">
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
               action="/EditOnlineServicesWeatherUnderground">
-            <fieldset style="text-align: center">
-                <h3><u><strong><a style="color: black" href="https://www.wunderground.com" target="_blank">
+            <fieldset style="text-align: center;">
+                <h3><u><strong><a style="color: black;" href="{{ PageURL }}">
                     Weather Underground
                 </a></strong></u></h3>
 
-                <h5><b>This will upload all compatible sensor readings to Weather Underground</b></h5>
+                <h5><b>
+                    This will upload all compatible sensor readings to
+                    <a style="color: black;" href="https://www.wunderground.com" target="_blank"><u>
+                        Weather Underground
+                    </u></a>
+                </b></h5>
 
                 <div class="mui-checkbox">
                     <label class="container_checkbox">
@@ -31,10 +36,10 @@
                 </div>
 
                 <div class="mui-textfield">
-                    <label style="color: black">
+                    <label style="color: black;">
                         Seconds between Updates
                         <br>
-                        <input style="width: 75px" type="number" min="1" name="weather_underground_interval"
+                        <input style="width: 75px;" type="number" min="1" name="weather_underground_interval"
                                value="{{ WUIntervalSeconds }}" {{ DisabledWUInterval }}>
                     </label>
                 </div>
@@ -49,19 +54,19 @@
                 </div>
 
                 <div class="mui-textfield">
-                    <label style="color: black">
+                    <label style="color: black;">
                         Station ID
                         <br>
-                        <input style="width: 125px" type="text" maxlength="15" name="station_id"
+                        <input style="width: 125px;" type="text" maxlength="15" name="station_id"
                                value="{{ WUStationID }}" {{ DisabledStationID }}>
                     </label>
                 </div>
 
                 <div class="mui-textfield">
-                    <label style="color: black">
+                    <label style="color: black;">
                         Station Key
                         <br>
-                        <input style="width: 175px" type="password" maxlength="15" name="station_key"
+                        <input style="width: 175px;" type="password" maxlength="15" name="station_key"
                                placeholder="Leave blank to use previous Key"
                                value="" {{ DisabledStationKey }}>
                     </label>
