@@ -20,10 +20,9 @@ import os
 import math
 import time
 from datetime import datetime
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateMonitoredThread, get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from operations_modules import app_config_access
@@ -420,7 +419,7 @@ def get_ultra_violet(return_as_dictionary=False):
 
 
 def get_accelerometer_xyz():
-    """ Returns sensors Accelerometer XYZ. """
+    """ Returns sensors Accelerometer XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -439,7 +438,7 @@ def get_accelerometer_xyz():
 
 
 def get_magnetometer_xyz():
-    """ Returns sensors Magnetometer XYZ. """
+    """ Returns sensors Magnetometer XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -456,7 +455,7 @@ def get_magnetometer_xyz():
 
 
 def get_gyroscope_xyz():
-    """ Returns sensors Gyroscope XYZ. """
+    """ Returns sensors Gyroscope XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
@@ -484,28 +483,22 @@ def display_message(text_msg):
             text_msg = "-- " + text_msg
             display_missing = True
             if app_config_access.installed_sensors.kootnet_dummy_sensor:
-                display_thread = Thread(target=sensors_direct.dummy_sensors.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.dummy_sensors.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-                display_thread = Thread(target=sensors_direct.rp_sense_hat_a.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.rp_sense_hat_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_matrix_11x7:
-                display_thread = Thread(target=sensors_direct.pimoroni_matrix_11x7_a.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.pimoroni_matrix_11x7_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_st7735:
-                display_thread = Thread(target=sensors_direct.pimoroni_st7735_a.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.pimoroni_st7735_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-                display_thread = Thread(target=sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_enviroplus:
-                display_thread = Thread(target=sensors_direct.pimoroni_enviroplus_a.display_text, args=[text_msg])
-                _start_daemon_thread(display_thread)
+                thread_function(sensors_direct.pimoroni_enviroplus_a.display_text, args=text_msg)
                 display_missing = False
             if display_missing:
                 return False
@@ -513,19 +506,6 @@ def display_message(text_msg):
     else:
         logger.sensors_logger.debug("* Unable to Display Text: Display disabled in Primary Configuration")
         return False
-
-
-def _start_daemon_thread(thread):
-    thread.daemon = True
-    thread.start()
-
-
-def start_special_sensor_interactive_services():
-    """ If available start additional hardware Interaction thread. """
-    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        text_name = "Sensor Interactive Service"
-        function = sensors_direct.rp_sense_hat_a.start_joy_stick_commands
-        app_cached_variables.interactive_sensor_thread = CreateMonitoredThread(function, thread_name=text_name)
 
 
 def restart_services(sleep_before_restart=1):
