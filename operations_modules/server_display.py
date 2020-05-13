@@ -20,10 +20,7 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from configuration_modules.config_display import CreateDisplaySensorsVariables
 from sensor_modules import sensor_access
-
-display_variables = CreateDisplaySensorsVariables()
 
 
 def scroll_interval_readings_on_display():
@@ -40,25 +37,24 @@ def scroll_interval_readings_on_display():
         logger.primary_logger.error(" -- Sensor Display Server Failed to Start: No Compatible Display Found")
 
 
-# TODO: Set multi sensor
 def get_numerical_display_text():
     text_message = ""
 
-    if app_config_access.display_config.sensors_to_display[display_variables.sensor_uptime]:
+    if app_config_access.display_config.sensor_uptime:
         text_message += "Uptime: " + str(sensor_access.get_uptime_minutes())
-    if app_config_access.display_config.sensors_to_display[display_variables.system_temperature]:
+    if app_config_access.display_config.system_temperature:
         text_message += " CPU Temp: " + str(sensor_access.get_cpu_temperature())
-    if app_config_access.display_config.sensors_to_display[display_variables.env_temperature]:
+    if app_config_access.display_config.env_temperature:
         text_message += " Env Temp: " + str(sensor_access.get_sensor_temperature())
-    if app_config_access.display_config.sensors_to_display[display_variables.pressure]:
+    if app_config_access.display_config.pressure:
         text_message += " Pressure: " + str(sensor_access.get_pressure())
-    if app_config_access.display_config.sensors_to_display[display_variables.altitude]:
+    if app_config_access.display_config.altitude:
         text_message += " Altitude: " + str(sensor_access.get_altitude())
-    if app_config_access.display_config.sensors_to_display[display_variables.humidity]:
+    if app_config_access.display_config.humidity:
         text_message += " Humidity: " + str(sensor_access.get_humidity())
-    if app_config_access.display_config.sensors_to_display[display_variables.distance]:
+    if app_config_access.display_config.distance:
         text_message += " Distance: " + str(sensor_access.get_distance())
-    if app_config_access.display_config.sensors_to_display[display_variables.gas]:
+    if app_config_access.display_config.gas:
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         for text_name, item_value in gas_readings.items():
             if text_name == app_cached_variables.database_variables.gas_resistance_index:
@@ -70,7 +66,7 @@ def get_numerical_display_text():
             elif text_name == app_cached_variables.database_variables.gas_nh3:
                 text_name = " Gas NH3:"
             text_message += str(text_name) + str(item_value)
-    if app_config_access.display_config.sensors_to_display[display_variables.particulate_matter]:
+    if app_config_access.display_config.particulate_matter:
         pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         for text_name, item_value in pm_readings.items():
             if text_name == app_cached_variables.database_variables.particulate_matter_1:
@@ -80,13 +76,13 @@ def get_numerical_display_text():
             elif text_name == app_cached_variables.database_variables.particulate_matter_10:
                 text_name = " PM10:"
             text_message += str(text_name) + str(item_value)
-    if app_config_access.display_config.sensors_to_display[display_variables.lumen]:
+    if app_config_access.display_config.lumen:
         text_message += " Lumen: " + str(sensor_access.get_lumen())
-    if app_config_access.display_config.sensors_to_display[display_variables.color]:
+    if app_config_access.display_config.color:
         ems_color_readings = sensor_access.get_ems_colors(return_as_dictionary=True)
         for text_name, item_value in ems_color_readings.items():
             text_message += " " + str(text_name) + ": " + str(item_value)
-    if app_config_access.display_config.sensors_to_display[display_variables.ultra_violet]:
+    if app_config_access.display_config.ultra_violet:
         uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
         for text_name, item_value in uv_readings.items():
             if text_name == app_cached_variables.database_variables.ultra_violet_index:
@@ -96,13 +92,13 @@ def get_numerical_display_text():
             elif text_name == app_cached_variables.database_variables.ultra_violet_b:
                 text_name = " UVB:"
             text_message += str(text_name) + str(item_value)
-    if app_config_access.display_config.sensors_to_display[display_variables.accelerometer]:
+    if app_config_access.display_config.accelerometer:
         xzy = sensor_access.get_accelerometer_xyz()
         text_message += " |Acc X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
-    if app_config_access.display_config.sensors_to_display[display_variables.magnetometer]:
+    if app_config_access.display_config.magnetometer:
         xzy = sensor_access.get_magnetometer_xyz()
         text_message += " |Mag X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
-    if app_config_access.display_config.sensors_to_display[display_variables.gyroscope]:
+    if app_config_access.display_config.gyroscope:
         xzy = sensor_access.get_gyroscope_xyz()
         text_message += " |Gyro X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
     return text_message

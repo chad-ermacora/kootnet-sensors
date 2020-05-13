@@ -21,59 +21,42 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
-class CreateDisplaySensorsVariables:
-    """ Create a object instance holding Sensor Display Variables (Such as sensor types to display). """
-
-    def __init__(self):
-        self.sensor_uptime = "UpTime"
-        self.system_temperature = "SysTemp"
-        self.env_temperature = "EnvTemp"
-        self.pressure = "Pressure"
-        self.altitude = "Altitude"
-        self.humidity = "Humidity"
-        self.distance = "Distance"
-        self.gas = "Gas"
-        self.particulate_matter = "PM"
-        self.lumen = "Lumen"
-        self.color = "Color"
-        self.ultra_violet = "UV"
-
-        self.accelerometer = "Acc"
-        self.magnetometer = "Mag"
-        self.gyroscope = "Gyro"
-
-
 class CreateDisplayConfiguration(CreateGeneralConfiguration):
     """ Creates the Primary Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 3
-        self.config_settings_names = ["Display every X Minutes", "Display Type", "Sensors to Display"]
+        self.valid_setting_count = 17
+        self.config_settings_names = ["Display every X Minutes", "Display Type", "Enable Sensor Uptime",
+                                      "Enable System Temperature", "Enable Environmental Temperature",
+                                      "Enable Pressure", "Enable Altitude", "Enable Humidity", "Enable Distance",
+                                      "Enable GAS", "Enable Particulate Matter", "Enable Lumen", "Enable Colors",
+                                      "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer",
+                                      "Enable Gyroscope"]
 
-        self.display_variables = CreateDisplaySensorsVariables()
         self.display_type_numerical = "numerical"
         self.display_type_graph = "graph"
 
         self.minutes_between_display = 60
         self.display_type = self.display_type_numerical
 
-        self.sensors_to_display = {self.display_variables.sensor_uptime: False,
-                                   self.display_variables.system_temperature: False,
-                                   self.display_variables.env_temperature: False,
-                                   self.display_variables.pressure: False,
-                                   self.display_variables.altitude: False,
-                                   self.display_variables.humidity: False,
-                                   self.display_variables.distance: False,
-                                   self.display_variables.gas: False,
-                                   self.display_variables.particulate_matter: False,
-                                   self.display_variables.lumen: False,
-                                   self.display_variables.color: False,
-                                   self.display_variables.ultra_violet: False,
-                                   self.display_variables.accelerometer: False,
-                                   self.display_variables.magnetometer: False,
-                                   self.display_variables.gyroscope: False}
+        # Enable or Disable Sensors to Display.  0 = Disabled, 1 = Enabled
+        self.sensor_uptime = 0
+        self.system_temperature = 0
+        self.env_temperature = 0
+        self.pressure = 0
+        self.altitude = 0
+        self.humidity = 0
+        self.distance = 0
+        self.gas = 0
+        self.particulate_matter = 0
+        self.lumen = 0
+        self.color = 0
+        self.ultra_violet = 0
+        self.accelerometer = 0
+        self.magnetometer = 0
+        self.gyroscope = 0
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -98,58 +81,66 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             self.display_type = html_request.form.get("display_type")
 
         if html_request.form.get("DisplaySensorUptime") is not None:
-            self.sensors_to_display[self.display_variables.sensor_uptime] = True
+            self.sensor_uptime = 1
         if html_request.form.get("DisplayCPUTemp") is not None:
-            self.sensors_to_display[self.display_variables.system_temperature] = True
+            self.system_temperature = 1
         if html_request.form.get("DisplayEnvTemp") is not None:
-            self.sensors_to_display[self.display_variables.env_temperature] = True
+            self.env_temperature = 1
         if html_request.form.get("DisplayPressure") is not None:
-            self.sensors_to_display[self.display_variables.pressure] = True
+            self.pressure = 1
         if html_request.form.get("DisplayAltitude") is not None:
-            self.sensors_to_display[self.display_variables.altitude] = True
+            self.altitude = 1
         if html_request.form.get("DisplayHumidity") is not None:
-            self.sensors_to_display[self.display_variables.humidity] = True
+            self.humidity = 1
         if html_request.form.get("DisplayDistance") is not None:
-            self.sensors_to_display[self.display_variables.distance] = True
+            self.distance = 1
         if html_request.form.get("DisplayGas") is not None:
-            self.sensors_to_display[self.display_variables.gas] = True
+            self.gas = 1
         if html_request.form.get("DisplayParticulateMatter") is not None:
-            self.sensors_to_display[self.display_variables.particulate_matter] = True
+            self.particulate_matter = 1
         if html_request.form.get("DisplayLumen") is not None:
-            self.sensors_to_display[self.display_variables.lumen] = True
+            self.lumen = 1
         if html_request.form.get("DisplayColours") is not None:
-            self.sensors_to_display[self.display_variables.color] = True
+            self.color = 1
         if html_request.form.get("DisplayUltraViolet") is not None:
-            self.sensors_to_display[self.display_variables.ultra_violet] = True
+            self.ultra_violet = 1
         if html_request.form.get("DisplayAccelerometer") is not None:
-            self.sensors_to_display[self.display_variables.accelerometer] = True
+            self.accelerometer = 1
         if html_request.form.get("DisplayMagnetometer") is not None:
-            self.sensors_to_display[self.display_variables.magnetometer] = True
+            self.magnetometer = 1
         if html_request.form.get("DisplayGyroscope") is not None:
-            self.sensors_to_display[self.display_variables.gyroscope] = True
+            self.gyroscope = 1
         self._update_configuration_settings_list()
         self.load_from_file = True
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        sensors_str = ""
-        for config in self.sensors_to_display:
-            sensors_str += str(config) + ":" + str(self.sensors_to_display[config]) + ","
-        sensors_str = sensors_str[:-1].strip()
-        self.config_settings = [str(self.minutes_between_display), str(self.display_type), sensors_str]
+        self.config_settings = [str(self.minutes_between_display), str(self.display_type), str(self.sensor_uptime),
+                                str(self.system_temperature), str(self.env_temperature), str(self.pressure),
+                                str(self.altitude), str(self.humidity), str(self.distance), str(self.gas),
+                                str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
+                                str(self.accelerometer), str(self.magnetometer), str(self.gyroscope)]
 
     def _update_variables_from_settings_list(self):
         bad_load = 0
         try:
             self.minutes_between_display = int(self.config_settings[0])
-            self.display_type = self.config_settings[1]
-            temp_sensors_list = self.config_settings[2].split(",")
-            for sensor in temp_sensors_list:
-                sensor_split = sensor.split(":")
-                if str(sensor_split[1]).strip() == "True":
-                    self.sensors_to_display[str(sensor_split[0]).strip()] = True
-                else:
-                    self.sensors_to_display[str(sensor_split[0]).strip()] = False
+            self.display_type = str(self.config_settings[1]).strip()
+            self.sensor_uptime = int(self.config_settings[2])
+            self.system_temperature = int(self.config_settings[3])
+            self.env_temperature = int(self.config_settings[4])
+            self.pressure = int(self.config_settings[5])
+            self.altitude = int(self.config_settings[6])
+            self.humidity = int(self.config_settings[7])
+            self.distance = int(self.config_settings[8])
+            self.gas = int(self.config_settings[9])
+            self.particulate_matter = int(self.config_settings[10])
+            self.lumen = int(self.config_settings[11])
+            self.color = int(self.config_settings[12])
+            self.ultra_violet = int(self.config_settings[13])
+            self.accelerometer = int(self.config_settings[14])
+            self.magnetometer = int(self.config_settings[15])
+            self.gyroscope = int(self.config_settings[16])
         except Exception as error:
             if self.load_from_file:
                 log_msg = "Invalid Settings detected for " + self.config_file_location + ": "

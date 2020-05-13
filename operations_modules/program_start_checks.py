@@ -27,6 +27,7 @@ from operations_modules.sqlite_database import check_database_structure
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
 
 
 def run_program_start_checks():
@@ -116,6 +117,10 @@ def _run_upgrade_checks():
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
         logger.primary_logger.info(msg)
         if previous_version.major_version == "Beta":
+            if previous_version.feature_version == 30:
+                if previous_version.minor_version < 34:
+                    no_changes = False
+                    reset_display_config()
             if previous_version.feature_version == 29:
                 if previous_version.minor_version < 13:
                     no_changes = False
@@ -147,19 +152,26 @@ def _run_upgrade_checks():
 def reset_installed_sensors():
     """ Writes a default installed sensor configuration file. """
     logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
-    default_installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
-    default_installed_sensors.save_config_to_file()
+    _reset_config_file(CreateInstalledSensorsConfiguration(load_from_file=False))
 
 
 def reset_primary_config():
     """ Writes a default main configuration file. """
     logger.primary_logger.warning(" **** Main Configuration Reset ****")
-    default_primary_config = CreatePrimaryConfiguration(load_from_file=False)
-    default_primary_config.save_config_to_file()
+    _reset_config_file(CreatePrimaryConfiguration(load_from_file=False))
 
 
 def reset_variance_config():
     """ Writes a default Trigger Variance configuration file. """
     logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
-    default_variance = CreateTriggerVariancesConfiguration(load_from_file=False)
-    default_variance.save_config_to_file()
+    _reset_config_file(CreateTriggerVariancesConfiguration(load_from_file=False))
+
+
+def reset_display_config():
+    """ Writes a default Display configuration file. """
+    logger.primary_logger.warning(" **** Display Configuration Reset ****")
+    _reset_config_file(CreateDisplayConfiguration(load_from_file=False))
+
+
+def _reset_config_file(config_instance):
+    config_instance.save_config_to_file()

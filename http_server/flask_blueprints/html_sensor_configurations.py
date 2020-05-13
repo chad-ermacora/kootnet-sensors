@@ -10,7 +10,6 @@ from flask import Blueprint, render_template, request, __version__ as flask_vers
 from werkzeug.security import generate_password_hash
 from cryptography import x509, __version__ as cryptography_version
 from cryptography.hazmat.backends import default_backend
-from configuration_modules.config_display import CreateDisplaySensorsVariables
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -28,7 +27,6 @@ from sensor_modules import sensor_access
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 
-display_variables = CreateDisplaySensorsVariables()
 mqtt_topics = CreateMQTTSensorTopics()
 running_with_root = True
 if geteuid():
@@ -105,31 +103,31 @@ def _get_config_primary_tab():
 
 def _get_config_installed_sensors_tab():
     try:
-        sensors_now = app_config_access.installed_sensors
+        installed_sensors = app_config_access.installed_sensors
         return render_template("edit_configurations/config_installed_sensors.html",
                                PageURL="/ConfigurationsHTML",
-                               GnuLinux=get_html_checkbox_state(sensors_now.linux_system),
-                               KootnetDummySensors=get_html_checkbox_state(sensors_now.kootnet_dummy_sensor),
-                               RaspberryPi=get_html_checkbox_state(sensors_now.raspberry_pi),
-                               SenseHAT=get_html_checkbox_state(sensors_now.raspberry_pi_sense_hat),
-                               PimoroniBH1745=get_html_checkbox_state(sensors_now.pimoroni_bh1745),
-                               PimoroniAS7262=get_html_checkbox_state(sensors_now.pimoroni_as7262),
-                               PimoroniMCP9600=get_html_checkbox_state(sensors_now.pimoroni_mcp9600),
-                               PimoroniBMP280=get_html_checkbox_state(sensors_now.pimoroni_bmp280),
-                               PimoroniBME680=get_html_checkbox_state(sensors_now.pimoroni_bme680),
-                               PimoroniEnviroPHAT=get_html_checkbox_state(sensors_now.pimoroni_enviro),
-                               PimoroniEnviroPlus=get_html_checkbox_state(sensors_now.pimoroni_enviroplus),
-                               PimoroniPMS5003=get_html_checkbox_state(sensors_now.pimoroni_pms5003),
-                               PimoroniSGP30=get_html_checkbox_state(sensors_now.pimoroni_sgp30),
-                               PimoroniMSA301=get_html_checkbox_state(sensors_now.pimoroni_msa301),
-                               PimoroniLSM303D=get_html_checkbox_state(sensors_now.pimoroni_lsm303d),
-                               PimoroniICM20948=get_html_checkbox_state(sensors_now.pimoroni_icm20948),
-                               PimoroniVL53L1X=get_html_checkbox_state(sensors_now.pimoroni_vl53l1x),
-                               PimoroniLTR559=get_html_checkbox_state(sensors_now.pimoroni_ltr_559),
-                               PimoroniVEML6075=get_html_checkbox_state(sensors_now.pimoroni_veml6075),
-                               Pimoroni11x7LEDMatrix=get_html_checkbox_state(sensors_now.pimoroni_matrix_11x7),
-                               PimoroniSPILCD10_96=get_html_checkbox_state(sensors_now.pimoroni_st7735),
-                               PimoroniMonoOLED128x128BW=get_html_checkbox_state(sensors_now.pimoroni_mono_oled_luma))
+                               GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
+                               KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
+                               RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),
+                               SenseHAT=get_html_checkbox_state(installed_sensors.raspberry_pi_sense_hat),
+                               PimoroniBH1745=get_html_checkbox_state(installed_sensors.pimoroni_bh1745),
+                               PimoroniAS7262=get_html_checkbox_state(installed_sensors.pimoroni_as7262),
+                               PimoroniMCP9600=get_html_checkbox_state(installed_sensors.pimoroni_mcp9600),
+                               PimoroniBMP280=get_html_checkbox_state(installed_sensors.pimoroni_bmp280),
+                               PimoroniBME680=get_html_checkbox_state(installed_sensors.pimoroni_bme680),
+                               PimoroniEnviroPHAT=get_html_checkbox_state(installed_sensors.pimoroni_enviro),
+                               PimoroniEnviroPlus=get_html_checkbox_state(installed_sensors.pimoroni_enviroplus),
+                               PimoroniPMS5003=get_html_checkbox_state(installed_sensors.pimoroni_pms5003),
+                               PimoroniSGP30=get_html_checkbox_state(installed_sensors.pimoroni_sgp30),
+                               PimoroniMSA301=get_html_checkbox_state(installed_sensors.pimoroni_msa301),
+                               PimoroniLSM303D=get_html_checkbox_state(installed_sensors.pimoroni_lsm303d),
+                               PimoroniICM20948=get_html_checkbox_state(installed_sensors.pimoroni_icm20948),
+                               PimoroniVL53L1X=get_html_checkbox_state(installed_sensors.pimoroni_vl53l1x),
+                               PimoroniLTR559=get_html_checkbox_state(installed_sensors.pimoroni_ltr_559),
+                               PimoroniVEML6075=get_html_checkbox_state(installed_sensors.pimoroni_veml6075),
+                               Pimoroni11x7LEDMatrix=get_html_checkbox_state(installed_sensors.pimoroni_matrix_11x7),
+                               PimoroniSPILCD10_96=get_html_checkbox_state(installed_sensors.pimoroni_st7735),
+                               PimoroniMonoOLED128x128BW=get_html_checkbox_state(installed_sensors.pimoroni_mono_oled_luma))
     except Exception as error:
         logger.network_logger.error("Error building Installed Sensors configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="installed-sensors-tab")
@@ -144,27 +142,42 @@ def _get_config_display_tab():
             display_numerical_checked = "checked"
         else:
             display_graph_checked = "checked"
-        sensors_to_display = app_config_access.display_config.sensors_to_display
+
+        sensor_uptime = app_config_access.display_config.sensor_uptime
+        system_temperature = app_config_access.display_config.system_temperature
+        env_temperature = app_config_access.display_config.env_temperature
+        pressure = app_config_access.display_config.pressure
+        altitude = app_config_access.display_config.altitude
+        humidity = app_config_access.display_config.humidity
+        distance = app_config_access.display_config.distance
+        gas = app_config_access.display_config.gas
+        particulate_matter = app_config_access.display_config.particulate_matter
+        lumen = app_config_access.display_config.lumen
+        color = app_config_access.display_config.color
+        ultra_violet = app_config_access.display_config.ultra_violet
+        accelerometer = app_config_access.display_config.accelerometer
+        magnetometer = app_config_access.display_config.magnetometer
+        gyroscope = app_config_access.display_config.gyroscope
         return render_template("edit_configurations/config_display.html",
                                PageURL="/ConfigurationsHTML",
                                DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
                                DisplayNumericalChecked=display_numerical_checked,
                                DisplayGraphChecked=display_graph_checked,
-                               DisplayUptimeChecked=sensors_to_display[display_variables.sensor_uptime],
-                               DisplayCPUTempChecked=sensors_to_display[display_variables.system_temperature],
-                               DisplayEnvTempChecked=sensors_to_display[display_variables.env_temperature],
-                               DisplayPressureChecked=sensors_to_display[display_variables.pressure],
-                               DisplayAltitudeChecked=sensors_to_display[display_variables.altitude],
-                               DisplayHumidityChecked=sensors_to_display[display_variables.humidity],
-                               DisplayDistanceChecked=sensors_to_display[display_variables.distance],
-                               DisplayGASChecked=sensors_to_display[display_variables.gas],
-                               DisplayPMChecked=sensors_to_display[display_variables.particulate_matter],
-                               DisplayLumenChecked=sensors_to_display[display_variables.lumen],
-                               DisplayColoursChecked=sensors_to_display[display_variables.color],
-                               DisplayUltraVioletChecked=sensors_to_display[display_variables.ultra_violet],
-                               DisplayAccChecked=sensors_to_display[display_variables.accelerometer],
-                               DisplayMagChecked=sensors_to_display[display_variables.magnetometer],
-                               DisplayGyroChecked=sensors_to_display[display_variables.gyroscope])
+                               DisplayUptimeChecked=get_html_checkbox_state(sensor_uptime),
+                               DisplayCPUTempChecked=get_html_checkbox_state(system_temperature),
+                               DisplayEnvTempChecked=get_html_checkbox_state(env_temperature),
+                               DisplayPressureChecked=get_html_checkbox_state(pressure),
+                               DisplayAltitudeChecked=get_html_checkbox_state(altitude),
+                               DisplayHumidityChecked=get_html_checkbox_state(humidity),
+                               DisplayDistanceChecked=get_html_checkbox_state(distance),
+                               DisplayGASChecked=get_html_checkbox_state(gas),
+                               DisplayPMChecked=get_html_checkbox_state(particulate_matter),
+                               DisplayLumenChecked=get_html_checkbox_state(lumen),
+                               DisplayColoursChecked=get_html_checkbox_state(color),
+                               DisplayUltraVioletChecked=get_html_checkbox_state(ultra_violet),
+                               DisplayAccChecked=get_html_checkbox_state(accelerometer),
+                               DisplayMagChecked=get_html_checkbox_state(magnetometer),
+                               DisplayGyroChecked=get_html_checkbox_state(gyroscope))
     except Exception as error:
         logger.network_logger.error("Error building Display configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="displays-tab")
@@ -295,9 +308,10 @@ def _get_checked_text(setting):
 
 def _get_config_weather_underground_tab():
     try:
-        wu_checked = get_html_checkbox_state(app_config_access.weather_underground_config.weather_underground_enabled)
-        wu_rapid_fire_checked = get_html_checkbox_state(
-            app_config_access.weather_underground_config.wu_rapid_fire_enabled)
+        weather_underground_enabled = app_config_access.weather_underground_config.weather_underground_enabled
+        wu_rapid_fire_enabled = app_config_access.weather_underground_config.wu_rapid_fire_enabled
+        wu_checked = get_html_checkbox_state(weather_underground_enabled)
+        wu_rapid_fire_checked = get_html_checkbox_state(wu_rapid_fire_enabled)
         wu_rapid_fire_disabled = "disabled"
         wu_interval_seconds_disabled = "disabled"
         wu_outdoor_disabled = "disabled"
@@ -734,6 +748,10 @@ def html_raw_configurations_view():
                            NCLocation=file_locations.dhcpcd_config_file,
                            WiFiConfiguration=str(get_file_content(file_locations.wifi_config_file)),
                            WCLocation=file_locations.wifi_config_file,
+                           BrokerConfiguration=str(get_file_content(file_locations.mqtt_broker_config)),
+                           BrokerCLocation=file_locations.mqtt_broker_config,
+                           MQTTPublisherConfiguration=str(get_file_content(file_locations.mqtt_publisher_config)),
+                           MQTTPublisherCLocation=file_locations.mqtt_publisher_config,
                            WeatherUndergroundConfiguration=str(get_file_content(file_locations.weather_underground_config)),
                            WUCLocation=file_locations.weather_underground_config,
                            LuftdatenConfiguration=str(get_file_content(file_locations.luftdaten_config)),
