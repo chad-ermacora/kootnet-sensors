@@ -19,7 +19,28 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
-from operations_modules.app_cached_variables import CreateDisplaySensorsVariables
+
+
+class CreateDisplaySensorsVariables:
+    """ Create a object instance holding Sensor Display Variables (Such as sensor types to display). """
+
+    def __init__(self):
+        self.sensor_uptime = "UpTime"
+        self.system_temperature = "SysTemp"
+        self.env_temperature = "EnvTemp"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "Gas"
+        self.particulate_matter = "PM"
+        self.lumen = "Lumen"
+        self.color = "Color"
+        self.ultra_violet = "UV"
+
+        self.accelerometer = "Acc"
+        self.magnetometer = "Mag"
+        self.gyroscope = "Gyro"
 
 
 class CreateDisplayConfiguration(CreateGeneralConfiguration):
@@ -32,9 +53,11 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.config_settings_names = ["Display every X Minutes", "Display Type", "Sensors to Display"]
 
         self.display_variables = CreateDisplaySensorsVariables()
+        self.display_type_numerical = "numerical"
+        self.display_type_graph = "graph"
 
         self.minutes_between_display = 60
-        self.display_type = self.display_variables.display_type_numerical
+        self.display_type = self.display_type_numerical
 
         self.sensors_to_display = {self.display_variables.sensor_uptime: False,
                                    self.display_variables.system_temperature: False,
@@ -105,6 +128,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("DisplayGyroscope") is not None:
             self.sensors_to_display[self.display_variables.gyroscope] = True
         self._update_configuration_settings_list()
+        self.load_from_file = True
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
