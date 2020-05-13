@@ -129,6 +129,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self.update_configuration_settings_list()
+        self.load_from_file = True
 
     def get_installed_names_str(self):
         """ Returns Installed Sensors as a String. """

@@ -172,6 +172,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self._update_configuration_settings_list()
+        self.load_from_file = True
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """

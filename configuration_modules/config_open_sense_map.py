@@ -135,6 +135,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("uv_b_id") is not None:
             self.ultra_violet_b_id = html_request.form.get("uv_b_id").strip()
         self._update_configuration_settings_list()
+        self.load_from_file = True
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
