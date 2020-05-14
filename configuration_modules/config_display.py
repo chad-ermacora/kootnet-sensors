@@ -126,6 +126,8 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         try:
             self.minutes_between_display = int(self.config_settings[0])
             self.display_type = str(self.config_settings[1]).strip()
+            if self.display_type != self.display_type_numerical and self.display_type != self.display_type_graph:
+                self.display_type = self.display_type_numerical
             self.sensor_uptime = int(self.config_settings[2])
             self.system_temperature = int(self.config_settings[3])
             self.env_temperature = int(self.config_settings[4])
