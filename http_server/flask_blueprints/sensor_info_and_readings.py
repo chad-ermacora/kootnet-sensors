@@ -2,7 +2,6 @@ from time import strftime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_text_running_thread_state
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import software_version
@@ -283,3 +282,15 @@ def html_sensors_latency():
                            Acc=str(sensors_latency[1][11]) + " Seconds",
                            Mag=str(sensors_latency[1][12]) + " Seconds",
                            Gyro=str(sensors_latency[1][13]) + " Seconds")
+
+
+def get_text_running_thread_state(service_enabled, thread_variable):
+    """ Checks to see if a 'service' thread is running and returns the result as text. """
+    if service_enabled:
+        return_text = "Stopped"
+        if thread_variable is None:
+            return_text = "Missing Sensor"
+        elif thread_variable.is_running:
+            return_text = "Running"
+        return return_text
+    return "Disabled"

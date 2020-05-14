@@ -110,13 +110,15 @@ class CreateMonitoredThread:
     If it gets restarted more then 5 times, it logs an error message and stops.
     """
 
-    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=5):
+    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
         self.is_running = True
         self.function = function
         self.args = args
         self.thread_name = thread_name
         self.current_restart_count = 0
         self.max_restart_count = max_restart_tries
+
+        self.shutdown_thread = False
 
         if self.args is not None:
             self.monitored_thread = Thread(target=self.function, args=self.args)
@@ -128,28 +130,47 @@ class CreateMonitoredThread:
         self.watch_thread.daemon = True
         self.watch_thread.start()
 
+        self.restart_watch_thread = Thread(target=self._restart_count_reset_watch)
+        self.restart_watch_thread.daemon = True
+        self.restart_watch_thread.start()
+
+    def _restart_count_reset_watch(self):
+        """ Resets self.current_restart_count to 0 if it's been longer then 60 seconds since a restart. """
+        last_restart_time = time.time()
+        last_count = 0
+        while True:
+            if self.current_restart_count:
+                if last_count != self.current_restart_count:
+                    last_count = self.current_restart_count
+                    last_restart_time = time.time()
+                elif time.time() - last_restart_time > 60:
+                    self.current_restart_count = 0
+            time.sleep(30)
+
     def _thread_and_monitor(self):
         logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
         self.monitored_thread.start()
-        while True:
-            time.sleep(30)
+        while not self.shutdown_thread:
             if not self.monitored_thread.is_alive():
-                logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
+                logger.primary_logger.info(self.thread_name + " Restarting...")
                 self.is_running = False
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
-                    if self.args is not None:
-                        self.monitored_thread = Thread(target=self.function, args=self.args)
-                    else:
+                    if self.args is None:
                         self.monitored_thread = Thread(target=self.function)
+                    else:
+                        self.monitored_thread = Thread(target=self.function, args=self.args)
                     self.monitored_thread.daemon = True
                     self.monitored_thread.start()
                     self.is_running = True
                 else:
-                    log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
-                    logger.primary_logger.critical(log_msg + " Times.  No further restart attempts will be made.")
+                    log_msg = self.thread_name + " has restarted " + str(self.current_restart_count)
+                    log_msg += " times in less then 1 minutes."
+                    logger.primary_logger.critical(log_msg + " No further restart attempts will be made.")
                     while True:
                         time.sleep(600)
+            time.sleep(5)
+        self.shutdown_thread = False
 
 
 def start_and_wait_threads(threads_list):
@@ -158,19 +179,6 @@ def start_and_wait_threads(threads_list):
         thread.start()
     for thread in threads_list:
         thread.join()
-
-
-def get_text_running_thread_state(service_enabled, thread_variable):
-    """ Checks to see if a 'service' thread is running and returns the result as text. """
-    if service_enabled:
-        return_text = "Stopped"
-        if thread_variable is None:
-            return_text = "Missing Sensor"
-        elif thread_variable.is_running:
-            return_text = "Running"
-    else:
-        return_text = "Disabled"
-    return return_text
 
 
 def get_file_content(load_file, open_type="r"):
