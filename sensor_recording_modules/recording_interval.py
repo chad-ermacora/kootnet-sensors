@@ -19,6 +19,7 @@
 import datetime
 from time import sleep
 from operations_modules import logger
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules import sqlite_database
@@ -76,6 +77,15 @@ class CreateHasSensorVariables:
 
 
 def start_interval_recording():
+    if app_config_access.primary_config.enable_interval_recording:
+        text_name = "Interval Recording"
+        function = _interval_recording
+        app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Interval Recording Disabled in Primary Configuration")
+
+
+def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
     logger.primary_logger.info(" -- Interval Recording Started")
     while True:

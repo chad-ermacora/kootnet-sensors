@@ -17,7 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules.app_config_access import trigger_variances, installed_sensors
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_config_access import primary_config, installed_sensors, trigger_variances
 from operations_modules.app_cached_variables import database_variables
 from operations_modules import app_cached_variables
 from sensor_recording_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
@@ -25,6 +26,13 @@ from sensor_modules import sensor_access
 
 
 def start_trigger_recording():
+    if primary_config.enable_trigger_recording:
+        thread_function(_trigger_recording)
+    else:
+        logger.primary_logger.debug("Trigger Recording Disabled in Primary Configuration")
+
+
+def _trigger_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
     logger.primary_logger.debug("Trigger Thread(s) Starting")
     try:
