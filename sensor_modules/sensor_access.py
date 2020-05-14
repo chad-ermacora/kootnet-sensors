@@ -473,32 +473,38 @@ def get_all_sensors_as_json():
     return "WIP"
 
 
-def display_message(text_msg):
+def display_message(text_msg, check_test=False):
     """ If a Supported Display is installed, shows provided text message on it. """
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
 
     text_msg = str(text_msg)
     if app_config_access.primary_config.enable_display:
-        if len(text_msg) > 0:
+        if len(text_msg) > 0 or check_test:
             text_msg = "-- " + text_msg
             display_missing = True
             if app_config_access.installed_sensors.kootnet_dummy_sensor:
-                thread_function(sensors_direct.dummy_sensors.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.dummy_sensors.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-                thread_function(sensors_direct.rp_sense_hat_a.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.rp_sense_hat_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_matrix_11x7:
-                thread_function(sensors_direct.pimoroni_matrix_11x7_a.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.pimoroni_matrix_11x7_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_st7735:
-                thread_function(sensors_direct.pimoroni_st7735_a.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.pimoroni_st7735_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
-                thread_function(sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.pimoroni_mono_oled_luma_a.display_text, args=text_msg)
                 display_missing = False
             if app_config_access.installed_sensors.pimoroni_enviroplus:
-                thread_function(sensors_direct.pimoroni_enviroplus_a.display_text, args=text_msg)
+                if not check_test:
+                    thread_function(sensors_direct.pimoroni_enviroplus_a.display_text, args=text_msg)
                 display_missing = False
             if display_missing:
                 return False
