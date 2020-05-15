@@ -19,14 +19,24 @@
 import requests
 from time import sleep
 from operations_modules import logger
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from operations_modules.app_config_access import installed_sensors, luftdaten_config
 from sensor_modules import sensor_access
 
 
-def start_luftdaten():
+def start_luftdaten_server():
+    if luftdaten_config.luftdaten_enabled:
+        text_name = "Luftdaten"
+        app_cached_variables.luftdaten_thread = CreateMonitoredThread(_luftdaten_server, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Luftdaten Disabled in Configuration")
+
+
+def _luftdaten_server():
     """ Sends compatible sensor readings to Luftdaten every X seconds based on set Interval. """
-    while True:
+    app_cached_variables.restart_luftdaten_thread = False
+    while not app_cached_variables.restart_luftdaten_thread:
         no_sensors = True
         try:
             if installed_sensors.pimoroni_bmp280 or installed_sensors.pimoroni_enviro:
@@ -44,9 +54,14 @@ def start_luftdaten():
 
         if no_sensors:
             logger.primary_logger.error("Luftdaten - No Compatible Sensors: No further attempts will be made")
-            while True:
-                sleep(3600)
-        sleep(luftdaten_config.interval_seconds)
+            while not app_cached_variables.restart_luftdaten_thread:
+                sleep(5)
+
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        while sleep_total < luftdaten_config.interval_seconds and not app_cached_variables.restart_luftdaten_thread:
+            sleep(sleep_fraction_interval)
+            sleep_total += sleep_fraction_interval
 
 
 def _bmp280():
