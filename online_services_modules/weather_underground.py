@@ -20,16 +20,31 @@ import requests
 from time import sleep
 from operations_modules import logger
 from operations_modules import software_version
-from operations_modules.app_cached_variables import no_sensor_present, database_variables
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules.app_config_access import weather_underground_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
 
-def start_weather_underground():
+no_sensor_present = app_cached_variables.no_sensor_present
+database_variables = app_cached_variables.database_variables
+
+
+def start_weather_underground_server():
+    if weather_underground_config.weather_underground_enabled:
+        text_name = "Weather Underground"
+        function = _weather_underground_server
+        app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Weather Underground Disabled in Configuration")
+
+
+def _weather_underground_server():
     """ Sends compatible sensor readings to Weather Underground every X seconds based on set Interval. """
+    app_cached_variables.restart_weather_underground_thread = False
     interval_seconds = weather_underground_config.interval_seconds
-    while True:
+    while not app_cached_variables.restart_weather_underground_thread:
         sensor_readings = get_weather_underground_readings()
         sw_version_text_list = software_version.version.split(".")
         sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
@@ -70,9 +85,14 @@ def start_weather_underground():
         else:
             log_msg = "Weather Underground - No Compatible Sensors: No further attempts will be made"
             logger.primary_logger.error(log_msg)
-            while True:
-                sleep(3600)
-        sleep(interval_seconds)
+            while not app_cached_variables.restart_weather_underground_thread:
+                sleep(5)
+
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        while sleep_total < interval_seconds and not app_cached_variables.restart_weather_underground_thread:
+            sleep(sleep_fraction_interval)
+            sleep_total += sleep_fraction_interval
 
 
 def get_weather_underground_readings():
