@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import time
-from os import geteuid
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \

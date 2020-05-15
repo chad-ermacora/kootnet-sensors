@@ -6,7 +6,6 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
 from operations_modules import software_version
 from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
 from http_server.server_http_auth import auth
