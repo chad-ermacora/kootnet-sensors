@@ -18,28 +18,44 @@
 """
 from time import sleep
 from operations_modules import logger
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from sensor_modules import sensor_access
 
 
-def scroll_interval_readings_on_display():
-    if sensor_access.display_message("KS init: " + get_numerical_display_text()):
+def start_display_server():
+    if app_config_access.primary_config.enable_display:
+        text_name = "Display"
+        function = _display_server
+        app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Display Disabled in Primary Configuration")
+
+
+def _display_server():
+    if sensor_access.display_message("Test", check_test=True):
         logger.primary_logger.info(" -- Sensor Display Server Started")
-        while True:
-            sleep(app_config_access.display_config.minutes_between_display * 60)
+        app_cached_variables.restart_mini_display_thread = False
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        while not app_cached_variables.restart_mini_display_thread:
             display_type_numerical = app_config_access.display_config.display_type_numerical
             if app_config_access.display_config.display_type == display_type_numerical:
                 sensor_access.display_message(get_numerical_display_text())
             else:
                 sensor_access.display_message(get_graphed_sensors())
+            display_sleep = app_config_access.display_config.minutes_between_display * 60
+            while sleep_total < display_sleep and not app_cached_variables.restart_mini_display_thread:
+                sleep(sleep_fraction_interval)
+                sleep_total += sleep_fraction_interval
+            sleep_total = 0
     else:
         logger.primary_logger.error(" -- Sensor Display Server Failed to Start: No Compatible Display Found")
 
 
 def get_numerical_display_text():
     text_message = ""
-
     if app_config_access.display_config.sensor_uptime:
         text_message += "Uptime: " + str(sensor_access.get_uptime_minutes())
     if app_config_access.display_config.system_temperature:
