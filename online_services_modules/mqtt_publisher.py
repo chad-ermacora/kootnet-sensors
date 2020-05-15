@@ -19,7 +19,8 @@
 from time import sleep
 from extras.python_modules.paho.mqtt import client as mqtt
 from operations_modules import logger
-from operations_modules.app_cached_variables import no_sensor_present
+from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from sensor_modules import sensor_access
 from sensor_recording_modules.recording_interval import available_sensors
@@ -47,8 +48,21 @@ class CreateMQTTSensorTopics:
         self.gyroscope = "Gyroscope"
 
 
-def start_mqtt_publisher():
+def start_mqtt_publisher_server():
+    if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
+        text_name = "MQTT Publisher"
+        function = _mqtt_publisher_server
+        app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("MQTT Publisher Disabled in Configuration")
+
+
+def _mqtt_publisher_server():
     """ Starts MQTT Publisher and runs based on settings found in the MQTT Publisher configuration file. """
+    app_cached_variables.restart_mqtt_publisher_thread = False
+    if app_config_access.mqtt_broker_config.enable_mqtt_broker:
+        # Sleep a few seconds to allow the local broker to start first
+        sleep(3)
     broker_address = app_config_access.mqtt_publisher_config.broker_address
     broker_server_port = app_config_access.mqtt_publisher_config.broker_server_port
     client = mqtt.Client()
@@ -57,8 +71,7 @@ def start_mqtt_publisher():
 
     not_connected = True
     max_tries_log = 0
-    sleep_time = app_config_access.mqtt_publisher_config.seconds_to_wait
-    while not_connected:
+    while not_connected and not app_cached_variables.restart_mqtt_publisher_thread:
         try:
             if app_config_access.mqtt_publisher_config.enable_broker_auth and \
                     app_config_access.mqtt_publisher_config.broker_user != "":
@@ -72,22 +85,27 @@ def start_mqtt_publisher():
             logger.network_logger.debug("MQTT Publisher Connection Code: " + str(mqtt_return_code))
             client.loop_start()
             not_connected = False
-            log_msg = " -- MQTT Publisher Started publishing to " + str(app_config_access.mqtt_publisher_config.broker_address)
-            logger.primary_logger.info(log_msg)
+            log_msg = " -- MQTT Publisher Started publishing to "
+            logger.primary_logger.info(log_msg + str(app_config_access.mqtt_publisher_config.broker_address))
         except Exception as error:
+            seconds_to_wait = 10
             if max_tries_log < 5:
                 logger.network_logger.warning("MQTT Publisher Client Connection Failure: " + str(error))
             elif max_tries_log == 5:
                 log_msg1 = "MQTT Publisher Client Connection has failed 5 times in a row. "
-                log_msg2 = "Attempts limited to every 5 minutes. Logging Disabled."
-                logger.primary_logger.error(log_msg1 + log_msg2)
-                sleep_time = 300
-            elif max_tries_log > 5:
+                logger.primary_logger.error(log_msg1 + "Attempts limited to every 5 minutes. Logging Disabled.")
+            if max_tries_log >= 5:
                 logger.network_logger.debug("MQTT Publisher Connection Failure # " + str(max_tries_log))
+                seconds_to_wait = 300
             max_tries_log += 1
-            sleep(sleep_time)
 
-    while True:
+            sleep_fraction_interval = 5
+            sleep_total = 0
+            while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
+                sleep(sleep_fraction_interval)
+                sleep_total += sleep_fraction_interval
+
+    while not app_cached_variables.restart_mqtt_publisher_thread:
         try:
             if app_config_access.mqtt_publisher_config.sensor_uptime:
                 topic = mqtt_base_topic + sensor_topics.system_uptime
@@ -136,7 +154,16 @@ def start_mqtt_publisher():
                 client.publish(topic, _readings_to_text(sensor_access.get_gyroscope_xyz()))
         except Exception as error:
             logger.primary_logger.error("MQTT Publisher Failure: " + str(error))
-        sleep(app_config_access.mqtt_publisher_config.seconds_to_wait)
+
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        seconds_to_wait = app_config_access.mqtt_publisher_config.seconds_to_wait
+        while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
+            sleep(sleep_fraction_interval)
+            sleep_total += sleep_fraction_interval
+    client.disconnect(reasoncode=0)
+    client.connected_flag = False
+    client.disconnect_flag = True
 
 
 def _readings_to_text(readings):
@@ -148,5 +175,5 @@ def _readings_to_text(readings):
         for reading in readings:
             return_text += str(reading) + ","
     else:
-        return no_sensor_present
+        return app_cached_variables.no_sensor_present
     return return_text[:-1]
