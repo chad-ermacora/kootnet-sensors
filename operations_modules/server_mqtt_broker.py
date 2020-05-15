@@ -29,6 +29,7 @@ terminal_restart_mosquitto = "systemctl restart mosquitto"
 
 
 def check_mqtt_broker_server_running():
+    """ If MQTT Broker server Mosquitto is running, return True else False. """
     try:
         if len(check_output(["pidof", "mosquitto"])) > 2:
             return True
@@ -39,35 +40,40 @@ def check_mqtt_broker_server_running():
 
 
 def restart_mqtt_broker_server():
+    """ Restarts MQTT Broker server Mosquitto's service. """
     if app_cached_variables.running_with_root:
         logger.primary_logger.info("Restarting MQTT Broker Mosquitto")
         os.system(terminal_restart_mosquitto)
+    else:
+        logger.primary_logger.warning("Unable to Restart MQTT Mosquitto, root required")
 
 
 def stop_mqtt_broker_server():
+    """ Stops MQTT Broker server Mosquitto's service. """
     if app_cached_variables.running_with_root:
         logger.primary_logger.info("Stopping MQTT Broker Mosquitto")
         os.system(terminal_disable_stop_mosquitto)
+    else:
+        logger.primary_logger.warning("Unable to Stop MQTT Mosquitto, root required")
 
 
 def start_mqtt_broker_server():
-    """ Starts MQTT Broker and runs based on settings found in the MQTT Broker configuration file. """
+    """ Starts MQTT Broker server Mosquitto's service. """
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:
         if app_cached_variables.running_with_root:
             if os.path.isfile("/usr/sbin/mosquitto") or os.path.isfile("/usr/bin/mosquitto"):
                 os.system(terminal_enable_start_mosquitto)
-                logger.primary_logger.debug(" -- Starting Mosquitto Server")
+                logger.primary_logger.info(" -- Starting Mosquitto Server")
             else:
                 logger.primary_logger.warning("MQTT Mosquitto Broker not installed")
-                if app_cached_variables.running_with_root:
-                    os.system(terminal_install_mqtt_mosquitto)
+                os.system(terminal_install_mqtt_mosquitto)
+                if os.path.isfile("/usr/sbin/mosquitto") or os.path.isfile("/usr/bin/mosquitto"):
                     logger.primary_logger.info("MQTT Mosquitto Broker has been installed")
-                    if not os.path.isfile("/usr/bin/mosquitto"):
-                        os.system(terminal_enable_start_mosquitto)
-                        logger.primary_logger.debug(" -- Starting Mosquitto Server")
-                    else:
-                        logger.primary_logger.error("MQTT Mosquitto did not install - Unable to start MQTT Broker")
+                    os.system(terminal_enable_start_mosquitto)
+                    logger.primary_logger.info(" -- Starting Mosquitto Server")
+                else:
+                    logger.primary_logger.error("MQTT Mosquitto did not install - Unable to start MQTT Broker")
         else:
-            logger.primary_logger.warning("Unable to run MQTT Broker - root required")
+            logger.primary_logger.warning("Unable to Start MQTT Broker Mosquitto, root required")
     else:
         logger.primary_logger.debug("MQTT Broker Disabled in Configuration")
