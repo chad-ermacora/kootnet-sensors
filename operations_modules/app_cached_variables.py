@@ -262,8 +262,8 @@ no_sensor_present = "NoSensor"
 plotly_theme = "plotly_dark"
 
 # Network Variables
-hostname = ""
-ip = ""
+hostname = "Still Loading"
+ip = "Refresh Page"
 ip_subnet = ""
 gateway = ""
 dns1 = ""
