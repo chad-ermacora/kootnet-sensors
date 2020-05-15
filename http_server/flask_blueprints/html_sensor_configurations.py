@@ -1,6 +1,5 @@
 import os
 import shutil
-from os import geteuid
 from plotly import __version__ as plotly_version
 from gevent import __version__ as gevent_version
 from requests import __version__ as requests_version
@@ -20,17 +19,18 @@ from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules import app_validation_checks
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
+from operations_modules.server_display import start_display_server
+from operations_modules.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server,\
+    stop_mqtt_broker_server, check_mqtt_broker_server_running
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
-from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, mqtt_base_topic
+from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, mqtt_base_topic, start_mqtt_publisher_server
+
 from sensor_modules import sensor_access
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
-
+running_with_root = app_cached_variables.running_with_root
 mqtt_topics = CreateMQTTSensorTopics()
-running_with_root = True
-if geteuid():
-    running_with_root = False
 
 
 @html_sensor_config_routes.route("/GetMQTTTopics")
@@ -256,11 +256,13 @@ def _get_config_trigger_variances_tab():
 
 def _get_config_mqtt_broker_tab():
     try:
-        enable_broker_server = app_config_access.mqtt_broker_config.enable_mqtt_broker
+        mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
+        if mosquitto_configuration is None:
+            mosquitto_configuration = ""
         return render_template("edit_configurations/config_mqtt_broker.html",
                                PageURL="/ConfigurationsHTML",
-                               MQTTBrokerServerChecked=_get_checked_text(enable_broker_server),
-                               MQTTBrokerUsername=app_config_access.mqtt_broker_config.username)
+                               BrokerServerChecked=_get_checked_text(check_mqtt_broker_server_running()),
+                               BrokerMosquittoConfig=mosquitto_configuration)
     except Exception as error:
         logger.network_logger.error("Error building MQTT Broker configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="mqtt-broker-tab")
@@ -501,12 +503,19 @@ def html_set_display_config():
         try:
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
-            page_msg = "Config Set, Please Restart Program"
-            if running_with_root:
-                page_msg = "Restarting Service, Please Wait ..."
-                thread_function(sensor_access.restart_services)
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
-            return return_page
+            if app_config_access.primary_config.enable_display:
+                if app_cached_variables.mini_display_thread is not None:
+                    if app_cached_variables.mini_display_thread.monitored_thread.is_alive():
+                        app_cached_variables.restart_mini_display_thread = True
+                    else:
+                        start_display_server()
+                else:
+                    start_display_server()
+            else:
+                if app_cached_variables.mini_display_thread is not None:
+                    app_cached_variables.mini_display_thread.shutdown_thread = True
+                    app_cached_variables.restart_mini_display_thread = True
+            return message_and_return(_get_restart_service_text("Display"), url="/ConfigurationsHTML")
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Display Configuration - Error: " + str(error))
             return message_and_return("Bad Display Configuration POST Request", url="/ConfigurationsHTML")
@@ -542,14 +551,48 @@ def html_set_config_mqtt_publisher():
         try:
             app_config_access.mqtt_publisher_config.update_with_html_request(request)
             app_config_access.mqtt_publisher_config.save_config_to_file()
-            page_msg = "Config Set, Please Restart Program"
-            if running_with_root:
-                page_msg = "Restarting Service, Please Wait ..."
-                thread_function(sensor_access.restart_services)
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_text = "MQTT Publisher Configuration Saved"
+            if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
+                return_text = _get_restart_service_text("MQTT Publisher")
+                if app_cached_variables.mqtt_publisher_thread is not None:
+                    if app_cached_variables.mqtt_publisher_thread.monitored_thread.is_alive():
+                        app_cached_variables.restart_mqtt_publisher_thread = True
+                    else:
+                        start_mqtt_publisher_server()
+                else:
+                    start_mqtt_publisher_server()
+            else:
+                if app_cached_variables.mqtt_publisher_thread is not None:
+                    app_cached_variables.mqtt_publisher_thread.shutdown_thread = True
+                    app_cached_variables.restart_mqtt_publisher_thread = True
+            return_page = message_and_return(return_text, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Publisher Configuration set Error: " + str(error))
+            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+
+
+@html_sensor_config_routes.route("/EditConfigMQTTBroker", methods=["POST"])
+@auth.login_required
+def html_set_config_mqtt_broker():
+    logger.network_logger.debug("** HTML Apply - MQTT Broker Configuration - Source: " + str(request.remote_addr))
+    if request.method == "POST":
+        try:
+            app_config_access.mqtt_broker_config.update_with_html_request(request)
+            app_config_access.mqtt_broker_config.save_config_to_file()
+            return_text = "MQTT Broker Configuration Saved"
+            if app_config_access.mqtt_broker_config.enable_mqtt_broker:
+                return_text = _get_restart_service_text("MQTT Broker")
+                if check_mqtt_broker_server_running():
+                    restart_mqtt_broker_server()
+                else:
+                    start_mqtt_broker_server()
+            else:
+                stop_mqtt_broker_server()
+            return_page = message_and_return(return_text, url="/ConfigurationsHTML")
+            return return_page
+        except Exception as error:
+            logger.primary_logger.error("HTML MQTT Broker Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
 
 
@@ -758,3 +801,7 @@ def html_raw_configurations_view():
                            LCLocation=file_locations.luftdaten_config,
                            OpenSenseMapConfiguration=str(get_file_content(file_locations.osm_config)),
                            OSMCLocation=file_locations.osm_config)
+
+
+def _get_restart_service_text(service_name):
+    return "Restarting " + str(service_name) + " Service, This may take up to 10 Seconds"
