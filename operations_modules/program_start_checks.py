@@ -49,7 +49,7 @@ def run_program_start_checks():
 
 def _set_file_permissions():
     """ Re-sets program file permissions. """
-    if os.geteuid() == 0:
+    if app_cached_variables.running_with_root:
         _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o744)
         _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o744)
         _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)

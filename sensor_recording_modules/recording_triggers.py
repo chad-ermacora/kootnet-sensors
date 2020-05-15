@@ -25,7 +25,7 @@ from sensor_recording_modules.variance_checks import CreateTriggerVarianceThread
 from sensor_modules import sensor_access
 
 
-def start_trigger_recording():
+def start_trigger_recording_server():
     if primary_config.enable_trigger_recording:
         thread_function(_trigger_recording)
     else:

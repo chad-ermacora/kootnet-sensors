@@ -6,7 +6,7 @@ from operations_modules import app_cached_variables
 from http_server import server_http_generic_functions
 from http_server.server_http_auth import auth
 
-html_functional_routes = Blueprint("html_basics", __name__)
+html_functional_routes = Blueprint("html_functional_routes", __name__)
 
 
 @html_functional_routes.route("/favicon.ico")

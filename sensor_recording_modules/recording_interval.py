@@ -76,7 +76,7 @@ class CreateHasSensorVariables:
         self.has_gyro = set_sensor_state_as
 
 
-def start_interval_recording():
+def start_interval_recording_server():
     if app_config_access.primary_config.enable_interval_recording:
         text_name = "Interval Recording"
         function = _interval_recording

@@ -193,7 +193,7 @@ def get_file_content(load_file, open_type="r"):
             logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
         return file_content
     else:
-        logger.primary_logger.error(load_file + " not found")
+        logger.primary_logger.warning(load_file + " not found")
 
 
 def write_file_to_disk(file_location, file_content, open_type="w"):

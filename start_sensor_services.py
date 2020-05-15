@@ -18,10 +18,13 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules import program_start_checks
+from operations_modules.program_start_checks import run_program_start_checks
+
 # Ensure files, database & configurations are OK
-program_start_checks.run_program_start_checks()
+run_program_start_checks()
+
 from operations_modules.app_cached_variables import running_with_root
+
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
@@ -31,43 +34,41 @@ except Exception as import_error_raw:
     while True:
         sleep(3600)
 from operations_modules import app_config_access
-from operations_modules.server_display import start_display_server
+from sensor_recording_modules.recording_interval import start_interval_recording_server
+from sensor_recording_modules.recording_triggers import start_trigger_recording_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
-from operations_modules.server_mqtt_broker import start_mqtt_broker_server
-from http_server.server_http import start_https_server
-from sensor_recording_modules.recording_interval import start_interval_recording
-from sensor_recording_modules.recording_triggers import start_trigger_recording
+from operations_modules.server_display import start_display_server
 from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
 from online_services_modules.luftdaten import start_luftdaten_server
 from online_services_modules.weather_underground import start_weather_underground_server
 from online_services_modules.open_sense_map import start_open_sense_map_server
+from operations_modules.server_mqtt_broker import start_mqtt_broker_server
+from http_server.server_http import start_https_server
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
 dummy_sensors_installed = app_config_access.installed_sensors.kootnet_dummy_sensor
 if dummy_sensors_installed or running_with_root and app_config_access.installed_sensors.no_sensors is False:
-    # Start up Interactive Hardware Servers like SenseHat Joystick & Buttons
-    start_hardware_interactive_server()
+    # Start up Interval & Trigger Sensor Recording
+    start_interval_recording_server()
+    start_trigger_recording_server()
 
-    # Start up the Display Server
+    # Start up Hardware Servers for Interaction and Display
+    start_hardware_interactive_server()
     start_display_server()
 
-    # Start up Interval & Trigger Sensor Recording
-    start_interval_recording()
-    start_trigger_recording()
-
     # Start up all enabled Online Services
+    start_mqtt_publisher_server()
     start_luftdaten_server()
     start_weather_underground_server()
     start_open_sense_map_server()
-    start_mqtt_publisher_server()
 else:
     if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
-# Start the HTTP Server for remote access
-start_https_server()
-# Start the MQTT Broker Server
+# Start the MQTT Broker Server & the HTTPS Web Portal Server
 start_mqtt_broker_server()
+start_https_server()
+
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:
     sleep(3600)

@@ -30,6 +30,8 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
+# TODO: Add missing Configurations
+
 
 class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def __init__(self):
