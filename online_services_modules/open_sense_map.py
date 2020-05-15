@@ -19,18 +19,32 @@
 import requests
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_cached_variables import no_sensor_present, database_variables, hostname
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules.app_config_access import installed_sensors, open_sense_map_config as osm_config
 from sensor_modules import sensor_access
 
+no_sensor_present = app_cached_variables.no_sensor_present
+database_variables = app_cached_variables.database_variables
 
-def start_open_sense_map():
+
+def start_open_sense_map_server():
+    if osm_config.open_sense_map_enabled:
+        text_name = "Open Sense Map"
+        function = _open_sense_map_server
+        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Open Sense Map Disabled in Configuration")
+
+
+def _open_sense_map_server():
     """ Sends compatible sensor readings to Open Sense Map every X seconds based on set Interval. """
+    app_cached_variables.restart_open_sense_map_thread = False
     if osm_config.sense_box_id != "":
         url = osm_config.open_sense_map_main_url_start + "/" + osm_config.sense_box_id + "/data"
         url_header = {"content-type": "application/json"}
 
-        while True:
+        while not app_cached_variables.restart_open_sense_map_thread:
             body_json = {}
             try:
                 env_temperature = str(sensor_access.get_sensor_temperature())
@@ -128,12 +142,17 @@ def start_open_sense_map():
                     log_msg = "Open Sense Map - No further updates will be attempted: " + \
                               "No Compatible Sensors or Missing Sensor IDs"
                     logger.network_logger.warning(log_msg)
-                    while True:
-                        sleep(3600)
+                    while not app_cached_variables.restart_open_sense_map_thread:
+                        sleep(5)
             except Exception as error:
                 logger.network_logger.error("Open Sense Map - Error sending data")
                 logger.network_logger.debug("Open Sense Map - Detailed Error: " + str(error))
-            sleep(osm_config.interval_seconds)
+
+            sleep_fraction_interval = 5
+            sleep_total = 0
+            while sleep_total < osm_config.interval_seconds and not app_cached_variables.restart_open_sense_map_thread:
+                sleep(sleep_fraction_interval)
+                sleep_total += sleep_fraction_interval
 
 
 def add_sensor_to_account(html_request):
@@ -146,7 +165,7 @@ def add_sensor_to_account(html_request):
         if login_token is not None:
             url_header = {"Authorization": "Bearer " + login_token,
                           "content-type": "application/json"}
-            body_json = {"name": hostname,
+            body_json = {"name": app_cached_variables.hostname,
                          "exposure": html_request.form.get("osm_location_type").strip()}
 
             grouptag = html_request.form.get("osm_grouptag").strip()
