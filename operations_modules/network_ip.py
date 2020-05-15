@@ -26,12 +26,14 @@ def check_for_dhcp(dhcpcd_config_lines):
     Checks the dhcpcd.conf file for a static IP address.
     Returns True if no static IPs are found, otherwise returns false.
     """
-    dhcp_status = True
-    for line in dhcpcd_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:18] == "static ip_address=":
-            dhcp_status = False
-    return dhcp_status
+    if dhcpcd_config_lines is not None:
+        dhcp_status = True
+        for line in dhcpcd_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:18] == "static ip_address=":
+                dhcp_status = False
+        return dhcp_status
+    return False
 
 
 def get_dhcpcd_ip(dhcpcd_config_lines):
@@ -39,11 +41,12 @@ def get_dhcpcd_ip(dhcpcd_config_lines):
     Checks the dhcpcd.conf file for a static IP address.
     Returns the IP address if a static IP is found, otherwise returns a empty string.
     """
-    for line in dhcpcd_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:18] == "static ip_address=":
-            ip_address = line_stripped[18:].split("/")[0]
-            return ip_address
+    if dhcpcd_config_lines is not None:
+        for line in dhcpcd_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:18] == "static ip_address=":
+                ip_address = line_stripped[18:].split("/")[0]
+                return ip_address
     return ""
 
 
@@ -52,10 +55,11 @@ def get_gateway(dhcpcd_config_lines):
     Checks the dhcpcd.conf file for a static gateway address (router).
     Returns the IP address of said gateway if found, otherwise returns a empty string.
     """
-    for line in dhcpcd_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:15] == "static routers=":
-            return line_stripped[15:]
+    if dhcpcd_config_lines is not None:
+        for line in dhcpcd_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:15] == "static routers=":
+                return line_stripped[15:]
     return ""
 
 
@@ -64,11 +68,12 @@ def get_subnet(dhcpcd_config_lines):
     Checks the dhcpcd.conf file for a static IP address.
     Returns the Subnet Mask of a static IP if found, otherwise returns a empty string.
     """
-    for line in dhcpcd_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:18] == "static ip_address=":
-            subnet_mask = "/" + line_stripped[18:].split("/")[1]
-            return subnet_mask
+    if dhcpcd_config_lines is not None:
+        for line in dhcpcd_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:18] == "static ip_address=":
+                subnet_mask = "/" + line_stripped[18:].split("/")[1]
+                return subnet_mask
     return ""
 
 
@@ -77,12 +82,13 @@ def get_dns(dhcpcd_config_lines, dns_server=0):
     Checks the dhcpcd.conf file for a static IP address.
     Returns the DNS server(s) IP addresses if a static IP is found, otherwise returns a empty string.
     """
-    for line in dhcpcd_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:27] == "static domain_name_servers=":
-            dns_list = line_stripped[27:].split(" ")
-            if len(dns_list) > 1 or dns_server == 0:
-                return dns_list[dns_server]
+    if dhcpcd_config_lines is not None:
+        for line in dhcpcd_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:27] == "static domain_name_servers=":
+                dns_list = line_stripped[27:].split(" ")
+                if len(dns_list) > 1 or dns_server == 0:
+                    return dns_list[dns_server]
     return ""
 
 

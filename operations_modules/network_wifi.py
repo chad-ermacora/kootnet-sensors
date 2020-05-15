@@ -27,10 +27,11 @@ def get_wifi_country_code(wifi_config_lines):
     Checks the wpa_supplicant.conf file for the set country code and returns it.
     If not found, returns an empty string.
     """
-    for line in wifi_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:8] == "country=":
-            return line_stripped[8:]
+    if wifi_config_lines is not None:
+        for line in wifi_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:8] == "country=":
+                return line_stripped[8:]
     return ""
 
 
@@ -39,10 +40,11 @@ def get_wifi_ssid(wifi_config_lines):
     Checks the wpa_supplicant.conf file for a wireless network name (SSID) and returns it.
     If not found, returns an empty string.
     """
-    for line in wifi_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:5] == "ssid=":
-            return line_stripped[6:-1]
+    if wifi_config_lines is not None:
+        for line in wifi_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:5] == "ssid=":
+                return line_stripped[6:-1]
     return ""
 
 
@@ -51,10 +53,11 @@ def get_wifi_security_type(wifi_config_lines):
     Checks the wpa_supplicant.conf file for the set wireless's security type and returns it.
     If not found, returns an empty string.
     """
-    for line in wifi_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:9] == "key_mgmt=":
-            return line_stripped[9:]
+    if wifi_config_lines is not None:
+        for line in wifi_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:9] == "key_mgmt=":
+                return line_stripped[9:]
     return ""
 
 
@@ -63,10 +66,12 @@ def get_wifi_psk(wifi_config_lines):
     Checks the wpa_supplicant.conf file for the set wireless password and returns it.
     If not found, returns an empty string.
     """
-    for line in wifi_config_lines:
-        line_stripped = line.strip()
-        if line_stripped[:4] == "psk=":
-            return line_stripped[5:-1]
+    if wifi_config_lines is not None:
+        for line in wifi_config_lines:
+            line_stripped = line.strip()
+            if line_stripped[:4] == "psk=":
+                return line_stripped[5:-1]
+    return ""
 
 
 def html_request_to_config_wifi(html_request):
