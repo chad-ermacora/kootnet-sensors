@@ -16,12 +16,58 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
+import os
+from subprocess import check_output
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 
+terminal_install_mqtt_mosquitto = "apt-get update && apt-get -y install mosquitto"
+terminal_enable_start_mosquitto = "systemctl enable mosquitto && systemctl start mosquitto"
+terminal_disable_stop_mosquitto = "systemctl disable mosquitto && systemctl stop mosquitto"
+terminal_restart_mosquitto = "systemctl restart mosquitto"
 
-def start_mqtt_broker():
+
+def check_mqtt_broker_server_running():
+    try:
+        if len(check_output(["pidof", "mosquitto"])) > 2:
+            return True
+        return False
+    except Exception as error:
+        print(str(error))
+        return False
+
+
+def restart_mqtt_broker_server():
+    if app_cached_variables.running_with_root:
+        logger.primary_logger.info("Restarting MQTT Broker Mosquitto")
+        os.system(terminal_restart_mosquitto)
+
+
+def stop_mqtt_broker_server():
+    if app_cached_variables.running_with_root:
+        logger.primary_logger.info("Stopping MQTT Broker Mosquitto")
+        os.system(terminal_disable_stop_mosquitto)
+
+
+def start_mqtt_broker_server():
     """ Starts MQTT Broker and runs based on settings found in the MQTT Broker configuration file. """
-    pass
+    if app_config_access.mqtt_broker_config.enable_mqtt_broker:
+        if app_cached_variables.running_with_root:
+            if os.path.isfile("/usr/sbin/mosquitto") or os.path.isfile("/usr/bin/mosquitto"):
+                os.system(terminal_enable_start_mosquitto)
+                logger.primary_logger.debug(" -- Starting Mosquitto Server")
+            else:
+                logger.primary_logger.warning("MQTT Mosquitto Broker not installed")
+                if app_cached_variables.running_with_root:
+                    os.system(terminal_install_mqtt_mosquitto)
+                    logger.primary_logger.info("MQTT Mosquitto Broker has been installed")
+                    if not os.path.isfile("/usr/bin/mosquitto"):
+                        os.system(terminal_enable_start_mosquitto)
+                        logger.primary_logger.debug(" -- Starting Mosquitto Server")
+                    else:
+                        logger.primary_logger.error("MQTT Mosquitto did not install - Unable to start MQTT Broker")
+        else:
+            logger.primary_logger.warning("Unable to run MQTT Broker - root required")
+    else:
+        logger.primary_logger.debug("MQTT Broker Disabled in Configuration")

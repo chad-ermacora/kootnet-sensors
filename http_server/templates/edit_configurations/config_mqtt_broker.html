@@ -7,13 +7,13 @@
             <h5><b>
                 This will Enable & Start a local
                 <a style="color: black;" href="https://en.wikipedia.org/wiki/MQTT#MQTT_broker" target="_blank"><u>
-                    MQTT Broker
-                </u></a>
+                    MQTT Broker</u></a>
+                 (Eclipse Mosquitto)
             </b></h5>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
-                    <input type="checkbox" name="EnableMQTTBrokerServer" value="" {{ MQTTBrokerServerChecked }} disabled>
+                    <input type="checkbox" name="enable_broker_server" value="" {{ BrokerServerChecked }}>
                     Enable MQTT Broker Server
                     <span class="checkmark_checkbox"></span>
                 </label>
@@ -21,31 +21,16 @@
 
             <br>
 
-            <div class="mui-checkbox" style="display: inline-block;">
-                <label class="container_checkbox">
-                    <input type="checkbox" name="enable_mqtt_auth" value="" {{ MQTTBrokerAuthChecked }}>
-                    Enable MQTT Topic Authentication
-                    <span class="checkmark_checkbox"></span>
-                </label>
-            </div>
-
-            <div class="mui-textfield">
-                <label style="color: black;">
-                    Username
-                    <br>
-                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
-                           value="{{ MQTTBrokerUsername }}" {{ DisabledMQTTBrokerUsername }}>
-                </label>
-            </div>
-
-            <div class="mui-textfield">
-                <label style="color: black;">
-                    Password
-                    <br>
-                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password"
-                            {{ DisabledMQTTBrokerPassword }}>
-                </label>
-            </div>
+            <label>
+                <a style="color: black;" target="_blank"
+                   href="https://github.com/eclipse/mosquitto/blob/master/mosquitto.conf">
+                    Mosquitto Configuration
+                </a>
+                <br>
+                <i>Leave Configuration Blank for a default open MQTT Broker</i>
+                <br>
+                <textarea name="mosquitto_config" cols="60" rows="20">{{ BrokerMosquittoConfig }}</textarea>
+            </label>
 
             <br>
 

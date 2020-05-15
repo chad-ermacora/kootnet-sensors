@@ -62,6 +62,7 @@ program_last_updated = sensor_config_dir + "/last_updated.txt"
 
 primary_config = sensor_config_dir + "/main_config.conf"
 mqtt_broker_config = sensor_config_dir + "/mqtt_broker_config.conf"
+mosquitto_configuration = "/etc/mosquitto/conf.d/kootnet_mosquitto.conf"
 mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
 display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
