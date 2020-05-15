@@ -16,15 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 from time import sleep
 from operations_modules import logger
 from operations_modules import program_start_checks
 # Ensure files, database & configurations are OK
 program_start_checks.run_program_start_checks()
-running_with_root = False
-if os.geteuid() == 0:
-    running_with_root = True
+from operations_modules.app_cached_variables import running_with_root
 try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
@@ -33,68 +30,44 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
-from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
-from operations_modules import app_cached_variables
 from operations_modules import app_config_access
-from operations_modules import server_display
-from operations_modules import server_hardware_interactive
-from http_server import server_http
-from sensor_recording_modules import recording_interval
-from sensor_recording_modules import recording_triggers
-from online_services_modules.mqtt_publisher import start_mqtt_publisher
-from online_services_modules.luftdaten import start_luftdaten
-from online_services_modules.weather_underground import start_weather_underground as start_wu
-from online_services_modules.open_sense_map import start_open_sense_map as start_osm
+from operations_modules.server_display import start_display_server
+from operations_modules.server_hardware_interactive import start_hardware_interactive_server
+from operations_modules.server_mqtt_broker import start_mqtt_broker_server
+from http_server.server_http import start_https_server
+from sensor_recording_modules.recording_interval import start_interval_recording
+from sensor_recording_modules.recording_triggers import start_trigger_recording
+from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
+from online_services_modules.luftdaten import start_luftdaten_server
+from online_services_modules.weather_underground import start_weather_underground_server
+from online_services_modules.open_sense_map import start_open_sense_map_server
 
 logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
-if app_config_access.installed_sensors.kootnet_dummy_sensor or \
-        running_with_root and app_config_access.installed_sensors.no_sensors is False:
-    # Start up special Sensor Access Service like SenseHat Joystick
-    text_name = "Sensor Interactive Service"
-    function = server_hardware_interactive.start_hardware_interactive_server
-    app_cached_variables.interactive_sensor_thread = CreateMonitoredThread(function, thread_name=text_name)
+dummy_sensors_installed = app_config_access.installed_sensors.kootnet_dummy_sensor
+if dummy_sensors_installed or running_with_root and app_config_access.installed_sensors.no_sensors is False:
+    # Start up Interactive Hardware Servers like SenseHat Joystick & Buttons
+    start_hardware_interactive_server()
 
-    # If there is a display installed, start up the display server
-    if app_config_access.primary_config.enable_display:
-        text_name = "Display"
-        function = server_display.scroll_interval_readings_on_display
-        app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
-    else:
-        logger.primary_logger.debug("Display Disabled in Primary Configuration")
+    # Start up the Display Server
+    start_display_server()
 
-    # Start up Interval Sensor Recording
-    if app_config_access.primary_config.enable_interval_recording:
-        text_name = "Interval Recording"
-        function = recording_interval.start_interval_recording
-        app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
-    else:
-        logger.primary_logger.debug("Interval Recording Disabled in Primary Configuration")
-
-    # Start up Trigger Sensor Recording
-    if app_config_access.primary_config.enable_trigger_recording:
-        app_cached_variables.trigger_recording_thread = thread_function(recording_triggers.start_trigger_recording)
-    else:
-        logger.primary_logger.debug("Trigger Recording Disabled in Primary Configuration")
+    # Start up Interval & Trigger Sensor Recording
+    start_interval_recording()
+    start_trigger_recording()
 
     # Start up all enabled Online Services
-    if app_config_access.weather_underground_config.weather_underground_enabled:
-        text_name = "Weather Underground"
-        app_cached_variables.weather_underground_thread = CreateMonitoredThread(start_wu, thread_name=text_name)
-    if app_config_access.luftdaten_config.luftdaten_enabled:
-        text_name = "Luftdaten"
-        app_cached_variables.luftdaten_thread = CreateMonitoredThread(start_luftdaten, thread_name=text_name)
-    if app_config_access.open_sense_map_config.open_sense_map_enabled:
-        text_name = "Open Sense Map"
-        app_cached_variables.open_sense_map_thread = CreateMonitoredThread(start_osm, thread_name=text_name)
-    if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
-        text_name = "MQTT Publisher"
-        app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(start_mqtt_publisher, thread_name=text_name)
+    start_luftdaten_server()
+    start_weather_underground_server()
+    start_open_sense_map_server()
+    start_mqtt_publisher_server()
 else:
     if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
 # Start the HTTP Server for remote access
-thread_function(server_http.https_start_and_watch)
+start_https_server()
+# Start the MQTT Broker Server
+start_mqtt_broker_server()
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:
     sleep(3600)
