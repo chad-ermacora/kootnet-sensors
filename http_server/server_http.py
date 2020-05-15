@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
@@ -94,11 +93,11 @@ class CreateSensorHTTP:
             logger.primary_logger.critical("--- Failed to Start HTTPS Server: " + str(error))
 
 
-def https_start_and_watch():
-    """ Starts an instance of the HTTP Flask server if imports are OK. """
+def start_https_server():
     if https_import_errors:
         log_message = "--- Failed to Start HTTPS Server - Missing Required Dependencies: "
         logger.primary_logger.critical(log_message + str(https_import_error_msg))
-        while True:
-            sleep(600)
-    app_cached_variables.http_server_thread = CreateMonitoredThread(CreateSensorHTTP, thread_name="HTTPS Server")
+    else:
+        text_name = "HTTPS Server"
+        function = CreateSensorHTTP
+        app_cached_variables.http_server_thread = CreateMonitoredThread(function, thread_name=text_name)
