@@ -18,9 +18,9 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
-from operations_modules.app_cached_variables_update import delayed_cache_update
+from operations_modules.app_cached_variables_update import update_cached_variables
 from operations_modules import app_config_access
 
 https_import_error_msg = ""
@@ -28,13 +28,26 @@ https_import_errors = True
 try:
     from http_server import server_http_auth
     from http_server.flask_blueprints.html_functional import html_functional_routes
-    from http_server.flask_blueprints.html_notes import html_notes_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
+    from http_server.flask_blueprints.html_notes import html_notes_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_primary import html_config_primary_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_sensors import \
+        html_config_installed_sensors_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_network import html_config_network_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_display import html_config_display_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_luftdaten import html_config_luftdaten_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_broker import html_config_mqtt_broker_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_publisher import \
+        html_config_mqtt_publisher_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_open_sense_map import html_config_osm_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import \
+        html_config_trigger_variances_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_weather_underground import \
+        html_config_weather_underground_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
     from http_server.flask_blueprints.system_commands import html_system_commands_routes
-    from http_server.flask_blueprints.online_services import html_online_services_routes
     from http_server.flask_blueprints.logs import html_logs_routes
     from http_server.flask_blueprints.html_sensor_configurations import html_sensor_config_routes
     from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
@@ -49,7 +62,10 @@ try:
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
     server_http_auth, html_functional_routes, html_basic_routes, html_notes_routes = None, None, None, None
-    html_download_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
+    html_config_primary_routes, html_config_installed_sensors_routes, html_config_display_routes = None, None, None
+    html_config_mqtt_broker_routes, html_config_mqtt_publisher_routes, html_config_network_routes = None, None, None
+    html_config_luftdaten_routes, html_config_osm_routes, html_config_weather_underground_routes = None, None, None
+    html_config_trigger_variances_routes, html_sensor_control_routes, html_plotly_graphing_routes = None, None, None
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
@@ -67,11 +83,20 @@ class CreateSensorHTTP:
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_notes_routes)
         app.register_blueprint(html_basic_routes)
+        app.register_blueprint(html_config_primary_routes)
+        app.register_blueprint(html_config_installed_sensors_routes)
+        app.register_blueprint(html_config_network_routes)
+        app.register_blueprint(html_config_display_routes)
+        app.register_blueprint(html_config_trigger_variances_routes)
+        app.register_blueprint(html_config_mqtt_broker_routes)
+        app.register_blueprint(html_config_mqtt_publisher_routes)
+        app.register_blueprint(html_config_luftdaten_routes)
+        app.register_blueprint(html_config_osm_routes)
+        app.register_blueprint(html_config_weather_underground_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)
         app.register_blueprint(html_plotly_graphing_routes)
         app.register_blueprint(html_system_commands_routes)
-        app.register_blueprint(html_online_services_routes)
         app.register_blueprint(html_logs_routes)
         app.register_blueprint(html_sensor_config_routes)
         app.register_blueprint(html_sensor_readings_routes)
@@ -79,7 +104,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_legacy_cc_routes)
         app.register_blueprint(html_sensor_info_readings_routes)
 
-        thread_function(delayed_cache_update)
+        update_cached_variables(delayed_update=True)
 
         try:
             flask_http_ip = app_config_access.primary_config.flask_http_ip
