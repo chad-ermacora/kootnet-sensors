@@ -32,7 +32,8 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
-if software_version.old_version == software_version.version or geteuid() != 0:
+running_with_root = app_cached_variables.running_with_root
+if software_version.old_version == software_version.version:
     try:
         html_report_system_start = get_file_content(file_locations.html_report_system1_start).strip()
         html_report_system_end = get_file_content(file_locations.html_report_system3_end).strip()
