@@ -16,103 +16,97 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from os import geteuid
 from flask import Blueprint, request
 from operations_modules import logger, app_config_access, app_cached_variables
-from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
-from online_services_modules.weather_underground import start_weather_underground
-from online_services_modules.luftdaten import start_luftdaten
-from online_services_modules.open_sense_map import start_open_sense_map
+from online_services_modules.weather_underground import start_weather_underground_server
+from online_services_modules.luftdaten import start_luftdaten_server
+from online_services_modules.open_sense_map import start_open_sense_map_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
-from sensor_modules import sensor_access
 
 html_online_services_routes = Blueprint("html_online_services_routes", __name__)
-
-running_with_root = True
-if geteuid():
-    running_with_root = False
+running_with_root = app_cached_variables.running_with_root
 
 
 @html_online_services_routes.route("/EditOnlineServicesWeatherUnderground", methods=["POST"])
 @auth.login_required
 def html_edit_online_services_wu():
     logger.network_logger.debug("** Edit Online Services Weather Underground accessed from " + str(request.remote_addr))
-    main_message = "Weather Underground Updated - "
-    message2 = ""
     if request.method == "POST":
         app_config_access.weather_underground_config.update_with_html_request(request)
         app_config_access.weather_underground_config.save_config_to_file()
-        if app_cached_variables.weather_underground_thread is not None:
-            message2 = "New Weather Underground settings will take effect after the sensor software restarts"
-            if running_with_root:
-                main_message += "Restarting Sensor Software"
-                thread_function(sensor_access.restart_services)
+        return_text = "Weather Underground Configuration Saved"
+        if app_config_access.weather_underground_config.weather_underground_enabled:
+            return_text = _get_restart_service_text("Weather Underground")
+            if app_cached_variables.weather_underground_thread is not None:
+                if app_cached_variables.weather_underground_thread.monitored_thread.is_alive():
+                    app_cached_variables.restart_weather_underground_thread = True
+                else:
+                    start_weather_underground_server()
+            else:
+                start_weather_underground_server()
         else:
-            if running_with_root:
-                text_name = "Weather Underground"
-                function = start_weather_underground
-                app_cached_variables.weather_underground_thread = CreateMonitoredThread(function, thread_name=text_name)
-                if request.form.get("enable_weather_underground") is not None:
-                    main_message += "Starting Weather Underground"
+            if app_cached_variables.weather_underground_thread is not None:
+                app_cached_variables.weather_underground_thread.shutdown_thread = True
+                app_cached_variables.restart_weather_underground_thread = True
+        return message_and_return(return_text, url="/ConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Weather Underground set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
-    return message_and_return(main_message, text_message2=message2, url="/ConfigurationsHTML")
 
 
 @html_online_services_routes.route("/EditOnlineServicesLuftdaten", methods=["POST"])
 @auth.login_required
 def html_edit_online_services_luftdaten():
     logger.network_logger.debug("** Edit Online Services Luftdaten accessed from " + str(request.remote_addr))
-    main_message = "Luftdaten Updated - "
-    message2 = ""
     if request.method == "POST":
         app_config_access.luftdaten_config.update_with_html_request(request)
         app_config_access.luftdaten_config.save_config_to_file()
-        if app_cached_variables.luftdaten_thread is not None:
-            message2 = "New Luftdaten settings will take effect after the sensor software restarts"
-            if running_with_root:
-                main_message += "Restarting Sensor Software"
-                thread_function(sensor_access.restart_services)
+        return_text = "Luftdaten Configuration Saved"
+        if app_config_access.luftdaten_config.luftdaten_enabled:
+            return_text = _get_restart_service_text("Luftdaten")
+            if app_cached_variables.luftdaten_thread is not None:
+                if app_cached_variables.luftdaten_thread.monitored_thread.is_alive():
+                    app_cached_variables.restart_luftdaten_thread = True
+                else:
+                    start_luftdaten_server()
+            else:
+                start_luftdaten_server()
         else:
-            if running_with_root:
-                text_name = "Luftdaten"
-                function = start_luftdaten
-                app_cached_variables.luftdaten_thread = CreateMonitoredThread(function, thread_name=text_name)
-                if request.form.get("enable_luftdaten") is not None:
-                    main_message += "Starting Luftdaten"
+            if app_cached_variables.luftdaten_thread is not None:
+                app_cached_variables.luftdaten_thread.shutdown_thread = True
+                app_cached_variables.restart_luftdaten_thread = True
+        return message_and_return(return_text, url="/ConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Luftdaten set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
-    return message_and_return(main_message, text_message2=message2, url="/ConfigurationsHTML")
 
 
 @html_online_services_routes.route("/EditOnlineServicesOSM", methods=["POST"])
 @auth.login_required
 def html_edit_online_services_open_sense_map():
     logger.network_logger.debug("** Edit Online Services Open Sense Map accessed from " + str(request.remote_addr))
-    main_message = "Open Sense Map Updated - "
-    message2 = ""
     if request.method == "POST":
         app_config_access.open_sense_map_config.update_with_html_request(request)
         app_config_access.open_sense_map_config.save_config_to_file()
-        if app_cached_variables.open_sense_map_thread is not None:
-            message2 = "New Open Sense Map settings will take effect after the sensor software restarts"
-            if running_with_root:
-                main_message += "Restarting Sensor Software"
-                thread_function(sensor_access.restart_services)
+        return_text = "Open Sense Map Configuration Saved"
+        if app_config_access.open_sense_map_config.open_sense_map_enabled:
+            return_text = _get_restart_service_text("Open Sense Map")
+            if app_cached_variables.open_sense_map_thread is not None:
+                if app_cached_variables.open_sense_map_thread.monitored_thread.is_alive():
+                    app_cached_variables.restart_open_sense_map_thread = True
+                else:
+                    start_open_sense_map_server()
+            else:
+                start_open_sense_map_server()
         else:
-            if running_with_root:
-                text_name = "Open Sense Map"
-                function = start_open_sense_map
-                app_cached_variables.open_sense_map_thread = CreateMonitoredThread(function, thread_name=text_name)
-                if request.form.get("enable_open_sense_map") is not None:
-                    main_message += "Starting Open Sense Map"
+            if app_cached_variables.open_sense_map_thread is not None:
+                app_cached_variables.open_sense_map_thread.shutdown_thread = True
+                app_cached_variables.restart_open_sense_map_thread = True
+        return message_and_return(return_text, url="/ConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Open Sense Map set Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
-    return message_and_return(main_message, text_message2=message2, url="/ConfigurationsHTML")
 
 
 @html_online_services_routes.route("/OnlineServicesRegisterSensorOSM", methods=["POST"])
@@ -137,3 +131,7 @@ def html_online_services_register_sensor_osm():
     else:
         logger.primary_logger.error("HTML Register Sensor with Open Sense Map Error")
         return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+
+
+def _get_restart_service_text(service_name):
+    return "Restarting " + str(service_name) + " Service, This may take up to 10 Seconds"
