@@ -80,8 +80,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Open Sense Map configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting Open Sense Map Configuration Update Check")
-        self.__init__(load_from_file=False)
-
+        self.open_sense_map_enabled = 0
         if html_request.form.get("enable_open_sense_map") is not None:
             self.open_sense_map_enabled = 1
         if html_request.form.get("osm_station_id") is not None:
