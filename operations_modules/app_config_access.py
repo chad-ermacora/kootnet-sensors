@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from os import geteuid
 from operations_modules import logger
+from operations_modules import app_cached_variables
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
@@ -29,7 +29,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
-if geteuid() != 0:
+if not app_cached_variables.running_with_root:
     logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
     if CreateInstalledSensorsConfiguration().kootnet_dummy_sensor:

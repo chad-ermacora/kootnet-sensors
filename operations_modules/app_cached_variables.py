@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from platform import system
+from os import geteuid
 from queue import Queue
 
 
@@ -243,6 +244,9 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
+running_with_root = True
+if geteuid() != 0:
+    running_with_root = False
 operating_system_name = ""
 database_variables = CreateDatabaseVariables()
 program_last_updated = ""
