@@ -118,16 +118,16 @@ def _run_upgrade_checks():
 
     if previous_version.major_version == "New_Install":
         logger.primary_logger.info("New Install Detected")
-        reset_primary_config()
-        reset_installed_sensors()
-        reset_variance_config()
-        reset_display_config()
-        reset_mqtt_broker_config()
-        reset_mqtt_publisher_config()
-        reset_weather_underground_config()
-        reset_luftdaten_config()
-        reset_open_sense_map_config()
-        reset_sensor_control_config()
+        reset_primary_config(log_reset=False)
+        reset_installed_sensors(log_reset=False)
+        reset_variance_config(log_reset=False)
+        reset_display_config(log_reset=False)
+        reset_mqtt_broker_config(log_reset=False)
+        reset_mqtt_publisher_config(log_reset=False)
+        reset_weather_underground_config(log_reset=False)
+        reset_luftdaten_config(log_reset=False)
+        reset_open_sense_map_config(log_reset=False)
+        reset_sensor_control_config(log_reset=False)
         no_changes = False
     else:
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
@@ -165,61 +165,71 @@ def _run_upgrade_checks():
         logger.primary_logger.info("Upgrade Complete - Please restart the Sensor program")
 
 
-def reset_primary_config():
+def reset_primary_config(log_reset=True):
     """ Writes a default main configuration file. """
-    logger.primary_logger.warning(" **** Main Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Main Configuration Reset ****")
     CreatePrimaryConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_installed_sensors():
+def reset_installed_sensors(log_reset=True):
     """ Writes a default installed sensor configuration file. """
-    logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_variance_config():
+def reset_variance_config(log_reset=True):
     """ Writes a default Trigger Variance configuration file. """
-    logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
     CreateTriggerVariancesConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_display_config():
+def reset_display_config(log_reset=True):
     """ Writes a default Display configuration file. """
-    logger.primary_logger.warning(" **** Display Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Display Configuration Reset ****")
     CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_mqtt_broker_config():
+def reset_mqtt_broker_config(log_reset=True):
     """ Writes a default MQTT Broker configuration file. """
-    logger.primary_logger.warning(" **** MQTT Broker Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** MQTT Broker Configuration Reset ****")
     CreateMQTTBrokerConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_mqtt_publisher_config():
+def reset_mqtt_publisher_config(log_reset=True):
     """ Writes a default MQTT Publisher configuration file. """
-    logger.primary_logger.warning(" **** MQTT Publisher Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** MQTT Publisher Configuration Reset ****")
     CreateMQTTPublisherConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_weather_underground_config():
+def reset_weather_underground_config(log_reset=True):
     """ Writes a default Weather Underground configuration file. """
-    logger.primary_logger.warning(" **** Weather Underground Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Weather Underground Configuration Reset ****")
     CreateWeatherUndergroundConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_luftdaten_config():
+def reset_luftdaten_config(log_reset=True):
     """ Writes a default Luftdaten configuration file. """
-    logger.primary_logger.warning(" **** Luftdaten Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Luftdaten Configuration Reset ****")
     CreateLuftdatenConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_open_sense_map_config():
+def reset_open_sense_map_config(log_reset=True):
     """ Writes a default Open Sense Map configuration file. """
-    logger.primary_logger.warning(" **** Open Sense Map Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Open Sense Map Configuration Reset ****")
     CreateOpenSenseMapConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_sensor_control_config():
+def reset_sensor_control_config(log_reset=True):
     """ Writes a default Sensor Control configuration file. """
-    logger.primary_logger.warning(" **** Sensor Control Configuration Reset ****")
+    if log_reset:
+        logger.primary_logger.warning(" **** Sensor Control Configuration Reset ****")
     CreateSensorControlConfiguration(load_from_file=False).save_config_to_file()
