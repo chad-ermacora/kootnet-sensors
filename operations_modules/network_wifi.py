@@ -103,13 +103,3 @@ def html_request_to_config_wifi(html_request):
         wifi_template = wifi_template.replace("{{ WirelessKeyMgmt1 }}", wifi_security_type1)
         return wifi_template
     return ""
-
-
-def get_wifi_config_from_file():
-    """ Loads wpa_supplicant.conf from file and returns it. """
-    return app_generic_functions.get_file_content(file_locations.wifi_config_file)
-
-
-def write_wifi_config_to_file(config):
-    """ Writes provided wpa_supplicant.conf file to local disk. """
-    app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, config)

@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -55,9 +56,9 @@ def html_set_config_mqtt_broker():
 
 def get_config_mqtt_broker_tab():
     try:
-        mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
-        if mosquitto_configuration is None:
-            mosquitto_configuration = ""
+        mosquitto_configuration = ""
+        if os.path.isfile(file_locations.mosquitto_configuration):
+            mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
         return render_template("edit_configurations/config_mqtt_broker.html",
                                PageURL="/ConfigurationsHTML",
                                BrokerServerChecked=get_html_checkbox_state(check_mqtt_broker_server_running()),

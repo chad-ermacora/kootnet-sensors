@@ -1,9 +1,26 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_config_access
-from operations_modules import network_wifi
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
 
@@ -216,7 +233,7 @@ def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))
     try:
         new_wifi_config = request.form.get("command_data")
-        network_wifi.write_wifi_config_to_file(new_wifi_config)
+        app_generic_functions.write_file_to_disk(file_locations.wifi_config_file, new_wifi_config)
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)

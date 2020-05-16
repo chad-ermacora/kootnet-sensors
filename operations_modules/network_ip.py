@@ -16,8 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from operations_modules import file_locations
-from operations_modules import app_generic_functions
 # TODO: Add ability to check for Ethernet vs. Wireless in all relevant areas
 
 
@@ -90,13 +88,3 @@ def get_dns(dhcpcd_config_lines, dns_server=0):
                 if len(dns_list) > 1 or dns_server == 0:
                     return dns_list[dns_server]
     return ""
-
-
-def get_dhcpcd_config_from_file():
-    """ Loads dhcpcd.conf from file and returns it. """
-    return app_generic_functions.get_file_content(file_locations.dhcpcd_config_file)
-
-
-def write_ipv4_config_to_file(dhcpcd_config):
-    """ Writes provided dhcpcd.conf file to local disk. """
-    app_generic_functions.write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_config)

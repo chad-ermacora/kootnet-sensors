@@ -200,8 +200,8 @@ def check_html_config_ipv4(html_request):
     ip_network_text = "interface wlan0\nstatic ip_address=" + ip_address + ip_subnet_mask + \
                       "\nstatic routers=" + ip_gateway + "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
 
-    dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
-    network_ip.write_ipv4_config_to_file(dhcpcd_template)
+    new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
+    write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
 
     shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
     os.chmod(file_locations.dhcpcd_config_file, 0o664)
@@ -220,7 +220,7 @@ def html_set_wifi_config():
         if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
             new_wireless_config = network_wifi.html_request_to_config_wifi(request)
             if new_wireless_config is not "":
-                network_wifi.write_wifi_config_to_file(new_wireless_config)
+                write_file_to_disk(file_locations.wifi_config_file, new_wireless_config)
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()

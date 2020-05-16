@@ -28,16 +28,15 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
         self.valid_setting_count = 22
-        self.config_settings_names = ["Enable MQTT", "Broker Server Address", "Port #", "Enable Authentication",
-                                      "User Name (Optional)", "Password (Optional)", "Seconds Between Reading Posts",
-                                      "Publish System Uptime", "Publish CPU Temperature",
-                                      "Publish Environmental Temperature", "Publish Pressure", "Publish Altitude",
-                                      "Publish Humidity", "Publish Distance", "Publish GAS",
-                                      "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
+        self.config_settings_names = ["Enable MQTT Publisher", "Broker Server Address", "Broker Port #",
+                                      "Enable Authentication", "User Name (Optional)", "Password (Optional)",
+                                      "Seconds Between Reading Posts", "Publish System Uptime",
+                                      "Publish CPU Temperature", "Publish Environmental Temperature",
+                                      "Publish Pressure", "Publish Altitude", "Publish Humidity", "Publish Distance",
+                                      "Publish GAS", "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
                                       "Publish Ultra Violet", "Publish Accelerometer", "Publish Magnetometer",
                                       "Publish Gyroscope"]
 
-        # These variables are for the MQTT Publisher
         self.enable_mqtt_publisher = 0
         self.broker_address = ""
         self.broker_server_port = 1883
