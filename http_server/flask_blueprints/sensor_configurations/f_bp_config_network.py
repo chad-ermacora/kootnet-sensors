@@ -125,22 +125,15 @@ def _is_valid_ssl_certificate(cert):
     return False
 
 
+# TODO: move checks to _set function below. Return check and message for html return
 @html_config_network_routes.route("/EditConfigIPv4", methods=["POST"])
 @auth.login_required
 def html_set_ipv4_config():
     logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
-    message = "Network settings have not been changed."
     if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
-        if request.form.get("ip_dhcp") is not None:
-            message = "You must reboot for all settings to take effect."
-            dhcpcd_template = get_file_content(file_locations.dhcpcd_config_file_template)
-            dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
-            hostname = request.form.get("ip_hostname")
-            os.system("hostnamectl set-hostname " + hostname)
-            write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
-            app_cached_variables_update.update_cached_variables()
-            msg = "IPv4 Configuration Updated"
-            return message_and_return(msg, text_message2=message, url="/NetworkConfigurationsHTML")
+        hostname = request.form.get("ip_hostname")
+        app_cached_variables.hostname = hostname
+        os.system("hostnamectl set-hostname " + hostname)
 
         ip_address = request.form.get("ip_address")
         ip_subnet = request.form.get("ip_subnet")
@@ -148,63 +141,50 @@ def html_set_ipv4_config():
         ip_dns1 = request.form.get("ip_dns1")
         ip_dns2 = request.form.get("ip_dns2")
 
-        try:
-            app_validation_checks.ip_address_is_valid(ip_address)
-        except ValueError:
-            return message_and_return("Invalid IP Address", text_message2=message, url="/NetworkConfigurationsHTML")
-        if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
-            return message_and_return("Invalid Subnet Mask", text_message2=message, url="/NetworkConfigurationsHTML")
-        if ip_gateway is not "":
-            try:
-                app_validation_checks.ip_address_is_valid(ip_gateway)
-            except ValueError:
-                return message_and_return("Invalid Gateway", text_message2=message, url="/NetworkConfigurationsHTML")
-        if ip_dns1 is not "":
-            try:
-                app_validation_checks.ip_address_is_valid(ip_dns1)
-            except ValueError:
-                title_message = "Invalid Primary DNS Address"
-                return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
-        if ip_dns2 is not "":
-            title_message = "Invalid Secondary DNS Address"
-            try:
-                app_validation_checks.ip_address_is_valid(ip_dns2)
-            except ValueError:
-                return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
+        dhcpcd_template = str(get_file_content(file_locations.dhcpcd_config_file_template))
+        if request.form.get("ip_dhcp") is not None:
+            dhcpcd_template = dhcpcd_template.replace("{{ StaticIPSettings }}", "")
+            write_file_to_disk(file_locations.dhcpcd_config_file, dhcpcd_template)
+            app_cached_variables.ip = ""
+            app_cached_variables.ip_subnet = ""
+            app_cached_variables.gateway = ""
+            app_cached_variables.dns1 = ""
+            app_cached_variables.dns2 = ""
+        else:
+            bad_setting_msg = ""
+            if not app_validation_checks.ip_address_is_valid(ip_address):
+                bad_setting_msg += "Invalid IP Address "
+            if not app_validation_checks.subnet_mask_is_valid(ip_subnet):
+                bad_setting_msg += "Invalid IP Subnet Mask "
+            if not app_validation_checks.ip_address_is_valid(ip_gateway) and ip_gateway != "":
+                bad_setting_msg += "Invalid Gateway IP Address "
+            if not app_validation_checks.ip_address_is_valid(ip_dns1) and ip_dns1 != "":
+                bad_setting_msg += "Invalid DNS Address "
+            if not app_validation_checks.ip_address_is_valid(ip_dns2) and ip_dns2 != "":
+                bad_setting_msg += "Invalid DNS Address "
+            if bad_setting_msg != "":
+                msg1 = "Invalid IP Settings"
+                return message_and_return(msg1, text_message2=bad_setting_msg, url="/NetworkConfigurationsHTML")
 
-        check_html_config_ipv4(request)
+            ip_network_text = "# Custom Static IP set by Kootnet Sensors" + \
+                              "\ninterface wlan0" + \
+                              "\nstatic ip_address=" + ip_address + ip_subnet + \
+                              "\nstatic routers=" + ip_gateway + \
+                              "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
+
+            new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
+            write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
+            shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
+            os.chmod(file_locations.dhcpcd_config_file, 0o664)
+
+        msg1 = "IPv4 Configuration Updated"
+        msg2 = "You must reboot for all settings to take effect."
         app_cached_variables_update.update_cached_variables()
-        title_message = "IPv4 Configuration Updated"
-        message = "You must reboot the sensor to take effect."
-        return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
+        return message_and_return(msg1, text_message2=msg2, url="/NetworkConfigurationsHTML")
     else:
         title_message = "Unable to Process IPv4 Configuration"
         message = "Invalid or Missing Hostname.\n\nOnly Alphanumeric Characters, Dashes and Underscores may be used."
         return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
-
-
-def check_html_config_ipv4(html_request):
-    logger.network_logger.debug("Starting HTML IPv4 Configuration Update Check")
-    dhcpcd_template = get_file_content(file_locations.dhcpcd_config_file_template)
-
-    hostname = html_request.form.get("ip_hostname")
-    os.system("hostnamectl set-hostname " + hostname)
-    app_cached_variables.hostname = hostname
-
-    ip_address = html_request.form.get("ip_address")
-    ip_subnet_mask = html_request.form.get("ip_subnet")
-    ip_gateway = html_request.form.get("ip_gateway")
-    ip_dns1 = html_request.form.get("ip_dns1")
-    ip_dns2 = html_request.form.get("ip_dns2")
-
-    ip_network_text = "interface wlan0\nstatic ip_address=" + ip_address + ip_subnet_mask + \
-                      "\nstatic routers=" + ip_gateway + "\nstatic domain_name_servers=" + ip_dns1 + " " + ip_dns2
-
-    new_dhcpcd_config = dhcpcd_template.replace("{{ StaticIPSettings }}", ip_network_text)
-    write_file_to_disk(file_locations.dhcpcd_config_file, new_dhcpcd_config)
-
-    shutil.chown(file_locations.dhcpcd_config_file, "root", "netdev")
-    os.chmod(file_locations.dhcpcd_config_file, 0o664)
 
 
 @html_config_network_routes.route("/EditConfigWifi", methods=["POST"])
