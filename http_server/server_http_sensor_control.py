@@ -110,14 +110,10 @@ class CreateReplacementVariables:
                 weather_underground_colour = "#F4A460"
                 if wu_config.weather_underground_enabled:
                     weather_underground_colour = "lightgreen"
-                if wu_config.bad_config_load:
-                    weather_underground_colour = "orangered"
 
                 open_sense_map_colour = "#F4A460"
                 if osm_config.open_sense_map_enabled:
                     open_sense_map_colour = "lightgreen"
-                if osm_config.bad_config_load:
-                    open_sense_map_colour = "orangered"
             else:
                 weather_underground_colour = "orangered"
                 open_sense_map_colour = "orangered"
@@ -136,9 +132,6 @@ class CreateReplacementVariables:
             luftdaten_colour = "#F4A460"
             if luftdaten_config.luftdaten_enabled:
                 luftdaten_colour = "lightgreen"
-            if luftdaten_config.bad_config_load:
-                luftdaten_colour = "orangered"
-                luftdaten_enabled = ""
 
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
             installed_sensors_config.set_config_with_str(installed_sensors_raw)

@@ -41,8 +41,6 @@ class CreateGeneralConfiguration:
         self.config_settings = []
         self.config_settings_names = []
 
-        self.bad_config_load = False
-
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
         try:
@@ -82,9 +80,8 @@ class CreateGeneralConfiguration:
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
             if not self.valid_setting_count == len(config_file_text):
                 if self.load_from_file:
-                    self.bad_config_load = True
                     log_msg = "Invalid number of settings found in "
-                    logger.primary_logger.warning(log_msg + str(self.config_file_location))
+                    logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - Please Check Config")
 
             self.config_settings = []
             for line in config_file_text:
@@ -94,13 +91,11 @@ class CreateGeneralConfiguration:
                 except Exception as error:
                     if self.load_from_file:
                         logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
-                    self.bad_config_load = True
                     setting = "error"
                 self.config_settings.append(setting)
         else:
             if self.load_from_file:
                 logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
-            self.bad_config_load = True
 
 
 class CreateMonitoredThread:
