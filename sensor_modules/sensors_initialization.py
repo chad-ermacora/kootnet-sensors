@@ -49,6 +49,7 @@ if geteuid() == 0:
     from sensor_modules import pimoroni_11x7_led_matrix
     from sensor_modules import pimoroni_0_96_spi_colour_lcd
     from sensor_modules import pimoroni_1_12_mono_oled
+    from sensor_modules import sensirion_sps30
 
     # Initialize sensor access, based on installed sensors file
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
@@ -95,6 +96,8 @@ if geteuid() == 0:
         pimoroni_st7735_a = pimoroni_0_96_spi_colour_lcd.CreateST7735()
     if app_config_access.installed_sensors.pimoroni_mono_oled_luma:
         pimoroni_mono_oled_luma_a = pimoroni_1_12_mono_oled.CreateLumaOLED()
+    if app_config_access.installed_sensors.sensirion_sps30:
+        sensirion_sps30_a = sensirion_sps30.CreateSPS30()
     logger.primary_logger.info(" -- Sensors Initialized")
 if app_config_access.installed_sensors.kootnet_dummy_sensor:
     dummy_sensors = kootnet_dummy_sensors.CreateDummySensors()

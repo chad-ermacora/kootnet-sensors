@@ -328,18 +328,17 @@ def get_particulate_matter(return_as_dictionary=False):
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm_readings = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()
-        if return_as_dictionary:
-            return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
-                    app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
-                    app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
+    elif app_config_access.installed_sensors.sensirion_sps30:
+        pm_readings = sensors_direct.sensirion_sps30_a.particulate_matter_data()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
-        if return_as_dictionary:
-            return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
-                    app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
-                    app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
     else:
         return no_sensor_present
+
+    if return_as_dictionary:
+        return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
+                app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
+                app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
     return pm_readings
 
 
