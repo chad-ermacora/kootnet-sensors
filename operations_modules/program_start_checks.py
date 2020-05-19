@@ -35,6 +35,8 @@ from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 
+create_directories_for_files = [file_locations.mosquitto_configuration]
+
 
 def run_program_start_checks():
     """
@@ -42,6 +44,7 @@ def run_program_start_checks():
     Sets file permissions, checks the database and generates the HTTPS certificates if not present.
     """
     logger.primary_logger.info(" -- Starting Programs Checks ...")
+    _check_directories()
     _set_file_permissions()
     check_database_structure()
     _check_ssl_files()
@@ -51,6 +54,16 @@ def run_program_start_checks():
         # The update function will automatically restart the service
         while True:
             time.sleep(30)
+
+
+def _check_directories():
+    if app_cached_variables.running_with_root:
+        for directory_check in create_directories_for_files:
+            current_directory = ""
+            for found_dir in directory_check.split("/")[1:-1]:
+                current_directory += "/" + str(found_dir)
+                if not os.path.isdir(current_directory):
+                    os.mkdir(current_directory)
 
 
 def _set_file_permissions():
