@@ -62,6 +62,5 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
             logger.primary_logger.debug("MQTT Broker Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
-                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving MQTT Broker Configuration.")
                 self.save_config_to_file()

@@ -177,6 +177,5 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             logger.primary_logger.debug("Open Sense Map Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
-                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Open Sense Map Configuration.")
                 self.save_config_to_file()
