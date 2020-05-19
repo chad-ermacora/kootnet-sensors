@@ -153,7 +153,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         return "N/A"
 
     def _update_variables_from_settings_list(self):
-        bad_load = 0
         try:
             self.linux_system = int(self.config_settings[0])
             self.raspberry_pi = int(self.config_settings[1])
@@ -177,29 +176,15 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_st7735 = int(self.config_settings[19])
             self.pimoroni_mono_oled_luma = int(self.config_settings[20])
             self.kootnet_dummy_sensor = int(self.config_settings[21])
+            self.sensirion_sps30 = int(self.config_settings[22])
             for sensor in self.config_settings:
                 if sensor:
                     self.no_sensors = False
-                    break
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
-            bad_load += 100
-
-        if bad_load < 99:
-            # Add new Settings here.
-            try:
-                self.sensirion_sps30 = int(self.config_settings[22])
-            except Exception as error:
-                self.sensirion_sps30 = 0
-                if self.load_from_file:
-                    logger.primary_logger.error("Installed Sensors 'Sensirion SPS30' not found, using default.")
-                    logger.primary_logger.debug(str(error))
-                bad_load += 1
-
-        if bad_load:
+            logger.primary_logger.debug("Installed Sensors Config: " + str(error))
             self.update_configuration_settings_list()
             if self.load_from_file:
+                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
 

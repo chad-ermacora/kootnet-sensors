@@ -263,7 +263,6 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
                                 str(self.gyroscope_wait_seconds)]
 
     def _update_variables_from_settings_list(self):
-        bad_load = 0
         try:
             self.sensor_uptime_enabled = int(self.config_settings[0])
             self.sensor_uptime_wait_seconds = float(self.config_settings[1])
@@ -328,17 +327,10 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_variance = float(self.config_settings[60])
             self.gyroscope_wait_seconds = float(self.config_settings[61])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
-            bad_load += 100
-
-        if bad_load < 99:
-            # Add new Settings here.
-            pass
-
-        if bad_load:
+            logger.primary_logger.debug("Trigger Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
+                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Trigger Variance Configuration.")
                 self.save_config_to_file()
 

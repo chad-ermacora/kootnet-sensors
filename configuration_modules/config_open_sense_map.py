@@ -174,9 +174,9 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             self.ultra_violet_a_id = str(self.config_settings[22])
             self.ultra_violet_b_id = str(self.config_settings[23])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
+            logger.primary_logger.debug("Open Sense Map Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
+                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Open Sense Map Configuration.")
                 self.save_config_to_file()

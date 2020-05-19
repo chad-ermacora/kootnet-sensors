@@ -96,7 +96,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                 str(self.temperature_offset), str(self.web_portal_port)]
 
     def _update_variables_from_settings_list(self):
-        bad_load = 0
         try:
             self.enable_debug_logging = int(self.config_settings[0])
             self.enable_display = int(self.config_settings[1])
@@ -105,23 +104,12 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.sleep_duration_interval = float(self.config_settings[4])
             self.enable_custom_temp = int(self.config_settings[5])
             self.temperature_offset = float(self.config_settings[6])
+            self.web_portal_port = int(self.config_settings[7])
         except Exception as error:
             if self.load_from_file:
-                log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-                logger.primary_logger.error(log_msg + str(error))
-            bad_load += 100
-
-        if bad_load < 99:
-            try:
-                self.web_portal_port = int(self.config_settings[7])
-            except Exception as error:
-                if self.load_from_file:
-                    logger.primary_logger.error("HTTPS Web Portal port number not found, using default.")
-                    logger.primary_logger.debug(str(error))
-                bad_load += 1
-
-        if bad_load:
+                logger.primary_logger.debug("Primary Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
+                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Primary Configuration.")
                 self.save_config_to_file()
