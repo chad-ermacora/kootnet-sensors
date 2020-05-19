@@ -21,9 +21,13 @@ from datetime import datetime
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_config_access
-from operations_modules.app_cached_variables import normal_state, low_state, high_state
+from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
+
+normal_state = app_cached_variables.normal_state
+low_state = app_cached_variables.low_state
+high_state = app_cached_variables.high_state
 
 
 class CreateTriggerVarianceData:
@@ -87,7 +91,7 @@ class CreateTriggerVarianceThread:
         datetime_stamps = []
 
         count = 0
-        while count < self.trigger_data.number_of_sets:
+        while count < self.trigger_data.number_of_sets or app_cached_variables.restart_all_trigger_recording_threads:
             try:
                 sensor_reading.append(self.trigger_data.get_sensor_data_function())
             except Exception as error:
@@ -100,7 +104,7 @@ class CreateTriggerVarianceThread:
         self.reading_and_datetime_stamps = [sensor_reading, datetime_stamps]
 
     def _sensor_uptime_check(self):
-        while True:
+        while not app_cached_variables.restart_all_trigger_recording_threads:
             self._update_sensor_readings_set()
             execute_str_list = _readings_to_sql_write_str_single_data(self)
             sqlite_database.write_to_sql_database(execute_str_list[0])
@@ -108,11 +112,11 @@ class CreateTriggerVarianceThread:
     def _data_check(self):
         log_msg = self.trigger_data.thread_name + " Starting Checks.  Checking every "
         logger.primary_logger.debug(log_msg + str(self.trigger_data.sensor_wait_seconds) + " Seconds")
-        while True:
+        while not app_cached_variables.restart_all_trigger_recording_threads:
             if self.number_of_errors > self.trigger_data.max_trigger_errors:
                 log_msg = "Max Errors reached for " + self.trigger_data.thread_name + ": Stopping Trigger Thread"
                 logger.primary_logger.warning(log_msg)
-                while True:
+                while not app_cached_variables.restart_all_trigger_recording_threads:
                     sleep(3600)
             if self._check_differences():
                 execute_str_list = []
