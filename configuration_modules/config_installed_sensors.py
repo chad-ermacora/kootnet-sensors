@@ -75,6 +75,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
+            self.config_settings_names[1] = self.get_raspberry_pi_model()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
@@ -142,10 +143,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         new_file_content = ""
         for setting, setting_name in zip(self.config_settings, self.config_settings_names):
             if int(setting):
-                if self.config_settings_names[1] == setting_name:
-                    new_file_content += self.get_raspberry_pi_model() + " || "
-                else:
-                    new_file_content += str(setting_name) + " || "
+                new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
             if geteuid():
                 return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
@@ -184,7 +182,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             logger.primary_logger.debug("Installed Sensors Config: " + str(error))
             self.update_configuration_settings_list()
             if self.load_from_file:
-                logger.primary_logger.error("Invalid Settings detected for " + self.config_file_location)
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
 
