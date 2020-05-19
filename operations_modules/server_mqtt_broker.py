@@ -44,8 +44,11 @@ def check_mqtt_broker_server_running():
 def restart_mqtt_broker_server():
     """ Restarts MQTT Broker server Mosquitto's service. """
     if app_cached_variables.running_with_root:
-        logger.primary_logger.info("Restarting MQTT Broker Mosquitto")
-        os.system(terminal_restart_mosquitto)
+        if check_mqtt_broker_server_running():
+            logger.primary_logger.info("Restarting MQTT Broker Mosquitto")
+            os.system(terminal_restart_mosquitto)
+        else:
+            start_mqtt_broker_server()
     else:
         logger.primary_logger.warning("Unable to Restart MQTT Mosquitto, root required")
 
@@ -53,8 +56,11 @@ def restart_mqtt_broker_server():
 def stop_mqtt_broker_server():
     """ Stops MQTT Broker server Mosquitto's service. """
     if app_cached_variables.running_with_root:
-        logger.primary_logger.info("Stopping MQTT Broker Mosquitto")
-        os.system(terminal_disable_stop_mosquitto)
+        if check_mqtt_broker_server_running():
+            logger.primary_logger.info("Stopping MQTT Broker Mosquitto")
+            os.system(terminal_disable_stop_mosquitto)
+        else:
+            logger.primary_logger.debug("MQTT Broker Mosquitto already Stopped")
     else:
         logger.primary_logger.warning("Unable to Stop MQTT Mosquitto, root required")
 
