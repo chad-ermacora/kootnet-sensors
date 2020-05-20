@@ -127,6 +127,7 @@ def _run_upgrade_checks():
     """
     logger.primary_logger.info(" -- Starting Upgrade Checks ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
+    current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
 
     if previous_version.major_version == "New_Install":
@@ -146,6 +147,10 @@ def _run_upgrade_checks():
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
         logger.primary_logger.info(msg)
         if previous_version.major_version == "Beta":
+            if previous_version.feature_version > current_version.feature_version:
+                logger.primary_logger.warning("The current version appears to be older then the previous version")
+                logger.primary_logger.warning("Please review your configurations in case of conflict")
+                no_changes = False
             if previous_version.feature_version == 30:
                 if previous_version.minor_version < 34:
                     no_changes = False
@@ -156,10 +161,14 @@ def _run_upgrade_checks():
                     reset_installed_sensors()
                     reset_variance_config()
         elif previous_version.major_version == "Alpha":
+            if previous_version.feature_version > current_version.feature_version:
+                logger.primary_logger.warning("The current version appears to be older then the previous version")
+                logger.primary_logger.warning("Please review your configurations in case of conflict")
+            else:
+                reset_installed_sensors()
+                reset_primary_config()
+                reset_variance_config()
             no_changes = False
-            reset_installed_sensors()
-            reset_primary_config()
-            reset_variance_config()
         else:
             no_changes = False
             msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
