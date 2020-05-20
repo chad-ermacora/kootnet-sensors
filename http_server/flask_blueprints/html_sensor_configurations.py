@@ -36,6 +36,7 @@ from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_se
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_luftdaten import get_config_luftdaten_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_broker import get_config_mqtt_broker_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_publisher import get_config_mqtt_publisher_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_subscriber import get_config_mqtt_subscriber_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_open_sense_map import get_config_osm_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_primary import get_config_primary_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import get_config_trigger_variances_tab
@@ -57,6 +58,7 @@ def html_edit_configurations():
                            ConfigTriggerVariancesTab=get_config_trigger_variances_tab(),
                            ConfigMQTTBrokerTab=get_config_mqtt_broker_tab(),
                            ConfigMQTTPublisherTab=get_config_mqtt_publisher_tab(),
+                           ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab(),
                            ConfigWUTab=get_config_weather_underground_tab(),
                            ConfigLuftdatenTab=get_config_luftdaten_tab(),
                            ConfigOSMTab=get_config_osm_tab())

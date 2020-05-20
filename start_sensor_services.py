@@ -39,6 +39,7 @@ from sensor_recording_modules.recording_triggers import start_trigger_recording_
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
 from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
+from operations_modules.server_mqtt_subscriber import start_mqtt_subscriber_server
 from online_services_modules.luftdaten import start_luftdaten_server
 from online_services_modules.weather_underground import start_weather_underground_server
 from online_services_modules.open_sense_map import start_open_sense_map_server
@@ -66,8 +67,9 @@ else:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
 # Start the MQTT Broker Server & the HTTPS Web Portal Server
-start_mqtt_broker_server()
 start_https_server()
+start_mqtt_broker_server()
+start_mqtt_subscriber_server()
 
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:

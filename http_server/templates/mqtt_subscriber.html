@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <meta http-equiv="refresh" content="10; url = {{ URL }}"/>
+
+    <fieldset style="text-align: center; background: #00B0FF; width: 950px;">
+        <h3><u><strong><a style="color: black;" href="{{ PageURL }}">MQTT Subscriber Topic Posts</a></strong></u></h3>
+
+        <h4>This will automatically refresh every 10 seconds</h4>
+
+        <a style="color: {{ MQTTEnabledColor }}; background: black;
+                font-size: large; text-decoration: none;"><b>{{ MQTTSubscriberEnabledText }}</b></a>
+        <br>
+        <br>
+
+        <label>
+            <a style="color: black;" target="_blank"
+               href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
+                MQTT Topics
+            </a>
+            <br>
+            <br>
+            <textarea name="subscriber_log" cols="100" rows="35">{{ SubscriberTopics }}</textarea>
+        </label>
+    </fieldset>
+
+{% endblock %}

@@ -25,6 +25,7 @@ from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
 from configuration_modules.config_mqtt_publisher import CreateMQTTPublisherConfiguration
+from configuration_modules.config_mqtt_subscriber import CreateMQTTSubscriberConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
@@ -46,6 +47,7 @@ display_config = CreateDisplayConfiguration()
 sensor_control_config = CreateSensorControlConfiguration()
 mqtt_broker_config = CreateMQTTBrokerConfiguration()
 mqtt_publisher_config = CreateMQTTPublisherConfiguration()
+mqtt_subscriber_config = CreateMQTTSubscriberConfiguration()
 weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()

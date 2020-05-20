@@ -39,6 +39,8 @@ try:
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_broker import html_config_mqtt_broker_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_publisher import \
         html_config_mqtt_publisher_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_subscriber import \
+        html_config_mqtt_subscriber_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_open_sense_map import html_config_osm_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import \
         html_config_trigger_variances_routes
@@ -69,6 +71,7 @@ except ImportError as https_import_error_msg_raw:
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
+    html_config_mqtt_subscriber_routes = None
     Flask, Compress, WSGIServer = None, None, None
 
 
@@ -90,6 +93,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_config_trigger_variances_routes)
         app.register_blueprint(html_config_mqtt_broker_routes)
         app.register_blueprint(html_config_mqtt_publisher_routes)
+        app.register_blueprint(html_config_mqtt_subscriber_routes)
         app.register_blueprint(html_config_luftdaten_routes)
         app.register_blueprint(html_config_osm_routes)
         app.register_blueprint(html_config_weather_underground_routes)

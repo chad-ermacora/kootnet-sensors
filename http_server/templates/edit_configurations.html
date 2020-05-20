@@ -38,14 +38,14 @@
             </a>
         </li>
 
-        <br>
-
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="trigger-variances-tab">
-                Trigger Variances
+                Triggers
             </a>
         </li>
+
+        <br>
 
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="mqtt-broker-tab">
@@ -55,6 +55,11 @@
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="mqtt-publisher-tab">
             MQTT Publisher
+        </a></li>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="mqtt-subscriber-tab">
+            MQTT Subscriber
         </a></li>
 
         <br>
@@ -82,6 +87,7 @@
     {{ ConfigTriggerVariancesTab|safe }}
     {{ ConfigMQTTBrokerTab|safe }}
     {{ ConfigMQTTPublisherTab|safe }}
+    {{ ConfigMQTTSubscriberTab|safe }}
     {{ ConfigWUTab|safe }}
     {{ ConfigLuftdatenTab|safe }}
     {{ ConfigOSMTab|safe }}
