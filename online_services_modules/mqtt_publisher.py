@@ -25,12 +25,11 @@ from operations_modules import app_config_access
 from sensor_modules import sensor_access
 from sensor_recording_modules.recording_interval import available_sensors
 
-mqtt_base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic + sensor_access.get_hostname() + "/"
-
 
 class CreateMQTTSensorTopics:
     """ Creates a Data Class holding MQTT Sensor Topics """
     def __init__(self):
+        self.mqtt_base_topic = "KS/" + sensor_access.get_hostname() + "/"
         self.system_uptime = "SystemUpTime"
         self.system_temperature = "SystemTemperature"
         self.env_temperature = "EnvironmentTemperature"
@@ -108,49 +107,49 @@ def _mqtt_publisher_server():
     while not app_cached_variables.restart_mqtt_publisher_thread:
         try:
             if app_config_access.mqtt_publisher_config.sensor_uptime:
-                topic = mqtt_base_topic + sensor_topics.system_uptime
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.system_uptime
                 client.publish(topic, sensor_access.get_uptime_minutes())
             if app_config_access.mqtt_publisher_config.system_temperature and available_sensors.has_cpu_temperature:
-                topic = mqtt_base_topic + sensor_topics.system_temperature
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.system_temperature
                 client.publish(topic, sensor_access.get_cpu_temperature())
             if app_config_access.mqtt_publisher_config.env_temperature and available_sensors.has_env_temperature:
-                topic = mqtt_base_topic + sensor_topics.env_temperature
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.env_temperature
                 client.publish(topic, sensor_access.get_sensor_temperature())
             if app_config_access.mqtt_publisher_config.pressure and available_sensors.has_pressure:
-                topic = mqtt_base_topic + sensor_topics.pressure
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.pressure
                 client.publish(topic, sensor_access.get_pressure())
             if app_config_access.mqtt_publisher_config.altitude and available_sensors.has_altitude:
-                topic = mqtt_base_topic + sensor_topics.altitude
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.altitude
                 client.publish(topic, sensor_access.get_altitude())
             if app_config_access.mqtt_publisher_config.humidity and available_sensors.has_humidity:
-                topic = mqtt_base_topic + sensor_topics.humidity
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.humidity
                 client.publish(topic, sensor_access.get_humidity())
             if app_config_access.mqtt_publisher_config.distance and available_sensors.has_distance:
-                topic = mqtt_base_topic + sensor_topics.distance
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.distance
                 client.publish(topic, sensor_access.get_distance())
             if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
-                topic = mqtt_base_topic + sensor_topics.gas
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.gas
                 client.publish(topic, _readings_to_text(sensor_access.get_gas()))
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                topic = mqtt_base_topic + sensor_topics.particulate_matter
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.particulate_matter
                 client.publish(topic, _readings_to_text(sensor_access.get_particulate_matter()))
             if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
-                topic = mqtt_base_topic + sensor_topics.lumen
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.lumen
                 client.publish(topic, sensor_access.get_lumen())
             if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
-                topic = mqtt_base_topic + sensor_topics.color
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.color
                 client.publish(topic, _readings_to_text(sensor_access.get_ems_colors()))
             if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
-                topic = mqtt_base_topic + sensor_topics.ultra_violet
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.ultra_violet
                 client.publish(topic, _readings_to_text(sensor_access.get_ultra_violet()))
             if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
-                topic = mqtt_base_topic + sensor_topics.accelerometer
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.accelerometer
                 client.publish(topic, _readings_to_text(sensor_access.get_accelerometer_xyz()))
             if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
-                topic = mqtt_base_topic + sensor_topics.magnetometer
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.magnetometer
                 client.publish(topic, _readings_to_text(sensor_access.get_magnetometer_xyz()))
             if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
-                topic = mqtt_base_topic + sensor_topics.gyroscope
+                topic = sensor_topics.mqtt_base_topic + sensor_topics.gyroscope
                 client.publish(topic, _readings_to_text(sensor_access.get_gyroscope_xyz()))
         except Exception as error:
             logger.primary_logger.error("MQTT Publisher Failure: " + str(error))

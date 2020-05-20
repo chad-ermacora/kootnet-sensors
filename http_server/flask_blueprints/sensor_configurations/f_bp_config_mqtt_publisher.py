@@ -22,11 +22,12 @@ from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
-from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, mqtt_base_topic, start_mqtt_publisher_server
+from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, start_mqtt_publisher_server
 from sensor_modules import sensor_access
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
 mqtt_topics = CreateMQTTSensorTopics()
+mqtt_base_topic = mqtt_topics.mqtt_base_topic
 
 
 @html_config_mqtt_publisher_routes.route("/EditConfigMQTTPublisher", methods=["POST"])
@@ -81,7 +82,7 @@ def html_get_mqtt_topics():
 
 def get_config_mqtt_publisher_tab():
     try:
-        base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic + sensor_access.get_hostname() + "/"
+        base_topic = mqtt_base_topic + sensor_access.get_hostname() + "/"
         enable_mqtt_publisher = app_config_access.mqtt_publisher_config.enable_mqtt_publisher
         enable_broker_auth = app_config_access.mqtt_publisher_config.enable_broker_auth
         return render_template("edit_configurations/config_mqtt_publisher.html",

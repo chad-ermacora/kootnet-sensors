@@ -44,7 +44,6 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.broker_user = ""
         self.broker_password = ""
         self.seconds_to_wait = 60
-        self.mqtt_base_topic = "KS/"
 
         self.send_all_as_json = 0
         self.sensor_uptime = 0
