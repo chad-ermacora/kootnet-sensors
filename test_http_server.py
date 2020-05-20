@@ -597,39 +597,46 @@ class TestApp(unittest.TestCase):
     def test_primary_config(self):
         self.assertTrue(self._config_test_changes(primary_config_test,
                                                   remote_get.sensor_configuration_file,
-                                                  remote_set.set_primary_configuration))
+                                                  remote_set.set_primary_configuration,
+                                                  config_name="Primary"))
 
     def test_installed_sensors_config(self):
         self.assertTrue(self._config_test_changes(installed_sensors_config_test,
                                                   remote_get.installed_sensors_file,
-                                                  remote_set.set_installed_sensors))
+                                                  remote_set.set_installed_sensors,
+                                                  config_name="Installed Sensors"))
 
     def test_trigger_variances_config(self):
         self.assertTrue(self._config_test_changes(trigger_variances_config_test,
                                                   remote_get.variance_config,
-                                                  remote_set.set_variance_configuration))
+                                                  remote_set.set_variance_configuration,
+                                                  config_name="Triggers"))
 
     def test_sensor_control_config(self):
         self.assertTrue(self._config_test_changes(sensor_control_config_test,
                                                   remote_get.sensor_control_configuration_file,
-                                                  remote_set.set_sensor_control_configuration))
+                                                  remote_set.set_sensor_control_configuration,
+                                                  config_name="Sensor Control"))
 
     def test_weather_underground_config(self):
         self.assertTrue(self._config_test_changes(weather_underground_config_test,
                                                   remote_get.weather_underground_config_file,
-                                                  remote_set.set_weather_underground_configuration))
+                                                  remote_set.set_weather_underground_configuration,
+                                                  config_name="Weather Underground"))
 
     def test_luftdaten_config(self):
         self.assertTrue(self._config_test_changes(luftdaten_config_test,
                                                   remote_get.luftdaten_config_file,
-                                                  remote_set.set_luftdaten_configuration))
+                                                  remote_set.set_luftdaten_configuration,
+                                                  config_name="Luftdaten"))
 
     def test_open_sense_map_config(self):
         self.assertTrue(self._config_test_changes(open_sense_map_config_test,
                                                   remote_get.open_sense_map_config_file,
-                                                  remote_set.set_open_sense_map_configuration))
+                                                  remote_set.set_open_sense_map_configuration,
+                                                  config_name="OSM"))
 
-    def _config_test_changes(self, config_instance, config_get_command, config_set_command):
+    def _config_test_changes(self, config_instance, config_get_command, config_set_command, config_name=""):
         original_config = get_http_sensor_reading(sensor_address, command=config_get_command)
 
         config_instance.set_settings_for_test1()
@@ -637,7 +644,7 @@ class TestApp(unittest.TestCase):
         send_config = config_instance.get_config_as_str()
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         first_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.get_config_as_str(), first_set_config):
+        if self._bad_config(config_instance.get_config_as_str(), first_set_config, config_name=config_name + " 1"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
@@ -646,31 +653,31 @@ class TestApp(unittest.TestCase):
         send_config = config_instance.get_config_as_str()
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.get_config_as_str(), second_set_config):
+        if self._bad_config(config_instance.get_config_as_str(), second_set_config, config_name=config_name + " 2"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
         send_config = config_instance.static_config_test
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.static_config_test, second_set_config):
+        if self._bad_config(config_instance.static_config_test, second_set_config, config_name=config_name + " 3"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
         send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
 
         original_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(original_config, original_set_config):
+        if self._bad_config(original_config, original_set_config, config_name=config_name + " 4"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
         return True
 
     @staticmethod
-    def _bad_config(sent_config, received_config):
+    def _bad_config(sent_config, received_config, config_name=""):
         if sent_config.strip() == received_config.strip():
-            print("Info: Configuration Check OK.")
+            print("Info: Configuration " + config_name + " Check OK.")
             return False
-        print("Error: Sent Configuration is different from Received Configuration\n")
+        print("Error: Sent " + config_name + " Configuration is different from Received Configuration\n")
         print("-Sent Configuration-\n" + str(sent_config) + "\n-Received Configuration-\n" + str(received_config))
         return True
 
