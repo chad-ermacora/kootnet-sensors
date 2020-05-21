@@ -77,9 +77,10 @@ class CreateSPS30:
         try:
             count = 0
             while count < 10:
-                if pm_reading_que.not_empty:
+                if not pm_reading_que.empty():
                     logger.sensors_logger.debug("Sensirion SPS30 - In the Get Que")
                     readings = pm_reading_que.get(block=True, timeout=10)
+                    pm_reading_que.task_done()
                     self.sensor_in_use = False
                     logger.sensors_logger.debug("Sensirion SPS30 - Past the Get Que")
                     return readings
@@ -87,8 +88,8 @@ class CreateSPS30:
                 count += 1
         except Exception as error:
             logger.sensors_logger.warning("Sensirion SPS30 Data Que Retrieval Error: " + str(error))
-
         logger.sensors_logger.warning("Re-Initializing Sensirion SPS30")
+
         self.sensirion_sps30_access.stop()
         self.sensirion_sps30_access.close_port()
         time.sleep(0.5)
@@ -99,6 +100,10 @@ class CreateSPS30:
         return [0.0, 0.0, 0.0]
 
     def _get_pm_readings_threaded(self):
+        while not pm_reading_que.empty():
+            pm_reading_que.get()
+            pm_reading_que.task_done()
+
         try:
             logger.sensors_logger.debug("Sensirion SPS30 - Pre Get Data")
             pm_data = self.sensirion_sps30_access.read_values()
