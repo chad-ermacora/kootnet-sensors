@@ -56,27 +56,6 @@ def html_set_config_mqtt_publisher():
             return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
 
 
-@html_config_mqtt_publisher_routes.route("/GetMQTTTopics")
-def html_get_mqtt_topics():
-    logger.network_logger.debug("** HTML Get MQTT Topics accessed from " + str(request.remote_addr))
-    return render_template("non-flask/mqtt_help.html",
-                           SystemUpTime=app_config_access.mqtt_publisher_config.sensor_uptime_topic,
-                           SystemTemperature=app_config_access.mqtt_publisher_config.system_temperature_topic,
-                           EnvironmentTemperature=app_config_access.mqtt_publisher_config.env_temperature_topic,
-                           Pressure=app_config_access.mqtt_publisher_config.pressure_topic,
-                           Altitude=app_config_access.mqtt_publisher_config.altitude_topic,
-                           Humidity=app_config_access.mqtt_publisher_config.humidity_topic,
-                           Distance=app_config_access.mqtt_publisher_config.distance_topic,
-                           Gas=app_config_access.mqtt_publisher_config.gas_topic,
-                           ParticulateMatter=app_config_access.mqtt_publisher_config.particulate_matter_topic,
-                           Lumen=app_config_access.mqtt_publisher_config.lumen_topic,
-                           Color=app_config_access.mqtt_publisher_config.color_topic,
-                           UltraViolet=app_config_access.mqtt_publisher_config.ultra_violet_topic,
-                           Accelerometer=app_config_access.mqtt_publisher_config.accelerometer_topic,
-                           Magnetometer=app_config_access.mqtt_publisher_config.magnetometer_topic,
-                           Gyroscope=app_config_access.mqtt_publisher_config.gyroscope_topic)
-
-
 def get_config_mqtt_publisher_tab():
     try:
         enable_mqtt_publisher = app_config_access.mqtt_publisher_config.enable_mqtt_publisher
