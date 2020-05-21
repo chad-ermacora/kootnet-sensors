@@ -37,6 +37,7 @@ Created on Tue May 18th 14:48:56 2020
 """
 import time
 from threading import Thread
+from queue import Queue
 from operations_modules import logger
 from operations_modules import app_config_access
 
@@ -46,6 +47,7 @@ pause_sensor_during_access_sec_pm = 0.1
 # Specify serial port name for sensor
 # i.e. "COM10" for Windows or "/dev/ttyUSB0" for Linux
 device_port = "/dev/ttyUSB0"
+pm_reading_que = Queue()
 
 
 class CreateSPS30:
@@ -54,11 +56,10 @@ class CreateSPS30:
     def __init__(self):
         self.sensor_in_use = False
         try:
-            sps30_pm_import = __import__("sensor_modules.drivers.SPS30.sps30", fromlist=["SPS30"])
-            self.sensirion_sps30_access = sps30_pm_import.SPS30(device_port)
-            background_readings = Thread(target=self.sensirion_sps30_access.start)
-            background_readings.daemon = True
-            background_readings.start()
+            self.sps30_pm_import = __import__("sensor_modules.drivers.SPS30.sps30", fromlist=["SPS30"])
+            self.sensirion_sps30_access = self.sps30_pm_import.SPS30(device_port)
+            self.sensirion_sps30_access.start()
+            time.sleep(2)
             logger.sensors_logger.debug("Sensirion SPS30 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Sensirion SPS30 Initialization - Failed: " + str(error))
@@ -69,31 +70,46 @@ class CreateSPS30:
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec_pm)
         self.sensor_in_use = True
+        background_readings = Thread(target=self._get_pm_readings_threaded)
+        background_readings.daemon = True
+        background_readings.start()
 
-        pm1 = 0.0
-        pm25 = 0.0
-        pm4 = 0.0
-        pm10 = 0.0
+        try:
+            count = 0
+            while count < 10:
+                if pm_reading_que.not_empty:
+                    logger.sensors_logger.debug("Sensirion SPS30 - In the Get Que")
+                    readings = pm_reading_que.get(block=True, timeout=10)
+                    self.sensor_in_use = False
+                    logger.sensors_logger.debug("Sensirion SPS30 - Past the Get Que")
+                    return readings
+                time.sleep(1)
+                count += 1
+        except Exception as error:
+            logger.sensors_logger.warning("Sensirion SPS30 Data Que Retrieval Error: " + str(error))
 
-        failing = True
-        fail_count = 0
-        while failing and fail_count < 5:
-            try:
-                pm_data = self.sensirion_sps30_access.read_values()
-                pm1 = float(pm_data[0])
-                pm25 = float(pm_data[1])
-                pm4 = float(pm_data[2])
-                pm10 = float(pm_data[3])
-                failing = False
-            except Exception as error:
-                fail_count += 1
-                log_msg = "Sensirion SPS30 PM reading failure #"
-                logger.sensors_logger.debug(log_msg + str(fail_count) + ": " + str(error))
-                self.sensirion_sps30_access.close_port()
-                self.sensirion_sps30_access.__init__(device_port)
-                time.sleep(0.5)
-
+        logger.sensors_logger.warning("Re-Initializing Sensirion SPS30")
+        self.sensirion_sps30_access.stop()
+        self.sensirion_sps30_access.close_port()
+        time.sleep(0.5)
+        self.sensirion_sps30_access.__init__(device_port)
+        time.sleep(1)
+        self.sensirion_sps30_access.start()
         self.sensor_in_use = False
-        return [round(pm1, round_decimal_to),
-                round(pm25, round_decimal_to),
-                round(pm10, round_decimal_to)]
+        return [0.0, 0.0, 0.0]
+
+    def _get_pm_readings_threaded(self):
+        try:
+            logger.sensors_logger.debug("Sensirion SPS30 - Pre Get Data")
+            pm_data = self.sensirion_sps30_access.read_values()
+            logger.sensors_logger.debug("Sensirion SPS30 - Post Get Data")
+            pm1 = float(pm_data[0])
+            pm25 = float(pm_data[1])
+            pm4 = float(pm_data[2])
+            pm10 = float(pm_data[3])
+            pm_reading_que.put([round(pm1, round_decimal_to),
+                                round(pm25, round_decimal_to),
+                                round(pm10, round_decimal_to)])
+            logger.sensors_logger.debug("Sensirion SPS30 - Data put in Que")
+        except Exception as error:
+            logger.sensors_logger.warning("Sensirion SPS30 - Get readings Failed: " + str(error))
