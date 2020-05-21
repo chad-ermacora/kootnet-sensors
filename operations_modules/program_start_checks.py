@@ -152,6 +152,9 @@ def _run_upgrade_checks():
                 logger.primary_logger.warning("Please review your configurations in case of conflict")
                 no_changes = False
             if previous_version.feature_version == 30:
+                if previous_version.minor_version < 63:
+                    no_changes = False
+                    reset_mqtt_publisher_config()
                 if previous_version.minor_version < 34:
                     no_changes = False
                     reset_display_config()

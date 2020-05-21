@@ -22,12 +22,9 @@ from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
-from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics, start_mqtt_publisher_server
-from sensor_modules import sensor_access
+from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
-mqtt_topics = CreateMQTTSensorTopics()
-mqtt_base_topic = mqtt_topics.mqtt_base_topic
 
 
 @html_config_mqtt_publisher_routes.route("/EditConfigMQTTPublisher", methods=["POST"])
@@ -63,31 +60,30 @@ def html_set_config_mqtt_publisher():
 def html_get_mqtt_topics():
     logger.network_logger.debug("** HTML Get MQTT Topics accessed from " + str(request.remote_addr))
     return render_template("non-flask/mqtt_help.html",
-                           SystemUpTime=mqtt_base_topic + mqtt_topics.system_uptime,
-                           SystemTemperature=mqtt_base_topic + mqtt_topics.system_temperature,
-                           EnvironmentTemperature=mqtt_base_topic + mqtt_topics.env_temperature,
-                           Pressure=mqtt_base_topic + mqtt_topics.pressure,
-                           Altitude=mqtt_base_topic + mqtt_topics.altitude,
-                           Humidity=mqtt_base_topic + mqtt_topics.humidity,
-                           Distance=mqtt_base_topic + mqtt_topics.distance,
-                           Gas=mqtt_base_topic + mqtt_topics.gas,
-                           ParticulateMatter=mqtt_base_topic + mqtt_topics.particulate_matter,
-                           Lumen=mqtt_base_topic + mqtt_topics.lumen,
-                           Color=mqtt_base_topic + mqtt_topics.color,
-                           UltraViolet=mqtt_base_topic + mqtt_topics.ultra_violet,
-                           Accelerometer=mqtt_base_topic + mqtt_topics.accelerometer,
-                           Magnetometer=mqtt_base_topic + mqtt_topics.magnetometer,
-                           Gyroscope=mqtt_base_topic + mqtt_topics.gyroscope)
+                           SystemUpTime=app_config_access.mqtt_publisher_config.sensor_uptime_topic,
+                           SystemTemperature=app_config_access.mqtt_publisher_config.system_temperature_topic,
+                           EnvironmentTemperature=app_config_access.mqtt_publisher_config.env_temperature_topic,
+                           Pressure=app_config_access.mqtt_publisher_config.pressure_topic,
+                           Altitude=app_config_access.mqtt_publisher_config.altitude_topic,
+                           Humidity=app_config_access.mqtt_publisher_config.humidity_topic,
+                           Distance=app_config_access.mqtt_publisher_config.distance_topic,
+                           Gas=app_config_access.mqtt_publisher_config.gas_topic,
+                           ParticulateMatter=app_config_access.mqtt_publisher_config.particulate_matter_topic,
+                           Lumen=app_config_access.mqtt_publisher_config.lumen_topic,
+                           Color=app_config_access.mqtt_publisher_config.color_topic,
+                           UltraViolet=app_config_access.mqtt_publisher_config.ultra_violet_topic,
+                           Accelerometer=app_config_access.mqtt_publisher_config.accelerometer_topic,
+                           Magnetometer=app_config_access.mqtt_publisher_config.magnetometer_topic,
+                           Gyroscope=app_config_access.mqtt_publisher_config.gyroscope_topic)
 
 
 def get_config_mqtt_publisher_tab():
     try:
-        base_topic = mqtt_base_topic + sensor_access.get_hostname() + "/"
         enable_mqtt_publisher = app_config_access.mqtt_publisher_config.enable_mqtt_publisher
         enable_broker_auth = app_config_access.mqtt_publisher_config.enable_broker_auth
         return render_template("edit_configurations/config_mqtt_publisher.html",
                                PageURL="/ConfigurationsHTML",
-                               MQTTBaseTopic=base_topic,
+                               MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic,
                                MQTTPublisherChecked=get_html_checkbox_state(enable_mqtt_publisher),
                                MQTTBrokerAddress=app_config_access.mqtt_publisher_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_publisher_config.broker_server_port),
@@ -108,7 +104,22 @@ def get_config_mqtt_publisher_tab():
                                MQTTUltraVioletChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.ultra_violet),
                                MQTTAccChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.accelerometer),
                                MQTTMagChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.magnetometer),
-                               MQTTGyroChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.gyroscope))
+                               MQTTGyroChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.gyroscope),
+                               MQTTUptimeTopic=app_config_access.mqtt_publisher_config.sensor_uptime_topic,
+                               MQTTCPUTempTopic=app_config_access.mqtt_publisher_config.system_temperature_topic,
+                               MQTTEnvTempTopic=app_config_access.mqtt_publisher_config.env_temperature_topic,
+                               MQTTPressureTopic=app_config_access.mqtt_publisher_config.pressure_topic,
+                               MQTTAltitudeTopic=app_config_access.mqtt_publisher_config.altitude_topic,
+                               MQTTHumidityTopic=app_config_access.mqtt_publisher_config.humidity_topic,
+                               MQTTDistanceTopic=app_config_access.mqtt_publisher_config.distance_topic,
+                               MQTTGASTopic=app_config_access.mqtt_publisher_config.gas_topic,
+                               MQTTPMTopic=app_config_access.mqtt_publisher_config.particulate_matter_topic,
+                               MQTTLumenTopic=app_config_access.mqtt_publisher_config.lumen_topic,
+                               MQTTColoursTopic=app_config_access.mqtt_publisher_config.color_topic,
+                               MQTTUltraVioletTopic=app_config_access.mqtt_publisher_config.ultra_violet_topic,
+                               MQTTAccTopic=app_config_access.mqtt_publisher_config.accelerometer_topic,
+                               MQTTMagTopic=app_config_access.mqtt_publisher_config.magnetometer_topic,
+                               MQTTGyroTopic=app_config_access.mqtt_publisher_config.gyroscope_topic)
     except Exception as error:
         logger.network_logger.error("Error building MQTT configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="mqtt-publisher-tab")

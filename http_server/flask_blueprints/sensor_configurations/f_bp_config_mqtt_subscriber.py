@@ -23,11 +23,8 @@ from operations_modules import app_config_access
 from operations_modules.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
-from online_services_modules.mqtt_publisher import CreateMQTTSensorTopics
 
 html_config_mqtt_subscriber_routes = Blueprint("html_config_mqtt_subscriber_routes", __name__)
-mqtt_topics = CreateMQTTSensorTopics()
-mqtt_base_topic = mqtt_topics.mqtt_base_topic
 
 
 @html_config_mqtt_subscriber_routes.route("/MQTTSubscriberView")

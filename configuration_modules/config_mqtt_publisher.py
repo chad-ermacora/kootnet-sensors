@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import random
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
@@ -27,7 +28,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 22
+        self.valid_setting_count = 37
         self.config_settings_names = ["Enable MQTT Publisher", "Broker Server Address", "Broker Port #",
                                       "Enable Authentication", "User Name (Optional)", "Password (Optional)",
                                       "Seconds Between Reading Posts", "Publish System Uptime",
@@ -35,7 +36,11 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                       "Publish Pressure", "Publish Altitude", "Publish Humidity", "Publish Distance",
                                       "Publish GAS", "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
                                       "Publish Ultra Violet", "Publish Accelerometer", "Publish Magnetometer",
-                                      "Publish Gyroscope"]
+                                      "Publish Gyroscope", "System Uptime Topic", "CPU Temperature Topic",
+                                      "Environmental Temperature Topic", "Pressure Topic", "Altitude Topic",
+                                      "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
+                                      "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic",
+                                      "Magnetometer Topic", "Gyroscope Topic"]
 
         self.enable_mqtt_publisher = 0
         self.broker_address = ""
@@ -61,6 +66,25 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.accelerometer = 0
         self.magnetometer = 0
         self.gyroscope = 0
+
+        self.mqtt_base_topic = "KS/Default" + str(random.randint(100000, 999999)) + "/"
+
+        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
+        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
+        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
+        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
+        self.pressure_topic = self.mqtt_base_topic + "Pressure"
+        self.altitude_topic = self.mqtt_base_topic + "Altitude"
+        self.humidity_topic = self.mqtt_base_topic + "Humidity"
+        self.distance_topic = self.mqtt_base_topic + "Distance"
+        self.gas_topic = self.mqtt_base_topic + "Gas"
+        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
+        self.lumen_topic = self.mqtt_base_topic + "Lumen"
+        self.color_topic = self.mqtt_base_topic + "Color"
+        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
+        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
+        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
+        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -92,36 +116,67 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.broker_password = str(html_request.form.get("broker_password"))
         if html_request.form.get("publish_seconds_wait") is not None:
             self.seconds_to_wait = int(html_request.form.get("publish_seconds_wait"))
-        if html_request.form.get("MQTTSensorUptime") is not None:
+        if html_request.form.get("mqtt_system_uptime") is not None:
             self.sensor_uptime = 1
-        if html_request.form.get("MQTTCPUTemp") is not None:
+        if html_request.form.get("mqtt_cpu_temp") is not None:
             self.system_temperature = 1
-        if html_request.form.get("MQTTEnvTemp") is not None:
+        if html_request.form.get("mqtt_env_temp") is not None:
             self.env_temperature = 1
-        if html_request.form.get("MQTTPressure") is not None:
+        if html_request.form.get("mqtt_pressure") is not None:
             self.pressure = 1
-        if html_request.form.get("MQTTAltitude") is not None:
+        if html_request.form.get("mqtt_altitude") is not None:
             self.altitude = 1
-        if html_request.form.get("MQTTHumidity") is not None:
+        if html_request.form.get("mqtt_humidity") is not None:
             self.humidity = 1
-        if html_request.form.get("MQTTDistance") is not None:
+        if html_request.form.get("mqtt_distance") is not None:
             self.distance = 1
-        if html_request.form.get("MQTTGas") is not None:
+        if html_request.form.get("mqtt_gas") is not None:
             self.gas = 1
-        if html_request.form.get("MQTTParticulateMatter") is not None:
+        if html_request.form.get("mqtt_particulate_matter") is not None:
             self.particulate_matter = 1
-        if html_request.form.get("MQTTLumen") is not None:
+        if html_request.form.get("mqtt_lumen") is not None:
             self.lumen = 1
-        if html_request.form.get("MQTTColours") is not None:
+        if html_request.form.get("mqtt_colours") is not None:
             self.color = 1
-        if html_request.form.get("MQTTUltraViolet") is not None:
+        if html_request.form.get("mqtt_ultra_violet") is not None:
             self.ultra_violet = 1
-        if html_request.form.get("MQTTAccelerometer") is not None:
+        if html_request.form.get("mqtt_accelerometer") is not None:
             self.accelerometer = 1
-        if html_request.form.get("MQTTMagnetometer") is not None:
+        if html_request.form.get("mqtt_magnetometer") is not None:
             self.magnetometer = 1
-        if html_request.form.get("MQTTGyroscope") is not None:
+        if html_request.form.get("mqtt_gyroscope") is not None:
             self.gyroscope = 1
+
+        if html_request.form.get("topic_mqtt_system_uptime").strip() != "":
+            self.sensor_uptime_topic = html_request.form.get("topic_mqtt_system_uptime")
+        if html_request.form.get("topic_mqtt_cpu_temp").strip() != "":
+            self.system_temperature_topic = html_request.form.get("topic_mqtt_cpu_temp")
+        if html_request.form.get("topic_mqtt_env_temp").strip() != "":
+            self.env_temperature_topic = html_request.form.get("topic_mqtt_env_temp")
+        if html_request.form.get("topic_mqtt_pressure").strip() != "":
+            self.pressure_topic = html_request.form.get("topic_mqtt_pressure")
+        if html_request.form.get("topic_mqtt_altitude").strip() != "":
+            self.altitude_topic = html_request.form.get("topic_mqtt_altitude")
+        if html_request.form.get("topic_mqtt_humidity").strip() != "":
+            self.humidity_topic = html_request.form.get("topic_mqtt_humidity")
+        if html_request.form.get("topic_mqtt_distance").strip() != "":
+            self.distance_topic = html_request.form.get("topic_mqtt_distance")
+        if html_request.form.get("topic_mqtt_gas").strip() != "":
+            self.gas_topic = html_request.form.get("topic_mqtt_gas")
+        if html_request.form.get("topic_mqtt_particulate_matter").strip() != "":
+            self.particulate_matter_topic = html_request.form.get("topic_mqtt_particulate_matter")
+        if html_request.form.get("topic_mqtt_lumen").strip() != "":
+            self.lumen_topic = html_request.form.get("topic_mqtt_lumen")
+        if html_request.form.get("topic_mqtt_colours").strip() != "":
+            self.color_topic = html_request.form.get("topic_mqtt_colours")
+        if html_request.form.get("topic_mqtt_ultra_violet").strip() != "":
+            self.ultra_violet_topic = html_request.form.get("topic_mqtt_ultra_violet")
+        if html_request.form.get("topic_mqtt_accelerometer").strip() != "":
+            self.accelerometer_topic = html_request.form.get("topic_mqtt_accelerometer")
+        if html_request.form.get("topic_mqtt_magnetometer").strip() != "":
+            self.magnetometer_topic = html_request.form.get("topic_mqtt_magnetometer")
+        if html_request.form.get("topic_mqtt_gyroscope").strip() != "":
+            self.gyroscope_topic = html_request.form.get("topic_mqtt_gyroscope")
         self._update_configuration_settings_list()
         self.load_from_file = True
 
@@ -148,7 +203,22 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                 str(self.ultra_violet),
                                 str(self.accelerometer),
                                 str(self.magnetometer),
-                                str(self.gyroscope)]
+                                str(self.gyroscope),
+                                str(self.sensor_uptime_topic),
+                                str(self.system_temperature_topic),
+                                str(self.env_temperature_topic),
+                                str(self.pressure_topic),
+                                str(self.altitude_topic),
+                                str(self.humidity_topic),
+                                str(self.distance_topic),
+                                str(self.gas_topic),
+                                str(self.particulate_matter_topic),
+                                str(self.lumen_topic),
+                                str(self.color_topic),
+                                str(self.ultra_violet_topic),
+                                str(self.accelerometer_topic),
+                                str(self.magnetometer_topic),
+                                str(self.gyroscope_topic)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -174,6 +244,22 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.accelerometer = int(self.config_settings[19])
             self.magnetometer = int(self.config_settings[20])
             self.gyroscope = int(self.config_settings[21])
+
+            self.sensor_uptime_topic = self.config_settings[22].strip()
+            self.system_temperature_topic = self.config_settings[23].strip()
+            self.env_temperature_topic = self.config_settings[24].strip()
+            self.pressure_topic = self.config_settings[25].strip()
+            self.altitude_topic = self.config_settings[26].strip()
+            self.humidity_topic = self.config_settings[27].strip()
+            self.distance_topic = self.config_settings[28].strip()
+            self.gas_topic = self.config_settings[29].strip()
+            self.particulate_matter_topic = self.config_settings[30].strip()
+            self.lumen_topic = self.config_settings[31].strip()
+            self.color_topic = self.config_settings[32].strip()
+            self.ultra_violet_topic = self.config_settings[33].strip()
+            self.accelerometer_topic = self.config_settings[34].strip()
+            self.magnetometer_topic = self.config_settings[35].strip()
+            self.gyroscope_topic = self.config_settings[36].strip()
         except Exception as error:
             logger.primary_logger.debug("MQTT Publisher Config: " + str(error))
             self._update_configuration_settings_list()
