@@ -117,6 +117,8 @@ def html_raw_configurations_view():
                            BrokerCLocation=file_locations.mqtt_broker_config,
                            MQTTPublisherConfiguration=str(get_file_content(file_locations.mqtt_publisher_config)),
                            MQTTPublisherCLocation=file_locations.mqtt_publisher_config,
+                           MQTTSubscriberConfiguration=str(get_file_content(file_locations.mqtt_subscriber_config)),
+                           MQTTSubscriberCLocation=file_locations.mqtt_subscriber_config,
                            WeatherUndergroundConfiguration=str(get_file_content(file_locations.weather_underground_config)),
                            WUCLocation=file_locations.weather_underground_config,
                            LuftdatenConfiguration=str(get_file_content(file_locations.luftdaten_config)),
