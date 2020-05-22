@@ -30,7 +30,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         self.valid_setting_count = 7
         self.config_settings_names = ["Enable MQTT Subscriber", "Broker Server Address", "Broker Port #",
                                       "Enable Authentication", "User Name (Optional)", "Password (Optional)",
-                                      "Topics as CSV (Eg. KS/Sensor32/)"]
+                                      "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#"]
 
         self.enable_mqtt_subscriber = 0
         self.broker_address = ""
