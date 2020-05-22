@@ -23,17 +23,14 @@
             Sensor Control
         </a></li>
         <br>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
-            Networking
-        </a></li>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="wifi-tab">
-            WiFi
-        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="mqtt-broker-tab">
             MQTT Broker
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="mqtt-publisher-tab">
             MQTT Publisher
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="mqtt-subscriber-tab">
+            MQTT Subscriber
         </a></li>
         <br>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="weather-underground-tab">
@@ -44,6 +41,13 @@
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="open-sense-map-tab">
             Open Sense Map
+        </a></li>
+        <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
+            Networking
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="wifi-tab">
+            WiFi
         </a></li>
     </ul>
 
@@ -154,6 +158,17 @@
             <h4 style="color: #00B0FF;">Location: {{ MQTTPublisherCLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ MQTTPublisherConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="mqtt-subscriber-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>MQTT Subscriber Configuration</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ MQTTSubscriberCLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ MQTTSubscriberConfiguration }}</span>
         </div>
     </div>
 
