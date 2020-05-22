@@ -21,7 +21,8 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
+from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
+    get_restart_service_text, get_html_selected_state
 from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
@@ -60,6 +61,16 @@ def get_config_mqtt_publisher_tab():
     try:
         enable_mqtt_publisher = app_config_access.mqtt_publisher_config.enable_mqtt_publisher
         enable_broker_auth = app_config_access.mqtt_publisher_config.enable_broker_auth
+        mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
+        qos_level_0 = ""
+        qos_level_1 = ""
+        qos_level_2 = ""
+        if mqtt_publisher_qos == 0:
+            qos_level_0 = get_html_selected_state(True)
+        elif mqtt_publisher_qos == 1:
+            qos_level_1 = get_html_selected_state(True)
+        elif mqtt_publisher_qos == 2:
+            qos_level_2 = get_html_selected_state(True)
         return render_template("edit_configurations/config_mqtt_publisher.html",
                                PageURL="/ConfigurationsHTML",
                                MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic,
@@ -69,6 +80,9 @@ def get_config_mqtt_publisher_tab():
                                MQTTPublishSecondsWait=str(app_config_access.mqtt_publisher_config.seconds_to_wait),
                                MQTTPublisherAuthChecked=get_html_checkbox_state(enable_broker_auth),
                                MQTTPublisherUsername=app_config_access.mqtt_publisher_config.broker_user,
+                               PublisherQoSLevel0=qos_level_0,
+                               PublisherQoSLevel1=qos_level_1,
+                               PublisherQoSLevel2=qos_level_2,
                                MQTTUptimeChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.sensor_uptime),
                                MQTTCPUTempChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.system_temperature),
                                MQTTEnvTempChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.env_temperature),

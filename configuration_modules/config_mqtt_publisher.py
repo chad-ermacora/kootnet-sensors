@@ -28,7 +28,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 37
+        self.valid_setting_count = 38
         self.config_settings_names = ["Enable MQTT Publisher", "Broker Server Address", "Broker Port #",
                                       "Enable Authentication", "User Name (Optional)", "Password (Optional)",
                                       "Seconds Between Reading Posts", "Publish System Uptime",
@@ -40,7 +40,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                       "Environmental Temperature Topic", "Pressure Topic", "Altitude Topic",
                                       "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
                                       "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic",
-                                      "Magnetometer Topic", "Gyroscope Topic"]
+                                      "Magnetometer Topic", "Gyroscope Topic", "Publisher Quality of Service Level"]
 
         self.enable_mqtt_publisher = 0
         self.broker_address = ""
@@ -49,6 +49,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.broker_user = ""
         self.broker_password = ""
         self.seconds_to_wait = 60
+
+        self.mqtt_publisher_qos = 0
 
         self.send_all_as_json = 0
         self.sensor_uptime = 0
@@ -101,6 +103,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.__init__(load_from_file=False)
         if html_request.form.get("enable_mqtt_publisher") is not None:
             self.enable_mqtt_publisher = 1
+
         if html_request.form.get("publish_broker_address") is not None:
             self.broker_address = html_request.form.get("publish_broker_address")
         if html_request.form.get("publish_broker_port") is not None:
@@ -108,6 +111,14 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                 self.broker_server_port = int(html_request.form.get("publish_broker_port"))
             except Exception as error:
                 logger.network_logger.error("Invalid Broker Port #: " + str(error))
+
+        if html_request.form.get("publish_qos_level") is not None:
+            qos_level = html_request.form.get("publish_qos_level")
+            if qos_level == "0":
+                self.mqtt_publisher_qos = 0
+            else:
+                self.mqtt_publisher_qos = int(qos_level)
+
         if html_request.form.get("enable_broker_auth") is not None:
             self.enable_broker_auth = 1
         if html_request.form.get("broker_username") is not None:
@@ -116,6 +127,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.broker_password = str(html_request.form.get("broker_password"))
         if html_request.form.get("publish_seconds_wait") is not None:
             self.seconds_to_wait = int(html_request.form.get("publish_seconds_wait"))
+
         if html_request.form.get("mqtt_system_uptime") is not None:
             self.sensor_uptime = 1
         if html_request.form.get("mqtt_cpu_temp") is not None:
@@ -218,16 +230,19 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                 str(self.ultra_violet_topic),
                                 str(self.accelerometer_topic),
                                 str(self.magnetometer_topic),
-                                str(self.gyroscope_topic)]
+                                str(self.gyroscope_topic),
+                                str(self.mqtt_publisher_qos)]
 
     def _update_variables_from_settings_list(self):
         try:
             self.enable_mqtt_publisher = int(self.config_settings[0])
             self.broker_address = self.config_settings[1]
             self.broker_server_port = int(self.config_settings[2])
+
             self.enable_broker_auth = int(self.config_settings[3])
             self.broker_user = self.config_settings[4]
             self.broker_password = self.config_settings[5]
+
             self.seconds_to_wait = int(self.config_settings[6])
             self.sensor_uptime = int(self.config_settings[7])
             self.system_temperature = int(self.config_settings[8])
@@ -260,6 +275,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.accelerometer_topic = self.config_settings[34].strip()
             self.magnetometer_topic = self.config_settings[35].strip()
             self.gyroscope_topic = self.config_settings[36].strip()
+
+            self.mqtt_publisher_qos = int(self.config_settings[37].strip())
         except Exception as error:
             logger.primary_logger.debug("MQTT Publisher Config: " + str(error))
             self._update_configuration_settings_list()

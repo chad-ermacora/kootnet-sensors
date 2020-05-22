@@ -82,52 +82,68 @@ def _mqtt_publisher_server():
                 sleep_total += sleep_fraction_interval
 
     while not app_cached_variables.restart_mqtt_publisher_thread:
+        mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
         try:
             if app_config_access.mqtt_publisher_config.sensor_uptime:
-                topic = app_config_access.mqtt_publisher_config.sensor_uptime_topic
-                client.publish(topic, payload=str(sensor_access.get_uptime_minutes()))
+                client.publish(app_config_access.mqtt_publisher_config.sensor_uptime_topic,
+                               payload=str(sensor_access.get_uptime_minutes()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.system_temperature and available_sensors.has_cpu_temperature:
-                topic = app_config_access.mqtt_publisher_config.system_temperature_topic
-                client.publish(topic, payload=str(sensor_access.get_cpu_temperature()))
+                client.publish(app_config_access.mqtt_publisher_config.system_temperature_topic,
+                               payload=str(sensor_access.get_cpu_temperature()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.env_temperature and available_sensors.has_env_temperature:
-                topic = app_config_access.mqtt_publisher_config.env_temperature_topic
-                client.publish(topic, payload=str(sensor_access.get_sensor_temperature()))
+                client.publish(app_config_access.mqtt_publisher_config.env_temperature_topic,
+                               payload=str(sensor_access.get_sensor_temperature()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.pressure and available_sensors.has_pressure:
-                topic = app_config_access.mqtt_publisher_config.pressure_topic
-                client.publish(topic, payload=str(sensor_access.get_pressure()))
+                client.publish(app_config_access.mqtt_publisher_config.pressure_topic,
+                               payload=str(sensor_access.get_pressure()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.altitude and available_sensors.has_altitude:
-                topic = app_config_access.mqtt_publisher_config.altitude_topic
-                client.publish(topic, payload=str(sensor_access.get_altitude()))
+                client.publish(app_config_access.mqtt_publisher_config.altitude_topic,
+                               payload=str(sensor_access.get_altitude()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.humidity and available_sensors.has_humidity:
-                topic = app_config_access.mqtt_publisher_config.humidity_topic
-                client.publish(topic, payload=str(sensor_access.get_humidity()))
+                client.publish(app_config_access.mqtt_publisher_config.humidity_topic,
+                               payload=str(sensor_access.get_humidity()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.distance and available_sensors.has_distance:
-                topic = app_config_access.mqtt_publisher_config.distance_topic
-                client.publish(topic, payload=str(sensor_access.get_distance()))
+                client.publish(app_config_access.mqtt_publisher_config.distance_topic,
+                               payload=str(sensor_access.get_distance()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
-                topic = app_config_access.mqtt_publisher_config.gas_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_gas()))
+                client.publish(app_config_access.mqtt_publisher_config.gas_topic,
+                               payload=_readings_to_text(sensor_access.get_gas()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                topic = app_config_access.mqtt_publisher_config.particulate_matter_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_particulate_matter()))
+                client.publish(app_config_access.mqtt_publisher_config.particulate_matter_topic,
+                               payload=_readings_to_text(sensor_access.get_particulate_matter()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
-                topic = app_config_access.mqtt_publisher_config.lumen_topic
-                client.publish(topic, payload=str(sensor_access.get_lumen()))
+                client.publish(app_config_access.mqtt_publisher_config.lumen_topic,
+                               payload=str(sensor_access.get_lumen()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
-                topic = app_config_access.mqtt_publisher_config.color_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_ems_colors()))
+                client.publish(app_config_access.mqtt_publisher_config.color_topic,
+                               payload=_readings_to_text(sensor_access.get_ems_colors()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
-                topic = app_config_access.mqtt_publisher_config.ultra_violet_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_ultra_violet()))
+                client.publish(app_config_access.mqtt_publisher_config.ultra_violet_topic,
+                               payload=_readings_to_text(sensor_access.get_ultra_violet()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
-                topic = app_config_access.mqtt_publisher_config.accelerometer_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_accelerometer_xyz()))
+                client.publish(app_config_access.mqtt_publisher_config.accelerometer_topic,
+                               payload=_readings_to_text(sensor_access.get_accelerometer_xyz()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
-                topic = app_config_access.mqtt_publisher_config.magnetometer_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_magnetometer_xyz()))
+                client.publish(app_config_access.mqtt_publisher_config.magnetometer_topic,
+                               payload=_readings_to_text(sensor_access.get_magnetometer_xyz()),
+                               qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
-                topic = app_config_access.mqtt_publisher_config.gyroscope_topic
-                client.publish(topic, payload=_readings_to_text(sensor_access.get_gyroscope_xyz()))
+                client.publish(app_config_access.mqtt_publisher_config.gyroscope_topic,
+                               payload=_readings_to_text(sensor_access.get_gyroscope_xyz()),
+                               qos=mqtt_publisher_qos)
         except Exception as error:
             logger.primary_logger.error("MQTT Publisher Failure: " + str(error))
 
@@ -143,16 +159,13 @@ def _mqtt_publisher_server():
 
 
 def _readings_to_text(readings):
-    try:
-        return_text = ""
-        if type(readings) is not list and type(readings) is not tuple:
-            return str(readings)
-        elif len(readings) > 0:
-            for reading in readings:
-                return_text += str(reading) + ","
-            return_text = return_text[:-1]
-        else:
-            return app_cached_variables.no_sensor_present
-        return return_text
-    except Exception as error:
-        logger.primary_logger.critical("Itz Here!")
+    return_text = ""
+    if type(readings) is not list and type(readings) is not tuple:
+        return str(readings)
+    elif len(readings) > 0:
+        for reading in readings:
+            return_text += str(reading) + ","
+        return_text = return_text[:-1]
+    else:
+        return app_cached_variables.no_sensor_present
+    return return_text
