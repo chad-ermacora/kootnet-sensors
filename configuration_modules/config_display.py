@@ -22,19 +22,20 @@ from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
 class CreateDisplayConfiguration(CreateGeneralConfiguration):
-    """ Creates the Primary Configuration object and loads settings from file (by default). """
+    """ Creates the Display Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 17
-        self.config_settings_names = ["Display every X Minutes", "Display Type", "Enable Sensor Uptime",
-                                      "Enable System Temperature", "Enable Environmental Temperature",
-                                      "Enable Pressure", "Enable Altitude", "Enable Humidity", "Enable Distance",
-                                      "Enable GAS", "Enable Particulate Matter", "Enable Lumen", "Enable Colors",
-                                      "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer",
-                                      "Enable Gyroscope"]
+        self.valid_setting_count = 18
+        self.config_settings_names = ["Enable Display", "Display every X Minutes", "Display Type", "Show Sensor Uptime",
+                                      "Show System Temperature", "Show Environmental Temperature",
+                                      "Show Pressure", "Show Altitude", "Show Humidity", "Show Distance",
+                                      "Show GAS", "Show Particulate Matter", "Show Lumen", "Show Colors",
+                                      "Show Ultra Violet", "Show Accelerometer", "Show Magnetometer",
+                                      "Show Gyroscope"]
 
+        self.enable_display = 0
         self.display_type_numerical = "numerical"
         self.display_type_graph = "graph"
 
@@ -71,6 +72,10 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         """ Updates the Display configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Display Configuration Update Check")
         self.__init__(load_from_file=False)
+
+        if html_request.form.get("enable_display") is not None:
+            self.enable_display = 1
+
         if html_request.form.get("display_interval_delay_min") is not None:
             try:
                 self.minutes_between_display = int(html_request.form.get("display_interval_delay_min"))
@@ -115,33 +120,35 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.minutes_between_display), str(self.display_type), str(self.sensor_uptime),
-                                str(self.system_temperature), str(self.env_temperature), str(self.pressure),
-                                str(self.altitude), str(self.humidity), str(self.distance), str(self.gas),
-                                str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
-                                str(self.accelerometer), str(self.magnetometer), str(self.gyroscope)]
+        self.config_settings = [str(self.enable_display), str(self.minutes_between_display), str(self.display_type),
+                                str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature),
+                                str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
+                                str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color),
+                                str(self.ultra_violet), str(self.accelerometer), str(self.magnetometer),
+                                str(self.gyroscope)]
 
     def _update_variables_from_settings_list(self):
         try:
-            self.minutes_between_display = int(self.config_settings[0])
-            self.display_type = str(self.config_settings[1]).strip()
+            self.enable_display = int(self.config_settings[0])
+            self.minutes_between_display = int(self.config_settings[1])
+            self.display_type = str(self.config_settings[2]).strip()
             if self.display_type != self.display_type_numerical and self.display_type != self.display_type_graph:
                 self.display_type = self.display_type_numerical
-            self.sensor_uptime = int(self.config_settings[2])
-            self.system_temperature = int(self.config_settings[3])
-            self.env_temperature = int(self.config_settings[4])
-            self.pressure = int(self.config_settings[5])
-            self.altitude = int(self.config_settings[6])
-            self.humidity = int(self.config_settings[7])
-            self.distance = int(self.config_settings[8])
-            self.gas = int(self.config_settings[9])
-            self.particulate_matter = int(self.config_settings[10])
-            self.lumen = int(self.config_settings[11])
-            self.color = int(self.config_settings[12])
-            self.ultra_violet = int(self.config_settings[13])
-            self.accelerometer = int(self.config_settings[14])
-            self.magnetometer = int(self.config_settings[15])
-            self.gyroscope = int(self.config_settings[16])
+            self.sensor_uptime = int(self.config_settings[3])
+            self.system_temperature = int(self.config_settings[4])
+            self.env_temperature = int(self.config_settings[5])
+            self.pressure = int(self.config_settings[6])
+            self.altitude = int(self.config_settings[7])
+            self.humidity = int(self.config_settings[8])
+            self.distance = int(self.config_settings[9])
+            self.gas = int(self.config_settings[10])
+            self.particulate_matter = int(self.config_settings[11])
+            self.lumen = int(self.config_settings[12])
+            self.color = int(self.config_settings[13])
+            self.ultra_violet = int(self.config_settings[14])
+            self.accelerometer = int(self.config_settings[15])
+            self.magnetometer = int(self.config_settings[16])
+            self.gyroscope = int(self.config_settings[17])
         except Exception as error:
             logger.primary_logger.debug("Display Config: " + str(error))
             self._update_configuration_settings_list()

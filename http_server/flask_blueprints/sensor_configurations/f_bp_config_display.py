@@ -35,7 +35,7 @@ def html_set_display_config():
         try:
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
-            if app_config_access.primary_config.enable_display:
+            if app_config_access.display_config.enable_display:
                 if app_cached_variables.mini_display_thread is not None:
                     if app_cached_variables.mini_display_thread.monitored_thread.is_alive():
                         app_cached_variables.restart_mini_display_thread = True
@@ -55,6 +55,7 @@ def html_set_display_config():
 
 def get_config_display_tab():
     try:
+        display = get_html_checkbox_state(app_config_access.display_config.enable_display)
         display_numerical_checked = ""
         display_graph_checked = ""
         display_type_numerical = app_config_access.display_config.display_type_numerical
@@ -80,6 +81,7 @@ def get_config_display_tab():
         gyroscope = app_config_access.display_config.gyroscope
         return render_template("edit_configurations/config_display.html",
                                PageURL="/ConfigurationsHTML",
+                               CheckedEnableDisplay=display,
                                DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
                                DisplayNumericalChecked=display_numerical_checked,
                                DisplayGraphChecked=display_graph_checked,

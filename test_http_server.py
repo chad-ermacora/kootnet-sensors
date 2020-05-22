@@ -38,7 +38,6 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
         CreatePrimaryConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
 0 = Enable Debug Logging
-1 = Enable Mini Display
 1 = Interval Recording to SQL Database
 1 = Trigger Recording to SQL Database
 227.27 = Recording Interval in Seconds ** Caution **
@@ -49,7 +48,6 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
         self.enable_debug_logging = 1
-        self.enable_display = 1
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 1
         self.sleep_duration_interval = 245.11
@@ -60,7 +58,6 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def set_settings_for_test2(self):
         self.web_portal_port = 12289
         self.enable_debug_logging = 0
-        self.enable_display = 0
         self.enable_interval_recording = 0
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 320.58

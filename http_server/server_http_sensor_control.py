@@ -144,7 +144,7 @@ class CreateReplacementVariables:
             installed_sensors_config.config_settings_names[1] = rpi_model_name
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
-            text_display = str(self.get_enabled_disabled_text(sensors_config.enable_display))
+            text_display = str(self.get_enabled_disabled_text(app_config_access.display_config.enable_display))
             text_interval_recording = str(self.get_enabled_disabled_text(sensors_config.enable_interval_recording))
             text_interval_seconds = str(sensors_config.sleep_duration_interval)
             text_trigger_recording = str(self.get_enabled_disabled_text(sensors_config.enable_trigger_recording))
@@ -159,7 +159,7 @@ class CreateReplacementVariables:
                 debug_colour = "lightgreen"
 
             display_colour = "#F4A460"
-            if sensors_config.enable_display:
+            if app_config_access.display_config.enable_display:
                 display_colour = "lightgreen"
 
             interval_recording_colour = "#F4A460"

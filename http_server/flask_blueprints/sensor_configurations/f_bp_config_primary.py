@@ -52,7 +52,6 @@ def html_set_config_main():
 def get_config_primary_tab():
     try:
         debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-        display = get_html_checkbox_state(app_config_access.primary_config.enable_display)
         interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
         trigger_recording = get_html_checkbox_state(app_config_access.primary_config.enable_trigger_recording)
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
@@ -62,7 +61,6 @@ def get_config_primary_tab():
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
-                               CheckedDisplay=display,
                                CheckedInterval=interval_recording,
                                DisabledIntervalDelay=get_html_disabled_state(interval_recording),
                                IntervalDelay=float(app_config_access.primary_config.sleep_duration_interval),

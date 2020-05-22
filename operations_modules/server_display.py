@@ -25,7 +25,7 @@ from sensor_modules import sensor_access
 
 
 def start_display_server():
-    if app_config_access.primary_config.enable_display:
+    if app_config_access.display_config.enable_display:
         text_name = "Display"
         function = _display_server
         app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)

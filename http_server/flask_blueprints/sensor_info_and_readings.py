@@ -47,7 +47,7 @@ def html_system_information():
     if app_config_access.primary_config.enable_debug_logging:
         debug_logging = "Enabled"
 
-    display_enabled = get_text_running_thread_state(app_config_access.primary_config.enable_display,
+    display_enabled = get_text_running_thread_state(app_config_access.display_config.enable_display,
                                                     app_cached_variables.mini_display_thread)
 
     interval_recording = get_text_running_thread_state(app_config_access.primary_config.enable_interval_recording,

@@ -4,6 +4,17 @@
         <fieldset style="text-align: center;">
             <h2><u><a style="color: black;" href="{{ PageURL }}">Display Settings</a></u></h2>
 
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="enable_display" value="" {{ CheckedEnableDisplay }}>
+                    Enable Display
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+            <br>
+
             <div class="mui-textfield">
                 <label style="color: black; font-size: medium;">
                     Minutes between displaying sensor readings

@@ -491,7 +491,7 @@ def display_message(text_msg, check_test=False):
     logger.primary_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
 
     text_msg = str(text_msg)
-    if app_config_access.primary_config.enable_display:
+    if app_config_access.display_config.enable_display:
         if len(text_msg) > 0 or check_test:
             text_msg = "-- " + text_msg
             display_missing = True
