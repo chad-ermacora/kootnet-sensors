@@ -39,6 +39,7 @@ def html_get_mqtt_subscriber_view():
 
     return render_template("mqtt_subscriber.html",
                            URL="/MQTTSubscriberView",
+                           MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                            MQTTSubscriberEnabledText=enabled_text,
                            MQTTEnabledColor=enabled_color,
                            SubscriberTopics=logger.get_sensor_log(file_locations.mqtt_subscriber_log))
@@ -63,6 +64,14 @@ def html_set_config_mqtt_subscriber():
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Subscriber Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+
+
+@html_config_mqtt_subscriber_routes.route("/ClearMQTTSubscriberLog")
+@auth.login_required
+def html_clear_mqtt_subscriber_log():
+    logger.network_logger.debug("** HTML Clear - MQTT Subscriber Log - Source: " + str(request.remote_addr))
+    logger.clear_mqtt_subscriber_log()
+    return html_get_mqtt_subscriber_view()
 
 
 def get_config_mqtt_subscriber_tab():

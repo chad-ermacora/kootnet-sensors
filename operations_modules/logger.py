@@ -111,7 +111,7 @@ def clear_sensor_log():
 
 def clear_mqtt_subscriber_log():
     """ Clears MQTT Subscriber Log. """
-    with open(file_locations.sensors_log, "w") as log_content:
+    with open(file_locations.mqtt_subscriber_log, "w") as log_content:
         log_content.write("")
 
 

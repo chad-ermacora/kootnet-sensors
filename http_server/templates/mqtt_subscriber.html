@@ -10,13 +10,22 @@
 
         <a style="color: {{ MQTTEnabledColor }}; background: black;
                 font-size: large; text-decoration: none;"><b>{{ MQTTSubscriberEnabledText }}</b></a>
+
+        <br>
+        <br>
+
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                onclick="window.location.href = '/ClearMQTTSubscriberLog';">
+            Clear Log
+        </button>
+
         <br>
         <br>
 
         <label>
             <a style="color: black;" target="_blank"
                href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
-                MQTT Topics
+                MQTT Data from Subscribed Topics on Broker {{ MQTTSubscriberServerAddress }}
             </a>
             <br>
             <br>
