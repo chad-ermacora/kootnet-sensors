@@ -2,6 +2,17 @@
 
 {% block content %}
 
+    <style>
+        #update_login_credentials {
+            width: 50%;
+            position: absolute;
+            z-index: 99;
+            margin: auto auto;
+            left: 0;
+            right: 0;
+        }
+    </style>
+
     <h2><strong>
         <a style="text-decoration: underline; color: red" href="/SystemCommands">Advanced</a>
     </strong></h2>
@@ -60,36 +71,36 @@
             <li><a>---------------</a></li>
             <li><a href="/UpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
             <li><a href="/UpgradeOnlineCleanDEV">Clean - DEV - HTTP Upgrade</a></li>
-{#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
-{#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
+            {#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
+            {#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
         </ul>
     </div>
 
-    <br>
-
     <div>
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditLogin">
-            <h2><u><a style="color: lightblue;" href="{{ PageURL }}">Change Login</a></u></h2>
+            <div id="update_login_credentials">
+                <h2><u><a style="color: lightblue;" href="{{ PageURL }}">Change Login</a></u></h2>
 
-            <div class="mui-textfield">
-                <label style="color: lightblue;">
-                    Username
-                    <br>
-                    <input style="width: 125px;" type="text" id="login_username" name="login_username" required
-                           placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
-                </label>
-            </div>
+                <div class="mui-textfield">
+                    <label style="color: lightblue;">
+                        Username
+                        <br>
+                        <input style="width: 125px;" type="text" id="login_username" name="login_username" required
+                               placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
+                    </label>
+                </div>
 
-            <div class="mui-textfield">
-                <label style="color: lightblue;">
-                    Password
-                    <br>
-                    <input style="width: 125px;" type="password" id="login_password" name="login_password" required
-                           placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
-                </label>
+                <div class="mui-textfield">
+                    <label style="color: lightblue;">
+                        Password
+                        <br>
+                        <input style="width: 125px;" type="password" id="login_password" name="login_password" required
+                               placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
+                    </label>
+                </div>
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
             </div>
-            <br>
-            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
         </form>
     </div>
 
