@@ -149,13 +149,11 @@ def html_system_information():
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     try:
-        raw_temp = sensor_access.get_sensor_temperature(temperature_offset=False)
-        adjusted_temp = raw_temp
+        raw_temp = sensor_access.get_sensor_temperature(temperature_correction=False)
+        adjusted_temp = sensor_access.get_sensor_temperature()
         temp_offset = "Disabled"
         if app_config_access.primary_config.enable_custom_temp:
             temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"
-            if adjusted_temp != app_cached_variables.no_sensor_present:
-                adjusted_temp = round(float(adjusted_temp) + float(app_config_access.primary_config.temperature_offset), 5)
 
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         gas_index = app_cached_variables.no_sensor_present

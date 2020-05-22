@@ -90,5 +90,12 @@ def get_html_checkbox_state(config_setting):
     return ""
 
 
+def get_html_disabled_state(config_setting):
+    """ Generic function to return HTML code for checkboxes (Used in flask render templates). """
+    if config_setting:
+        return ""
+    return "disabled"
+
+
 def get_restart_service_text(service_name):
     return "Restarting " + str(service_name) + " Service, This may take up to 10 Seconds"

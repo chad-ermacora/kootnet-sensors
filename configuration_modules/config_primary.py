@@ -27,19 +27,23 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 8
+        self.valid_setting_count = 10
         self.config_settings_names = ["Enable Debug Logging", "Enable Mini Display",
                                       "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
                                       "Recording Interval in Seconds ** Caution **",
                                       "Enable Custom Temperature Offset", "Current Temperature Offset",
-                                      "HTTPS Port Number (Default is 10065)"]
+                                      "HTTPS Port Number (Default is 10065)", "Enable Temperature Compensation Factor",
+                                      "Temperature Compensation Factor"]
         self.enable_debug_logging = 0
         self.enable_display = 0
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 300.0
+
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
+        self.enable_temperature_comp_factor = 0
+        self.temperature_comp_factor = 0.0
 
         self.flask_http_ip = ""
         self.web_portal_port = 10065
@@ -62,6 +66,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_interval_recording = 0
         self.enable_trigger_recording = 0
         self.enable_custom_temp = 0
+        self.enable_temperature_comp_factor = 0
 
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
@@ -84,6 +89,11 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_custom_temp = 1
             self.temperature_offset = new_temp
 
+        if html_request.form.get("enable_custom_temp_comp") is not None:
+            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
+            self.enable_temperature_comp_factor = 1
+            self.temperature_comp_factor = new_temp_comp
+
         if html_request.form.get("ip_web_port") is not None:
             self.web_portal_port = int(html_request.form.get("ip_web_port"))
         self._update_configuration_settings_list()
@@ -93,7 +103,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_settings = [str(self.enable_debug_logging), str(self.enable_display),
                                 str(self.enable_interval_recording), str(self.enable_trigger_recording),
                                 str(self.sleep_duration_interval), str(self.enable_custom_temp),
-                                str(self.temperature_offset), str(self.web_portal_port)]
+                                str(self.temperature_offset), str(self.web_portal_port),
+                                str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -105,6 +116,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_custom_temp = int(self.config_settings[5])
             self.temperature_offset = float(self.config_settings[6])
             self.web_portal_port = int(self.config_settings[7])
+            self.enable_temperature_comp_factor = int(self.config_settings[8])
+            self.temperature_comp_factor = float(self.config_settings[9])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))

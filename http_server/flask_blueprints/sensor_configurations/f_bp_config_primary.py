@@ -22,7 +22,8 @@ from operations_modules import app_cached_variables
 from operations_modules import app_config_access
 from operations_modules.app_generic_functions import thread_function
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
+from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_disabled_state, \
+    message_and_return
 from sensor_modules import sensor_access
 
 html_config_primary_routes = Blueprint("html_config_primary_routes", __name__)
@@ -53,26 +54,25 @@ def get_config_primary_tab():
         debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
         display = get_html_checkbox_state(app_config_access.primary_config.enable_display)
         interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
-        interval_recording_disabled = "disabled"
-        if interval_recording:
-            interval_recording_disabled = ""
         trigger_recording = get_html_checkbox_state(app_config_access.primary_config.enable_trigger_recording)
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
-        custom_temp_offset_disabled = "disabled"
-        if custom_temp_offset:
-            custom_temp_offset_disabled = ""
+        custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
+
         return render_template("edit_configurations/config_primary.html",
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
                                CheckedDisplay=display,
                                CheckedInterval=interval_recording,
-                               DisabledIntervalDelay=interval_recording_disabled,
+                               DisabledIntervalDelay=get_html_disabled_state(interval_recording),
                                IntervalDelay=float(app_config_access.primary_config.sleep_duration_interval),
                                CheckedTrigger=trigger_recording,
                                CheckedCustomTempOffset=custom_temp_offset,
-                               DisabledCustomTempOffset=custom_temp_offset_disabled,
-                               temperature_offset=float(app_config_access.primary_config.temperature_offset))
+                               DisabledCustomTempOffset=get_html_disabled_state(custom_temp_offset),
+                               temperature_offset=float(app_config_access.primary_config.temperature_offset),
+                               CheckedCustomTempComp=custom_temp_comp,
+                               CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor),
+                               DisabledCustomTempComp=get_html_disabled_state(custom_temp_comp))
     except Exception as error:
         logger.network_logger.error("Error building Primary configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="primary-config-tab")

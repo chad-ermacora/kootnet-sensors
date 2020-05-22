@@ -184,7 +184,7 @@ def get_cpu_temperature():
     return temperature
 
 
-def get_sensor_temperature(temperature_offset=True):
+def get_sensor_temperature(temperature_correction=True):
     """ Returns sensors Environmental temperature. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
@@ -203,13 +203,27 @@ def get_sensor_temperature(temperature_offset=True):
     else:
         return no_sensor_present
 
-    if temperature_offset and temperature != app_cached_variables.no_sensor_present:
-        if app_config_access.primary_config.enable_custom_temp:
+    if temperature_correction and temperature != no_sensor_present:
+        enable_custom_temp = app_config_access.primary_config.enable_custom_temp
+        temperature_offset = app_config_access.primary_config.temperature_offset
+        new_temp = temperature
+        if enable_custom_temp and temperature_offset != 0:
             try:
-                return round(temperature + app_config_access.primary_config.temperature_offset, 6)
+                new_temp = round(temperature + temperature_offset, 6)
             except Exception as error:
                 logger.sensors_logger.warning("Invalid Temperature Offset")
                 logger.sensors_logger.debug(str(error))
+
+        cpu_temp = get_cpu_temperature()
+        enable_temperature_comp_factor = app_config_access.primary_config.enable_temperature_comp_factor
+        temperature_comp_factor = app_config_access.primary_config.temperature_comp_factor
+        if enable_temperature_comp_factor and cpu_temp != no_sensor_present and temperature_comp_factor != 0:
+            try:
+                new_temp = round(new_temp - ((cpu_temp - new_temp) * temperature_comp_factor), 6)
+            except Exception as error:
+                logger.sensors_logger.warning("Invalid Temperature Factor")
+                logger.sensors_logger.debug(str(error))
+        return new_temp
     return temperature
 
 
