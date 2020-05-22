@@ -154,6 +154,9 @@ def html_sensors_readings():
         temp_offset = "Disabled"
         if app_config_access.primary_config.enable_custom_temp:
             temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"
+        temp_comp = "Disabled"
+        if app_config_access.primary_config.temperature_comp_factor:
+            temp_comp = str(app_config_access.primary_config.temperature_comp_factor)
 
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         gas_index = app_cached_variables.no_sensor_present
@@ -202,6 +205,7 @@ def html_sensors_readings():
                                RAWEnvTemperature=str(raw_temp) + " °C",
                                AdjustedEnvTemperature=str(adjusted_temp) + " °C",
                                EnvTemperatureOffset=str(temp_offset),
+                               EnvTemperatureComp=str(temp_comp),
                                Pressure=str(sensor_access.get_pressure()) + " hPa",
                                Altitude=str(sensor_access.get_altitude()) + " Meters",
                                Humidity=str(sensor_access.get_humidity()) + " %RH",
