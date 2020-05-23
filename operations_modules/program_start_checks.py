@@ -159,21 +159,20 @@ def _run_upgrade_checks():
                 if previous_version.minor_version < 63:
                     no_changes = False
                     reset_mqtt_publisher_config()
-                if previous_version.minor_version < 34:
-                    no_changes = False
-                    reset_display_config()
             if previous_version.feature_version == 29:
-                if previous_version.minor_version < 13:
-                    no_changes = False
-                    reset_installed_sensors()
-                    reset_variance_config()
+                # Beta.29.x versions don't have any MQTT or Display Configurations
+                no_changes = False
+                reset_primary_config()
+                reset_installed_sensors()
+                reset_variance_config()
         elif previous_version.major_version == "Alpha":
+            # Alpha versions don't have any MQTT or Display Configurations
             if previous_version.feature_version > current_version.feature_version:
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
                 logger.primary_logger.warning("Please review your configurations in case of conflict")
             else:
-                reset_installed_sensors()
                 reset_primary_config()
+                reset_installed_sensors()
                 reset_variance_config()
             no_changes = False
         else:
