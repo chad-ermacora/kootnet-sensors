@@ -121,7 +121,7 @@ def get_raw_sensors_log():
 def delete_primary_log():
     logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
     logger.clear_primary_log()
-    return server_http_generic_functions.message_and_return("Primary Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()
 
 
 @html_logs_routes.route("/DeleteNetworkLog")
@@ -129,7 +129,7 @@ def delete_primary_log():
 def delete_network_log():
     logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
     logger.clear_network_log()
-    return server_http_generic_functions.message_and_return("Network Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()
 
 
 @html_logs_routes.route("/DeleteSensorsLog")
@@ -137,4 +137,4 @@ def delete_network_log():
 def delete_sensors_log():
     logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
     logger.clear_sensor_log()
-    return server_http_generic_functions.message_and_return("Sensors Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()
