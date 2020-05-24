@@ -40,7 +40,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                       "Environmental Temperature Topic", "Pressure Topic", "Altitude Topic",
                                       "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
                                       "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic",
-                                      "Magnetometer Topic", "Gyroscope Topic", "Publisher Quality of Service Level"]
+                                      "Magnetometer Topic", "Gyroscope Topic", "MQTT Quality of Service Level (0-2)"]
 
         self.enable_mqtt_publisher = 0
         self.broker_address = ""

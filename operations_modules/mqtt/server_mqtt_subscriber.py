@@ -29,6 +29,7 @@ class CreateMQTTSubscriberTopicRetrieval:
         self.topic = topic
         self.restart_mqtt_subscriber_thread = False
 
+        self.mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
         self.cb_auth = None
         if app_config_access.mqtt_subscriber_config.enable_broker_auth:
             broker_user = app_config_access.mqtt_subscriber_config.broker_user
@@ -47,7 +48,7 @@ class CreateMQTTSubscriberTopicRetrieval:
         while not self.restart_mqtt_subscriber_thread:
             try:
                 message = subscribe.simple(self.topic, hostname=self.broker_address, port=self.broker_server_port,
-                                           auth=self.cb_auth, tls=None)
+                                           auth=self.cb_auth, tls=None, qos=self.mqtt_qos)
                 logger.mqtt_subscriber_logger.info(str(message.topic) + " = " + str(message.payload.decode("UTF-8")))
             except Exception as error:
                 logger.mqtt_subscriber_logger.error("Error processing MQTT Subscriber Message: " + str(error))

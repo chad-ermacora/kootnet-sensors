@@ -22,7 +22,8 @@ from operations_modules import file_locations
 from operations_modules import app_config_access
 from operations_modules.mqtt.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
+from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
+    get_restart_service_text, get_html_selected_state
 
 html_config_mqtt_subscriber_routes = Blueprint("html_config_mqtt_subscriber_routes", __name__)
 
@@ -76,6 +77,17 @@ def html_clear_mqtt_subscriber_log():
 
 def get_config_mqtt_subscriber_tab():
     try:
+        mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
+        qos_level_0 = ""
+        qos_level_1 = ""
+        qos_level_2 = ""
+        if mqtt_qos == 0:
+            qos_level_0 = get_html_selected_state(True)
+        elif mqtt_qos == 1:
+            qos_level_1 = get_html_selected_state(True)
+        elif mqtt_qos == 2:
+            qos_level_2 = get_html_selected_state(True)
+
         enable_mqtt_subscriber = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber
         enable_broker_auth = app_config_access.mqtt_subscriber_config.enable_broker_auth
         csv_mqtt_topics = ""
@@ -87,6 +99,9 @@ def get_config_mqtt_subscriber_tab():
                                MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
                                MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
+                               MQTTQoSLevel0=qos_level_0,
+                               MQTTQoSLevel1=qos_level_1,
+                               MQTTQoSLevel2=qos_level_2,
                                MQTTSubscriberAuthChecked=get_html_checkbox_state(enable_broker_auth),
                                MQTTSubscriberUsername=app_config_access.mqtt_subscriber_config.broker_user,
                                SubscriberTopics=csv_mqtt_topics)

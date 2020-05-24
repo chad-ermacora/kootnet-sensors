@@ -27,10 +27,11 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_subscriber_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Subscriber Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 7
+        self.valid_setting_count = 8
         self.config_settings_names = ["Enable MQTT Subscriber", "Broker Server Address", "Broker Port #",
                                       "Enable Authentication", "User Name (Optional)", "Password (Optional)",
-                                      "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#"]
+                                      "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#",
+                                      "MQTT Quality of Service Level (0-2)"]
 
         self.enable_mqtt_subscriber = 0
         self.broker_address = ""
@@ -39,6 +40,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         self.broker_user = ""
         self.broker_password = ""
         self.subscribed_topics_list = ["#"]
+
+        self.mqtt_subscriber_qos = 0
 
         self._update_configuration_settings_list()
         if load_from_file:
@@ -68,6 +71,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             self.broker_user = str(html_request.form.get("broker_username"))
         if html_request.form.get("broker_password") is not None:
             self.broker_password = str(html_request.form.get("broker_password"))
+        if html_request.form.get("mqtt_qos_level") is not None:
+            self.mqtt_subscriber_qos = int(html_request.form.get("mqtt_qos_level"))
         if html_request.form.get("subscriber_topics") is not None:
             topics_text_list = str(html_request.form.get("subscriber_topics")).split(",")
             self.subscribed_topics_list = []
@@ -88,7 +93,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
                                 str(self.enable_broker_auth),
                                 str(self.broker_user),
                                 str(self.broker_password),
-                                topics_text]
+                                topics_text,
+                                str(self.mqtt_subscriber_qos)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -99,6 +105,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             self.broker_user = self.config_settings[4]
             self.broker_password = self.config_settings[5]
             topics_text_list = self.config_settings[6].split(",")
+            self.mqtt_subscriber_qos = int(self.config_settings[7])
             self.subscribed_topics_list = []
             for topic in topics_text_list:
                 if topic.strip() != "":
