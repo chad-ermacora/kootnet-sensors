@@ -52,6 +52,9 @@ def _display_server():
             sleep_total = 0
     else:
         logger.primary_logger.error(" -- Sensor Display Server Failed to Start: No Compatible Display Found")
+        logger.primary_logger.debug("Putting Display Server in to Sleep Mode")
+        while not app_cached_variables.restart_mini_display_thread:
+            sleep(10)
 
 
 def get_numerical_display_text():
