@@ -37,13 +37,15 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def __init__(self):
         CreatePrimaryConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
+10165 = HTTPS Port Number (Default is 10065)
 0 = Enable Debug Logging
 1 = Interval Recording to SQL Database
 1 = Trigger Recording to SQL Database
-227.27 = Recording Interval in Seconds ** Caution **
+227.27 = Recording Interval in Seconds * Caution *
 1 = Enable Custom Temperature Offset
 -11.23 = Current Temperature Offset
-10165 = HTTPS Port Number (Default is 10065)"""
+1 = Enable Temperature Compensation Factor
+0.29 = Temperature Compensation Factor"""
 
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
@@ -70,6 +72,7 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
     def __init__(self):
         CreateInstalledSensorsConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
+1 = Kootnet Dummy Sensors
 1 = Gnu/Linux
 0 = Raspberry Pi
 1 = Raspberry Pi Sense HAT
@@ -91,7 +94,6 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 1 = Pimoroni 11x7 LED Matrix
 0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
 1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
-1 = Kootnet Dummy Sensors
 0 = Sensirion SPS30"""
 
     def set_settings_for_test1(self):
@@ -671,6 +673,25 @@ class TestApp(unittest.TestCase):
 
     @staticmethod
     def _bad_config(sent_config, received_config, config_name=""):
+        if config_name[:-2] == "Installed Sensors":
+            list_sent_config = sent_config.strip().split("\n")
+            new_sent_config = ""
+            for index, line in enumerate(list_sent_config):
+                if index == 3:
+                    new_sent_config += line.split("=")[0].strip() + " = RPi\n"
+                else:
+                    new_sent_config += line.strip() + "\n"
+            sent_config = new_sent_config.strip()
+
+            list_received_config = received_config.strip().split("\n")
+            new_received_config = ""
+            for index, line in enumerate(list_received_config):
+                if index == 3:
+                    new_received_config += line.split("=")[0].strip() + " = RPi\n"
+                else:
+                    new_received_config += line.strip() + "\n"
+            received_config = new_received_config.strip()
+
         if sent_config.strip() == received_config.strip():
             print("Info: Configuration " + config_name + " Check OK.")
             return False
