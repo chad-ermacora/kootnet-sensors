@@ -17,7 +17,7 @@ Created on Mon Jan 20 07:03:56 2020
 """
 import time
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 round_decimal_to = 5
 pause_sensor_during_access_sec = 0.007

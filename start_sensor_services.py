@@ -33,7 +33,7 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_recording_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server

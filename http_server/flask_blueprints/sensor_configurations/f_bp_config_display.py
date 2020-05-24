@@ -20,7 +20,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from flask import Blueprint, render_template, request
 from operations_modules.server_display import start_display_server
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
 

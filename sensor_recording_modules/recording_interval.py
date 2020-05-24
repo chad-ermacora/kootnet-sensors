@@ -21,7 +21,7 @@ from time import sleep
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 

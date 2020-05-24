@@ -20,7 +20,7 @@ import os
 import time
 from threading import Thread
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from PIL import Image

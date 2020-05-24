@@ -22,7 +22,7 @@ from operations_modules import logger
 from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
-from operations_modules.app_config_access import weather_underground_config
+from configuration_modules.app_config_access import weather_underground_config
 from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 

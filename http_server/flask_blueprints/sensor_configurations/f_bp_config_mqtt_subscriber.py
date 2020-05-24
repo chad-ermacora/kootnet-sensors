@@ -19,7 +19,7 @@
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules.mqtt.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \

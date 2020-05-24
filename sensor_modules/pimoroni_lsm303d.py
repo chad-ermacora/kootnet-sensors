@@ -19,7 +19,7 @@ Created on Sat Aug 25 08:53:56 2018
 """
 import time
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 lsm303d_address = 0x1d
 round_decimal_to = 5

@@ -18,7 +18,7 @@ Created on Tue July 9 15:53:56 2019
 """
 import time
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 
 class CreateMatrix11x7:

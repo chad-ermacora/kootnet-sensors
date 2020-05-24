@@ -21,7 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
     get_file_content, check_for_port_in_address, get_ip_and_port_split
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import network_wifi
 from operations_modules import software_version

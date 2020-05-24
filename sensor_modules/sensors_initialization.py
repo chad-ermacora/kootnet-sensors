@@ -18,7 +18,7 @@
 """
 from os import geteuid
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from sensor_modules import linux_os as _linux_os
 from sensor_modules import kootnet_dummy_sensors as _kootnet_dummy_sensors
 

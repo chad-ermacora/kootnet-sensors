@@ -18,7 +18,7 @@ Created on Tue July 9 16:33:56 2019
 from time import sleep
 from threading import Thread
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 turn_off_display = 30
 

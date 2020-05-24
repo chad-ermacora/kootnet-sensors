@@ -20,7 +20,7 @@ from time import sleep
 from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function, CreateMonitoredThread
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from sensor_modules.sensor_access import sensors_direct
 
 

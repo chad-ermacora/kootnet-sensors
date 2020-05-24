@@ -21,7 +21,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import software_version
 from sensor_modules import sensor_access
 

@@ -20,7 +20,7 @@ from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
 

@@ -22,7 +22,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import write_file_to_disk
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 terminal_install_mqtt_mosquitto = "apt-get update && apt-get -y install mosquitto"
 terminal_enable_start_mosquitto = "systemctl enable mosquitto && systemctl start mosquitto"

@@ -20,7 +20,7 @@ Created on Sat Aug 25 08:53:56 2018
 import time
 from os import system
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
 
 round_decimal_to = 5

@@ -21,7 +21,7 @@ from extras.python_modules.paho.mqtt import subscribe
 from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 
 class CreateMQTTSubscriberTopicRetrieval:

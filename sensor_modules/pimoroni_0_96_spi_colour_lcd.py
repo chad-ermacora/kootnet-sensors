@@ -19,7 +19,7 @@ from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import file_locations
 
 

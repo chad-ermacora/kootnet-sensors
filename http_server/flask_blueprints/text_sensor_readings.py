@@ -18,7 +18,7 @@
 """
 from flask import Blueprint, request
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from sensor_modules import sensor_access
 

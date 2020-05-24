@@ -19,7 +19,7 @@
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
     get_restart_service_text, get_html_selected_state
@@ -71,6 +71,19 @@ def get_config_mqtt_publisher_tab():
             qos_level_1 = get_html_selected_state(True)
         elif mqtt_publisher_qos == 2:
             qos_level_2 = get_html_selected_state(True)
+        sensor_uptime = app_config_access.mqtt_publisher_config.sensor_uptime
+        system_temperature = app_config_access.mqtt_publisher_config.system_temperature
+        env_temperature = app_config_access.mqtt_publisher_config.env_temperature
+        pressure = app_config_access.mqtt_publisher_config.pressure
+        altitude = app_config_access.mqtt_publisher_config.altitude
+        humidity = app_config_access.mqtt_publisher_config.humidity
+        distance = app_config_access.mqtt_publisher_config.distance
+        particulate_matter = app_config_access.mqtt_publisher_config.particulate_matter
+        color = app_config_access.mqtt_publisher_config.color
+        ultra_violet = app_config_access.mqtt_publisher_config.ultra_violet
+        accelerometer = app_config_access.mqtt_publisher_config.accelerometer
+        magnetometer = app_config_access.mqtt_publisher_config.magnetometer
+        gyroscope = app_config_access.mqtt_publisher_config.gyroscope
         return render_template("edit_configurations/config_mqtt_publisher.html",
                                PageURL="/ConfigurationsHTML",
                                MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic,
@@ -83,21 +96,21 @@ def get_config_mqtt_publisher_tab():
                                PublisherQoSLevel0=qos_level_0,
                                PublisherQoSLevel1=qos_level_1,
                                PublisherQoSLevel2=qos_level_2,
-                               MQTTUptimeChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.sensor_uptime),
-                               MQTTCPUTempChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.system_temperature),
-                               MQTTEnvTempChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.env_temperature),
-                               MQTTPressureChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.pressure),
-                               MQTTAltitudeChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.altitude),
-                               MQTTHumidityChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.humidity),
-                               MQTTDistanceChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.distance),
+                               MQTTUptimeChecked=get_html_checkbox_state(sensor_uptime),
+                               MQTTCPUTempChecked=get_html_checkbox_state(system_temperature),
+                               MQTTEnvTempChecked=get_html_checkbox_state(env_temperature),
+                               MQTTPressureChecked=get_html_checkbox_state(pressure),
+                               MQTTAltitudeChecked=get_html_checkbox_state(altitude),
+                               MQTTHumidityChecked=get_html_checkbox_state(humidity),
+                               MQTTDistanceChecked=get_html_checkbox_state(distance),
                                MQTTGASChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.gas),
-                               MQTTPMChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.particulate_matter),
+                               MQTTPMChecked=get_html_checkbox_state(particulate_matter),
                                MQTTLumenChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.lumen),
-                               MQTTColoursChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.color),
-                               MQTTUltraVioletChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.ultra_violet),
-                               MQTTAccChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.accelerometer),
-                               MQTTMagChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.magnetometer),
-                               MQTTGyroChecked=get_html_checkbox_state(app_config_access.mqtt_publisher_config.gyroscope),
+                               MQTTColoursChecked=get_html_checkbox_state(color),
+                               MQTTUltraVioletChecked=get_html_checkbox_state(ultra_violet),
+                               MQTTAccChecked=get_html_checkbox_state(accelerometer),
+                               MQTTMagChecked=get_html_checkbox_state(magnetometer),
+                               MQTTGyroChecked=get_html_checkbox_state(gyroscope),
                                MQTTUptimeTopic=app_config_access.mqtt_publisher_config.sensor_uptime_topic,
                                MQTTCPUTempTopic=app_config_access.mqtt_publisher_config.system_temperature_topic,
                                MQTTEnvTempTopic=app_config_access.mqtt_publisher_config.env_temperature_topic,

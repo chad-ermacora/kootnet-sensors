@@ -21,7 +21,7 @@ from extras.python_modules.paho.mqtt import client as mqtt
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from sensor_recording_modules.recording_interval import available_sensors
 

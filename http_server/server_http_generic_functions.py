@@ -19,7 +19,7 @@
 from flask import render_template
 from threading import Thread
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from http_server import server_http_sensor_control
 from sensor_modules.sensor_access import get_system_datetime
 

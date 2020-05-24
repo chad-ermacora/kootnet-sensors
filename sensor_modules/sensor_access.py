@@ -25,7 +25,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
 from sensor_modules import sensors_initialization as sensors_direct
 
