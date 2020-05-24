@@ -72,9 +72,9 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
         self.update_configuration_settings_list()
         if load_from_file:
-            self.config_settings_names[2] = self.get_raspberry_pi_model()
             self._init_config_variables()
             self._update_variables_from_settings_list()
+            self.config_settings_names[2] = self.get_raspberry_pi_model()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
