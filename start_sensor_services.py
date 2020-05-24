@@ -18,7 +18,7 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules.program_start_checks import run_program_start_checks
+from operations_modules.initialization_checks import run_program_start_checks
 
 # Ensure files, database & configurations are OK
 run_program_start_checks()
