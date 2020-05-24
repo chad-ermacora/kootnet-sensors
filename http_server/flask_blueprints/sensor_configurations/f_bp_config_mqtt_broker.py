@@ -22,7 +22,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_config_access
 from operations_modules.app_generic_functions import get_file_content
-from operations_modules.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server,\
+from operations_modules.mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server,\
     stop_mqtt_broker_server, check_mqtt_broker_server_running
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text

@@ -23,7 +23,7 @@ from operations_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
     get_restart_service_text, get_html_selected_state
-from online_services_modules.mqtt_publisher import start_mqtt_publisher_server
+from operations_modules.mqtt.server_mqtt_publisher import start_mqtt_publisher_server
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
 
