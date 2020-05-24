@@ -31,16 +31,17 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.valid_setting_count = 38
         self.config_settings_names = ["Enable MQTT Publisher", "Broker Server Address", "Broker Port #",
                                       "Enable Authentication", "User Name (Optional)", "Password (Optional)",
-                                      "Seconds Between Reading Posts", "Publish System Uptime",
-                                      "Publish CPU Temperature", "Publish Environmental Temperature",
-                                      "Publish Pressure", "Publish Altitude", "Publish Humidity", "Publish Distance",
-                                      "Publish GAS", "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
+                                      "Seconds Between Reading Posts", "MQTT Quality of Service Level (0-2)",
+                                      "Publish System Uptime", "Publish CPU Temperature",
+                                      "Publish Environmental Temperature", "Publish Pressure", "Publish Altitude",
+                                      "Publish Humidity", "Publish Distance", "Publish GAS",
+                                      "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
                                       "Publish Ultra Violet", "Publish Accelerometer", "Publish Magnetometer",
                                       "Publish Gyroscope", "System Uptime Topic", "CPU Temperature Topic",
                                       "Environmental Temperature Topic", "Pressure Topic", "Altitude Topic",
                                       "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
                                       "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic",
-                                      "Magnetometer Topic", "Gyroscope Topic", "MQTT Quality of Service Level (0-2)"]
+                                      "Magnetometer Topic", "Gyroscope Topic"]
 
         self.enable_mqtt_publisher = 0
         self.broker_address = ""
@@ -201,6 +202,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                 str(self.broker_user),
                                 str(self.broker_password),
                                 str(self.seconds_to_wait),
+                                str(self.mqtt_publisher_qos),
                                 str(self.sensor_uptime),
                                 str(self.system_temperature),
                                 str(self.env_temperature),
@@ -230,53 +232,50 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                                 str(self.ultra_violet_topic),
                                 str(self.accelerometer_topic),
                                 str(self.magnetometer_topic),
-                                str(self.gyroscope_topic),
-                                str(self.mqtt_publisher_qos)]
+                                str(self.gyroscope_topic)]
 
     def _update_variables_from_settings_list(self):
         try:
             self.enable_mqtt_publisher = int(self.config_settings[0])
             self.broker_address = self.config_settings[1]
             self.broker_server_port = int(self.config_settings[2])
-
             self.enable_broker_auth = int(self.config_settings[3])
             self.broker_user = self.config_settings[4]
             self.broker_password = self.config_settings[5]
-
             self.seconds_to_wait = int(self.config_settings[6])
-            self.sensor_uptime = int(self.config_settings[7])
-            self.system_temperature = int(self.config_settings[8])
-            self.env_temperature = int(self.config_settings[9])
-            self.pressure = int(self.config_settings[10])
-            self.altitude = int(self.config_settings[11])
-            self.humidity = int(self.config_settings[12])
-            self.distance = int(self.config_settings[13])
-            self.gas = int(self.config_settings[14])
-            self.particulate_matter = int(self.config_settings[15])
-            self.lumen = int(self.config_settings[16])
-            self.color = int(self.config_settings[17])
-            self.ultra_violet = int(self.config_settings[18])
-            self.accelerometer = int(self.config_settings[19])
-            self.magnetometer = int(self.config_settings[20])
-            self.gyroscope = int(self.config_settings[21])
+            self.mqtt_publisher_qos = int(self.config_settings[7].strip())
 
-            self.sensor_uptime_topic = self.config_settings[22].strip()
-            self.system_temperature_topic = self.config_settings[23].strip()
-            self.env_temperature_topic = self.config_settings[24].strip()
-            self.pressure_topic = self.config_settings[25].strip()
-            self.altitude_topic = self.config_settings[26].strip()
-            self.humidity_topic = self.config_settings[27].strip()
-            self.distance_topic = self.config_settings[28].strip()
-            self.gas_topic = self.config_settings[29].strip()
-            self.particulate_matter_topic = self.config_settings[30].strip()
-            self.lumen_topic = self.config_settings[31].strip()
-            self.color_topic = self.config_settings[32].strip()
-            self.ultra_violet_topic = self.config_settings[33].strip()
-            self.accelerometer_topic = self.config_settings[34].strip()
-            self.magnetometer_topic = self.config_settings[35].strip()
-            self.gyroscope_topic = self.config_settings[36].strip()
+            self.sensor_uptime = int(self.config_settings[8])
+            self.system_temperature = int(self.config_settings[9])
+            self.env_temperature = int(self.config_settings[10])
+            self.pressure = int(self.config_settings[11])
+            self.altitude = int(self.config_settings[12])
+            self.humidity = int(self.config_settings[13])
+            self.distance = int(self.config_settings[14])
+            self.gas = int(self.config_settings[15])
+            self.particulate_matter = int(self.config_settings[16])
+            self.lumen = int(self.config_settings[17])
+            self.color = int(self.config_settings[18])
+            self.ultra_violet = int(self.config_settings[19])
+            self.accelerometer = int(self.config_settings[20])
+            self.magnetometer = int(self.config_settings[21])
+            self.gyroscope = int(self.config_settings[22])
 
-            self.mqtt_publisher_qos = int(self.config_settings[37].strip())
+            self.sensor_uptime_topic = self.config_settings[23].strip()
+            self.system_temperature_topic = self.config_settings[24].strip()
+            self.env_temperature_topic = self.config_settings[25].strip()
+            self.pressure_topic = self.config_settings[26].strip()
+            self.altitude_topic = self.config_settings[27].strip()
+            self.humidity_topic = self.config_settings[28].strip()
+            self.distance_topic = self.config_settings[29].strip()
+            self.gas_topic = self.config_settings[30].strip()
+            self.particulate_matter_topic = self.config_settings[31].strip()
+            self.lumen_topic = self.config_settings[32].strip()
+            self.color_topic = self.config_settings[33].strip()
+            self.ultra_violet_topic = self.config_settings[34].strip()
+            self.accelerometer_topic = self.config_settings[35].strip()
+            self.magnetometer_topic = self.config_settings[36].strip()
+            self.gyroscope_topic = self.config_settings[37].strip()
         except Exception as error:
             logger.primary_logger.debug("MQTT Publisher Config: " + str(error))
             self._update_configuration_settings_list()

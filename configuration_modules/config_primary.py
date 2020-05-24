@@ -28,10 +28,10 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 9
-        self.config_settings_names = ["Enable Debug Logging", "Interval Recording to SQL Database",
-                                      "Trigger Recording to SQL Database", "Recording Interval in Seconds * Caution *",
-                                      "Enable Custom Temperature Offset", "Current Temperature Offset",
-                                      "HTTPS Port Number (Default is 10065)", "Enable Temperature Compensation Factor",
+        self.config_settings_names = ["HTTPS Port Number (Default is 10065)", "Enable Debug Logging",
+                                      "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
+                                      "Recording Interval in Seconds * Caution *", "Enable Custom Temperature Offset",
+                                      "Current Temperature Offset", "Enable Temperature Compensation Factor",
                                       "Temperature Compensation Factor"]
         self.enable_debug_logging = 0
         self.enable_interval_recording = 1
@@ -46,7 +46,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.flask_http_ip = ""
         self.web_portal_port = 10065
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -90,30 +90,31 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("ip_web_port") is not None:
             self.web_portal_port = int(html_request.form.get("ip_web_port"))
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_debug_logging), str(self.enable_interval_recording),
-                                str(self.enable_trigger_recording), str(self.sleep_duration_interval),
-                                str(self.enable_custom_temp), str(self.temperature_offset), str(self.web_portal_port),
-                                str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor)]
+        self.config_settings = [str(self.web_portal_port), str(self.enable_debug_logging),
+                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
+                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
+                                str(self.temperature_offset), str(self.enable_temperature_comp_factor),
+                                str(self.temperature_comp_factor)]
 
     def _update_variables_from_settings_list(self):
         try:
-            self.enable_debug_logging = int(self.config_settings[0])
-            self.enable_interval_recording = int(self.config_settings[1])
-            self.enable_trigger_recording = int(self.config_settings[2])
-            self.sleep_duration_interval = float(self.config_settings[3])
-            self.enable_custom_temp = int(self.config_settings[4])
-            self.temperature_offset = float(self.config_settings[5])
-            self.web_portal_port = int(self.config_settings[6])
+            self.web_portal_port = int(self.config_settings[0])
+            self.enable_debug_logging = int(self.config_settings[1])
+            self.enable_interval_recording = int(self.config_settings[2])
+            self.enable_trigger_recording = int(self.config_settings[3])
+            self.sleep_duration_interval = float(self.config_settings[4])
+            self.enable_custom_temp = int(self.config_settings[5])
+            self.temperature_offset = float(self.config_settings[6])
             self.enable_temperature_comp_factor = int(self.config_settings[7])
             self.temperature_comp_factor = float(self.config_settings[8])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Primary Configuration.")
                 self.save_config_to_file()

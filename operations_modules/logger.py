@@ -64,7 +64,7 @@ def _debug_enabled():
         with open(file_locations.primary_config, "r") as loaded_file:
             file_lines_list = loaded_file.read().split("\n")
             if len(file_lines_list) > 1:
-                debug_setting = file_lines_list[1].split("=")[0].strip()
+                debug_setting = file_lines_list[2].split("=")[0].strip()
                 if int(debug_setting):
                     return True
     return False

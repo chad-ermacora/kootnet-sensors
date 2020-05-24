@@ -53,7 +53,7 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
         self.sleep_duration_interval = 245.11
         self.enable_custom_temp = 1
         self.temperature_offset = 11.11
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.web_portal_port = 12289
@@ -63,7 +63,7 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
         self.sleep_duration_interval = 320.58
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguration):
