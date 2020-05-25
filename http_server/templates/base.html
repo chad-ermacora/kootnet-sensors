@@ -329,7 +329,7 @@
         }
 
         function RebootSensorYesNo() {
-            var r = confirm("Restart Service?");
+            var r = confirm("Reboot Sensor?");
             if (r == true) {
                 window.location = "/RebootSystem"
             }
@@ -344,19 +344,23 @@
                     Kootnet Sensor
                 </a>
             </span>
-            <a style="color: orange; font-size: large;" href="{{ PageURL }}">
+            <a style="color: red; font-size: large;" href="{{ PageURL }}">
                 <b>Refresh Page</b>
             </a>
 
-            <a style="color: orange; font-size: large; position: absolute; right: 25px;"
-               onclick="RestartServiceYesNo()" {{ RestartServiceHidden }}>
-                <b>Service Restart Required</b>
-            </a>
+            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;"><div {{ RestartServiceHidden }}>
+                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                        onclick="RestartServiceYesNo()">
+                    Service Restart Required
+                </button>
+            </div></div>
 
-            <a style="color: orange; font-size: large; position: absolute; right: 25px;"
-               onclick="RebootSensorYesNo()" {{ RebootSensorHidden }}>
-                <b>Sensor Restart Required</b>
-            </a>
+            <div style="display: inline-block; position: absolute; z-index: 999; right: 10px;"><div {{ RebootSensorHidden }}>
+                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                        onclick="RebootSensorYesNo()">
+                    Sensor Restart Required
+                </button>
+            </div></div>
         </div>
     </div>
 </header>
