@@ -30,7 +30,7 @@ def run_configuration_upgrade_checks():
      Checks previous written version of the program to the current version.
      If the current version is different, start upgrade functions.
     """
-    logger.primary_logger.info(" -- Starting Upgrade Checks ...")
+    logger.primary_logger.info(" -- Upgrade Detected Checking Configurations ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
     current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
