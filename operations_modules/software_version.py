@@ -21,19 +21,27 @@ from operations_modules import file_locations
 
 
 class CreateRefinedVersion:
-    """ Takes the provided program version and creates a data class object. """
-    def __init__(self, instance_version):
+    """ Takes the provided program version as text and creates a data class object. """
+    def __init__(self, version_text=""):
+        self.bad_version_load = True
+        self.major_version = 0
+        self.feature_version = 0
+        self.minor_version = 0
+        self.load_from_string(version_text)
+
+    def load_from_string(self, version_text):
         try:
-            version_split = instance_version.split(".")
-            self.major_version = version_split[0]
-            self.feature_version = int(version_split[1])
-            self.minor_version = int(version_split[2])
+            version_split = str(version_text).split(".")
+            if len(version_split) > 2:
+                self.major_version = version_split[0]
+                self.feature_version = int(version_split[1])
+                self.minor_version = int(version_split[2])
+                self.bad_version_load = False
         except Exception as error:
-            print("Bad Version - " + str(instance_version))
-            print(str(error))
-            self.major_version = 0
-            self.feature_version = 0
-            self.minor_version = 0
+            print("version load error: " + str(error))
+
+    def get_version_string(self):
+        return str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
 
 
 def _get_old_version():
@@ -54,5 +62,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.30.91"
+version = "Beta.30.98"
 old_version = _get_old_version()

@@ -826,19 +826,11 @@ sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name, r
                        remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
                        remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
 
-bad_sensor_contact = True
-bad_sensor_login = True
-if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
-    bad_sensor_contact = False
-    if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-        bad_sensor_login = False
-
-
 if __name__ == '__main__':
-    if not bad_sensor_login and not bad_sensor_contact:
-        unittest.main()
-    else:
-        if bad_sensor_contact:
-            print("\n-- Sensor Offline --\n")
-        elif bad_sensor_login:
+    if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
+        if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
+            unittest.main()
+        else:
             print("\n-- Incorrect Sensor Login --\n")
+    else:
+        print("\n-- Sensor Offline --\n")
