@@ -247,6 +247,7 @@ def upgrade_rp_controller():
 
 
 @html_system_commands_routes.route("/RestartServices")
+@auth.login_required
 def services_restart():
     message = "This should only take 5 to 30 seconds."
     logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))

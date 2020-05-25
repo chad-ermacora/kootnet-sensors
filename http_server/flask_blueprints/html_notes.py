@@ -22,6 +22,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from http_server.server_http_auth import auth
+from http_server.server_http_generic_functions import get_html_hidden_state
 from sensor_modules.sensor_access import add_note_to_database, update_note_in_database, delete_db_note, \
     get_db_note_dates, get_db_note_user_dates
 
@@ -108,6 +109,9 @@ def sensor_notes():
     else:
         selected_note = "No Notes Found"
     return render_template("sensor_notes.html",
+                           PageURL="/SensorNotes",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            CurrentNoteNumber=app_cached_variables.note_current,
                            LastNoteNumber=str(app_cached_variables.notes_total_count),
                            DisplayedNote=selected_note)

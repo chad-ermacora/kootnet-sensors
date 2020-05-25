@@ -20,10 +20,8 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from operations_modules.app_generic_functions import thread_function
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
-from sensor_modules import sensor_access
 
 html_config_installed_sensors_routes = Blueprint("html_config_installed_sensors_routes", __name__)
 running_with_root = app_cached_variables.running_with_root
@@ -38,9 +36,7 @@ def html_set_installed_sensors():
             app_config_access.installed_sensors.update_with_html_request(request)
             app_config_access.installed_sensors.save_config_to_file()
             page_msg = "Installed Sensors Set, Please Restart Program"
-            if running_with_root:
-                page_msg = "Restarting Service, Please Wait ..."
-                thread_function(sensor_access.restart_services)
+            app_cached_variables.html_service_restart = True
             return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:

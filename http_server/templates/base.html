@@ -320,6 +320,21 @@
 </div>
 
 <header id="header">
+    <script>
+        function RestartServiceYesNo() {
+            var r = confirm("Restart Service?");
+            if (r == true) {
+                window.location = "/RestartServices"
+            }
+        }
+
+        function RebootSensorYesNo() {
+            var r = confirm("Restart Service?");
+            if (r == true) {
+                window.location = "/RebootSystem"
+            }
+        }
+    </script>
     <div class="mui-appbar mui--appbar-line-height">
         <div class="mui-container-fluid" style="background-color: black;">
             <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
@@ -329,6 +344,19 @@
                     Kootnet Sensor
                 </a>
             </span>
+            <a style="color: orange; font-size: large;" href="{{ PageURL }}">
+                <b>Refresh Page</b>
+            </a>
+
+            <a style="color: orange; font-size: large; position: absolute; right: 25px;"
+               onclick="RestartServiceYesNo()" {{ RestartServiceHidden }}>
+                <b>Service Restart Required</b>
+            </a>
+
+            <a style="color: orange; font-size: large; position: absolute; right: 25px;"
+               onclick="RebootSensorYesNo()" {{ RebootSensorHidden }}>
+                <b>Sensor Restart Required</b>
+            </a>
         </div>
     </div>
 </header>

@@ -19,11 +19,12 @@
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules.mqtt.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
-    get_restart_service_text, get_html_selected_state
+    get_restart_service_text, get_html_selected_state, get_html_hidden_state
 
 html_config_mqtt_subscriber_routes = Blueprint("html_config_mqtt_subscriber_routes", __name__)
 
@@ -39,7 +40,9 @@ def html_get_mqtt_subscriber_view():
         enabled_color = "green"
 
     return render_template("mqtt_subscriber.html",
-                           URL="/MQTTSubscriberView",
+                           PageURL="/MQTTSubscriberView",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                            MQTTSubscriberEnabledText=enabled_text,
                            MQTTEnabledColor=enabled_color,

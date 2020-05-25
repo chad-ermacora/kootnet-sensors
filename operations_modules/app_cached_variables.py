@@ -300,6 +300,10 @@ restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
+# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
+html_service_restart = False
+html_sensor_reboot = False
+
 # Running Trigger Recording Threads
 trigger_thread_sensor_uptime = None
 trigger_thread_cpu_temp = None

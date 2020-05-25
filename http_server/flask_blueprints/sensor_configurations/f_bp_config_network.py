@@ -31,7 +31,7 @@ from operations_modules import network_wifi
 from operations_modules import app_validation_checks
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return
+from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
 
 html_config_network_routes = Blueprint("html_config_network_routes", __name__)
 
@@ -65,6 +65,8 @@ def html_edit_network_configurations():
 
         return render_template("network_configurations.html",
                                PageURL="/NetworkConfigurationsHTML",
+                               RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                               RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                                SSLFileLocation=file_locations.http_ssl_folder,
                                WirelessCountryCode=app_cached_variables.wifi_country_code,
                                SSID1=app_cached_variables.wifi_ssid,
@@ -180,6 +182,7 @@ def html_set_ipv4_config():
         msg1 = "IPv4 Configuration Updated"
         msg2 = "You must reboot for all settings to take effect."
         app_cached_variables_update.update_cached_variables()
+        app_cached_variables.html_sensor_reboot = True
         return message_and_return(msg1, text_message2=msg2, url="/NetworkConfigurationsHTML")
     else:
         title_message = "Unable to Process IPv4 Configuration"
@@ -204,6 +207,7 @@ def html_set_wifi_config():
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
+                app_cached_variables.html_sensor_reboot = True
                 return message_and_return(title_message, text_message2=message, url="/NetworkConfigurationsHTML")
         else:
             logger.network_logger.debug("HTML WiFi Configuration Update Failed")

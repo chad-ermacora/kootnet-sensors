@@ -20,6 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
+from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_basic_routes = Blueprint("html_basic_routes", __name__)
 
@@ -30,6 +31,9 @@ html_basic_routes = Blueprint("html_basic_routes", __name__)
 def html_system_management():
     logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
     return render_template("system_commands.html",
+                           PageURL="/SystemCommands",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            LoginUserName=app_cached_variables.http_flask_user)
 
 

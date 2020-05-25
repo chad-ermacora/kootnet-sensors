@@ -21,7 +21,7 @@ from werkzeug.security import check_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from http_server import server_http_generic_functions
+from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return
 from http_server.server_http_auth import auth
 
 html_functional_routes = Blueprint("html_functional_routes", __name__)
@@ -149,7 +149,11 @@ def tinymce_plugin_help():
 
 @html_functional_routes.route('/logout')
 def logout():
-    return render_template("message_return.html", TextMessage="Logout OK.  Returning to Home.", URL="/"), 401
+    return render_template("message_return.html",
+                           PageURL="/",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+                           TextMessage="Logout OK.  Returning to Home."), 401
 
 
 @auth.verify_password
@@ -163,4 +167,4 @@ def verify_password(username, password):
 @auth.error_handler
 def auth_error():
     logger.network_logger.debug(" *** First or Failed Login from " + str(request.remote_addr))
-    return server_http_generic_functions.message_and_return("Unauthorized Access")
+    return message_and_return("Unauthorized Access")

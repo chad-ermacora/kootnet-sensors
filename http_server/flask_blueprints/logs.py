@@ -24,6 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
 from http_server import server_http_generic_functions
+from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_logs_routes = Blueprint("html_logs_routes", __name__)
 
@@ -35,7 +36,9 @@ def html_get_log_view():
     network_log_lines = logger.get_number_of_log_entries(file_locations.network_log)
     sensors_log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
     return render_template("log_view.html",
-                           LogURL="/GetLogsHTML",
+                           PageURL="/GetLogsHTML",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            PrimaryLog=logger.get_sensor_log(file_locations.primary_log),
                            PrimaryLogLinesText=_get_log_view_message(primary_log_lines),
                            NetworkLog=logger.get_sensor_log(file_locations.network_log),

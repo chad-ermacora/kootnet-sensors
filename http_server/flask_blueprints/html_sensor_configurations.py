@@ -30,7 +30,7 @@ from operations_modules import app_cached_variables
 from operations_modules import software_version
 from operations_modules.app_generic_functions import get_file_content
 from http_server.server_http_auth import auth, save_http_auth_to_file
-from http_server.server_http_generic_functions import message_and_return
+from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_display import get_config_display_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_sensors import get_config_installed_sensors_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_luftdaten import get_config_luftdaten_tab
@@ -52,6 +52,8 @@ def html_edit_configurations():
     logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
     return render_template("edit_configurations.html",
                            PageURL="/ConfigurationsHTML",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ConfigPrimaryTab=get_config_primary_tab(),
                            ConfigInstalledSensorsTab=get_config_installed_sensors_tab(),
                            ConfigDisplayTab=get_config_display_tab(),
@@ -98,6 +100,9 @@ def html_raw_configurations_view():
                           "Numpy: " + str(numpy_version) + "\n"
 
     return render_template("view_raw_configurations.html",
+                           PageURL="/HTMLRawConfigurations",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ModuleVersions=module_version_text,
                            MainConfiguration=str(get_file_content(file_locations.primary_config)),
                            MCLocation=file_locations.primary_config,

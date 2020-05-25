@@ -1,14 +1,8 @@
 <style>
-    #leftbox {
+    #floatboxes {
         float: left;
-    {#background:Red; #} width: 50%;
-    {#height:280px;#} height: auto;
-    }
-
-    #rightbox {
-        float: left;
-    {#background:Green; #} width: 50%;
-    {#height:280px; #} height: auto;
+        width: 50%;
+        height: auto;
     }
 </style>
 
@@ -136,7 +130,7 @@
                                value="{{ MQTTUptimeTopic }}">
                     </label>
                 </div>
-                <div id="leftbox">
+                <div id="floatboxes">
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
                             <input type="checkbox" name="mqtt_cpu_temp" value="" {{ MQTTCPUTempChecked }}>
@@ -283,7 +277,7 @@
                     </div>
                 </div>
 
-                <div id="leftbox">
+                <div id="floatboxes">
                     <div class="mui-checkbox" style="display: inline-block">
                         <label class="container_checkbox">
                             <input type="checkbox" name="mqtt_particulate_matter" value="" {{ MQTTPMChecked }}>

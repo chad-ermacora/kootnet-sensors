@@ -30,10 +30,12 @@ def message_and_return(return_message, text_message2="", url="/", special_comman
     Optional: Add a secondary text message, customize the URL or add a special HTML command.
     """
     return render_template("message_return.html",
+                           PageURL=url,
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            TextMessage=return_message,
                            TextMessage2=text_message2,
-                           CloseWindow=special_command,
-                           URL=url)
+                           CloseWindow=special_command)
 
 
 def get_sensor_control_report(address_list, report_type="systems_report"):
@@ -91,10 +93,17 @@ def get_html_checkbox_state(config_setting):
 
 
 def get_html_disabled_state(config_setting):
-    """ Generic function to return HTML code for checkboxes (Used in flask render templates). """
+    """ Generic function used to disable HTML content if config_setting is False (Used in flask render templates). """
     if config_setting:
         return ""
     return "disabled"
+
+
+def get_html_hidden_state(config_setting):
+    """ Generic function used to hide HTML content if config_setting is False (Used in flask render templates). """
+    if config_setting:
+        return ""
+    return "hidden"
 
 
 def get_html_selected_state(config_setting):

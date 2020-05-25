@@ -22,8 +22,9 @@ from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return
+from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 
@@ -53,6 +54,9 @@ def html_plotly_graphing():
         triggers_creation_date = "No Plotly Graph Found"
 
     return render_template("plotly_graph.html",
+                           PageURL="/PlotlyGraph",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ExtraTextMessage=extra_message,
                            CreateButtonDisabled=button_disabled,
                            IntervalPlotlyDate=interval_creation_date,

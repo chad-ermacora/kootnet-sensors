@@ -24,6 +24,7 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import software_version
 from sensor_modules import sensor_access
+from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes", __name__)
 
@@ -33,6 +34,9 @@ html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes",
 @html_sensor_info_readings_routes.route("/index.html")
 def index():
     return render_template("index.html",
+                           PageURL="/index",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            HostName=app_cached_variables.hostname,
                            SQLDatabaseLocation=file_locations.sensor_database,
                            SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
@@ -109,6 +113,9 @@ def html_system_information():
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
 
     return render_template("sensor_information.html",
+                           PageURL="/SensorInformation",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            OSVersion=app_cached_variables.operating_system_name,
@@ -196,6 +203,9 @@ def html_sensors_readings():
 
         red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
         return render_template("sensor_readings.html",
+                               PageURL="/SensorReadings",
+                               RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                               RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                                URLRedirect="SensorReadings",
                                HostName=app_cached_variables.hostname,
                                IPAddress=app_cached_variables.ip,
@@ -231,7 +241,10 @@ def html_sensors_readings():
                                Gyro=str(sensor_access.get_gyroscope_xyz()) + " °/s")
     except Exception as error:
         logger.primary_logger.error("Unable to generate Readings Page: " + str(error))
-        return render_template("message_return.html", URL="/",
+        return render_template("message_return.html",
+                               PageURL="/",
+                               RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                               RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                                TextMessage="Unable to generate Readings Page",
                                message2=str(error))
 
@@ -270,6 +283,9 @@ def html_sensors_latency():
     logger.network_logger.debug("** Sensor Latency accessed from " + str(request.remote_addr))
     sensors_latency = sensor_access.get_sensors_latency()
     return render_template("sensor_readings.html",
+                           PageURL="/TestSensorLatency",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            URLRedirect="TestSensorLatency",
                            HostName="Sensor Latency",
                            IPAddress=app_cached_variables.ip,
