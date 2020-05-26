@@ -39,6 +39,9 @@ def html_get_mqtt_subscriber_view():
         enabled_text = "Enabled"
         enabled_color = "green"
 
+    mqtt_subscriber_log_content = logger.get_sensor_log(file_locations.mqtt_subscriber_log)
+    if mqtt_subscriber_log_content == "":
+        mqtt_subscriber_log_content = "No MQTT Subscriber Messages"
     return render_template("mqtt_subscriber.html",
                            PageURL="/MQTTSubscriberView",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
@@ -46,7 +49,7 @@ def html_get_mqtt_subscriber_view():
                            MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                            MQTTSubscriberEnabledText=enabled_text,
                            MQTTEnabledColor=enabled_color,
-                           SubscriberTopics=logger.get_sensor_log(file_locations.mqtt_subscriber_log))
+                           SubscriberTopics=mqtt_subscriber_log_content)
 
 
 @html_config_mqtt_subscriber_routes.route("/EditConfigMQTTSubscriber", methods=["POST"])
