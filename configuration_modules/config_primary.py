@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
 
 
 class CreatePrimaryConfiguration(CreateGeneralConfiguration):
@@ -33,6 +33,10 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                       "Recording Interval in Seconds * Caution *", "Enable Custom Temperature Offset",
                                       "Current Temperature Offset", "Enable Temperature Compensation Factor",
                                       "Temperature Compensation Factor"]
+
+        self.sensor_checkin_id = get_file_content(file_locations.sensor_checkin_id).strip()
+        self.checkin_url = "https://server.dragonwarz.net:10065/SensorCheckin"
+
         self.enable_debug_logging = 0
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 0

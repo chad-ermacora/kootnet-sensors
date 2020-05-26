@@ -48,6 +48,7 @@ if os.geteuid() != 0:
                 print("Make Directory Error: " + str(error))
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
+sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
 sensor_html_help = program_root_dir + "/extras/SensorUnitHelp.html"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
@@ -58,6 +59,7 @@ sensors_log = log_directory + "sensors_log.txt"
 mqtt_subscriber_log = log_directory + "mqtt_subscriber_log.txt"
 log_zip_file = log_directory + "all_logs.zip"
 
+sensor_checkin_id = sensor_config_dir + "/sensor_checkin_id.txt"
 old_version_file = sensor_config_dir + "/installed_version.txt"
 program_last_updated = sensor_config_dir + "/last_updated.txt"
 

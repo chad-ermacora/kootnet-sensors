@@ -128,13 +128,16 @@ class CreateDatabaseVariables:
     """ Creates a object instance holding SQLite3 database table and row names. """
 
     def __init__(self):
-        self.table_interval = "IntervalData"
-        self.table_trigger = "TriggerData"
         self.table_other = "OtherData"
-
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
+        self.sensor_check_in_version = "KootnetVersion"
+        self.sensor_check_in_primary_log = "primary_log"
+        self.sensor_check_in_sensors_log = "sensors_log"
+
+        self.table_interval = "IntervalData"
+        self.table_trigger = "TriggerData"
         self.all_tables_datetime = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"

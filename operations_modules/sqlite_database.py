@@ -33,6 +33,10 @@ class CreateOtherDataEntry:
         self.sensor_types = ""
         self.sensor_readings = ""
 
+    def get_sql_execute_string(self):
+        return self.sql_query_start + self.sensor_types + self.sql_query_values_start + \
+               self.sensor_readings + self.sql_query_values_end
+
 
 def write_to_sql_database(sql_query):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
@@ -48,10 +52,10 @@ def write_to_sql_database(sql_query):
         logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
 
 
-def sql_execute_get_data(sql_query):
+def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_database):
     """ Returns SQL data based on provided sql_query. """
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_database)
+        database_connection = sqlite3.connect(sql_database_location)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         sql_column_data = sqlite_database.fetchall()
@@ -73,13 +77,13 @@ def check_database_structure(database_location=file_locations.sensor_database):
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
 
-        _create_table_and_datetime(database_variables.table_interval, db_cursor)
-        _create_table_and_datetime(database_variables.table_trigger, db_cursor)
+        create_table_and_datetime(database_variables.table_interval, db_cursor)
+        create_table_and_datetime(database_variables.table_trigger, db_cursor)
         for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
                                                     database_variables.get_sensor_columns_list()):
-            interval_response = _check_sql_table_and_column(database_variables.table_interval, column_intervals,
-                                                            db_cursor)
-            trigger_response = _check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
+            interval_response = check_sql_table_and_column(database_variables.table_interval, column_intervals,
+                                                           db_cursor)
+            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
             if interval_response:
                 columns_created += 1
             else:
@@ -89,9 +93,9 @@ def check_database_structure(database_location=file_locations.sensor_database):
             else:
                 columns_already_made += 1
 
-        _create_table_and_datetime(database_variables.table_other, db_cursor)
+        create_table_and_datetime(database_variables.table_other, db_cursor)
         for column_other in database_variables.get_other_columns_list():
-            other_response = _check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+            other_response = check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
             if other_response:
                 columns_created += 1
             else:
@@ -107,7 +111,7 @@ def check_database_structure(database_location=file_locations.sensor_database):
         return False
 
 
-def _create_table_and_datetime(table, db_cursor):
+def create_table_and_datetime(table, db_cursor):
     """ Add's or verifies provided table and DateTime column in the SQLite Database. """
     try:
         # Create or update table
@@ -117,7 +121,7 @@ def _create_table_and_datetime(table, db_cursor):
         logger.primary_logger.debug(table + " - " + str(error))
 
 
-def _check_sql_table_and_column(table_name, column_name, db_cursor):
+def check_sql_table_and_column(table_name, column_name, db_cursor):
     """ Add's or verifies provided table and column in the SQLite Database. """
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))

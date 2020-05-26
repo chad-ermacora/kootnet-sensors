@@ -17,10 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import random
+import string
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import write_file_to_disk
 from operations_modules.sqlite_database import check_database_structure
 from configuration_modules.upgrade_configurations import run_configuration_upgrade_checks
 
@@ -37,6 +40,7 @@ def run_program_start_checks():
     _set_file_permissions()
     check_database_structure()
     _check_ssl_files()
+    _check_sensor_id()
     if software_version.old_version != software_version.version:
         run_configuration_upgrade_checks()
 
@@ -49,6 +53,16 @@ def _check_directories():
                 current_directory += "/" + str(found_dir)
                 if not os.path.isdir(current_directory):
                     os.mkdir(current_directory)
+
+
+def _check_sensor_id():
+    """
+    Checks for Sensor Checkin ID file, if missing, creates one.
+    The Sensor ID is Randomly Generated and used to track Software Usage and Online History of Sensors.
+    """
+    if not os.path.isfile(file_locations.sensor_checkin_id):
+        random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(64)])
+        write_file_to_disk(file_locations.sensor_checkin_id, random_id)
 
 
 def _set_file_permissions():

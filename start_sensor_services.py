@@ -36,6 +36,7 @@ except Exception as import_error_raw:
 from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_recording_server
+from operations_modules.software_checkin import start_sensor_checkin_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
 from operations_modules.mqtt.server_mqtt_publisher import start_mqtt_publisher_server
@@ -70,6 +71,7 @@ else:
 start_https_server()
 start_mqtt_broker_server()
 start_mqtt_subscriber_server()
+start_sensor_checkin_server()
 
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:

@@ -77,12 +77,12 @@ def get_number_of_log_entries(log_file):
         return len(log_lines)
 
 
-def get_sensor_log(log_file):
+def get_sensor_log(log_file, max_lines=max_log_lines_return):
     """ Opens provided log file location and returns its content. """
     with open(log_file, "r") as log_content:
         log_lines = log_content.readlines()
-        if max_log_lines_return:
-            log_lines = log_lines[-max_log_lines_return:]
+        if max_lines:
+            log_lines = log_lines[-max_lines:]
         log_lines.reverse()
 
         return_log = ""
@@ -123,10 +123,11 @@ mqtt_subscriber_logger = logging.getLogger("MQTTSubscriber")
 
 main_formatter = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 sensor_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+mqtt_formatter = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
 
 initialize_logger(primary_logger, file_locations.primary_log, main_formatter)
 initialize_logger(network_logger, file_locations.network_log, main_formatter)
 initialize_logger(sensors_logger, file_locations.sensors_log, sensor_formatter)
-initialize_logger(mqtt_subscriber_logger, file_locations.mqtt_subscriber_log, main_formatter)
+initialize_logger(mqtt_subscriber_logger, file_locations.mqtt_subscriber_log, mqtt_formatter)
 
 set_logging_level()
