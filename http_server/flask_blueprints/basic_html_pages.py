@@ -50,7 +50,7 @@ def view_help_file():
 @html_basic_routes.route("/SensorCheckin", methods=["POST"])
 def remote_sensor_check_ins():
     if request.form.get("checkin_id"):
-        checkin_id = str(request.form.get("checkin_id"))
+        checkin_id = "KS" + str(request.form.get("checkin_id"))
         logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
 
         current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -83,7 +83,7 @@ def remote_sensor_check_ins():
             db_connection.commit()
             db_connection.close()
         except Exception as error:
-            logger.network_logger.debug("Sensor Checkin error: " + str(error))
+            logger.network_logger.warning("Sensor Checkin error for " + checkin_id + ": " + str(error))
 
 
 @html_basic_routes.route("/ViewSensorCheckin")
