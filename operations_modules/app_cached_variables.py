@@ -258,8 +258,8 @@ total_ram_memory = 0.0
 total_ram_memory_size_type = " MB"
 
 # Is filled with Currently available online Stable / Developmental versions
-standard_version_available = ""
-developmental_version_available = ""
+standard_version_available = "Retrieving ..."
+developmental_version_available = "Retrieving ..."
 
 # Static variables
 command_data_separator = "[new_data_section]"
