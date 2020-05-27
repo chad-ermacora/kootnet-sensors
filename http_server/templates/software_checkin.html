@@ -1,6 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <p style="color: red;">SensorCount = {{ SensorsInDatabase }}</p>
+    <meta http-equiv="refresh" content="60; url = {{ PageURL }}"/>
+
+    <fieldset style="text-align: center; max-width: 850px;">
+    <div>
+        <h3><u><strong>
+            <a style="color: red;" href="{{ PageURL }}">Sensor Checkin Statistics</a>
+        </strong></u></h3>
+
+        <h4 style="color: #F4A460;">This will automatically refresh every 60 seconds</h4>
+
+        <br>
+        <p style="color: red; font-size: large;">Total Sensors in Database: {{ SensorsInDatabase }}</p>
+        <br>
+
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                onclick="window.location.href = '/ChangeMe';">
+            Clear Old Check-ins
+        </button>
+
+        <br>
+        <br>
+
+        <h4><u><strong>
+            <a style="color: red;">Sensor Check-ins based on last contacted</a>
+        </strong></u></h4>
+
+        <p style="color: red; font-size: large;">hour: {{ TotalSensorCountHour }}</p>
+        <p style="color: red; font-size: large;">12 hours: {{ TotalSensorCountHour12 }}</p>
+        <p style="color: red; font-size: large;">1 Day: {{ TotalSensorCountDay }}</p>
+        <p style="color: red; font-size: large;">7 Days: {{ TotalSensorCountWeek }}</p>
+        <p style="color: red; font-size: large;">30 Days: {{ TotalSensorCountMonth }}</p>
+
+        <br>
+        <br>
+        <span style="color: greenyellow; white-space: pre-wrap;">{{ CheckinSensorStatistics }}</span>
+    </div>
+</fieldset>
+
+
 
 {% endblock %}
