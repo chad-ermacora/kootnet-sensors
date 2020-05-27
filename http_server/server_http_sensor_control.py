@@ -137,7 +137,7 @@ class CreateReplacementVariables:
             installed_sensors_config.set_config_with_str(installed_sensors_raw)
             try:
                 installed_sensors_lines = installed_sensors_raw.strip().split("\n")
-                rpi_model_name = installed_sensors_lines[2].split("=")[1].strip()
+                rpi_model_name = installed_sensors_lines[3].split("=")[1].strip()
             except Exception as error:
                 logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
                 rpi_model_name = "Raspberry Pi"
