@@ -33,6 +33,7 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
+from operations_modules.software_version import start_new_version_check_server
 from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_recording_server
@@ -72,7 +73,7 @@ start_https_server()
 start_mqtt_broker_server()
 start_mqtt_subscriber_server()
 start_sensor_checkin_server()
-
+start_new_version_check_server()
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:
     sleep(3600)

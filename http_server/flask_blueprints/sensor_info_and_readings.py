@@ -120,6 +120,8 @@ def html_system_information():
                            IPAddress=app_cached_variables.ip,
                            OSVersion=app_cached_variables.operating_system_name,
                            KootnetVersion=software_version.version,
+                           NewStandardKootnetVersion=app_cached_variables.standard_version_available,
+                           NewDevelopmentalKootnetVersion=app_cached_variables.developmental_version_available,
                            LastUpdated=app_cached_variables.program_last_updated,
                            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
                            SystemUptime=sensor_access.get_uptime_str(),
