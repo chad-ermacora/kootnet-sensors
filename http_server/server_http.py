@@ -29,6 +29,7 @@ try:
     from http_server import server_http_auth
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
+    from http_server.flask_blueprints.html_sensor_check_ins import html_sensor_check_ins_routes
     from http_server.flask_blueprints.html_notes import html_notes_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_primary import html_config_primary_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_sensors import \
@@ -71,7 +72,7 @@ except ImportError as https_import_error_msg_raw:
     html_system_commands_routes, html_online_services_routes, html_logs_routes = None, None, None
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
-    html_config_mqtt_subscriber_routes = None
+    html_config_mqtt_subscriber_routes, html_sensor_check_ins_routes = None, None
     Flask, Compress, WSGIServer = None, None, None
 
 
@@ -86,6 +87,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_notes_routes)
         app.register_blueprint(html_basic_routes)
+        app.register_blueprint(html_sensor_check_ins_routes)
         app.register_blueprint(html_config_primary_routes)
         app.register_blueprint(html_config_installed_sensors_routes)
         app.register_blueprint(html_config_network_routes)
