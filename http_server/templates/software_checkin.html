@@ -5,7 +5,7 @@
 
     <script>
         function DeleteOldCheckinData() {
-            let r = confirm("This cannot be undone, are you sure?");
+            let r = confirm("You will lose previous Log Entries\nThis cannot be undone\nAre you sure?");
             if (r === true) {
                 window.location = "/ClearOldCheckinData"
             }
