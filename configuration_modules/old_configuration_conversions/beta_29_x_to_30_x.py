@@ -8,6 +8,7 @@ from configuration_modules.config_installed_sensors import CreateInstalledSensor
 
 
 def upgrade_beta_29_to_30():
+    # Beta.29.x versions don't have any MQTT or Display Configurations
     new_primary_config = CreatePrimaryConfiguration(load_from_file=False)
     try:
         primary_config_lines = get_file_content(file_locations.primary_config).strip().split("\n")
