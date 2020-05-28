@@ -23,7 +23,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.sqlite_database import create_table_and_datetime, check_sql_table_and_column, \
-    sql_execute_get_data
+    sql_execute_get_data, write_to_sql_database
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_hidden_state
 
@@ -42,6 +42,7 @@ def remote_sensor_check_ins():
         sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
         sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
         sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
+        sensor_uptime = app_cached_variables.database_variables.sensor_uptime
         try:
             db_connection = sqlite3.connect(file_locations.sensor_checkin_database)
             db_cursor = db_connection.cursor()
@@ -50,16 +51,21 @@ def remote_sensor_check_ins():
             check_sql_table_and_column(checkin_id, sensor_check_in_version, db_cursor)
             check_sql_table_and_column(checkin_id, sensor_check_in_primary_log, db_cursor)
             check_sql_table_and_column(checkin_id, sensor_check_in_sensors_log, db_cursor)
+            check_sql_table_and_column(checkin_id, sensor_uptime, db_cursor)
 
             sql_ex_string = "INSERT OR IGNORE INTO '{CheckinIDTable}' " + \
-                            "({DateTimeColumn},{KootnetVersionColumn},{PrimaryLogColumn},{SensorLogColumn})" + \
-                            " VALUES ('{CurrentDateTime}','{KootnetVersion}','{PrimaryLog}','{SensorLog}');"
+                            "({DateTimeColumn},{KootnetVersionColumn},{SensorUptimeColumn}," + \
+                            "{PrimaryLogColumn},{SensorLogColumn})" + \
+                            " VALUES ('{CurrentDateTime}','{KootnetVersion}','{SensorUptime}'," + \
+                            "'{PrimaryLog}','{SensorLog}');"
             sql_ex_string = sql_ex_string.format(CheckinIDTable=checkin_id, DateTimeColumn=all_tables_datetime,
                                                  KootnetVersionColumn=sensor_check_in_version,
+                                                 SensorUptimeColumn=sensor_uptime,
                                                  PrimaryLogColumn=sensor_check_in_primary_log,
                                                  SensorLogColumn=sensor_check_in_sensors_log,
                                                  CurrentDateTime=current_datetime,
                                                  KootnetVersion=str(request.form.get("program_version")),
+                                                 SensorUptime=str(request.form.get("sensor_uptime")),
                                                  PrimaryLog=str(request.form.get("primary_log")),
                                                  SensorLog=str(request.form.get("sensor_log")))
             db_cursor.execute(sql_ex_string)
@@ -101,6 +107,9 @@ def view_sensor_check_ins():
 
         get_current_version_sql = "SELECT KootnetVersion FROM '" + cleaned_id + "' ORDER BY KootnetVersion DESC LIMIT 1;"
         current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
+
+        get_current_uptime_sql = "SELECT SensorUpTime FROM '" + cleaned_id + "' ORDER BY SensorUpTime DESC LIMIT 1;"
+        current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
         if len(clean_last_checkin_date) > 16:
             try:
@@ -129,6 +138,7 @@ def view_sensor_check_ins():
                 logger.network_logger.warning("Error in last checkin verification: " + str(error))
         sensor_statistics += "Sensor ID: " + cleaned_id + \
                              "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
+                             "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
                              "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
                              "\nLast Checkin in 'UTC0': " + clean_last_checkin_date + "\n\n"
     sensor_statistics_lines = sensor_statistics.split("\n")
@@ -149,6 +159,65 @@ def view_sensor_check_ins():
                            CheckinSensorStatistics=sensor_statistics)
 
 
+@html_sensor_check_ins_routes.route("/ClearOldCheckinData")
+@auth.login_required
+def clear_check_ins_counts():
+
+    db_location = file_locations.sensor_checkin_database
+    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+    sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
+
+    for sensor_id in sensor_ids:
+        cleaned_id = str(sensor_id[0]).strip()
+
+        db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
+        db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
+        db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
+        db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
+        db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
+
+        get_last_sensor_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + cleaned_id + \
+                                           "' ORDER BY DateTime DESC LIMIT 1;"
+        raw_last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
+
+        get_version_sql = "SELECT " + db_sensor_check_in_version + " FROM '" + cleaned_id + \
+                          "' ORDER BY KootnetVersion DESC LIMIT 1;"
+        sensor_version = sql_execute_get_data(get_version_sql, sql_database_location=db_location)
+
+        get_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + cleaned_id + \
+                         "' ORDER BY SensorUpTime DESC LIMIT 1;"
+        sensor_uptime = sql_execute_get_data(get_uptime_sql, sql_database_location=db_location)
+
+        get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + cleaned_id + \
+                              "' ORDER BY SensorUpTime DESC LIMIT 1;"
+        sensor_primary_log = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
+
+        get_sensor_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + cleaned_id + \
+                             "' ORDER BY SensorUpTime DESC LIMIT 1;"
+        sensor_sensor_log = sql_execute_get_data(get_sensor_log_sql, sql_database_location=db_location)
+
+        write_to_sql_database("DELETE FROM '" + cleaned_id + "';", sql_database_location=db_location)
+
+        sql_ex_string = "INSERT OR IGNORE INTO '{CheckinIDTable}' " + \
+                        "({DateTimeColumn},{KootnetVersionColumn},{SensorUptimeColumn}," + \
+                        "{PrimaryLogColumn},{SensorLogColumn})" + \
+                        " VALUES ('{CurrentDateTime}','{KootnetVersion}','{SensorUptime}'," + \
+                        "'{PrimaryLog}','{SensorLog}');"
+
+        sql_ex_string = sql_ex_string.format(CheckinIDTable=cleaned_id, DateTimeColumn=db_all_tables_datetime,
+                                             KootnetVersionColumn=db_sensor_check_in_version,
+                                             SensorUptimeColumn=db_sensor_uptime,
+                                             PrimaryLogColumn=db_sensor_check_in_primary_log,
+                                             SensorLogColumn=db_sensor_check_in_sensors_log,
+                                             CurrentDateTime=_get_sql_element(raw_last_checkin_date),
+                                             KootnetVersion=_get_sql_element(sensor_version),
+                                             SensorUptime=_get_sql_element(sensor_uptime),
+                                             PrimaryLog=_get_sql_element(sensor_primary_log),
+                                             SensorLog=_get_sql_element(sensor_sensor_log))
+        write_to_sql_database(sql_ex_string, sql_database_location=file_locations.sensor_checkin_database)
+    return view_sensor_check_ins()
+
+
 def _get_sql_element(sql_data):
     try:
         for date_entry in sql_data:
@@ -158,7 +227,3 @@ def _get_sql_element(sql_data):
         logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
         return "Error"
     return ""
-
-
-def clear_check_ins_counts():
-    pass

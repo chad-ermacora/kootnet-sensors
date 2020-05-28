@@ -47,11 +47,11 @@ def run_configuration_upgrade_checks():
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
                 logger.primary_logger.warning("Please review your configurations in case of conflict")
                 no_changes = False
-            if previous_version.feature_version == 30:
+            elif previous_version.feature_version == 30:
                 if previous_version.minor_version < 90:
                     no_changes = False
                     upgrade_beta_30_x_to_30_90()
-            if previous_version.feature_version == 29:
+            elif previous_version.feature_version == 29:
                 # Beta.29.x versions don't have any MQTT or Display Configurations
                 no_changes = False
                 upgrade_beta_29_to_30()

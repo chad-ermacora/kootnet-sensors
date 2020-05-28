@@ -25,7 +25,7 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
+from operations_modules.sqlite_database import validate_sqlite_database, check_main_database_structure
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
 from sensor_modules import sensor_access
@@ -96,7 +96,7 @@ def put_sql_db():
     if new_database is not None:
         new_database.save(temp_db_location)
         if validate_sqlite_database(database_location=temp_db_location):
-            check_database_structure(database_location=temp_db_location)
+            check_main_database_structure(database_location=temp_db_location)
             if _move_database():
                 os.system("mv -f " + temp_db_location + " " + file_locations.sensor_database)
                 logger.primary_logger.info(return_message_ok)

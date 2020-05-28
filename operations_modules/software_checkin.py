@@ -23,6 +23,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
+from sensor_modules import sensor_access
 
 checkin_wait_time_sec = 86400
 
@@ -36,8 +37,8 @@ class CreateCheckinServer:
         previous_sensors_logs = ""
         while True:
             try:
-                current_primary_logs = logger.get_sensor_log(file_locations.primary_log, max_lines=25)
-                current_sensors_logs = logger.get_sensor_log(file_locations.sensors_log, max_lines=25)
+                current_primary_logs = logger.get_sensor_log(file_locations.primary_log, max_lines=40)
+                current_sensors_logs = logger.get_sensor_log(file_locations.sensors_log, max_lines=40)
                 if current_primary_logs == previous_primary_logs:
                     current_primary_logs = ""
                 else:
@@ -51,6 +52,7 @@ class CreateCheckinServer:
                 requests.post(url=app_config_access.primary_config.checkin_url, timeout=5, verify=False,
                               data={"checkin_id": app_config_access.primary_config.sensor_checkin_id,
                                     "program_version": version,
+                                    "sensor_uptime": sensor_access.get_uptime_minutes(),
                                     "primary_log": current_primary_logs,
                                     "sensor_log": current_sensors_logs})
             except Exception as error:

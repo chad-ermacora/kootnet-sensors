@@ -68,12 +68,20 @@ else:
     if running_with_root:
         logger.primary_logger.warning("No Sensors in Installed Sensors Configuration file")
 
-# Start the MQTT Broker Server & the HTTPS Web Portal Server
+# Start the HTTPS Web Portal Server
 start_https_server()
+
+# Start the MQTT Servers
 start_mqtt_broker_server()
 start_mqtt_subscriber_server()
+
+# Start the "Call Home" Check-in server.
+# Sends Sensor ID and Kootnet Version + sometimes 25 lines of the Primary and Sensors Logs
 start_sensor_checkin_server()
+
+# Start Version Check Server (Checks for updates)
 start_new_version_check_server()
+
 logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
 while True:
     sleep(3600)

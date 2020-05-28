@@ -24,7 +24,7 @@ from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk
-from operations_modules.sqlite_database import check_database_structure
+from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure
 from configuration_modules.upgrade_configurations import run_configuration_upgrade_checks
 
 create_directories_for_files = [file_locations.mosquitto_configuration]
@@ -38,10 +38,11 @@ def run_program_start_checks():
     logger.primary_logger.info(" -- Starting Programs Checks ...")
     _check_directories()
     _set_file_permissions()
-    check_database_structure()
+    check_main_database_structure()
     _check_ssl_files()
     _check_sensor_id()
     if software_version.old_version != software_version.version:
+        check_checkin_database_structure()
         run_configuration_upgrade_checks()
 
 

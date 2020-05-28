@@ -4,36 +4,38 @@
     <meta http-equiv="refresh" content="10; url = {{ PageURL }}"/>
 
     <fieldset style="text-align: center; max-width: 850px;">
-    <div>
-        <h3><u><strong>
-            <a style="color: red;" href="{{ PageURL }}">MQTT Subscriber Topic Posts</a>
-        </strong></u></h3>
+        <div>
+            <h3><u><strong>
+                <a style="color: red;" href="{{ PageURL }}">MQTT Subscriber Topic Posts</a>
+            </strong></u></h3>
 
-        <h4 style="color: #F4A460;">This will automatically refresh every 10 seconds</h4>
+            <h4 style="color: #F4A460;">This will automatically refresh every 10 seconds</h4>
 
-        <br>
+            <br>
 
 
-        <a style="color: {{ MQTTEnabledColor }}; text-decoration: none; font-size: large;">
-            <b>{{ MQTTSubscriberEnabledText }}</b>
-        </a>
+            <a style="color: {{ MQTTEnabledColor }}; text-decoration: none; font-size: large;">
+                <b>{{ MQTTSubscriberEnabledText }}</b>
+            </a>
 
-        <br>
-        <br>
+            <br>
+            <br>
 
-        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                onclick="window.location.href = '/ClearMQTTSubscriberLog';">
-            Clear Log
-        </button>
-        <br>
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    onclick="window.location.href = '/ClearMQTTSubscriberLog';">
+                Clear Log
+            </button>
 
-        <a style="color: red;" target="_blank"
-           href="https://mosquitto.org/man/mqtt-7.html">
-            MQTT Data from Subscribed Topics on Broker {{ MQTTSubscriberServerAddress }}
-        </a>
-        <br>
-        <br>
-        <span style="color: greenyellow; white-space: pre-wrap;">{{ SubscriberTopics }}</span>
-    </div>
-</fieldset>
+            <br>
+            <br>
+
+            <a style="color: red;" target="_blank"
+               href="https://mosquitto.org/man/mqtt-7.html">
+                MQTT Data from Subscribed Topics on Broker {{ MQTTSubscriberServerAddress }}
+            </a>
+            <br>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ SubscriberTopics }}</span>
+        </div>
+    </fieldset>
 {% endblock %}
