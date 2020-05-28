@@ -171,6 +171,15 @@
         </form>
     </div>
 
+    <script>
+        function ReCreateSSLCertificates() {
+            let r = confirm("This will automatically restart the Service, are you sure?");
+            if (r === true) {
+                window.location = "/CreateNewSelfSignedSSL"
+            }
+        }
+    </script>
+
     <div class="mui-tabs__pane" id="network-ssl-tab">
         <form class="mui-form" method="POST" enctype="multipart/form-data" style="max-width: 550px; min-height: 300px;"
               action="/EditSSL">
@@ -190,7 +199,7 @@
                 </b></p>
 
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                        type="button" onclick="window.location.href = '/CreateNewSelfSignedSSL';">
+                        type="button" onclick="ReCreateSSLCertificates();">
                     Create New Self-Signed SSL Certificate & Key
                 </button>
 

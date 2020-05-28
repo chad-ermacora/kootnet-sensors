@@ -3,6 +3,15 @@
 {% block content %}
     <meta http-equiv="refresh" content="60; url = {{ PageURL }}"/>
 
+    <script>
+        function DeleteOldCheckinData() {
+            let r = confirm("This cannot be undone, are you sure?");
+            if (r === true) {
+                window.location = "/ClearOldCheckinData"
+            }
+        }
+    </script>
+
     <fieldset style="text-align: center; max-width: 850px;">
     <div>
         <h3><u><strong>
@@ -18,7 +27,7 @@
         <br>
 
         <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                onclick="window.location.href = '/ClearOldCheckinData';">
+                onclick="DeleteOldCheckinData();">
             Clear Old Check-ins
         </button>
 
@@ -26,7 +35,7 @@
         <br>
 
         <h4><u><strong>
-            <a style="color: red;">Sensor that have Checked-in the past</a>
+            <a style="color: red;">Last Sensor Contacts in the past</a>
         </strong></u></h4>
 
         <p style="color: red; font-size: large;">hour: {{ TotalSensorCountHour }}</p>
