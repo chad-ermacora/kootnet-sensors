@@ -45,23 +45,20 @@ def run_configuration_upgrade_checks():
         if previous_version.major_version == "Beta":
             if previous_version.feature_version > current_version.feature_version:
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
-                logger.primary_logger.warning("Please review your configurations in case of conflict")
+                log_msg1 = "Configurations compatibility can not be guaranteed, "
+                logger.primary_logger.warning(log_msg1 + "resetting Primary and Installed Sensors Configurations")
                 no_changes = False
+                reset_installed_sensors()
+                reset_primary_config()
             elif previous_version.feature_version == 30:
                 if previous_version.minor_version < 90:
                     no_changes = False
                     upgrade_beta_30_x_to_30_90()
             elif previous_version.feature_version == 29:
-                # Beta.29.x versions don't have any MQTT or Display Configurations
                 no_changes = False
                 upgrade_beta_29_to_30()
         elif previous_version.major_version == "Alpha":
-            # Alpha versions don't have any MQTT or Display Configurations
-            if previous_version.feature_version > current_version.feature_version:
-                logger.primary_logger.warning("The current version appears to be older then the previous version")
-                logger.primary_logger.warning("Please review your configurations in case of conflict")
-            else:
-                upgrade_alpha_to_beta()
+            upgrade_alpha_to_beta()
             no_changes = False
         else:
             no_changes = False
