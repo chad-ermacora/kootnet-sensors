@@ -119,6 +119,7 @@ def html_system_information():
                            HostName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            OSVersion=app_cached_variables.operating_system_name,
+                           KootnetSensorID=app_config_access.primary_config.sensor_checkin_id,
                            KootnetVersion=software_version.version,
                            NewStandardKootnetVersion=app_cached_variables.standard_version_available,
                            NewDevelopmentalKootnetVersion=app_cached_variables.developmental_version_available,
