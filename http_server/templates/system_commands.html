@@ -2,6 +2,36 @@
 
 {% block content %}
 
+    <script>
+        function SensorShutdown() {
+            let r = confirm("Are you sure you want to Shutdown the Sensor?");
+            if (r === true) {
+                window.location = "/ShutdownSystem"
+            }
+        }
+
+        function DevUpgradeHTTP() {
+            let r = confirm("Developmental Builds can be unstable, are you sure?");
+            if (r === true) {
+                window.location = "/UpgradeOnlineDev"
+            }
+        }
+
+        function CleanUpgradeHTTP() {
+            let r = confirm("This will require Internet access and up to 10 minutes\nRun now?");
+            if (r === true) {
+                window.location = "/UpgradeOnlineClean"
+            }
+        }
+
+        function CleanDevUpgradeHTTP() {
+            let r = confirm("This will require Internet access and up to 10 minutes\nRun now?");
+            if (r === true) {
+                window.location = "/UpgradeOnlineCleanDEV"
+            }
+        }
+    </script>
+
     <style>
         #update_login_credentials {
             width: 50%;
@@ -50,7 +80,7 @@
             <li><a href="/RestartServices">Restart Program</a></li>
             <li><a href="/RebootSystem">Reboot System</a></li>
             <li><a>---------------</a></li>
-            <li><a href="/ShutdownSystem">Shutdown System</a></li>
+            <li><a style="cursor: pointer;" onclick="SensorShutdown();">Shutdown System</a></li>
         </ul>
     </div>
 
@@ -62,7 +92,7 @@
             <span class="mui-caret"></span>
         </button>
         <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
+            <li><a style="cursor: pointer;" onclick="DevUpgradeHTTP();">DEV - HTTP Upgrade</a></li>
             <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
         </ul>
     </div>
@@ -75,8 +105,8 @@
             <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
             <li><a href="/UpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
             <li><a>---------------</a></li>
-            <li><a href="/UpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
-            <li><a href="/UpgradeOnlineCleanDEV">Clean - DEV - HTTP Upgrade</a></li>
+            <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
+            <li><a style="cursor: pointer;" onclick="CleanDevUpgradeHTTP();">Clean - DEV - HTTP Upgrade</a></li>
             {#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
             {#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
         </ul>
