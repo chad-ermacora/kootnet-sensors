@@ -61,7 +61,7 @@ def _check_sensor_id():
     The Sensor ID is Randomly Generated and used to track Software Usage and Online History of Sensors.
     """
     if not os.path.isfile(file_locations.sensor_checkin_id):
-        random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(64)])
+        random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
         write_file_to_disk(file_locations.sensor_checkin_id, random_id)
 
 

@@ -28,6 +28,7 @@ from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_sensor_check_ins_routes = Blueprint("html_sensor_check_ins_routes", __name__)
+max_statistics_lines = 200
 
 
 @html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST"])
@@ -52,7 +53,7 @@ def remote_sensor_check_ins():
 
             sql_ex_string = "INSERT OR IGNORE INTO '{CheckinIDTable}' " + \
                             "({DateTimeColumn},{KootnetVersionColumn},{PrimaryLogColumn},{SensorLogColumn})" + \
-                            " VALUES ('{CurrentDateTime}','{KootnetVersion}','{PrimaryLog}','{SensorLog}')"
+                            " VALUES ('{CurrentDateTime}','{KootnetVersion}','{PrimaryLog}','{SensorLog}');"
             sql_ex_string = sql_ex_string.format(CheckinIDTable=checkin_id, DateTimeColumn=all_tables_datetime,
                                                  KootnetVersionColumn=sensor_check_in_version,
                                                  PrimaryLogColumn=sensor_check_in_primary_log,
@@ -61,12 +62,13 @@ def remote_sensor_check_ins():
                                                  KootnetVersion=str(request.form.get("program_version")),
                                                  PrimaryLog=str(request.form.get("primary_log")),
                                                  SensorLog=str(request.form.get("sensor_log")))
-
             db_cursor.execute(sql_ex_string)
             db_connection.commit()
             db_connection.close()
+            return "OK", 202
         except Exception as error:
-            logger.network_logger.warning("Sensor Checkin error for " + checkin_id + ": " + str(error))
+            logger.network_logger.warning("Sensor Checkin error for " + str(checkin_id) + ": " + str(error))
+        return "Failed", 400
 
 
 @html_sensor_check_ins_routes.route("/ViewSensorCheckin")
@@ -74,14 +76,14 @@ def remote_sensor_check_ins():
 def view_sensor_check_ins():
     db_location = file_locations.sensor_checkin_database
 
-    get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table' " + \
+    get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
                                    "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
     sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_location)
 
-    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table'"
+    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
     sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
 
-    sensor_statistics = "Total Check-Ins per Sensor\n\n"
+    sensor_statistics = "Per Sensor Check-in Information\n\n"
     current_date_time = datetime.utcnow()
     contact_in_past_hour = 0
     contact_in_past_12hour = 0
@@ -91,13 +93,13 @@ def view_sensor_check_ins():
     for sensor_id in sensor_ids:
         cleaned_id = str(sensor_id[0]).strip()
 
-        get_sensor_checkin_count_per_id_sql = "SELECT count('DateTime') FROM '" + cleaned_id + "'"
+        get_sensor_checkin_count_per_id_sql = "SELECT count('DateTime') FROM '" + cleaned_id + "';"
         checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_location)
 
-        get_last_sensor_checkin_date_sql = "SELECT DateTime FROM '" + cleaned_id + "' DESC LIMIT 1;"
+        get_last_sensor_checkin_date_sql = "SELECT DateTime FROM '" + cleaned_id + "' ORDER BY DateTime DESC LIMIT 1;"
         last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
 
-        get_current_version_sql = "SELECT KootnetVersion FROM '" + cleaned_id + "' DESC LIMIT 1;"
+        get_current_version_sql = "SELECT KootnetVersion FROM '" + cleaned_id + "' ORDER BY KootnetVersion DESC LIMIT 1;"
         current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
         if len(clean_last_checkin_date) > 16:
@@ -129,6 +131,11 @@ def view_sensor_check_ins():
                              "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
                              "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
                              "\nLast Checkin in 'UTC0': " + clean_last_checkin_date + "\n\n"
+    sensor_statistics_lines = sensor_statistics.split("\n")
+    if len(sensor_statistics_lines) > max_statistics_lines:
+        sensor_statistics = ""
+        for line in sensor_statistics_lines[:max_statistics_lines]:
+            sensor_statistics += line + "\n"
     return render_template("software_checkin.html",
                            PageURL="/ViewSensorCheckin",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
@@ -148,6 +155,10 @@ def _get_sql_element(sql_data):
             for date_entry2 in date_entry:
                 return str(date_entry2)
     except Exception as error:
-        logger.network_logger.debug("Error extracting data in Sensor Checkins: " + str(error))
+        logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
         return "Error"
     return ""
+
+
+def clear_check_ins_counts():
+    pass
