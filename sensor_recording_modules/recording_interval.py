@@ -25,6 +25,8 @@ from configuration_modules import app_config_access
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
+database_variables = app_cached_variables.database_variables
+
 
 class CreateHasSensorVariables:
     def __init__(self):
@@ -43,7 +45,12 @@ class CreateHasSensorVariables:
             self.has_distance = 1
         if sensor_access.get_gas() != app_cached_variables.no_sensor_present:
             self.has_gas = 1
-        if sensor_access.get_particulate_matter() != app_cached_variables.no_sensor_present:
+
+        pm_readings = sensor_access.get_particulate_matter()
+        if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_2_5] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_4] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_10] != app_cached_variables.no_sensor_present:
             self.has_particulate_matter = 1
         if sensor_access.get_ultra_violet() != app_cached_variables.no_sensor_present:
             self.has_ultra_violet = 1
@@ -143,7 +150,7 @@ def get_interval_sensor_readings():
             sensor_types.append(text_name)
             sensor_readings.append(item_value)
     if available_sensors.has_particulate_matter:
-        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+        pm_readings = sensor_access.get_particulate_matter()
         for text_name, item_value in pm_readings.items():
             sensor_types.append(text_name)
             sensor_readings.append(item_value)

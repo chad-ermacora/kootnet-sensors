@@ -99,13 +99,13 @@ def get_distance():
 @html_sensor_readings_routes.route("/GetAllGas")
 def get_all_gas():
     logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
-    return str(sensor_access.get_gas(return_as_dictionary=True))
+    return sensor_access.get_gas(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAllParticulateMatter")
 def get_all_particulate_matter():
     logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
-    return str(sensor_access.get_particulate_matter(return_as_dictionary=True))
+    return sensor_access.get_particulate_matter()
 
 
 @html_sensor_readings_routes.route("/GetLumen")
@@ -117,13 +117,13 @@ def get_lumen():
 @html_sensor_readings_routes.route("/GetEMSColors")
 def get_ems_colors():
     logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ems_colors(return_as_dictionary=True))
+    return sensor_access.get_ems_colors(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAllUltraViolet")
 def get_all_ultra_violet():
     logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ultra_violet(return_as_dictionary=True))
+    return sensor_access.get_ultra_violet(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAccelerometerXYZ")

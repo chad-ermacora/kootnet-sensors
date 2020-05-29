@@ -23,79 +23,79 @@ from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
-from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables import no_sensor_present, command_data_separator, database_variables, \
+    current_platform, bash_commands
 from operations_modules import sqlite_database
 from configuration_modules import app_config_access
-from operations_modules.app_cached_variables import no_sensor_present, command_data_separator
 from sensor_modules import sensors_initialization as sensors_direct
 
 
 def get_operating_system_name():
     """ Returns sensors Operating System Name and version. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_os_name_version()
     return no_sensor_present
 
 
 def get_hostname():
     """ Returns sensors hostname. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_hostname()
     return no_sensor_present
 
 
 def get_ip():
     """ Returns sensor IP Address as a String. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_ip()
     return no_sensor_present
 
 
 def get_disk_usage_gb():
     """ Returns sensor root disk usage as GB's. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_gb()
     return no_sensor_present
 
 
 def get_disk_usage_percent():
     """ Returns sensor root disk usage as a %. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_disk_usage_percent()
     return no_sensor_present
 
 
 def get_memory_usage_percent():
     """ Returns sensor RAM usage as a %. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_memory_usage_percent()
     return no_sensor_present
 
 
 def get_system_datetime():
     """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sys_datetime_str()
     return no_sensor_present
 
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_raw()
     return no_sensor_present
 
 
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_uptime_str()
     return no_sensor_present
 
 
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
     return no_sensor_present
@@ -103,21 +103,21 @@ def get_system_reboot_count():
 
 def get_db_size():
     """ Returns SQL Database size in MB. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_sql_db_size()
     return no_sensor_present
 
 
 def get_db_notes_count():
     """ Returns Number of Notes in the SQL Database. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_notes_count()
     return no_sensor_present
 
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    if app_cached_variables.current_platform == "Linux":
+    if current_platform == "Linux":
         return sensors_direct.operating_system_a.get_db_first_last_date()
     return no_sensor_present
 
@@ -312,33 +312,33 @@ def get_gas(return_as_dictionary=False):
     if app_config_access.installed_sensors.pimoroni_bme680:
         gas_readings = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings}
+            return {database_variables.gas_resistance_index: gas_readings}
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         gas_readings = sensors_direct.pimoroni_enviroplus_a.gas_data()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.gas_oxidising: gas_readings[0],
-                    app_cached_variables.database_variables.gas_reducing: gas_readings[1],
-                    app_cached_variables.database_variables.gas_nh3: gas_readings[2]}
+            return {database_variables.gas_oxidising: gas_readings[0],
+                    database_variables.gas_reducing: gas_readings[1],
+                    database_variables.gas_nh3: gas_readings[2]}
     elif app_config_access.installed_sensors.pimoroni_sgp30:
         # TODO: Add e-co2 this sensor can do into program (In DB?)
         gas_readings = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings}
+            return {database_variables.gas_resistance_index: gas_readings}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         gas_readings = [sensors_direct.dummy_sensors.gas_resistance_index()]
         gas_readings += sensors_direct.dummy_sensors.gas_data()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.gas_resistance_index: gas_readings[0],
-                    app_cached_variables.database_variables.gas_oxidising: gas_readings[1],
-                    app_cached_variables.database_variables.gas_reducing: gas_readings[2],
-                    app_cached_variables.database_variables.gas_nh3: gas_readings[3]}
+            return {database_variables.gas_resistance_index: gas_readings[0],
+                    database_variables.gas_oxidising: gas_readings[1],
+                    database_variables.gas_reducing: gas_readings[2],
+                    database_variables.gas_nh3: gas_readings[3]}
     else:
         return no_sensor_present
     return gas_readings
 
 
-def get_particulate_matter(return_as_dictionary=False):
-    """ Returns selected Particulate Matter readings as a list (Default: Send All) """
+def get_particulate_matter():
+    """ Returns selected Particulate Matter readings in a Dictionary. """
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
         pm_readings = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()
@@ -347,12 +347,10 @@ def get_particulate_matter(return_as_dictionary=False):
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
     else:
-        return no_sensor_present
-
-    if return_as_dictionary:
-        return {app_cached_variables.database_variables.particulate_matter_1: pm_readings[0],
-                app_cached_variables.database_variables.particulate_matter_2_5: pm_readings[1],
-                app_cached_variables.database_variables.particulate_matter_10: pm_readings[2]}
+        return {database_variables.particulate_matter_1: no_sensor_present,
+                database_variables.particulate_matter_2_5: no_sensor_present,
+                database_variables.particulate_matter_4: no_sensor_present,
+                database_variables.particulate_matter_10: no_sensor_present}
     return pm_readings
 
 
@@ -378,33 +376,33 @@ def get_ems_colors(return_as_dictionary=False):
     if app_config_access.installed_sensors.pimoroni_as7262:
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.red: colours[0],
-                    app_cached_variables.database_variables.orange: colours[1],
-                    app_cached_variables.database_variables.yellow: colours[2],
-                    app_cached_variables.database_variables.green: colours[3],
-                    app_cached_variables.database_variables.blue: colours[4],
-                    app_cached_variables.database_variables.violet: colours[5]}
+            return {database_variables.red: colours[0],
+                    database_variables.orange: colours[1],
+                    database_variables.yellow: colours[2],
+                    database_variables.green: colours[3],
+                    database_variables.blue: colours[4],
+                    database_variables.violet: colours[5]}
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.red: colours[0],
-                    app_cached_variables.database_variables.green: colours[1],
-                    app_cached_variables.database_variables.blue: colours[2]}
+            return {database_variables.red: colours[0],
+                    database_variables.green: colours[1],
+                    database_variables.blue: colours[2]}
     elif app_config_access.installed_sensors.pimoroni_bh1745:
         colours = sensors_direct.pimoroni_bh1745_a.ems()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.red: colours[0],
-                    app_cached_variables.database_variables.green: colours[1],
-                    app_cached_variables.database_variables.blue: colours[2]}
+            return {database_variables.red: colours[0],
+                    database_variables.green: colours[1],
+                    database_variables.blue: colours[2]}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         colours = sensors_direct.dummy_sensors.spectral_six_channel()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.red: colours[0],
-                    app_cached_variables.database_variables.orange: colours[1],
-                    app_cached_variables.database_variables.yellow: colours[2],
-                    app_cached_variables.database_variables.green: colours[3],
-                    app_cached_variables.database_variables.blue: colours[4],
-                    app_cached_variables.database_variables.violet: colours[5]}
+            return {database_variables.red: colours[0],
+                    database_variables.orange: colours[1],
+                    database_variables.yellow: colours[2],
+                    database_variables.green: colours[3],
+                    database_variables.blue: colours[4],
+                    database_variables.violet: colours[5]}
     else:
         return no_sensor_present
     return colours
@@ -416,16 +414,16 @@ def get_ultra_violet(return_as_dictionary=False):
         uv_index = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
         uv_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.ultra_violet_index: uv_index,
-                    app_cached_variables.database_variables.ultra_violet_a: uv_reading[0],
-                    app_cached_variables.database_variables.ultra_violet_b: uv_reading[1]}
+            return {database_variables.ultra_violet_index: uv_index,
+                    database_variables.ultra_violet_a: uv_reading[0],
+                    database_variables.ultra_violet_b: uv_reading[1]}
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         uv_index = sensors_direct.dummy_sensors.ultra_violet_index()
         uv_reading = sensors_direct.dummy_sensors.ultra_violet()
         if return_as_dictionary:
-            return {app_cached_variables.database_variables.ultra_violet_index: uv_index,
-                    app_cached_variables.database_variables.ultra_violet_a: uv_reading[0],
-                    app_cached_variables.database_variables.ultra_violet_b: uv_reading[1]}
+            return {database_variables.ultra_violet_index: uv_index,
+                    database_variables.ultra_violet_a: uv_reading[0],
+                    database_variables.ultra_violet_b: uv_reading[1]}
     else:
         return no_sensor_present
     return uv_reading
@@ -530,29 +528,29 @@ def display_message(text_msg, check_test=False):
 def restart_services(sleep_before_restart=1):
     """ Reloads systemd service files & restarts KootnetSensors service. """
     time.sleep(sleep_before_restart)
-    os.system(app_cached_variables.bash_commands["RestartService"])
+    os.system(bash_commands["RestartService"])
 
 
 def get_db_notes():
     """ Returns a comma separated string of Notes from the SQL Database. """
-    sql_query = "SELECT " + app_cached_variables.database_variables.other_table_column_notes + \
-                " FROM " + app_cached_variables.database_variables.table_other
+    sql_query = "SELECT " + database_variables.other_table_column_notes + \
+                " FROM " + database_variables.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
     """ Returns a comma separated string of Note Dates from the SQL Database. """
-    sql_query_notes = "SELECT " + app_cached_variables.database_variables.all_tables_datetime + \
-                      " FROM " + app_cached_variables.database_variables.table_other
+    sql_query_notes = "SELECT " + database_variables.all_tables_datetime + \
+                      " FROM " + database_variables.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
     """ Returns a comma separated string of User Note Dates from the SQL Database. """
-    sql_query_user_datetime = "SELECT " + app_cached_variables.database_variables.other_table_column_user_date_time + \
-                              " FROM " + app_cached_variables.database_variables.table_other
+    sql_query_user_datetime = "SELECT " + database_variables.other_table_column_user_date_time + \
+                              " FROM " + database_variables.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
     return _create_str_from_list(sql_data_user_datetime)
 
@@ -588,10 +586,10 @@ def add_note_to_database(datetime_note):
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
 
-        sql_data.sensor_types = app_cached_variables.database_variables.all_tables_datetime + ", " + \
-                                app_cached_variables.database_variables.other_table_column_user_date_time + ", " + \
-                                app_cached_variables.database_variables.other_table_column_notes
-        sql_data.sensor_readings = "'" + current_datetime + "','" + custom_datetime + "','" + note + "'"
+        sql_data.sensor_types = database_variables.all_tables_datetime + ", " + \
+                                database_variables.other_table_column_user_date_time + ", " + \
+                                database_variables.other_table_column_notes
+        sql_data.sensor_readings = "('" + current_datetime + "'),('" + custom_datetime + "'),('" + note + "')"
 
         sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
                        sql_data.sensor_readings + sql_data.sql_query_values_end)
@@ -606,12 +604,12 @@ def update_note_in_database(datetime_note):
     data_list = datetime_note.split(command_data_separator)
 
     try:
-        current_datetime = "'" + data_list[0] + "'"
-        user_datetime = "'" + data_list[1] + "'"
-        note = "'" + data_list[2] + "'"
+        current_datetime = data_list[0]
+        user_datetime = data_list[1]
+        note = data_list[2]
 
-        sql_execute = "UPDATE OtherData SET " + "Notes = " + note + \
-                      ",UserDateTime = " + user_datetime + " WHERE DateTime = " + current_datetime
+        sql_execute = "UPDATE OtherData SET " + "Notes = ('" + note + \
+                      "'),UserDateTime = ('" + user_datetime + "') WHERE DateTime = ('" + current_datetime + "')"
         sqlite_database.write_to_sql_database(sql_execute)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
@@ -619,7 +617,7 @@ def update_note_in_database(datetime_note):
 
 def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
-    sql_query = "DELETE FROM " + str(app_cached_variables.database_variables.table_other) + \
-                " WHERE " + str(app_cached_variables.database_variables.all_tables_datetime) + \
+    sql_query = "DELETE FROM " + str(database_variables.table_other) + \
+                " WHERE " + str(database_variables.all_tables_datetime) + \
                 " = '" + note_datetime + "'"
     sqlite_database.write_to_sql_database(sql_query)

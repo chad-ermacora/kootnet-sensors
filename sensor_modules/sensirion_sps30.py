@@ -39,6 +39,7 @@ import time
 from threading import Thread
 from queue import Queue
 from operations_modules import logger
+from operations_modules.app_cached_variables import database_variables, no_sensor_present
 from configuration_modules import app_config_access
 
 round_decimal_to = 5
@@ -97,7 +98,10 @@ class CreateSPS30:
         time.sleep(1)
         self.sensirion_sps30_access.start()
         self.sensor_in_use = False
-        return [0.0, 0.0, 0.0]
+        return {database_variables.particulate_matter_1: no_sensor_present,
+                database_variables.particulate_matter_2_5: no_sensor_present,
+                database_variables.particulate_matter_4: no_sensor_present,
+                database_variables.particulate_matter_10: no_sensor_present}
 
     def _get_pm_readings_threaded(self):
         while not pm_reading_que.empty():
@@ -112,9 +116,11 @@ class CreateSPS30:
             pm25 = float(pm_data[1])
             pm4 = float(pm_data[2])
             pm10 = float(pm_data[3])
-            pm_reading_que.put([round(pm1, round_decimal_to),
-                                round(pm25, round_decimal_to),
-                                round(pm10, round_decimal_to)])
+
+            pm_reading_que.put({database_variables.particulate_matter_1: round(pm1, round_decimal_to),
+                                database_variables.particulate_matter_2_5: round(pm25, round_decimal_to),
+                                database_variables.particulate_matter_4: round(pm4, round_decimal_to),
+                                database_variables.particulate_matter_10: round(pm10, round_decimal_to)})
             logger.sensors_logger.debug("Sensirion SPS30 - Data put in Que")
         except Exception as error:
             logger.sensors_logger.warning("Sensirion SPS30 - Get readings Failed: " + str(error))

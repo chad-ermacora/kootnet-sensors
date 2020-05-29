@@ -109,6 +109,7 @@ class CreateNetworkGetCommands:
         self.all_particulate_matter = "GetAllParticulateMatter"
         self.pm_1 = "GetParticulateMatter1"
         self.pm_2_5 = "GetParticulateMatter2_5"
+        self.pm_4 = "GetParticulateMatter4"
         self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
         self.electromagnetic_spectrum = "GetEMSColors"
@@ -155,6 +156,7 @@ class CreateDatabaseVariables:
         self.gas_nh3 = "Gas_NH3"
         self.particulate_matter_1 = "Particulate_Matter_1"
         self.particulate_matter_2_5 = "Particulate_Matter_2_5"
+        self.particulate_matter_4 = "Particulate_Matter_4"
         self.particulate_matter_10 = "Particulate_Matter_10"
 
         self.lumen = "Lumen"
@@ -196,6 +198,7 @@ class CreateDatabaseVariables:
                               self.gas_nh3,
                               self.particulate_matter_1,
                               self.particulate_matter_2_5,
+                              self.particulate_matter_4,
                               self.particulate_matter_10,
                               self.lumen,
                               self.red,

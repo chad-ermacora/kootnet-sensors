@@ -107,14 +107,13 @@ def _bme280():
 
 
 def _pms5003():
-    pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+    pm_readings = sensor_access.get_particulate_matter()
     pm10_reading = ""
     pm25_reading = ""
-    if pm_readings != app_cached_variables.no_sensor_present:
-        if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
-            pm10_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_10])
-        if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
-            pm25_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_2_5])
+    if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
+        pm10_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_10])
+    if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
+        pm25_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_2_5])
     headers = {"X-PIN": "1",
                "X-Sensor": "raspi-" + luftdaten_config.station_id,
                "Content-Type": "application/json",

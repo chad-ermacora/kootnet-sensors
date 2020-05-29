@@ -183,17 +183,19 @@ def html_sensors_readings():
             if app_cached_variables.database_variables.gas_nh3 in gas_readings:
                 gas_nh3 = gas_readings[app_cached_variables.database_variables.gas_nh3]
 
-        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
+        pm_readings = sensor_access.get_particulate_matter()
         pm_1 = app_cached_variables.no_sensor_present
         pm_2_5 = app_cached_variables.no_sensor_present
+        pm_4 = app_cached_variables.no_sensor_present
         pm_10 = app_cached_variables.no_sensor_present
-        if pm_readings != app_cached_variables.no_sensor_present:
-            if app_cached_variables.database_variables.particulate_matter_1 in pm_readings:
-                pm_1 = pm_readings[app_cached_variables.database_variables.particulate_matter_1]
-            if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
-                pm_2_5 = pm_readings[app_cached_variables.database_variables.particulate_matter_2_5]
-            if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
-                pm_10 = pm_readings[app_cached_variables.database_variables.particulate_matter_10]
+        if app_cached_variables.database_variables.particulate_matter_1 in pm_readings:
+            pm_1 = pm_readings[app_cached_variables.database_variables.particulate_matter_1]
+        if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
+            pm_2_5 = pm_readings[app_cached_variables.database_variables.particulate_matter_2_5]
+        if app_cached_variables.database_variables.particulate_matter_4 in pm_readings:
+            pm_4 = pm_readings[app_cached_variables.database_variables.particulate_matter_4]
+        if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
+            pm_10 = pm_readings[app_cached_variables.database_variables.particulate_matter_10]
 
         uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
         uv_a = app_cached_variables.no_sensor_present
@@ -229,6 +231,7 @@ def html_sensors_readings():
                                GasNH3=str(gas_nh3) + " kΩ",
                                PM1=str(pm_1) + " µg/m³",
                                PM25=str(pm_2_5) + " µg/m³",
+                               PM4=str(pm_4) + " µg/m³",
                                PM10=str(pm_10) + " µg/m³",
                                Lumen=str(sensor_access.get_lumen()) + " lm",
                                Red=str(red),

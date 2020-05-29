@@ -23,6 +23,7 @@ from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
+from operations_modules.app_cached_variables import database_variables, no_sensor_present
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
@@ -254,9 +255,10 @@ class CreateEnviroPlus:
                 except Exception as error:
                     logger.sensors_logger.error("Pimoroni Enviro+ Particulate Matter Update - Failed: " + str(error))
                 self.sensor_in_use = False
-        return [round(self.pm1, round_decimal_to),
-                round(self.pm25, round_decimal_to),
-                round(self.pm10, round_decimal_to)]
+        return {database_variables.particulate_matter_1: round(self.pm1, round_decimal_to),
+                database_variables.particulate_matter_2_5: round(self.pm25, round_decimal_to),
+                database_variables.particulate_matter_4: no_sensor_present,
+                database_variables.particulate_matter_10: round(self.pm10, round_decimal_to)}
 
     @staticmethod
     def _enable_psm5003_serial():

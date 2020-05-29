@@ -25,6 +25,8 @@ from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from sensor_recording_modules.recording_interval import available_sensors
 
+database_variables = app_cached_variables.database_variables
+
 
 def start_mqtt_publisher_server():
     if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
@@ -117,8 +119,13 @@ def _mqtt_publisher_server():
                                payload=_readings_to_text(sensor_access.get_gas()),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
+                pm_readings = sensor_access.get_particulate_matter()
+                temp_send_readings = [pm_readings[database_variables.particulate_matter_1],
+                                      pm_readings[database_variables.particulate_matter_2_5],
+                                      pm_readings[database_variables.particulate_matter_4],
+                                      pm_readings[database_variables.particulate_matter_10]]
                 client.publish(app_config_access.mqtt_publisher_config.particulate_matter_topic,
-                               payload=_readings_to_text(sensor_access.get_particulate_matter()),
+                               payload=_readings_to_text(temp_send_readings),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
                 client.publish(app_config_access.mqtt_publisher_config.lumen_topic,
