@@ -30,24 +30,16 @@ if geteuid() == 0:
     if app_config_access.installed_sensors.raspberry_pi:
         raspberry_pi_a = _raspberry_pi_system.CreateRPSystem()
 
-    from sensor_modules import pimoroni_as7262 as _pimoroni_as7262
-    from sensor_modules import pimoroni_bh1745 as _pimoroni_bh1745
-    from sensor_modules import pimoroni_mcp9600 as _pimoroni_mcp9600
-    from sensor_modules import pimoroni_bmp280 as _pimoroni_bmp280
-    from sensor_modules import pimoroni_bme680 as _pimoroni_bme680
-    from sensor_modules import pimoroni_enviro as _pimoroni_enviro
-    from sensor_modules import pimoroni_enviroplus as _pimoroni_enviroplus
-    from sensor_modules import pimoroni_sgp30 as _pimoroni_sgp30
-    from sensor_modules import pimoroni_msa301 as _pimoroni_msa301
-    from sensor_modules import pimoroni_lsm303d as _pimoroni_lsm303d
-    from sensor_modules import pimoroni_icm20948 as _pimoroni_icm20948
-    from sensor_modules import pimoroni_ltr_559 as _pimoroni_ltr_559
-    from sensor_modules import pimoroni_vl53l1x as _pimoroni_vl53l1x
-    from sensor_modules import pimoroni_veml6075 as _pimoroni_veml6075
+    from sensor_modules.pimoroni import pimoroni_enviroplus as _pimoroni_enviroplus, \
+        pimoroni_vl53l1x as _pimoroni_vl53l1x, \
+        pimoroni_enviro as _pimoroni_enviro, pimoroni_lsm303d as _pimoroni_lsm303d, pimoroni_bmp280 as _pimoroni_bmp280, \
+        pimoroni_bh1745 as _pimoroni_bh1745, pimoroni_msa301 as _pimoroni_msa301, \
+        pimoroni_1_12_mono_oled as _pimoroni_1_12_mono_oled, pimoroni_icm20948 as _pimoroni_icm20948, \
+        pimoroni_0_96_spi_colour_lcd as _pimoroni_0_96_spi_colour_lcd, \
+        pimoroni_11x7_led_matrix as _pimoroni_11x7_led_matrix, pimoroni_bme680 as _pimoroni_bme680, \
+        pimoroni_mcp9600 as _pimoroni_mcp9600, pimoroni_as7262 as _pimoroni_as7262, pimoroni_sgp30 as _pimoroni_sgp30, \
+        pimoroni_veml6075 as _pimoroni_veml6075, pimoroni_ltr_559 as _pimoroni_ltr_559
     from sensor_modules import raspberry_pi_sensehat as _raspberry_pi_sensehat
-    from sensor_modules import pimoroni_11x7_led_matrix as _pimoroni_11x7_led_matrix
-    from sensor_modules import pimoroni_0_96_spi_colour_lcd as _pimoroni_0_96_spi_colour_lcd
-    from sensor_modules import pimoroni_1_12_mono_oled as _pimoroni_1_12_mono_oled
     from sensor_modules import sensirion_sps30 as _sensirion_sps30
 
     # Initialize sensor access, based on installed sensors file
