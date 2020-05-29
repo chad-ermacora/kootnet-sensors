@@ -141,7 +141,7 @@ class CreateReplacementVariables:
             except Exception as error:
                 logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
                 rpi_model_name = "Raspberry Pi"
-            installed_sensors_config.config_settings_names[1] = rpi_model_name
+            installed_sensors_config.config_settings_names[2] = rpi_model_name
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
             text_display = str(self.get_enabled_disabled_text(app_config_access.display_config.enable_display))
