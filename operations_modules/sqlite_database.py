@@ -38,12 +38,16 @@ class CreateOtherDataEntry:
                self.sensor_readings + self.sql_query_values_end
 
 
-def write_to_sql_database(sql_query, sql_database_location=file_locations.sensor_database):
+def write_to_sql_database(sql_query, data_entries,
+                          sql_database_location=file_locations.sensor_database):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
         db_connection = sqlite3.connect(sql_database_location)
         db_cursor = db_connection.cursor()
-        db_cursor.execute(sql_query)
+        if data_entries is None:
+            db_cursor.execute(sql_query)
+        else:
+            db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database)

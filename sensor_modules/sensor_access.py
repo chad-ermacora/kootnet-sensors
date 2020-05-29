@@ -184,7 +184,7 @@ def get_cpu_temperature():
     return temperature
 
 
-def get_sensor_temperature(temperature_correction=True):
+def get_sensor_temperature(temperature_correction=True, get_both=False):
     """ Returns sensors Environmental temperature. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
@@ -203,7 +203,9 @@ def get_sensor_temperature(temperature_correction=True):
     else:
         return no_sensor_present
 
-    if temperature_correction and temperature != no_sensor_present:
+    new_temp = temperature
+    if temperature_correction and temperature != no_sensor_present or \
+            get_both and temperature != no_sensor_present:
         enable_custom_temp = app_config_access.primary_config.enable_custom_temp
         temperature_offset = app_config_access.primary_config.temperature_offset
         new_temp = temperature
@@ -223,7 +225,10 @@ def get_sensor_temperature(temperature_correction=True):
             except Exception as error:
                 logger.sensors_logger.warning("Invalid Temperature Factor")
                 logger.sensors_logger.debug(str(error))
-        return new_temp
+        if not get_both:
+            return new_temp
+    if get_both:
+        return [temperature, new_temp]
     return temperature
 
 
@@ -578,39 +583,37 @@ def _create_str_from_list(sql_data_notes):
 
 def add_note_to_database(datetime_note):
     """ Takes the provided DateTime and Note as a list then writes it to the SQL Database. """
-    sql_data = sqlite_database.CreateOtherDataEntry()
     user_date_and_note = datetime_note.split(command_data_separator)
-
     current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     if len(user_date_and_note) > 1:
         custom_datetime = user_date_and_note[0]
         note = user_date_and_note[1]
 
-        sql_data.sensor_types = database_variables.all_tables_datetime + ", " + \
-                                database_variables.other_table_column_user_date_time + ", " + \
-                                database_variables.other_table_column_notes
-        sql_data.sensor_readings = "('" + current_datetime + "'),('" + custom_datetime + "'),('" + note + "')"
+        sql_execute = "INSERT OR IGNORE INTO OtherData (" + \
+                      database_variables.all_tables_datetime + "," + \
+                      database_variables.other_table_column_user_date_time + "," + \
+                      database_variables.other_table_column_notes + ")" + \
+                      " VALUES (?,?,?);"
 
-        sql_execute = (sql_data.sql_query_start + sql_data.sensor_types + sql_data.sql_query_values_start +
-                       sql_data.sensor_readings + sql_data.sql_query_values_end)
+        data_entries = [current_datetime, custom_datetime, note]
 
-        sqlite_database.write_to_sql_database(sql_execute)
+        sqlite_database.write_to_sql_database(sql_execute, data_entries)
     else:
         logger.network_logger.error("Unable to add Note to DB: Bad Note")
 
 
 def update_note_in_database(datetime_note):
     """ Takes the provided DateTime and Note as a list then updates the note in the SQL Database. """
-    data_list = datetime_note.split(command_data_separator)
-
     try:
+        data_list = datetime_note.split(command_data_separator)
+
         current_datetime = data_list[0]
-        user_datetime = data_list[1]
+        custom_datetime = data_list[1]
         note = data_list[2]
 
-        sql_execute = "UPDATE OtherData SET " + "Notes = ('" + note + \
-                      "'),UserDateTime = ('" + user_datetime + "') WHERE DateTime = ('" + current_datetime + "')"
-        sqlite_database.write_to_sql_database(sql_execute)
+        sql_execute = "UPDATE OtherData SET Notes = ?,UserDateTime = ? WHERE DateTime = ?;"
+        data_entries = [note, custom_datetime, current_datetime]
+        sqlite_database.write_to_sql_database(sql_execute, data_entries)
     except Exception as error:
         logger.primary_logger.error("DB note update error: " + str(error))
 
@@ -619,5 +622,6 @@ def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
     sql_query = "DELETE FROM " + str(database_variables.table_other) + \
                 " WHERE " + str(database_variables.all_tables_datetime) + \
-                " = '" + note_datetime + "'"
-    sqlite_database.write_to_sql_database(sql_query)
+                " = ?;"
+    sql_data = [note_datetime]
+    sqlite_database.write_to_sql_database(sql_query, sql_data)

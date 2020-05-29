@@ -98,10 +98,13 @@ def _interval_recording():
     while True:
         try:
             new_sensor_data = get_interval_sensor_readings()
-            new_sensor_data = new_sensor_data.split(app_cached_variables.command_data_separator)
-            interval_sql_execute_part1 = "INSERT OR IGNORE INTO IntervalData (" + str(new_sensor_data[0])
-            interval_sql_execute_part2 = ") VALUES (" + str(new_sensor_data[1]) + ")"
-            sqlite_database.write_to_sql_database(interval_sql_execute_part1 + interval_sql_execute_part2)
+            sql_string = "INSERT OR IGNORE INTO IntervalData (" + new_sensor_data[0] + ") VALUES ("
+            sql_data = []
+            for entry in new_sensor_data[1]:
+                sql_string += "?,"
+                sql_data.append(str(entry))
+            sql_string = sql_string[:-1] + ")"
+            sqlite_database.write_to_sql_database(sql_string, sql_data)
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
         sleep(app_config_access.primary_config.sleep_duration_interval)
@@ -195,9 +198,7 @@ def get_interval_sensor_readings():
                             gyroscope_readings[1],
                             gyroscope_readings[2]]
 
-    return_interval_data = _list_to_csv_string(sensor_types) + \
-                           app_cached_variables.command_data_separator + \
-                           _list_to_csv_string_quoted(sensor_readings)
+    return_interval_data = [_list_to_csv_string(sensor_types), sensor_readings]
     return return_interval_data
 
 

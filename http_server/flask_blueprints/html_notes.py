@@ -29,27 +29,6 @@ from sensor_modules.sensor_access import add_note_to_database, update_note_in_da
 html_notes_routes = Blueprint("html_notes_routes", __name__)
 
 
-def translate_note_text(note_text, translate_type="decode"):
-    if translate_type == "decode":
-        new_note = note_text.replace("[clean_slash]", "\\")
-        new_note = new_note.replace("[replaced_comma]", ",")
-        new_note = new_note.replace("[replaced_apostrophe]", "'")
-        new_note = new_note.replace("[replaced_double_quote]", '"')
-        new_note = new_note.replace("[replaced_dash]", "-")
-        new_note = new_note.replace("[replaced_num]", "#")
-        new_note = new_note.replace("[new_line]", "\n")
-    else:
-        new_note = note_text.replace("\\", "[clean_slash]")
-        new_note = new_note.replace(",", "[replaced_comma]")
-        new_note = new_note.replace("'", "[replaced_apostrophe]")
-        new_note = new_note.replace('"', "[replaced_double_quote]")
-        new_note = new_note.replace("-", "[replaced_dash]")
-        new_note = new_note.replace("#", "[replaced_num]")
-        new_note = new_note.replace("\n", "[new_line]")
-        new_note = new_note.replace("\r", "[new_line]")
-    return new_note
-
-
 @html_notes_routes.route("/SensorNotes", methods=["GET", "POST"])
 @auth.login_required
 def sensor_notes():
@@ -74,7 +53,7 @@ def sensor_notes():
                     app_cached_variables.note_current = 1
             elif button_operation == "save_note":
                 if app_cached_variables.notes_total_count > 0:
-                    note_text = translate_note_text(request.form.get("note_text"), translate_type="encode")
+                    note_text = request.form.get("note_text")
                     note_auto_date_times = get_db_note_dates().split(",")
                     note_custom_date_times = get_db_note_user_dates().split(",")
                     primary_note_date_time = note_auto_date_times[app_cached_variables.note_current - 1]
@@ -105,7 +84,7 @@ def sensor_notes():
     note_num = app_cached_variables.note_current - 1
     if app_cached_variables.notes_total_count > 0:
         selected_note = str(sqlite_database.sql_execute_get_data(selected_note_sql_query)[note_num][0])
-        selected_note = translate_note_text(selected_note)
+        selected_note = selected_note
     else:
         selected_note = "No Notes Found"
     return render_template("sensor_notes.html",

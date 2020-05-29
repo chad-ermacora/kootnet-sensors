@@ -107,7 +107,7 @@ class CreateTriggerVarianceThread:
         while not app_cached_variables.restart_all_trigger_recording_threads:
             self._update_sensor_readings_set()
             execute_str_list = _readings_to_sql_write_str_single_data(self)
-            sqlite_database.write_to_sql_database(execute_str_list[0])
+            sqlite_database.write_to_sql_database(execute_str_list[0], data_entries=None)
 
     def _data_check(self):
         log_msg = self.trigger_data.thread_name + " Starting Checks.  Checking every "
@@ -125,7 +125,7 @@ class CreateTriggerVarianceThread:
                 elif self.trigger_data.num_of_readings > 1:
                     execute_str_list = _readings_to_sql_write_str_multiple_data(self)
                 for sql_execute in execute_str_list:
-                    sqlite_database.write_to_sql_database(sql_execute)
+                    sqlite_database.write_to_sql_database(sql_execute, data_entries=None)
 
     def _check_differences(self):
         differences = []
