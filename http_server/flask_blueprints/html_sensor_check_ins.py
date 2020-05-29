@@ -56,8 +56,9 @@ def remote_sensor_check_ins():
             sql_ex_string = "INSERT OR IGNORE INTO '{CheckinIDTable}' " + \
                             "({DateTimeColumn},{KootnetVersionColumn},{SensorUptimeColumn}," + \
                             "{PrimaryLogColumn},{SensorLogColumn})" + \
-                            " VALUES ('{CurrentDateTime}','{KootnetVersion}','{SensorUptime}'," + \
-                            "'{PrimaryLog}','{SensorLog}');"
+                            " VALUES (('{CurrentDateTime}'),('{KootnetVersion}'),('{SensorUptime}')," + \
+                            "('{PrimaryLog}'),('{SensorLog}'));"
+
             sql_ex_string = sql_ex_string.format(CheckinIDTable=checkin_id, DateTimeColumn=all_tables_datetime,
                                                  KootnetVersionColumn=sensor_check_in_version,
                                                  SensorUptimeColumn=sensor_uptime,
@@ -162,7 +163,6 @@ def view_sensor_check_ins():
 @html_sensor_check_ins_routes.route("/ClearOldCheckinData")
 @auth.login_required
 def clear_check_ins_counts():
-
     db_location = file_locations.sensor_checkin_database
     get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
     sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
@@ -201,8 +201,8 @@ def clear_check_ins_counts():
         sql_ex_string = "INSERT OR IGNORE INTO '{CheckinIDTable}' " + \
                         "({DateTimeColumn},{KootnetVersionColumn},{SensorUptimeColumn}," + \
                         "{PrimaryLogColumn},{SensorLogColumn})" + \
-                        " VALUES ('{CurrentDateTime}','{KootnetVersion}','{SensorUptime}'," + \
-                        "'{PrimaryLog}','{SensorLog}');"
+                        " VALUES (('{CurrentDateTime}'),('{KootnetVersion}'),('{SensorUptime}')," + \
+                        "('{PrimaryLog}'),('{SensorLog}'));"
 
         sql_ex_string = sql_ex_string.format(CheckinIDTable=cleaned_id, DateTimeColumn=db_all_tables_datetime,
                                              KootnetVersionColumn=db_sensor_check_in_version,
