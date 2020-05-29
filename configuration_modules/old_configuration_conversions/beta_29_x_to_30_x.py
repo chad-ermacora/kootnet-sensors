@@ -1,7 +1,8 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from configuration_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
-    reset_installed_sensors, reset_variance_config, successful_upgrade_message
+    reset_installed_sensors, reset_variance_config, successful_upgrade_message, reset_display_config, \
+    reset_mqtt_broker_config, reset_mqtt_subscriber_config, reset_mqtt_publisher_config
 from operations_modules.app_generic_functions import get_file_content
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
@@ -61,3 +62,7 @@ def upgrade_beta_29_to_30():
     new_installed_sensors.update_configuration_settings_list()
     new_installed_sensors.save_config_to_file()
     reset_variance_config()
+    reset_display_config()
+    reset_mqtt_broker_config(log_reset=False)
+    reset_mqtt_publisher_config(log_reset=False)
+    reset_mqtt_subscriber_config(log_reset=False)
