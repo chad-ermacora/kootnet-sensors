@@ -80,7 +80,7 @@ def _get_old_version():
             return old_version_content.strip()
     else:
         write_program_version_to_file()
-        return "New_Install.99.999"
+        return "Unknown.0.0"
 
 
 def write_program_version_to_file():

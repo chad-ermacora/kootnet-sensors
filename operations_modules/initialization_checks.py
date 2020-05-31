@@ -39,10 +39,10 @@ def run_program_start_checks():
     _check_directories()
     _set_file_permissions()
     check_main_database_structure()
+    check_checkin_database_structure()
     _check_ssl_files()
     _check_sensor_id()
     if software_version.old_version != software_version.version:
-        check_checkin_database_structure()
         run_configuration_upgrade_checks()
 
 

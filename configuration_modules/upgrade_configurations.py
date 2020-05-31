@@ -38,8 +38,13 @@ def run_configuration_upgrade_checks():
 
     if previous_version.major_version == "New_Install":
         logger.primary_logger.info("New Install Detected")
-        reset_all_silent()
         no_changes = False
+        reset_all_silent()
+    elif previous_version.major_version == "Unknown":
+        logger.primary_logger.warning("Unknown Previous Version Detected")
+        no_changes = False
+        reset_installed_sensors()
+        reset_primary_config()
     else:
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
         logger.primary_logger.info(msg)
@@ -63,12 +68,12 @@ def run_configuration_upgrade_checks():
                 no_changes = False
                 upgrade_beta_29_to_30()
         elif previous_version.major_version == "Alpha":
+            no_changes = False
             upgrade_alpha_to_beta()
-            no_changes = False
         else:
-            no_changes = False
             msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
             logger.primary_logger.error(msg)
+            no_changes = False
             reset_installed_sensors()
             reset_primary_config()
 

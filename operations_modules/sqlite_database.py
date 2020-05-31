@@ -168,7 +168,7 @@ def create_table_and_datetime(table, db_cursor):
         db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
         logger.primary_logger.debug("Table '" + table + "' - Created")
     except Exception as error:
-        logger.primary_logger.debug(table + " - " + str(error))
+        logger.primary_logger.debug("SQLite3 Table Check/Creation: " + str(error))
 
 
 def check_sql_table_and_column(table_name, column_name, db_cursor):
@@ -177,8 +177,9 @@ def check_sql_table_and_column(table_name, column_name, db_cursor):
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         return True
     except Exception as error:
-        logger.primary_logger.debug(str(error))
-        return False
+        if str(error)[:21] != "duplicate column name":
+            logger.primary_logger.warning("SQLite3 Column Check Error: " + str(error))
+    return False
 
 
 def validate_sqlite_database(database_location):
