@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from subprocess import check_output
+from subprocess import check_output, SubprocessError
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import write_file_to_disk
@@ -33,11 +33,13 @@ terminal_restart_mosquitto = "systemctl restart mosquitto"
 def check_mqtt_broker_server_running():
     """ If MQTT Broker server Mosquitto is running, return True else False. """
     try:
-        if len(check_output(["pidof", "mosquitto"])) > 2:
+        if len(str(check_output(["pidof", "mosquitto"]))) > 2:
             return True
         return False
+    except SubprocessError:
+        return False
     except Exception as error:
-        logger.primary_logger.debug("MQTT Broker Running Check Error: " + str(error))
+        logger.primary_logger.warning("MQTT Broker Running Check Error: " + str(error))
         return False
 
 
