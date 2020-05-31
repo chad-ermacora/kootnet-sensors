@@ -45,15 +45,16 @@ def _weather_underground_server():
     app_cached_variables.restart_weather_underground_thread = False
     interval_seconds = weather_underground_config.interval_seconds
     while not app_cached_variables.restart_weather_underground_thread:
-        sensor_readings = get_weather_underground_readings()
-        sw_version_text_list = software_version.version.split(".")
-        sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
-        if sensor_readings:
-            if weather_underground_config.wu_rapid_fire_enabled:
-                url = weather_underground_config.wu_rapid_fire_url_start
-            else:
-                url = weather_underground_config.wu_main_url_start
-            try:
+        try:
+            sensor_readings = get_weather_underground_readings()
+            sw_version_text_list = software_version.version.split(".")
+            sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
+            if sensor_readings:
+                if weather_underground_config.wu_rapid_fire_enabled:
+                    url = weather_underground_config.wu_rapid_fire_url_start
+                else:
+                    url = weather_underground_config.wu_main_url_start
+
                 url += weather_underground_config.wu_id + weather_underground_config.station_id + \
                        weather_underground_config.wu_key + weather_underground_config.station_key + \
                        weather_underground_config.wu_utc_datetime + \
@@ -78,15 +79,14 @@ def _weather_underground_server():
                     response_text = str(html_get_response.text)
                     log_msg = "Weather Underground - Unknown Error " + status_code + ": " + response_text
                     logger.network_logger.error(log_msg)
-
-            except Exception as error:
-                logger.network_logger.error("Weather Underground - Error sending data")
-                logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
-        else:
-            log_msg = "Weather Underground - No Compatible Sensors: No further attempts will be made"
-            logger.primary_logger.error(log_msg)
-            while not app_cached_variables.restart_weather_underground_thread:
-                sleep(5)
+            else:
+                log_msg = "Weather Underground - No Compatible Sensors: No further attempts will be made"
+                logger.primary_logger.error(log_msg)
+                while not app_cached_variables.restart_weather_underground_thread:
+                    sleep(5)
+        except Exception as error:
+            logger.network_logger.error("Weather Underground - Error sending data")
+            logger.network_logger.debug("Weather Underground - Detailed Error: " + str(error))
 
         sleep_fraction_interval = 5
         sleep_total = 0
@@ -146,10 +146,11 @@ def get_weather_underground_readings():
             return_readings_str += "&UV=" + str(round(uv_index, round_decimal_to))
 
     pm_readings = sensor_access.get_particulate_matter()
-    if database_variables.particulate_matter_2_5 in pm_readings:
-        pm_2_5 = pm_readings[database_variables.particulate_matter_2_5]
-        return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
-    if database_variables.particulate_matter_10 in pm_readings:
-        pm_10 = pm_readings[database_variables.particulate_matter_10]
-        return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
+    if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
+        if database_variables.particulate_matter_2_5 in pm_readings:
+            pm_2_5 = pm_readings[database_variables.particulate_matter_2_5]
+            return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
+        if database_variables.particulate_matter_10 in pm_readings:
+            pm_10 = pm_readings[database_variables.particulate_matter_10]
+            return_readings_str += "&AqPM10=" + str(round(pm_10, round_decimal_to))
     return return_readings_str

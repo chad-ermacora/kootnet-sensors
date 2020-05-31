@@ -24,6 +24,8 @@ from operations_modules import app_cached_variables
 from configuration_modules.app_config_access import installed_sensors, luftdaten_config
 from sensor_modules import sensor_access
 
+database_variables = app_cached_variables.database_variables
+
 
 def start_luftdaten_server():
     if luftdaten_config.luftdaten_enabled:
@@ -110,21 +112,22 @@ def _pms5003():
     pm_readings = sensor_access.get_particulate_matter()
     pm10_reading = ""
     pm25_reading = ""
-    if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
-        pm10_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_10])
-    if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
-        pm25_reading = str(pm_readings[app_cached_variables.database_variables.particulate_matter_2_5])
-    headers = {"X-PIN": "1",
-               "X-Sensor": "raspi-" + luftdaten_config.station_id,
-               "Content-Type": "application/json",
-               "cache-control": "no-cache"}
+    if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
+        if database_variables.particulate_matter_10 in pm_readings:
+            pm10_reading = str(pm_readings[database_variables.particulate_matter_10])
+        if database_variables.particulate_matter_2_5 in pm_readings:
+            pm25_reading = str(pm_readings[database_variables.particulate_matter_2_5])
+        headers = {"X-PIN": "1",
+                   "X-Sensor": "raspi-" + luftdaten_config.station_id,
+                   "Content-Type": "application/json",
+                   "cache-control": "no-cache"}
 
-    post_reply = requests.post(url=luftdaten_config.luftdaten_url,
-                               json={"software_version": luftdaten_config.return_software_version, "sensordatavalues": [
-                                   {"value_type": "P1", "value": pm10_reading},
-                                   {"value_type": "P2", "value": pm25_reading}]},
-                               headers=headers)
-    if post_reply.ok:
-        logger.network_logger.debug("Luftdaten - PMS5003 OK - Status Code: " + str(post_reply.status_code))
-    else:
-        logger.network_logger.warning("Luftdaten - PMS5003 Failed - Status Code: " + str(post_reply.status_code))
+        post_reply = requests.post(url=luftdaten_config.luftdaten_url,
+                                   json={"software_version": luftdaten_config.return_software_version, "sensordatavalues": [
+                                       {"value_type": "P1", "value": pm10_reading},
+                                       {"value_type": "P2", "value": pm25_reading}]},
+                                   headers=headers)
+        if post_reply.ok:
+            logger.network_logger.debug("Luftdaten - PMS5003 OK - Status Code: " + str(post_reply.status_code))
+        else:
+            logger.network_logger.warning("Luftdaten - PMS5003 Failed - Status Code: " + str(post_reply.status_code))

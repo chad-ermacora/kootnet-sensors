@@ -95,18 +95,19 @@ def _open_sense_map_server():
                     body_json[osm_config.lumen_id] = lumen_reading
 
                 pm_readings = sensor_access.get_particulate_matter()
-                if database_variables.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
-                    pm1 = pm_readings[database_variables.particulate_matter_1]
-                    body_json[osm_config.pm1_id] = str(pm1)
-                if database_variables.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
-                    pm2_5 = pm_readings[database_variables.particulate_matter_2_5]
-                    body_json[osm_config.pm2_5_id] = str(pm2_5)
-                if database_variables.particulate_matter_4 in pm_readings and osm_config.pm4_id != "":
-                    pm4 = pm_readings[database_variables.particulate_matter_4]
-                    body_json[osm_config.pm4_id] = str(pm4)
-                if database_variables.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
-                    pm10 = pm_readings[database_variables.particulate_matter_10]
-                    body_json[osm_config.pm10_id] = str(pm10)
+                if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
+                    if database_variables.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
+                        pm1 = pm_readings[database_variables.particulate_matter_1]
+                        body_json[osm_config.pm1_id] = str(pm1)
+                    if database_variables.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
+                        pm2_5 = pm_readings[database_variables.particulate_matter_2_5]
+                        body_json[osm_config.pm2_5_id] = str(pm2_5)
+                    if database_variables.particulate_matter_4 in pm_readings and osm_config.pm4_id != "":
+                        pm4 = pm_readings[database_variables.particulate_matter_4]
+                        body_json[osm_config.pm4_id] = str(pm4)
+                    if database_variables.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
+                        pm10 = pm_readings[database_variables.particulate_matter_10]
+                        body_json[osm_config.pm10_id] = str(pm10)
 
                 colors = sensor_access.get_ems_colors(return_as_dictionary=True)
                 if colors != no_sensor_present:
