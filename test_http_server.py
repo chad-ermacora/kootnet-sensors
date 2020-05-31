@@ -519,6 +519,7 @@ Mega2311kk = SenseBox ID
 234kj44h234234 = Gas Reduced Sensor ID
 2344kjh25h = PM 1.0 Sensor ID
 234kjh425h = PM 2.5 Sensor ID
+234kjh425h = PM 4 Sensor ID
 234kjerh25h = PM 10 Sensor ID
 234kjah25h = Lumen Sensor ID
 234kjsh25h = Red Sensor ID
@@ -546,6 +547,7 @@ Mega2311kk = SenseBox ID
         self.gas_nh3_id = "123333"
         self.pm1_id = "123333"
         self.pm2_5_id = "123333"
+        self.pm4_id = "123333"
         self.pm10_id = "123333"
 
         self.lumen_id = "123333"
@@ -576,6 +578,7 @@ Mega2311kk = SenseBox ID
         self.gas_nh3_id = "698742"
         self.pm1_id = "698742"
         self.pm2_5_id = "698742"
+        self.pm4_id = "698742"
         self.pm10_id = "698742"
 
         self.lumen_id = "698742"

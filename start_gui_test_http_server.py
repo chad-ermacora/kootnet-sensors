@@ -29,7 +29,8 @@ from operations_modules.app_generic_functions import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
 import test_http_server
 
-compatible_version = CreateRefinedVersion("Beta.30.97")
+compatible_version_str = "Beta.30.x"
+refined_compatible_version = CreateRefinedVersion("Beta.30.142")
 remote_sensor_version = CreateRefinedVersion()
 
 
@@ -54,17 +55,17 @@ def run_tests():
         if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
             temp_version = get_http_sensor_reading(sensor_address, command="GetSensorVersion", timeout=5)
             remote_sensor_version.load_from_string(temp_version)
-            if remote_sensor_version.major_version == compatible_version.major_version and \
-                    remote_sensor_version.feature_version == compatible_version.feature_version and \
-                    remote_sensor_version.minor_version >= compatible_version.minor_version:
+            if remote_sensor_version.major_version == refined_compatible_version.major_version and \
+                    remote_sensor_version.feature_version == refined_compatible_version.feature_version and \
+                    remote_sensor_version.minor_version >= refined_compatible_version.minor_version:
                 print(" ------ Starting Tests ------")
                 print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
                 suite = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp)
                 suite.run(unittest.TestResult())
             else:
                 print("-- Incompatible Version Detected --\n")
-                print_msg = "-- Compatible Version: " + compatible_version.get_version_string()
-                print(print_msg + " (" + str(compatible_version.minor_version) + " or higher) --")
+                print_msg = "-- Compatible Version: " + refined_compatible_version.get_version_string()
+                print(print_msg + " (" + str(refined_compatible_version.minor_version) + " or higher) --")
                 print("-- Remote Version: " + remote_sensor_version.get_version_string() + " --")
         else:
             print("-- Incorrect Sensor Login --")
@@ -86,7 +87,8 @@ def run_tests():
 redirect_string = io.StringIO()
 sys.stdout = redirect_string
 
-app = guizero.App(title="KootNet Sensors - Unit Tester for Beta.29.x", width=622, height=538, layout="grid")
+app_title_name = "KootNet Sensors - Unit Tester for " + compatible_version_str
+app = guizero.App(title=app_title_name, width=622, height=538, layout="grid")
 app_text_address = guizero.Text(app, text="Sensor Address", grid=[1, 1], align="left")
 app_textbox_address = guizero.TextBox(app, text="localhost", width=40, grid=[2, 1], align="left")
 app_button_test_sensor = guizero.PushButton(app, text="Start Tests", command=button_go, grid=[3, 1], align="right")
