@@ -23,6 +23,7 @@ from configuration_modules.old_configuration_conversions.generic_upgrade_functio
 from configuration_modules.old_configuration_conversions.alpha_to_beta import upgrade_alpha_to_beta
 from configuration_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
 from configuration_modules.old_configuration_conversions.beta_30_x_to_30_90 import upgrade_beta_30_x_to_30_90
+from configuration_modules.old_configuration_conversions.beta_30_90_to_30_138 import upgrade_beta_30_90_to_30_138
 
 
 def run_configuration_upgrade_checks():
@@ -30,7 +31,7 @@ def run_configuration_upgrade_checks():
      Checks previous written version of the program to the current version.
      If the current version is different, start upgrade functions.
     """
-    logger.primary_logger.info(" -- Upgrade Detected Checking Configurations ...")
+    logger.primary_logger.debug(" -- Configuration Upgrade Check Starting ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
     current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
@@ -42,6 +43,7 @@ def run_configuration_upgrade_checks():
     else:
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
         logger.primary_logger.info(msg)
+
         if previous_version.major_version == "Beta":
             if previous_version.feature_version > current_version.feature_version:
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
@@ -51,6 +53,9 @@ def run_configuration_upgrade_checks():
                 reset_installed_sensors()
                 reset_primary_config()
             elif previous_version.feature_version == 30:
+                if previous_version.minor_version < 138:
+                    no_changes = False
+                    upgrade_beta_30_90_to_30_138()
                 if previous_version.minor_version < 90:
                     no_changes = False
                     upgrade_beta_30_x_to_30_90()

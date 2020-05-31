@@ -29,11 +29,10 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 18
         self.config_settings_names = ["Enable Display", "Display every X Minutes", "Display Type", "Show Sensor Uptime",
-                                      "Show System Temperature", "Show Environmental Temperature",
-                                      "Show Pressure", "Show Altitude", "Show Humidity", "Show Distance",
-                                      "Show GAS", "Show Particulate Matter", "Show Lumen", "Show Colors",
-                                      "Show Ultra Violet", "Show Accelerometer", "Show Magnetometer",
-                                      "Show Gyroscope"]
+                                      "Show System Temperature", "Show Environmental Temperature", "Show Pressure",
+                                      "Show Altitude", "Show Humidity", "Show Distance", "Show GAS",
+                                      "Show Particulate Matter", "Show Lumen", "Show Colors", "Show Ultra Violet",
+                                      "Show Accelerometer", "Show Magnetometer", "Show Gyroscope"]
 
         self.enable_display = 0
         self.display_type_numerical = "numerical"
@@ -59,7 +58,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.magnetometer = 0
         self.gyroscope = 0
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -115,10 +114,10 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             self.magnetometer = 1
         if html_request.form.get("DisplayGyroscope") is not None:
             self.gyroscope = 1
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         self.load_from_file = True
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.enable_display), str(self.minutes_between_display), str(self.display_type),
                                 str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature),
@@ -151,7 +150,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             self.gyroscope = int(self.config_settings[17])
         except Exception as error:
             logger.primary_logger.debug("Display Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Display Configuration.")
                 self.save_config_to_file()

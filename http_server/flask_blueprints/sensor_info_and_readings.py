@@ -160,8 +160,12 @@ def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
     try:
         temp_list = sensor_access.get_sensor_temperature(get_both=True)
-        raw_temp = temp_list[0]
-        adjusted_temp = temp_list[1]
+        raw_temp = "NoSensor"
+        adjusted_temp = "NoSensor"
+        if len(temp_list) == 2:
+            raw_temp = temp_list[0]
+            adjusted_temp = temp_list[1]
+
         temp_offset = "Disabled"
         if app_config_access.primary_config.enable_custom_temp:
             temp_offset = str(app_config_access.primary_config.temperature_offset) + " °C"

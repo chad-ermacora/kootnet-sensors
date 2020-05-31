@@ -559,7 +559,7 @@ Mega2311kk = SenseBox ID
         self.ultra_violet_index_id = "123333"
         self.ultra_violet_a_id = "123333"
         self.ultra_violet_b_id = "123333"
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.open_sense_map_enabled = 1
@@ -589,7 +589,7 @@ Mega2311kk = SenseBox ID
         self.ultra_violet_index_id = "698742"
         self.ultra_violet_a_id = "698742"
         self.ultra_violet_b_id = "698742"
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class TestApp(unittest.TestCase):

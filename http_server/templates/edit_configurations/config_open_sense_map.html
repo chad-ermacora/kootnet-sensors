@@ -190,6 +190,16 @@
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
+                                        PM4 ID
+                                        <br>
+                                        <input style="width: 200px;" type="text" maxlength="64" name="pm4_id"
+                                               value="{{ OSMPM4ID }}" disabled>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mui-col-md-6">
+                                <div class="mui-textfield">
+                                    <label style="color: black">
                                         PM10 ID
                                         <br>
                                         <input style="width: 200px" type="text" maxlength="64" name="pm10_id"
@@ -197,6 +207,9 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -207,9 +220,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -220,6 +230,9 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -230,9 +243,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -243,6 +253,9 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -253,9 +266,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -266,6 +276,9 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -276,9 +289,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -289,6 +299,9 @@
                                     </label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -299,9 +312,6 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="mui-row">
                             <div class="mui-col-md-6">
                                 <div class="mui-textfield">
                                     <label style="color: black">
@@ -417,62 +427,31 @@
 
 <script>
     jQuery('#osm_enabled').change(function () {
-        if (jQuery(this).prop('checked')) {
+        new OpenSenseMapEnabled();
+    })
+
+    jQuery('#osm_manual_sensor_ids').change(function () {
+        new OpenSenseMapIDsChecked();
+    })
+</script>
+
+<script>
+    function OpenSenseMapEnabled() {
+        if (jQuery('#osm_enabled').prop('checked')) {
             document.getElementsByName("osm_station_id")[0].disabled = false;
             document.getElementsByName("osm_interval")[0].disabled = false;
             document.getElementsByName("enable_osm_manual_sensor_ids")[0].disabled = false;
-            if (jQuery('#osm_manual_sensor_ids').prop('checked')) {
-                document.getElementsByName("env_temp_id")[0].disabled = false;
-                document.getElementsByName("pressure_id")[0].disabled = false;
-                document.getElementsByName("altitude_id")[0].disabled = false;
-                document.getElementsByName("humidity_id")[0].disabled = false;
-                document.getElementsByName("gas_index_id")[0].disabled = false;
-                document.getElementsByName("gas_nh3_id")[0].disabled = false;
-                document.getElementsByName("gas_oxidising_id")[0].disabled = false;
-                document.getElementsByName("gas_reducing_id")[0].disabled = false;
-                document.getElementsByName("pm1_id")[0].disabled = false;
-                document.getElementsByName("pm2_5_id")[0].disabled = false;
-                document.getElementsByName("pm10_id")[0].disabled = false;
-                document.getElementsByName("lumen_id")[0].disabled = false;
-                document.getElementsByName("red_id")[0].disabled = false;
-                document.getElementsByName("orange_id")[0].disabled = false;
-                document.getElementsByName("yellow_id")[0].disabled = false;
-                document.getElementsByName("green_id")[0].disabled = false;
-                document.getElementsByName("blue_id")[0].disabled = false;
-                document.getElementsByName("violet_id")[0].disabled = false;
-                document.getElementsByName("uv_index_id")[0].disabled = false;
-                document.getElementsByName("uv_a_id")[0].disabled = false;
-                document.getElementsByName("uv_b_id")[0].disabled = false;
-            }
+            new OpenSenseMapIDsChecked();
         } else {
             document.getElementsByName("osm_station_id")[0].disabled = true;
             document.getElementsByName("osm_interval")[0].disabled = true;
             document.getElementsByName("enable_osm_manual_sensor_ids")[0].disabled = true;
-            document.getElementsByName("env_temp_id")[0].disabled = true;
-            document.getElementsByName("pressure_id")[0].disabled = true;
-            document.getElementsByName("altitude_id")[0].disabled = true;
-            document.getElementsByName("humidity_id")[0].disabled = true;
-            document.getElementsByName("gas_index_id")[0].disabled = true;
-            document.getElementsByName("gas_nh3_id")[0].disabled = true;
-            document.getElementsByName("gas_oxidising_id")[0].disabled = true;
-            document.getElementsByName("gas_reducing_id")[0].disabled = true;
-            document.getElementsByName("pm1_id")[0].disabled = true;
-            document.getElementsByName("pm2_5_id")[0].disabled = true;
-            document.getElementsByName("pm10_id")[0].disabled = true;
-            document.getElementsByName("lumen_id")[0].disabled = true;
-            document.getElementsByName("red_id")[0].disabled = true;
-            document.getElementsByName("orange_id")[0].disabled = true;
-            document.getElementsByName("yellow_id")[0].disabled = true;
-            document.getElementsByName("green_id")[0].disabled = true;
-            document.getElementsByName("blue_id")[0].disabled = true;
-            document.getElementsByName("violet_id")[0].disabled = true;
-            document.getElementsByName("uv_index_id")[0].disabled = true;
-            document.getElementsByName("uv_a_id")[0].disabled = true;
-            document.getElementsByName("uv_b_id")[0].disabled = true;
+            new DisableOpenSenseMapIDs();
         }
-    });
-    jQuery('#osm_manual_sensor_ids').change(function () {
-        if (jQuery(this).prop('checked')) {
+    }
+
+    function OpenSenseMapIDsChecked() {
+        if (jQuery('#osm_manual_sensor_ids').prop('checked')) {
             document.getElementsByName("env_temp_id")[0].disabled = false;
             document.getElementsByName("pressure_id")[0].disabled = false;
             document.getElementsByName("altitude_id")[0].disabled = false;
@@ -483,6 +462,7 @@
             document.getElementsByName("gas_reducing_id")[0].disabled = false;
             document.getElementsByName("pm1_id")[0].disabled = false;
             document.getElementsByName("pm2_5_id")[0].disabled = false;
+            document.getElementsByName("pm4_id")[0].disabled = false;
             document.getElementsByName("pm10_id")[0].disabled = false;
             document.getElementsByName("lumen_id")[0].disabled = false;
             document.getElementsByName("red_id")[0].disabled = false;
@@ -495,27 +475,32 @@
             document.getElementsByName("uv_a_id")[0].disabled = false;
             document.getElementsByName("uv_b_id")[0].disabled = false;
         } else {
-            document.getElementsByName("env_temp_id")[0].disabled = true;
-            document.getElementsByName("pressure_id")[0].disabled = true;
-            document.getElementsByName("altitude_id")[0].disabled = true;
-            document.getElementsByName("humidity_id")[0].disabled = true;
-            document.getElementsByName("gas_index_id")[0].disabled = true;
-            document.getElementsByName("gas_nh3_id")[0].disabled = true;
-            document.getElementsByName("gas_oxidising_id")[0].disabled = true;
-            document.getElementsByName("gas_reducing_id")[0].disabled = true;
-            document.getElementsByName("pm1_id")[0].disabled = true;
-            document.getElementsByName("pm2_5_id")[0].disabled = true;
-            document.getElementsByName("pm10_id")[0].disabled = true;
-            document.getElementsByName("lumen_id")[0].disabled = true;
-            document.getElementsByName("red_id")[0].disabled = true;
-            document.getElementsByName("orange_id")[0].disabled = true;
-            document.getElementsByName("yellow_id")[0].disabled = true;
-            document.getElementsByName("green_id")[0].disabled = true;
-            document.getElementsByName("blue_id")[0].disabled = true;
-            document.getElementsByName("violet_id")[0].disabled = true;
-            document.getElementsByName("uv_index_id")[0].disabled = true;
-            document.getElementsByName("uv_a_id")[0].disabled = true;
-            document.getElementsByName("uv_b_id")[0].disabled = true;
+            new DisableOpenSenseMapIDs();
         }
-    });
+    }
+
+    function DisableOpenSenseMapIDs() {
+        document.getElementsByName("env_temp_id")[0].disabled = true;
+        document.getElementsByName("pressure_id")[0].disabled = true;
+        document.getElementsByName("altitude_id")[0].disabled = true;
+        document.getElementsByName("humidity_id")[0].disabled = true;
+        document.getElementsByName("gas_index_id")[0].disabled = true;
+        document.getElementsByName("gas_nh3_id")[0].disabled = true;
+        document.getElementsByName("gas_oxidising_id")[0].disabled = true;
+        document.getElementsByName("gas_reducing_id")[0].disabled = true;
+        document.getElementsByName("pm1_id")[0].disabled = true;
+        document.getElementsByName("pm2_5_id")[0].disabled = true;
+        document.getElementsByName("pm4_id")[0].disabled = true;
+        document.getElementsByName("pm10_id")[0].disabled = true;
+        document.getElementsByName("lumen_id")[0].disabled = true;
+        document.getElementsByName("red_id")[0].disabled = true;
+        document.getElementsByName("orange_id")[0].disabled = true;
+        document.getElementsByName("yellow_id")[0].disabled = true;
+        document.getElementsByName("green_id")[0].disabled = true;
+        document.getElementsByName("blue_id")[0].disabled = true;
+        document.getElementsByName("violet_id")[0].disabled = true;
+        document.getElementsByName("uv_index_id")[0].disabled = true;
+        document.getElementsByName("uv_a_id")[0].disabled = true;
+        document.getElementsByName("uv_b_id")[0].disabled = true;
+    }
 </script>

@@ -22,7 +22,19 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from configuration_modules.app_config_access import installed_sensors, open_sense_map_config as osm_config
+from operations_modules.online_services_modules.osm_sensor_templates import raspberry_pi_sense_hat
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_enviro
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_enviro_plus
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_pms5003
+from operations_modules.online_services_modules.osm_sensor_templates import sensirion_sps30
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_bme680
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_bmp280
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_ltr_559
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_as7262
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_bh1745
+from operations_modules.online_services_modules.osm_sensor_templates import pimoroni_veml6075
 from sensor_modules import sensor_access
+
 
 no_sensor_present = app_cached_variables.no_sensor_present
 database_variables = app_cached_variables.database_variables
@@ -89,6 +101,9 @@ def _open_sense_map_server():
                 if database_variables.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
                     pm2_5 = pm_readings[database_variables.particulate_matter_2_5]
                     body_json[osm_config.pm2_5_id] = str(pm2_5)
+                if database_variables.particulate_matter_4 in pm_readings and osm_config.pm4_id != "":
+                    pm4 = pm_readings[database_variables.particulate_matter_4]
+                    body_json[osm_config.pm4_id] = str(pm4)
                 if database_variables.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
                     pm10 = pm_readings[database_variables.particulate_matter_10]
                     body_json[osm_config.pm10_id] = str(pm10)
@@ -209,250 +224,27 @@ def add_sensor_to_account(html_request):
 def _get_osm_registration_sensors():
     sensor_types = []
     if installed_sensors.raspberry_pi_sense_hat:
-        sensor_types.append({
-            "title": "Temperature",
-            "unit": "°C",
-            "sensorType": "RPiSenseHAT",
-            "icon": "osem-thermometer"
-        })
-        sensor_types.append({
-            "title": "Pressure",
-            "unit": "hPa",
-            "sensorType": "RPiSenseHAT",
-            "icon": "osem-barometer"
-        })
-        sensor_types.append({
-            "title": "Humidity",
-            "unit": "%RH",
-            "sensorType": "RPiSenseHAT",
-            "icon": "osem-humidity"
-        })
+        sensor_types += raspberry_pi_sense_hat.get_osm_sensor_template()
     if installed_sensors.pimoroni_enviro:
-        sensor_types.append({
-            "title": "Temperature",
-            "unit": "°C",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-thermometer"
-        })
-        sensor_types.append({
-            "title": "Pressure",
-            "unit": "hPa",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-barometer"
-        })
-        sensor_types.append({
-            "title": "Lumen",
-            "unit": "lm",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Red",
-            "unit": "lm",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Green",
-            "unit": "lm",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Blue",
-            "unit": "lm",
-            "sensorType": "PimoroniEnviroPHAT",
-            "icon": "osem-brightness"
-        })
+        sensor_types += pimoroni_enviro.get_osm_sensor_template()
     if installed_sensors.pimoroni_enviroplus:
-        sensor_types.append({
-            "title": "Temperature",
-            "unit": "°C",
-            "sensorType": "PimoroniEnviroPlus",
-            "icon": "osem-thermometer"
-        })
-        sensor_types.append({
-            "title": "Pressure",
-            "unit": "hPa",
-            "sensorType": "PimoroniEnviroPlus",
-            "icon": "osem-barometer"
-        })
-        sensor_types.append({
-            "title": "Humidity",
-            "unit": "%RH",
-            "sensorType": "PimoroniEnviroPlus",
-            "icon": "osem-humidity"
-        })
-        sensor_types.append({
-            "title": "Lumen",
-            "unit": "lm",
-            "sensorType": "PimoroniEnviroPlus",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Oxidised",
-            "unit": "kΩ",
-            "sensorType": "PimoroniEnviroPlus"
-        })
-        sensor_types.append({
-            "title": "Reduced",
-            "unit": "kΩ",
-            "sensorType": "PimoroniEnviroPlus"
-        })
-        sensor_types.append({
-            "title": "nh3",
-            "unit": "kΩ",
-            "sensorType": "PimoroniEnviroPlus"
-        })
+        sensor_types += pimoroni_enviro_plus.get_osm_sensor_template()
     if installed_sensors.pimoroni_pms5003:
-        sensor_types.append({
-            "title": "PM1",
-            "unit": "µg/m³",
-            "sensorType": "PSM5003",
-            "icon": "osem-cloud"
-        })
-        sensor_types.append({
-            "title": "PM2.5",
-            "unit": "µg/m³",
-            "sensorType": "PSM5003",
-            "icon": "osem-cloud"
-        })
-        sensor_types.append({
-            "title": "PM10",
-            "unit": "µg/m³",
-            "sensorType": "PSM5003",
-            "icon": "osem-cloud"
-        })
+        sensor_types += pimoroni_pms5003.get_osm_sensor_template()
+    if installed_sensors.sensirion_sps30:
+        sensor_types += sensirion_sps30.get_osm_sensor_template()
     if installed_sensors.pimoroni_bme680:
-        sensor_types.append({
-            "title": "Temperature",
-            "unit": "°C",
-            "sensorType": "PimoroniBME680",
-            "icon": "osem-thermometer"
-        })
-        sensor_types.append({
-            "title": "Pressure",
-            "unit": "hPa",
-            "sensorType": "PimoroniBME680",
-            "icon": "osem-barometer"
-        })
-        sensor_types.append({
-            "title": "Humidity",
-            "unit": "%RH",
-            "sensorType": "PimoroniBME680",
-            "icon": "osem-humidity"
-        })
-        sensor_types.append({
-            "title": "Gas VOC",
-            "unit": "kΩ",
-            "sensorType": "PimoroniBME680"
-        })
+        sensor_types += pimoroni_bme680.get_osm_sensor_template()
     if installed_sensors.pimoroni_bmp280:
-        sensor_types.append({
-            "title": "Temperature",
-            "unit": "°C",
-            "sensorType": "PimoroniBMP280",
-            "icon": "osem-thermometer"
-        })
-        sensor_types.append({
-            "title": "Pressure",
-            "unit": "hPa",
-            "sensorType": "PimoroniBMP280",
-            "icon": "osem-barometer"
-        })
-        sensor_types.append({
-            "title": "Altitude",
-            "unit": "m",
-            "sensorType": "PimoroniBMP280"
-        })
+        sensor_types += pimoroni_bmp280.get_osm_sensor_template()
     if installed_sensors.pimoroni_ltr_559:
-        sensor_types.append({
-            "title": "Lumen",
-            "unit": "lm",
-            "sensorType": "PimoroniLTR559",
-            "icon": "osem-brightness"
-        })
+        sensor_types += pimoroni_ltr_559.get_osm_sensor_template()
     if installed_sensors.pimoroni_as7262:
-        sensor_types.append({
-            "title": "Red",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Orange",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Yellow",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Green",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Blue",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Violet",
-            "unit": "lm",
-            "sensorType": "PimoroniAS7262",
-            "icon": "osem-brightness"
-        })
+        sensor_types += pimoroni_as7262.get_osm_sensor_template()
     if installed_sensors.pimoroni_bh1745:
-        sensor_types.append({
-            "title": "Lumen",
-            "unit": "lm",
-            "sensorType": "PimoroniBH1745",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Red",
-            "unit": "lm",
-            "sensorType": "PimoroniBH1745",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Green",
-            "unit": "lm",
-            "sensorType": "PimoroniBH1745",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "Blue",
-            "unit": "lm",
-            "sensorType": "PimoroniBH1745",
-            "icon": "osem-brightness"
-        })
+        sensor_types += pimoroni_bh1745.get_osm_sensor_template()
     if installed_sensors.pimoroni_veml6075:
-        sensor_types.append({
-            "title": "UltraVioletIndex",
-            "unit": "UV",
-            "sensorType": "PimoroniVEML6075",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "UltraVioletA",
-            "unit": "UVA",
-            "sensorType": "PimoroniVEML6075",
-            "icon": "osem-brightness"
-        })
-        sensor_types.append({
-            "title": "UltraVioletB",
-            "unit": "UVB",
-            "sensorType": "PimoroniVEML6075",
-            "icon": "osem-brightness"
-        })
+        sensor_types += pimoroni_veml6075.get_osm_sensor_template()
     return sensor_types
 
 
@@ -468,4 +260,4 @@ def get_json_web_login_token(account_email, account_password):
     elif response.status_code == 403:
         logger.network_logger.debug("Open Sense Map - Get Token: Login Failed")
     else:
-        logger.network_logger.warning("Open Sense Map - Get Token: Login went wrong somehow...")
+        logger.network_logger.warning("Open Sense Map - Get Token: Login went wrong somehow ...")
