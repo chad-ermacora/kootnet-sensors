@@ -76,6 +76,7 @@ class CreateNetworkGetCommands:
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
+        self.display_configuration_file = "GetDisplayConfiguration"
         self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.variance_config = "GetVarianceConfiguration"

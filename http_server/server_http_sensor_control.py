@@ -27,6 +27,7 @@ from operations_modules import network_wifi
 from operations_modules import software_version
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
@@ -78,6 +79,7 @@ class CreateReplacementVariables:
     def report_config(self, ip_address):
         try:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
+            get_display_config = self.remote_sensor_commands.display_configuration_file
             command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
             command_config_os_wu = self.remote_sensor_commands.weather_underground_config_file
             command_config_os_luftdaten = self.remote_sensor_commands.luftdaten_config_file
@@ -119,22 +121,29 @@ class CreateReplacementVariables:
                 open_sense_map_colour = "orangered"
 
             sensor_date_time = get_http_sensor_reading(ip_address, command=self.remote_sensor_commands.system_date_time)
+
             sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
-            installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             sensors_config = CreatePrimaryConfiguration(load_from_file=False)
             sensors_config.set_config_with_str(sensor_config_raw)
 
+            display_config_raw = get_http_sensor_reading(ip_address, command=get_display_config)
+            display_config = CreateDisplayConfiguration(load_from_file=False)
+            display_config.set_config_with_str(display_config_raw)
+
+            installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
+            installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
+            installed_sensors_config.set_config_with_str(installed_sensors_raw)
+
+            luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + ip_address
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
+
+            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + ip_address
             luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
             luftdaten_colour = "#F4A460"
             if luftdaten_config.luftdaten_enabled:
                 luftdaten_colour = "lightgreen"
 
-            installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
-            installed_sensors_config.set_config_with_str(installed_sensors_raw)
             try:
                 installed_sensors_lines = installed_sensors_raw.strip().split("\n")
                 rpi_model_name = installed_sensors_lines[3].split("=")[1].strip()
@@ -144,7 +153,7 @@ class CreateReplacementVariables:
             installed_sensors_config.config_settings_names[2] = rpi_model_name
 
             text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
-            text_display = str(self.get_enabled_disabled_text(app_config_access.display_config.enable_display))
+            text_display = str(self.get_enabled_disabled_text(display_config.enable_display))
             text_interval_recording = str(self.get_enabled_disabled_text(sensors_config.enable_interval_recording))
             text_interval_seconds = str(sensors_config.sleep_duration_interval)
             text_trigger_recording = str(self.get_enabled_disabled_text(sensors_config.enable_trigger_recording))
@@ -159,7 +168,7 @@ class CreateReplacementVariables:
                 debug_colour = "lightgreen"
 
             display_colour = "#F4A460"
-            if app_config_access.display_config.enable_display:
+            if display_config.enable_display:
                 display_colour = "lightgreen"
 
             interval_recording_colour = "#F4A460"

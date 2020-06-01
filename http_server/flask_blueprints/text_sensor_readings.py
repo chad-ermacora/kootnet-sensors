@@ -18,6 +18,7 @@
 """
 from flask import Blueprint, request
 from operations_modules import logger
+from operations_modules.app_cached_variables import command_data_separator
 from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from sensor_modules import sensor_access
@@ -28,7 +29,12 @@ html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 @html_sensor_readings_routes.route("/GetIntervalSensorReadings")
 def get_interval_readings():
     logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    return str(get_interval_sensor_readings())
+    sensor_readings = get_interval_sensor_readings()
+    readings_data = ""
+    for reading in sensor_readings[1]:
+        readings_data += str(reading) + ","
+    readings_data = readings_data[:-1]
+    return str(sensor_readings[0] + command_data_separator + readings_data)
 
 
 @html_sensor_readings_routes.route("/GetSensorsLatency")
