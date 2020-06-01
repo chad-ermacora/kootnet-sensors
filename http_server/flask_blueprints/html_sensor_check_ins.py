@@ -108,36 +108,41 @@ def view_sensor_check_ins():
         get_current_uptime_sql = "SELECT SensorUpTime FROM '" + cleaned_id + "' ORDER BY DateTime DESC LIMIT 1;"
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
+        web_view_last_checkin_date = clean_last_checkin_date
         if len(clean_last_checkin_date) > 16:
+
             try:
-                last_remote_checkin_date = datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S")
-                if (current_date_time - last_remote_checkin_date) < timedelta(0.04167):
+                checkin_date_converted = datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S")
+                if (current_date_time - checkin_date_converted) < timedelta(hours=1):
                     contact_in_past_hour += 1
                     contact_in_past_12hour += 1
                     contact_in_past_day += 1
                     contact_in_past_week += 1
                     contact_in_past_month += 1
-                elif (current_date_time - last_remote_checkin_date) < timedelta(0.5):
+                elif (current_date_time - checkin_date_converted) < timedelta(hours=12):
                     contact_in_past_12hour += 1
                     contact_in_past_day += 1
                     contact_in_past_week += 1
                     contact_in_past_month += 1
-                elif (current_date_time - last_remote_checkin_date) < timedelta(1):
+                elif (current_date_time - checkin_date_converted) < timedelta(days=1):
                     contact_in_past_day += 1
                     contact_in_past_week += 1
                     contact_in_past_month += 1
-                elif (current_date_time - last_remote_checkin_date) < timedelta(7):
+                elif (current_date_time - checkin_date_converted) < timedelta(days=7):
                     contact_in_past_week += 1
                     contact_in_past_month += 1
-                elif (current_date_time - last_remote_checkin_date) < timedelta(30):
+                elif (current_date_time - checkin_date_converted) < timedelta(weeks=4):
                     contact_in_past_month += 1
+                checkin_hour_offset = app_cached_variables.checkin_hour_offset
+                checkin_date_converted = checkin_date_converted + timedelta(hours=checkin_hour_offset)
+                web_view_last_checkin_date = checkin_date_converted.strftime("%Y-%m-%d %H:%M:%S")
             except Exception as error:
                 logger.network_logger.warning("Error in last checkin verification: " + str(error))
         sensor_statistics += "Sensor ID: " + cleaned_id + \
                              "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
                              "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
                              "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
-                             "\nLast Checkin in 'UTC0': " + clean_last_checkin_date + "\n\n"
+                             "\nLast Check-in DateTime: " + str(web_view_last_checkin_date) + "\n\n"
     sensor_statistics_lines = sensor_statistics.split("\n")
     if len(sensor_statistics_lines) > max_statistics_lines:
         sensor_statistics = ""
@@ -153,6 +158,7 @@ def view_sensor_check_ins():
                            TotalSensorCountDay=contact_in_past_day,
                            TotalSensorCountWeek=contact_in_past_week,
                            TotalSensorCountMonth=contact_in_past_month,
+                           CheckinHourOffset=app_cached_variables.checkin_hour_offset,
                            CheckinSensorStatistics=sensor_statistics)
 
 
@@ -207,6 +213,20 @@ def clear_check_ins_counts():
                     _get_sql_element(sensor_sensor_log)]
         if _get_sql_element(raw_last_checkin_date) != "NA":
             write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
+    return view_sensor_check_ins()
+
+
+@html_sensor_check_ins_routes.route("/SaveCheckinSettings", methods=["POST"])
+@auth.login_required
+def html_set_checkin_settings():
+    logger.network_logger.debug("** HTML Apply - Saving Check-ins Settings - Source: " + str(request.remote_addr))
+    if request.method == "POST":
+        if request.form.get("checkin_hour_offset") is not None:
+            try:
+                new_offset = float(request.form.get("checkin_hour_offset"))
+                app_cached_variables.checkin_hour_offset = new_offset
+            except Exception as error:
+                logger.network_logger.warning("Unable to set new Sensor Check-in Hour Offset: " + str(error))
     return view_sensor_check_ins()
 
 

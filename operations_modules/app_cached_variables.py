@@ -289,6 +289,9 @@ wifi_psk = ""
 http_flask_user = "Kootnet"
 http_flask_password = "sensors"
 
+# Software Check-in Variables
+checkin_hour_offset = 0
+
 # Running "Service" Threads
 http_server_thread = None
 interval_recording_thread = None
