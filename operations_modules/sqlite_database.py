@@ -110,6 +110,7 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         db_connection.close()
         debug_log_message = str(columns_already_made) + " Columns found in SQL Tables, "
         logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
+        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on Check-in Database Failed: " + str(error))
@@ -155,6 +156,7 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         db_connection.close()
         debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
         logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
+        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on Main Database Failed: " + str(error))
