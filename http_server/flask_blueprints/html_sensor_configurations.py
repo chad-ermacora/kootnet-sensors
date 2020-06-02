@@ -16,15 +16,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from plotly import __version__ as plotly_version
-from gevent import __version__ as gevent_version
-from requests import __version__ as requests_version
-from werkzeug import __version__ as werkzeug_version
-from numpy import __version__ as numpy_version
+from operations_modules import logger
+try:
+    from plotly import __version__ as plotly_version
+    from numpy import __version__ as numpy_version
+    from gevent import __version__ as gevent_version
+    from requests import __version__ as requests_version
+    from werkzeug import __version__ as werkzeug_version
+except ImportError as import_error:
+    logger.primary_logger.warning("Import Versions Failed: " + str(import_error))
+    plotly_version = "Unknown"
+    numpy_version = "Unknown"
+    gevent_version = "Unknown"
+    requests_version = "Unknown"
+    werkzeug_version = "Unknown"
 from flask import Blueprint, render_template, request, __version__ as flask_version
 from werkzeug.security import generate_password_hash
 from cryptography import __version__ as cryptography_version
-from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import software_version
