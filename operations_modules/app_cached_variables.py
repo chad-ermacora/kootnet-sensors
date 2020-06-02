@@ -292,6 +292,10 @@ http_flask_password = "sensors"
 
 # Software Check-in Variables
 checkin_hour_offset = 0
+checkin_search_sensor_id = ""
+checkin_sensor_info = ""
+checkin_search_primary_log = ""
+checkin_search_sensors_log = ""
 
 # Running "Service" Threads
 http_server_thread = None
