@@ -255,8 +255,14 @@ def get_altitude():
     """ Returns sensors altitude. """
     if app_config_access.installed_sensors.pimoroni_bmp280:
         altitude = sensors_direct.pimoroni_bmp280_a.altitude()
+    elif app_config_access.installed_sensors.pimoroni_bme680:
+        altitude = sensors_direct.pimoroni_bme680_a.altitude()
+    elif app_config_access.installed_sensors.pimoroni_enviro:
+        altitude = sensors_direct.pimoroni_enviro_a.altitude()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         altitude = sensors_direct.pimoroni_enviroplus_a.altitude()
+    elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        altitude = sensors_direct.raspberry_pi_a.altitude()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         altitude = sensors_direct.dummy_sensors.altitude()
     else:

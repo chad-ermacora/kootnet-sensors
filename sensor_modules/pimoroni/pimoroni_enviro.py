@@ -62,6 +62,20 @@ class CreateEnviro:
         self.sensor_in_use = False
         return int(pressure_hpa)
 
+    def altitude(self, qnh=1013.25):
+        """ Returns Altitude as a Float. """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        try:
+            pressure = self.enviro_import.weather.pressure(unit="hPa")
+            var_altitude = 44330.0 * (1.0 - pow(pressure / qnh, (1.0 / 5.255)))
+        except Exception as error:
+            var_altitude = 0.0
+            logger.sensors_logger.error("Pimoroni Enviro Altitude - Failed: " + str(error))
+        self.sensor_in_use = False
+        return round(var_altitude, round_decimal_to)
+
     def lumen(self):
         """ Returns Lumen as a Integer in lm. """
         while self.sensor_in_use:
