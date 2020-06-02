@@ -65,7 +65,7 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
         sql_column_data = sqlite_database.fetchall()
         database_connection.close()
     except Exception as error:
-        logger.primary_logger.error("SQL Execute Get Data Error: " + str(error))
+        logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
         sql_column_data = []
     return sql_column_data
 

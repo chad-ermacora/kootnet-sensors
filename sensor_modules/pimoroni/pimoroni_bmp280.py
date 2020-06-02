@@ -66,10 +66,7 @@ class CreateBMP280:
         return int(pressure_hpa)
 
     def altitude(self):
-        """ Returns Altitude as a Float. """
-        # This should probably have a baseline of one sample every second for 100 seconds, but have it's own thread
-        # Having it's own thread should allow the program to continue while waiting for this
-        # Replace "pressure" with a baseline of the sum of 100 divided by the length 100
+        """ Returns Altitude in meters as a Float. """
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
