@@ -161,19 +161,6 @@ class CreateEnviroPlus:
         self.sensor_in_use = False
         return int(pressure_hpa)
 
-    def altitude(self):
-        """ Returns Altitude as a Float. """
-        while self.sensor_in_use:
-            time.sleep(pause_sensor_during_access_sec)
-        self.sensor_in_use = True
-        try:
-            var_altitude = self.bme280.get_altitude()
-        except Exception as error:
-            var_altitude = 0.0
-            logger.sensors_logger.error("Pimoroni Enviro+ Altitude - Failed: " + str(error))
-        self.sensor_in_use = False
-        return round(var_altitude, round_decimal_to)
-
     def humidity(self):
         """ Returns Humidity as a Float. """
         while self.sensor_in_use:

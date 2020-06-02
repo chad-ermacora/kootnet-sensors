@@ -251,23 +251,20 @@ def get_pressure():
     return pressure
 
 
-def get_altitude():
+def get_altitude(qnh=1013.25):
     """ Returns sensors altitude. """
-    if app_config_access.installed_sensors.pimoroni_bmp280:
-        altitude = sensors_direct.pimoroni_bmp280_a.altitude()
-    elif app_config_access.installed_sensors.pimoroni_bme680:
-        altitude = sensors_direct.pimoroni_bme680_a.altitude()
-    elif app_config_access.installed_sensors.pimoroni_enviro:
-        altitude = sensors_direct.pimoroni_enviro_a.altitude()
-    elif app_config_access.installed_sensors.pimoroni_enviroplus:
-        altitude = sensors_direct.pimoroni_enviroplus_a.altitude()
-    elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        altitude = sensors_direct.raspberry_pi_a.altitude()
-    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
-        altitude = sensors_direct.dummy_sensors.altitude()
-    else:
+    round_decimal_to = 5
+    temperature = get_sensor_temperature()
+    pressure = get_pressure()
+    if pressure == no_sensor_present or temperature == no_sensor_present:
         return no_sensor_present
-    return altitude
+
+    try:
+        var_altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
+    except Exception as error:
+        var_altitude = 0.0
+        logger.sensors_logger.error("Altitude Calculation using Temperature & Pressure Failed: " + str(error))
+    return round(var_altitude, round_decimal_to)
 
 
 def get_humidity():

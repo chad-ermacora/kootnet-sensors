@@ -93,17 +93,6 @@ class CreateBME680:
             logger.sensors_logger.error("Pimoroni BME680 Pressure - Failed: " + str(error))
         return int(pressure_hpa)
 
-    def altitude(self, qnh=1013.25):
-        """ Returns Altitude as a Float. """
-        self._update_sensor_readings()
-        try:
-            pressure = self.sensor.data.pressure
-            var_altitude = 44330.0 * (1.0 - pow(pressure / qnh, (1.0 / 5.255)))
-        except Exception as error:
-            var_altitude = 0.0
-            logger.sensors_logger.error("Pimoroni BME680 Altitude - Failed: " + str(error))
-        return round(var_altitude, round_decimal_to)
-
     def humidity(self):
         """ Returns Humidity as a Float. """
         self._update_sensor_readings()
