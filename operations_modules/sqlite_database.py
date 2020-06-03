@@ -83,6 +83,7 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
         sensor_check_in_version = database_variables.sensor_check_in_version
+        sensor_check_in_installed_sensors = database_variables.sensor_check_in_installed_sensors
         sensor_check_in_primary_log = database_variables.sensor_check_in_primary_log
         sensor_check_in_sensors_log = database_variables.sensor_check_in_sensors_log
         sensor_uptime = database_variables.sensor_uptime
@@ -90,6 +91,10 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         for sensor_id in sensor_ids:
             cleaned_id = str(sensor_id[0]).strip()
             if check_sql_table_and_column(cleaned_id, sensor_check_in_version, db_cursor):
+                columns_created += 1
+            else:
+                columns_already_made += 1
+            if check_sql_table_and_column(cleaned_id, sensor_check_in_installed_sensors, db_cursor):
                 columns_created += 1
             else:
                 columns_already_made += 1

@@ -135,6 +135,7 @@ class CreateDatabaseVariables:
         self.other_table_column_notes = "Notes"
 
         self.sensor_check_in_version = "KootnetVersion"
+        self.sensor_check_in_installed_sensors = "installed_sensors"
         self.sensor_check_in_primary_log = "primary_log"
         self.sensor_check_in_sensors_log = "sensors_log"
 
@@ -293,6 +294,7 @@ http_flask_password = "sensors"
 # Software Check-in Variables
 checkin_hour_offset = 0
 checkin_search_sensor_id = ""
+checkin_search_sensor_installed_sensors = ""
 checkin_sensor_info = ""
 checkin_search_primary_log = ""
 checkin_search_sensors_log = ""

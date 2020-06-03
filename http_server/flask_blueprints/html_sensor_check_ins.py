@@ -41,6 +41,7 @@ def remote_sensor_check_ins():
         db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
         db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
         db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
+        db_sensor_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
         db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
         db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
 
@@ -50,6 +51,7 @@ def remote_sensor_check_ins():
 
             create_table_and_datetime(checkin_id, db_cursor)
             check_sql_table_and_column(checkin_id, db_sensor_check_in_version, db_cursor)
+            check_sql_table_and_column(checkin_id, db_sensor_installed_sensors, db_cursor)
             check_sql_table_and_column(checkin_id, db_sensor_uptime, db_cursor)
             check_sql_table_and_column(checkin_id, db_sensor_check_in_primary_log, db_cursor)
             check_sql_table_and_column(checkin_id, db_sensor_check_in_sensors_log, db_cursor)
@@ -59,14 +61,15 @@ def remote_sensor_check_ins():
             sql_ex_string = "INSERT OR IGNORE INTO '" + checkin_id + "' (" + \
                             db_all_tables_datetime + "," + \
                             db_sensor_check_in_version + "," + \
+                            db_sensor_installed_sensors + "," + \
                             db_sensor_uptime + "," + \
                             db_sensor_check_in_primary_log + "," + \
                             db_sensor_check_in_sensors_log + ")" + \
-                            " VALUES (?,?,?,?,?);"
+                            " VALUES (?,?,?,?,?,?);"
 
             sql_data = [current_datetime, str(request.form.get("program_version")),
-                        str(request.form.get("sensor_uptime")), str(request.form.get("primary_log")),
-                        str(request.form.get("sensor_log"))]
+                        str(request.form.get("installed_sensors")), str(request.form.get("sensor_uptime")),
+                        str(request.form.get("primary_log")), str(request.form.get("sensor_log"))]
             write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
             return "OK", 202
         except Exception as error:
@@ -177,7 +180,7 @@ def view_sensor_check_ins():
 def search_sensor_delete_senor_id():
     db_location = file_locations.sensor_checkin_database
     sensor_id = app_cached_variables.checkin_search_sensor_id
-    if app_cached_variables.checkin_search_sensor_id != "":
+    if app_cached_variables.checkin_search_sensor_id != "" and app_cached_variables.checkin_search_sensor_id.isalnum():
         write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_location)
         app_cached_variables.checkin_sensor_info = ""
         app_cached_variables.checkin_search_sensor_id = ""
@@ -191,7 +194,7 @@ def search_sensor_delete_senor_id():
 def search_sensor_check_ins():
     if request.form.get("sensor_id") is not None:
         sensor_id = str(request.form.get("sensor_id"))
-        if len(sensor_id) == 34:
+        if len(sensor_id) == 34 and sensor_id.isalnum():
             app_cached_variables.checkin_search_sensor_id = sensor_id
             new_sensor_info_string = _get_sensor_info_string(app_cached_variables.checkin_search_sensor_id)
             app_cached_variables.checkin_sensor_info = new_sensor_info_string
@@ -206,52 +209,69 @@ def search_sensor_check_ins():
 def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checkin_database):
     app_cached_variables.checkin_search_primary_log = ""
     app_cached_variables.checkin_search_sensors_log = ""
+    if sensor_id.isalnum():
+        get_primary_log_sql = "SELECT primary_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        primary_logs = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
 
-    get_primary_log_sql = "SELECT primary_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
-    primary_logs = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
+        get_sensors_log_sql = "SELECT sensors_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
 
-    get_sensors_log_sql = "SELECT sensors_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
-    sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
-
-    for data_entry in primary_logs:
-        for log_entry in data_entry:
-            if log_entry != "":
-                app_cached_variables.checkin_search_primary_log = str(log_entry)
-                break
-        break
-    for data_entry in sensors_logs:
-        for log_entry in data_entry:
-            if log_entry != "":
-                app_cached_variables.checkin_search_sensors_log = str(log_entry)
-                break
-        break
+        for data_entry in primary_logs:
+            for log_entry in data_entry:
+                if log_entry != "":
+                    app_cached_variables.checkin_search_primary_log = str(log_entry)
+                    break
+            break
+        for data_entry in sensors_logs:
+            for log_entry in data_entry:
+                if log_entry != "":
+                    app_cached_variables.checkin_search_sensors_log = str(log_entry)
+                    break
+            break
 
 
 def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin_database):
-    get_sensor_checkin_count_per_id_sql = "SELECT count('DateTime') FROM '" + sensor_id + "';"
-    checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_location)
+    if sensor_id.isalnum():
+        get_sensor_checkin_count_per_id_sql = "SELECT count('DateTime') FROM '" + sensor_id + "';"
+        checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_location)
 
-    get_last_sensor_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
-    last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
+        get_last_sensor_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
 
-    get_current_version_sql = "SELECT KootnetVersion FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
-    current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
+        get_current_version_sql = "SELECT KootnetVersion FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
 
-    get_current_uptime_sql = "SELECT SensorUpTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
-    current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
-    clean_last_checkin_date = _get_sql_element(last_checkin_date)
+        get_installed_sensors_sql = "SELECT installed_sensors FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        current_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
 
-    checkin_hour_offset = app_cached_variables.checkin_hour_offset
-    web_view_last_checkin_date = clean_last_checkin_date
-    if clean_last_checkin_date != "NA":
-        checkin_date_converted = datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S")
-        checkin_date_converted = checkin_date_converted + timedelta(hours=checkin_hour_offset)
-        web_view_last_checkin_date = checkin_date_converted.strftime("%Y-%m-%d %H:%M:%S")
-    return "Sensor ID: " + sensor_id + \
-           "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
-           "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
-           "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
-           "\nLast Check-in DateTime: " + str(web_view_last_checkin_date) + "\n\n"
+        for data_entry in current_installed_sensors:
+            for log_entry in data_entry:
+                if log_entry != "":
+                    app_cached_variables.checkin_search_sensor_installed_sensors = str(log_entry)
+                    break
+            break
+
+        get_current_uptime_sql = "SELECT SensorUpTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
+        clean_last_checkin_date = _get_sql_element(last_checkin_date)
+
+        checkin_hour_offset = app_cached_variables.checkin_hour_offset
+        web_view_last_checkin_date = clean_last_checkin_date
+        if clean_last_checkin_date != "NA":
+            checkin_date_converted = datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S")
+            checkin_date_converted = checkin_date_converted + timedelta(hours=checkin_hour_offset)
+            web_view_last_checkin_date = checkin_date_converted.strftime("%Y-%m-%d %H:%M:%S")
+        return "Sensor ID: " + sensor_id + \
+               "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
+               "\n" + app_cached_variables.checkin_search_sensor_installed_sensors + \
+               "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
+               "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
+               "\nLast Check-in DateTime: " + str(web_view_last_checkin_date) + "\n\n"
+    return "Sensor ID: Bad Sensor ID" + \
+           "\nSoftware Version: NA" + \
+           "\nSensor Uptime in Minutes: NA" + \
+           "\nTotal Checkin Count: NA" + \
+           "\nLast Check-in DateTime: NA\n\n"
 
 
 @html_sensor_check_ins_routes.route("/ClearOldCheckinData")

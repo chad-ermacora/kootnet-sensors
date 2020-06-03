@@ -35,10 +35,17 @@ class CreateCheckinServer:
 
         previous_primary_logs = ""
         previous_sensors_logs = ""
+        previous_installed_sensors = ""
         while True:
             try:
+                current_installed_sensors = app_config_access.installed_sensors.get_installed_names_str()
                 current_primary_logs = logger.get_sensor_log(file_locations.primary_log, max_lines=40)
                 current_sensors_logs = logger.get_sensor_log(file_locations.sensors_log, max_lines=40)
+                if current_installed_sensors == previous_installed_sensors:
+                    current_installed_sensors = ""
+                else:
+                    previous_installed_sensors = current_installed_sensors
+
                 if current_primary_logs == previous_primary_logs:
                     current_primary_logs = ""
                 else:
@@ -53,6 +60,7 @@ class CreateCheckinServer:
                               data={"checkin_id": app_config_access.primary_config.sensor_checkin_id,
                                     "program_version": version,
                                     "sensor_uptime": sensor_access.get_uptime_minutes(),
+                                    "installed_sensors": current_installed_sensors,
                                     "primary_log": current_primary_logs,
                                     "sensor_log": current_sensors_logs})
             except Exception as error:
