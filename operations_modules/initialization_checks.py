@@ -35,7 +35,7 @@ def run_program_start_checks():
     This function is used before most of the program has started.
     Sets file permissions, checks the database and generates the HTTPS certificates if not present.
     """
-    logger.primary_logger.info(" -- Starting Programs Checks ...")
+    logger.primary_logger.info(" -- Pre-Start Initializations Started")
     _check_directories()
     _set_file_permissions()
     check_main_database_structure()
@@ -44,6 +44,7 @@ def run_program_start_checks():
     _check_sensor_id()
     if software_version.old_version != software_version.version:
         run_configuration_upgrade_checks()
+    logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
 def _check_directories():

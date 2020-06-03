@@ -25,7 +25,8 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
-from http_server.server_http_generic_functions import get_sensor_control_report, get_html_hidden_state
+from http_server.server_http_generic_functions import get_html_hidden_state
+from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 

@@ -27,7 +27,8 @@ from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
+from http_server.server_http_generic_functions import message_and_return
+from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
     check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
     create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, get_html_reports_combo, \

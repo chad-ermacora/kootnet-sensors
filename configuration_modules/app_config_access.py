@@ -30,11 +30,11 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
+logger.primary_logger.info(" -- Loading Configurations")
+# Make sure all hardware based sensors are marked as not installed if lacking root permissions
 if running_with_root:
-    logger.primary_logger.debug("Initializing configurations")
     installed_sensors = CreateInstalledSensorsConfiguration()
 else:
-    logger.primary_logger.warning(" -- Sensors Initialization Skipped - root permissions required for sensors")
     installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
     if CreateInstalledSensorsConfiguration().kootnet_dummy_sensor:
         installed_sensors.kootnet_dummy_sensor = 1
@@ -51,3 +51,4 @@ mqtt_subscriber_config = CreateMQTTSubscriberConfiguration()
 weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()
+logger.primary_logger.info(" -- Configurations Loaded")

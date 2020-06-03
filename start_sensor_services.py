@@ -48,7 +48,7 @@ from operations_modules.online_services_modules.open_sense_map import start_open
 from operations_modules.mqtt.server_mqtt_broker import start_mqtt_broker_server
 from http_server.server_http import start_https_server
 
-logger.primary_logger.info(" -- Kootnet Sensor Programs Starting ...")
+logger.primary_logger.debug(" -- Starting Kootnet Sensor Threads")
 dummy_sensors_installed = app_config_access.installed_sensors.kootnet_dummy_sensor
 if dummy_sensors_installed or running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up Interval & Trigger Sensor Recording
@@ -82,6 +82,6 @@ start_sensor_checkin_server()
 # Start Version Check Server (Checks for updates)
 start_new_version_check_server()
 
-logger.primary_logger.debug(" -- Kootnet Sensor Programs Initializations Done")
+logger.primary_logger.debug(" -- Thread Initializations Complete")
 while True:
     sleep(3600)
