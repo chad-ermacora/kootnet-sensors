@@ -6,7 +6,7 @@ Created on Wed June 3 12:21:56 2020
 
 @author: OO-Dragon
 """
-from operations_modules.app_cached_variables import no_sensor_present
+from operations_modules.app_cached_variables import no_sensor_present, database_variables
 
 
 class CreateNoSensorsDummySensor:
@@ -57,7 +57,10 @@ class CreateNoSensorsDummySensor:
     @staticmethod
     def particulate_matter_data():
         """ Returns NoSensor. """
-        return no_sensor_present
+        return {database_variables.particulate_matter_1: no_sensor_present,
+                database_variables.particulate_matter_2_5: no_sensor_present,
+                database_variables.particulate_matter_4: no_sensor_present,
+                database_variables.particulate_matter_10: no_sensor_present}
 
     @staticmethod
     def ultra_violet_index():

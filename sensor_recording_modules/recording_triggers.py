@@ -163,7 +163,7 @@ def _trigger_recording():
         humidity = CreateTriggerVarianceThread(humidity_data)
         distance = CreateTriggerVarianceThread(distance_data)
         lumen = CreateTriggerVarianceThread(lumen_data)
-        visible_ems = CreateTriggerVarianceThread(visible_ems_data)
+        # visible_ems = CreateTriggerVarianceThread(visible_ems_data)
         accelerometer = CreateTriggerVarianceThread(accelerometer_data)
         magnetometer = CreateTriggerVarianceThread(magnetometer_data)
         gyroscope = CreateTriggerVarianceThread(gyroscope_data)
@@ -176,7 +176,7 @@ def _trigger_recording():
         app_cached_variables.trigger_thread_humidity = humidity.monitored_thread
         app_cached_variables.trigger_thread_distance = distance.monitored_thread
         app_cached_variables.trigger_thread_lumen = lumen.monitored_thread
-        app_cached_variables.trigger_thread_visible_ems = visible_ems.monitored_thread
+        # app_cached_variables.trigger_thread_visible_ems = visible_ems.monitored_thread
         app_cached_variables.trigger_thread_accelerometer = accelerometer.monitored_thread
         app_cached_variables.trigger_thread_magnetometer = magnetometer.monitored_thread
         app_cached_variables.trigger_thread_gyroscope = gyroscope.monitored_thread

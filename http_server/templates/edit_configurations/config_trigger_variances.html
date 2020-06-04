@@ -124,7 +124,7 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="gas" value="" {{ CheckedGas }}>
+                            <input type="checkbox" name="gas" value="" {{ CheckedGas }} disabled>
                             Gas
                             <span class="checkmark_checkbox"></span>
                         </label>
@@ -135,7 +135,7 @@
                             Index Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_index"
-                                   value="{{ TriggerGasIndex }}">
+                                   value="{{ TriggerGasIndex }}" disabled>
                         </label>
                     </div>
 
@@ -144,7 +144,7 @@
                             Oxidising Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_oxidising"
-                                   value="{{ TriggerGasOxidising }}">
+                                   value="{{ TriggerGasOxidising }}" disabled>
                         </label>
                     </div>
 
@@ -153,7 +153,7 @@
                             Reducing Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_reducing"
-                                   value="{{ TriggerGasReducing }}">
+                                   value="{{ TriggerGasReducing }}" disabled>
                         </label>
                     </div>
 
@@ -162,7 +162,7 @@
                             NH3 Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_nh3"
-                                   value="{{ TriggerGasNH3 }}">
+                                   value="{{ TriggerGasNH3 }}" disabled>
                         </label>
                     </div>
 
@@ -171,7 +171,7 @@
                             Seconds between readings
                             <br>
                             <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_gas"
-                                   value="{{ SecondsGas }}">
+                                   value="{{ SecondsGas }}" disabled>
                         </label>
                     </div>
 
@@ -179,7 +179,7 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="particulate_matter" value="" {{ CheckedPM }}>
+                            <input type="checkbox" name="particulate_matter" value="" {{ CheckedPM }} disabled>
                             Particulate Matter
                             <span class="checkmark_checkbox"></span>
                         </label>
@@ -190,25 +190,34 @@
                             PM1 Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="trigger_pm1"
-                                   value="{{ TriggerPM1 }}">
+                                   value="{{ TriggerPM1 }}" disabled>
                         </label>
                     </div>
 
                     <div class="mui-textfield">
-                        <label style="color: black">
+                        <label style="color: black;">
                             PM2.5 Trigger variance
                             <br>
-                            <input style="width: 75px" type="number" step="0.0001" name="trigger_pm2_5"
-                                   value="{{ TriggerPM25 }}">
+                            <input style="width: 75px;" type="number" step="0.0001" name="trigger_pm2_5"
+                                   value="{{ TriggerPM25 }}" disabled>
                         </label>
                     </div>
 
                     <div class="mui-textfield">
-                        <label style="color: black">
+                        <label style="color: black;">
+                            PM4 Trigger variance
+                            <br>
+                            <input style="width: 75px;" type="number" step="0.0001" name="trigger_pm4"
+                                   value="{{ TriggerPM4 }}" disabled>
+                        </label>
+                    </div>
+
+                    <div class="mui-textfield">
+                        <label style="color: black;">
                             PM10 Trigger variance
                             <br>
-                            <input style="width: 75px" type="number" step="0.0001" name="trigger_pm10"
-                                   value="{{ TriggerPM10 }}">
+                            <input style="width: 75px;" type="number" step="0.0001" name="trigger_pm10"
+                                   value="{{ TriggerPM10 }}" disabled>
                         </label>
                     </div>
 
@@ -217,7 +226,7 @@
                             Seconds between readings
                             <br>
                             <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_pm"
-                                   value="{{ SecondsPM }}">
+                                   value="{{ SecondsPM }}" disabled>
                         </label>
                     </div>
 
@@ -429,7 +438,7 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="colour" value="" {{ CheckedColour }}>
+                            <input type="checkbox" name="colour" value="" {{ CheckedColour }} disabled>
                             Colour
                             <span class="checkmark_checkbox"></span>
                         </label>
@@ -440,7 +449,7 @@
                             Red Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="red"
-                                   value="{{ TriggerRed }}">
+                                   value="{{ TriggerRed }}" disabled>
                         </label>
                     </div>
 
@@ -449,7 +458,7 @@
                             Orange Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="orange"
-                                   value="{{ TriggerOrange }}">
+                                   value="{{ TriggerOrange }}" disabled>
                         </label>
                     </div>
 
@@ -458,7 +467,7 @@
                             Yellow Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="yellow"
-                                   value="{{ TriggerYellow }}">
+                                   value="{{ TriggerYellow }}" disabled>
                         </label>
                     </div>
 
@@ -467,7 +476,7 @@
                             Green Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="green"
-                                   value="{{ TriggerGreen }}">
+                                   value="{{ TriggerGreen }}" disabled>
                         </label>
                     </div>
 
@@ -476,7 +485,7 @@
                             Blue Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="blue"
-                                   value="{{ TriggerBlue }}">
+                                   value="{{ TriggerBlue }}" disabled>
                         </label>
                     </div>
 
@@ -485,7 +494,7 @@
                             Violet Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="violet"
-                                   value="{{ TriggerViolet }}">
+                                   value="{{ TriggerViolet }}" disabled>
                         </label>
                     </div>
 
@@ -494,7 +503,7 @@
                             Seconds between readings
                             <br>
                             <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_colour"
-                                   value="{{ SecondsColour }}">
+                                   value="{{ SecondsColour }}" disabled>
                         </label>
                     </div>
 
@@ -502,7 +511,7 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }}>
+                            <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }} disabled>
                             Ultra Violet
                             <span class="checkmark_checkbox"></span>
                         </label>
@@ -513,7 +522,7 @@
                             UVA Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="ultra_violet_a"
-                                   value="{{ TriggerUltraVioletA }}">
+                                   value="{{ TriggerUltraVioletA }}" disabled>
                         </label>
                     </div>
 
@@ -522,7 +531,7 @@
                             UVB Trigger variance
                             <br>
                             <input style="width: 75px" type="number" step="0.0001" name="ultra_violet_b"
-                                   value="{{ TriggerUltraVioletB }}">
+                                   value="{{ TriggerUltraVioletB }}" disabled>
                         </label>
                     </div>
 
@@ -531,7 +540,7 @@
                             Seconds between readings
                             <br>
                             <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_ultra_violet"
-                                   value="{{ SecondsUltraViolet }}">
+                                   value="{{ SecondsUltraViolet }}" disabled>
                         </label>
                     </div>
 
