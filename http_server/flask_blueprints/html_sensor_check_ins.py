@@ -37,7 +37,7 @@ def remote_sensor_check_ins():
         checkin_id = "KS" + str(request.form.get("checkin_id"))
         logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
 
-        current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
         db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
         db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
@@ -99,9 +99,9 @@ def view_sensor_check_ins():
         raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(raw_last_checkin_date)
         if clean_last_checkin_date != "NA":
-            id_date_list.append([datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S"), sensor_id])
+            id_date_list.append([datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S"), sensor_id])
         else:
-            id_date_list.append([datetime.strptime("1001-01-01 01:01:01", "%Y-%m-%d %H:%M:%S"), sensor_id])
+            id_date_list.append([datetime.strptime("1901-01-01 01:01:01", "%Y-%m-%d %H:%M:%S"), sensor_id])
     id_date_list.sort(reverse=True)
 
     sensor_statistics = "Per Sensor Check-in Information\n\n"
@@ -216,18 +216,22 @@ def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checki
         get_sensors_log_sql = "SELECT sensors_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
         sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
 
+        found_log = False
         for data_entry in primary_logs:
+            if found_log:
+                break
             for log_entry in data_entry:
                 if log_entry != "":
                     app_cached_variables.checkin_search_primary_log = str(log_entry)
-                    break
-            break
+                    found_log = True
+        found_log = False
         for data_entry in sensors_logs:
+            if found_log:
+                break
             for log_entry in data_entry:
                 if log_entry != "":
                     app_cached_variables.checkin_search_sensors_log = str(log_entry)
-                    break
-            break
+                    found_log = True
 
 
 def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin_database):
@@ -244,12 +248,14 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
         get_installed_sensors_sql = "SELECT installed_sensors FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
         current_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
 
+        found_installed_sensors = False
         for data_entry in current_installed_sensors:
+            if found_installed_sensors:
+                break
             for log_entry in data_entry:
                 if log_entry != "":
                     app_cached_variables.checkin_search_sensor_installed_sensors = str(log_entry)
-                    break
-            break
+                    found_installed_sensors = True
 
         get_current_uptime_sql = "SELECT SensorUpTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
@@ -258,7 +264,7 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
         checkin_hour_offset = app_cached_variables.checkin_hour_offset
         web_view_last_checkin_date = clean_last_checkin_date
         if clean_last_checkin_date != "NA":
-            checkin_date_converted = datetime.strptime(clean_last_checkin_date[:-4], "%Y-%m-%d %H:%M:%S")
+            checkin_date_converted = datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S")
             checkin_date_converted = checkin_date_converted + timedelta(hours=checkin_hour_offset)
             web_view_last_checkin_date = checkin_date_converted.strftime("%Y-%m-%d %H:%M:%S")
         return "Sensor ID: " + sensor_id + \
