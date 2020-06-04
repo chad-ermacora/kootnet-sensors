@@ -19,6 +19,7 @@
 import os
 import random
 import string
+from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
@@ -38,23 +39,31 @@ def run_program_start_checks():
     logger.primary_logger.info(" -- Pre-Start Initializations Started")
     _check_directories()
     _set_file_permissions()
-    check_main_database_structure()
-    check_checkin_database_structure()
     _check_ssl_files()
     _check_sensor_id()
     if software_version.old_version != software_version.version:
+        db_check_threads = [Thread(target=check_main_database_structure),
+                            Thread(target=check_checkin_database_structure)]
+        for thread in db_check_threads:
+            thread.daemon = True
+            thread.start()
+        for thread in db_check_threads:
+            thread.join()
         run_configuration_upgrade_checks()
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
 def _check_directories():
-    if app_cached_variables.running_with_root:
-        for directory_check in create_directories_for_files:
-            current_directory = ""
-            for found_dir in directory_check.split("/")[1:-1]:
-                current_directory += "/" + str(found_dir)
-                if not os.path.isdir(current_directory):
-                    os.mkdir(current_directory)
+    try:
+        if app_cached_variables.running_with_root:
+            for directory_check in create_directories_for_files:
+                current_directory = ""
+                for found_dir in directory_check.split("/")[1:-1]:
+                    current_directory += "/" + str(found_dir)
+                    if not os.path.isdir(current_directory):
+                        os.mkdir(current_directory)
+    except Exception as error:
+        logger.primary_logger.error("Problem Checking Program Directories: " + str(error))
 
 
 def _check_sensor_id():
@@ -62,9 +71,12 @@ def _check_sensor_id():
     Checks for Sensor Checkin ID file, if missing, creates one.
     The Sensor ID is Randomly Generated and used to track Software Usage and Online History of Sensors.
     """
-    if not os.path.isfile(file_locations.sensor_checkin_id):
-        random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
-        write_file_to_disk(file_locations.sensor_checkin_id, random_id)
+    try:
+        if not os.path.isfile(file_locations.sensor_checkin_id):
+            random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
+            write_file_to_disk(file_locations.sensor_checkin_id, random_id)
+    except Exception as error:
+        logger.primary_logger.error("Problem Creating Sensor ID: " + str(error))
 
 
 def _set_file_permissions():
@@ -94,28 +106,31 @@ def _change_permissions_recursive(path, folder_mode, files_mode):
 def _check_ssl_files():
     """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
-    if not os.path.isdir(file_locations.http_ssl_folder):
-        os.mkdir(file_locations.http_ssl_folder)
+    try:
+        if not os.path.isdir(file_locations.http_ssl_folder):
+            os.mkdir(file_locations.http_ssl_folder)
 
-    if os.path.isfile(file_locations.http_ssl_key):
-        logger.primary_logger.debug("SSL Key Found")
-    else:
-        logger.primary_logger.info("SSL Key not Found - Generating Key")
-        os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
+        if os.path.isfile(file_locations.http_ssl_key):
+            logger.primary_logger.debug("SSL Key Found")
+        else:
+            logger.primary_logger.info("SSL Key not Found - Generating Key")
+            os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
 
-    if os.path.isfile(file_locations.http_ssl_csr):
-        logger.primary_logger.debug("SSL CSR Found")
-    else:
-        logger.primary_logger.info("SSL CSR not Found - Generating CSR")
-        terminal_command_part1 = "openssl req -new -key " + file_locations.http_ssl_key
-        terminal_command_part2 = " -out " + file_locations.http_ssl_csr + " -subj"
-        terminal_command_part3 = " '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
-        os.system(terminal_command_part1 + terminal_command_part2 + terminal_command_part3)
+        if os.path.isfile(file_locations.http_ssl_csr):
+            logger.primary_logger.debug("SSL CSR Found")
+        else:
+            logger.primary_logger.info("SSL CSR not Found - Generating CSR")
+            terminal_command_part1 = "openssl req -new -key " + file_locations.http_ssl_key
+            terminal_command_part2 = " -out " + file_locations.http_ssl_csr + " -subj"
+            terminal_command_part3 = " '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
+            os.system(terminal_command_part1 + terminal_command_part2 + terminal_command_part3)
 
-    if os.path.isfile(file_locations.http_ssl_crt):
-        logger.primary_logger.debug("SSL Certificate Found")
-    else:
-        logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
-        terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
-        terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
-        os.system(terminal_command_part1 + terminal_command_part2)
+        if os.path.isfile(file_locations.http_ssl_crt):
+            logger.primary_logger.debug("SSL Certificate Found")
+        else:
+            logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
+            terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
+            terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
+            os.system(terminal_command_part1 + terminal_command_part2)
+    except Exception as error:
+        logger.primary_logger.error("Problem Creating HTTPS SSL Files: " + str(error))
