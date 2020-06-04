@@ -312,7 +312,7 @@ open_sense_map_thread = None
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
 restart_interval_recording_thread = False
-restart_all_trigger_recording_threads = False
+restart_all_trigger_threads = False
 restart_mini_display_thread = False
 restart_mqtt_publisher_thread = False
 restart_mqtt_subscriber_thread = False
