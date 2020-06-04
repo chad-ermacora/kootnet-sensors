@@ -95,7 +95,8 @@ def start_interval_recording_server():
 def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
     logger.primary_logger.info(" -- Interval Recording Started")
-    while True:
+    app_cached_variables.restart_interval_recording_thread = False
+    while not app_cached_variables.restart_interval_recording_thread:
         try:
             new_sensor_data = get_interval_sensor_readings()
             sql_string = "INSERT OR IGNORE INTO IntervalData (" + new_sensor_data[0] + ") VALUES ("
@@ -107,7 +108,13 @@ def _interval_recording():
             sqlite_database.write_to_sql_database(sql_string, sql_data)
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
-        sleep(app_config_access.primary_config.sleep_duration_interval)
+
+        sleep_duration_interval = app_config_access.primary_config.sleep_duration_interval
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        while sleep_total < sleep_duration_interval and not app_cached_variables.restart_interval_recording_thread:
+            sleep(sleep_fraction_interval)
+            sleep_total += sleep_fraction_interval
 
 
 def get_interval_sensor_readings():

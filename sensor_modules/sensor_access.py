@@ -27,7 +27,9 @@ from operations_modules.app_cached_variables import no_sensor_present, command_d
     current_platform, bash_commands
 from operations_modules import sqlite_database
 from configuration_modules import app_config_access
-from sensor_modules import sensors_initialization as sensors_direct
+from sensor_modules import sensors_initialization
+
+sensors_direct = sensors_initialization.CreateSensorAccess(first_start=True)
 
 
 def get_operating_system_name():
@@ -494,7 +496,7 @@ def get_all_sensors_as_json():
 
 def display_message(text_msg, check_test=False):
     """ If a Supported Display is installed, shows provided text message on it. """
-    logger.primary_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
+    logger.sensors_logger.debug("* Displaying Text on LED Screen: " + str(text_msg)[:50])
 
     text_msg = str(text_msg)
     if app_config_access.display_config.enable_display:
@@ -602,7 +604,7 @@ def add_note_to_database(datetime_note):
 
         sqlite_database.write_to_sql_database(sql_execute, data_entries)
     else:
-        logger.network_logger.error("Unable to add Note to DB: Bad Note")
+        logger.primary_logger.error("Unable to add Note to DB: Bad Note")
 
 
 def update_note_in_database(datetime_note):
