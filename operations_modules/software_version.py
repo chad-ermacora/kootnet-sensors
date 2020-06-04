@@ -66,7 +66,7 @@ def _check_for_new_version():
             request_data = requests.get(developmental_url, allow_redirects=False)
             app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
         except Exception as error:
-            logger.primary_logger.warning("Software Version Check Failed: " + str(error))
+            logger.primary_logger.debug("Available Update Check Failed: " + str(error))
             app_cached_variables.standard_version_available = "Retrieval Failed"
             app_cached_variables.developmental_version_available = "Retrieval Failed"
         sleep(18000)
@@ -90,5 +90,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.30.160"
+version = "Beta.30.180"
 old_version = _get_old_version()
