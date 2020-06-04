@@ -72,60 +72,37 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
 
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
-    columns_created = 0
-    columns_already_made = 0
+    db_connection = sqlite3.connect(database_location)
+    db_cursor = db_connection.cursor()
 
-    try:
-        db_connection = sqlite3.connect(database_location)
-        db_cursor = db_connection.cursor()
+    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+    sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
-        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-        sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
-
-        sensor_check_in_version = database_variables.sensor_check_in_version
-        sensor_check_in_installed_sensors = database_variables.sensor_check_in_installed_sensors
-        sensor_check_in_primary_log = database_variables.sensor_check_in_primary_log
-        sensor_check_in_sensors_log = database_variables.sensor_check_in_sensors_log
-        sensor_uptime = database_variables.sensor_uptime
-
-        for sensor_id in sensor_ids:
-            cleaned_id = str(sensor_id[0]).strip()
-            if check_sql_table_and_column(cleaned_id, sensor_check_in_version, db_cursor):
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if check_sql_table_and_column(cleaned_id, sensor_check_in_installed_sensors, db_cursor):
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if check_sql_table_and_column(cleaned_id, sensor_uptime, db_cursor):
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if check_sql_table_and_column(cleaned_id, sensor_check_in_primary_log, db_cursor):
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if check_sql_table_and_column(cleaned_id, sensor_check_in_sensors_log, db_cursor):
-                columns_created += 1
-            else:
-                columns_already_made += 1
-
-        db_connection.commit()
-        db_connection.close()
-        debug_log_message = str(columns_already_made) + " Columns found in SQL Tables, "
-        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
-        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
-        return True
-    except Exception as error:
-        logger.primary_logger.error("Checks on Check-in Database Failed: " + str(error))
-        return False
+    columns = [database_variables.sensor_check_in_version,
+               database_variables.sensor_uptime,
+               database_variables.sensor_check_in_installed_sensors,
+               database_variables.sensor_check_in_primary_log,
+               database_variables.sensor_check_in_sensors_log]
+    for sensor_id in sensor_ids:
+        cleaned_id = str(sensor_id[0]).strip()
+        for column in columns:
+            try:
+                add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                db_cursor.execute(add_columns_sql)
+            except Exception as error:
+                if str(error)[:21] != "duplicate column name":
+                    logger.primary_logger.error("Check-in Database Error: " + str(error))
+    db_connection.commit()
+    db_connection.close()
+    # TODO: Move VACUUM to a button instead of auto doing?
+    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
+    logger.primary_logger.debug("Check on 'Checkin' Database Complete")
+    return True
 
 
 def check_main_database_structure(database_location=file_locations.sensor_database):
     """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running Checks on Main Database")
-
     columns_created = 0
     columns_already_made = 0
 
@@ -161,7 +138,9 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         db_connection.close()
         debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
         logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
-        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
+        # TODO: Put the VACUUM as a button under advanced other?
+        # write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
+        logger.primary_logger.debug("Checks on Main Database Complete")
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on Main Database Failed: " + str(error))
