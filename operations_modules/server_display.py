@@ -34,11 +34,10 @@ def start_display_server():
 
 
 def _display_server():
+    app_cached_variables.restart_mini_display_thread = False
     if sensor_access.display_message("Test", check_test=True):
         logger.primary_logger.info(" -- Sensor Display Server Started")
-        app_cached_variables.restart_mini_display_thread = False
         sleep_fraction_interval = 5
-        sleep_total = 0
         while not app_cached_variables.restart_mini_display_thread:
             display_type_numerical = app_config_access.display_config.display_type_numerical
             if app_config_access.display_config.display_type == display_type_numerical:
@@ -46,13 +45,12 @@ def _display_server():
             else:
                 sensor_access.display_message(get_graphed_sensors())
             display_sleep = app_config_access.display_config.minutes_between_display * 60
+            sleep_total = 0
             while sleep_total < display_sleep and not app_cached_variables.restart_mini_display_thread:
                 sleep(sleep_fraction_interval)
                 sleep_total += sleep_fraction_interval
-            sleep_total = 0
     else:
-        logger.primary_logger.error(" -- Sensor Display Server Failed to Start: No Compatible Display Found")
-        logger.primary_logger.debug("Putting Display Server in to Sleep Mode")
+        logger.primary_logger.debug("No Compatible Display Found - Display Server Entering Sleep Mode")
         while not app_cached_variables.restart_mini_display_thread:
             sleep(10)
 
