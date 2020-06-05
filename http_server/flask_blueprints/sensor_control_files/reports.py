@@ -66,7 +66,8 @@ class CreateReplacementVariables:
 
     @staticmethod
     def report_system():
-        return [["GetOSVersion", "{{ OSVersion }}"],
+        return [["GetSensorID", "{{ SensorID }}"],
+                ["GetOSVersion", "{{ OSVersion }}"],
                 ["GetSensorVersion", "{{ ProgramVersion }}"],
                 ["GetProgramLastUpdated", "{{ LastUpdated }}"],
                 ["GetSystemDateTime", "{{ SensorDateTime }}"],
