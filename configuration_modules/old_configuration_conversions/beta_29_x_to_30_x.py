@@ -12,6 +12,7 @@ from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfig
 
 def upgrade_beta_29_to_30():
     # Beta.29.x versions don't have any MQTT or Display Configurations
+    reset_display_config(log_reset=False)
     new_primary_config = CreatePrimaryConfiguration(load_from_file=False)
     try:
         primary_config_lines = get_file_content(file_locations.primary_config).strip().split("\n")
@@ -25,15 +26,13 @@ def upgrade_beta_29_to_30():
         new_primary_config.temperature_offset = float(primary_config_lines[6].split("=")[0].strip())
         new_primary_config.web_portal_port = int(primary_config_lines[7].split("=")[0].strip())
         if new_primary_config.enable_display:
-            new_display_config = CreateDisplayConfiguration()
+            new_display_config = CreateDisplayConfiguration(load_from_file=False)
             new_display_config.enable_display = 1
             new_display_config.system_temperature = 1
             new_display_config.env_temperature = 1
             new_display_config.update_configuration_settings_list()
             new_display_config.save_config_to_file()
             successful_upgrade_message("Display")
-        else:
-            reset_display_config(log_reset=False)
         successful_upgrade_message("Primary")
     except Exception as error:
         logger.primary_logger.error("Problem during Primary Configuration Upgrade: " + str(error))
