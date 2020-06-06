@@ -97,43 +97,7 @@ def _start_plotly_graph(graph_data):
             graph_data.sql_cpu_temp = _get_sql_data(graph_data, var_sql_query)
             graph_data.sql_cpu_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.env_temperature:
-            sql_column_data = _get_sql_data(graph_data, var_sql_query)
-
-            count = 0
-            if graph_data.enable_custom_temp_offset:
-                for data in sql_column_data:
-                    try:
-                        sql_column_data[count] = str(float(data) + graph_data.temperature_offset)
-                        count = count + 1
-                    except Exception as error:
-                        count = count + 1
-                        logger.primary_logger.error("Bad SQL entry from Column 'EnvironmentTemp' - " + str(error))
-            else:
-                var_sql_query = "SELECT " + sql_column_names.env_temperature_offset + \
-                                " FROM " + graph_data.graph_table + \
-                                " WHERE DateTime BETWEEN datetime('" + get_sql_graph_start + \
-                                "') AND datetime('" + get_sql_graph_end + \
-                                "') LIMIT " + str(graph_data.max_sql_queries)
-
-                sql_temp_offset_data = _get_sql_data(graph_data, var_sql_query)
-
-                warn_message = False
-                error_message = ""
-                count = 0
-                for data in sql_column_data:
-                    try:
-                        sql_column_data[count] = str(float(data) + float(sql_temp_offset_data[count]))
-                        count = count + 1
-                    except Exception as error:
-                        if error_message == "":
-                            error_message = str(error)
-                        warn_message = True
-                        count = count + 1
-
-                if warn_message:
-                    logger.primary_logger.warning("Plotly Graph - Bad Env temperature or offset: " + error_message)
-
-            graph_data.sql_hat_temp = sql_column_data
+            graph_data.sql_hat_temp = _get_sql_data(graph_data, var_sql_query)
             graph_data.sql_hat_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.pressure:
             graph_data.sql_pressure = _get_sql_data(graph_data, var_sql_query)
