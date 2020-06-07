@@ -1,6 +1,6 @@
 from operations_modules import logger
 from operations_modules import file_locations
-from configuration_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
+from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
     reset_installed_sensors, reset_variance_config, successful_upgrade_message, reset_mqtt_broker_config, \
     reset_mqtt_subscriber_config, reset_mqtt_publisher_config, reset_display_config
 from operations_modules.app_generic_functions import get_file_content

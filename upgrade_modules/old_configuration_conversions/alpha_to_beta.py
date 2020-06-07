@@ -1,11 +1,18 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content
-from configuration_modules.old_configuration_conversions.generic_upgrade_functions import successful_upgrade_message
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
+from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
+    reset_installed_sensors, successful_upgrade_message, reset_display_config, reset_variance_config, \
+    reset_mqtt_broker_config, reset_mqtt_publisher_config, reset_mqtt_subscriber_config
 
 
-def upgrade_beta_30_90_to_30_138():
+def upgrade_alpha_to_beta():
+    # Alpha versions don't have any MQTT or Display Configurations
+    reset_primary_config()
+    logger.set_logging_level()
+    reset_installed_sensors()
+    reset_variance_config()
     try:
         new_osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
         raw_config_settings = get_file_content(file_locations.osm_config).strip().split("\n")[1:]
@@ -43,3 +50,8 @@ def upgrade_beta_30_90_to_30_138():
         successful_upgrade_message("Open Sense Map")
     except Exception as error:
         logger.primary_logger.error("Open Sense Map Configuration conversion error: " + str(error))
+
+    reset_display_config(log_reset=False)
+    reset_mqtt_broker_config(log_reset=False)
+    reset_mqtt_publisher_config(log_reset=False)
+    reset_mqtt_subscriber_config(log_reset=False)

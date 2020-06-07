@@ -26,7 +26,7 @@ from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure
-from configuration_modules.upgrade_configurations import run_configuration_upgrade_checks
+from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
 
 create_directories_for_files = [file_locations.mosquitto_configuration]
 
