@@ -157,26 +157,30 @@ def get_interval_sensor_readings():
     if available_sensors.has_gas:
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         for text_name, item_value in gas_readings.items():
-            sensor_types.append(text_name)
-            sensor_readings.append(item_value)
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
     if available_sensors.has_particulate_matter:
         pm_readings = sensor_access.get_particulate_matter()
         for text_name, item_value in pm_readings.items():
-            sensor_types.append(text_name)
-            sensor_readings.append(item_value)
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
     if available_sensors.has_lumen:
         sensor_types.append(app_cached_variables.database_variables.lumen)
         sensor_readings.append(sensor_access.get_lumen())
     if available_sensors.has_color:
         ems_colours = sensor_access.get_ems_colors(return_as_dictionary=True)
         for text_name, item_value in ems_colours.items():
-            sensor_types.append(text_name)
-            sensor_readings.append(item_value)
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
     if available_sensors.has_ultra_violet:
         uv_reading = sensor_access.get_ultra_violet(return_as_dictionary=True)
         for text_name, item_value in uv_reading.items():
-            sensor_types.append(text_name)
-            sensor_readings.append(item_value)
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
     if available_sensors.has_acc:
         accelerometer_readings = sensor_access.get_accelerometer_xyz()
 
