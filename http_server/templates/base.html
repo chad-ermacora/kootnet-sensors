@@ -21,6 +21,10 @@
         .head_foot:link {
             color: red;
         }
+
+        .mui-form input {
+            text-align: center;
+        }
     </style>
 
     <style>
@@ -220,6 +224,13 @@
 
         <li>
             <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.location.href = '/MQTTSubscriberView';">
+                MQTT Subscriber
+            </button>
+        </li>
+
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
                     onclick="window.location.href = '/SensorNotes';">
                 Notes
             </button>
@@ -309,15 +320,41 @@
 </div>
 
 <header id="header">
+    <script>
+        function RestartServiceYesNo() {
+            let r = confirm("Restart Service?");
+            if (r === true) {
+                window.location = "/RestartServices"
+            }
+        }
+
+        function RebootSensorYesNo() {
+            let r = confirm("Reboot Sensor?");
+            if (r === true) {
+                window.location = "/RebootSystem"
+            }
+        }
+    </script>
     <div class="mui-appbar mui--appbar-line-height">
         <div class="mui-container-fluid" style="background-color: black;">
             <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
             <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
-            <span class="mui--text-title mui--visible-xs-inline-block mui--visible-sm-inline-block">
-                <a class="head_foot" href="/">
-                    Kootnet Sensor
-                </a>
-            </span>
+
+            <a style="color: red; font-size: large;" href="{{ PageURL }}"><b>Refresh Page</b></a>
+
+            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;"><div {{ RestartServiceHidden }}>
+                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                        onclick="RestartServiceYesNo();">
+                    Service Restart Required
+                </button>
+            </div></div>
+
+            <div style="display: inline-block; position: absolute; z-index: 99; right: 10px;"><div {{ RebootSensorHidden }}>
+                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                        onclick="RebootSensorYesNo();">
+                    Sensor Restart Required
+                </button>
+            </div></div>
         </div>
     </div>
 </header>

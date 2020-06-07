@@ -1,0 +1,210 @@
+<div class="mui-tabs__pane" id="installed-sensors-tab">
+    <form class="mui-form" method="POST" style="width: 575px; min-height: 300px;" action="/EditInstalledSensors">
+        <fieldset style="text-align: center;">
+            <h2><u><a style="color: black;" href="{{ PageURL }}">Supported System & Sensor Modules</a></u></h2>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="kootnet_dummy_sensor" {{ KootnetDummySensors }}>
+                    Kootnet Dummy Sensors
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <h4><u>Raspberry Pi</u></h4>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="linux_system" value="" {{ GnuLinux }}>
+                    Gnu/Linux
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="raspberry_pi" value="" {{ RaspberryPi }}>
+                    Raspberry Pi - Any Model
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="raspberry_pi_sense_hat" value="" {{ SenseHAT }}>
+                    Sense HAT
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <h4><u>Pimoroni</u></h4>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_bh1745" value="" {{ PimoroniBH1745 }}>
+                    BH1745
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_as7262" value="" {{ PimoroniAS7262 }}>
+                    AS7262
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_bmp280" value="" {{ PimoroniBMP280 }}>
+                    BMP280
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_bme680" value="" {{ PimoroniBME680 }}>
+                    BME680
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_enviro" value="" {{ PimoroniEnviroPHAT }}>
+                    Enviro
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_enviroplus" value="" {{ PimoroniEnviroPlus }}>
+                    Enviro+
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_pms5003" value="" {{ PimoroniPMS5003 }}>
+                    PMS5003
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_lsm303d" value="" {{ PimoroniLSM303D }}>
+                    LSM303D
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_icm20948" value="" {{ PimoroniICM20948 }}>
+                    ICM20948
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_vl53l1x" value="" {{ PimoroniVL53L1X }}>
+                    VL53L1X
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_ltr_559" value="" {{ PimoroniLTR559 }}>
+                    LTR-559
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_veml6075" value="" {{ PimoroniVEML6075 }}>
+                    VEML6075
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_matrix_11x7" value="" {{ Pimoroni11x7LEDMatrix }}>
+                    11x7 LED Matrix
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_st7735" value="" {{ PimoroniSPILCD10_96 }}>
+                    10.96'' SPI Colour LCD (160x80)
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_mono_oled_luma" value="" {{ PimoroniMonoOLED128x128BW }}>
+                    1.12'' Mono OLED (128x128, white/black)
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <h4><u>Un-Tested Sensors</u></h4>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_mcp9600" value="" {{ PimoroniMCP9600 }}>
+                    Pimoroni MCP9600
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_sgp30" value="" {{ PimoroniSGP30 }}>
+                    Pimoroni SGP30
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="pimoroni_msa301" value="" {{ PimoroniMSA301 }}>
+                    Pimoroni MSA301
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="sensirion_sps30" value="" {{ SensirionSPS30 }}>
+                    Sensirion SPS30
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </fieldset>
+    </form>
+</div>

@@ -16,24 +16,60 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import requests
 from os import path
+from time import sleep
+from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import thread_function
 
 
 class CreateRefinedVersion:
-    """ Takes the provided program version and creates a data class object. """
-    def __init__(self, instance_version):
+    """ Takes the provided program version as text and creates a data class object. """
+    def __init__(self, version_text=""):
+        self.bad_version_load = True
+        self.major_version = 0
+        self.feature_version = 0
+        self.minor_version = 0
+        self.load_from_string(version_text)
+
+    def load_from_string(self, version_text):
         try:
-            version_split = instance_version.split(".")
-            self.major_version = version_split[0]
-            self.feature_version = int(version_split[1])
-            self.minor_version = int(version_split[2])
+            version_split = str(version_text).split(".")
+            if len(version_split) > 2:
+                self.major_version = version_split[0]
+                self.feature_version = int(version_split[1])
+                self.minor_version = int(version_split[2])
+                self.bad_version_load = False
         except Exception as error:
-            print("Bad Version - " + str(instance_version))
-            print(str(error))
-            self.major_version = 0
-            self.feature_version = 0
-            self.minor_version = 0
+            print("version load error: " + str(error))
+
+    def get_version_string(self):
+        return str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
+
+
+def start_new_version_check_server():
+    thread_function(_check_for_new_version)
+
+
+def _check_for_new_version():
+    logger.primary_logger.debug(" -- Software Version Check Server Started")
+    standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
+    developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
+
+    sleep(10)
+    while True:
+        try:
+            request_data = requests.get(standard_url, allow_redirects=False)
+            app_cached_variables.standard_version_available = request_data.content.decode("utf-8").strip()
+            request_data = requests.get(developmental_url, allow_redirects=False)
+            app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
+        except Exception as error:
+            logger.primary_logger.debug("Available Update Check Failed: " + str(error))
+            app_cached_variables.standard_version_available = "Retrieval Failed"
+            app_cached_variables.developmental_version_available = "Retrieval Failed"
+        sleep(18000)
 
 
 def _get_old_version():
@@ -44,7 +80,7 @@ def _get_old_version():
             return old_version_content.strip()
     else:
         write_program_version_to_file()
-        return _new_install_version
+        return "Unknown.0.0"
 
 
 def write_program_version_to_file():
@@ -54,9 +90,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-new_install = False
-_new_install_version = "New_Install.99.999"
-version = "Beta.29.110"
+version = "Beta.30.190"
 old_version = _get_old_version()
-if old_version == _new_install_version:
-    new_install = True

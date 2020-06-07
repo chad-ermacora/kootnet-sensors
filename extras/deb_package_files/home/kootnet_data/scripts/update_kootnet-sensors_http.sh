@@ -20,6 +20,7 @@ printf '\n-- %s HTTP UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
 # Clean up previous downloads if any
 rm -f /tmp${DEB_INSTALLER} 2>/dev/null
 wget -O /tmp${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
+apt-get update
 apt-get -y install /tmp${DEB_INSTALLER}
 # Save DateTime and Update type to file (Used in program to show last updated)
 date >${CONFIG_DIR}/last_updated.txt

@@ -1,3 +1,21 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import time
 import requests
 from threading import Thread
@@ -6,8 +24,9 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
-from http_server.server_http_generic_functions import get_sensor_control_report
+from configuration_modules import app_config_access
+from http_server.server_http_generic_functions import get_html_hidden_state
+from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 
@@ -76,7 +95,11 @@ def check_sensor_status_sensor_control(address_list):
                        response_time + " Seconds</span></th>\n" + \
                        "        <th><span style='background-color: #f2f2f2;'>" + \
                        response["sensor_hostname"] + "</span></th></tr>\n"
-    return render_template("sensor_control_online_status.html", SensorResponse=text_insert.strip())
+    return render_template("sensor_control_online_status.html",
+                           PageURL="/SensorControlManage",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+                           SensorResponse=text_insert.strip())
 
 
 def create_all_databases_zipped(ip_list):
@@ -243,6 +266,9 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
                                     response["download_size"] + " " + size_type + "</span></th></tr>\n"
 
     return render_template("sensor_control_downloads.html",
+                           PageURL="/SensorControlManage",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            DownloadTypeMessage=download_type_message,
                            DownloadURLs=sensor_download_sql_list.strip(),
                            SensorResponse=text_ip_and_response.strip(),
@@ -437,6 +463,9 @@ def sensor_control_management():
         disable_run_action_button = "disabled"
 
     return render_template("sensor_control.html",
+                           PageURL="/SensorControlManage",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ExtraTextMessage=extra_message,
                            DownloadReportsZipDisabled=download_reports_zip,
                            DownloadDatabasesDisabled=download_databases_zip,

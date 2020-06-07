@@ -17,14 +17,22 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules.app_config_access import trigger_variances, installed_sensors
+from operations_modules.app_generic_functions import thread_function
+from configuration_modules.app_config_access import primary_config, installed_sensors, trigger_variances
 from operations_modules.app_cached_variables import database_variables
 from operations_modules import app_cached_variables
 from sensor_recording_modules.variance_checks import CreateTriggerVarianceThread, CreateTriggerVarianceData
 from sensor_modules import sensor_access
 
 
-def start_trigger_recording():
+def start_trigger_recording_server():
+    if primary_config.enable_trigger_recording:
+        thread_function(_trigger_recording)
+    else:
+        logger.primary_logger.debug("Trigger Recording Disabled in Primary Configuration")
+
+
+def _trigger_recording():
     """ Starts recording all enabled sensors to the SQL database based on set trigger variances (set in config). """
     logger.primary_logger.debug("Trigger Thread(s) Starting")
     try:
@@ -83,7 +91,7 @@ def start_trigger_recording():
                               trigger_variances.green_variance,
                               trigger_variances.blue_variance]
         number_of_readings = 3
-        if installed_sensors.has_violet:
+        if installed_sensors.pimoroni_as7262:
             number_of_readings = 6
             ems_database_sensor_variable = database_variables.red + "," + \
                                            database_variables.orange + "," + \
@@ -97,7 +105,7 @@ def start_trigger_recording():
                                   trigger_variances.green_variance,
                                   trigger_variances.blue_variance,
                                   trigger_variances.violet_variance]
-        visible_ems_data = CreateTriggerVarianceData(sensor_access.get_ems,
+        visible_ems_data = CreateTriggerVarianceData(sensor_access.get_ems_colors,
                                                      ems_database_sensor_variable,
                                                      thread_name="Trigger - Visible Electromagnetic Spectrum",
                                                      enabled=trigger_variances.colour_enabled,
@@ -155,7 +163,7 @@ def start_trigger_recording():
         humidity = CreateTriggerVarianceThread(humidity_data)
         distance = CreateTriggerVarianceThread(distance_data)
         lumen = CreateTriggerVarianceThread(lumen_data)
-        visible_ems = CreateTriggerVarianceThread(visible_ems_data)
+        # visible_ems = CreateTriggerVarianceThread(visible_ems_data)
         accelerometer = CreateTriggerVarianceThread(accelerometer_data)
         magnetometer = CreateTriggerVarianceThread(magnetometer_data)
         gyroscope = CreateTriggerVarianceThread(gyroscope_data)
@@ -168,7 +176,7 @@ def start_trigger_recording():
         app_cached_variables.trigger_thread_humidity = humidity.monitored_thread
         app_cached_variables.trigger_thread_distance = distance.monitored_thread
         app_cached_variables.trigger_thread_lumen = lumen.monitored_thread
-        app_cached_variables.trigger_thread_visible_ems = visible_ems.monitored_thread
+        # app_cached_variables.trigger_thread_visible_ems = visible_ems.monitored_thread
         app_cached_variables.trigger_thread_accelerometer = accelerometer.monitored_thread
         app_cached_variables.trigger_thread_magnetometer = magnetometer.monitored_thread
         app_cached_variables.trigger_thread_gyroscope = gyroscope.monitored_thread

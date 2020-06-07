@@ -30,47 +30,49 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
+# TODO: Add missing Configurations
+
 
 class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def __init__(self):
         CreatePrimaryConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
+10165 = HTTPS Port Number (Default is 10065)
 0 = Enable Debug Logging
-1 = Enable Mini Display
 1 = Interval Recording to SQL Database
 1 = Trigger Recording to SQL Database
-227.27 = Recording Interval in Seconds ** Caution **
+227.27 = Recording Interval in Seconds * Caution *
 1 = Enable Custom Temperature Offset
 -11.23 = Current Temperature Offset
-10165 = HTTPS Port Number (Default is 10065)"""
+1 = Enable Temperature Compensation Factor
+0.29 = Temperature Compensation Factor"""
 
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
         self.enable_debug_logging = 1
-        self.enable_display = 1
         self.enable_interval_recording = 1
         self.enable_trigger_recording = 1
         self.sleep_duration_interval = 245.11
         self.enable_custom_temp = 1
         self.temperature_offset = 11.11
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.web_portal_port = 12289
         self.enable_debug_logging = 0
-        self.enable_display = 0
         self.enable_interval_recording = 0
         self.enable_trigger_recording = 0
         self.sleep_duration_interval = 320.58
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguration):
     def __init__(self):
         CreateInstalledSensorsConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
+1 = Kootnet Dummy Sensors
 1 = Gnu/Linux
 0 = Raspberry Pi
 1 = Raspberry Pi Sense HAT
@@ -91,7 +93,8 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 0 = Pimoroni VEML6075
 1 = Pimoroni 11x7 LED Matrix
 0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
-1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)"""
+1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
+0 = Sensirion SPS30"""
 
     def set_settings_for_test1(self):
         self.linux_system = 0
@@ -117,7 +120,7 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 0
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.linux_system = 1
@@ -143,7 +146,7 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 1
         self.pimoroni_st7735 = 1
         self.pimoroni_mono_oled_luma = 1
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguration):
@@ -516,6 +519,7 @@ Mega2311kk = SenseBox ID
 234kj44h234234 = Gas Reduced Sensor ID
 2344kjh25h = PM 1.0 Sensor ID
 234kjh425h = PM 2.5 Sensor ID
+234kjh425h = PM 4 Sensor ID
 234kjerh25h = PM 10 Sensor ID
 234kjah25h = Lumen Sensor ID
 234kjsh25h = Red Sensor ID
@@ -543,6 +547,7 @@ Mega2311kk = SenseBox ID
         self.gas_nh3_id = "123333"
         self.pm1_id = "123333"
         self.pm2_5_id = "123333"
+        self.pm4_id = "123333"
         self.pm10_id = "123333"
 
         self.lumen_id = "123333"
@@ -556,7 +561,7 @@ Mega2311kk = SenseBox ID
         self.ultra_violet_index_id = "123333"
         self.ultra_violet_a_id = "123333"
         self.ultra_violet_b_id = "123333"
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.open_sense_map_enabled = 1
@@ -573,6 +578,7 @@ Mega2311kk = SenseBox ID
         self.gas_nh3_id = "698742"
         self.pm1_id = "698742"
         self.pm2_5_id = "698742"
+        self.pm4_id = "698742"
         self.pm10_id = "698742"
 
         self.lumen_id = "698742"
@@ -586,46 +592,53 @@ Mega2311kk = SenseBox ID
         self.ultra_violet_index_id = "698742"
         self.ultra_violet_a_id = "698742"
         self.ultra_violet_b_id = "698742"
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class TestApp(unittest.TestCase):
     def test_primary_config(self):
         self.assertTrue(self._config_test_changes(primary_config_test,
                                                   remote_get.sensor_configuration_file,
-                                                  remote_set.set_primary_configuration))
+                                                  remote_set.set_primary_configuration,
+                                                  config_name="Primary"))
 
     def test_installed_sensors_config(self):
         self.assertTrue(self._config_test_changes(installed_sensors_config_test,
                                                   remote_get.installed_sensors_file,
-                                                  remote_set.set_installed_sensors))
+                                                  remote_set.set_installed_sensors,
+                                                  config_name="Installed Sensors"))
 
     def test_trigger_variances_config(self):
         self.assertTrue(self._config_test_changes(trigger_variances_config_test,
                                                   remote_get.variance_config,
-                                                  remote_set.set_variance_configuration))
+                                                  remote_set.set_variance_configuration,
+                                                  config_name="Triggers"))
 
     def test_sensor_control_config(self):
         self.assertTrue(self._config_test_changes(sensor_control_config_test,
                                                   remote_get.sensor_control_configuration_file,
-                                                  remote_set.set_sensor_control_configuration))
+                                                  remote_set.set_sensor_control_configuration,
+                                                  config_name="Sensor Control"))
 
     def test_weather_underground_config(self):
         self.assertTrue(self._config_test_changes(weather_underground_config_test,
                                                   remote_get.weather_underground_config_file,
-                                                  remote_set.set_weather_underground_configuration))
+                                                  remote_set.set_weather_underground_configuration,
+                                                  config_name="Weather Underground"))
 
     def test_luftdaten_config(self):
         self.assertTrue(self._config_test_changes(luftdaten_config_test,
                                                   remote_get.luftdaten_config_file,
-                                                  remote_set.set_luftdaten_configuration))
+                                                  remote_set.set_luftdaten_configuration,
+                                                  config_name="Luftdaten"))
 
     def test_open_sense_map_config(self):
         self.assertTrue(self._config_test_changes(open_sense_map_config_test,
                                                   remote_get.open_sense_map_config_file,
-                                                  remote_set.set_open_sense_map_configuration))
+                                                  remote_set.set_open_sense_map_configuration,
+                                                  config_name="OSM"))
 
-    def _config_test_changes(self, config_instance, config_get_command, config_set_command):
+    def _config_test_changes(self, config_instance, config_get_command, config_set_command, config_name=""):
         original_config = get_http_sensor_reading(sensor_address, command=config_get_command)
 
         config_instance.set_settings_for_test1()
@@ -633,7 +646,7 @@ class TestApp(unittest.TestCase):
         send_config = config_instance.get_config_as_str()
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         first_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.get_config_as_str(), first_set_config):
+        if self._bad_config(config_instance.get_config_as_str(), first_set_config, config_name=config_name + " 1"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
@@ -642,31 +655,50 @@ class TestApp(unittest.TestCase):
         send_config = config_instance.get_config_as_str()
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.get_config_as_str(), second_set_config):
+        if self._bad_config(config_instance.get_config_as_str(), second_set_config, config_name=config_name + " 2"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
         send_config = config_instance.static_config_test
         send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
         second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(config_instance.static_config_test, second_set_config):
+        if self._bad_config(config_instance.static_config_test, second_set_config, config_name=config_name + " 3"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
 
         send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
 
         original_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
-        if self._bad_config(original_config, original_set_config):
+        if self._bad_config(original_config, original_set_config, config_name=config_name + " 4"):
             send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
             return False
         return True
 
     @staticmethod
-    def _bad_config(sent_config, received_config):
+    def _bad_config(sent_config, received_config, config_name=""):
+        if config_name[:-2] == "Installed Sensors":
+            list_sent_config = sent_config.strip().split("\n")
+            new_sent_config = ""
+            for index, line in enumerate(list_sent_config):
+                if index == 3:
+                    new_sent_config += line.split("=")[0].strip() + " = RPi\n"
+                else:
+                    new_sent_config += line.strip() + "\n"
+            sent_config = new_sent_config.strip()
+
+            list_received_config = received_config.strip().split("\n")
+            new_received_config = ""
+            for index, line in enumerate(list_received_config):
+                if index == 3:
+                    new_received_config += line.split("=")[0].strip() + " = RPi\n"
+                else:
+                    new_received_config += line.strip() + "\n"
+            received_config = new_received_config.strip()
+
         if sent_config.strip() == received_config.strip():
-            print("Info: Configuration Check OK.")
+            print("Info: Configuration " + config_name + " Check OK.")
             return False
-        print("Error: Sent Configuration is different from Received Configuration\n")
+        print("Error: Sent " + config_name + " Configuration is different from Received Configuration\n")
         print("-Sent Configuration-\n" + str(sent_config) + "\n-Received Configuration-\n" + str(received_config))
         return True
 
@@ -797,19 +829,11 @@ sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name, r
                        remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
                        remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
 
-bad_sensor_contact = True
-bad_sensor_login = True
-if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
-    bad_sensor_contact = False
-    if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-        bad_sensor_login = False
-
-
 if __name__ == '__main__':
-    if not bad_sensor_login and not bad_sensor_contact:
-        unittest.main()
-    else:
-        if bad_sensor_contact:
-            print("\n-- Sensor Offline --\n")
-        elif bad_sensor_login:
+    if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
+        if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
+            unittest.main()
+        else:
             print("\n-- Incorrect Sensor Login --\n")
+    else:
+        print("\n-- Sensor Offline --\n")

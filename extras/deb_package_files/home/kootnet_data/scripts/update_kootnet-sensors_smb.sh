@@ -24,6 +24,7 @@ printf '\n-- %s SMB UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
 mkdir ${MOUNT_DIR} 2>/dev/null
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} ${MOUNT_DIR} -o ${CIFS_OPTIONS}
 sleep 1
+apt-get update
 apt-get -y install ${MOUNT_DIR}${DEB_INSTALLER}
 umount ${MOUNT_DIR}
 # Save DateTime and Update type to file (Used in program to show last updated)

@@ -19,26 +19,102 @@
 import datetime
 from time import sleep
 from operations_modules import logger
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import sqlite_database
-from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
+database_variables = app_cached_variables.database_variables
 
-def start_interval_recording():
+
+class CreateHasSensorVariables:
+    def __init__(self):
+        self._set_all_has_sensor_states(0)
+        if sensor_access.get_cpu_temperature() != app_cached_variables.no_sensor_present:
+            self.has_cpu_temperature = 1
+        if sensor_access.get_sensor_temperature() != app_cached_variables.no_sensor_present:
+            self.has_env_temperature = 1
+        if sensor_access.get_pressure() != app_cached_variables.no_sensor_present:
+            self.has_pressure = 1
+        if sensor_access.get_altitude() != app_cached_variables.no_sensor_present:
+            self.has_altitude = 1
+        if sensor_access.get_humidity() != app_cached_variables.no_sensor_present:
+            self.has_humidity = 1
+        if sensor_access.get_distance() != app_cached_variables.no_sensor_present:
+            self.has_distance = 1
+        if sensor_access.get_gas() != app_cached_variables.no_sensor_present:
+            self.has_gas = 1
+
+        pm_readings = sensor_access.get_particulate_matter()
+        if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_2_5] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_4] != app_cached_variables.no_sensor_present \
+                or pm_readings[database_variables.particulate_matter_10] != app_cached_variables.no_sensor_present:
+            self.has_particulate_matter = 1
+        if sensor_access.get_ultra_violet() != app_cached_variables.no_sensor_present:
+            self.has_ultra_violet = 1
+        if sensor_access.get_lumen() != app_cached_variables.no_sensor_present:
+            self.has_lumen = 1
+        if sensor_access.get_ems_colors() != app_cached_variables.no_sensor_present:
+            self.has_color = 1
+        if sensor_access.get_accelerometer_xyz() != app_cached_variables.no_sensor_present:
+            self.has_acc = 1
+        if sensor_access.get_magnetometer_xyz() != app_cached_variables.no_sensor_present:
+            self.has_mag = 1
+        if sensor_access.get_gyroscope_xyz() != app_cached_variables.no_sensor_present:
+            self.has_gyro = 1
+
+    # TODO: Break up multi-sensors like PM & GAS as started below
+    def _set_all_has_sensor_states(self, set_sensor_state_as):
+        self.has_cpu_temperature = set_sensor_state_as
+        self.has_env_temperature = set_sensor_state_as
+        self.has_pressure = set_sensor_state_as
+        self.has_altitude = set_sensor_state_as
+        self.has_humidity = set_sensor_state_as
+        self.has_distance = set_sensor_state_as
+        self.has_gas = set_sensor_state_as
+        self.has_particulate_matter = set_sensor_state_as
+        self.has_ultra_violet = set_sensor_state_as
+        self.has_lumen = set_sensor_state_as
+        self.has_color = set_sensor_state_as
+        self.has_acc = set_sensor_state_as
+        self.has_mag = set_sensor_state_as
+        self.has_gyro = set_sensor_state_as
+
+
+def start_interval_recording_server():
+    if app_config_access.primary_config.enable_interval_recording:
+        text_name = "Interval Recording"
+        function = _interval_recording
+        app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
+    else:
+        logger.primary_logger.debug("Interval Recording Disabled in Primary Configuration")
+
+
+def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
     logger.primary_logger.info(" -- Interval Recording Started")
-    while True:
+    app_cached_variables.restart_interval_recording_thread = False
+    while not app_cached_variables.restart_interval_recording_thread:
         try:
             new_sensor_data = get_interval_sensor_readings()
-            new_sensor_data = new_sensor_data.split(app_cached_variables.command_data_separator)
-            interval_sql_execute_part1 = "INSERT OR IGNORE INTO IntervalData (" + str(new_sensor_data[0])
-            interval_sql_execute_part2 = ") VALUES (" + str(new_sensor_data[1]) + ")"
-            sqlite_database.write_to_sql_database(interval_sql_execute_part1 + interval_sql_execute_part2)
+            sql_string = "INSERT OR IGNORE INTO IntervalData (" + new_sensor_data[0] + ") VALUES ("
+            sql_data = []
+            for entry in new_sensor_data[1]:
+                sql_string += "?,"
+                sql_data.append(str(entry))
+            sql_string = sql_string[:-1] + ")"
+            sqlite_database.write_to_sql_database(sql_string, sql_data)
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
-        sleep(app_config_access.primary_config.sleep_duration_interval)
+
+        sleep_duration_interval = app_config_access.primary_config.sleep_duration_interval
+        sleep_fraction_interval = 5
+        sleep_total = 0
+        while sleep_total < sleep_duration_interval and not app_cached_variables.restart_interval_recording_thread:
+            sleep(sleep_fraction_interval)
+            sleep_total += sleep_fraction_interval
 
 
 def get_interval_sensor_readings():
@@ -46,7 +122,6 @@ def get_interval_sensor_readings():
     Returns Interval formatted sensor readings based on installed sensors.
     Format = 'CSV String Installed Sensor Types' + special separator + 'CSV String Sensor Readings'
     """
-
     sensor_types = [app_cached_variables.database_variables.all_tables_datetime]
     sensor_readings = [datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
     if app_config_access.installed_sensors.linux_system:
@@ -56,10 +131,10 @@ def get_interval_sensor_readings():
         sensor_readings += [sensor_access.get_hostname(),
                             sensor_access.get_ip(),
                             sensor_access.get_uptime_minutes()]
-    if app_config_access.installed_sensors.raspberry_pi:
+    if available_sensors.has_cpu_temperature:
         sensor_types.append(app_cached_variables.database_variables.system_temperature)
         sensor_readings.append(sensor_access.get_cpu_temperature())
-    if app_config_access.installed_sensors.has_env_temperature:
+    if available_sensors.has_env_temperature:
         sensor_types.append(app_cached_variables.database_variables.env_temperature)
         sensor_types.append(app_cached_variables.database_variables.env_temperature_offset)
         sensor_readings.append(sensor_access.get_sensor_temperature())
@@ -67,87 +142,46 @@ def get_interval_sensor_readings():
             sensor_readings.append(app_config_access.primary_config.temperature_offset)
         else:
             sensor_readings.append("0.0")
-    if app_config_access.installed_sensors.has_pressure:
+    if available_sensors.has_pressure:
         sensor_types.append(app_cached_variables.database_variables.pressure)
         sensor_readings.append(sensor_access.get_pressure())
-    if app_config_access.installed_sensors.has_altitude:
+    if available_sensors.has_altitude:
         sensor_types.append(app_cached_variables.database_variables.altitude)
         sensor_readings.append(sensor_access.get_altitude())
-    if app_config_access.installed_sensors.has_humidity:
+    if available_sensors.has_humidity:
         sensor_types.append(app_cached_variables.database_variables.humidity)
         sensor_readings.append(sensor_access.get_humidity())
-    if app_config_access.installed_sensors.has_distance:
+    if available_sensors.has_distance:
         sensor_types.append(app_cached_variables.database_variables.distance)
         sensor_readings.append(sensor_access.get_distance())
-    if app_config_access.installed_sensors.has_gas:
-        gas_index = sensor_access.get_gas_resistance_index()
-        gas_oxidised = sensor_access.get_gas_oxidised()
-        gas_reduced = sensor_access.get_gas_reduced()
-        gas_nh3 = sensor_access.get_gas_nh3()
-
-        if valid_sensor_reading(gas_index):
-            sensor_types.append(app_cached_variables.database_variables.gas_resistance_index)
-            sensor_readings.append(gas_index)
-        if valid_sensor_reading(gas_oxidised):
-            sensor_types.append(app_cached_variables.database_variables.gas_oxidising)
-            sensor_readings.append(gas_oxidised)
-        if valid_sensor_reading(gas_reduced):
-            sensor_types.append(app_cached_variables.database_variables.gas_reducing)
-            sensor_readings.append(gas_reduced)
-        if valid_sensor_reading(gas_nh3):
-            sensor_types.append(app_cached_variables.database_variables.gas_nh3)
-            sensor_readings.append(gas_nh3)
-    if app_config_access.installed_sensors.has_particulate_matter:
-        pm1_reading = sensor_access.get_particulate_matter_1()
-        pm2_5_reading = sensor_access.get_particulate_matter_2_5()
-        pm10_reading = sensor_access.get_particulate_matter_10()
-
-        if valid_sensor_reading(pm1_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_1)
-            sensor_readings.append(pm1_reading)
-        if valid_sensor_reading(pm2_5_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_2_5)
-            sensor_readings.append(pm2_5_reading)
-        if valid_sensor_reading(pm10_reading):
-            sensor_types.append(app_cached_variables.database_variables.particulate_matter_10)
-            sensor_readings.append(pm10_reading)
-    if app_config_access.installed_sensors.has_lumen:
+    if available_sensors.has_gas:
+        gas_readings = sensor_access.get_gas(return_as_dictionary=True)
+        for text_name, item_value in gas_readings.items():
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
+    if available_sensors.has_particulate_matter:
+        pm_readings = sensor_access.get_particulate_matter()
+        for text_name, item_value in pm_readings.items():
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
+    if available_sensors.has_lumen:
         sensor_types.append(app_cached_variables.database_variables.lumen)
         sensor_readings.append(sensor_access.get_lumen())
-    if app_config_access.installed_sensors.has_red:
-        ems_colours = sensor_access.get_ems()
-
-        if len(ems_colours) == 3:
-            sensor_types += [app_cached_variables.database_variables.red,
-                             app_cached_variables.database_variables.green,
-                             app_cached_variables.database_variables.blue]
-            sensor_readings += [ems_colours[0],
-                                ems_colours[1],
-                                ems_colours[2]]
-        elif len(ems_colours) == 6:
-            sensor_types += [app_cached_variables.database_variables.red,
-                             app_cached_variables.database_variables.orange,
-                             app_cached_variables.database_variables.yellow,
-                             app_cached_variables.database_variables.green,
-                             app_cached_variables.database_variables.blue,
-                             app_cached_variables.database_variables.violet]
-            sensor_readings += [ems_colours[0],
-                                ems_colours[1],
-                                ems_colours[2],
-                                ems_colours[3],
-                                ems_colours[4],
-                                ems_colours[5]]
-    if app_config_access.installed_sensors.has_ultra_violet:
-        uva_reading = sensor_access.get_ultra_violet_a()
-        uvb_reading = sensor_access.get_ultra_violet_b()
-
-        if valid_sensor_reading(uva_reading):
-            sensor_types.append(app_cached_variables.database_variables.ultra_violet_a)
-            sensor_readings.append(sensor_access.get_ultra_violet_a())
-        if valid_sensor_reading(uvb_reading):
-            sensor_types.append(app_cached_variables.database_variables.ultra_violet_b)
-            sensor_readings.append(sensor_access.get_ultra_violet_b())
-    if app_config_access.installed_sensors.has_acc:
+    if available_sensors.has_color:
+        ems_colours = sensor_access.get_ems_colors(return_as_dictionary=True)
+        for text_name, item_value in ems_colours.items():
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
+    if available_sensors.has_ultra_violet:
+        uv_reading = sensor_access.get_ultra_violet(return_as_dictionary=True)
+        for text_name, item_value in uv_reading.items():
+            if item_value != app_cached_variables.no_sensor_present:
+                sensor_types.append(text_name)
+                sensor_readings.append(item_value)
+    if available_sensors.has_acc:
         accelerometer_readings = sensor_access.get_accelerometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.acc_x,
@@ -156,7 +190,7 @@ def get_interval_sensor_readings():
         sensor_readings += [accelerometer_readings[0],
                             accelerometer_readings[1],
                             accelerometer_readings[2]]
-    if app_config_access.installed_sensors.has_mag:
+    if available_sensors.has_mag:
         magnetometer_readings = sensor_access.get_magnetometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.mag_x,
@@ -165,7 +199,7 @@ def get_interval_sensor_readings():
         sensor_readings += [magnetometer_readings[0],
                             magnetometer_readings[1],
                             magnetometer_readings[2]]
-    if app_config_access.installed_sensors.has_gyro:
+    if available_sensors.has_gyro:
         gyroscope_readings = sensor_access.get_gyroscope_xyz()
 
         sensor_types += [app_cached_variables.database_variables.gyro_x,
@@ -175,9 +209,7 @@ def get_interval_sensor_readings():
                             gyroscope_readings[1],
                             gyroscope_readings[2]]
 
-    return_interval_data = _list_to_csv_string(sensor_types) + \
-                           app_cached_variables.command_data_separator + \
-                           _list_to_csv_string_quoted(sensor_readings)
+    return_interval_data = [_list_to_csv_string(sensor_types), sensor_readings]
     return return_interval_data
 
 
@@ -197,3 +229,6 @@ def _list_to_csv_string_quoted(list_to_add):
             text_string += "'" + str(entry) + "',"
         return text_string[:-1]
     return ""
+
+
+available_sensors = CreateHasSensorVariables()

@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from platform import system
+from os import geteuid
 from queue import Queue
 
 
@@ -75,6 +76,7 @@ class CreateNetworkGetCommands:
         self.sensor_configuration = "GetConfigurationReport"
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
+        self.display_configuration_file = "GetDisplayConfiguration"
         self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.variance_config = "GetVarianceConfiguration"
@@ -108,9 +110,10 @@ class CreateNetworkGetCommands:
         self.all_particulate_matter = "GetAllParticulateMatter"
         self.pm_1 = "GetParticulateMatter1"
         self.pm_2_5 = "GetParticulateMatter2_5"
+        self.pm_4 = "GetParticulateMatter4"
         self.pm_10 = "GetParticulateMatter10"
         self.lumen = "GetLumen"
-        self.electromagnetic_spectrum = "GetEMS"
+        self.electromagnetic_spectrum = "GetEMSColors"
         self.all_ultra_violet = "GetAllUltraViolet"
         self.ultra_violet_index = "GetUltraVioletA"
         self.ultra_violet_a = "GetUltraVioletA"
@@ -127,13 +130,17 @@ class CreateDatabaseVariables:
     """ Creates a object instance holding SQLite3 database table and row names. """
 
     def __init__(self):
-        self.table_interval = "IntervalData"
-        self.table_trigger = "TriggerData"
         self.table_other = "OtherData"
-
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
+        self.sensor_check_in_version = "KootnetVersion"
+        self.sensor_check_in_installed_sensors = "installed_sensors"
+        self.sensor_check_in_primary_log = "primary_log"
+        self.sensor_check_in_sensors_log = "sensors_log"
+
+        self.table_interval = "IntervalData"
+        self.table_trigger = "TriggerData"
         self.all_tables_datetime = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
@@ -151,6 +158,7 @@ class CreateDatabaseVariables:
         self.gas_nh3 = "Gas_NH3"
         self.particulate_matter_1 = "Particulate_Matter_1"
         self.particulate_matter_2_5 = "Particulate_Matter_2_5"
+        self.particulate_matter_4 = "Particulate_Matter_4"
         self.particulate_matter_10 = "Particulate_Matter_10"
 
         self.lumen = "Lumen"
@@ -192,6 +200,7 @@ class CreateDatabaseVariables:
                               self.gas_nh3,
                               self.particulate_matter_1,
                               self.particulate_matter_2_5,
+                              self.particulate_matter_4,
                               self.particulate_matter_10,
                               self.lumen,
                               self.red,
@@ -243,6 +252,9 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
+running_with_root = True
+if geteuid() != 0:
+    running_with_root = False
 operating_system_name = ""
 database_variables = CreateDatabaseVariables()
 program_last_updated = ""
@@ -250,13 +262,20 @@ reboot_count = ""
 total_ram_memory = 0.0
 total_ram_memory_size_type = " MB"
 
+# Is filled with Currently available online Stable / Developmental versions
+standard_version_available = "Retrieving ..."
+developmental_version_available = "Retrieving ..."
+
 # Static variables
 command_data_separator = "[new_data_section]"
 no_sensor_present = "NoSensor"
 
+# Plotly Configuration Variables
+plotly_theme = "plotly_dark"
+
 # Network Variables
-hostname = ""
-ip = ""
+hostname = "Still Loading"
+ip = "Refresh Page"
 ip_subnet = ""
 gateway = ""
 dns1 = ""
@@ -272,14 +291,38 @@ wifi_psk = ""
 http_flask_user = "Kootnet"
 http_flask_password = "sensors"
 
+# Software Check-in Variables
+checkin_hour_offset = 0
+checkin_search_sensor_id = ""
+checkin_search_sensor_installed_sensors = ""
+checkin_sensor_info = ""
+checkin_search_primary_log = ""
+checkin_search_sensors_log = ""
+
 # Running "Service" Threads
 http_server_thread = None
 interval_recording_thread = None
 mini_display_thread = None
 interactive_sensor_thread = None
+mqtt_publisher_thread = None
 weather_underground_thread = None
 luftdaten_thread = None
 open_sense_map_thread = None
+
+# If these variables are set to True, it will restart the corresponding thread
+# After the thread restarts, it sets this back to False
+restart_interval_recording_thread = False
+restart_all_trigger_threads = False
+restart_mini_display_thread = False
+restart_mqtt_publisher_thread = False
+restart_mqtt_subscriber_thread = False
+restart_weather_underground_thread = False
+restart_luftdaten_thread = False
+restart_open_sense_map_thread = False
+
+# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
+html_service_restart = False
+html_sensor_reboot = False
 
 # Running Trigger Recording Threads
 trigger_thread_sensor_uptime = None

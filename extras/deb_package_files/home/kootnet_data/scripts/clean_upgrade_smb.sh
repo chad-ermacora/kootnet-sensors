@@ -35,6 +35,7 @@ rm -f /etc/systemd/system/SensorR*.service 2>/dev/null
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} /mnt/supernas -o ${CIFS_OPTIONS}
 sleep 1
 cp /mnt/supernas${DEB_INSTALLER} /tmp
+apt-get update
 apt-get -y --reinstall --allow-downgrades install /tmp${DEB_INSTALLER}
 umount /mnt/supernas
 # Save DateTime and Update type to file (Used in program to show last updated)

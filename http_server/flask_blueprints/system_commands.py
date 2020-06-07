@@ -1,3 +1,21 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import os
 import time
 from datetime import datetime
@@ -6,9 +24,9 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
-from operations_modules import app_config_access
 from operations_modules import software_version
-from operations_modules.sqlite_database import validate_sqlite_database, check_database_structure
+from operations_modules.sqlite_database import validate_sqlite_database, check_main_database_structure
+from configuration_modules.app_config_access import primary_config
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
 from sensor_modules import sensor_access
@@ -28,6 +46,12 @@ def check_online():
 @auth.login_required
 def test_login():
     return "OK"
+
+
+@html_system_commands_routes.route("/GetSensorID")
+def get_sensor_id():
+    logger.network_logger.debug("* Sensor's ID sent to " + str(request.remote_addr))
+    return "KS" + str(primary_config.sensor_checkin_id)
 
 
 @html_system_commands_routes.route("/GetHostName")
@@ -79,7 +103,7 @@ def put_sql_db():
     if new_database is not None:
         new_database.save(temp_db_location)
         if validate_sqlite_database(database_location=temp_db_location):
-            check_database_structure(database_location=temp_db_location)
+            check_main_database_structure(database_location=temp_db_location)
             if _move_database():
                 os.system("mv -f " + temp_db_location + " " + file_locations.sensor_database)
                 logger.primary_logger.info(return_message_ok)
@@ -230,6 +254,7 @@ def upgrade_rp_controller():
 
 
 @html_system_commands_routes.route("/RestartServices")
+@auth.login_required
 def services_restart():
     message = "This should only take 5 to 30 seconds."
     logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
@@ -319,14 +344,11 @@ def create_new_self_signed_ssl():
 @html_system_commands_routes.route("/DisplayText", methods=["PUT"])
 def display_text():
     max_length_text_message = 250
-    if app_config_access.primary_config.enable_display and app_config_access.installed_sensors.has_display:
-        logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
-        text_message = request.form.get("command_data")
-        if len(text_message) > max_length_text_message:
-            logger.network_logger.warning("Message sent to Display is longer then " + str(max_length_text_message) +
-                                          ". Truncating to " + str(max_length_text_message) + " Character")
-            text_message = text_message[:max_length_text_message]
-        sensor_access.display_message(text_message)
-    else:
-        logger.network_logger.warning("* Unable to Display Text: Sensor Display disabled or not installed")
+    logger.network_logger.info("* Show Message on Display Initiated by " + str(request.remote_addr))
+    text_message = request.form.get("command_data")
+    if len(text_message) > max_length_text_message:
+        logger.network_logger.warning("Message sent to Display is longer then " + str(max_length_text_message) +
+                                      ". Truncating to " + str(max_length_text_message) + " Character")
+        text_message = text_message[:max_length_text_message]
+    sensor_access.display_message(text_message)
     return "OK"

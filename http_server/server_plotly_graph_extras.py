@@ -22,7 +22,7 @@ from http_server import server_plotly_graph_variables
 try:
     from plotly import graph_objs as go
 except ImportError as import_error:
-    logger.primary_logger.debug("Plotly Graph - Failed Import")
+    logger.primary_logger.warning("Plotly Graph Import Failed: " + str(import_error))
     go = None
 
 interval_table = "IntervalData"

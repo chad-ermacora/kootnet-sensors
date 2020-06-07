@@ -41,8 +41,6 @@ class CreateGeneralConfiguration:
         self.config_settings = []
         self.config_settings_names = []
 
-        self.bad_config_load = False
-
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
         try:
@@ -76,14 +74,14 @@ class CreateGeneralConfiguration:
         return new_file_content
 
     def set_config_with_str(self, config_file_text):
+        """ Sets configuration with the provided Text. """
         if config_file_text is not None:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
             if not self.valid_setting_count == len(config_file_text):
                 if self.load_from_file:
-                    self.bad_config_load = True
                     log_msg = "Invalid number of settings found in "
-                    logger.primary_logger.warning(log_msg + str(self.config_file_location))
+                    logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - Please Check Config")
 
             self.config_settings = []
             for line in config_file_text:
@@ -93,13 +91,11 @@ class CreateGeneralConfiguration:
                 except Exception as error:
                     if self.load_from_file:
                         logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
-                    self.bad_config_load = True
                     setting = "error"
                 self.config_settings.append(setting)
         else:
             if self.load_from_file:
                 logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
-            self.bad_config_load = True
 
 
 class CreateMonitoredThread:
@@ -109,13 +105,15 @@ class CreateMonitoredThread:
     If it gets restarted more then 5 times, it logs an error message and stops.
     """
 
-    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=5):
+    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
         self.is_running = True
         self.function = function
         self.args = args
         self.thread_name = thread_name
         self.current_restart_count = 0
         self.max_restart_count = max_restart_tries
+
+        self.shutdown_thread = False
 
         if self.args is not None:
             self.monitored_thread = Thread(target=self.function, args=self.args)
@@ -127,28 +125,47 @@ class CreateMonitoredThread:
         self.watch_thread.daemon = True
         self.watch_thread.start()
 
+        self.restart_watch_thread = Thread(target=self._restart_count_reset_watch)
+        self.restart_watch_thread.daemon = True
+        self.restart_watch_thread.start()
+
+    def _restart_count_reset_watch(self):
+        """ Resets self.current_restart_count to 0 if it's been longer then 60 seconds since a restart. """
+        last_restart_time = time.time()
+        last_count = 0
+        while True:
+            if self.current_restart_count:
+                if last_count != self.current_restart_count:
+                    last_count = self.current_restart_count
+                    last_restart_time = time.time()
+                elif time.time() - last_restart_time > 60:
+                    self.current_restart_count = 0
+            time.sleep(30)
+
     def _thread_and_monitor(self):
         logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
         self.monitored_thread.start()
-        while True:
-            time.sleep(30)
+        while not self.shutdown_thread:
             if not self.monitored_thread.is_alive():
-                logger.primary_logger.error(self.thread_name + " Stopped Unexpectedly - Restarting...")
+                logger.primary_logger.info(self.thread_name + " Restarting...")
                 self.is_running = False
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
-                    if self.args is not None:
-                        self.monitored_thread = Thread(target=self.function, args=self.args)
-                    else:
+                    if self.args is None:
                         self.monitored_thread = Thread(target=self.function)
+                    else:
+                        self.monitored_thread = Thread(target=self.function, args=self.args)
                     self.monitored_thread.daemon = True
                     self.monitored_thread.start()
                     self.is_running = True
                 else:
-                    log_msg = self.thread_name + " has attempted to restart " + str(self.current_restart_count)
-                    logger.primary_logger.critical(log_msg + " Times.  No further restart attempts will be made.")
+                    log_msg = self.thread_name + " has restarted " + str(self.current_restart_count)
+                    log_msg += " times in less then 1 minutes."
+                    logger.primary_logger.critical(log_msg + " No further restart attempts will be made.")
                     while True:
                         time.sleep(600)
+            time.sleep(5)
+        self.shutdown_thread = False
 
 
 def start_and_wait_threads(threads_list):
@@ -157,19 +174,6 @@ def start_and_wait_threads(threads_list):
         thread.start()
     for thread in threads_list:
         thread.join()
-
-
-def get_text_running_thread_state(service_enabled, thread_variable):
-    """ Checks to see if a 'service' thread is running and returns the result as text. """
-    if service_enabled:
-        return_text = "Stopped"
-        if thread_variable is None:
-            return_text = "Missing Sensor"
-        elif thread_variable.is_running:
-            return_text = "Running"
-    else:
-        return_text = "Disabled"
-    return return_text
 
 
 def get_file_content(load_file, open_type="r"):
@@ -184,7 +188,8 @@ def get_file_content(load_file, open_type="r"):
             logger.primary_logger.error("Unable to load " + load_file + " - " + str(error))
         return file_content
     else:
-        logger.primary_logger.error(load_file + " not found")
+        logger.primary_logger.debug(load_file + " not found")
+    return ""
 
 
 def write_file_to_disk(file_location, file_content, open_type="w"):

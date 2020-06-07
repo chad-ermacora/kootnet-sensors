@@ -16,18 +16,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from threading import Thread
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import network_wifi
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return, get_sensor_control_report
+from http_server.server_http_generic_functions import message_and_return
+from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
     check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
     create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, get_html_reports_combo, \
@@ -358,24 +360,24 @@ def _run_system_command(command, include_data=None):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        sent_ok = 0
-        sent_failed = 0
         if _missing_login_credentials():
             return _get_missing_login_credentials_page()
         for ip in ip_list:
-            if _login_successful(ip):
-                if include_data is not None:
-                    app_generic_functions.send_http_command(ip, command, included_data=include_data)
-                else:
-                    app_generic_functions.get_http_sensor_reading(ip, command=command)
-                sent_ok += 1
-            else:
-                sent_failed += 1
-        msg2 = "Successfully sent: " + str(sent_ok) + "  ||  Bad Login: " + str(sent_failed)
-        msg1 = command + " sent to " + str(len(ip_list)) + " Sensors"
-        return message_and_return(msg1, url="/SensorControlManage", text_message2=msg2)
+            thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
+            thread.daemon = True
+            thread.start()
+        msg1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
+        return message_and_return(msg1, url="/SensorControlManage")
     msg2 = "Error sending System Command '" + command + "' to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+
+
+def _system_command_thread(ip, command, include_data=None):
+    if _login_successful(ip):
+        if include_data is not None:
+            app_generic_functions.send_http_command(ip, command, included_data=include_data)
+        else:
+            app_generic_functions.get_http_sensor_reading(ip, command=command)
 
 
 def _missing_login_credentials():

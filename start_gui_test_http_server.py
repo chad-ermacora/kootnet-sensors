@@ -25,7 +25,13 @@ from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import get_http_sensor_reading
+from operations_modules.software_version import CreateRefinedVersion
 import test_http_server
+
+compatible_version_str = "Beta.30.x"
+refined_compatible_version = CreateRefinedVersion("Beta.30.142")
+remote_sensor_version = CreateRefinedVersion()
 
 
 def button_go():
@@ -38,30 +44,36 @@ def run_tests():
     app_textbox_address.disable()
     app_button_test_sensor.disable()
     app_text_output.disable()
-    test_http_server.sensor_address = app_textbox_address.value
     app_cached_variables.http_login = app_textbox_user.value
     app_cached_variables.http_password = app_textbox_password.value
 
-    test_http_server.bad_sensor_contact = True
-    test_http_server.bad_sensor_login = True
-    sensor_address = test_http_server.sensor_address
-    if test_http_server.get_http_sensor_reading(sensor_address, timeout=5) == "OK":
-        test_http_server.bad_sensor_contact = False
-        if test_http_server.get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-            test_http_server.bad_sensor_login = False
+    sensor_address = app_textbox_address.value
+    test_http_server.sensor_address = sensor_address
 
-    print("Sensor: " + str(test_http_server.sensor_address) + "\n")
-    if test_http_server.bad_sensor_contact:
+    print("Sensor: " + str(sensor_address) + "\n\n")
+    if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
+        if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
+            temp_version = get_http_sensor_reading(sensor_address, command="GetSensorVersion", timeout=5)
+            remote_sensor_version.load_from_string(temp_version)
+            if remote_sensor_version.major_version == refined_compatible_version.major_version and \
+                    remote_sensor_version.feature_version == refined_compatible_version.feature_version and \
+                    remote_sensor_version.minor_version >= refined_compatible_version.minor_version:
+                print(" ------ Starting Tests ------")
+                print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
+                suite = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp)
+                suite.run(unittest.TestResult())
+            else:
+                print("-- Incompatible Version Detected --\n")
+                print_msg = "-- Compatible Version: " + refined_compatible_version.get_version_string()
+                print(print_msg + " (" + str(refined_compatible_version.minor_version) + " or higher) --")
+                print("-- Remote Version: " + remote_sensor_version.get_version_string() + " --")
+        else:
+            print("-- Incorrect Sensor Login --")
+    else:
         print("-- Sensor Offline --\n\n")
-        if test_http_server.sensor_address == "localhost":
-            print("\nLocal Primary Log\n" + logger.get_sensor_log(file_locations.primary_log))
-    elif test_http_server.bad_sensor_login:
-        print("-- Incorrect Sensor Login --")
-    if not test_http_server.bad_sensor_login and not test_http_server.bad_sensor_contact:
-        print(" ------ Starting Tests ------")
-        print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
-        suite = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp)
-        suite.run(unittest.TestResult())
+        if sensor_address == "localhost":
+            print("Local Primary Log\n" + logger.get_sensor_log(file_locations.primary_log))
+
     print("\n\n ------ End of Tests ------")
     print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
     app_text_output.enable()
@@ -75,7 +87,8 @@ def run_tests():
 redirect_string = io.StringIO()
 sys.stdout = redirect_string
 
-app = guizero.App(title="KootNet Sensors - Unit Tester for Beta.29.x", width=622, height=518, layout="grid")
+app_title_name = "KootNet Sensors - Unit Tester for " + compatible_version_str
+app = guizero.App(title=app_title_name, width=622, height=538, layout="grid")
 app_text_address = guizero.Text(app, text="Sensor Address", grid=[1, 1], align="left")
 app_textbox_address = guizero.TextBox(app, text="localhost", width=40, grid=[2, 1], align="left")
 app_button_test_sensor = guizero.PushButton(app, text="Start Tests", command=button_go, grid=[3, 1], align="right")

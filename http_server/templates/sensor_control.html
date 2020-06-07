@@ -2,6 +2,31 @@
 
 {% block content %}
 
+    <script>
+        function DevUpgradeHTTP() {
+            let r = confirm("Developmental Builds can be unstable\nInitiate HTTP remote DEV upgrades now?");
+            if (r === true) {
+                window.location = "/SCUpgradeOnlineDev"
+            }
+        }
+
+        function DevUpgradeSMB() {
+            let r = confirm("Developmental Builds can be unstable\nInitiate SMB remote DEV upgrades now?");
+            if (r === true) {
+                window.location = "/SCUpgradeSMBDev"
+            }
+        }
+
+        function CleanUpgradeHTTP() {
+            let r = confirm("This will require Internet access on all remote sensors" +
+                " and may take up to 10 minutes. You will be unable to access the sensors during this time." +
+                "\nRun now?");
+            if (r === true) {
+                window.location = "/SCUpgradeOnlineClean"
+            }
+        }
+    </script>
+
     <style>
         .mui-container-fluid {
             font-weight: bold;
@@ -262,8 +287,8 @@
                     <ul class="mui-dropdown__menu">
                         <li><a href="/SCUpgradeOnline">HTTP Upgrade</a></li>
                         <li><a href="/SCUpgradeSMB">SMB Upgrade</a></li>
-                        <li><a href="/SCUpgradeOnlineDev">DEV - HTTP Upgrade</a></li>
-                        <li><a href="/SCUpgradeSMBDev">DEV - SMB Upgrade</a></li>
+                        <li><a style="cursor: pointer;" onclick="DevUpgradeHTTP();">DEV - HTTP Upgrade</a></li>
+                        <li><a style="cursor: pointer;" onclick="DevUpgradeSMB();">DEV - SMB Upgrade</a></li>
                     </ul>
                 </div>
                 <div class="mui-dropdown">
@@ -286,7 +311,7 @@
                         <li><a href="/SCUpgradeSystemOS">Upgrade OS & Reboot</a></li>
                         <li><a href="/SCUpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
                         <li><a>---------------</a></li>
-                        <li><a href="/SCUpgradeOnlineClean">Clean - HTTP Upgrade</a></li>
+                        <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
                     </ul>
                 </div>
             </div>

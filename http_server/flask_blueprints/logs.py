@@ -1,3 +1,21 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import os
 from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
@@ -6,6 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
 from http_server import server_http_generic_functions
+from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_logs_routes = Blueprint("html_logs_routes", __name__)
 
@@ -17,7 +36,9 @@ def html_get_log_view():
     network_log_lines = logger.get_number_of_log_entries(file_locations.network_log)
     sensors_log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
     return render_template("log_view.html",
-                           LogURL="/GetLogsHTML",
+                           PageURL="/GetLogsHTML",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            PrimaryLog=logger.get_sensor_log(file_locations.primary_log),
                            PrimaryLogLinesText=_get_log_view_message(primary_log_lines),
                            NetworkLog=logger.get_sensor_log(file_locations.network_log),
@@ -103,7 +124,7 @@ def get_raw_sensors_log():
 def delete_primary_log():
     logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
     logger.clear_primary_log()
-    return server_http_generic_functions.message_and_return("Primary Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()
 
 
 @html_logs_routes.route("/DeleteNetworkLog")
@@ -111,7 +132,7 @@ def delete_primary_log():
 def delete_network_log():
     logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
     logger.clear_network_log()
-    return server_http_generic_functions.message_and_return("Network Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()
 
 
 @html_logs_routes.route("/DeleteSensorsLog")
@@ -119,4 +140,4 @@ def delete_network_log():
 def delete_sensors_log():
     logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
     logger.clear_sensor_log()
-    return server_http_generic_functions.message_and_return("Sensors Log Deleted", url="/GetLogsHTML")
+    return html_get_log_view()

@@ -102,8 +102,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
             self.station_key = str(self.config_settings[4])
             self.wu_rapid_fire_enabled = int(self.config_settings[5])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
+            logger.primary_logger.debug("Weather Underground Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Weather Underground Configuration.")

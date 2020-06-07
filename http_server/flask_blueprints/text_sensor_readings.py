@@ -1,6 +1,25 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 from flask import Blueprint, request
 from operations_modules import logger
-from operations_modules import app_config_access
+from operations_modules.app_cached_variables import command_data_separator
+from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from sensor_modules import sensor_access
 
@@ -10,7 +29,12 @@ html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 @html_sensor_readings_routes.route("/GetIntervalSensorReadings")
 def get_interval_readings():
     logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    return str(get_interval_sensor_readings())
+    sensor_readings = get_interval_sensor_readings()
+    readings_data = ""
+    for reading in sensor_readings[1]:
+        readings_data += str(reading) + ","
+    readings_data = readings_data[:-1]
+    return str(sensor_readings[0] + command_data_separator + readings_data)
 
 
 @html_sensor_readings_routes.route("/GetSensorsLatency")
@@ -81,62 +105,13 @@ def get_distance():
 @html_sensor_readings_routes.route("/GetAllGas")
 def get_all_gas():
     logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
-    gas_return = [sensor_access.get_gas_resistance_index(),
-                  sensor_access.get_gas_oxidised(),
-                  sensor_access.get_gas_reduced(),
-                  sensor_access.get_gas_nh3()]
-    return str(gas_return)
-
-
-@html_sensor_readings_routes.route("/GetGasResistanceIndex")
-def get_gas_resistance_index():
-    logger.network_logger.debug("* GAS Resistance Index sent to " + str(request.remote_addr))
-    return str(sensor_access.get_gas_resistance_index())
-
-
-@html_sensor_readings_routes.route("/GetGasOxidised")
-def get_gas_oxidised():
-    logger.network_logger.debug("* GAS Oxidised sent to " + str(request.remote_addr))
-    return str(sensor_access.get_gas_oxidised())
-
-
-@html_sensor_readings_routes.route("/GetGasReduced")
-def get_gas_reduced():
-    logger.network_logger.debug("* GAS Reduced sent to " + str(request.remote_addr))
-    return str(sensor_access.get_gas_reduced())
-
-
-@html_sensor_readings_routes.route("/GetGasNH3")
-def get_gas_nh3():
-    logger.network_logger.debug("* GAS NH3 sent to " + str(request.remote_addr))
-    return str(sensor_access.get_gas_nh3())
+    return sensor_access.get_gas(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAllParticulateMatter")
 def get_all_particulate_matter():
     logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
-    return_pm = [sensor_access.get_particulate_matter_1(),
-                 sensor_access.get_particulate_matter_2_5(),
-                 sensor_access.get_particulate_matter_10()]
-    return str(return_pm)
-
-
-@html_sensor_readings_routes.route("/GetParticulateMatter1")
-def get_particulate_matter_1():
-    logger.network_logger.debug("* Particulate Matter 1 sent to " + str(request.remote_addr))
-    return str(sensor_access.get_particulate_matter_1())
-
-
-@html_sensor_readings_routes.route("/GetParticulateMatter2_5")
-def get_particulate_matter_2_5():
-    logger.network_logger.debug("* Particulate Matter 2.5 sent to " + str(request.remote_addr))
-    return str(sensor_access.get_particulate_matter_2_5())
-
-
-@html_sensor_readings_routes.route("/GetParticulateMatter10")
-def get_particulate_matter_10():
-    logger.network_logger.debug("* Particulate Matter 10 sent to " + str(request.remote_addr))
-    return str(sensor_access.get_particulate_matter_10())
+    return sensor_access.get_particulate_matter()
 
 
 @html_sensor_readings_routes.route("/GetLumen")
@@ -145,29 +120,16 @@ def get_lumen():
     return str(sensor_access.get_lumen())
 
 
-@html_sensor_readings_routes.route("/GetEMS")
-def get_visible_ems():
+@html_sensor_readings_routes.route("/GetEMSColors")
+def get_ems_colors():
     logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ems())
+    return sensor_access.get_ems_colors(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAllUltraViolet")
 def get_all_ultra_violet():
     logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
-    return_ultra_violet = [sensor_access.get_ultra_violet_a(), sensor_access.get_ultra_violet_b()]
-    return str(return_ultra_violet)
-
-
-@html_sensor_readings_routes.route("/GetUltraVioletA")
-def get_ultra_violet_a():
-    logger.network_logger.debug("* Ultra Violet A sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ultra_violet_a())
-
-
-@html_sensor_readings_routes.route("/GetUltraVioletB")
-def get_ultra_violet_b():
-    logger.network_logger.debug("* Ultra Violet B sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ultra_violet_b())
+    return sensor_access.get_ultra_violet(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetAccelerometerXYZ")

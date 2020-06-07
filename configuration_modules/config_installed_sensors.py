@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+from os import geteuid
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
@@ -30,17 +31,20 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         installed_sensors_config = file_locations.installed_sensors_config
         CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 21
-        self.config_settings_names = ["Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
-                                      "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680",
-                                      "Pimoroni EnviroPHAT", "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003",
-                                      "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948", "Pimoroni VL53L1X",
-                                      "Pimoroni LTR-559", "Pimoroni VEML6075", "Pimoroni 11x7 LED Matrix",
-                                      "Pimoroni 10.96'' SPI Colour LCD (160x80)",
-                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)"]
+        self.valid_setting_count = 23
+        self.config_settings_names = ["Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT",
+                                      "Pimoroni BH1745", "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280",
+                                      "Pimoroni BME680", "Pimoroni EnviroPHAT", "Pimoroni Enviro+", "Pimoroni SGP30",
+                                      "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948",
+                                      "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
+                                      "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96'' SPI Colour LCD (160x80)",
+                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30"]
 
         self.no_sensors = True
-        self.linux_system = 0
+
+        self.kootnet_dummy_sensor = 0
+
+        self.linux_system = 1
         self.raspberry_pi = 0
 
         self.raspberry_pi_sense_hat = 0
@@ -64,16 +68,17 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
 
-        self._update_configuration_settings_list()
+        self.sensirion_sps30 = 0
+
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
-        self._update_has_sensor_variables()
+            self.config_settings_names[2] = self.get_raspberry_pi_model()
 
     def set_config_with_str(self, config_file_text):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
-        self._update_has_sensor_variables()
 
     def update_with_html_request(self, html_request):
         """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
@@ -122,10 +127,14 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.pimoroni_st7735 = 1
             if html_request.form.get("pimoroni_mono_oled_luma") is not None:
                 self.pimoroni_mono_oled_luma = 1
+            if html_request.form.get("kootnet_dummy_sensor") is not None:
+                self.kootnet_dummy_sensor = 1
+            if html_request.form.get("sensirion_sps30") is not None:
+                self.sensirion_sps30 = 1
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-        self._update_configuration_settings_list()
-        self._update_has_sensor_variables()
+        self.update_configuration_settings_list()
+        self.load_from_file = True
 
     def get_installed_names_str(self):
         """ Returns Installed Sensors as a String. """
@@ -133,172 +142,58 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         new_file_content = ""
         for setting, setting_name in zip(self.config_settings, self.config_settings_names):
             if int(setting):
-                if self.config_settings_names[1] == setting_name:
-                    new_file_content += self.get_raspberry_pi_model() + " || "
-                else:
-                    new_file_content += str(setting_name) + " || "
+                new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
+            if geteuid():
+                return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
             return new_file_content[:-4]
         return "N/A"
 
+    def update_configuration_settings_list(self):
+        """ Set's config_settings variable list based on current settings. """
+        self.config_settings = [str(self.kootnet_dummy_sensor), str(self.linux_system), str(self.raspberry_pi),
+                                str(self.raspberry_pi_sense_hat), str(self.pimoroni_bh1745), str(self.pimoroni_as7262),
+                                str(self.pimoroni_mcp9600), str(self.pimoroni_bmp280), str(self.pimoroni_bme680),
+                                str(self.pimoroni_enviro), str(self.pimoroni_enviroplus), str(self.pimoroni_sgp30),
+                                str(self.pimoroni_pms5003), str(self.pimoroni_msa301), str(self.pimoroni_lsm303d),
+                                str(self.pimoroni_icm20948), str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559),
+                                str(self.pimoroni_veml6075), str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
+                                str(self.pimoroni_mono_oled_luma), str(self.sensirion_sps30)]
+
     def _update_variables_from_settings_list(self):
-        bad_load = 0
         try:
-            self.linux_system = int(self.config_settings[0])
-            self.raspberry_pi = int(self.config_settings[1])
-            self.raspberry_pi_sense_hat = int(self.config_settings[2])
-            self.pimoroni_bh1745 = int(self.config_settings[3])
-            self.pimoroni_as7262 = int(self.config_settings[4])
-            self.pimoroni_mcp9600 = int(self.config_settings[5])
-            self.pimoroni_bmp280 = int(self.config_settings[6])
-            self.pimoroni_bme680 = int(self.config_settings[7])
-            self.pimoroni_enviro = int(self.config_settings[8])
-            self.pimoroni_enviroplus = int(self.config_settings[9])
-            self.pimoroni_sgp30 = int(self.config_settings[10])
-            self.pimoroni_pms5003 = int(self.config_settings[11])
-            self.pimoroni_msa301 = int(self.config_settings[12])
-            self.pimoroni_lsm303d = int(self.config_settings[13])
-            self.pimoroni_icm20948 = int(self.config_settings[14])
-            self.pimoroni_vl53l1x = int(self.config_settings[15])
-            self.pimoroni_ltr_559 = int(self.config_settings[16])
-            self.pimoroni_veml6075 = int(self.config_settings[17])
-            self.pimoroni_matrix_11x7 = int(self.config_settings[18])
-            self.pimoroni_st7735 = int(self.config_settings[19])
-            self.pimoroni_mono_oled_luma = int(self.config_settings[20])
+            self.kootnet_dummy_sensor = int(self.config_settings[0])
+            self.linux_system = int(self.config_settings[1])
+            self.raspberry_pi = int(self.config_settings[2])
+            self.raspberry_pi_sense_hat = int(self.config_settings[3])
+            self.pimoroni_bh1745 = int(self.config_settings[4])
+            self.pimoroni_as7262 = int(self.config_settings[5])
+            self.pimoroni_mcp9600 = int(self.config_settings[6])
+            self.pimoroni_bmp280 = int(self.config_settings[7])
+            self.pimoroni_bme680 = int(self.config_settings[8])
+            self.pimoroni_enviro = int(self.config_settings[9])
+            self.pimoroni_enviroplus = int(self.config_settings[10])
+            self.pimoroni_sgp30 = int(self.config_settings[11])
+            self.pimoroni_pms5003 = int(self.config_settings[12])
+            self.pimoroni_msa301 = int(self.config_settings[13])
+            self.pimoroni_lsm303d = int(self.config_settings[14])
+            self.pimoroni_icm20948 = int(self.config_settings[15])
+            self.pimoroni_vl53l1x = int(self.config_settings[16])
+            self.pimoroni_ltr_559 = int(self.config_settings[17])
+            self.pimoroni_veml6075 = int(self.config_settings[18])
+            self.pimoroni_matrix_11x7 = int(self.config_settings[19])
+            self.pimoroni_st7735 = int(self.config_settings[20])
+            self.pimoroni_mono_oled_luma = int(self.config_settings[21])
+            self.sensirion_sps30 = int(self.config_settings[22])
+            for sensor in self.config_settings:
+                if sensor:
+                    self.no_sensors = False
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
-            bad_load += 100
-
-        if bad_load < 99:
-            # Add new Settings here.
-            pass
-
-        if bad_load:
-            self._update_configuration_settings_list()
+            logger.primary_logger.debug("Installed Sensors Config: " + str(error))
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Installed Sensors.")
                 self.save_config_to_file()
-
-    def _update_configuration_settings_list(self):
-        """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.linux_system), str(self.raspberry_pi), str(self.raspberry_pi_sense_hat),
-                                str(self.pimoroni_bh1745), str(self.pimoroni_as7262), str(self.pimoroni_mcp9600),
-                                str(self.pimoroni_bmp280), str(self.pimoroni_bme680), str(self.pimoroni_enviro),
-                                str(self.pimoroni_enviroplus), str(self.pimoroni_sgp30), str(self.pimoroni_pms5003),
-                                str(self.pimoroni_msa301), str(self.pimoroni_lsm303d), str(self.pimoroni_icm20948),
-                                str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
-                                str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
-                                str(self.pimoroni_mono_oled_luma)]
-
-    def _update_has_sensor_variables(self):
-        self._set_default_has_sensor_variables()
-        if self.raspberry_pi:
-            self.has_cpu_temperature = 1
-        if self.raspberry_pi_sense_hat:
-            self.has_display = 1
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_humidity = 1
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if self.pimoroni_bh1745:
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-        if self.pimoroni_as7262:
-            self.has_red = 1
-            self.has_orange = 1
-            self.has_yellow = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_violet = 1
-        if self.pimoroni_bmp280:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_altitude = 1
-        if self.pimoroni_bme680:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_humidity = 1
-            self.has_gas = 1
-        if self.pimoroni_enviro:
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_lumen = 1
-            self.has_red = 1
-            self.has_green = 1
-            self.has_blue = 1
-            self.has_acc = 1
-            self.has_mag = 1
-        if self.pimoroni_enviroplus:
-            self.has_display = 1
-            self.has_env_temperature = 1
-            self.has_pressure = 1
-            self.has_altitude = 1
-            self.has_humidity = 1
-            self.has_distance = 1
-            self.has_lumen = 1
-            self.has_gas = 1
-        if self.pimoroni_pms5003:
-            self.has_particulate_matter = 1
-        if self.pimoroni_lsm303d:
-            self.has_acc = 1
-            self.has_mag = 1
-        if self.pimoroni_icm20948:
-            self.has_acc = 1
-            self.has_mag = 1
-            self.has_gyro = 1
-        if self.pimoroni_vl53l1x:
-            self.has_distance = 1
-        if self.pimoroni_ltr_559:
-            self.has_lumen = 1
-            self.has_distance = 1
-        if self.pimoroni_veml6075:
-            self.has_ultra_violet = 1
-            self.has_ultra_violet_comparator = 1
-        if self.pimoroni_matrix_11x7:
-            self.has_display = 1
-        if self.pimoroni_st7735:
-            self.has_display = 1
-        if self.pimoroni_mono_oled_luma:
-            self.has_display = 1
-        if self.pimoroni_msa301:
-            self.has_acc = 1
-        if self.pimoroni_sgp30:
-            self.has_gas = 1
-        if self.pimoroni_mcp9600:
-            self.has_env_temperature = 1
-        for sensor in self.config_settings:
-            if sensor:
-                self.no_sensors = False
-                break
-
-    def _set_default_has_sensor_variables(self):
-        self.has_display = 0
-        self.has_real_time_clock = 0
-        self.has_cpu_temperature = 0
-        self.has_env_temperature = 0
-        self.has_pressure = 0
-        self.has_altitude = 0
-        self.has_humidity = 0
-        self.has_distance = 0
-        self.has_gas = 0
-        self.has_particulate_matter = 0
-        self.has_ultra_violet = 0
-        self.has_ultra_violet_comparator = 0
-        self.has_lumen = 0
-        self.has_red = 0
-        self.has_orange = 0
-        self.has_yellow = 0
-        self.has_green = 0
-        self.has_blue = 0
-        self.has_violet = 0
-        self.has_acc = 0
-        self.has_mag = 0
-        self.has_gyro = 0
 
     def get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """

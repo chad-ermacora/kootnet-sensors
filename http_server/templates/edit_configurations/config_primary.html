@@ -1,0 +1,119 @@
+<div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
+    <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditConfigMain">
+        <fieldset style="text-align: center;">
+            <h2><u><a style="color: black;" href="{{ PageURL }}">Main Configuration</a></u></h2>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    HTTPS Port Number
+                    <br>
+                    <br>
+                    <input style="width: 65px;" type="number" id="ip_web_port" name="ip_web_port" required
+                           placeholder="10065" min="1024" max="65535" value="{{ IPWebPort }}">
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="debug_logging" value="" {{ CheckedDebug }}>
+                    Enable Debug Logging
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="enable_interval_recording" id="enable_interval_recording"
+                           value="" {{ CheckedInterval }}>
+                    Record sensors to SQL database based on set Interval
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    Seconds between Interval recordings
+                    <br>
+                    <br>
+                    <input style="width: 75px;" type="number" step="0.1" min="1" name="interval_delay_seconds"
+                           value="{{ IntervalDelay }}" {{ DisabledIntervalDelay }}>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" name="enable_trigger_recording" value="" {{ CheckedTrigger }}>
+                    Record sensors to SQL database based on set Triggers
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset"
+                           value="" {{ CheckedCustomTempOffset }}>
+                    Enable Environmental Temperature Offset
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    <input style="width: 75px;" type="number" step="0.01" min="-100" max="100"
+                           name="custom_temperature_offset"
+                           value="{{ temperature_offset }}" {{ DisabledCustomTempOffset }}>
+                </label>
+            </div>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
+                    <input type="checkbox" id="enable_custom_temp_comp" name="enable_custom_temp_comp"
+                           value="" {{ CheckedCustomTempComp }}>
+                    Enable Pi Temperature Correction Factor
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    <input style="width: 55px;" type="number" step="0.001" min="0" max="100"
+                           name="custom_temperature_comp"
+                           value="{{ CustomTempComp }}" {{ DisabledCustomTempComp }}>
+                </label>
+            </div>
+
+            <p>
+                Compensated environmental temperature formula is as follows<br>
+                (RawTemperature + Offset) - ((PiTemperature - RawTemperature) x CorrectionFactor)<br>
+                PiTemperature = Raspberry Pi CPU Temperature
+            </p>
+
+            <br>
+
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+        </fieldset>
+    </form>
+</div>
+
+<script>
+    jQuery('#enable_interval_recording').change(function () {
+        document.getElementsByName("interval_delay_seconds")[0].disabled = !jQuery(this).prop('checked');
+    });
+
+    jQuery('#enable_custom_temp_offset').change(function () {
+        document.getElementsByName("custom_temperature_offset")[0].disabled = !jQuery(this).prop('checked');
+    });
+
+    jQuery('#enable_custom_temp_comp').change(function () {
+        document.getElementsByName("custom_temperature_comp")[0].disabled = !jQuery(this).prop('checked');
+    });
+</script>
+

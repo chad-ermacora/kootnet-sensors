@@ -48,19 +48,27 @@ if os.geteuid() != 0:
                 print("Make Directory Error: " + str(error))
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
+sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
 sensor_html_help = program_root_dir + "/extras/SensorUnitHelp.html"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
 log_directory = sensor_data_dir + "/logs/"
-primary_log = log_directory + "Primary_log.txt"
-network_log = log_directory + "Network_log.txt"
-sensors_log = log_directory + "Sensors_log.txt"
+primary_log = log_directory + "primary_log.txt"
+network_log = log_directory + "network_log.txt"
+sensors_log = log_directory + "sensors_log.txt"
+mqtt_subscriber_log = log_directory + "mqtt_subscriber_log.txt"
 log_zip_file = log_directory + "all_logs.zip"
 
+sensor_checkin_id = sensor_config_dir + "/sensor_checkin_id.txt"
 old_version_file = sensor_config_dir + "/installed_version.txt"
 program_last_updated = sensor_config_dir + "/last_updated.txt"
 
 primary_config = sensor_config_dir + "/main_config.conf"
+mqtt_broker_config = sensor_config_dir + "/mqtt_broker_config.conf"
+mosquitto_configuration = "/etc/mosquitto/conf.d/kootnet_mosquitto.conf"
+mqtt_subscriber_config = sensor_config_dir + "/mqtt_subscriber_config.conf"
+mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
+display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 

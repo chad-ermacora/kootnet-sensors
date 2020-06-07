@@ -1,7 +1,25 @@
+"""
+    KootNet Sensors is a collection of programs and scripts to deploy,
+    interact with, and collect readings from various Sensors.
+    Copyright (C) 2018  Chad Ermacora  chad.ermacora@gmail.com
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
 import os
 from flask import Blueprint, request
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
 from operations_modules import software_version
@@ -16,9 +34,13 @@ html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
 @html_legacy_cc_routes.route("/GetSensorReadings")
 def cc_get_sensor_readings():
     logger.network_logger.debug("* CC Sensor Readings sent to " + str(request.remote_addr))
-    interval_readings = get_interval_sensor_readings().split(app_cached_variables.command_data_separator)
+    interval_readings = get_interval_sensor_readings()
+    readings_data = ""
+    for reading in interval_readings[1]:
+        readings_data += str(reading) + ","
+    readings_data = readings_data[:-1]
     str_interval_types = interval_readings[0].split(",")
-    str_interval_types_data = interval_readings[1].split(",")
+    str_interval_types_data = readings_data.split(",")
 
     return_data = ""
     return_types = ""

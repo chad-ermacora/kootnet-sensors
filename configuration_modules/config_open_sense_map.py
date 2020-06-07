@@ -27,15 +27,15 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.osm_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 24
+        self.valid_setting_count = 25
         self.config_settings_names = ["Enable Open Sense Map", "SenseBox ID", "Send to Server in Seconds",
                                       "Temperature Sensor ID", "Pressure Sensor ID", "Altitude Sensor ID",
                                       "Humidity Sensor ID", "Gas VOC Sensor ID", "Gas NH3 Sensor ID",
                                       "Gas Oxidised Sensor ID", "Gas Reduced Sensor ID", "PM 1.0 Sensor ID",
-                                      "PM 2.5 Sensor ID", "PM 10 Sensor ID", "Lumen Sensor ID", "Red Sensor ID",
-                                      "Orange Sensor ID", "Yellow Sensor ID", "Green Sensor ID", "Blue Sensor ID",
-                                      "Violet Sensor ID", "Ultra Violet Index Sensor ID", "Ultra Violet A Sensor ID",
-                                      "Ultra Violet B Sensor ID"]
+                                      "PM 2.5 Sensor ID", "PM 4 Sensor ID", "PM 10 Sensor ID", "Lumen Sensor ID",
+                                      "Red Sensor ID", "Orange Sensor ID", "Yellow Sensor ID", "Green Sensor ID",
+                                      "Blue Sensor ID", "Violet Sensor ID", "Ultra Violet Index Sensor ID",
+                                      "Ultra Violet A Sensor ID", "Ultra Violet B Sensor ID"]
 
         self.open_sense_map_main_url_start = "https://api.opensensemap.org/boxes"
         self.open_sense_map_login_url = "https://api.opensensemap.org/users/sign-in"
@@ -54,6 +54,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
         self.gas_nh3_id = ""
         self.pm1_id = ""
         self.pm2_5_id = ""
+        self.pm4_id = ""
         self.pm10_id = ""
 
         self.lumen_id = ""
@@ -68,7 +69,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
         self.ultra_violet_a_id = ""
         self.ultra_violet_b_id = ""
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -80,8 +81,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Open Sense Map configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting Open Sense Map Configuration Update Check")
-        self.__init__(load_from_file=False)
-
+        self.open_sense_map_enabled = 0
         if html_request.form.get("enable_open_sense_map") is not None:
             self.open_sense_map_enabled = 1
         if html_request.form.get("osm_station_id") is not None:
@@ -112,6 +112,8 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             self.pm1_id = html_request.form.get("pm1_id").strip()
         if html_request.form.get("pm2_5_id") is not None:
             self.pm2_5_id = html_request.form.get("pm2_5_id").strip()
+        if html_request.form.get("pm4_id") is not None:
+            self.pm4_id = html_request.form.get("pm4_id").strip()
         if html_request.form.get("pm10_id") is not None:
             self.pm10_id = html_request.form.get("pm10_id").strip()
         if html_request.form.get("lumen_id") is not None:
@@ -134,18 +136,19 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             self.ultra_violet_a_id = html_request.form.get("uv_a_id").strip()
         if html_request.form.get("uv_b_id") is not None:
             self.ultra_violet_b_id = html_request.form.get("uv_b_id").strip()
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
+        self.load_from_file = True
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [str(self.open_sense_map_enabled), str(self.sense_box_id), str(self.interval_seconds),
                                 str(self.temperature_id), str(self.pressure_id), str(self.altitude_id),
                                 str(self.humidity_id), str(self.gas_voc_id), str(self.gas_nh3_id),
                                 str(self.gas_oxidised_id), str(self.gas_reduced_id), str(self.pm1_id),
-                                str(self.pm2_5_id), str(self.pm10_id), str(self.lumen_id), str(self.red_id),
-                                str(self.orange_id), str(self.yellow_id), str(self.green_id), str(self.blue_id),
-                                str(self.violet_id), str(self.ultra_violet_index_id), str(self.ultra_violet_a_id),
-                                str(self.ultra_violet_b_id)]
+                                str(self.pm2_5_id), str(self.pm4_id), str(self.pm10_id), str(self.lumen_id),
+                                str(self.red_id), str(self.orange_id), str(self.yellow_id), str(self.green_id),
+                                str(self.blue_id), str(self.violet_id), str(self.ultra_violet_index_id),
+                                str(self.ultra_violet_a_id), str(self.ultra_violet_b_id)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -162,21 +165,21 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
             self.gas_reduced_id = str(self.config_settings[10])
             self.pm1_id = str(self.config_settings[11])
             self.pm2_5_id = str(self.config_settings[12])
-            self.pm10_id = str(self.config_settings[13])
-            self.lumen_id = str(self.config_settings[14])
-            self.red_id = str(self.config_settings[15])
-            self.orange_id = str(self.config_settings[16])
-            self.yellow_id = str(self.config_settings[17])
-            self.green_id = str(self.config_settings[18])
-            self.blue_id = str(self.config_settings[19])
-            self.violet_id = str(self.config_settings[20])
-            self.ultra_violet_index_id = str(self.config_settings[21])
-            self.ultra_violet_a_id = str(self.config_settings[22])
-            self.ultra_violet_b_id = str(self.config_settings[23])
+            self.pm4_id = str(self.config_settings[13])
+            self.pm10_id = str(self.config_settings[14])
+            self.lumen_id = str(self.config_settings[15])
+            self.red_id = str(self.config_settings[16])
+            self.orange_id = str(self.config_settings[17])
+            self.yellow_id = str(self.config_settings[18])
+            self.green_id = str(self.config_settings[19])
+            self.blue_id = str(self.config_settings[20])
+            self.violet_id = str(self.config_settings[21])
+            self.ultra_violet_index_id = str(self.config_settings[22])
+            self.ultra_violet_a_id = str(self.config_settings[23])
+            self.ultra_violet_b_id = str(self.config_settings[24])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
-            self._update_configuration_settings_list()
+            logger.primary_logger.debug("Open Sense Map Config: " + str(error))
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Open Sense Map Configuration.")
                 self.save_config_to_file()

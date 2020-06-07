@@ -51,10 +51,12 @@ def set_logging_level():
         primary_logger.setLevel(logging.DEBUG)
         network_logger.setLevel(logging.DEBUG)
         sensors_logger.setLevel(logging.DEBUG)
+        mqtt_subscriber_logger.setLevel(logging.DEBUG)
     else:
         primary_logger.setLevel(logging.INFO)
         network_logger.setLevel(logging.INFO)
         sensors_logger.setLevel(logging.INFO)
+        mqtt_subscriber_logger.setLevel(logging.INFO)
 
 
 def _debug_enabled():
@@ -62,7 +64,7 @@ def _debug_enabled():
         with open(file_locations.primary_config, "r") as loaded_file:
             file_lines_list = loaded_file.read().split("\n")
             if len(file_lines_list) > 1:
-                debug_setting = file_lines_list[1].split("=")[0].strip()
+                debug_setting = file_lines_list[2].split("=")[0].strip()
                 if int(debug_setting):
                     return True
     return False
@@ -75,12 +77,12 @@ def get_number_of_log_entries(log_file):
         return len(log_lines)
 
 
-def get_sensor_log(log_file):
+def get_sensor_log(log_file, max_lines=max_log_lines_return):
     """ Opens provided log file location and returns its content. """
     with open(log_file, "r") as log_content:
         log_lines = log_content.readlines()
-        if max_log_lines_return:
-            log_lines = log_lines[-max_log_lines_return:]
+        if max_lines:
+            log_lines = log_lines[-max_lines:]
         log_lines.reverse()
 
         return_log = ""
@@ -90,20 +92,26 @@ def get_sensor_log(log_file):
 
 
 def clear_primary_log():
-    """ Clears all Primary Sensor Log. """
+    """ Clears Primary Log. """
     with open(file_locations.primary_log, "w") as log_content:
         log_content.write("")
 
 
 def clear_network_log():
-    """ Clears all Network Sensor Log. """
+    """ Clears Network Log. """
     with open(file_locations.network_log, "w") as log_content:
         log_content.write("")
 
 
 def clear_sensor_log():
-    """ Clears all Sensor(s) Log. """
+    """ Clears Sensors Log. """
     with open(file_locations.sensors_log, "w") as log_content:
+        log_content.write("")
+
+
+def clear_mqtt_subscriber_log():
+    """ Clears MQTT Subscriber Log. """
+    with open(file_locations.mqtt_subscriber_log, "w") as log_content:
         log_content.write("")
 
 
@@ -111,12 +119,15 @@ def clear_sensor_log():
 primary_logger = logging.getLogger("PrimaryLog")
 network_logger = logging.getLogger("NetworkLog")
 sensors_logger = logging.getLogger("SensorsLog")
+mqtt_subscriber_logger = logging.getLogger("MQTTSubscriber")
 
 main_formatter = logging.Formatter("%(asctime)s - %(levelname)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
 sensor_formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s:  %(message)s", "%Y-%m-%d %H:%M:%S")
+mqtt_formatter = logging.Formatter("%(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S")
 
 initialize_logger(primary_logger, file_locations.primary_log, main_formatter)
 initialize_logger(network_logger, file_locations.network_log, main_formatter)
 initialize_logger(sensors_logger, file_locations.sensors_log, sensor_formatter)
+initialize_logger(mqtt_subscriber_logger, file_locations.mqtt_subscriber_log, mqtt_formatter)
 
 set_logging_level()

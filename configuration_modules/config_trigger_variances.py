@@ -101,6 +101,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
 
         self.particulate_matter_1_variance = 4.0
         self.particulate_matter_2_5_variance = 4.0
+        self.particulate_matter_4_variance = 4.0
         self.particulate_matter_10_variance = 4.0
         self.particulate_matter_wait_seconds = 60.0
 
@@ -137,94 +138,142 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("checkbox_sensor_uptime") is not None:
             self.sensor_uptime_enabled = 1
-        self.sensor_uptime_wait_seconds = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
+        if html_request.form.get("days_sensor_uptime") is not None:
+            self.sensor_uptime_wait_seconds = float(html_request.form.get("days_sensor_uptime")) * 60.0 * 60.0 * 24.0
 
         if html_request.form.get("checkbox_cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
-        self.cpu_temperature_variance = float(html_request.form.get("trigger_cpu_temperature"))
-        self.cpu_temperature_wait_seconds = float(html_request.form.get("seconds_cpu_temperature"))
+        if html_request.form.get("trigger_cpu_temperature") is not None:
+            self.cpu_temperature_variance = float(html_request.form.get("trigger_cpu_temperature"))
+        if html_request.form.get("seconds_cpu_temperature") is not None:
+            self.cpu_temperature_wait_seconds = float(html_request.form.get("seconds_cpu_temperature"))
 
         if html_request.form.get("env_temperature") is not None:
             self.env_temperature_enabled = 1
-        self.env_temperature_variance = float(html_request.form.get("trigger_env_temperature"))
-        self.env_temperature_wait_seconds = float(html_request.form.get("seconds_env_temperature"))
+        if html_request.form.get("trigger_env_temperature") is not None:
+            self.env_temperature_variance = float(html_request.form.get("trigger_env_temperature"))
+        if html_request.form.get("seconds_env_temperature") is not None:
+            self.env_temperature_wait_seconds = float(html_request.form.get("seconds_env_temperature"))
 
         if html_request.form.get("pressure") is not None:
             self.pressure_enabled = 1
-        self.pressure_variance = float(html_request.form.get("trigger_pressure"))
-        self.pressure_wait_seconds = float(html_request.form.get("seconds_pressure"))
+        if html_request.form.get("trigger_pressure") is not None:
+            self.pressure_variance = float(html_request.form.get("trigger_pressure"))
+        if html_request.form.get("seconds_pressure") is not None:
+            self.pressure_wait_seconds = float(html_request.form.get("seconds_pressure"))
 
         if html_request.form.get("humidity") is not None:
             self.humidity_enabled = 1
-        self.humidity_variance = float(html_request.form.get("trigger_humidity"))
-        self.humidity_wait_seconds = float(html_request.form.get("seconds_humidity"))
+        if html_request.form.get("trigger_humidity") is not None:
+            self.humidity_variance = float(html_request.form.get("trigger_humidity"))
+        if html_request.form.get("seconds_humidity") is not None:
+            self.humidity_wait_seconds = float(html_request.form.get("seconds_humidity"))
 
         if html_request.form.get("altitude") is not None:
             self.altitude_enabled = 1
-        self.altitude_variance = float(html_request.form.get("trigger_altitude"))
-        self.altitude_wait_seconds = float(html_request.form.get("seconds_altitude"))
+        if html_request.form.get("trigger_altitude") is not None:
+            self.altitude_variance = float(html_request.form.get("trigger_altitude"))
+        if html_request.form.get("seconds_altitude") is not None:
+            self.altitude_wait_seconds = float(html_request.form.get("seconds_altitude"))
 
         if html_request.form.get("distance") is not None:
             self.distance_enabled = 1
-        self.distance_variance = float(html_request.form.get("trigger_distance"))
-        self.distance_wait_seconds = float(html_request.form.get("seconds_distance"))
+        if html_request.form.get("trigger_distance") is not None:
+            self.distance_variance = float(html_request.form.get("trigger_distance"))
+        if html_request.form.get("seconds_distance") is not None:
+            self.distance_wait_seconds = float(html_request.form.get("seconds_distance"))
 
         if html_request.form.get("lumen") is not None:
             self.lumen_enabled = 1
-        self.lumen_variance = float(html_request.form.get("trigger_lumen"))
-        self.lumen_wait_seconds = float(html_request.form.get("seconds_lumen"))
+        if html_request.form.get("trigger_lumen") is not None:
+            self.lumen_variance = float(html_request.form.get("trigger_lumen"))
+        if html_request.form.get("seconds_lumen") is not None:
+            self.lumen_wait_seconds = float(html_request.form.get("seconds_lumen"))
 
         if html_request.form.get("colour") is not None:
             self.colour_enabled = 1
-        self.red_variance = float(html_request.form.get("red"))
-        self.orange_variance = float(html_request.form.get("orange"))
-        self.yellow_variance = float(html_request.form.get("yellow"))
-        self.green_variance = float(html_request.form.get("green"))
-        self.blue_variance = float(html_request.form.get("blue"))
-        self.violet_variance = float(html_request.form.get("violet"))
-        self.colour_wait_seconds = float(html_request.form.get("seconds_colour"))
+        if html_request.form.get("red") is not None:
+            self.red_variance = float(html_request.form.get("red"))
+        if html_request.form.get("orange") is not None:
+            self.orange_variance = float(html_request.form.get("orange"))
+        if html_request.form.get("yellow") is not None:
+            self.yellow_variance = float(html_request.form.get("yellow"))
+        if html_request.form.get("green") is not None:
+            self.green_variance = float(html_request.form.get("green"))
+        if html_request.form.get("blue") is not None:
+            self.blue_variance = float(html_request.form.get("blue"))
+        if html_request.form.get("violet") is not None:
+            self.violet_variance = float(html_request.form.get("violet"))
+        if html_request.form.get("seconds_colour") is not None:
+            self.colour_wait_seconds = float(html_request.form.get("seconds_colour"))
 
         if html_request.form.get("ultra_violet") is not None:
             self.ultra_violet_enabled = 1
-        self.ultra_violet_a_variance = float(html_request.form.get("ultra_violet_a"))
-        self.ultra_violet_b_variance = float(html_request.form.get("ultra_violet_b"))
-        self.ultra_violet_wait_seconds = float(html_request.form.get("seconds_ultra_violet"))
+        if html_request.form.get("ultra_violet_a") is not None:
+            self.ultra_violet_a_variance = float(html_request.form.get("ultra_violet_a"))
+        if html_request.form.get("ultra_violet_b") is not None:
+            self.ultra_violet_b_variance = float(html_request.form.get("ultra_violet_b"))
+        if html_request.form.get("seconds_ultra_violet") is not None:
+            self.ultra_violet_wait_seconds = float(html_request.form.get("seconds_ultra_violet"))
 
         if html_request.form.get("gas") is not None:
             self.gas_enabled = 1
-        self.gas_resistance_index_variance = float(html_request.form.get("trigger_gas_index"))
-        self.gas_oxidising_variance = float(html_request.form.get("trigger_gas_oxidising"))
-        self.gas_reducing_variance = float(html_request.form.get("trigger_gas_reducing"))
-        self.gas_nh3_variance = float(html_request.form.get("trigger_gas_nh3"))
-        self.gas_wait_seconds = float(html_request.form.get("seconds_gas"))
+        if html_request.form.get("trigger_gas_index") is not None:
+            self.gas_resistance_index_variance = float(html_request.form.get("trigger_gas_index"))
+        if html_request.form.get("trigger_gas_oxidising") is not None:
+            self.gas_oxidising_variance = float(html_request.form.get("trigger_gas_oxidising"))
+        if html_request.form.get("trigger_gas_reducing") is not None:
+            self.gas_reducing_variance = float(html_request.form.get("trigger_gas_reducing"))
+        if html_request.form.get("trigger_gas_nh3") is not None:
+            self.gas_nh3_variance = float(html_request.form.get("trigger_gas_nh3"))
+        if html_request.form.get("seconds_gas") is not None:
+            self.gas_wait_seconds = float(html_request.form.get("seconds_gas"))
 
         if html_request.form.get("particulate_matter") is not None:
             self.particulate_matter_enabled = 1
-        self.particulate_matter_1_variance = float(html_request.form.get("trigger_pm1"))
-        self.particulate_matter_2_5_variance = float(html_request.form.get("trigger_pm2_5"))
-        self.particulate_matter_10_variance = float(html_request.form.get("trigger_pm10"))
-        self.particulate_matter_wait_seconds = float(html_request.form.get("seconds_pm"))
+        if html_request.form.get("trigger_pm1") is not None:
+            self.particulate_matter_1_variance = float(html_request.form.get("trigger_pm1"))
+        if html_request.form.get("trigger_pm2_5") is not None:
+            self.particulate_matter_2_5_variance = float(html_request.form.get("trigger_pm2_5"))
+        if html_request.form.get("trigger_pm4") is not None:
+            self.particulate_matter_4_variance = float(html_request.form.get("trigger_pm4"))
+        if html_request.form.get("trigger_pm10") is not None:
+            self.particulate_matter_10_variance = float(html_request.form.get("trigger_pm10"))
+        if html_request.form.get("seconds_pm") is not None:
+            self.particulate_matter_wait_seconds = float(html_request.form.get("seconds_pm"))
 
         if html_request.form.get("accelerometer") is not None:
             self.accelerometer_enabled = 1
-        self.accelerometer_x_variance = float(html_request.form.get("accelerometer_x"))
-        self.accelerometer_y_variance = float(html_request.form.get("accelerometer_y"))
-        self.accelerometer_z_variance = float(html_request.form.get("accelerometer_z"))
-        self.accelerometer_wait_seconds = float(html_request.form.get("seconds_accelerometer"))
+        if html_request.form.get("accelerometer_x") is not None:
+            self.accelerometer_x_variance = float(html_request.form.get("accelerometer_x"))
+        if html_request.form.get("accelerometer_y") is not None:
+            self.accelerometer_y_variance = float(html_request.form.get("accelerometer_y"))
+        if html_request.form.get("accelerometer_z") is not None:
+            self.accelerometer_z_variance = float(html_request.form.get("accelerometer_z"))
+        if html_request.form.get("seconds_accelerometer") is not None:
+            self.accelerometer_wait_seconds = float(html_request.form.get("seconds_accelerometer"))
 
         if html_request.form.get("magnetometer") is not None:
             self.magnetometer_enabled = 1
-        self.magnetometer_x_variance = float(html_request.form.get("magnetometer_x"))
-        self.magnetometer_y_variance = float(html_request.form.get("magnetometer_y"))
-        self.magnetometer_z_variance = float(html_request.form.get("magnetometer_z"))
-        self.magnetometer_wait_seconds = float(html_request.form.get("seconds_magnetometer"))
+        if html_request.form.get("magnetometer_x") is not None:
+            self.magnetometer_x_variance = float(html_request.form.get("magnetometer_x"))
+        if html_request.form.get("magnetometer_y") is not None:
+            self.magnetometer_y_variance = float(html_request.form.get("magnetometer_y"))
+        if html_request.form.get("magnetometer_z") is not None:
+            self.magnetometer_z_variance = float(html_request.form.get("magnetometer_z"))
+        if html_request.form.get("seconds_magnetometer") is not None:
+            self.magnetometer_wait_seconds = float(html_request.form.get("seconds_magnetometer"))
 
         if html_request.form.get("gyroscope") is not None:
             self.gyroscope_enabled = 1
-        self.gyroscope_x_variance = float(html_request.form.get("gyroscope_x"))
-        self.gyroscope_y_variance = float(html_request.form.get("gyroscope_y"))
-        self.gyroscope_z_variance = float(html_request.form.get("gyroscope_z"))
-        self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
+        if html_request.form.get("gyroscope_x") is not None:
+            self.gyroscope_x_variance = float(html_request.form.get("gyroscope_x"))
+        if html_request.form.get("gyroscope_y") is not None:
+            self.gyroscope_y_variance = float(html_request.form.get("gyroscope_y"))
+        if html_request.form.get("gyroscope_z") is not None:
+            self.gyroscope_z_variance = float(html_request.form.get("gyroscope_z"))
+        if html_request.form.get("seconds_gyroscope") is not None:
+            self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
         self._update_configuration_settings_list()
 
     def reset_settings(self):
@@ -263,7 +312,6 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
                                 str(self.gyroscope_wait_seconds)]
 
     def _update_variables_from_settings_list(self):
-        bad_load = 0
         try:
             self.sensor_uptime_enabled = int(self.config_settings[0])
             self.sensor_uptime_wait_seconds = float(self.config_settings[1])
@@ -328,15 +376,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_variance = float(self.config_settings[60])
             self.gyroscope_wait_seconds = float(self.config_settings[61])
         except Exception as error:
-            log_msg = "Invalid Settings detected for " + self.config_file_location + ": "
-            logger.primary_logger.error(log_msg + str(error))
-            bad_load += 100
-
-        if bad_load < 99:
-            # Add new Settings here.
-            pass
-
-        if bad_load:
+            logger.primary_logger.debug("Trigger Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Trigger Variance Configuration.")

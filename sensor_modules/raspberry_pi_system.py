@@ -11,7 +11,7 @@ Created on Sat Aug 25 08:53:56 2018
 import os
 import time
 from operations_modules import logger
-from operations_modules import app_config_access
+from configuration_modules import app_config_access
 
 round_decimal_to = 5
 pause_sensor_during_access_sec = 0.005
@@ -29,7 +29,6 @@ class CreateRPSystem:
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi System Access Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.raspberry_pi = 0
-            app_config_access.installed_sensors.has_cpu_temperature = 0
 
     def cpu_temperature(self):
         """ Returns System CPU Temperature as a Float. """
