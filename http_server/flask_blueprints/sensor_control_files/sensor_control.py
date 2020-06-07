@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from threading import Thread
 from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
@@ -359,24 +360,24 @@ def _run_system_command(command, include_data=None):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
     if len(ip_list) > 0:
-        sent_ok = 0
-        sent_failed = 0
         if _missing_login_credentials():
             return _get_missing_login_credentials_page()
         for ip in ip_list:
-            if _login_successful(ip):
-                if include_data is not None:
-                    app_generic_functions.send_http_command(ip, command, included_data=include_data)
-                else:
-                    app_generic_functions.get_http_sensor_reading(ip, command=command)
-                sent_ok += 1
-            else:
-                sent_failed += 1
-        msg2 = "Successfully sent: " + str(sent_ok) + "  ||  Bad Login: " + str(sent_failed)
-        msg1 = command + " sent to " + str(len(ip_list)) + " Sensors"
-        return message_and_return(msg1, url="/SensorControlManage", text_message2=msg2)
+            thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
+            thread.daemon = True
+            thread.start()
+        msg1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
+        return message_and_return(msg1, url="/SensorControlManage")
     msg2 = "Error sending System Command '" + command + "' to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+
+
+def _system_command_thread(ip, command, include_data=None):
+    if _login_successful(ip):
+        if include_data is not None:
+            app_generic_functions.send_http_command(ip, command, included_data=include_data)
+        else:
+            app_generic_functions.get_http_sensor_reading(ip, command=command)
 
 
 def _missing_login_credentials():
