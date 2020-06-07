@@ -72,32 +72,36 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
 
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
-    db_connection = sqlite3.connect(database_location)
-    db_cursor = db_connection.cursor()
+    try:
+        db_connection = sqlite3.connect(database_location)
+        db_cursor = db_connection.cursor()
 
-    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-    sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
-    columns = [database_variables.sensor_check_in_version,
-               database_variables.sensor_uptime,
-               database_variables.sensor_check_in_installed_sensors,
-               database_variables.sensor_check_in_primary_log,
-               database_variables.sensor_check_in_sensors_log]
-    for sensor_id in sensor_ids:
-        cleaned_id = str(sensor_id[0]).strip()
-        for column in columns:
-            try:
-                add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
-                db_cursor.execute(add_columns_sql)
-            except Exception as error:
-                if str(error)[:21] != "duplicate column name":
-                    logger.primary_logger.error("Check-in Database Error: " + str(error))
-    db_connection.commit()
-    db_connection.close()
-    # TODO: Move VACUUM to a button instead of auto doing?
-    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
-    logger.primary_logger.debug("Check on 'Checkin' Database Complete")
-    return True
+        columns = [database_variables.sensor_check_in_version,
+                   database_variables.sensor_uptime,
+                   database_variables.sensor_check_in_installed_sensors,
+                   database_variables.sensor_check_in_primary_log,
+                   database_variables.sensor_check_in_sensors_log]
+        for sensor_id in sensor_ids:
+            cleaned_id = str(sensor_id[0]).strip()
+            for column in columns:
+                try:
+                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                    db_cursor.execute(add_columns_sql)
+                except Exception as error:
+                    if str(error)[:21] != "duplicate column name":
+                        logger.primary_logger.error("Checkin Database Error: " + str(error))
+        db_connection.commit()
+        db_connection.close()
+        # TODO: Move VACUUM to a button instead of auto doing?
+        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
+        logger.primary_logger.debug("Check on 'Checkin' Database Complete")
+        return True
+    except Exception as error:
+        logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
+        return False
 
 
 def check_main_database_structure(database_location=file_locations.sensor_database):
@@ -105,7 +109,6 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
     logger.primary_logger.debug("Running Checks on Main Database")
     columns_created = 0
     columns_already_made = 0
-
     try:
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
@@ -182,3 +185,32 @@ def validate_sqlite_database(database_location):
     except Exception as error:
         logger.primary_logger.error("Database Check: " + str(error))
     return False
+
+
+def run_database_integrity_check(sqlite_database_location, quick=True):
+    db_connection = sqlite3.connect(sqlite_database_location)
+    db_cursor = db_connection.cursor()
+
+    if quick:
+        integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()
+    else:
+        integrity_check_fetch = db_cursor.execute("PRAGMA integrity_check;").fetchall()
+
+    db_connection.commit()
+    db_connection.close()
+
+    log_msg1 = "Full Integrity Check ran on "
+    if quick:
+        log_msg1 = "Quick Integrity Check ran on "
+    integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
+    logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
+
+
+def sql_fetch_items_to_text(sql_query_results):
+    return_msg = ""
+    for item in sql_query_results:
+        for item2 in item:
+            return_msg += str(item2) + " | "
+    if len(return_msg) > 3:
+        return_msg = return_msg[:-3]
+    return return_msg

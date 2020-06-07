@@ -25,7 +25,8 @@ from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk
-from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure
+from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
+    run_database_integrity_check
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
 
 create_directories_for_files = [file_locations.mosquitto_configuration]
@@ -42,6 +43,8 @@ def run_program_start_checks():
     _check_ssl_files()
     _check_sensor_id()
     if software_version.old_version != software_version.version:
+        run_database_integrity_check(file_locations.sensor_database, quick=False)
+        run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
         db_check_threads = [Thread(target=check_main_database_structure),
                             Thread(target=check_checkin_database_structure)]
         for thread in db_check_threads:
@@ -50,6 +53,9 @@ def run_program_start_checks():
         for thread in db_check_threads:
             thread.join()
         run_configuration_upgrade_checks()
+    else:
+        run_database_integrity_check(file_locations.sensor_database)
+        run_database_integrity_check(file_locations.sensor_checkin_database)
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
