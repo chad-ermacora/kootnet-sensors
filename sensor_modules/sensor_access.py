@@ -234,6 +234,17 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
     return temperature
 
 
+# Todo: Have it return the difference between RAW temp + Adjustment.  Test it
+def get_temperature_correction():
+    raw_and_corrected = get_sensor_temperature(get_both=True)
+    temp_difference = 0.0
+    try:
+        temp_difference = raw_and_corrected[1] - raw_and_corrected[0]
+    except Exception as error:
+        logger.sensors_logger.warning("Unable to get Env Temperature Correction amount: " + str(error))
+    return round(temp_difference, 5)
+
+
 def get_pressure():
     """ Returns sensors pressure. """
     if app_config_access.installed_sensors.pimoroni_enviro:
