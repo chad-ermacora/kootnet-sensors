@@ -31,13 +31,13 @@ def run_configuration_upgrade_checks():
      Checks previous written version of the program to the current version.
      If the current version is different, start upgrade functions.
     """
-    logger.primary_logger.debug(" -- Configuration Upgrade Check Starting ...")
+    logger.primary_logger.debug(" - Configuration Upgrade Check Starting ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
     current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
 
     if previous_version.major_version == "New_Install":
-        logger.primary_logger.info("New Install Detected")
+        logger.primary_logger.info(" - New Install Detected")
         no_changes = False
         reset_all_silent()
     elif previous_version.major_version == "Unknown":
@@ -47,7 +47,7 @@ def run_configuration_upgrade_checks():
         reset_primary_config()
     else:
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
-        logger.primary_logger.info(msg)
+        logger.primary_logger.info(" - " + msg)
 
         if previous_version.major_version == "Beta":
             if previous_version.feature_version > current_version.feature_version:
@@ -78,6 +78,6 @@ def run_configuration_upgrade_checks():
             reset_primary_config()
 
     if no_changes:
-        logger.primary_logger.info("No configuration changes detected")
+        logger.primary_logger.info(" - No configuration changes detected")
     software_version.write_program_version_to_file()
     software_version.old_version = software_version.version

@@ -199,9 +199,9 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
     db_connection.commit()
     db_connection.close()
 
-    log_msg1 = "Full Integrity Check ran on "
+    log_msg1 = " - Full Integrity Check ran on "
     if quick:
-        log_msg1 = "Quick Integrity Check ran on "
+        log_msg1 = " - Quick Integrity Check ran on "
     integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
     logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
 
