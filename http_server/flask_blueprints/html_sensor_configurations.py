@@ -28,6 +28,7 @@ except ImportError as import_error:
     logger.primary_logger.warning("Import Versions Failed: " + str(import_error))
     plotly_version = "Unknown"
     numpy_version = "Unknown"
+    greenlet_version = "Unknown"
     gevent_version = "Unknown"
     requests_version = "Unknown"
     werkzeug_version = "Unknown"
