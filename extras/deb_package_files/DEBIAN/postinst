@@ -1,6 +1,7 @@
 #!/bin/bash
 PYTHON_VENV_DIR="/home/kootnet_data/env"
 INSTALL_DIR="/opt/kootnet-sensors"
+PYTHON_MODULES_DIR=${INSTALL_DIR}/extras/python_modules
 CONFIG_DIR="/etc/kootnet"
 if [[ ! -f ${CONFIG_DIR}/installed_version.txt ]]; then
   echo 'New_Install.99.999' >${CONFIG_DIR}/installed_version.txt
@@ -8,13 +9,66 @@ if [[ ! -f ${CONFIG_DIR}/installed_version.txt ]]; then
 fi
 if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   python3 -m venv --system-site-packages ${PYTHON_VENV_DIR}
+  ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
+  OS=$(awk '/^ID=/' /etc/os-release | sed 's/ID=//')
+  if [ "${OS}" == "raspbian" ]; then
+    PI_MODEL=$(head -n 1 /proc/device-tree/model | cut -c1-14)
+    if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv6l.whl
+    else
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv7l.whl
+    fi
+    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/pyserial-3.4-py2.py3-none-any.whl
+    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/click-7.1.2-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/itsdangerous-1.1.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/Werkzeug-1.0.1-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/Jinja2-2.11.2-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/pyusb-1.0.2-py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/pyftdi-0.51.2-py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/colorzero-1.1-py2.py3-none-any.whl
+    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Flask-1.1.2-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/Flask_HTTPAuth-4.1.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/zope.event-4.4-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/luma.core-1.14.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/luma.oled-3.4.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/paho_mqtt-1.5.0-py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/gpiozero-1.5.1-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/smbus2-0.3.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/guizero-1.1.0-py3-none-any.whl
+    if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv6l.whl \
+      ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv6l.whl
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv6l.whl
+    else
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv7l.whl \
+      ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv7l.whl
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv7l.whl
+    fi
+    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/retrying-1.3.3-py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/Flask_Compress-1.5.0-py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/requests-2.23.0-py2.py3-none-any.whl
+    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/plotly-4.8.1-py2.py3-none-any.whl
+  fi
 fi
 ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
 ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
-OS=$(awk '/^ID=/' /etc/os-release | sed 's/ID=//')
-if [ "${OS}" == "raspbian" ]; then
-  ${PYTHON_VENV_DIR}/bin/pip3 install gpiozero pyserial spidev smbus smbus2 luma.core luma.oled
-fi
 echo '*/1 * * * * fake-hwclock' >>/tmp/tmp34441.txt
 crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt
@@ -23,11 +77,11 @@ echo ' - DEB' >>${CONFIG_DIR}/last_updated.txt
 systemctl daemon-reload
 systemctl enable KootnetSensors
 systemctl start KootnetSensors
-printf "\n\nWaiting for program initalization to finish...\n\n"
+printf "\n\nWaiting for program initialization to finish...\n\n"
 counter=0
 while true; do
   if [[ "$(wget --no-check-certificate -q -O - "https://localhost:10065/CheckOnlineStatus")" == "OK" ]]; then
-    printf "Initalization Complete\n\n"
+    printf "initialization Complete\n\n"
     printf 'Open https://localhost:10065 on the local sensor to configure\n\n'
     printf 'To access the sensor from another device, replace "localhost" with an IP\n'
     printf 'IP addresses show below  ** Note: 127.0.0.1 is the same as localhost **\n\n'
@@ -35,7 +89,7 @@ while true; do
     printf '\n'
     exit 0
   elif [ "$counter" -gt 45 ]; then
-    printf "Timeout: Problem Initalizing Application, missing requirements?\n\n"
+    printf "Timeout: Problem initializing Application, missing requirements?\n\n"
     exit 1
   fi
   sleep 2
