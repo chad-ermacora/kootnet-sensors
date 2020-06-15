@@ -147,3 +147,12 @@ venv.bak/
 /extras/python_modules/zope.event-4.4-py2.py3-none-any.whl
 /extras/python_modules/zope.interface-5.1.0-cp37-cp37m-linux_armv6l.whl
 /extras/python_modules/zope.interface-5.1.0-cp37-cp37m-linux_armv7l.whl
+/extras/python_modules/click-7.1.2-py2.py3-none-any.whl
+/extras/python_modules/colorzero-1.1-py2.py3-none-any.whl
+/extras/python_modules/MarkupSafe-1.1.1-cp37-cp37m-linux_armv6l.whl
+/extras/python_modules/MarkupSafe-1.1.1-cp37-cp37m-linux_armv7l.whl
+/extras/python_modules/pycparser-2.20-py2.py3-none-any.whl
+/extras/python_modules/pyftdi-0.51.2-py3-none-any.whl
+/extras/python_modules/pyusb-1.0.2-py3-none-any.whl
+/extras/python_modules/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv6l.whl
+/extras/python_modules/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv7l.whl
