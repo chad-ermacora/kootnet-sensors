@@ -138,8 +138,9 @@ def get_interval_sensor_readings():
         sensor_types.append(app_cached_variables.database_variables.env_temperature)
         sensor_types.append(app_cached_variables.database_variables.env_temperature_offset)
         sensor_readings.append(sensor_access.get_sensor_temperature())
-        if app_config_access.primary_config.enable_custom_temp:
-            sensor_readings.append(app_config_access.primary_config.temperature_offset)
+        if app_config_access.primary_config.enable_custom_temp or \
+                app_config_access.primary_config.enable_temperature_comp_factor:
+            sensor_readings.append(sensor_access.get_temperature_correction())
         else:
             sensor_readings.append("0.0")
     if available_sensors.has_pressure:
