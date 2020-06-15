@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from extras.python_modules.paho.mqtt import client as mqtt
+from paho.mqtt import client as mqtt
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
