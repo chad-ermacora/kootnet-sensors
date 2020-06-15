@@ -137,8 +137,8 @@ class CreateSensorAccess:
 
         if app_config_access.installed_sensors.kootnet_dummy_sensor:
             self.dummy_sensors = _kootnet_dummy_sensors.CreateDummySensors()
-            log_msg2 = " - Readings will be randomly generated for any missing sensor types"
-            logger.sensors_logger.warning(" -- Dummy Sensors Enabled" + log_msg2)
+            log_msg2 = "Readings will be randomly generated for any missing sensor types"
+            logger.sensors_logger.warning(" - Dummy Sensors Enabled, " + log_msg2)
         logger.primary_logger.info(" -- Sensors Initialized")
 
     def _set_dummy_sensors(self):
