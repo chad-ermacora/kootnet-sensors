@@ -168,14 +168,6 @@ class CreateMonitoredThread:
         self.shutdown_thread = False
 
 
-def start_and_wait_threads(threads_list):
-    """ Starts provided list of threads and waits for them all to complete. """
-    for thread in threads_list:
-        thread.start()
-    for thread in threads_list:
-        thread.join()
-
-
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
@@ -210,6 +202,14 @@ def thread_function(function, args=None):
         system_thread = Thread(target=function)
     system_thread.daemon = True
     system_thread.start()
+
+
+def start_and_wait_threads(threads_list):
+    """ Starts provided list of threads and waits for them all to complete. """
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
 
 
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
