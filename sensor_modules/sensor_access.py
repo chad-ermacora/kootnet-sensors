@@ -200,9 +200,13 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
         temperature = sensors_direct.pimoroni_bme680_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         temperature = sensors_direct.rp_sense_hat_a.temperature()
+    elif app_config_access.installed_sensors.w1_therm_sensor:
+        temperature = sensors_direct.w1_therm_sensor_a.temperature()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.temperature()
     else:
+        if get_both:
+            return [no_sensor_present, no_sensor_present]
         return no_sensor_present
 
     new_temp = temperature
@@ -238,11 +242,14 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
 def get_temperature_correction():
     raw_and_corrected = get_sensor_temperature(get_both=True)
     temp_difference = 0.0
-    try:
-        temp_difference = raw_and_corrected[1] - raw_and_corrected[0]
-    except Exception as error:
-        logger.sensors_logger.warning("Unable to get Env Temperature Correction amount: " + str(error))
-    return round(temp_difference, 5)
+    if raw_and_corrected[0] != no_sensor_present:
+        try:
+            temp_difference = raw_and_corrected[1] - raw_and_corrected[0]
+        except Exception as error:
+            logger.sensors_logger.warning("Unable to get Env Temperature Correction amount: " + str(error))
+        return round(temp_difference, 5)
+    else:
+        return temp_difference
 
 
 def get_pressure():

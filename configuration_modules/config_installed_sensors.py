@@ -31,14 +31,16 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         installed_sensors_config = file_locations.installed_sensors_config
         CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 23
+        self.valid_setting_count = 24
+        w1_therm_sensor = "W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"
         self.config_settings_names = ["Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT",
                                       "Pimoroni BH1745", "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280",
                                       "Pimoroni BME680", "Pimoroni EnviroPHAT", "Pimoroni Enviro+", "Pimoroni SGP30",
                                       "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948",
                                       "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
                                       "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96'' SPI Colour LCD (160x80)",
-                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30"]
+                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30",
+                                      w1_therm_sensor]
 
         self.no_sensors = True
 
@@ -69,6 +71,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.pimoroni_mono_oled_luma = 0
 
         self.sensirion_sps30 = 0
+
+        self.w1_therm_sensor = 0
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -131,6 +135,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.kootnet_dummy_sensor = 1
             if html_request.form.get("sensirion_sps30") is not None:
                 self.sensirion_sps30 = 1
+            if html_request.form.get("w1thermsensor") is not None:
+                self.w1_therm_sensor = 1
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
         self.update_configuration_settings_list()
@@ -158,7 +164,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                                 str(self.pimoroni_pms5003), str(self.pimoroni_msa301), str(self.pimoroni_lsm303d),
                                 str(self.pimoroni_icm20948), str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559),
                                 str(self.pimoroni_veml6075), str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
-                                str(self.pimoroni_mono_oled_luma), str(self.sensirion_sps30)]
+                                str(self.pimoroni_mono_oled_luma), str(self.sensirion_sps30), str(self.w1_therm_sensor)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -185,6 +191,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_st7735 = int(self.config_settings[20])
             self.pimoroni_mono_oled_luma = int(self.config_settings[21])
             self.sensirion_sps30 = int(self.config_settings[22])
+            self.w1_therm_sensor = int(self.config_settings[23])
             for sensor in self.config_settings:
                 if sensor:
                     self.no_sensors = False

@@ -71,7 +71,8 @@ def get_config_installed_sensors_tab():
                                Pimoroni11x7LEDMatrix=get_html_checkbox_state(installed_sensors.pimoroni_matrix_11x7),
                                PimoroniSPILCD10_96=get_html_checkbox_state(installed_sensors.pimoroni_st7735),
                                PimoroniMonoOLED128x128BW=get_html_checkbox_state(installed_sensors.pimoroni_mono_oled_luma),
-                               SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30))
+                               SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30),
+                               W1ThermSensor=get_html_checkbox_state(installed_sensors.w1_therm_sensor))
     except Exception as error:
         logger.network_logger.error("Error building Installed Sensors configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="installed-sensors-tab")

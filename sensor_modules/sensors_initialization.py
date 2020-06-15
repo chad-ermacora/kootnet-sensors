@@ -42,6 +42,7 @@ from sensor_modules.pimoroni import pimoroni_veml6075 as _pimoroni_veml6075
 from sensor_modules.pimoroni import pimoroni_ltr_559 as _pimoroni_ltr_559
 from sensor_modules import raspberry_pi_sensehat as _raspberry_pi_sense_hat
 from sensor_modules import sensirion_sps30 as _sensirion_sps30
+from sensor_modules import maxim_dallas_1_wire_multi as _maxim_dallas_1_wire_multi
 from sensor_modules.no_sensors_dummy_sensors import CreateNoSensorsDummySensor
 
 
@@ -132,6 +133,9 @@ class CreateSensorAccess:
             if installed_sensors.sensirion_sps30 and not self.sensirion_sps30_a.initialized_sensor:
                 self.sensirion_sps30_a = _sensirion_sps30.CreateSPS30()
                 self.sensirion_sps30_a.initialized_sensor = True
+            if installed_sensors.w1_therm_sensor and not self.w1_therm_sensor_a.initialized_sensor:
+                self.w1_therm_sensor_a = _maxim_dallas_1_wire_multi.CreateW1ThermSenor()
+                self.w1_therm_sensor_a.initialized_sensor = True
         else:
             logger.sensors_logger.info(" -- Hardware Based Sensor Initializations Skipped - root required")
 
@@ -162,3 +166,4 @@ class CreateSensorAccess:
         self.pimoroni_st7735_a = CreateNoSensorsDummySensor()
         self.pimoroni_mono_oled_luma_a = CreateNoSensorsDummySensor()
         self.sensirion_sps30_a = CreateNoSensorsDummySensor()
+        self.w1_therm_sensor_a = CreateNoSensorsDummySensor()
