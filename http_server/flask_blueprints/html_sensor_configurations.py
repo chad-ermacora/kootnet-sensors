@@ -20,6 +20,7 @@ from operations_modules import logger
 try:
     from plotly import __version__ as plotly_version
     from numpy import __version__ as numpy_version
+    from greenlet import __version__ as greenlet_version
     from gevent import __version__ as gevent_version
     from requests import __version__ as requests_version
     from werkzeug import __version__ as werkzeug_version
@@ -101,6 +102,7 @@ def html_raw_configurations_view():
     module_version_text = "Kootnet Sensors: " + software_version.version + "\n" + \
                           "Flask: " + str(flask_version) + "\n" + \
                           "Gevent: " + str(gevent_version) + "\n" + \
+                          "Greenlet: " + str(greenlet_version) + "\n" + \
                           "Cryptography: " + str(cryptography_version) + "\n" + \
                           "Werkzeug: " + str(werkzeug_version) + "\n" + \
                           "Requests: " + str(requests_version) + "\n" + \
