@@ -25,7 +25,8 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules.sqlite_database import validate_sqlite_database, check_main_database_structure
+from operations_modules.sqlite_database import validate_sqlite_database, check_main_database_structure, \
+    write_to_sql_database
 from configuration_modules.app_config_access import primary_config
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
@@ -277,6 +278,22 @@ def system_shutdown():
     message2 = "You will be unable to access it until some one turns it back on."
     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["ShutdownSystem"])
     return message_and_return("Sensor Shutting Down", text_message2=message2, url="/")
+
+
+@html_system_commands_routes.route("/VacuumMainSQLDatabase")
+@auth.login_required
+def vacuum_main_database():
+    logger.network_logger.info("** Main SQL Database VACUUM Initiated by " + str(request.remote_addr))
+    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
+    return message_and_return("Main SQL Database has been Shrunk", url="/SystemCommands")
+
+
+@html_system_commands_routes.route("/VacuumCheckInsSQLDatabase")
+@auth.login_required
+def vacuum_check_ins_database():
+    logger.network_logger.info("** CheckIn SQL Database VACUUM Initiated by " + str(request.remote_addr))
+    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
+    return message_and_return("Check-Ins SQL Database has been Shrunk", url="/SystemCommands")
 
 
 @html_system_commands_routes.route("/UpgradeSystemOS")
