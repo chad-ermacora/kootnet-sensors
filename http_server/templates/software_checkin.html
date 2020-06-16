@@ -4,12 +4,6 @@
     <meta http-equiv="refresh" content="300; url = {{ PageURL }}"/>
 
     <script>
-        function DeleteOldCheckinData() {
-            let r = confirm("You will lose previous Log Entries\nThis cannot be undone\nAre you sure?");
-            if (r === true) {
-                window.location = "/ClearOldCheckinData"
-            }
-        }
         function DeleteSensorID() {
             let r = confirm("Sensor deletions cannot be undone, are you sure?");
             if (r === true) {
@@ -28,24 +22,36 @@
 
             <br>
 
+            <h4 style="color: red;"><strong>
+                Clear Old Sensor ID's that have not Checked-in for X Days
+            </strong></h4>
+
+            <form id="mqtt-form" class="mui-form" method="POST" action="/DeleteSensorsOlderCheckin"
+                  onsubmit="return confirm('Delete Old Sensor Entries?');">
+                <div class="mui-textfield">
+                    <label style="color: red; font-size: medium;">
+                        Days
+                        <input style="width: 75px;" type="number" max="3650"
+                               name="delete_sensors_older_days"
+                               value="{{ DeleteSensorsOlderDays }}">
+                    </label>
+                </div>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200" type="submit">
+                    Delete
+                </button>
+            </form>
+
+            <br>
+            <br>
+
             <p style="color: red; font-size: large;">Total Sensors in Database: {{ SensorsInDatabase }}</p>
-
-            <br>
-
-            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                    onclick="DeleteOldCheckinData();">
-                Clear Old Check-ins
-            </button>
-
-            <br>
-            <br>
 
             <h4><u><strong>
                 <a style="color: red;">Sensor Contacts in the past</a>
             </strong></u></h4>
 
             <p style="color: red; font-size: large;">hour: {{ TotalSensorCountHour }}</p>
-            <p style="color: red; font-size: large;">1 Day: {{ TotalSensorCountDay }}</p>
+            <p style="color: red; font-size: large;">Day: {{ TotalSensorCountDay }}</p>
             <p style="color: red; font-size: large;">2 Days: {{ TotalSensorCount2Day }}</p>
             <p style="color: red; font-size: large;">7 Days: {{ TotalSensorCountWeek }}</p>
             <p style="color: red; font-size: large;">4 Weeks: {{ TotalSensorCountMonth }}</p>
@@ -105,7 +111,8 @@
                 </form>
                 <span style="color: greenyellow; white-space: pre-wrap;">{{ SearchSensorInfo }}</span>
                 <button type="button" class="mui-btn mui-btn--raised mui--bg-color-pink-900 mui--color-white"
-                        onclick="DeleteSensorID();" {{ SearchSensorDeleteDisabled }}>Delete Sensor</button>
+                        onclick="DeleteSensorID();" {{ SearchSensorDeleteDisabled }}>Delete Sensor
+                </button>
                 <br>
                 <br>
                 <ul class="mui-tabs__bar">

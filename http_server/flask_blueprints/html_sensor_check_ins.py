@@ -81,28 +81,11 @@ def remote_sensor_check_ins():
 @auth.login_required
 def view_sensor_check_ins():
     db_location = file_locations.sensor_checkin_database
-
     get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
                                    "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
     sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_location)
 
-    get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-    sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
-
-    cleaned_sensor_list = []
-    for sensor_id in sensor_ids:
-        cleaned_sensor_list.append(str(sensor_id[0]).strip())
-
-    id_date_list = []
-    for sensor_id in cleaned_sensor_list:
-        get_last_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
-        raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
-        clean_last_checkin_date = _get_sql_element(raw_last_checkin_date)
-        if clean_last_checkin_date != "NA":
-            id_date_list.append([datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S"), sensor_id])
-        else:
-            id_date_list.append([datetime.strptime("1901-01-01 01:01:01", "%Y-%m-%d %H:%M:%S"), sensor_id])
-    id_date_list.sort(reverse=True)
+    id_date_list = _get_check_in_sensor_ids(include_last_datetime=True)
 
     sensor_statistics = "Per Sensor Check-in Information\n\n"
     current_date_time = datetime.utcnow()
@@ -161,6 +144,7 @@ def view_sensor_check_ins():
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            SensorsInDatabase=_get_sql_element(sensor_count),
+                           DeleteSensorsOlderDays=app_cached_variables.checkin_delete_sensors_older_days,
                            TotalSensorCountHour=contact_in_past_hour,
                            TotalSensorCountDay=contact_in_past_day,
                            TotalSensorCount2Day=contact_in_past_2days,
@@ -173,6 +157,25 @@ def view_sensor_check_ins():
                            SearchSensorDeleteDisabled=delete_enabled,
                            PrimaryLog=app_cached_variables.checkin_search_primary_log,
                            SensorLog=app_cached_variables.checkin_search_sensors_log)
+
+
+@html_sensor_check_ins_routes.route("/DeleteSensorsOlderCheckin", methods=["POST"])
+@auth.login_required
+def delete_sensors_older_then():
+    try:
+        checkin_delete_sensors_older_days = int(request.form.get("delete_sensors_older_days"))
+        app_cached_variables.checkin_delete_sensors_older_days = checkin_delete_sensors_older_days
+        datetime_sensor_ids_list = _get_check_in_sensor_ids(include_last_datetime=True)
+        current_date_time = datetime.utcnow()
+        for date_and_sensor_id in datetime_sensor_ids_list:
+            clean_last_checkin_date = date_and_sensor_id[0]
+            cleaned_id = date_and_sensor_id[1]
+            print(str((current_date_time - clean_last_checkin_date).days))
+            if (current_date_time - clean_last_checkin_date).days >= checkin_delete_sensors_older_days:
+                _delete_sensor_id(cleaned_id)
+    except Exception as error:
+        logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
+    return view_sensor_check_ins()
 
 
 @html_sensor_check_ins_routes.route("/DeleteSensorCheckinID")
@@ -357,3 +360,41 @@ def _get_sql_element(sql_data):
         logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
         return "Error"
     return "NA"
+
+
+def _get_check_in_sensor_ids(include_last_datetime=False):
+    """
+    Returns a list of Sensor ID's from the Check-In database.
+    If include_last_datetime=True, returns a list of [datetime, sensor_id]
+    """
+    db_location = file_locations.sensor_checkin_database
+    try:
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
+
+        cleaned_sensor_list = []
+        for sensor_id in sensor_ids:
+            cleaned_sensor_list.append(str(sensor_id[0]).strip())
+        if include_last_datetime:
+            return_sensor_ids_list = []
+            for sensor_id in cleaned_sensor_list:
+                get_last_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+                raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
+                clean_last_checkin_date = _get_sql_element(raw_last_checkin_date)
+                if clean_last_checkin_date != "NA":
+                    return_sensor_ids_list.append([datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S"), sensor_id])
+                else:
+                    return_sensor_ids_list.append([datetime.strptime("1901-01-01 01:01:01", "%Y-%m-%d %H:%M:%S"), sensor_id])
+            return_sensor_ids_list.sort(reverse=True)
+        else:
+            return_sensor_ids_list = cleaned_sensor_list
+        return return_sensor_ids_list
+    except Exception as error:
+        logger.network_logger.error("Unable to retrieve Check-In Sensor IDs: " + str(error))
+    return []
+
+
+def _delete_sensor_id(sensor_id):
+    """ Deletes provided Text Sensor ID from the Check-In database """
+    database_location = file_locations.sensor_checkin_database
+    write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=database_location)
