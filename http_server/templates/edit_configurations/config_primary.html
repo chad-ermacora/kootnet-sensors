@@ -27,6 +27,25 @@
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
+                    <input type="checkbox" name="enable_checkin" {{ CheckedSensorCheckIns }}>
+                    Enable Sensor Checkin
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <div class="mui-textfield">
+                <label style="color: black;">
+                    Checkin DNS Address or IP
+                    <br>
+                    <input style="width: 350px;" type="text" maxlength="250" name="checkin_address"
+                           value="{{ CheckinAddress }}">
+                </label>
+            </div>
+
+            <br>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox">
                     <input type="checkbox" name="enable_interval_recording" id="enable_interval_recording"
                            value="" {{ CheckedInterval }}>
                     Record sensors to SQL database based on set Interval

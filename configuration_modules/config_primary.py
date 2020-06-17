@@ -27,15 +27,16 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 9
+        self.valid_setting_count = 11
         self.config_settings_names = ["HTTPS Port Number (Default is 10065)", "Enable Debug Logging",
                                       "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
                                       "Recording Interval in Seconds * Caution *", "Enable Custom Temperature Offset",
                                       "Current Temperature Offset", "Enable Temperature Compensation Factor",
-                                      "Temperature Compensation Factor"]
+                                      "Temperature Compensation Factor", "Enable Sensor Check-Ins", "Checkin URL"]
 
+        self.enable_checkin = 1
         self.sensor_checkin_id = get_file_content(file_locations.sensor_checkin_id).strip()
-        self.checkin_url = "https://server.dragonwarz.net:10065/SensorCheckin"
+        self.checkin_url = "server.dragonwarz.net:10065"
 
         self.enable_debug_logging = 0
         self.enable_interval_recording = 1
@@ -68,6 +69,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_trigger_recording = 0
         self.enable_custom_temp = 0
         self.enable_temperature_comp_factor = 0
+        self.enable_checkin = 0
 
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
@@ -94,6 +96,13 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("ip_web_port") is not None:
             self.web_portal_port = int(html_request.form.get("ip_web_port"))
+
+        if html_request.form.get("enable_checkin") is not None:
+            self.enable_checkin = 1
+        if html_request.form.get("checkin_address") is not None:
+            self.checkin_url = str(html_request.form.get("checkin_address")).strip()
+            if ":" not in self.checkin_url:
+                self.checkin_url = self.checkin_url + ":10065"
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
@@ -102,7 +111,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                 str(self.enable_interval_recording), str(self.enable_trigger_recording),
                                 str(self.sleep_duration_interval), str(self.enable_custom_temp),
                                 str(self.temperature_offset), str(self.enable_temperature_comp_factor),
-                                str(self.temperature_comp_factor)]
+                                str(self.temperature_comp_factor), str(self.enable_checkin), str(self.checkin_url)]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -115,6 +124,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.temperature_offset = float(self.config_settings[6])
             self.enable_temperature_comp_factor = int(self.config_settings[7])
             self.temperature_comp_factor = float(self.config_settings[8])
+            self.enable_checkin = int(self.config_settings[9])
+            self.checkin_url = self.config_settings[10].strip()
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))

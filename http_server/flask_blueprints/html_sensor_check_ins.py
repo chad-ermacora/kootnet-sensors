@@ -22,6 +22,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 from operations_modules.sqlite_database import create_table_and_datetime, check_sql_table_and_column, \
     sql_execute_get_data, write_to_sql_database
 from http_server.server_http_auth import auth
@@ -89,45 +90,17 @@ def view_sensor_check_ins():
 
     sensor_statistics = "Per Sensor Check-in Information\n\n"
     current_date_time = datetime.utcnow()
-    contact_in_past_hour = 0
-    contact_in_past_day = 0
-    contact_in_past_2days = 0
-    contact_in_past_week = 0
-    contact_in_past_month = 0
-    contact_in_past_year = 0
+
+    sensor_contact_count = 0
+    count_contact_days = app_config_access.checkin_config.count_contact_days
     for date_and_sensor_id in id_date_list:
         cleaned_id = date_and_sensor_id[1]
         clean_last_checkin_date = date_and_sensor_id[0].strftime("%Y-%m-%d %H:%M:%S")
         if len(clean_last_checkin_date) > 16:
             try:
                 checkin_date_converted = datetime.strptime(clean_last_checkin_date, "%Y-%m-%d %H:%M:%S")
-                if (current_date_time - checkin_date_converted) < timedelta(hours=1):
-                    contact_in_past_hour += 1
-                    contact_in_past_day += 1
-                    contact_in_past_2days += 1
-                    contact_in_past_week += 1
-                    contact_in_past_month += 1
-                    contact_in_past_year += 1
-                elif (current_date_time - checkin_date_converted) < timedelta(days=1):
-                    contact_in_past_day += 1
-                    contact_in_past_2days += 1
-                    contact_in_past_week += 1
-                    contact_in_past_month += 1
-                    contact_in_past_year += 1
-                elif (current_date_time - checkin_date_converted) < timedelta(days=2):
-                    contact_in_past_2days += 1
-                    contact_in_past_week += 1
-                    contact_in_past_month += 1
-                    contact_in_past_year += 1
-                elif (current_date_time - checkin_date_converted) < timedelta(days=7):
-                    contact_in_past_week += 1
-                    contact_in_past_month += 1
-                    contact_in_past_year += 1
-                elif (current_date_time - checkin_date_converted) < timedelta(weeks=4):
-                    contact_in_past_month += 1
-                    contact_in_past_year += 1
-                elif (current_date_time - checkin_date_converted) < timedelta(weeks=52):
-                    contact_in_past_year += 1
+                if (current_date_time - checkin_date_converted) < timedelta(days=count_contact_days):
+                    sensor_contact_count += 1
             except Exception as error:
                 logger.network_logger.warning("Error in last checkin verification: " + str(error))
         sensor_statistics += _get_sensor_info_string(cleaned_id)
@@ -144,14 +117,10 @@ def view_sensor_check_ins():
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            SensorsInDatabase=_get_sql_element(sensor_count),
-                           DeleteSensorsOlderDays=app_cached_variables.checkin_delete_sensors_older_days,
-                           TotalSensorCountHour=contact_in_past_hour,
-                           TotalSensorCountDay=contact_in_past_day,
-                           TotalSensorCount2Day=contact_in_past_2days,
-                           TotalSensorCountWeek=contact_in_past_week,
-                           TotalSensorCountMonth=contact_in_past_month,
-                           TotalSensorCountYear=contact_in_past_year,
-                           CheckinHourOffset=app_cached_variables.checkin_hour_offset,
+                           DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
+                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
+                           TotalSensorCount=sensor_contact_count,
+                           CheckinHourOffset=app_config_access.checkin_config.hour_offset,
                            CheckinSensorStatistics=sensor_statistics,
                            SearchSensorInfo=app_cached_variables.checkin_sensor_info,
                            SearchSensorDeleteDisabled=delete_enabled,
@@ -164,7 +133,7 @@ def view_sensor_check_ins():
 def delete_sensors_older_then():
     try:
         checkin_delete_sensors_older_days = int(request.form.get("delete_sensors_older_days"))
-        app_cached_variables.checkin_delete_sensors_older_days = checkin_delete_sensors_older_days
+        app_config_access.checkin_config.delete_sensors_older_days = checkin_delete_sensors_older_days
         datetime_sensor_ids_list = _get_check_in_sensor_ids(include_last_datetime=True)
         current_date_time = datetime.utcnow()
         for date_and_sensor_id in datetime_sensor_ids_list:
@@ -264,7 +233,7 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
 
-        checkin_hour_offset = app_cached_variables.checkin_hour_offset
+        checkin_hour_offset = app_config_access.checkin_config.hour_offset
         web_view_last_checkin_date = clean_last_checkin_date
         if clean_last_checkin_date != "NA":
             checkin_date_converted = datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S")
@@ -345,7 +314,7 @@ def html_set_checkin_settings():
         if request.form.get("checkin_hour_offset") is not None:
             try:
                 new_offset = float(request.form.get("checkin_hour_offset"))
-                app_cached_variables.checkin_hour_offset = new_offset
+                app_config_access.checkin_config.hour_offset = new_offset
             except Exception as error:
                 logger.network_logger.warning("Unable to set new Sensor Check-in Hour Offset: " + str(error))
     return view_sensor_check_ins()
