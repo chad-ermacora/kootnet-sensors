@@ -291,9 +291,7 @@ wifi_psk = ""
 http_flask_user = "Kootnet"
 http_flask_password = "sensors"
 
-# Software Check-in Variables
-checkin_delete_sensors_older_days = 365
-checkin_hour_offset = 0
+# Sensor Check-in View Variables
 checkin_search_sensor_id = ""
 checkin_search_sensor_installed_sensors = ""
 checkin_sensor_info = ""

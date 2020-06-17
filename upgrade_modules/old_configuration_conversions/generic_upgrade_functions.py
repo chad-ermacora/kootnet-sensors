@@ -28,6 +28,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
+from configuration_modules.config_check_ins import CreateCheckinConfiguration
 
 
 def successful_upgrade_message(config_name="Generic"):
@@ -111,6 +112,13 @@ def reset_sensor_control_config(log_reset=True):
     CreateSensorControlConfiguration(load_from_file=False).save_config_to_file()
 
 
+def reset_checkin_config(log_reset=True):
+    """ Writes a default Checkin configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Checkin Configuration Reset ****")
+    CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
+
+
 def reset_all_silent():
     reset_primary_config(log_reset=False)
     reset_installed_sensors(log_reset=False)
@@ -123,3 +131,4 @@ def reset_all_silent():
     reset_luftdaten_config(log_reset=False)
     reset_open_sense_map_config(log_reset=False)
     reset_sensor_control_config(log_reset=False)
+    reset_checkin_config(log_reset=False)
