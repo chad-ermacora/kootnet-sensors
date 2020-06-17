@@ -21,9 +21,8 @@ from operations_modules import software_version
 from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_all_silent, \
     reset_primary_config, reset_installed_sensors
 from upgrade_modules.old_configuration_conversions.alpha_to_beta import upgrade_alpha_to_beta
-from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
-from upgrade_modules.old_configuration_conversions.beta_30_x_to_30_90 import upgrade_beta_30_x_to_30_90
-from upgrade_modules.old_configuration_conversions.beta_30_90_to_30_138 import upgrade_beta_30_90_to_30_138
+from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30, \
+    upgrade_beta_30_x_to_30_90, upgrade_beta_30_90_to_30_138
 
 
 def run_configuration_upgrade_checks():
@@ -53,10 +52,13 @@ def run_configuration_upgrade_checks():
             if previous_version.feature_version > current_version.feature_version:
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
                 log_msg1 = "Configurations compatibility can not be guaranteed, "
-                logger.primary_logger.warning(log_msg1 + "resetting Primary and Installed Sensors Configurations")
+                logger.primary_logger.warning(log_msg1 + "resetting Primary and Installed Sensors configurations")
                 no_changes = False
                 reset_installed_sensors()
                 reset_primary_config()
+            elif previous_version.feature_version == 31:
+                if previous_version.minor_version < 7:
+                    pass
             elif previous_version.feature_version == 30:
                 if previous_version.minor_version < 138:
                     no_changes = False
