@@ -90,5 +90,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.31.5"
+version = "Beta.31.10"
 old_version = _get_old_version()
