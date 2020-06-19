@@ -77,6 +77,13 @@
                data-mui-controls="open-sense-map-tab">
             Open Sense Map
         </a></li>
+
+        <br>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="checkin-server-config-tab">
+            Checkin Server
+        </a></li>
     </ul>
 
     <br>
@@ -91,5 +98,6 @@
     {{ ConfigWUTab|safe }}
     {{ ConfigLuftdatenTab|safe }}
     {{ ConfigOSMTab|safe }}
+    {{ ConfigCheckinServerTab|safe }}
 
 {% endblock %}

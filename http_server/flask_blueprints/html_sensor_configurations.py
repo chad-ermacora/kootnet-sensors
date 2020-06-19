@@ -51,6 +51,7 @@ from http_server.flask_blueprints.sensor_configurations.f_bp_config_open_sense_m
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_primary import get_config_primary_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import get_config_trigger_variances_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_weather_underground import get_config_weather_underground_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_checkin_server import get_config_checkin_server_tab
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 running_with_root = app_cached_variables.running_with_root
@@ -73,7 +74,8 @@ def html_edit_configurations():
                            ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab(),
                            ConfigWUTab=get_config_weather_underground_tab(),
                            ConfigLuftdatenTab=get_config_luftdaten_tab(),
-                           ConfigOSMTab=get_config_osm_tab())
+                           ConfigOSMTab=get_config_osm_tab(),
+                           ConfigCheckinServerTab=get_config_checkin_server_tab())
 
 
 @html_sensor_config_routes.route("/EditLogin", methods=["POST"])

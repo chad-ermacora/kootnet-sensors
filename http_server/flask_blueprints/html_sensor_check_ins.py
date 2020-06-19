@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 import sqlite3
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
@@ -26,7 +27,7 @@ from configuration_modules import app_config_access
 from operations_modules.sqlite_database import create_table_and_datetime, check_sql_table_and_column, \
     sql_execute_get_data, write_to_sql_database
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return
+from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return, get_html_checkbox_state
 
 html_sensor_check_ins_routes = Blueprint("html_sensor_check_ins_routes", __name__)
 max_statistics_lines = 200
@@ -34,48 +35,50 @@ max_statistics_lines = 200
 
 @html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST"])
 def remote_sensor_check_ins():
-    if request.form.get("checkin_id"):
-        checkin_id = "KS" + str(request.form.get("checkin_id"))
-        logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
+    if app_config_access.checkin_config.enable_checkin_recording:
+        if request.form.get("checkin_id"):
+            checkin_id = "KS" + str(request.form.get("checkin_id"))
+            logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
 
-        current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-        db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
-        db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
-        db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
-        db_sensor_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
-        db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
-        db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
+            current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
+            db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
+            db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
+            db_sensor_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
+            db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
+            db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
 
-        try:
-            db_connection = sqlite3.connect(file_locations.sensor_checkin_database)
-            db_cursor = db_connection.cursor()
+            try:
+                db_connection = sqlite3.connect(file_locations.sensor_checkin_database)
+                db_cursor = db_connection.cursor()
 
-            create_table_and_datetime(checkin_id, db_cursor)
-            check_sql_table_and_column(checkin_id, db_sensor_check_in_version, db_cursor)
-            check_sql_table_and_column(checkin_id, db_sensor_installed_sensors, db_cursor)
-            check_sql_table_and_column(checkin_id, db_sensor_uptime, db_cursor)
-            check_sql_table_and_column(checkin_id, db_sensor_check_in_primary_log, db_cursor)
-            check_sql_table_and_column(checkin_id, db_sensor_check_in_sensors_log, db_cursor)
-            db_connection.commit()
-            db_connection.close()
+                create_table_and_datetime(checkin_id, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_check_in_version, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_installed_sensors, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_uptime, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_check_in_primary_log, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_check_in_sensors_log, db_cursor)
+                db_connection.commit()
+                db_connection.close()
 
-            sql_ex_string = "INSERT OR IGNORE INTO '" + checkin_id + "' (" + \
-                            db_all_tables_datetime + "," + \
-                            db_sensor_check_in_version + "," + \
-                            db_sensor_installed_sensors + "," + \
-                            db_sensor_uptime + "," + \
-                            db_sensor_check_in_primary_log + "," + \
-                            db_sensor_check_in_sensors_log + ")" + \
-                            " VALUES (?,?,?,?,?,?);"
+                sql_ex_string = "INSERT OR IGNORE INTO '" + checkin_id + "' (" + \
+                                db_all_tables_datetime + "," + \
+                                db_sensor_check_in_version + "," + \
+                                db_sensor_installed_sensors + "," + \
+                                db_sensor_uptime + "," + \
+                                db_sensor_check_in_primary_log + "," + \
+                                db_sensor_check_in_sensors_log + ")" + \
+                                " VALUES (?,?,?,?,?,?);"
 
-            sql_data = [current_datetime, str(request.form.get("program_version")),
-                        str(request.form.get("installed_sensors")), str(request.form.get("sensor_uptime")),
-                        str(request.form.get("primary_log")), str(request.form.get("sensor_log"))]
-            write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
-            return "OK", 202
-        except Exception as error:
-            logger.network_logger.warning("Sensor Checkin error for " + str(checkin_id) + ": " + str(error))
+                sql_data = [current_datetime, str(request.form.get("program_version")),
+                            str(request.form.get("installed_sensors")), str(request.form.get("sensor_uptime")),
+                            str(request.form.get("primary_log")), str(request.form.get("sensor_log"))]
+                write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
+                return "OK", 202
+            except Exception as error:
+                logger.network_logger.warning("Sensor Checkin error for " + str(checkin_id) + ": " + str(error))
         return "Failed", 400
+    return "Checkin Recording Disabled", 202
 
 
 @html_sensor_check_ins_routes.route("/ViewSensorCheckin")
@@ -109,42 +112,57 @@ def view_sensor_check_ins():
         sensor_statistics = ""
         for line in sensor_statistics_lines[:max_statistics_lines]:
             sensor_statistics += line + "\n"
-    delete_enabled = ""
-    if app_cached_variables.checkin_search_sensor_id == "":
-        delete_enabled = "disabled"
+    enable_checkin_recording = app_config_access.checkin_config.enable_checkin_recording
+    if os.path.isfile(file_locations.sensor_checkin_database):
+        db_size_mb = round(os.path.getsize(file_locations.sensor_checkin_database) / 1000000, 3)
+    else:
+        db_size_mb = 0.0
     return render_template("software_checkin.html",
                            PageURL="/ViewSensorCheckin",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            SensorsInDatabase=_get_sql_element(sensor_count),
-                           DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
-                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
                            TotalSensorCount=sensor_contact_count,
-                           CheckinHourOffset=app_config_access.checkin_config.hour_offset,
                            CheckinSensorStatistics=sensor_statistics,
-                           SearchSensorInfo=app_cached_variables.checkin_sensor_info,
-                           SearchSensorDeleteDisabled=delete_enabled,
-                           PrimaryLog=app_cached_variables.checkin_search_primary_log,
-                           SensorLog=app_cached_variables.checkin_search_sensors_log)
+                           CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
+                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
+                           CheckinHourOffset=app_config_access.checkin_config.hour_offset,
+                           CheckinDBSize=db_size_mb,
+                           DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days)
 
 
 @html_sensor_check_ins_routes.route("/DeleteSensorsOlderCheckin", methods=["POST"])
 @auth.login_required
 def delete_sensors_older_then():
     try:
-        checkin_delete_sensors_older_days = int(request.form.get("delete_sensors_older_days"))
-        app_config_access.checkin_config.delete_sensors_older_days = checkin_delete_sensors_older_days
+        app_config_access.checkin_config.update_with_html_request(request, skip_all_but_delete_setting=True)
+        app_config_access.checkin_config.save_config_to_file()
+        delete_sensors_older_days = app_config_access.checkin_config.delete_sensors_older_days
         datetime_sensor_ids_list = _get_check_in_sensor_ids(include_last_datetime=True)
         current_date_time = datetime.utcnow()
         for date_and_sensor_id in datetime_sensor_ids_list:
             clean_last_checkin_date = date_and_sensor_id[0]
             cleaned_id = date_and_sensor_id[1]
-            print(str((current_date_time - clean_last_checkin_date).days))
-            if (current_date_time - clean_last_checkin_date).days >= checkin_delete_sensors_older_days:
+            if (current_date_time - clean_last_checkin_date).days >= delete_sensors_older_days:
                 _delete_sensor_id(cleaned_id)
+        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
     except Exception as error:
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
     return view_sensor_check_ins()
+
+
+@html_sensor_check_ins_routes.route("/CheckinSensorSearch")
+@auth.login_required
+def view_search_sensor_check_ins():
+    delete_enabled = ""
+    if app_cached_variables.checkin_search_sensor_id == "":
+        delete_enabled = "disabled"
+    return render_template("software_checkin_search.html",
+                           PageURL="/CheckinSensorSearch",
+                           SearchSensorInfo=app_cached_variables.checkin_sensor_info,
+                           SearchSensorDeleteDisabled=delete_enabled,
+                           PrimaryLog=app_cached_variables.checkin_search_primary_log,
+                           SensorLog=app_cached_variables.checkin_search_sensors_log)
 
 
 @html_sensor_check_ins_routes.route("/DeleteSensorCheckinID")
@@ -155,10 +173,11 @@ def search_sensor_delete_senor_id():
     if app_cached_variables.checkin_search_sensor_id != "" and app_cached_variables.checkin_search_sensor_id.isalnum():
         write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_location)
         app_cached_variables.checkin_sensor_info = ""
+        app_cached_variables.checkin_search_sensor_installed_sensors = ""
         app_cached_variables.checkin_search_sensor_id = ""
         app_cached_variables.checkin_search_primary_log = ""
         app_cached_variables.checkin_search_sensors_log = ""
-    return view_sensor_check_ins()
+    return view_search_sensor_check_ins()
 
 
 @html_sensor_check_ins_routes.route("/SearchCheckinSensorID", methods=["POST"])
@@ -167,15 +186,38 @@ def search_sensor_check_ins():
     if request.form.get("sensor_id") is not None:
         sensor_id = str(request.form.get("sensor_id"))
         if len(sensor_id) == 34 and sensor_id.isalnum():
-            app_cached_variables.checkin_search_sensor_id = sensor_id
-            new_sensor_info_string = _get_sensor_info_string(app_cached_variables.checkin_search_sensor_id)
-            app_cached_variables.checkin_sensor_info = new_sensor_info_string
-            _search_checkin_get_logs(app_cached_variables.checkin_search_sensor_id)
+            if check_sensor_id_exists(sensor_id):
+                app_cached_variables.checkin_search_sensor_id = sensor_id
+                new_sensor_info_string = _get_sensor_info_string(app_cached_variables.checkin_search_sensor_id)
+                app_cached_variables.checkin_sensor_info = new_sensor_info_string
+                _search_checkin_get_logs(app_cached_variables.checkin_search_sensor_id)
+            else:
+                app_cached_variables.checkin_search_sensor_id = ""
+                app_cached_variables.checkin_sensor_info = "Sensor Not Found\n\n"
+                app_cached_variables.checkin_search_sensor_installed_sensors = ""
+                app_cached_variables.checkin_search_primary_log = ""
+                app_cached_variables.checkin_search_sensors_log = ""
         else:
             log_msg2 = "A sensor ID is 34 characters long, starts with KS and " + \
                        "can be found on the left under 'System Information'. "
-            return message_and_return("Invalid Sensor ID", text_message2=log_msg2, url="/ViewSensorCheckin")
-    return view_sensor_check_ins()
+            return message_and_return("Invalid Sensor ID", text_message2=log_msg2, url="/CheckinSensorSearch")
+    return view_search_sensor_check_ins()
+
+
+def check_sensor_id_exists(sensor_id):
+    sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
+    try:
+        database_connection = sqlite3.connect(file_locations.sensor_checkin_database)
+        sqlite_database = database_connection.cursor()
+        sqlite_database.execute(sql_query)
+        if sqlite_database.fetchone()[0]:
+            database_connection.close()
+            return True
+        else:
+            database_connection.close()
+            return False
+    except Exception as error:
+        logger.primary_logger.error("Unable to access CheckIns Database: " + str(error))
 
 
 def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checkin_database):
@@ -264,6 +306,7 @@ def clear_check_ins_counts():
 
         db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
         db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
+        db_sensor_check_in_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
         db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
         db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
         db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
@@ -276,16 +319,20 @@ def clear_check_ins_counts():
                           "' ORDER BY DateTime DESC LIMIT 1;"
         sensor_version = sql_execute_get_data(get_version_sql, sql_database_location=db_location)
 
+        get_installed_sensors_sql = "SELECT " + db_sensor_check_in_installed_sensors + " FROM '" + cleaned_id + \
+                          "' WHERE " + db_sensor_check_in_installed_sensors + " != '' ORDER BY DateTime DESC LIMIT 1;"
+        sensor_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
+
         get_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + cleaned_id + \
                          "' ORDER BY DateTime DESC LIMIT 1;"
         sensor_uptime = sql_execute_get_data(get_uptime_sql, sql_database_location=db_location)
 
         get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + cleaned_id + \
-                              "' ORDER BY DateTime DESC LIMIT 1;"
+                              "' WHERE " + db_sensor_check_in_sensors_log + " != '' ORDER BY DateTime DESC LIMIT 1;"
         sensor_primary_log = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
 
         get_sensor_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + cleaned_id + \
-                             "' ORDER BY DateTime DESC LIMIT 1;"
+                             "' WHERE " + db_sensor_check_in_sensors_log + " != '' ORDER BY DateTime DESC LIMIT 1;"
         sensor_sensor_log = sql_execute_get_data(get_sensor_log_sql, sql_database_location=db_location)
 
         write_to_sql_database("DELETE FROM '" + cleaned_id + "';", None, sql_database_location=db_location)
@@ -293,30 +340,18 @@ def clear_check_ins_counts():
         sql_ex_string = "INSERT OR IGNORE INTO '" + cleaned_id + "' (" + \
                         db_all_tables_datetime + "," + \
                         db_sensor_check_in_version + "," + \
+                        db_sensor_check_in_installed_sensors + "," + \
                         db_sensor_uptime + "," + \
                         db_sensor_check_in_primary_log + "," + \
                         db_sensor_check_in_sensors_log + ")" + \
-                        " VALUES (?,?,?,?,?);"
+                        " VALUES (?,?,?,?,?,?);"
 
         sql_data = [_get_sql_element(raw_last_checkin_date), _get_sql_element(sensor_version),
-                    _get_sql_element(sensor_uptime), _get_sql_element(sensor_primary_log),
-                    _get_sql_element(sensor_sensor_log)]
+                    _get_sql_element(sensor_installed_sensors), _get_sql_element(sensor_uptime),
+                    _get_sql_element(sensor_primary_log), _get_sql_element(sensor_sensor_log)]
         if _get_sql_element(raw_last_checkin_date) != "NA":
             write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
-    return view_sensor_check_ins()
-
-
-@html_sensor_check_ins_routes.route("/SaveCheckinSettings", methods=["POST"])
-@auth.login_required
-def html_set_checkin_settings():
-    logger.network_logger.debug("** HTML Apply - Saving Check-ins Settings - Source: " + str(request.remote_addr))
-    if request.method == "POST":
-        if request.form.get("checkin_hour_offset") is not None:
-            try:
-                new_offset = float(request.form.get("checkin_hour_offset"))
-                app_config_access.checkin_config.hour_offset = new_offset
-            except Exception as error:
-                logger.network_logger.warning("Unable to set new Sensor Check-in Hour Offset: " + str(error))
+    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
     return view_sensor_check_ins()
 
 

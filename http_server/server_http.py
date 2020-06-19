@@ -47,6 +47,8 @@ try:
         html_config_trigger_variances_routes
     from http_server.flask_blueprints.sensor_configurations.f_bp_config_weather_underground import \
         html_config_weather_underground_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_checkin_server import \
+        html_config_checkin_server_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
@@ -99,6 +101,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_config_luftdaten_routes)
         app.register_blueprint(html_config_osm_routes)
         app.register_blueprint(html_config_weather_underground_routes)
+        app.register_blueprint(html_config_checkin_server_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)
         app.register_blueprint(html_plotly_graphing_routes)
