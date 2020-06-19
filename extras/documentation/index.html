@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+
+    <title>Kootnet Sensors Documentation</title>
+
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <link rel="stylesheet" type="text/css" href="/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/stroke.css">
+    <link rel="stylesheet" type="text/css" href="/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/animate.css">
+    <link rel="stylesheet" type="text/css" href="/prettyPhoto.css">
+    <link rel="stylesheet" type="text/css" href="/doc_style.css">
+
+    <link rel="stylesheet" type="text/css" href="/shCore.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/shThemeRDark.css" media="all">
+
+    <!-- CUSTOM -->
+    <link rel="stylesheet" type="text/css" href="/doc_custom.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <div class="container">
+
+            <section id="top" class="section docs-heading">
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="big-title text-center">
+                            <h1>Kootnet Sensors</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+            </section>
+            <!-- end section -->
+
+            <div class="row">
+
+                <div class="col-md-3">
+                    <nav class="docs-sidebar" data-spy="affix" data-offset-top="300" data-offset-bottom="200" role="navigation">
+                        <ul class="nav">
+                            <li><a href="#line1">Introduction</a></li>
+                            <li><a href="#line2">Installation & Removal</a></li>
+                            <li><a href="#line3">Web Portal Basics</a>
+								<ul class="nav">
+                                    <li><a href="#line3_1">General Overview</a></li>
+                                    <li><a href="#line3_2">System Information</a></li>
+                                    <li><a href="#line3_3">Sensor Readings</a></li>
+									<li><a href="#line3_4">Database</a></li>
+                                    <li><a href="#line3_5">Notes</a></li>
+                                    <li><a href="#line3_6">Graphing</a></li>
+                                    <li><a href="#line3_7">Advanced</a></li>
+									<li><a href="#line3_8">Logs</a></li>
+                                </ul>
+							</li>
+							<li><a href="#line4">Basic Configurations</a>
+								<ul class="nav">
+                                    <li><a href="#line4_1">Main/Primary</a></li>
+                                    <li><a href="#line4_2">Installed Sensors</a></li>
+                                    <li><a href="#line4_3">Displays</a></li>
+                                    <li><a href="#line4_4">Tiggers</a></li>
+                                </ul>
+							</li>
+                            <li><a href="#line5">MQTT</a>
+								<ul class="nav">
+                                    <li><a href="#line5_1">Publisher</a></li>
+                                    <li><a href="#line5_2">Subscriber</a></li>
+                                    <li><a href="#line5_3">Broker</a></li>
+                                </ul>
+							</li>
+							<li><a href="#line6">Online Services</a>
+								<ul class="nav">
+                                    <li><a href="#line6_1">Open Sense Map</a></li>
+                                    <li><a href="#line6_2">Weather Underground</a></li>
+                                    <li><a href="#line6_3">Luftdaten</a></li>
+                                </ul>
+							</li>
+                            <li><a href="#line7">Sensor Control</a>
+								<ul class="nav">
+                                    <li><a href="#line7_1">IP List & Login</a></li>
+                                    <li><a href="#line7_2">Checks & Downloads</a></li>
+                                    <li><a href="#line7_3">Push Configurations</a></li>
+                                    <li><a href="#line7_4">Push System Commands</a></li>
+                                </ul>
+							</li>
+                            <li><a href="#line8">Checkin Server</a>
+                                <ul class="nav">
+                                    <li><a href="#line8_1">Main View</a></li>
+                                    <li><a href="#line8_2">Sensor Search</a></li>
+                                    <li><a href="#line8_3">Configuration</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#line9">Networking</a>
+                                <ul class="nav">
+                                    <li><a href="#line9_1">Main</a></li>
+                                    <li><a href="#line9_2">Wifi</a></li>
+                                    <li><a href="#line9_3">SSL Certificate</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </nav >
+                </div>
+                <div class="col-md-9">
+
+                    <section>
+                        <div class="intro1">
+                            <ul>
+                                <li><strong>Kootnet Sensors : </strong>Documentation</li>
+                                <li><strong>Document Version : </strong>0.1</li>
+                                <li><strong>Last Updated : </strong>June 20th, 2020</li>
+                                <li><strong>Author  : </strong>Chad Ermacora</li>
+                                <li><strong>Kootnet Sensors Source Code : </strong> <a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
+                                <li><strong>License : </strong> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line1" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Introduction <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <a href="/KootnetSensorHardware.jpg" data-rel="prettyPhoto"><img src="/KootnetSensorHardware.jpg" alt="" class="img-responsive img-thumbnail"></a>
+                                <p>Kootnet Sensors is a program used to take sensor readings from multiple sensors and record them to an SQLite3 database and or upload them to one or more Online 3rd party service like Open Sense Map. Add one or more of the 25+ supported hardware sensors to record and view readings of your choice. Sensor types include heat, pressure, altitude, humidity, distance, gas, particulate matter 1/2.5/4/10, light, color, ultra violet, acceleration, electromagnetic fields and angular velocity (gyroscope).</p>
+
+                                <p>
+                                    KootNet Sensors requires a Raspberry Pi to utilize Sensors but can be installed on Ubuntu or Debian in order to use the “Sensor Control” web interface for managing up to 20 other remote Kootnet Sensors as well as uploading other sensor databases in order to utilize more powerful computers in creating graphs.
+                                </p>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line2" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Installation & Removal <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <hr>
+
+                        <h4>Requirements</h4>
+                        <strong>Operating System : </strong>Ubuntu, Debian, Raspbian/Raspberry Pi OS<br>
+                        <strong>Other Requirements : </strong>Internet Access<br>
+                        <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero can take up to 20 minutes</i>
+
+                        <br><br>
+
+                        <h4>Installation using a GUI Desktop</h4>
+                        <p>Installation from a supported GUI based Operating system is fairly straight forward.  Click one of the following links to download Kootnet sensors, then double click the file in your operating systems file manager to install.</p>
+                        <p>
+                            <a href="http://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">Current Stable Release</a><br>
+                            <a href="http://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">Latest Developmental Release</a>  ** Warning: Developmental Releases can be unstable **
+                        </p>
+                        <p>
+                            Once the install has completed, you can find shortcuts to the various program function in your operating systems menu.
+                        </p>
+						
+						<h4>Installation using a Terminal</h4>
+						
+						<p>
+                            To install using a terminal, enter the following command, hit enter and wait for it to finish.<br>
+                        </p>
+
+						<pre class="brush: bash">wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
+                        <p>
+                            If the installation completes successfully, you'll be given the URL to access the sensor.
+                        </p>
+
+                        <p>
+                            To remove Kootnet Sensors, you can find it in your Operating Systems Application Manager or run the following Terminal command.<br>
+                        </p>
+
+
+						<pre class="brush: bash">sudo apt-get remove kootnet-sensors</pre>
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line3" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Web Portal Basics <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line3_1"><u>General Overview</u></h4>
+
+                        <p>The Web Portal is used for 90% of all sensor interactions. Explanations of options and functions will be given under each section.</p>
+                        <p>
+                            Please note, Internet is required for viewing the following pictures.
+                        </p>
+
+                        <h4 id="line3_2"><u>System Information</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/KSMain2.png" alt="" class="img-responsive">
+
+                        <h4 id="line3_3"><u>Sensor Readings</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorReadings_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line3_4"><u>Database</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Database_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line3_5"><u>Notes</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorNotes_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line3_6"><u>Plotly Graphing</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorGraphing_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line3_7"><u>Advanced</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_advanced_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line3_8"><u>Logs</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_logs_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line4" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Basic Configurations <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line4_1"><u>Main/Primary</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_2"><u>Installed Sensors</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_3"><u>Display</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_4"><u>Triggers</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line5" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">MQTT <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line5_1"><u>Publisher</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line5_2"><u>Subscriber</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/MQTT_Subscriber_View_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line5_3"><u>Broker (Eclipse Mosquitto)</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line6" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Online Services <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line6_1"><u>Open Sense Map</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line6_2"><u>Weather Underground</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line6_3"><u>Luftdaten</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line7" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Sensor Control <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line7_1"><u>IP List & Login</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_Control_IP_List_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line7_2"><u>Sensor Checks & Downloads</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_control_checks_downloads_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line7_3"><u>Push Sensor Configurations</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_control_Config_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line7_4"><u>Push System Commands</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_control_commands_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line8" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Sensor Checkin Server <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line8_1"><u>Main View</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line8_2"><u>Sensor Search</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line8_3"><u>Configuration</u></h4>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line9" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Networking <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line9_1"><u>Main</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_Networking_Main_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line9_2"><u>Wifi</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_Networking_wifi_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line9_3"><u>SSL Certificate</u></h4>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_Networking_SSL_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                </div>
+                <!-- // end .col -->
+
+            </div>
+            <!-- // end .row -->
+
+        </div>
+        <!-- // end container -->
+
+    </div>
+    <!-- end wrapper -->
+
+    <script src="/jquery.min.js"></script>
+    <script src="/bootstrap.min.js"></script>
+    <script src="/retina.js"></script>
+    <script src="/wow.js"></script>
+    <script src="/jquery.prettyPhoto.js"></script>
+
+    <!-- CUSTOM PLUGINS -->
+    <script src="/doc_custom.js"></script>
+    <script src="/doc_main.js"></script>
+
+    <script src="/shCore.js"></script>
+	<script src="/shBrushBash.js"></script>
+
+</body>
+
+</html>
