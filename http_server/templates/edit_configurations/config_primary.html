@@ -33,9 +33,15 @@
                 </label>
             </div>
 
+            <p>
+                The URL should point to a Kootnet Sensor<br>
+                The Default URL sends debug info back to the developer
+            </p>
+
             <div class="mui-textfield">
                 <label style="color: black;">
-                    Checkin DNS Address or IP
+                    Checkin DNS Address or IP + Port<br>
+                    Eg. Sensor3.MyDomain.com:10065
                     <br>
                     <input style="width: 350px;" type="text" maxlength="250" name="checkin_address"
                            value="{{ CheckinAddress }}">

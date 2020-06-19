@@ -30,8 +30,8 @@ checkin_wait_time_sec = 86400
 
 class CreateCheckinServer:
     def __init__(self):
-        logger.primary_logger.debug(" -- Sensor Checkin Server Started")
         sleep(30)
+        logger.primary_logger.debug(" -- Sensor CheckIns Started")
 
         previous_primary_logs = ""
         previous_sensors_logs = ""
