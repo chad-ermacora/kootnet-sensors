@@ -45,17 +45,18 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         super().set_config_with_str(config_file_text)
         self._update_variables_from_settings_list()
 
-    def update_with_html_request(self, html_request):
+    def update_with_html_request(self, html_request, skip_all_but_delete_setting=False):
         """ Updates the Checkin configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Checkin Configuration Update Check")
 
-        self.enable_checkin_recording = 0
-        if html_request.form.get("enable_checkin") is not None:
-            self.enable_checkin_recording = 1
-        if html_request.form.get("count_contact_days") is not None:
-            self.count_contact_days = float(html_request.form.get("count_contact_days"))
-        if html_request.form.get("hour_offset") is not None:
-            self.hour_offset = float(html_request.form.get("hour_offset"))
+        if not skip_all_but_delete_setting:
+            self.enable_checkin_recording = 0
+            if html_request.form.get("enable_checkin") is not None:
+                self.enable_checkin_recording = 1
+            if html_request.form.get("contact_in_past_days") is not None:
+                self.count_contact_days = float(html_request.form.get("contact_in_past_days"))
+            if html_request.form.get("checkin_hour_offset") is not None:
+                self.hour_offset = float(html_request.form.get("checkin_hour_offset"))
         if html_request.form.get("delete_sensors_older_days") is not None:
             self.delete_sensors_older_days = float(html_request.form.get("delete_sensors_older_days"))
         self.update_configuration_settings_list()
