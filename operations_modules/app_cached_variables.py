@@ -256,11 +256,12 @@ running_with_root = True
 if geteuid() != 0:
     running_with_root = False
 operating_system_name = ""
-database_variables = CreateDatabaseVariables()
 program_last_updated = ""
 reboot_count = ""
 total_ram_memory = 0.0
 total_ram_memory_size_type = " MB"
+tmp_sensor_id = ""
+database_variables = CreateDatabaseVariables()
 
 # Is filled with Currently available online Stable / Developmental versions
 standard_version_available = "Retrieving ..."
