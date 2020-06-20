@@ -298,7 +298,8 @@ def clear_check_ins_counts():
     sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
 
     for sensor_id in sensor_ids:
-        _clear_old_sensor_checkin_data(sensor_id)
+        cleaned_sensor_id = str(sensor_id[0]).strip()
+        _clear_old_sensor_checkin_data(cleaned_sensor_id)
     write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
     return view_sensor_check_ins()
 
