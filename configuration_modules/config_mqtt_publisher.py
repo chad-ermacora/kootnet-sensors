@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import random
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules import app_cached_variables
 
 
 class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
@@ -69,8 +69,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.accelerometer = 0
         self.magnetometer = 0
         self.gyroscope = 0
-
-        self.mqtt_base_topic = "KS/Default" + str(random.randint(100000, 999999)) + "/"
+        self.mqtt_base_topic = "KS/D" + app_cached_variables.tmp_sensor_id[-6:] + "/"
 
         self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
         self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
