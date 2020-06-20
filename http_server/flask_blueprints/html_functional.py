@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from time import sleep
 from flask import Blueprint, send_file, render_template, request
 from werkzeug.security import check_password_hash
 from operations_modules import logger
@@ -251,13 +252,16 @@ def logout():
 
 @auth.verify_password
 def verify_password(username, password):
-    if username == app_cached_variables.http_flask_user:
-        logger.network_logger.debug("* Login attempt from " + str(request.remote_addr))
-        return check_password_hash(app_cached_variables.http_flask_password, password)
+    if username == app_cached_variables.http_flask_user and \
+            check_password_hash(app_cached_variables.http_flask_password, password):
+        logger.network_logger.debug("* Login to Web Portal Successful from " + str(request.remote_addr))
+        return True
+    logger.network_logger.debug("* Login to Web Portal Failed from " + str(request.remote_addr))
+    # Sleep on failure to help prevent brute force attempts
+    sleep(1)
     return False
 
 
 @auth.error_handler
 def auth_error():
-    logger.network_logger.debug(" *** First or Failed Login from " + str(request.remote_addr))
     return message_and_return("Unauthorized Access")
