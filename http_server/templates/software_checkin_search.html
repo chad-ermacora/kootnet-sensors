@@ -17,6 +17,13 @@
                 window.location = "/DeleteSensorCheckinID"
             }
         }
+
+        function RemoveSensorEntries() {
+            let r = confirm("Sensor deletions cannot be undone, are you sure?");
+            if (r === true) {
+                window.location = "/ClearOldSearchSensorCheckIns"
+            }
+        }
     </script>
 </head>
 <body>
@@ -38,6 +45,9 @@
     <span style="color: greenyellow; white-space: pre-wrap;">{{ SearchSensorInfo }}</span>
     <button type="button" class="mui-btn mui-btn--raised mui--bg-color-pink-900 mui--color-white"
             onclick="DeleteSensorID();" {{ SearchSensorDeleteDisabled }}>Delete Sensor
+    </button>
+    <button type="button" class="mui-btn mui-btn--raised mui--bg-color-green-900 mui--color-white"
+            onclick="RemoveSensorEntries();" {{ SearchSensorClearDisabled }}>Remove Old Checkin Data
     </button>
     <br>
     <br>
