@@ -52,7 +52,7 @@ def test_login():
 @html_system_commands_routes.route("/GetSensorID")
 def get_sensor_id():
     logger.network_logger.debug("* Sensor's ID sent to " + str(request.remote_addr))
-    return "KS" + str(primary_config.sensor_checkin_id)
+    return "KS" + str(primary_config.sensor_id)
 
 
 @html_system_commands_routes.route("/GetHostName")

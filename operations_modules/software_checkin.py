@@ -58,7 +58,7 @@ class CreateCheckinServer:
                         previous_sensors_logs = current_sensors_logs
                     url = "https://" + app_config_access.primary_config.checkin_url + "/SensorCheckin"
                     requests.post(url=url, timeout=10, verify=False,
-                                  data={"checkin_id": app_config_access.primary_config.sensor_checkin_id,
+                                  data={"checkin_id": app_config_access.primary_config.sensor_id,
                                         "program_version": version,
                                         "sensor_uptime": sensor_access.get_uptime_minutes(),
                                         "installed_sensors": current_installed_sensors,

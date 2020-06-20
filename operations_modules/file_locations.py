@@ -59,7 +59,7 @@ mqtt_subscriber_log = log_directory + "mqtt_subscriber_log.txt"
 log_zip_file = log_directory + "all_logs.zip"
 
 checkin_configuration = sensor_config_dir + "/checkin_config.txt"
-sensor_checkin_id = sensor_config_dir + "/sensor_checkin_id.txt"
+sensor_id = sensor_config_dir + "/sensor_id.txt"
 old_version_file = sensor_config_dir + "/installed_version.txt"
 program_last_updated = sensor_config_dir + "/last_updated.txt"
 

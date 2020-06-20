@@ -18,7 +18,8 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_file_content
+from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules import app_cached_variables
 
 
 class CreatePrimaryConfiguration(CreateGeneralConfiguration):
@@ -35,7 +36,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                                       "Temperature Compensation Factor", "Enable Sensor Check-Ins", "Checkin URL"]
 
         self.enable_checkin = 1
-        self.sensor_checkin_id = get_file_content(file_locations.sensor_checkin_id).strip()
+        self.sensor_id = app_cached_variables.tmp_sensor_id
         self.checkin_url = "server.dragonwarz.net:10065"
 
         self.enable_debug_logging = 0
