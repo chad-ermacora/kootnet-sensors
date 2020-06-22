@@ -3,7 +3,7 @@
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
 <!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <!--<![endif]-->
 
 <head>
@@ -67,7 +67,13 @@
                     <nav class="docs-sidebar" data-spy="affix" data-offset-top="300" data-offset-bottom="200" role="navigation">
                         <ul class="nav">
                             <li><a href="#line1">Introduction</a></li>
-                            <li><a href="#line2">Installation & Removal</a></li>
+                                <li><a href="#line2">Installation & Removal</a>
+                                    <ul class="nav">
+                                    <li><a href="#line2_1">GUI Installation</a></li>
+                                    <li><a href="#line2_2">Terminal Installation</a></li>
+                                    <li><a href="#line2_3">Terminal Removal</a></li>
+                                </ul>
+                            </li>
                             <li><a href="#line3">Web Portal Basics</a>
 								<ul class="nav">
                                     <li><a href="#line3_1">General Overview</a></li>
@@ -124,6 +130,12 @@
                                     <li><a href="#line9_3">SSL Certificate</a></li>
                                 </ul>
                             </li>
+                            <li><a href="#line10">Troubleshooting</a>
+                                <ul class="nav">
+                                    <li><a href="#line10_1">Installation Problems</a></li>
+                                    <li><a href="#line10_2">Start-up Problems</a></li>
+                                </ul>
+                            </li>
                         </ul>
                     </nav >
                 </div>
@@ -136,7 +148,7 @@
                                 <li><strong>Document Version : </strong>0.1</li>
                                 <li><strong>Last Updated : </strong>June 20th, 2020</li>
                                 <li><strong>Author  : </strong>Chad Ermacora</li>
-                                <li><strong>Kootnet Sensors Source Code : </strong> <a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
+                                <li><strong>Source Code : </strong> <a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
                                 <li><strong>License : </strong> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
                             </ul>
                         </div>
@@ -165,6 +177,36 @@
                             <!-- end col -->
                         </div>
                         <!-- end row -->
+                        <h4><strong>Supported Hardware for Sensor Recording</strong></h4>
+                        <p>
+                            <a href="https://www.raspberrypi.org/products/"><strong><u>Raspberry Pi</u></strong></a><br>
+                            <i><strong>System Boards</strong></i>: Zero W, 3x, 4x and Probably Previous RPi's but they are untested<br>
+                            <i><strong>Combo Sensors</strong></i>: Sense HAT
+                        </p>
+
+                        <p>
+                            <a href="https://shop.pimoroni.com/"><strong><u>Pimoroni</u></strong></a><br>
+                            <i><strong>Pure Displays</strong></i>: 11x7 LED Matrix, 1.12" Mono OLED (128x128, white/black), 0.96" SPI Colour LCD (160x80)<br>
+                            <i><strong>Temperature</strong></i>: *MCP9600<br>
+                            <i><strong>Color/Light</strong></i>: AS7262, BH1745, VEML6075<br>
+                            <i><strong>Combo Sensors</strong></i>: Enviro+, EnviroPHAT, BME680, BMP280, LTR-559<br>
+                            <i><strong>Volatile Organic Compounds</strong></i>: *SGP30<br>
+                            <i><strong>Particulate Matter</strong></i>: PMS5003<br>
+                            <i><strong>Distance</strong></i>: VL53L1X<br>
+                            <i><strong>Accelerometer & or Magnetometer & or Gyroscope</strong></i>: ICM20948, LSM303D, *MSA301
+                        </p>
+
+                        <p>
+                            <a href="https://www.maximintegrated.com/"><strong><u>Maxim/Dallas</u></strong></a><br>
+                            <i><strong>Temperature</strong></i>: *DS1822, *DS18S20, *DS18B20, *DS1825, *DS28EA00, *MAX31850K
+                        </p>
+
+                        <p>
+                            <a href="https://www.sensirion.com/en/environmental-sensors/"><strong><u>Sensirion</u></strong></a><br>
+                            <i><strong>Particulate Matter</strong></i>: SPS30
+                        </p>
+
+                        <p><strong>Note</strong>: <i>Sensor names starting with a * are untested.</i></p>
 
                     </section>
                     <!-- end section -->
@@ -184,21 +226,27 @@
                         <h4>Requirements</h4>
                         <strong>Operating System : </strong>Ubuntu, Debian, Raspbian/Raspberry Pi OS<br>
                         <strong>Other Requirements : </strong>Internet Access<br>
-                        <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero can take up to 20 minutes</i>
+                        <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero can take up to 20 minutes</i><br>
+                        <strong>Note : </strong><i>You must use the 32bit Raspbian/Raspberry Pi OS for proper Hardware Sensor functionality</i>
 
                         <br><br>
 
-                        <h4>Installation using a GUI Desktop</h4>
-                        <p>Installation from a supported GUI based Operating system is fairly straight forward.  Click one of the following links to download Kootnet sensors, then double click the file in your operating systems file manager to install.</p>
+                        <h4 id="line2_1">Installation using a GUI Desktop</h4>
+                        <p>
+                            Installation from a supported GUI based Operating system is fairly straight forward.
+                            Click one of the following links to download Kootnet sensors,
+                            then double click the downloaded file and look for an install button to start the install process.
+                        </p>
                         <p>
                             <a href="http://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">Current Stable Release</a><br>
                             <a href="http://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">Latest Developmental Release</a>  ** Warning: Developmental Releases can be unstable **
                         </p>
                         <p>
-                            Once the install has completed, you can find shortcuts to the various program function in your operating systems menu.
+                            Once the install has completed, you can find shortcuts to the various program functions in your operating systems menu.
+                            In Raspbian / Raspberry Pi OS, you can find the program shortcuts under "Accessories".
                         </p>
 						
-						<h4>Installation using a Terminal</h4>
+						<h4 id="line2_2">Installation using a Terminal</h4>
 						
 						<p>
                             To install using a terminal, enter the following command, hit enter and wait for it to finish.<br>
@@ -206,15 +254,18 @@
 
 						<pre class="brush: bash">wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
                         <p>
-                            If the installation completes successfully, you'll be given the URL to access the sensor.
+                            If the installation completes successfully, you'll be given the default Username/Password & URL to access the sensor.
                         </p>
+
+                        <h4 id="line2_3">Removal using the Terminal</h4>
+                        <p>
+                             Run the following Terminal command to uninstall Kootnet Sensors.<br>
+                        </p>
+						<pre class="brush: bash">sudo apt-get remove kootnet-sensors</pre>
 
                         <p>
-                            To remove Kootnet Sensors, you can find it in your Operating Systems Application Manager or run the following Terminal command.<br>
+                            <strong><i>Note</i></strong>: The Sensor's Databases, Configurations & Python Virtual Environment will be kept
                         </p>
-
-
-						<pre class="brush: bash">sudo apt-get remove kootnet-sensors</pre>
 
                     </section>
                     <!-- end section -->
@@ -231,12 +282,51 @@
 
                         <h4 id="line3_1"><u>General Overview</u></h4>
 
-                        <p>The Web Portal is used for 90% of all sensor interactions. Explanations of options and functions will be given under each section.</p>
                         <p>
-                            Please note, Internet is required for viewing the following pictures.
+                            Kootnet Sensors has a built in HTTPS server (Web Portal) to monitor, manage and operate the Sensor.
+                            There is also a 'Sensor Control' section in the Web Portal for managing one or more remote sensors.
+                            Assuming the sensor's IP is 192.168.10.11, you can access the sensor at https://192.168.10.11:10065
+                            from any device with a web browser on the same network.
+                        </p>
+
+                        <p>
+                            The following sections will go into more details regarding definitions and functionality.<br>
+                            <i>Please note, Internet is required for viewing pictures in the following sections.</i>
+                        </p>
+
+                        <p>
+                            <strong><u>Default Web Portal Login</u></strong><br>
+                            <strong>User</strong>: Kootnet<br>
+                            <strong>Password</strong>: sensors<br><br>
+                            <strong>Recommended</strong>: <i>Change the default Web Portal username and password after install.</i><br>
+                            <strong>Note</strong>: <i>Find shortcuts to edit configurations and access the Web Portal in the operating systems main menu.</i>
                         </p>
 
                         <h4 id="line3_2"><u>System Information</u></h4>
+
+                        <p>
+                            The System Information page has all the information you need to get a quick overview of the Sensor's status.
+                        </p>
+
+                        <p>
+                            <strong>Operating System</strong>: The Underlying Operating System the Sensor Software is running on top of<br>
+                            <strong>Sensor ID</strong>: Used to uniquely identify the sensor in 'Sensor Check-Ins'<br>
+                            <strong>Running Version</strong>: Version of Kootnet Sensors running locally<br>
+                            <strong>Newest Std Version</strong>: The latest available Standard (Stable) version of Kootnet Sensors<br>
+                            <strong>Newest Dev Version</strong>: The latest available Developmental (Unstable) version of Kootnet Sensors<br>
+                            <strong>Last Updated</strong>: Last date the Kootnet Sensors software was updated locally<br>
+                            <strong>Sensor Date & Time</strong>: Date, Time & Timezone on the local Sensor<br>
+                            <strong>Sensor Uptime</strong>: Length of time the local sensor has been online without a reboot or shutdown<br>
+                            <strong>Sensor Reboots</strong>: Amount of times the Sensor has rebooted (According to uptime recordings in the database)<br>
+                            <strong>System Temperature</strong>: Current Temperature of the System's CPU<br>
+                            <strong>RAM Usage</strong>: % of RAM in use on the local Sensor<br>
+                            <strong>Drive Usage</strong>: Current % of disk space used on the root drive ('/')<br>
+                            <br>
+                            <strong>Installed Sensors</strong>: Currently Installed Sensors (Most sensors will disable them selves if initialization fails)<br>
+                            <br>
+                            <strong>Program Status</strong>: Status of the different aspects of Kootnet Sensors. Availible Status's are Disabled, Enabled <br>
+                        </p>
+
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/KSMain2.png" alt="" class="img-responsive">
 
                         <h4 id="line3_3"><u>Sensor Readings</u></h4>
@@ -271,16 +361,16 @@
                         <!-- end row -->
 
                         <h4 id="line4_1"><u>Main/Primary</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/main_config.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_2"><u>Installed Sensors</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_installed_sensors.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_3"><u>Display</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_display.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_4"><u>Triggers</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_triggers.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -394,6 +484,74 @@
 
                         <h4 id="line9_3"><u>SSL Certificate</u></h4>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_Networking_SSL_June_2020.png" alt="" class="img-responsive img-thumbnail">
+
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line10" class="section">
+
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Troubleshooting <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4>Terminal Configurations Tool</h4>
+                        <p>
+                            Run the following command in a terminal to manage the local Sensor outside the Web Portal.<br><br>
+                            <strong>Note</strong>: <i>You may find useful information in the program logs located in /home/kootnet_data/logs</i>
+                        </p>
+
+                        <pre class="brush: bash">sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py</pre>
+
+                        <br>
+
+                        <h3 id="line10_1">Installation & Upgrade Problems</h3>
+
+                        <p style="font-size: medium;">
+                            Installation issues can occur for various reasons. Here are a few possible causes and fixes.<br>
+                        </p>
+                        <ul>
+                            <li>1. <strong>Internet Connection Issues</strong>
+                                <ul>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><i>Errors may include</i></strong>: Timeout messages, server unresponsive, failed to satisfy dependencies</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Find a more stable Internet connection</li>
+                                </ul>
+                            </li>
+                            <li>2. <strong>Unresponsive Servers hosting required dependencies</strong> (Such as the Raspberry Pi Repositories)
+                                <ul>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><i>Errors may include</i></strong>: Timeout messages, server unresponsive, failed to satisfy dependencies</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Wait 5 or 10 minutes and try again OR change your default apt-get repository</li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <h3 id="line10_2">Kootnet Sensors Start-up Problems</h3>
+
+                        <ul>
+                            <li>1. <strong>Invalid Primary or Trigger Configuration</strong>
+                                <ul>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><i>Errors may include</i></strong>: ???</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Remove the Primary Configuration file and restart the sensor</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Review the Trigger Configuration before re-enabling trigger recording</li>
+                                </ul>
+                                <pre class="brush: bash">sudo rm -f /etc/kootnet/main_config.conf && sudo reboot</pre>
+                            </li>
+                            <li>2. <strong>Bad Hardware</strong> (Such as a corrupt SD Card)
+                                <ul>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><i>Errors may include</i></strong>: Missing dependencies in the Kootnet Sensor logs</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)" from the *Terminal Configurations Tool*</li>
+                                </ul>
+                            </li>
+                            <li>3. <strong>File Corruption</strong>
+                                <ul>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong><i>Errors may include</i></strong>: Missing dependencies in the Kootnet Sensor logs</li>
+                                    <li>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)" from the *Terminal Configurations Tool*</li>
+                                </ul>
+                            </li>
+                        </ul>
 
                     </section>
                     <!-- end section -->
