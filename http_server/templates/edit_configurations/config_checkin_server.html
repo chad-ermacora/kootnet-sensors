@@ -5,7 +5,7 @@
         <fieldset style="text-align: center;">
             <div>
                 <h3><u><strong>
-                    <a style="color: black;" href="{{ PageURL }}">Checkin View Settings</a>
+                    <a style="color: black;" href="{{ PageURL }}">Checkin Server Settings</a>
                 </strong></u></h3>
 
                 <div class="mui-checkbox" style="display: inline-block;">
@@ -16,14 +16,15 @@
                     </label>
                 </div>
 
-                <br>
-                <br>
+                <h3><u><strong>
+                    Checkin View Settings
+                </strong></u></h3>
 
                 <div class="mui-textfield">
                     <label style="color: black; font-size: medium;">
                         Show Sensor count for sensors that have Checked in the past X days
                         <br>
-                        <input style="width: 75px;" type="number" max="3650"
+                        <input style="width: 75px;" type="number" max="3650" step="0.1"
                                name="contact_in_past_days"
                                value="{{ ContactInPastDays }}">
                     </label>
@@ -49,7 +50,7 @@
                 <div class="mui-textfield">
                     <label style="color: black; font-size: medium;">
                         Delete Sensor's with Check ins older then X days<br>
-                        <input style="width: 75px;" type="number" max="3650"
+                        <input style="width: 75px;" type="number" max="3650" step="0.1"
                                name="delete_sensors_older_days"
                                value="{{ DeleteSensorsOlderDays }}">
                     </label>
