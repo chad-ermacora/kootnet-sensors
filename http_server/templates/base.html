@@ -251,6 +251,13 @@
         </li>
 
         <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.open('/SensorUnitHelp.html', '_blank');">
+                Documentation
+            </button>
+        </li>
+
+        <li>
             <strong><a style="color: red; font-size: medium;">
                 Remote Management
             </a></strong>
@@ -311,9 +318,6 @@
                     Project Homepage</a></li>
                 <li><a style="color: #00B0FF;" href="https://github.com/chad-ermacora/sensor-rp" target="_blank">
                     GitHub Repository</a></li>
-                <li><a style="color: #00B0FF;"
-                       href="/SensorUnitHelp.html" target="_blank">
-                    Sensor Help</a></li>
             </ul>
         </li>
     </ul>
@@ -342,19 +346,23 @@
 
             <a style="color: red; font-size: large;" href="{{ PageURL }}"><b>Refresh Page</b></a>
 
-            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;"><div {{ RestartServiceHidden }}>
-                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
-                        onclick="RestartServiceYesNo();">
-                    Service Restart Required
-                </button>
-            </div></div>
+            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;">
+                <div {{ RestartServiceHidden }}>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                            onclick="RestartServiceYesNo();">
+                        Service Restart Required
+                    </button>
+                </div>
+            </div>
 
-            <div style="display: inline-block; position: absolute; z-index: 99; right: 10px;"><div {{ RebootSensorHidden }}>
-                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
-                        onclick="RebootSensorYesNo();">
-                    Sensor Restart Required
-                </button>
-            </div></div>
+            <div style="display: inline-block; position: absolute; z-index: 99; right: 10px;">
+                <div {{ RebootSensorHidden }}>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                            onclick="RebootSensorYesNo();">
+                        Sensor Restart Required
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </header>
