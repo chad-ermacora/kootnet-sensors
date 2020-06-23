@@ -19,6 +19,7 @@
 from operations_modules import logger
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
@@ -49,7 +50,14 @@ def reset_installed_sensors(log_reset=True):
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_variance_config(log_reset=True):
+def reset_trigger_high_low_config(log_reset=True):
+    """ Writes a default Trigger High/Low configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Trigger High/Low Configuration Reset ****")
+    CreateTriggerHighLowConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_trigger_variance_config(log_reset=True):
     """ Writes a default Trigger Variance configuration file. """
     if log_reset:
         logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
@@ -122,7 +130,7 @@ def reset_checkin_config(log_reset=True):
 def reset_all_silent():
     reset_primary_config(log_reset=False)
     reset_installed_sensors(log_reset=False)
-    reset_variance_config(log_reset=False)
+    reset_trigger_variance_config(log_reset=False)
     reset_display_config(log_reset=False)
     reset_mqtt_broker_config(log_reset=False)
     reset_mqtt_publisher_config(log_reset=False)

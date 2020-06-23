@@ -71,6 +71,7 @@ mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
 display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
+trigger_high_low_config = sensor_config_dir + "/trigger_high_low.conf"
 
 http_auth = sensor_config_dir + "/auth.conf"
 

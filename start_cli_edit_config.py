@@ -47,7 +47,7 @@ def start_script():
     while running:
         os.system("clear")
         print("Please Select an Option\n")
-        print("1. View/Edit Primary, Installed Sensors & Trigger Variance Configurations")
+        print("1. View/Edit Primary Config & Installed Sensors")
         print("2. Change Web Login Credentials")
         print("3. Update Python Modules")
         print("4. Upgrade Kootnet Sensors (Standard HTTP)")
@@ -67,7 +67,6 @@ def start_script():
             if selection == 1:
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
-                os.system("nano " + file_locations.trigger_variances_config)
                 print("Restart KootnetSensors service for changes to take effect")
             elif selection == 2:
                 change_https_auth()
