@@ -376,7 +376,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_variance = float(self.config_settings[60])
             self.gyroscope_wait_seconds = float(self.config_settings[61])
         except Exception as error:
-            logger.primary_logger.debug("Trigger Config: " + str(error))
+            logger.primary_logger.debug("Trigger Variance Config: " + str(error))
             self._update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Trigger Variance Configuration.")

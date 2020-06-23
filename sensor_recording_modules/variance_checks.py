@@ -25,10 +25,6 @@ from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
 
-normal_state = app_cached_variables.normal_state
-low_state = app_cached_variables.low_state
-high_state = app_cached_variables.high_state
-
 
 class CreateTriggerVarianceData:
     def __init__(self, get_sensor_data_function, sensor_database_variable, enabled=1,
@@ -174,14 +170,6 @@ class CreateTriggerVarianceThread:
 def get_datetime_stamp():
     """ Returns current UTC 0 time as a string "%Y-%m-%d %H:%M:%S.%f". """
     return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-
-
-def _get_trigger_state(reading, low_trigger, high_trigger):
-    if reading < low_trigger:
-        return low_state
-    elif reading > high_trigger:
-        return high_state
-    return normal_state
 
 
 def _readings_to_sql_write_str_single_data(trigger_object):

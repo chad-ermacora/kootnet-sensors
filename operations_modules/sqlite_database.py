@@ -113,19 +113,18 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
 
         create_table_and_datetime(database_variables.table_interval, db_cursor)
         create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
-                                                    database_variables.get_sensor_columns_list()):
-            interval_response = check_sql_table_and_column(database_variables.table_interval, column_intervals,
-                                                           db_cursor)
-            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
-            if interval_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if trigger_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
+        for column in database_variables.get_sensor_columns_list():
+            interval_response = check_sql_table_and_column(database_variables.table_interval, column, db_cursor)
+            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column, db_cursor)
+            for response in [interval_response, trigger_response]:
+                if response:
+                    columns_created += 1
+                else:
+                    columns_already_made += 1
+        if check_sql_table_and_column(database_variables.table_trigger, database_variables.trigger_state, db_cursor):
+            columns_created += 1
+        else:
+            columns_already_made += 1
 
         create_table_and_datetime(database_variables.table_other, db_cursor)
         for column_other in database_variables.get_other_columns_list():

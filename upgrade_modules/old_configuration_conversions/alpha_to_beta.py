@@ -3,7 +3,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
-    reset_installed_sensors, successful_upgrade_message, reset_display_config, reset_variance_config, \
+    reset_installed_sensors, successful_upgrade_message, reset_display_config, reset_trigger_variance_config, \
     reset_mqtt_broker_config, reset_mqtt_publisher_config, reset_mqtt_subscriber_config
 
 
@@ -12,7 +12,7 @@ def upgrade_alpha_to_beta():
     reset_primary_config()
     logger.set_logging_level()
     reset_installed_sensors()
-    reset_variance_config()
+    reset_trigger_variance_config()
     try:
         new_osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
         raw_config_settings = get_file_content(file_locations.osm_config).strip().split("\n")[1:]

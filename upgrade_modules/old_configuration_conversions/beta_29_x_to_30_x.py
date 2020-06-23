@@ -1,7 +1,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_primary_config, \
-    reset_installed_sensors, reset_variance_config, successful_upgrade_message, reset_mqtt_broker_config, \
+    reset_installed_sensors, reset_trigger_variance_config, successful_upgrade_message, reset_mqtt_broker_config, \
     reset_mqtt_subscriber_config, reset_mqtt_publisher_config, reset_display_config, reset_checkin_config
 from operations_modules.app_generic_functions import get_file_content
 from configuration_modules.config_primary import CreatePrimaryConfiguration
@@ -112,7 +112,7 @@ def upgrade_beta_29_to_30():
     except Exception as error:
         logger.primary_logger.error("Open Sense Map Configuration conversion error: " + str(error))
 
-    reset_variance_config()
+    reset_trigger_variance_config()
     reset_mqtt_broker_config(log_reset=False)
     reset_mqtt_publisher_config(log_reset=False)
     reset_mqtt_subscriber_config(log_reset=False)
