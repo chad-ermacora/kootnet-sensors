@@ -91,7 +91,8 @@
                                     <li><a href="#line4_1">Main/Primary</a></li>
                                     <li><a href="#line4_2">Installed Sensors</a></li>
                                     <li><a href="#line4_3">Displays</a></li>
-                                    <li><a href="#line4_4">Tiggers</a></li>
+                                    <li><a href="#line4_4">Triggers</a></li>
+                                    <li><a href="#line4_5">Terminal access</a></li>
                                 </ul>
 							</li>
                             <li><a href="#line5">MQTT</a>
@@ -226,7 +227,7 @@
                         <h4>Requirements</h4>
                         <strong>Operating System : </strong>Ubuntu, Debian, Raspbian/Raspberry Pi OS<br>
                         <strong>Other Requirements : </strong>Internet Access<br>
-                        <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero can take up to 20 minutes</i><br>
+                        <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero can take up to 30 minutes</i><br>
                         <strong>Note : </strong><i>You must use the 32bit Raspbian/Raspberry Pi OS for proper Hardware Sensor functionality</i>
 
                         <br><br>
@@ -298,7 +299,7 @@
                             <strong><u>Default Web Portal Login</u></strong><br>
                             <strong>User</strong>: Kootnet<br>
                             <strong>Password</strong>: sensors<br><br>
-                            <strong>Recommended</strong>: <i>Change the default Web Portal username and password after install.</i><br>
+                            <strong>Recommended</strong>: <a href="#line3_7"><i>Change the default Web Portal username and password after install.</i></a><br>
                             <strong>Note</strong>: <i>Find shortcuts to edit configurations and access the Web Portal in the operating systems main menu.</i>
                         </p>
 
@@ -314,8 +315,8 @@
                             <strong>Running Version</strong>: Version of Kootnet Sensors running locally<br>
                             <strong>Newest Std Version</strong>: The latest available Standard (Stable) version of Kootnet Sensors<br>
                             <strong>Newest Dev Version</strong>: The latest available Developmental (Unstable) version of Kootnet Sensors<br>
-                            <strong>Last Updated</strong>: Last date the Kootnet Sensors software was updated locally<br>
-                            <strong>Sensor Date & Time</strong>: Date, Time & Timezone on the local Sensor<br>
+                            <strong>Last Updated</strong>: Last date & time the local Kootnet Sensor software was updated<br>
+                            <strong>Sensor Date & Time</strong>: Date, time & timezone on the local Sensor<br>
                             <strong>Sensor Uptime</strong>: Length of time the local sensor has been online without a reboot or shutdown<br>
                             <strong>Sensor Reboots</strong>: Amount of times the Sensor has rebooted (According to uptime recordings in the database)<br>
                             <strong>System Temperature</strong>: Current Temperature of the System's CPU<br>
@@ -330,21 +331,51 @@
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/KSMain2.png" alt="" class="img-responsive">
 
                         <h4 id="line3_3"><u>Sensor Readings</u></h4>
+                        <p>
+                            The Sensor Reading's Page gives a live snapshot of each sensor's readings.
+                            If the sensor is missing or not enabled, it will show "NoSensor".
+                            Most sensor names can be clicked to take you to the relevant Wikipedia page.
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorReadings_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_4"><u>Database</u></h4>
+                        <p>
+                            The main Index page for Kootnet Sensors is the Database Information Page. On this page you can download the SQLite3 database in RAW or Zip format.
+                            You can also upload a RAW SQLite3 database to replace the existing one.
+                            This is meant to allow the creation of graphs on faster PCs and the transfer of old data to new sensors.<br><br>
+                            <strong>Note</strong>: <i>The SQLite3 database holds all sensor recordings as well as Notes.</i><br>
+                            <strong>Note</strong>: <i>The Sensor Checkin Database is a separate SQLite3 database that currently cannot be downloaded.</i>
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Database_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_5"><u>Notes</u></h4>
+                        <p>
+                            The Notes page is where you can add, modify and remove notes in the SQL database.
+                            There is a "Date/Time" function under the Insert menu meant to be used to add a standard date stamp
+                            of when you are working on your notes but also to identify exactly when you find an interesting data point in the sensor recordings.
+                            This way others can create a graph to locate data the note is refering to.
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorNotes_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_6"><u>Plotly Graphing</u></h4>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorGraphing_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_7"><u>Advanced</u></h4>
+                        <p>
+                            The Advanced page is used to execute functions that are more System related, as opposed to sensor related.
+                            Find links to upgrade Kootnet Sensors, the OS & Python Modules.
+                            You can also view RAW configurations, Python Module Versions & Sensor Checkin Statistics.
+                            Power, SQL and Login update functions are located here as well.
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_advanced_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_8"><u>Logs</u></h4>
+                        <p>
+                            The Logs are broken into 3 tabs, Primary, Network and Sensors.<br>
+                            The Primary log holds general program operations information.<br>
+                            The Network Log holds information regarding network commands and operations.<br>
+                            The Sensors Log holds information regarding hardware sensor operations.
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_logs_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
@@ -370,7 +401,37 @@
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_display.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_4"><u>Triggers</u></h4>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_triggers.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail"><br>
+                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_5"><u>Terminal Configurations</u></h4>
+                        <p>
+                            The Terminal Configuration Tool allows you to control some aspects of the sensor using the sensor's local Terminal.
+                            To run the Terminal Configuration Tool, open a terminal and run the following command.
+                            You will be presented with a number of commands.
+                        </p>
+                        <pre class="brush: bash">sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py</pre>
+
+                        <br>
+
+                        <p>
+                            <strong>View/Edit Configurations</strong>: Opens the Primary & Installed Sensors configurations in nano<br>
+                            <strong>Change Web Login Credentials</strong>: Reset's the Web Portal Login to values of your choice<br>
+                            <strong>Update Python Modules</strong>: Upgrades each Python module, one after the other, then restarts the application<br>
+                            <strong>Upgrade Kootnet Sensors</strong><br>
+                            (Standard HTTP): Upgrades Kootnet Sensors to the latest Stable Version<br>
+                            (Development HTTP): Upgrades Kootnet Sensors to the latest Unstable Version<br>
+                            (Clean HTTP): Removes all program files minus databases, logs and configurations
+                            then re-installs the latest Stable version of Kootnet Sensors<br>
+                            <strong>Create New Self Signed SSL Certificate</strong>: Removes old Web SSL Certificates, Creates new ones & restarts the software<br>
+                            <strong>Enable & Start KootnetSensors</strong>: Enables & Starts Kootnet Sensor's systemd service<br>
+                            <strong>Disable & Stop KootnetSensors</strong>: Disables & Stops Kootnet Sensor's systemd service<br>
+                            <strong>Restart KootnetSensors Service</strong>: Restarts Kootnet Sensor's systemd service<br>
+                            <strong>Run Sensor Local Tests</strong>: Runs basic Sensor Tests and returns the results<br>
+                            <strong>Exit</strong>: Exit's the Terminal Configuration Tool<br>
+                        </p>
+
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/kootnet_sensors_terminal_config.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
