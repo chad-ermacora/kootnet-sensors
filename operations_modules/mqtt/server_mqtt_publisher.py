@@ -119,7 +119,7 @@ def _mqtt_publisher_server():
                                payload=_readings_to_text(sensor_access.get_gas()),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                pm_readings = sensor_access.get_particulate_matter()
+                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
                 temp_send_readings = [pm_readings[database_variables.particulate_matter_1],
                                       pm_readings[database_variables.particulate_matter_2_5],
                                       pm_readings[database_variables.particulate_matter_4],

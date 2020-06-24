@@ -365,7 +365,7 @@ def get_gas(return_as_dictionary=False):
     return gas_readings
 
 
-def get_particulate_matter():
+def get_particulate_matter(return_as_dictionary=False):
     """ Returns selected Particulate Matter readings in a Dictionary. """
     if app_config_access.installed_sensors.pimoroni_enviroplus and \
             app_config_access.installed_sensors.pimoroni_pms5003:
@@ -375,11 +375,18 @@ def get_particulate_matter():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
     else:
-        return {database_variables.particulate_matter_1: no_sensor_present,
-                database_variables.particulate_matter_2_5: no_sensor_present,
-                database_variables.particulate_matter_4: no_sensor_present,
-                database_variables.particulate_matter_10: no_sensor_present}
-    return pm_readings
+        if return_as_dictionary:
+            return {database_variables.particulate_matter_1: no_sensor_present,
+                    database_variables.particulate_matter_2_5: no_sensor_present,
+                    database_variables.particulate_matter_4: no_sensor_present,
+                    database_variables.particulate_matter_10: no_sensor_present}
+        return [no_sensor_present, no_sensor_present, no_sensor_present, no_sensor_present]
+    if return_as_dictionary:
+        return pm_readings
+    return [pm_readings[database_variables.particulate_matter_1],
+            pm_readings[database_variables.particulate_matter_2_5],
+            pm_readings[database_variables.particulate_matter_4],
+            pm_readings[database_variables.particulate_matter_10]]
 
 
 def get_lumen():

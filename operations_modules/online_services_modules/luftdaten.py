@@ -116,7 +116,7 @@ def _bme280():
 
 def _pms5003():
     try:
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         pm10_reading = ""
         pm25_reading = ""
         if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:

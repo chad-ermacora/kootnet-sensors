@@ -46,7 +46,7 @@ class CreateHasSensorVariables:
         if sensor_access.get_gas() != app_cached_variables.no_sensor_present:
             self.has_gas = 1
 
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present \
                 or pm_readings[database_variables.particulate_matter_2_5] != app_cached_variables.no_sensor_present \
                 or pm_readings[database_variables.particulate_matter_4] != app_cached_variables.no_sensor_present \
@@ -162,7 +162,7 @@ def get_interval_sensor_readings():
                 sensor_types.append(text_name)
                 sensor_readings.append(item_value)
     if available_sensors.has_particulate_matter:
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         for text_name, item_value in pm_readings.items():
             if item_value != app_cached_variables.no_sensor_present:
                 sensor_types.append(text_name)

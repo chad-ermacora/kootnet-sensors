@@ -84,7 +84,7 @@ def get_numerical_display_text():
                 text_name = " Gas NH3:"
             text_message += str(text_name) + str(item_value)
     if app_config_access.display_config.particulate_matter:
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         for text_name, item_value in pm_readings.items():
             if text_name == app_cached_variables.database_variables.particulate_matter_1:
                 text_name = " PM1:"

@@ -111,7 +111,7 @@ def get_all_gas():
 @html_sensor_readings_routes.route("/GetAllParticulateMatter")
 def get_all_particulate_matter():
     logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
-    return sensor_access.get_particulate_matter()
+    return sensor_access.get_particulate_matter(return_as_dictionary=True)
 
 
 @html_sensor_readings_routes.route("/GetLumen")

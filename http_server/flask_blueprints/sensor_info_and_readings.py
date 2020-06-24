@@ -188,7 +188,7 @@ def html_sensors_readings():
             if app_cached_variables.database_variables.gas_nh3 in gas_readings:
                 gas_nh3 = gas_readings[app_cached_variables.database_variables.gas_nh3]
 
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         pm_1 = app_cached_variables.no_sensor_present
         pm_2_5 = app_cached_variables.no_sensor_present
         pm_4 = app_cached_variables.no_sensor_present
