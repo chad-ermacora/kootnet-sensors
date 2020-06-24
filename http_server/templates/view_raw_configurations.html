@@ -16,11 +16,11 @@
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="display-config-tab">
             Display Configuration
         </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="trigger-high-low-tab">
+            Trigger High/Low
+        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="trigger-variances-tab">
             Trigger Variances
-        </a></li>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="sensor-control-tab">
-            Sensor Control
         </a></li>
         <br>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="mqtt-broker-tab">
@@ -43,6 +43,9 @@
             Open Sense Map
         </a></li>
         <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="sensor-control-tab">
+            Sensor Control
+        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
             Networking
         </a></li>
@@ -91,6 +94,17 @@
             <h4 style="color: #00B0FF;">Location: {{ DCLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ DisplayConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="trigger-high-low-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Trigger High/Low</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ THLLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ TriggerHighLowConfiguration }}</span>
         </div>
     </div>
 

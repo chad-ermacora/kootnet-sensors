@@ -125,6 +125,8 @@ def html_raw_configurations_view():
                            ISLocation=file_locations.installed_sensors_config,
                            DisplayConfiguration=str(get_file_content(file_locations.display_config)),
                            DCLocation=file_locations.display_config,
+                           TriggerHighLowConfiguration=str(get_file_content(file_locations.trigger_high_low_config)),
+                           THLLocation=file_locations.trigger_high_low_config,
                            TriggerConfiguration=str(get_file_content(file_locations.trigger_variances_config)),
                            TVLocation=file_locations.trigger_variances_config,
                            SensorControlConfiguration=str(get_file_content(file_locations.html_sensor_control_config)),
