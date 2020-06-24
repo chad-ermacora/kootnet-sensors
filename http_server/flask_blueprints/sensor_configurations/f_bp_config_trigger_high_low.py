@@ -29,8 +29,10 @@ html_config_trigger_high_low_routes = Blueprint("html_config_trigger_high_low_ro
 def get_config_trigger_high_low_tab():
     try:
         high_low_settings = app_config_access.trigger_high_low
+        recording_enabled = get_html_checkbox_state(high_low_settings.enable_high_low_trigger_recording)
         return render_template("edit_configurations/config_trigger_high_low.html",
                                PageURL="/ConfigurationsHTML",
+                               CheckedEnableHLTRecording=recording_enabled,
                                CheckedCPUTemperature=get_html_checkbox_state(high_low_settings.cpu_temperature_enabled),
                                TriggerLowCPUTemperature=high_low_settings.cpu_temperature_low,
                                TriggerHighCPUTemperature=high_low_settings.cpu_temperature_high,
