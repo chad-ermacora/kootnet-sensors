@@ -36,7 +36,7 @@ def html_set_display_config():
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
             if app_config_access.display_config.enable_display:
-                if app_cached_variables.mini_display_thread is not None:
+                if app_cached_variables.mini_display_thread.current_state != "Disabled":
                     if app_cached_variables.mini_display_thread.monitored_thread.is_alive():
                         app_cached_variables.restart_mini_display_thread = True
                     else:

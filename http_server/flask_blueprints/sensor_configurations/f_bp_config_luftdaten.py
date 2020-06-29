@@ -37,7 +37,7 @@ def html_edit_online_services_luftdaten():
         return_text = "Luftdaten Configuration Saved"
         if app_config_access.luftdaten_config.luftdaten_enabled:
             return_text = get_restart_service_text("Luftdaten")
-            if app_cached_variables.luftdaten_thread is not None:
+            if app_cached_variables.luftdaten_thread != "Disabled":
                 if app_cached_variables.luftdaten_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_luftdaten_thread = True
                 else:

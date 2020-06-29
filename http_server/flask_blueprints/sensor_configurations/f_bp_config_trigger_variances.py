@@ -56,6 +56,7 @@ def get_config_trigger_variances_tab():
         variances = app_config_access.trigger_variances
         return render_template("edit_configurations/config_trigger_variances.html",
                                PageURL="/ConfigurationsHTML",
+                               CheckedTrigger=get_html_checkbox_state(variances.enable_trigger_variance),
                                CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
                                DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
                                CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),

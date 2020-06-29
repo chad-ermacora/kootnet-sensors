@@ -38,7 +38,7 @@ def html_edit_online_services_wu():
         return_text = "Weather Underground Configuration Saved"
         if app_config_access.weather_underground_config.weather_underground_enabled:
             return_text = get_restart_service_text("Weather Underground")
-            if app_cached_variables.weather_underground_thread is not None:
+            if app_cached_variables.weather_underground_thread != "Disabled":
                 if app_cached_variables.weather_underground_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_weather_underground_thread = True
                 else:

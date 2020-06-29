@@ -107,6 +107,7 @@ class CreateMonitoredThread:
 
     def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
         self.is_running = True
+        self.current_state = "Starting"
         self.function = function
         self.args = args
         self.thread_name = thread_name
@@ -128,6 +129,7 @@ class CreateMonitoredThread:
         self.restart_watch_thread = Thread(target=self._restart_count_reset_watch)
         self.restart_watch_thread.daemon = True
         self.restart_watch_thread.start()
+        self.current_state = "Running"
 
     def _restart_count_reset_watch(self):
         """ Resets self.current_restart_count to 0 if it's been longer then 60 seconds since a restart. """
@@ -149,6 +151,7 @@ class CreateMonitoredThread:
             if not self.monitored_thread.is_alive():
                 logger.primary_logger.info(self.thread_name + " Restarting...")
                 self.is_running = False
+                self.current_state = "Restarting"
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
                     if self.args is None:
@@ -158,13 +161,16 @@ class CreateMonitoredThread:
                     self.monitored_thread.daemon = True
                     self.monitored_thread.start()
                     self.is_running = True
+                    self.current_state = "Running"
                 else:
                     log_msg = self.thread_name + " has restarted " + str(self.current_restart_count)
                     log_msg += " times in less then 1 minutes."
                     logger.primary_logger.critical(log_msg + " No further restart attempts will be made.")
+                    self.current_state = "Error"
                     while True:
                         time.sleep(600)
             time.sleep(5)
+        self.current_state = "Stopped"
         self.shutdown_thread = False
 
 

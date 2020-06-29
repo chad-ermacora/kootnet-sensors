@@ -19,7 +19,7 @@
 from time import sleep, time
 from datetime import datetime
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
 from operations_modules import sqlite_database
@@ -30,38 +30,43 @@ class CreateTriggerVarianceData:
     def __init__(self, get_sensor_data_function, sensor_database_variable, enabled=1,
                  thread_name="GenericTriggerThread", variance=99999.99, sensor_wait_seconds=10,
                  num_of_readings=1, number_of_reading_sets=3):
-        self.get_sensor_data_function = get_sensor_data_function
-        test_sensor_reading = self.get_sensor_data_function()
-        self.enabled = enabled
-        self.thread_name = thread_name
-        self.num_of_readings = num_of_readings
-        self.number_of_sets = number_of_reading_sets
-        self.variance = variance
-        self.sql_sensor_name = sensor_access.get_hostname()
-        self.sql_ip = sensor_access.get_ip()
-        self.sensor_wait_seconds = sensor_wait_seconds
+        try:
+            self.get_sensor_data_function = get_sensor_data_function
+            test_sensor_reading = self.get_sensor_data_function()
+            self.enabled = enabled
+            self.thread_name = thread_name
+            self.num_of_readings = num_of_readings
+            self.number_of_sets = number_of_reading_sets
+            self.variance = variance
+            self.sql_sensor_name = sensor_access.get_hostname()
+            self.sql_ip = sensor_access.get_ip()
+            self.sensor_wait_seconds = sensor_wait_seconds
 
-        self.sensor_database_variable = sensor_database_variable
-        self.max_trigger_errors = 10
-        self.last_error_time = time()
-        self.reset_errors_after = 60.0
-        if self.enabled:
-            logger.primary_logger.debug(thread_name + " - Enabled: " + str(self.enabled) +
-                                        " No Sensors: " + str(app_config_access.installed_sensors.no_sensors) +
-                                        " Test Reading: " + str(test_sensor_reading) +
-                                        " DB Variable: " + str(sensor_database_variable) +
-                                        " # Readings: " + str(self.num_of_readings) +
-                                        " # Sets: " + str(self.number_of_sets) +
-                                        " Variance: " + str(self.variance) +
-                                        " Wait Sec: " + str(self.sensor_wait_seconds))
-        else:
-            logger.primary_logger.debug(thread_name + " - Disabled")
+            self.sensor_database_variable = sensor_database_variable
+            self.max_trigger_errors = 10
+            self.last_error_time = time()
+            self.reset_errors_after = 60.0
+            if self.enabled:
+                logger.primary_logger.debug(
+                    thread_name + " - Enabled: " + str(self.enabled) +
+                    " No Sensors: " + str(app_config_access.installed_sensors.no_sensors) +
+                    " Test Reading: " + str(test_sensor_reading) +
+                    " DB Variable: " + str(sensor_database_variable) +
+                    " # Readings: " + str(self.num_of_readings) +
+                    " # Sets: " + str(self.number_of_sets) +
+                    " Variance: " + str(self.variance) +
+                    " Wait Sec: " + str(self.sensor_wait_seconds)
+                )
+            else:
+                logger.primary_logger.debug(thread_name + " - Disabled")
+        except Exception as error:
+            logger.primary_logger.error(thread_name + " Error Processing Data: " + str(error))
 
 
 class CreateTriggerVarianceThread:
     """ Creates an object holding a Trigger Variance Monitored Thread (If Enabled). """
 
-    def __init__(self, trigger_data, sensor_uptime=False):
+    def __init__(self, trigger_data):
         self.running = False
 
         self.trigger_data = trigger_data
@@ -72,18 +77,21 @@ class CreateTriggerVarianceThread:
             self.sql_columns_str_start = "DateTime," + trigger_data.sensor_database_variable
 
         self.reading_and_datetime_stamps = []
-        while not self.running:
-            if self.trigger_data.enabled and not app_config_access.installed_sensors.no_sensors:
-                if sensor_uptime:
-                    self.monitored_thread = CreateMonitoredThread(self._sensor_uptime_check,
-                                                                  thread_name=self.trigger_data.thread_name)
-                else:
-                    self.monitored_thread = CreateMonitoredThread(self._data_check,
-                                                                  thread_name=self.trigger_data.thread_name)
-                self.running = True
-            else:
-                self.monitored_thread = None
-            sleep(10)
+        thread_function(self._start_thread)
+
+    def _start_thread(self):
+        if self.trigger_data.enabled and not app_config_access.installed_sensors.no_sensors:
+            while not self.running:
+                try:
+                    thread_name = self.trigger_data.thread_name
+                    self.monitored_thread = CreateMonitoredThread(self._data_check, thread_name=thread_name)
+                    self.running = True
+                except Exception as error:
+                    log_msg = "Error running Trigger Variance tests on " + self.trigger_data.thread_name + ": "
+                    logger.primary_logger.error(log_msg + str(error))
+                sleep(10)
+        else:
+            self.monitored_thread = None
 
     def _update_sensor_readings_set(self):
         """ Sends provided string to retrieve sensor data. """

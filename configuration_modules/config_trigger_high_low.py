@@ -73,91 +73,91 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.env_temperature_high = 35.0
         self.env_temperature_wait_seconds = 10.0
 
-        self.pressure_low = 400
+        self.pressure_low = 350
         self.pressure_high = 1200
         self.pressure_wait_seconds = 10.0
 
-        self.humidity_low = 5.0
-        self.humidity_high = 75.0
+        self.humidity_low = 25.0
+        self.humidity_high = 80.0
         self.humidity_wait_seconds = 10.0
 
-        self.altitude_low = 10
+        self.altitude_low = 200
         self.altitude_high = 1000
         self.altitude_wait_seconds = 10.0
 
         self.distance_low = 1.0
         self.distance_high = 555.0
-        self.distance_wait_seconds = 0.2
+        self.distance_wait_seconds = 10
 
-        self.lumen_low = 100.0
-        self.lumen_high = 100.0
-        self.lumen_wait_seconds = 1.0
+        self.lumen_low = 25.0
+        self.lumen_high = 1000.0
+        self.lumen_wait_seconds = 10
 
         self.red_low = 15.0
-        self.red_high = 15.0
+        self.red_high = 215.0
         self.orange_low = 15.0
-        self.orange_high = 15.0
+        self.orange_high = 215.0
         self.yellow_low = 15.0
-        self.yellow_high = 15.0
+        self.yellow_high = 215.0
         self.green_low = 15.0
-        self.green_high = 15.0
+        self.green_high = 215.0
         self.blue_low = 15.0
-        self.blue_high = 15.0
+        self.blue_high = 215.0
         self.violet_low = 15.0
-        self.violet_high = 15.0
+        self.violet_high = 215.0
         self.colour_wait_seconds = 20.0
 
-        self.ultra_violet_index_low = 5.0
-        self.ultra_violet_index_high = 5.0
-        self.ultra_violet_a_low = 10.0
-        self.ultra_violet_a_high = 10.0
-        self.ultra_violet_b_low = 10.0
-        self.ultra_violet_b_high = 10.0
-        self.ultra_violet_wait_seconds = 1.0
+        self.ultra_violet_index_low = 25.0
+        self.ultra_violet_index_high = 225.0
+        self.ultra_violet_a_low = 21.0
+        self.ultra_violet_a_high = 210.0
+        self.ultra_violet_b_low = 20.0
+        self.ultra_violet_b_high = 210.0
+        self.ultra_violet_wait_seconds = 10.0
 
         self.gas_resistance_index_low = 100.0
-        self.gas_resistance_index_high = 100.0
+        self.gas_resistance_index_high = 800.0
         self.gas_oxidising_low = 100.0
-        self.gas_oxidising_high = 100.0
+        self.gas_oxidising_high = 800.0
         self.gas_reducing_low = 100.0
-        self.gas_reducing_high = 100.0
+        self.gas_reducing_high = 800.0
         self.gas_nh3_low = 100.0
-        self.gas_nh3_high = 100.0
-        self.gas_wait_seconds = 30.0
+        self.gas_nh3_high = 800.0
+        self.gas_wait_seconds = 15.0
 
-        self.particulate_matter_1_low = 4.0
-        self.particulate_matter_1_high = 4.0
-        self.particulate_matter_2_5_low = 4.0
-        self.particulate_matter_2_5_high = 4.0
-        self.particulate_matter_4_low = 4.0
-        self.particulate_matter_4_high = 4.0
-        self.particulate_matter_10_low = 4.0
-        self.particulate_matter_10_high = 4.0
-        self.particulate_matter_wait_seconds = 30.0
+        self.particulate_matter_1_low = 40.0
+        self.particulate_matter_1_high = 114.0
+        self.particulate_matter_2_5_low = 41.0
+        self.particulate_matter_2_5_high = 114.0
+        self.particulate_matter_4_low = 41.0
+        self.particulate_matter_4_high = 114.0
+        self.particulate_matter_10_low = 41.0
+        self.particulate_matter_10_high = 114.0
+        self.particulate_matter_wait_seconds = 15.0
 
         self.accelerometer_x_low = 0.1
-        self.accelerometer_x_high = 0.1
+        self.accelerometer_x_high = 0.9
         self.accelerometer_y_low = 0.1
-        self.accelerometer_y_high = 0.1
+        self.accelerometer_y_high = 0.9
         self.accelerometer_z_low = 0.1
-        self.accelerometer_z_high = 0.1
-        self.accelerometer_wait_seconds = 0.3
+        self.accelerometer_z_high = 0.9
+        self.accelerometer_wait_seconds = 1
 
-        self.magnetometer_x_low = 25.0
-        self.magnetometer_x_high = 25.0
-        self.magnetometer_y_low = 25.0
-        self.magnetometer_y_high = 25.0
-        self.magnetometer_z_low = 25.0
-        self.magnetometer_z_high = 25.0
-        self.magnetometer_wait_seconds = 0.3
+        self.magnetometer_x_low = 40.0
+        self.magnetometer_x_high = 60.0
+        self.magnetometer_y_low = 40.0
+        self.magnetometer_y_high = 60.0
+        self.magnetometer_z_low = 40.0
+        self.magnetometer_z_high = 60.0
+        self.magnetometer_wait_seconds = 1
 
-        self.gyroscope_x_low = 25.0
-        self.gyroscope_x_high = 25.0
-        self.gyroscope_y_low = 25.0
-        self.gyroscope_y_high = 25.0
-        self.gyroscope_z_low = 25.0
-        self.gyroscope_z_high = 25.0
-        self.gyroscope_wait_seconds = 0.3
+        self.gyroscope_x_low = 10.0
+        self.gyroscope_x_high = 70.0
+        self.gyroscope_y_low = 10.0
+        self.gyroscope_y_high = 70.0
+        self.gyroscope_z_low = 10.0
+        self.gyroscope_z_high = 70.0
+        self.gyroscope_wait_seconds = 1
 
         self._update_configuration_settings_list()
         if load_from_file:

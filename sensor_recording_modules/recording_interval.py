@@ -84,12 +84,12 @@ class CreateHasSensorVariables:
 
 
 def start_interval_recording_server():
-    if app_config_access.primary_config.enable_interval_recording:
+    if app_config_access.interval_recording_config.enable_interval_recording:
         text_name = "Interval Recording"
         function = _interval_recording
         app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
     else:
-        logger.primary_logger.debug("Interval Recording Disabled in Primary Configuration")
+        logger.primary_logger.debug("Interval Recording Disabled in the Configuration")
 
 
 def _interval_recording():

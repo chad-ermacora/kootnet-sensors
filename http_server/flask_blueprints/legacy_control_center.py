@@ -97,8 +97,8 @@ def cc_set_date_time():
 @html_legacy_cc_routes.route("/GetConfigurationReport")
 def cc_get_configuration_report():
     logger.network_logger.debug("* CC Sensor Configuration Data Sent to " + str(request.remote_addr))
-    config_str_csv = str(app_config_access.primary_config.enable_interval_recording) + "," + \
-                     str(app_config_access.primary_config.enable_trigger_recording) + "," + \
+    config_str_csv = str(app_config_access.interval_recording_config.enable_interval_recording) + "," + \
+                     str(app_config_access.trigger_variances.enable_trigger_variance) + "," + \
                      str(app_config_access.primary_config.sleep_duration_interval) + "," + \
                      str(app_config_access.primary_config.enable_custom_temp) + "," + \
                      str(app_config_access.primary_config.temperature_offset)

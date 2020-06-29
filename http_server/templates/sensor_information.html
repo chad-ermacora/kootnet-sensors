@@ -23,11 +23,6 @@
             background-color: #0BB10D;
             width: auto;
         }
-
-        .trigger-threads {
-            display: none;
-            overflow: hidden;
-        }
     </style>
 
     <h2><strong><a style="text-decoration: underline; color: red;" href="/SensorInformation">
@@ -113,6 +108,21 @@
 
     <div class="mui-container-fluid">
         <div class="mui-row">
+            <div class="mui-col-md-3">Interval Recording</div>
+            <div class="mui-col-md-4">{{ IntervalRecording }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">High/Low Triggers</div>
+            <div class="mui-col-md-4">{{ TriggerHighLowRecording }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Variance Triggers</div>
+            <div class="mui-col-md-4">{{ TriggerVarianceRecording }}</div>
+        </div>
+
+        <div class="mui-row">
             <div class="mui-col-md-3">Debug Logging</div>
             <div class="mui-col-md-4">{{ DebugLogging }}</div>
         </div>
@@ -120,6 +130,11 @@
         <div class="mui-row">
             <div class="mui-col-md-3">Mini Display</div>
             <div class="mui-col-md-4">{{ SupportedDisplay }}</div>
+        </div>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">Open Sense Map</div>
+            <div class="mui-col-md-4">{{ OpenSenseMapService }}</div>
         </div>
 
         <div class="mui-row">
@@ -131,91 +146,15 @@
             <div class="mui-col-md-3">Luftdaten</div>
             <div class="mui-col-md-4">{{ LuftdatenService }}</div>
         </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Open Sense Map</div>
-            <div class="mui-col-md-4">{{ OpenSenseMapService }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Interval Recording</div>
-            <div class="mui-col-md-4">{{ IntervalRecording }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Trigger Recording</div>
-            <div class="mui-col-md-4">{{ TriggerRecording }}</div>
-        </div>
     </div>
 
-    <button type="button" class="mui-btn mui-btn--raised" id="trigger-threads"
-            style="display: block; left: 125px;" {{ TriggerButtonDisabled }}>
-        Individual Trigger Status
+    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+            onclick="window.open('/SensorTriggerStatus','targetWindow',
+       'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=875,height=425');
+       return false;" {{ TriggerStatusButtonDisabled }}>
+        Trigger Recording Detailed Status
     </button>
 
-    <div class="mui-container-fluid trigger-threads">
-        <div class="mui-row">
-            <div class="mui-col-md-3">Sensor Uptime</div>
-            <div class="mui-col-md-4">{{ TriggerSensorUptime }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">CPU Temperature</div>
-            <div class="mui-col-md-4">{{ TriggerCPUTemp }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Env Temperature</div>
-            <div class="mui-col-md-4">{{ TriggerEnvTemp }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Pressure</div>
-            <div class="mui-col-md-4">{{ TriggerPressure }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Altitude</div>
-            <div class="mui-col-md-4">{{ TriggerAltitude }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Humidity</div>
-            <div class="mui-col-md-4">{{ TriggerHumidity }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Distance</div>
-            <div class="mui-col-md-4">{{ TriggerDistance }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Lumen</div>
-            <div class="mui-col-md-4">{{ TriggerLumen }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Visible EMS</div>
-            <div class="mui-col-md-4">{{ TriggerVisibleEMS }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Accelerometer</div>
-            <div class="mui-col-md-4">{{ TriggerAccelerometer }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Magnetometer</div>
-            <div class="mui-col-md-4">{{ TriggerMagnetometer }}</div>
-        </div>
-        <div class="mui-row">
-            <div class="mui-col-md-3">Gyroscope</div>
-            <div class="mui-col-md-4">{{ TriggerGyroscope }}</div>
-        </div>
-    </div>
-
     <br>
-
-    <script>
-        document.getElementById("trigger-threads").addEventListener("click", function () {
-            this.classList.toggle("active");
-            var content = this.nextElementSibling;
-            if (content.style.display === "inline-block") {
-                content.style.display = "none";
-            } else {
-                content.style.display = "inline-block";
-            }
-        });
-    </script>
 
 {% endblock %}

@@ -26,6 +26,22 @@
 
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="interval-recording-tab">
+                Interval Recording
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="trigger-variances-tab">
+                Trigger Recording
+            </a>
+        </li>
+
+        <br>
+
+         <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="installed-sensors-tab">
                 Installed Sensors
             </a>
@@ -38,12 +54,10 @@
             </a>
         </li>
 
-        <li>
-            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-               data-mui-controls="trigger-variances-tab">
-                Trigger Recording
-            </a>
-        </li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="checkin-server-config-tab">
+            Checkin Settings
+        </a></li>
 
         <br>
 
@@ -77,20 +91,12 @@
                data-mui-controls="open-sense-map-tab">
             Open Sense Map
         </a></li>
-
-        <br>
-
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-               data-mui-controls="checkin-server-config-tab">
-            Checkin Settings
-        </a></li>
     </ul>
 
     <br>
 
     {{ ConfigPrimaryTab|safe }}
-    {{ ConfigInstalledSensorsTab|safe }}
-    {{ ConfigDisplayTab|safe }}
+    {{ ConfigIntervalRecordingTab|safe }}
 
     <div class="mui-tabs__pane" id="trigger-variances-tab">
         <ul class="mui-tabs__bar">
@@ -108,19 +114,24 @@
                 </a>
             </li>
         </ul>
+
         <div class="mui-tabs__pane mui--is-active" id="trigger-high-low-config-tab">
             {{ ConfigTriggerHighLowTab|safe }}
         </div>
+
         <div class="mui-tabs__pane" id="trigger-variances-config-tab">
             {{ ConfigTriggerVariancesTab|safe }}
         </div>
     </div>
+
+    {{ ConfigInstalledSensorsTab|safe }}
+    {{ ConfigDisplayTab|safe }}
+    {{ ConfigCheckinServerTab|safe }}
     {{ ConfigMQTTBrokerTab|safe }}
     {{ ConfigMQTTPublisherTab|safe }}
     {{ ConfigMQTTSubscriberTab|safe }}
     {{ ConfigWUTab|safe }}
     {{ ConfigLuftdatenTab|safe }}
     {{ ConfigOSMTab|safe }}
-    {{ ConfigCheckinServerTab|safe }}
 
 {% endblock %}

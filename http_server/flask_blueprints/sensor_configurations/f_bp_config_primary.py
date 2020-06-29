@@ -21,11 +21,9 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_disabled_state, \
-    message_and_return
+from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
 html_config_primary_routes = Blueprint("html_config_primary_routes", __name__)
-running_with_root = app_cached_variables.running_with_root
 
 
 @html_config_primary_routes.route("/EditConfigMain", methods=["POST"])
@@ -49,8 +47,6 @@ def get_config_primary_tab():
     try:
         debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
         sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
-        interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
-        trigger_recording = get_html_checkbox_state(app_config_access.primary_config.enable_trigger_recording)
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
         custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
 
@@ -60,16 +56,10 @@ def get_config_primary_tab():
                                CheckedDebug=debug_logging,
                                CheckedSensorCheckIns=sensor_check_ins,
                                CheckinAddress=app_config_access.primary_config.checkin_url,
-                               CheckedInterval=interval_recording,
-                               DisabledIntervalDelay=get_html_disabled_state(interval_recording),
-                               IntervalDelay=float(app_config_access.primary_config.sleep_duration_interval),
-                               CheckedTrigger=trigger_recording,
                                CheckedCustomTempOffset=custom_temp_offset,
-                               DisabledCustomTempOffset=get_html_disabled_state(custom_temp_offset),
                                temperature_offset=float(app_config_access.primary_config.temperature_offset),
                                CheckedCustomTempComp=custom_temp_comp,
-                               CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor),
-                               DisabledCustomTempComp=get_html_disabled_state(custom_temp_comp))
+                               CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor))
     except Exception as error:
         logger.network_logger.error("Error building Primary configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="primary-config-tab")

@@ -23,21 +23,13 @@
 
         <div class="mui-checkbox" style="display: inline-block;">
             <label class="container_checkbox">
-                <input type="checkbox" name="checkbox_sensor_uptime" value="" {{ CheckedSensorUptime }}>
-                Sensor Uptime
+                <input type="checkbox" name="enable_trigger_recording" value="" {{ CheckedTrigger }}>
+                Enable Trigger Variance Recording
                 <span class="checkmark_checkbox"></span>
             </label>
         </div>
 
-        <div class="mui-textfield">
-            <label style="color: black">
-                Days between SQL writes of sensor uptime
-                <br>
-                <input style="width: 75px" type="number" step="0.01" name="days_sensor_uptime"
-                       value="{{ DaysSensorUptime }}">
-            </label>
-        </div>
-
+        <br>
         <br>
 
         <div class="mui-row" style="alignment: center">

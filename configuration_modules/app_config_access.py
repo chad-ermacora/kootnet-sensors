@@ -20,6 +20,7 @@ from operations_modules import logger
 from operations_modules.app_cached_variables import running_with_root
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
@@ -44,6 +45,7 @@ else:
         installed_sensors.update_configuration_settings_list()
 
 primary_config = CreatePrimaryConfiguration()
+interval_recording_config = CreateIntervalRecordingConfiguration()
 trigger_high_low = CreateTriggerHighLowConfiguration()
 trigger_variances = CreateTriggerVariancesConfiguration()
 display_config = CreateDisplayConfiguration()

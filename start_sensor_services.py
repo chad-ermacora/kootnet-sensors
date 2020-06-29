@@ -36,7 +36,8 @@ except Exception as import_error_raw:
 from operations_modules.software_version import start_new_version_check_server
 from configuration_modules import app_config_access
 from sensor_recording_modules.recording_interval import start_interval_recording_server
-from sensor_recording_modules.recording_triggers import start_trigger_recording_server
+from sensor_recording_modules.recording_high_low_triggers import start_trigger_high_low_recording_server
+from sensor_recording_modules.recording_triggers import start_trigger_variance_recording_server
 from operations_modules.software_checkin import start_sensor_checkin_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
@@ -53,7 +54,8 @@ dummy_sensors_installed = app_config_access.installed_sensors.kootnet_dummy_sens
 if dummy_sensors_installed or running_with_root and app_config_access.installed_sensors.no_sensors is False:
     # Start up Interval & Trigger Sensor Recording
     start_interval_recording_server()
-    start_trigger_recording_server()
+    start_trigger_high_low_recording_server()
+    start_trigger_variance_recording_server()
 
     # Start up Hardware Servers for Interaction and Display
     start_hardware_interactive_server()

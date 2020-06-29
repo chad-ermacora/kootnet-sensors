@@ -139,9 +139,12 @@ class CreateDatabaseVariables:
         self.sensor_check_in_primary_log = "primary_log"
         self.sensor_check_in_sensors_log = "sensors_log"
 
-        self.table_interval = "IntervalData"
-        self.table_trigger = "TriggerData"
         self.all_tables_datetime = "DateTime"
+
+        self.table_trigger = "TriggerData"
+        self.trigger_state = "TriggerState"
+
+        self.table_interval = "IntervalData"
         self.sensor_name = "SensorName"
         self.ip = "IP"
         self.sensor_uptime = "SensorUpTime"
@@ -183,7 +186,7 @@ class CreateDatabaseVariables:
         self.gyro_z = "Gyro_Z"
 
     def get_sensor_columns_list(self):
-        """ Returns SQL Table columns used for Interval & Trigger recording as a list. """
+        """ Returns SQL Table columns used for Interval recording as a list. """
         sensor_sql_columns = [self.sensor_name,
                               self.ip,
                               self.sensor_uptime,
@@ -249,6 +252,12 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
                  "RebootSystem": "reboot",
                  "ShutdownSystem": "shutdown -h now"}
 
+
+class _CreateEmptyThreadClass:
+    def __init__(self):
+        self.current_state = "Disabled"
+
+
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
@@ -300,14 +309,14 @@ checkin_search_primary_log = ""
 checkin_search_sensors_log = ""
 
 # Running "Service" Threads
-http_server_thread = None
-interval_recording_thread = None
-mini_display_thread = None
-interactive_sensor_thread = None
-mqtt_publisher_thread = None
-weather_underground_thread = None
-luftdaten_thread = None
-open_sense_map_thread = None
+http_server_thread = _CreateEmptyThreadClass()
+interval_recording_thread = _CreateEmptyThreadClass()
+mini_display_thread = _CreateEmptyThreadClass()
+interactive_sensor_thread = _CreateEmptyThreadClass()
+mqtt_publisher_thread = _CreateEmptyThreadClass()
+weather_underground_thread = _CreateEmptyThreadClass()
+luftdaten_thread = _CreateEmptyThreadClass()
+open_sense_map_thread = _CreateEmptyThreadClass()
 
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
@@ -324,19 +333,38 @@ restart_open_sense_map_thread = False
 html_service_restart = False
 html_sensor_reboot = False
 
-# Running Trigger Recording Threads
-trigger_thread_sensor_uptime = None
-trigger_thread_cpu_temp = None
-trigger_thread_env_temp = None
-trigger_thread_pressure = None
-trigger_thread_altitude = None
-trigger_thread_humidity = None
-trigger_thread_distance = None
-trigger_thread_lumen = None
-trigger_thread_visible_ems = None
-trigger_thread_accelerometer = None
-trigger_thread_magnetometer = None
-trigger_thread_gyroscope = None
+# Running High/Low Trigger Recording Threads
+trigger_high_low_cpu_temp = _CreateEmptyThreadClass()
+trigger_high_low_env_temp = _CreateEmptyThreadClass()
+trigger_high_low_pressure = _CreateEmptyThreadClass()
+trigger_high_low_altitude = _CreateEmptyThreadClass()
+trigger_high_low_humidity = _CreateEmptyThreadClass()
+trigger_high_low_distance = _CreateEmptyThreadClass()
+trigger_high_low_lumen = _CreateEmptyThreadClass()
+trigger_high_low_visible_colours = _CreateEmptyThreadClass()
+trigger_high_low_ultra_violet = _CreateEmptyThreadClass()
+trigger_high_low_gas = _CreateEmptyThreadClass()
+trigger_high_low_particulate_matter = _CreateEmptyThreadClass()
+trigger_high_low_accelerometer = _CreateEmptyThreadClass()
+trigger_high_low_magnetometer = _CreateEmptyThreadClass()
+trigger_high_low_gyroscope = _CreateEmptyThreadClass()
+
+# Trigger Variance threads. Re-Work? at least re-name.
+trigger_thread_sensor_uptime = _CreateEmptyThreadClass()
+trigger_thread_cpu_temp = _CreateEmptyThreadClass()
+trigger_thread_env_temp = _CreateEmptyThreadClass()
+trigger_thread_pressure = _CreateEmptyThreadClass()
+trigger_thread_altitude = _CreateEmptyThreadClass()
+trigger_thread_humidity = _CreateEmptyThreadClass()
+trigger_thread_distance = _CreateEmptyThreadClass()
+trigger_thread_lumen = _CreateEmptyThreadClass()
+trigger_thread_visible_ems = _CreateEmptyThreadClass()
+trigger_thread_ultra_violet = _CreateEmptyThreadClass()
+trigger_thread_gas = _CreateEmptyThreadClass()
+trigger_thread_particulate_matter = _CreateEmptyThreadClass()
+trigger_thread_accelerometer = _CreateEmptyThreadClass()
+trigger_thread_magnetometer = _CreateEmptyThreadClass()
+trigger_thread_gyroscope = _CreateEmptyThreadClass()
 
 # Checked before running OS or pip3 upgrades
 # Set to False when stating a upgrade, returns to True after program restarts
@@ -347,24 +375,6 @@ creating_the_reports_zip = False
 creating_the_big_zip = False
 creating_databases_zip = False
 creating_logs_zip = False
-
-# Possible Trigger "High / Low" States
-normal_state = "Normal"
-low_state = "Low"
-high_state = "High"
-
-state_sensor_uptime = normal_state
-state_cpu_temp = normal_state
-state_env_temp = normal_state
-state_pressure = normal_state
-state_altitude = normal_state
-state_humidity = normal_state
-state_distance = normal_state
-state_lumen = normal_state
-state_visible_ems = normal_state
-state_accelerometer = normal_state
-state_magnetometer = normal_state
-state_gyroscope = normal_state
 
 # Login used for remote sensors (Used in Sensor Control)
 http_login = ""

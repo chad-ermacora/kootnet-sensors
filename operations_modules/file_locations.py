@@ -70,6 +70,7 @@ mqtt_subscriber_config = sensor_config_dir + "/mqtt_subscriber_config.conf"
 mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
 display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
+interval_config = sensor_config_dir + "/interval_recording.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 trigger_high_low_config = sensor_config_dir + "/trigger_high_low.conf"
 

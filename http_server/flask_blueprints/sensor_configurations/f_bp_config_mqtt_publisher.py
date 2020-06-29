@@ -39,7 +39,7 @@ def html_set_config_mqtt_publisher():
             return_text = "MQTT Publisher Configuration Saved"
             if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
                 return_text = get_restart_service_text("MQTT Publisher")
-                if app_cached_variables.mqtt_publisher_thread is not None:
+                if app_cached_variables.mqtt_publisher_thread.current_state != "Disabled":
                     if app_cached_variables.mqtt_publisher_thread.monitored_thread.is_alive():
                         app_cached_variables.restart_mqtt_publisher_thread = True
                     else:
