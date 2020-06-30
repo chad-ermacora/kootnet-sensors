@@ -78,6 +78,8 @@ class CreateTriggerVarianceThread:
 
         self.reading_and_datetime_stamps = []
         thread_function(self._start_thread)
+        while not app_cached_variables.restart_all_trigger_threads:
+            sleep(5)
 
     def _start_thread(self):
         if self.trigger_data.enabled and not app_config_access.installed_sensors.no_sensors:
