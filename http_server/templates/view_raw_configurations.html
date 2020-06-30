@@ -13,14 +13,14 @@
             Installed Sensors
         </a></li>
         <br>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="display-config-tab">
-            Display Configuration
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="interval-recording-tab">
+            Interval Recording
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="trigger-high-low-tab">
-            Trigger High/Low
+            High/Low Trigger
         </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="trigger-variances-tab">
-            Trigger Variances
+            Variance Trigger
         </a></li>
         <br>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="mqtt-broker-tab">
@@ -43,6 +43,9 @@
             Open Sense Map
         </a></li>
         <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="display-config-tab">
+            Display
+        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="sensor-control-tab">
             Sensor Control
         </a></li>
@@ -94,6 +97,17 @@
             <h4 style="color: #00B0FF;">Location: {{ DCLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ DisplayConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="interval-recording-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Interval Recording</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ IntervalLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ IntervalConfiguration }}</span>
         </div>
     </div>
 

@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
+
 try:
     from plotly import __version__ as plotly_version
     from numpy import __version__ as numpy_version
@@ -42,17 +43,23 @@ from operations_modules.app_generic_functions import get_file_content
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_display import get_config_display_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_sensors import get_config_installed_sensors_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_installed_sensors import \
+    get_config_installed_sensors_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_luftdaten import get_config_luftdaten_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_broker import get_config_mqtt_broker_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_publisher import get_config_mqtt_publisher_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_subscriber import get_config_mqtt_subscriber_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_mqtt_subscriber import \
+    get_config_mqtt_subscriber_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_open_sense_map import get_config_osm_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_primary import get_config_primary_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_interval_recording import get_config_interval_recording_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_high_low import get_config_trigger_high_low_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import get_config_trigger_variances_tab
-from http_server.flask_blueprints.sensor_configurations.f_bp_config_weather_underground import get_config_weather_underground_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_interval_recording import \
+    get_config_interval_recording_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_high_low import \
+    get_config_trigger_high_low_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_trigger_variances import \
+    get_config_trigger_variances_tab
+from http_server.flask_blueprints.sensor_configurations.f_bp_config_weather_underground import \
+    get_config_weather_underground_tab
 from http_server.flask_blueprints.sensor_configurations.f_bp_config_checkin_server import get_config_checkin_server_tab
 
 html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
@@ -63,23 +70,25 @@ running_with_root = app_cached_variables.running_with_root
 @auth.login_required
 def html_edit_configurations():
     logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
-    return render_template("edit_configurations.html",
-                           PageURL="/ConfigurationsHTML",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           ConfigPrimaryTab=get_config_primary_tab(),
-                           ConfigIntervalRecordingTab=get_config_interval_recording_tab(),
-                           ConfigTriggerHighLowTab=get_config_trigger_high_low_tab(),
-                           ConfigTriggerVariancesTab=get_config_trigger_variances_tab(),
-                           ConfigInstalledSensorsTab=get_config_installed_sensors_tab(),
-                           ConfigDisplayTab=get_config_display_tab(),
-                           ConfigCheckinServerTab=get_config_checkin_server_tab(),
-                           ConfigMQTTBrokerTab=get_config_mqtt_broker_tab(),
-                           ConfigMQTTPublisherTab=get_config_mqtt_publisher_tab(),
-                           ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab(),
-                           ConfigWUTab=get_config_weather_underground_tab(),
-                           ConfigLuftdatenTab=get_config_luftdaten_tab(),
-                           ConfigOSMTab=get_config_osm_tab())
+    return render_template(
+        "edit_configurations.html",
+        PageURL="/ConfigurationsHTML",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        ConfigPrimaryTab=get_config_primary_tab(),
+        ConfigIntervalRecordingTab=get_config_interval_recording_tab(),
+        ConfigTriggerHighLowTab=get_config_trigger_high_low_tab(),
+        ConfigTriggerVariancesTab=get_config_trigger_variances_tab(),
+        ConfigInstalledSensorsTab=get_config_installed_sensors_tab(),
+        ConfigDisplayTab=get_config_display_tab(),
+        ConfigCheckinServerTab=get_config_checkin_server_tab(),
+        ConfigMQTTBrokerTab=get_config_mqtt_broker_tab(),
+        ConfigMQTTPublisherTab=get_config_mqtt_publisher_tab(),
+        ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab(),
+        ConfigWUTab=get_config_weather_underground_tab(),
+        ConfigLuftdatenTab=get_config_luftdaten_tab(),
+        ConfigOSMTab=get_config_osm_tab()
+    )
 
 
 @html_sensor_config_routes.route("/EditLogin", methods=["POST"])
@@ -106,46 +115,51 @@ def html_set_login_credentials():
 @auth.login_required
 def html_raw_configurations_view():
     logger.network_logger.debug("** HTML Raw Configurations viewed by " + str(request.remote_addr))
-    module_version_text = "Kootnet Sensors: " + software_version.version + "\n" + \
-                          "Flask: " + str(flask_version) + "\n" + \
-                          "Gevent: " + str(gevent_version) + "\n" + \
-                          "Greenlet: " + str(greenlet_version) + "\n" + \
-                          "Cryptography: " + str(cryptography_version) + "\n" + \
-                          "Werkzeug: " + str(werkzeug_version) + "\n" + \
-                          "Requests: " + str(requests_version) + "\n" + \
-                          "Plotly Graphing: " + str(plotly_version) + "\n" + \
-                          "Numpy: " + str(numpy_version) + "\n"
+    module_version_text = \
+        "Kootnet Sensors: " + software_version.version + "\n" + \
+        "Flask: " + str(flask_version) + "\n" + \
+        "Gevent: " + str(gevent_version) + "\n" + \
+        "Greenlet: " + str(greenlet_version) + "\n" + \
+        "Cryptography: " + str(cryptography_version) + "\n" + \
+        "Werkzeug: " + str(werkzeug_version) + "\n" + \
+        "Requests: " + str(requests_version) + "\n" + \
+        "Plotly Graphing: " + str(plotly_version) + "\n" + \
+        "Numpy: " + str(numpy_version) + "\n"
 
-    return render_template("view_raw_configurations.html",
-                           PageURL="/HTMLRawConfigurations",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           ModuleVersions=module_version_text,
-                           MainConfiguration=str(get_file_content(file_locations.primary_config)),
-                           MCLocation=file_locations.primary_config,
-                           InstalledSensorsConfiguration=str(get_file_content(file_locations.installed_sensors_config)),
-                           ISLocation=file_locations.installed_sensors_config,
-                           DisplayConfiguration=str(get_file_content(file_locations.display_config)),
-                           DCLocation=file_locations.display_config,
-                           TriggerHighLowConfiguration=str(get_file_content(file_locations.trigger_high_low_config)),
-                           THLLocation=file_locations.trigger_high_low_config,
-                           TriggerConfiguration=str(get_file_content(file_locations.trigger_variances_config)),
-                           TVLocation=file_locations.trigger_variances_config,
-                           SensorControlConfiguration=str(get_file_content(file_locations.html_sensor_control_config)),
-                           SCCLocation=file_locations.html_sensor_control_config,
-                           NetworkConfiguration=str(get_file_content(file_locations.dhcpcd_config_file)),
-                           NCLocation=file_locations.dhcpcd_config_file,
-                           WiFiConfiguration=str(get_file_content(file_locations.wifi_config_file)),
-                           WCLocation=file_locations.wifi_config_file,
-                           BrokerConfiguration=str(get_file_content(file_locations.mqtt_broker_config)),
-                           BrokerCLocation=file_locations.mqtt_broker_config,
-                           MQTTPublisherConfiguration=str(get_file_content(file_locations.mqtt_publisher_config)),
-                           MQTTPublisherCLocation=file_locations.mqtt_publisher_config,
-                           MQTTSubscriberConfiguration=str(get_file_content(file_locations.mqtt_subscriber_config)),
-                           MQTTSubscriberCLocation=file_locations.mqtt_subscriber_config,
-                           WeatherUndergroundConfiguration=str(get_file_content(file_locations.weather_underground_config)),
-                           WUCLocation=file_locations.weather_underground_config,
-                           LuftdatenConfiguration=str(get_file_content(file_locations.luftdaten_config)),
-                           LCLocation=file_locations.luftdaten_config,
-                           OpenSenseMapConfiguration=str(get_file_content(file_locations.osm_config)),
-                           OSMCLocation=file_locations.osm_config)
+    return render_template(
+        "view_raw_configurations.html",
+        PageURL="/HTMLRawConfigurations",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        ModuleVersions=module_version_text,
+        MainConfiguration=str(get_file_content(file_locations.primary_config)),
+        MCLocation=file_locations.primary_config,
+        InstalledSensorsConfiguration=str(get_file_content(file_locations.installed_sensors_config)),
+        ISLocation=file_locations.installed_sensors_config,
+        DisplayConfiguration=str(get_file_content(file_locations.display_config)),
+        DCLocation=file_locations.display_config,
+        IntervalConfiguration=str(get_file_content(file_locations.interval_config)),
+        IntervalLocation=file_locations.interval_config,
+        TriggerHighLowConfiguration=str(get_file_content(file_locations.trigger_high_low_config)),
+        THLLocation=file_locations.trigger_high_low_config,
+        TriggerConfiguration=str(get_file_content(file_locations.trigger_variances_config)),
+        TVLocation=file_locations.trigger_variances_config,
+        SensorControlConfiguration=str(get_file_content(file_locations.html_sensor_control_config)),
+        SCCLocation=file_locations.html_sensor_control_config,
+        NetworkConfiguration=str(get_file_content(file_locations.dhcpcd_config_file)),
+        NCLocation=file_locations.dhcpcd_config_file,
+        WiFiConfiguration=str(get_file_content(file_locations.wifi_config_file)),
+        WCLocation=file_locations.wifi_config_file,
+        BrokerConfiguration=str(get_file_content(file_locations.mqtt_broker_config)),
+        BrokerCLocation=file_locations.mqtt_broker_config,
+        MQTTPublisherConfiguration=str(get_file_content(file_locations.mqtt_publisher_config)),
+        MQTTPublisherCLocation=file_locations.mqtt_publisher_config,
+        MQTTSubscriberConfiguration=str(get_file_content(file_locations.mqtt_subscriber_config)),
+        MQTTSubscriberCLocation=file_locations.mqtt_subscriber_config,
+        WeatherUndergroundConfiguration=str(get_file_content(file_locations.weather_underground_config)),
+        WUCLocation=file_locations.weather_underground_config,
+        LuftdatenConfiguration=str(get_file_content(file_locations.luftdaten_config)),
+        LCLocation=file_locations.luftdaten_config,
+        OpenSenseMapConfiguration=str(get_file_content(file_locations.osm_config)),
+        OSMCLocation=file_locations.osm_config
+    )
