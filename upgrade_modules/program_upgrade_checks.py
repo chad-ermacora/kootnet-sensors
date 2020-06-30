@@ -22,6 +22,7 @@ from upgrade_modules.old_configuration_conversions import generic_upgrade_functi
 from upgrade_modules.old_configuration_conversions.alpha_to_beta import upgrade_alpha_to_beta
 from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30, \
     upgrade_beta_30_x_to_30_90, upgrade_beta_30_90_to_30_138
+from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31_21
 
 
 def run_configuration_upgrade_checks():
@@ -56,15 +57,15 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 31:
+                if previous_version.minor_version < 21:
+                    no_changes = False
+                    upgrade_beta_30_x_to_31_21()
                 if previous_version.minor_version < 18:
                     generic_upgrade_functions.reset_trigger_high_low_config(log_reset=False)
             elif previous_version.feature_version == 30:
-                if previous_version.minor_version < 138:
-                    no_changes = False
-                    upgrade_beta_30_90_to_30_138()
-                if previous_version.minor_version < 90:
-                    no_changes = False
-                    upgrade_beta_30_x_to_30_90()
+                no_changes = False
+                generic_upgrade_functions.reset_trigger_high_low_config(log_reset=False)
+                upgrade_beta_30_x_to_31_21()
             elif previous_version.feature_version == 29:
                 no_changes = False
                 upgrade_beta_29_to_30()
