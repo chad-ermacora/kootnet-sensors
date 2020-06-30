@@ -238,7 +238,6 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
     return temperature
 
 
-# Todo: Have it return the difference between RAW temp + Adjustment.  Test it
 def get_temperature_correction():
     raw_and_corrected = get_sensor_temperature(get_both=True)
     temp_difference = 0.0

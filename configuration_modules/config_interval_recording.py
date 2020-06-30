@@ -32,7 +32,8 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             "Enable Interval Recording", "Recording Interval in Seconds * Caution *", "Enable Sensor Uptime",
             "Enable CPU Temperature", "Enable Environmental Temperature", "Enable Pressure", "Enable Humidity",
             "Enable Altitude", "Enable Distance", "Enable Lumen", "Enable Colour", "Enable Ultra Violet", "Enable GAS",
-            "Enable Particulate Matter", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope"]
+            "Enable Particulate Matter", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope"
+        ]
 
         self.enable_interval_recording = 1
         self.sleep_duration_interval = 300.0

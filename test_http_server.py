@@ -294,7 +294,7 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
         self.gyroscope_y_variance = 65.72
         self.gyroscope_z_variance = 65.72
         self.gyroscope_wait_seconds = 65.72
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.sensor_uptime_enabled = 1
@@ -373,7 +373,7 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
         self.gyroscope_y_variance = 84.16
         self.gyroscope_z_variance = 84.16
         self.gyroscope_wait_seconds = 84.16
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateSensorControlConfigurationTest(CreateSensorControlConfiguration):
