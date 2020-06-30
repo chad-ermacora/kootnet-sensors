@@ -55,12 +55,8 @@ def html_system_information():
 
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
 
-    enable_interval_recording = app_config_access.interval_recording_config.enable_interval_recording
     enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
     enable_trigger_recording = app_config_access.trigger_variances.enable_trigger_variance
-    enable_trigger_button = "disabled"
-    if enable_high_low_trigger_recording or enable_trigger_recording:
-        enable_trigger_button = ""
     return render_template(
         "sensor_information.html",
         PageURL="/SensorInformation",
@@ -82,39 +78,22 @@ def html_system_information():
         TotalRAM=total_ram_entry,
         DiskUsage=sensor_access.get_disk_usage_percent(),
         InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
-        IntervalRecording=_get_text_check_enabled(enable_interval_recording),
+        IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
         TriggerHighLowRecording=_get_text_check_enabled(enable_high_low_trigger_recording),
         TriggerVarianceRecording=_get_text_check_enabled(enable_trigger_recording),
         DebugLogging=debug_logging,
         SupportedDisplay=app_cached_variables.mini_display_thread.current_state,
         OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,
         WeatherUndergroundService=app_cached_variables.weather_underground_thread.current_state,
-        LuftdatenService=app_cached_variables.luftdaten_thread.current_state,
-        TriggerStatusButtonDisabled=enable_trigger_button
+        LuftdatenService=app_cached_variables.luftdaten_thread.current_state
     )
 
 
-# TODO: Return window of all trigger threads and their status
 @html_sensor_info_readings_routes.route("/SensorTriggerStatus")
 def html_trigger_status():
     return render_template(
-        "recording_sql_status.html",
+        "trigger_recording_status.html",
         PageURL="/SensorTriggerStatus",
-        IntervalSensorUptime="WIP",
-        IntervalCPUTemp="WIP",
-        IntervalEnvTemp="WIP",
-        IntervalPressure="WIP",
-        IntervalAltitude="WIP",
-        IntervalHumidity="WIP",
-        IntervalDistance="WIP",
-        IntervalLumen="WIP",
-        IntervalVisibleEMS="WIP",
-        IntervalUltraViolet="WIP",
-        IntervalGAS="WIP",
-        IntervalPM="WIP",
-        IntervalAccelerometer="WIP",
-        IntervalMagnetometer="WIP",
-        IntervalGyroscope="WIP",
         TriggerVarianceCPUTemp=app_cached_variables.trigger_variance_thread_cpu_temp.current_state,
         TriggerVarianceEnvTemp=app_cached_variables.trigger_variance_thread_env_temp.current_state,
         TriggerVariancePressure=app_cached_variables.trigger_variance_thread_pressure.current_state,
