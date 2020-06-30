@@ -24,47 +24,45 @@ from operations_modules.app_cached_variables import no_sensor_present, command_d
     CreateNetworkGetCommands, CreateNetworkSetCommands
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
+from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 
+
 # TODO: Add missing Configurations
-
-
 class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
     def __init__(self):
         CreatePrimaryConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Enable = 1 & Disable = 0
 10165 = HTTPS Port Number (Default is 10065)
 0 = Enable Debug Logging
-1 = Interval Recording to SQL Database
-1 = Trigger Recording to SQL Database
-227.27 = Recording Interval in Seconds * Caution *
 1 = Enable Custom Temperature Offset
 -11.23 = Current Temperature Offset
 1 = Enable Temperature Compensation Factor
-0.29 = Temperature Compensation Factor"""
+0.29 = Temperature Compensation Factor
+1 = Enable Sensor Check-Ins
+server.dragonwarz.net:10065 = Checkin URL"""
 
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
         self.enable_debug_logging = 1
-        self.enable_interval_recording = 1
-        self.enable_trigger_recording = 1
-        self.sleep_duration_interval = 245.11
         self.enable_custom_temp = 1
         self.temperature_offset = 11.11
+        self.enable_checkin = 1
+        self.checkin_url = "test1"
         self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.web_portal_port = 12289
         self.enable_debug_logging = 0
-        self.enable_interval_recording = 0
-        self.enable_trigger_recording = 0
-        self.sleep_duration_interval = 320.58
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
+        self.enable_checkin = 0
+        self.checkin_url = "test2"
         self.update_configuration_settings_list()
 
 
@@ -94,7 +92,8 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
 1 = Pimoroni 11x7 LED Matrix
 0 = Pimoroni 10.96'' SPI Colour LCD (160x80)
 1 = Pimoroni 1.12'' Mono OLED (128x128, white/black)
-0 = Sensirion SPS30"""
+0 = Sensirion SPS30
+1 = W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"""
 
     def set_settings_for_test1(self):
         self.linux_system = 0
@@ -120,6 +119,8 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 0
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
+        self.sensirion_sps30 = 0
+        self.w1_therm_sensor = 0
         self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
@@ -146,6 +147,8 @@ class CreateInstalledSensorsConfigurationTest(CreateInstalledSensorsConfiguratio
         self.pimoroni_matrix_11x7 = 1
         self.pimoroni_st7735 = 1
         self.pimoroni_mono_oled_luma = 1
+        self.sensirion_sps30 = 1
+        self.w1_therm_sensor = 1
         self.update_configuration_settings_list()
 
 
@@ -153,8 +156,7 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
     def __init__(self):
         CreateTriggerVariancesConfiguration.__init__(self, load_from_file=False)
         self.static_config_test = """Configure Variance Settings.  0 = Disabled, 1 = Enabled
-1 = Enable Sensor Uptime
-22.12 = Seconds between SQL Writes of Sensor Uptime
+1 = Enable Trigger Variances
 1 = Enable CPU Temperature
 345.0 = CPU Temperature variance
 122.0 = Seconds between 'CPU Temperature' readings
@@ -218,8 +220,7 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
 """
 
     def set_settings_for_test1(self):
-        self.sensor_uptime_enabled = 0
-        self.sensor_uptime_wait_seconds = 240.729
+        self.enable_trigger_variance = 0
 
         self.cpu_temperature_enabled = 0
         self.cpu_temperature_variance = 65.72
@@ -297,8 +298,7 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
         self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
-        self.sensor_uptime_enabled = 1
-        self.sensor_uptime_wait_seconds = 658.169
+        self.enable_trigger_variance = 1
 
         self.cpu_temperature_enabled = 1
         self.cpu_temperature_variance = 84.16
@@ -809,6 +809,8 @@ def check_no_sensor_return(sensor_data, data_name):
 
 primary_config_test = CreatePrimaryConfigurationTest()
 installed_sensors_config_test = CreateInstalledSensorsConfigurationTest()
+interval_recording_config_test = CreateIntervalRecordingConfiguration()
+trigger_high_low_config_test = CreateTriggerHighLowConfiguration()
 trigger_variances_config_test = CreateTriggerVariancesConfigurationTest()
 sensor_control_config_test = CreateSensorControlConfigurationTest()
 weather_underground_config_test = CreateWeatherUndergroundConfigurationTest()
@@ -819,15 +821,17 @@ sensor_address = "localhost"
 
 remote_set = CreateNetworkSetCommands()
 remote_get = CreateNetworkGetCommands()
-sensor_get_commands = [remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
-                       remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,
-                       remote_get.environmental_temp, remote_get.env_temp_offset, remote_get.pressure,
-                       remote_get.altitude, remote_get.humidity, remote_get.distance, remote_get.all_gas,
-                       remote_get.gas_index, remote_get.gas_oxidised, remote_get.gas_reduced, remote_get.gas_nh3,
-                       remote_get.all_particulate_matter, remote_get.pm_1, remote_get.pm_2_5, remote_get.pm_10,
-                       remote_get.lumen, remote_get.electromagnetic_spectrum, remote_get.all_ultra_violet,
-                       remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
-                       remote_get.magnetometer_xyz, remote_get.gyroscope_xyz]
+sensor_get_commands = [
+    remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
+    remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,
+    remote_get.environmental_temp, remote_get.env_temp_offset, remote_get.pressure,
+    remote_get.altitude, remote_get.humidity, remote_get.distance, remote_get.all_gas,
+    remote_get.gas_index, remote_get.gas_oxidised, remote_get.gas_reduced, remote_get.gas_nh3,
+    remote_get.all_particulate_matter, remote_get.pm_1, remote_get.pm_2_5, remote_get.pm_10,
+    remote_get.lumen, remote_get.electromagnetic_spectrum, remote_get.all_ultra_violet,
+    remote_get.ultra_violet_a, remote_get.ultra_violet_b, remote_get.accelerometer_xyz,
+    remote_get.magnetometer_xyz, remote_get.gyroscope_xyz
+]
 
 if __name__ == '__main__':
     if get_http_sensor_reading(sensor_address, timeout=5) == "OK":

@@ -251,7 +251,6 @@ class _SingleTriggerThread:
             logger.primary_logger.error(log_msg + "' Recording Failure: " + str(error))
 
 
-# TODO: Recording works just fine, but need to add a state for each reading in the readings
 class _MultiTriggerThread:
     def __init__(self, custom_trigger_variables):
         self.current_state = []

@@ -318,21 +318,6 @@ weather_underground_thread = _CreateEmptyThreadClass()
 luftdaten_thread = _CreateEmptyThreadClass()
 open_sense_map_thread = _CreateEmptyThreadClass()
 
-# If these variables are set to True, it will restart the corresponding thread
-# After the thread restarts, it sets this back to False
-restart_interval_recording_thread = False
-restart_all_trigger_threads = False
-restart_mini_display_thread = False
-restart_mqtt_publisher_thread = False
-restart_mqtt_subscriber_thread = False
-restart_weather_underground_thread = False
-restart_luftdaten_thread = False
-restart_open_sense_map_thread = False
-
-# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
-html_service_restart = False
-html_sensor_reboot = False
-
 # Running High/Low Trigger Recording Threads
 trigger_high_low_cpu_temp = _CreateEmptyThreadClass()
 trigger_high_low_env_temp = _CreateEmptyThreadClass()
@@ -350,21 +335,35 @@ trigger_high_low_magnetometer = _CreateEmptyThreadClass()
 trigger_high_low_gyroscope = _CreateEmptyThreadClass()
 
 # Trigger Variance threads. Re-Work? at least re-name.
-trigger_thread_sensor_uptime = _CreateEmptyThreadClass()
-trigger_thread_cpu_temp = _CreateEmptyThreadClass()
-trigger_thread_env_temp = _CreateEmptyThreadClass()
-trigger_thread_pressure = _CreateEmptyThreadClass()
-trigger_thread_altitude = _CreateEmptyThreadClass()
-trigger_thread_humidity = _CreateEmptyThreadClass()
-trigger_thread_distance = _CreateEmptyThreadClass()
-trigger_thread_lumen = _CreateEmptyThreadClass()
-trigger_thread_visible_ems = _CreateEmptyThreadClass()
-trigger_thread_ultra_violet = _CreateEmptyThreadClass()
-trigger_thread_gas = _CreateEmptyThreadClass()
-trigger_thread_particulate_matter = _CreateEmptyThreadClass()
-trigger_thread_accelerometer = _CreateEmptyThreadClass()
-trigger_thread_magnetometer = _CreateEmptyThreadClass()
-trigger_thread_gyroscope = _CreateEmptyThreadClass()
+trigger_variance_thread_cpu_temp = _CreateEmptyThreadClass()
+trigger_variance_thread_env_temp = _CreateEmptyThreadClass()
+trigger_variance_thread_pressure = _CreateEmptyThreadClass()
+trigger_variance_thread_altitude = _CreateEmptyThreadClass()
+trigger_variance_thread_humidity = _CreateEmptyThreadClass()
+trigger_variance_thread_distance = _CreateEmptyThreadClass()
+trigger_variance_thread_lumen = _CreateEmptyThreadClass()
+trigger_variance_thread_visible_ems = _CreateEmptyThreadClass()
+trigger_variance_thread_ultra_violet = _CreateEmptyThreadClass()
+trigger_variance_thread_gas = _CreateEmptyThreadClass()
+trigger_variance_thread_particulate_matter = _CreateEmptyThreadClass()
+trigger_variance_thread_accelerometer = _CreateEmptyThreadClass()
+trigger_variance_thread_magnetometer = _CreateEmptyThreadClass()
+trigger_variance_thread_gyroscope = _CreateEmptyThreadClass()
+
+# If these variables are set to True, it will restart the corresponding thread
+# After the thread restarts, it sets this back to False
+restart_interval_recording_thread = False
+restart_all_trigger_threads = False
+restart_mini_display_thread = False
+restart_mqtt_publisher_thread = False
+restart_mqtt_subscriber_thread = False
+restart_weather_underground_thread = False
+restart_luftdaten_thread = False
+restart_open_sense_map_thread = False
+
+# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
+html_service_restart = False
+html_sensor_reboot = False
 
 # Checked before running OS or pip3 upgrades
 # Set to False when stating a upgrade, returns to True after program restarts

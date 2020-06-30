@@ -48,7 +48,7 @@ def _trigger_recording():
                 variance=trigger_variances.cpu_temperature_variance,
                 sensor_wait_seconds=trigger_variances.cpu_temperature_wait_seconds
             )
-            app_cached_variables.trigger_thread_cpu_temp = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_cpu_temp = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[cpu_temp_data]
             )
         if trigger_variances.env_temperature_enabled:
@@ -60,7 +60,7 @@ def _trigger_recording():
                 variance=trigger_variances.env_temperature_variance,
                 sensor_wait_seconds=trigger_variances.env_temperature_wait_seconds
             )
-            app_cached_variables.trigger_thread_env_temp = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_env_temp = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[env_temp_data]
             )
         if trigger_variances.pressure_enabled:
@@ -72,7 +72,7 @@ def _trigger_recording():
                 variance=trigger_variances.pressure_variance,
                 sensor_wait_seconds=trigger_variances.pressure_wait_seconds
             )
-            app_cached_variables.trigger_thread_pressure = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_pressure = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[pressure_data]
             )
         if trigger_variances.altitude_enabled:
@@ -84,7 +84,7 @@ def _trigger_recording():
                 variance=trigger_variances.altitude_variance,
                 sensor_wait_seconds=trigger_variances.altitude_wait_seconds
             )
-            app_cached_variables.trigger_thread_altitude = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_altitude = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[altitude_data]
             )
         if trigger_variances.humidity_enabled:
@@ -96,7 +96,7 @@ def _trigger_recording():
                 variance=trigger_variances.humidity_variance,
                 sensor_wait_seconds=trigger_variances.humidity_wait_seconds
             )
-            app_cached_variables.trigger_thread_humidity = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_humidity = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[humidity_data]
             )
         if trigger_variances.distance_enabled:
@@ -108,7 +108,7 @@ def _trigger_recording():
                 variance=trigger_variances.distance_variance,
                 sensor_wait_seconds=trigger_variances.distance_wait_seconds
             )
-            app_cached_variables.trigger_thread_distance = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_distance = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[distance_data]
             )
         if trigger_variances.lumen_enabled:
@@ -120,7 +120,7 @@ def _trigger_recording():
                 variance=trigger_variances.lumen_variance,
                 sensor_wait_seconds=trigger_variances.lumen_wait_seconds
             )
-            app_cached_variables.trigger_thread_lumen = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_lumen = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[lumen_data]
             )
         if trigger_variances.colour_enabled:
@@ -160,7 +160,7 @@ def _trigger_recording():
                 sensor_wait_seconds=trigger_variances.colour_wait_seconds,
                 num_of_readings=number_of_readings
             )
-            app_cached_variables.trigger_thread_visible_ems = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_visible_ems = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[visible_ems_data]
             )
         if trigger_variances.accelerometer_enabled:
@@ -182,7 +182,7 @@ def _trigger_recording():
                 sensor_wait_seconds=trigger_variances.accelerometer_wait_seconds,
                 num_of_readings=3
             )
-            app_cached_variables.trigger_thread_accelerometer = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_accelerometer = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[accelerometer_data]
             )
         if trigger_variances.magnetometer_enabled:
@@ -202,7 +202,7 @@ def _trigger_recording():
                 sensor_wait_seconds=trigger_variances.magnetometer_wait_seconds,
                 num_of_readings=3
             )
-            app_cached_variables.trigger_thread_magnetometer = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_magnetometer = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[magnetometer_data]
             )
         if trigger_variances.gyroscope_enabled:
@@ -222,7 +222,7 @@ def _trigger_recording():
                 sensor_wait_seconds=trigger_variances.gyroscope_wait_seconds,
                 num_of_readings=3
             )
-            app_cached_variables.trigger_thread_gyroscope = CreateMonitoredThread(
+            app_cached_variables.trigger_variance_thread_gyroscope = CreateMonitoredThread(
                 CreateTriggerVarianceThread, args=[gyroscope_data]
             )
         logger.primary_logger.info(" -- Variance Trigger Recording Threads Started")

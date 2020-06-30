@@ -30,7 +30,21 @@ database_variables = app_cached_variables.database_variables
 
 class CreateHasSensorVariables:
     def __init__(self):
-        self._set_all_has_sensor_states(0)
+        self.has_cpu_temperature = 0
+        self.has_env_temperature = 0
+        self.has_pressure = 0
+        self.has_altitude = 0
+        self.has_humidity = 0
+        self.has_distance = 0
+        self.has_gas = 0
+        self.has_particulate_matter = 0
+        self.has_ultra_violet = 0
+        self.has_lumen = 0
+        self.has_color = 0
+        self.has_acc = 0
+        self.has_mag = 0
+        self.has_gyro = 0
+
         if sensor_access.get_cpu_temperature() != app_cached_variables.no_sensor_present:
             self.has_cpu_temperature = 1
         if sensor_access.get_sensor_temperature() != app_cached_variables.no_sensor_present:
@@ -64,23 +78,6 @@ class CreateHasSensorVariables:
             self.has_mag = 1
         if sensor_access.get_gyroscope_xyz() != app_cached_variables.no_sensor_present:
             self.has_gyro = 1
-
-    # TODO: Break up multi-sensors like PM & GAS as started below
-    def _set_all_has_sensor_states(self, set_sensor_state_as):
-        self.has_cpu_temperature = set_sensor_state_as
-        self.has_env_temperature = set_sensor_state_as
-        self.has_pressure = set_sensor_state_as
-        self.has_altitude = set_sensor_state_as
-        self.has_humidity = set_sensor_state_as
-        self.has_distance = set_sensor_state_as
-        self.has_gas = set_sensor_state_as
-        self.has_particulate_matter = set_sensor_state_as
-        self.has_ultra_violet = set_sensor_state_as
-        self.has_lumen = set_sensor_state_as
-        self.has_color = set_sensor_state_as
-        self.has_acc = set_sensor_state_as
-        self.has_mag = set_sensor_state_as
-        self.has_gyro = set_sensor_state_as
 
 
 def start_interval_recording_server():
