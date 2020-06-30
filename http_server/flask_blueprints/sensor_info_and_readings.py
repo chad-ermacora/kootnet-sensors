@@ -99,7 +99,6 @@ def html_trigger_status():
     return render_template(
         "trigger_recording_status.html",
         PageURL="/SensorTriggerStatus",
-        TriggerVarianceSensorUptime=app_cached_variables.trigger_thread_sensor_uptime.current_state,
         TriggerVarianceCPUTemp=app_cached_variables.trigger_thread_cpu_temp.current_state,
         TriggerVarianceEnvTemp=app_cached_variables.trigger_thread_env_temp.current_state,
         TriggerVariancePressure=app_cached_variables.trigger_thread_pressure.current_state,

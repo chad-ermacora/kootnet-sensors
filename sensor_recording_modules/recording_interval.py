@@ -109,7 +109,7 @@ def _interval_recording():
         except Exception as error:
             logger.primary_logger.error("Interval Recording Failure: " + str(error))
 
-        sleep_duration_interval = app_config_access.primary_config.sleep_duration_interval
+        sleep_duration_interval = app_config_access.interval_recording_config.sleep_duration_interval
         sleep_fraction_interval = 5
         sleep_total = 0
         while sleep_total < sleep_duration_interval and not app_cached_variables.restart_interval_recording_thread:

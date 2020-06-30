@@ -28,21 +28,18 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 11
-        self.config_settings_names = ["HTTPS Port Number (Default is 10065)", "Enable Debug Logging",
-                                      "Interval Recording to SQL Database", "Trigger Recording to SQL Database",
-                                      "Recording Interval in Seconds * Caution *", "Enable Custom Temperature Offset",
-                                      "Current Temperature Offset", "Enable Temperature Compensation Factor",
-                                      "Temperature Compensation Factor", "Enable Sensor Check-Ins", "Checkin URL"]
+        self.valid_setting_count = 8
+        self.config_settings_names = [
+            "HTTPS Port Number (Default is 10065)", "Enable Debug Logging", "Enable Custom Temperature Offset",
+            "Current Temperature Offset", "Enable Temperature Compensation Factor", "Temperature Compensation Factor",
+            "Enable Sensor Check-Ins", "Checkin URL"
+        ]
 
         self.enable_checkin = 1
         self.sensor_id = app_cached_variables.tmp_sensor_id
         self.checkin_url = "server.dragonwarz.net:10065"
 
         self.enable_debug_logging = 0
-        self.enable_interval_recording = 1
-        self.enable_trigger_recording = 0
-        self.sleep_duration_interval = 300.0
 
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
@@ -66,24 +63,12 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
 
         self.enable_debug_logging = 0
-        self.enable_interval_recording = 0
-        self.enable_trigger_recording = 0
         self.enable_custom_temp = 0
         self.enable_temperature_comp_factor = 0
         self.enable_checkin = 0
 
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
-
-        if html_request.form.get("enable_interval_recording") is not None:
-            self.enable_interval_recording = 1
-
-        if html_request.form.get("interval_delay_seconds") is not None:
-            new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
-            self.sleep_duration_interval = new_sleep_duration
-
-        if html_request.form.get("enable_trigger_recording") is not None:
-            self.enable_trigger_recording = 1
 
         if html_request.form.get("enable_custom_temp_offset") is not None:
             new_temp = float(html_request.form.get("custom_temperature_offset"))
@@ -108,25 +93,22 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.web_portal_port), str(self.enable_debug_logging),
-                                str(self.enable_interval_recording), str(self.enable_trigger_recording),
-                                str(self.sleep_duration_interval), str(self.enable_custom_temp),
-                                str(self.temperature_offset), str(self.enable_temperature_comp_factor),
-                                str(self.temperature_comp_factor), str(self.enable_checkin), str(self.checkin_url)]
+        self.config_settings = [
+            str(self.web_portal_port), str(self.enable_debug_logging), str(self.enable_custom_temp),
+            str(self.temperature_offset), str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor),
+            str(self.enable_checkin), str(self.checkin_url)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:
             self.web_portal_port = int(self.config_settings[0])
             self.enable_debug_logging = int(self.config_settings[1])
-            self.enable_interval_recording = int(self.config_settings[2])
-            self.enable_trigger_recording = int(self.config_settings[3])
-            self.sleep_duration_interval = float(self.config_settings[4])
-            self.enable_custom_temp = int(self.config_settings[5])
-            self.temperature_offset = float(self.config_settings[6])
-            self.enable_temperature_comp_factor = int(self.config_settings[7])
-            self.temperature_comp_factor = float(self.config_settings[8])
-            self.enable_checkin = int(self.config_settings[9])
-            self.checkin_url = self.config_settings[10].strip()
+            self.enable_custom_temp = int(self.config_settings[2])
+            self.temperature_offset = float(self.config_settings[3])
+            self.enable_temperature_comp_factor = int(self.config_settings[4])
+            self.temperature_comp_factor = float(self.config_settings[5])
+            self.enable_checkin = int(self.config_settings[6])
+            self.checkin_url = self.config_settings[7].strip()
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))
