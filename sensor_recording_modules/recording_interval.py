@@ -121,17 +121,20 @@ def get_interval_sensor_readings():
     """
     sensor_types = [app_cached_variables.database_variables.all_tables_datetime]
     sensor_readings = [datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]]
+    interval_recording_config = app_config_access.interval_recording_config
     if app_config_access.installed_sensors.linux_system:
         sensor_types += [app_cached_variables.database_variables.sensor_name,
-                         app_cached_variables.database_variables.ip,
-                         app_cached_variables.database_variables.sensor_uptime]
+                         app_cached_variables.database_variables.ip]
         sensor_readings += [sensor_access.get_hostname(),
-                            sensor_access.get_ip(),
-                            sensor_access.get_uptime_minutes()]
-    if available_sensors.has_cpu_temperature:
+                            sensor_access.get_ip()]
+        if interval_recording_config.sensor_uptime_enabled:
+            sensor_types += [app_cached_variables.database_variables.sensor_uptime]
+            sensor_readings += [sensor_access.get_uptime_minutes()]
+
+    if available_sensors.has_cpu_temperature and interval_recording_config.cpu_temperature_enabled:
         sensor_types.append(app_cached_variables.database_variables.system_temperature)
         sensor_readings.append(sensor_access.get_cpu_temperature())
-    if available_sensors.has_env_temperature:
+    if available_sensors.has_env_temperature and interval_recording_config.env_temperature_enabled:
         sensor_types.append(app_cached_variables.database_variables.env_temperature)
         sensor_types.append(app_cached_variables.database_variables.env_temperature_offset)
         sensor_readings.append(sensor_access.get_sensor_temperature())
@@ -140,46 +143,46 @@ def get_interval_sensor_readings():
             sensor_readings.append(sensor_access.get_temperature_correction())
         else:
             sensor_readings.append("0.0")
-    if available_sensors.has_pressure:
+    if available_sensors.has_pressure and interval_recording_config.pressure_enabled:
         sensor_types.append(app_cached_variables.database_variables.pressure)
         sensor_readings.append(sensor_access.get_pressure())
-    if available_sensors.has_altitude:
+    if available_sensors.has_altitude and interval_recording_config.altitude_enabled:
         sensor_types.append(app_cached_variables.database_variables.altitude)
         sensor_readings.append(sensor_access.get_altitude())
-    if available_sensors.has_humidity:
+    if available_sensors.has_humidity and interval_recording_config.humidity_enabled:
         sensor_types.append(app_cached_variables.database_variables.humidity)
         sensor_readings.append(sensor_access.get_humidity())
-    if available_sensors.has_distance:
+    if available_sensors.has_distance and interval_recording_config.distance_enabled:
         sensor_types.append(app_cached_variables.database_variables.distance)
         sensor_readings.append(sensor_access.get_distance())
-    if available_sensors.has_gas:
+    if available_sensors.has_gas and interval_recording_config.gas_enabled:
         gas_readings = sensor_access.get_gas(return_as_dictionary=True)
         for text_name, item_value in gas_readings.items():
             if item_value != app_cached_variables.no_sensor_present:
                 sensor_types.append(text_name)
                 sensor_readings.append(item_value)
-    if available_sensors.has_particulate_matter:
+    if available_sensors.has_particulate_matter and interval_recording_config.particulate_matter_enabled:
         pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         for text_name, item_value in pm_readings.items():
             if item_value != app_cached_variables.no_sensor_present:
                 sensor_types.append(text_name)
                 sensor_readings.append(item_value)
-    if available_sensors.has_lumen:
+    if available_sensors.has_lumen and interval_recording_config.lumen_enabled:
         sensor_types.append(app_cached_variables.database_variables.lumen)
         sensor_readings.append(sensor_access.get_lumen())
-    if available_sensors.has_color:
+    if available_sensors.has_color and interval_recording_config.colour_enabled:
         ems_colours = sensor_access.get_ems_colors(return_as_dictionary=True)
         for text_name, item_value in ems_colours.items():
             if item_value != app_cached_variables.no_sensor_present:
                 sensor_types.append(text_name)
                 sensor_readings.append(item_value)
-    if available_sensors.has_ultra_violet:
+    if available_sensors.has_ultra_violet and interval_recording_config.ultra_violet_enabled:
         uv_reading = sensor_access.get_ultra_violet(return_as_dictionary=True)
         for text_name, item_value in uv_reading.items():
             if item_value != app_cached_variables.no_sensor_present:
                 sensor_types.append(text_name)
                 sensor_readings.append(item_value)
-    if available_sensors.has_acc:
+    if available_sensors.has_acc and interval_recording_config.accelerometer_enabled:
         accelerometer_readings = sensor_access.get_accelerometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.acc_x,
@@ -188,7 +191,7 @@ def get_interval_sensor_readings():
         sensor_readings += [accelerometer_readings[0],
                             accelerometer_readings[1],
                             accelerometer_readings[2]]
-    if available_sensors.has_mag:
+    if available_sensors.has_mag and interval_recording_config.magnetometer_enabled:
         magnetometer_readings = sensor_access.get_magnetometer_xyz()
 
         sensor_types += [app_cached_variables.database_variables.mag_x,
@@ -197,7 +200,7 @@ def get_interval_sensor_readings():
         sensor_readings += [magnetometer_readings[0],
                             magnetometer_readings[1],
                             magnetometer_readings[2]]
-    if available_sensors.has_gyro:
+    if available_sensors.has_gyro and interval_recording_config.gyroscope_enabled:
         gyroscope_readings = sensor_access.get_gyroscope_xyz()
 
         sensor_types += [app_cached_variables.database_variables.gyro_x,
