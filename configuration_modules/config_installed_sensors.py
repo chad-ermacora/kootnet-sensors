@@ -89,6 +89,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
         self.__init__(load_from_file=False)
         try:
+            self.linux_system = 0
             if html_request.form.get("linux_system") is not None:
                 self.linux_system = 1
             if html_request.form.get("raspberry_pi") is not None:
