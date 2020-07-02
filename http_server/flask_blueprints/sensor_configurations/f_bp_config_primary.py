@@ -52,6 +52,7 @@ def get_config_primary_tab():
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
                                CheckedSensorCheckIns=sensor_check_ins,
+                               CheckinHours=app_config_access.primary_config.checkin_wait_in_hours,
                                CheckinAddress=app_config_access.primary_config.checkin_url,
                                CheckedCustomTempOffset=custom_temp_offset,
                                temperature_offset=float(app_config_access.primary_config.temperature_offset),

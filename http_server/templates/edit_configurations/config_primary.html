@@ -38,18 +38,25 @@
                 </label>
             </div>
 
-            <p>
-                The URL should point to a Kootnet Sensor<br>
-                The Default URL sends debug info back to the developer
-            </p>
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    Hours between Checkin's
+                    <br>
+                    <br>
+                    <input style="width: 65px;" type="number" name="checkin_hours" required
+                           placeholder="24" min="0.01" step="0.01" max="8760" value="{{ CheckinHours }}">
+                </label>
+            </div>
+
+            <br>
+            <br>
 
             <div class="mui-textfield">
                 <label style="color: black;">
-                    Checkin DNS Address or IP + Port<br>
-                    Eg. Sensor3.MyDomain.com:10065
-                    <br>
+                    Checkin Server Address & Port<br>
+                    Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br>
                     <input style="width: 350px;" type="text" maxlength="250" name="checkin_address"
-                           value="{{ CheckinAddress }}">
+                           placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
                 </label>
             </div>
 
