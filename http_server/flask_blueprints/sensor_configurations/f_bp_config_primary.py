@@ -18,7 +18,6 @@
 """
 from flask import Blueprint, render_template, request
 from operations_modules import logger
-from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
@@ -34,8 +33,7 @@ def html_set_config_main():
         try:
             app_config_access.primary_config.update_with_html_request(request)
             app_config_access.primary_config.save_config_to_file()
-            page_msg = "Config Set, Please Restart Program"
-            app_cached_variables.html_service_restart = True
+            page_msg = "Main Configuration Set & Applied"
             return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
             return return_page
         except Exception as error:
@@ -49,7 +47,6 @@ def get_config_primary_tab():
         sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
         custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
-
         return render_template("edit_configurations/config_primary.html",
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
