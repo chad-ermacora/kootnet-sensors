@@ -253,7 +253,7 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
                  "ShutdownSystem": "shutdown -h now"}
 
 
-class _CreateEmptyThreadClass:
+class CreateEmptyThreadClass:
     def __init__(self):
         self.current_state = "Disabled"
 
@@ -309,46 +309,46 @@ checkin_search_primary_log = ""
 checkin_search_sensors_log = ""
 
 # Running "Service" Threads
-http_server_thread = _CreateEmptyThreadClass()
-interval_recording_thread = _CreateEmptyThreadClass()
-mini_display_thread = _CreateEmptyThreadClass()
-interactive_sensor_thread = _CreateEmptyThreadClass()
-mqtt_publisher_thread = _CreateEmptyThreadClass()
-weather_underground_thread = _CreateEmptyThreadClass()
-luftdaten_thread = _CreateEmptyThreadClass()
-open_sense_map_thread = _CreateEmptyThreadClass()
+http_server_thread = CreateEmptyThreadClass()
+interval_recording_thread = CreateEmptyThreadClass()
+mini_display_thread = CreateEmptyThreadClass()
+interactive_sensor_thread = CreateEmptyThreadClass()
+mqtt_publisher_thread = CreateEmptyThreadClass()
+weather_underground_thread = CreateEmptyThreadClass()
+luftdaten_thread = CreateEmptyThreadClass()
+open_sense_map_thread = CreateEmptyThreadClass()
 
 # Running High/Low Trigger Recording Threads
-trigger_high_low_cpu_temp = _CreateEmptyThreadClass()
-trigger_high_low_env_temp = _CreateEmptyThreadClass()
-trigger_high_low_pressure = _CreateEmptyThreadClass()
-trigger_high_low_altitude = _CreateEmptyThreadClass()
-trigger_high_low_humidity = _CreateEmptyThreadClass()
-trigger_high_low_distance = _CreateEmptyThreadClass()
-trigger_high_low_lumen = _CreateEmptyThreadClass()
-trigger_high_low_visible_colours = _CreateEmptyThreadClass()
-trigger_high_low_ultra_violet = _CreateEmptyThreadClass()
-trigger_high_low_gas = _CreateEmptyThreadClass()
-trigger_high_low_particulate_matter = _CreateEmptyThreadClass()
-trigger_high_low_accelerometer = _CreateEmptyThreadClass()
-trigger_high_low_magnetometer = _CreateEmptyThreadClass()
-trigger_high_low_gyroscope = _CreateEmptyThreadClass()
+trigger_high_low_cpu_temp = CreateEmptyThreadClass()
+trigger_high_low_env_temp = CreateEmptyThreadClass()
+trigger_high_low_pressure = CreateEmptyThreadClass()
+trigger_high_low_altitude = CreateEmptyThreadClass()
+trigger_high_low_humidity = CreateEmptyThreadClass()
+trigger_high_low_distance = CreateEmptyThreadClass()
+trigger_high_low_lumen = CreateEmptyThreadClass()
+trigger_high_low_visible_colours = CreateEmptyThreadClass()
+trigger_high_low_ultra_violet = CreateEmptyThreadClass()
+trigger_high_low_gas = CreateEmptyThreadClass()
+trigger_high_low_particulate_matter = CreateEmptyThreadClass()
+trigger_high_low_accelerometer = CreateEmptyThreadClass()
+trigger_high_low_magnetometer = CreateEmptyThreadClass()
+trigger_high_low_gyroscope = CreateEmptyThreadClass()
 
 # Trigger Variance threads. Re-Work? at least re-name.
-trigger_variance_thread_cpu_temp = _CreateEmptyThreadClass()
-trigger_variance_thread_env_temp = _CreateEmptyThreadClass()
-trigger_variance_thread_pressure = _CreateEmptyThreadClass()
-trigger_variance_thread_altitude = _CreateEmptyThreadClass()
-trigger_variance_thread_humidity = _CreateEmptyThreadClass()
-trigger_variance_thread_distance = _CreateEmptyThreadClass()
-trigger_variance_thread_lumen = _CreateEmptyThreadClass()
-trigger_variance_thread_visible_ems = _CreateEmptyThreadClass()
-trigger_variance_thread_ultra_violet = _CreateEmptyThreadClass()
-trigger_variance_thread_gas = _CreateEmptyThreadClass()
-trigger_variance_thread_particulate_matter = _CreateEmptyThreadClass()
-trigger_variance_thread_accelerometer = _CreateEmptyThreadClass()
-trigger_variance_thread_magnetometer = _CreateEmptyThreadClass()
-trigger_variance_thread_gyroscope = _CreateEmptyThreadClass()
+trigger_variance_thread_cpu_temp = CreateEmptyThreadClass()
+trigger_variance_thread_env_temp = CreateEmptyThreadClass()
+trigger_variance_thread_pressure = CreateEmptyThreadClass()
+trigger_variance_thread_altitude = CreateEmptyThreadClass()
+trigger_variance_thread_humidity = CreateEmptyThreadClass()
+trigger_variance_thread_distance = CreateEmptyThreadClass()
+trigger_variance_thread_lumen = CreateEmptyThreadClass()
+trigger_variance_thread_visible_ems = CreateEmptyThreadClass()
+trigger_variance_thread_ultra_violet = CreateEmptyThreadClass()
+trigger_variance_thread_gas = CreateEmptyThreadClass()
+trigger_variance_thread_particulate_matter = CreateEmptyThreadClass()
+trigger_variance_thread_accelerometer = CreateEmptyThreadClass()
+trigger_variance_thread_magnetometer = CreateEmptyThreadClass()
+trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
