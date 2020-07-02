@@ -38,22 +38,22 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.enable_interval_recording = 1
         self.sleep_duration_interval = 300.0
 
-        self.enable_interval_recording = 0
-        self.sensor_uptime_enabled = 0
-        self.cpu_temperature_enabled = 0
-        self.env_temperature_enabled = 0
-        self.pressure_enabled = 0
-        self.humidity_enabled = 0
-        self.altitude_enabled = 0
-        self.distance_enabled = 0
-        self.lumen_enabled = 0
-        self.colour_enabled = 0
-        self.ultra_violet_enabled = 0
-        self.gas_enabled = 0
-        self.particulate_matter_enabled = 0
-        self.accelerometer_enabled = 0
-        self.magnetometer_enabled = 0
-        self.gyroscope_enabled = 0
+        self.enable_interval_recording = 1
+        self.sensor_uptime_enabled = 1
+        self.cpu_temperature_enabled = 1
+        self.env_temperature_enabled = 1
+        self.pressure_enabled = 1
+        self.humidity_enabled = 1
+        self.altitude_enabled = 1
+        self.distance_enabled = 1
+        self.lumen_enabled = 1
+        self.colour_enabled = 1
+        self.ultra_violet_enabled = 1
+        self.gas_enabled = 1
+        self.particulate_matter_enabled = 1
+        self.accelerometer_enabled = 1
+        self.magnetometer_enabled = 1
+        self.gyroscope_enabled = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
