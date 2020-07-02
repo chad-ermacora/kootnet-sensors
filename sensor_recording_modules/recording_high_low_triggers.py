@@ -19,7 +19,7 @@
 from time import sleep
 from datetime import datetime
 from operations_modules import logger
-from operations_modules.app_generic_functions import thread_function, CreateMonitoredThread as CMT
+from operations_modules.app_generic_functions import CreateMonitoredThread as CMT
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import sqlite_database
@@ -422,16 +422,3 @@ def start_trigger_high_low_recording_server():
         logger.primary_logger.info(" -- High/Low Trigger Recording Threads Started")
     else:
         logger.primary_logger.debug("High/Low Trigger Recording Disabled in Configuration")
-
-
-def restart_high_low_trigger_threads():
-    thread_function(_restart_high_low_worker)
-
-
-def _restart_high_low_worker():
-    if app_config_access.trigger_high_low.enable_high_low_trigger_recording:
-        logger.primary_logger.info(" -- All Enabled High/Low Trigger Recording Threads ReStarted")
-        app_cached_variables.restart_all_trigger_threads = True
-        sleep(10)
-        app_cached_variables.restart_all_trigger_threads = False
-        start_trigger_high_low_recording_server()

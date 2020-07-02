@@ -38,14 +38,15 @@ def html_set_config_mqtt_broker():
         try:
             app_config_access.mqtt_broker_config.update_with_html_request(request)
             app_config_access.mqtt_broker_config.save_config_to_file()
-            return_text = "MQTT Broker Configuration Saved"
             if app_config_access.mqtt_broker_config.enable_mqtt_broker:
-                return_text = get_restart_service_text("MQTT Broker")
                 if check_mqtt_broker_server_running():
+                    return_text = get_restart_service_text("MQTT Broker")
                     restart_mqtt_broker_server()
                 else:
+                    return_text = "MQTT Broker Configuration Saved & Service Started"
                     start_mqtt_broker_server()
             else:
+                return_text = "MQTT Broker Configuration Saved & Service Stopped"
                 stop_mqtt_broker_server()
             return_page = message_and_return(return_text, url="/ConfigurationsHTML")
             return return_page
