@@ -81,17 +81,21 @@ class CreateHasSensorVariables:
 
 
 def start_interval_recording_server():
-    if not app_config_access.interval_recording_config.enable_interval_recording:
-        logger.primary_logger.debug("Interval Recording Disabled in the Configuration")
     text_name = "Interval Recording"
     function = _interval_recording
     app_cached_variables.interval_recording_thread = CreateMonitoredThread(function, thread_name=text_name)
+    if not app_config_access.interval_recording_config.enable_interval_recording:
+        logger.primary_logger.debug("Interval Recording Disabled in the Configuration")
+        app_cached_variables.interval_recording_thread.current_state = "Disabled"
 
 
 def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
+    sleep(5)
+    app_cached_variables.interval_recording_thread.current_state = "Disabled"
     while not app_config_access.interval_recording_config.enable_interval_recording:
         sleep(5)
+    app_cached_variables.interval_recording_thread.current_state = "Running"
     logger.primary_logger.info(" -- Interval Recording Started")
     app_cached_variables.restart_interval_recording_thread = False
     while not app_cached_variables.restart_interval_recording_thread:

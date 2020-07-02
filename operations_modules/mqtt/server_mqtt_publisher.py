@@ -29,16 +29,20 @@ database_variables = app_cached_variables.database_variables
 
 
 def start_mqtt_publisher_server():
-    if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
-        text_name = "MQTT Publisher"
-        function = _mqtt_publisher_server
-        app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(function, thread_name=text_name)
-    else:
+    text_name = "MQTT Publisher"
+    function = _mqtt_publisher_server
+    app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(function, thread_name=text_name)
+    if not app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
         logger.primary_logger.debug("MQTT Publisher Disabled in Configuration")
+        app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
 
 
 def _mqtt_publisher_server():
     """ Starts MQTT Publisher and runs based on settings found in the MQTT Publisher configuration file. """
+    app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
+    while not app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
+        sleep(5)
+    app_cached_variables.mqtt_publisher_thread.current_state = "Running"
     app_cached_variables.restart_mqtt_publisher_thread = False
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:
         # Sleep a few seconds to allow the local broker to start first

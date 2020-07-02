@@ -25,15 +25,20 @@ from sensor_modules import sensor_access
 
 
 def start_display_server():
-    if app_config_access.display_config.enable_display:
-        text_name = "Display"
-        function = _display_server
-        app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
-    else:
+    text_name = "Display"
+    function = _display_server
+    app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
+    if not app_config_access.display_config.enable_display:
         logger.primary_logger.debug("Display Disabled in Primary Configuration")
+        app_cached_variables.mini_display_thread.current_state = "Disabled"
 
 
 def _display_server():
+    sleep(5)
+    app_cached_variables.mini_display_thread.current_state = "Disabled"
+    while not app_config_access.display_config.enable_display:
+        sleep(5)
+    app_cached_variables.mini_display_thread.current_state = "Running"
     app_cached_variables.restart_mini_display_thread = False
     if sensor_access.display_message("Test", check_test=True):
         logger.primary_logger.info(" -- Sensor Display Server Started")
