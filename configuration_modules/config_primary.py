@@ -69,6 +69,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
+            logger.set_logging_level(debug_enabled=True)
+        else:
+            logger.set_logging_level(debug_enabled=False)
 
         if html_request.form.get("enable_custom_temp_offset") is not None:
             new_temp = float(html_request.form.get("custom_temperature_offset"))

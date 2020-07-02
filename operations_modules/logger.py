@@ -46,19 +46,6 @@ def initialize_logger(logger, log_location, formatter):
     logger.addHandler(stream_handler)
 
 
-def set_logging_level():
-    if _debug_enabled():
-        primary_logger.setLevel(logging.DEBUG)
-        network_logger.setLevel(logging.DEBUG)
-        sensors_logger.setLevel(logging.DEBUG)
-        mqtt_subscriber_logger.setLevel(logging.DEBUG)
-    else:
-        primary_logger.setLevel(logging.INFO)
-        network_logger.setLevel(logging.INFO)
-        sensors_logger.setLevel(logging.INFO)
-        mqtt_subscriber_logger.setLevel(logging.INFO)
-
-
 def _debug_enabled():
     if os.path.isfile(file_locations.primary_config):
         with open(file_locations.primary_config, "r") as loaded_file:
@@ -68,6 +55,19 @@ def _debug_enabled():
                 if int(debug_setting):
                     return True
     return False
+
+
+def set_logging_level(debug_enabled=_debug_enabled()):
+    if debug_enabled:
+        primary_logger.setLevel(logging.DEBUG)
+        network_logger.setLevel(logging.DEBUG)
+        sensors_logger.setLevel(logging.DEBUG)
+        mqtt_subscriber_logger.setLevel(logging.DEBUG)
+    else:
+        primary_logger.setLevel(logging.INFO)
+        network_logger.setLevel(logging.INFO)
+        sensors_logger.setLevel(logging.INFO)
+        mqtt_subscriber_logger.setLevel(logging.INFO)
 
 
 def get_number_of_log_entries(log_file):
