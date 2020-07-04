@@ -3,17 +3,21 @@
           action="/EditConfigMQTTSubscriber">
         <fieldset style="text-align: center;">
             <h3>
-                <u><strong><a style="color: black;" href="{{ PageURL }}">MQTT Subscriber Configuration</a></strong></u><br>
+                <u><strong><a style="color: black;" href="http://mqtt.org/" target="_blank">
+                    MQTT Subscriber Configuration
+                </a></strong></u><br>
                 <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line5_2" target="_blank">
                     Click Here for Help
                 </a>
+                <hr>
             </h3>
 
-            <h5><b>
-                Subscribe to a
-                <a style="color: black;" href="http://mqtt.org/" target="_blank"><u>MQTT</u></a> Broker
-                <a style="color: black;" href="/MQTTSubscriberView">(View)</a>
-            </b></h5>
+            <a style="color: darkblue; font-size: medium;" href="/MQTTSubscriberView" target="_blank">
+                Click to view Subscriber Data Stream
+            </a>
+
+            <br>
+            <br>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -31,6 +35,8 @@
                            value="{{ MQTTBrokerAddress }}">
                 </label>
             </div>
+
+            <br>
 
             <div class="mui-textfield">
                 <label style="color: black;">
@@ -83,9 +89,11 @@
             </div>
 
             <br>
+            <hr>
 
             <label>
-                <a style="color: black;" target="_blank" href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
+                <a style="color: black;" target="_blank"
+                   href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
                     MQTT Topics
                 </a>
                 <br>

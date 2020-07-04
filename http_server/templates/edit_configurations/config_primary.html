@@ -6,6 +6,7 @@
                 <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line4_1" target="_blank">
                     Click Here for Help
                 </a>
+                <hr>
             </h2>
 
             <div class="mui-textfield">
@@ -19,6 +20,7 @@
             </div>
 
             <br>
+            <hr>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -28,7 +30,7 @@
                 </label>
             </div>
 
-            <br>
+            <hr>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -61,12 +63,15 @@
             </div>
 
             <br>
+            <hr>
+
+            <h3>Environmental Temperature Offset </h3>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
                     <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset"
                            value="" {{ CheckedCustomTempOffset }}>
-                    Enable Environmental Temperature Offset
+                    Enable Static Offset
                     <span class="checkmark_checkbox"></span>
                 </label>
             </div>
@@ -98,8 +103,8 @@
 
             <p>
                 Compensated environmental temperature formula is as follows<br>
-                (RawTemperature + Offset) - ((PiTemperature - RawTemperature) x CorrectionFactor)<br>
-                PiTemperature = Raspberry Pi CPU Temperature
+                (RawEnvTemperature + StaticOffset) - ((PiTemperature - RawEnvTemperature) x CF)<br>
+                CF = Correction Factor set above
             </p>
 
             <br>
