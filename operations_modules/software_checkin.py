@@ -64,7 +64,7 @@ class CreateCheckinServer:
                                         "sensor_log": current_sensors_logs})
                 except Exception as error:
                     logger.network_logger.debug("Failed to send Checkin ID: " + str(error))
-                sleep_duration = app_config_access.primary_config.checkin_wait_in_hours * 60
+                sleep_duration = app_config_access.primary_config.checkin_wait_in_hours * 60 * 60
                 sleep(sleep_duration)
             else:
                 sleep(30)
