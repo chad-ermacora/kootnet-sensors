@@ -20,6 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
+from sensor_recording_modules.variance_checks import auto_set_triggers_wait_time
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -151,5 +152,5 @@ def html_set_trigger_high_low():
 @auth.login_required
 def html_reset_trigger_high_low():
     logger.network_logger.info("** Trigger High/Low Reset - Source " + str(request.remote_addr))
-    app_config_access.trigger_high_low.reset_settings()
+    auto_set_triggers_wait_time(set_high_low=True)
     return message_and_return("Trigger High/Low Reset", url="/ConfigurationsHTML")

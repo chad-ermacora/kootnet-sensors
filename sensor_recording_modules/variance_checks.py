@@ -230,3 +230,67 @@ def _readings_to_sql_write_str_multiple_data(trigger_object):
     except Exception as error:
         logger.primary_logger.error("Triggers Sextuplet Readings - Get string for write to DB Error: " + str(error))
     return sql_execute_list
+
+
+def auto_set_triggers_wait_time(multiplier=4.0, set_variance=False, set_high_low=False):
+    sensor_names_list = [
+        "cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity", "distance", "gas",
+        "particulate_matter", "lumen", "colours", "ultra_violet", "accelerometer_xyz", "magnetometer_xyz",
+        "gyroscope_xyz"
+    ]
+    sensor_latency = {
+        "cpu_temperature": 0, "environment_temperature": 0, "pressure": 0, "altitude": 0, "humidity": 0,
+        "distance": 0, "gas": 0, "particulate_matter": 0, "lumen": 0, "colours": 0, "ultra_violet": 0,
+        "accelerometer_xyz": 0, "magnetometer_xyz": 0, "gyroscope_xyz": 0
+    }
+
+    multi_latency_sets = [
+        sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(),
+        sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency()
+    ]
+
+    for sensor_name in sensor_names_list:
+        for sensor_latency_pull in multi_latency_sets:
+            if sensor_latency_pull[sensor_name] is not None:
+                if sensor_latency_pull[sensor_name] > sensor_latency[sensor_name]:
+                    try:
+                        sensor_latency[sensor_name] = sensor_latency_pull[sensor_name] * multiplier
+                    except Exception as error:
+                        logger.primary_logger.error("Unable to set " + sensor_name + " wait time: " + str(error))
+            else:
+                sensor_latency[sensor_name] = 999.999
+
+    if set_high_low:
+        app_config_access.trigger_high_low.cpu_temperature_wait_seconds = sensor_latency["cpu_temperature"]
+        app_config_access.trigger_high_low.env_temperature_wait_seconds = sensor_latency["environment_temperature"]
+        app_config_access.trigger_high_low.pressure_wait_seconds = sensor_latency["pressure"]
+        app_config_access.trigger_high_low.altitude_wait_seconds = sensor_latency["altitude"]
+        app_config_access.trigger_high_low.humidity_wait_seconds = sensor_latency["humidity"]
+        app_config_access.trigger_high_low.distance_wait_seconds = sensor_latency["distance"]
+        app_config_access.trigger_high_low.gas_wait_seconds = sensor_latency["gas"]
+        app_config_access.trigger_high_low.particulate_matter_wait_seconds = sensor_latency["particulate_matter"]
+        app_config_access.trigger_high_low.lumen_wait_seconds = sensor_latency["lumen"]
+        app_config_access.trigger_high_low.colour_wait_seconds = sensor_latency["colours"]
+        app_config_access.trigger_high_low.ultra_violet_wait_seconds = sensor_latency["ultra_violet"]
+        app_config_access.trigger_high_low.accelerometer_wait_seconds = sensor_latency["accelerometer_xyz"]
+        app_config_access.trigger_high_low.magnetometer_wait_seconds = sensor_latency["magnetometer_xyz"]
+        app_config_access.trigger_high_low.gyroscope_wait_seconds = sensor_latency["gyroscope_xyz"]
+        app_config_access.trigger_high_low.update_configuration_settings_list()
+        app_config_access.trigger_high_low.save_config_to_file()
+    if set_variance:
+        app_config_access.trigger_variances.cpu_temperature_wait_seconds = sensor_latency["cpu_temperature"]
+        app_config_access.trigger_variances.env_temperature_wait_seconds = sensor_latency["environment_temperature"]
+        app_config_access.trigger_variances.pressure_wait_seconds = sensor_latency["pressure"]
+        app_config_access.trigger_variances.altitude_wait_seconds = sensor_latency["altitude"]
+        app_config_access.trigger_variances.humidity_wait_seconds = sensor_latency["humidity"]
+        app_config_access.trigger_variances.distance_wait_seconds = sensor_latency["distance"]
+        app_config_access.trigger_variances.gas_wait_seconds = sensor_latency["gas"]
+        app_config_access.trigger_variances.particulate_matter_wait_seconds = sensor_latency["particulate_matter"]
+        app_config_access.trigger_variances.lumen_wait_seconds = sensor_latency["lumen"]
+        app_config_access.trigger_variances.colour_wait_seconds = sensor_latency["colours"]
+        app_config_access.trigger_variances.ultra_violet_wait_seconds = sensor_latency["ultra_violet"]
+        app_config_access.trigger_variances.accelerometer_wait_seconds = sensor_latency["accelerometer_xyz"]
+        app_config_access.trigger_variances.magnetometer_wait_seconds = sensor_latency["magnetometer_xyz"]
+        app_config_access.trigger_variances.gyroscope_wait_seconds = sensor_latency["gyroscope_xyz"]
+        app_config_access.trigger_variances.update_configuration_settings_list()
+        app_config_access.trigger_variances.save_config_to_file()

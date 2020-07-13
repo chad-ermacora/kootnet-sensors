@@ -20,6 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
+from sensor_recording_modules.variance_checks import auto_set_triggers_wait_time
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -46,8 +47,8 @@ def html_set_trigger_variances():
 @html_config_trigger_variances_routes.route("/ResetTriggerVariances")
 @auth.login_required
 def html_reset_trigger_variances():
-    logger.network_logger.info("** Trigger Variances Reset - Source " + str(request.remote_addr))
-    app_config_access.trigger_variances.reset_settings()
+    logger.network_logger.info("** Trigger Variances Auto set - Source " + str(request.remote_addr))
+    auto_set_triggers_wait_time(set_variance=True)
     return message_and_return("Trigger Variances Reset", url="/ConfigurationsHTML")
 
 
