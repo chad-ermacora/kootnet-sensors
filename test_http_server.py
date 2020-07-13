@@ -45,7 +45,8 @@ class CreatePrimaryConfigurationTest(CreatePrimaryConfiguration):
 1 = Enable Temperature Compensation Factor
 0.29 = Temperature Compensation Factor
 1 = Enable Sensor Check-Ins
-server.dragonwarz.net:10065 = Checkin URL"""
+server.dragonwarz.net:10065 = Checkin URL
+12 = Checkin Every X Hours"""
 
     def set_settings_for_test1(self):
         self.web_portal_port = 11445
