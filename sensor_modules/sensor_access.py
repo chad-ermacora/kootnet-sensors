@@ -152,14 +152,14 @@ def get_sensors_latency():
                          "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
                          "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
 
-    sensor_latency_list = []
-    for sensor_function in sensor_function_list:
+    sensor_latency_dic = {}
+    for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
         thing = _get_sensor_latency(sensor_function)
         if thing is None:
-            sensor_latency_list.append(None)
+            sensor_latency_dic[sensor_name] = None
         else:
-            sensor_latency_list.append(round(thing, 6))
-    return [sensor_names_list, sensor_latency_list]
+            sensor_latency_dic[sensor_name] = round(thing, 6)
+    return sensor_latency_dic
 
 
 def _get_sensor_latency(sensor_function):
@@ -379,7 +379,7 @@ def get_particulate_matter(return_as_dictionary=False):
                     database_variables.particulate_matter_2_5: no_sensor_present,
                     database_variables.particulate_matter_4: no_sensor_present,
                     database_variables.particulate_matter_10: no_sensor_present}
-        return [no_sensor_present, no_sensor_present, no_sensor_present, no_sensor_present]
+        return no_sensor_present
     if return_as_dictionary:
         return pm_readings
     return [pm_readings[database_variables.particulate_matter_1],
