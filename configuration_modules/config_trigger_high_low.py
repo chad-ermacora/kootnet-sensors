@@ -159,7 +159,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.gyroscope_z_high = 70.0
         self.gyroscope_wait_seconds = 1
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -377,12 +377,12 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             self.gyroscope_z_high = float(html_request.form.get("trigger_high_gyroscope_z"))
         if html_request.form.get("seconds_gyroscope") is not None:
             self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def reset_settings(self):
         self.__init__(load_from_file=False)
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
         self.config_settings = [
             str(self.cpu_temperature_enabled), str(self.cpu_temperature_low), str(self.cpu_temperature_high),
@@ -517,7 +517,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             self.enable_high_low_trigger_recording = int(self.config_settings[94])
         except Exception as error:
             logger.primary_logger.debug("Trigger High/Low Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Trigger High/Low Configuration.")
                 self.save_config_to_file()
