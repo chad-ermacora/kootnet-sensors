@@ -20,7 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
-from sensor_recording_modules.variance_checks import auto_set_triggers_wait_time
+from sensor_recording_modules.triggers_auto_set import auto_set_triggers_wait_time
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -112,6 +112,7 @@ def get_config_trigger_variances_tab():
                                CheckedPM=get_html_checkbox_state(variances.particulate_matter_enabled),
                                TriggerPM1=variances.particulate_matter_1_variance,
                                TriggerPM25=variances.particulate_matter_2_5_variance,
+                               TriggerPM4=variances.particulate_matter_4_variance,
                                TriggerPM10=variances.particulate_matter_10_variance,
                                SecondsPM=variances.particulate_matter_wait_seconds,
                                CheckedAccelerometer=get_html_checkbox_state(variances.accelerometer_enabled),
