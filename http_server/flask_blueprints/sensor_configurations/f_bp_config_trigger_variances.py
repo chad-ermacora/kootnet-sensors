@@ -44,12 +44,24 @@ def html_set_trigger_variances():
     return message_and_return("Bad Trigger Variances POST Request", url="/ConfigurationsHTML")
 
 
+@html_config_trigger_variances_routes.route("/SetTriggerVariancesLowestSeconds")
+@auth.login_required
+def html_set_lowest_trigger_variances_seconds():
+    logger.network_logger.info("** Trigger Variances Auto Set to Lowest Recommended - Source " + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_variances, set_lowest=True)
+    msg_1 = "Trigger Variance Seconds Settings Set to Lowest"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to the Lowest recommended values."
+    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+
+
 @html_config_trigger_variances_routes.route("/ResetTriggerVariances")
 @auth.login_required
 def html_reset_trigger_variances():
-    logger.network_logger.info("** Trigger Variances Auto set - Source " + str(request.remote_addr))
-    auto_set_triggers_wait_time(set_variance=True)
-    return message_and_return("Trigger Variances Reset", url="/ConfigurationsHTML")
+    logger.network_logger.info("** Trigger Variances Reset to Default - Source " + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_variances)
+    msg_1 = "Trigger Variance Seconds Settings Set to Default"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to recommended defaults."
+    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
 
 
 def get_config_trigger_variances_tab():

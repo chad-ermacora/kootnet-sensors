@@ -148,9 +148,23 @@ def html_set_trigger_high_low():
     return message_and_return("Bad Trigger High/Low POST Request", url="/ConfigurationsHTML")
 
 
-@html_config_trigger_high_low_routes.route("/ResetTriggerHighLow")
+@html_config_trigger_high_low_routes.route("/SetLowestTriggerHighLowSeconds")
 @auth.login_required
-def html_reset_trigger_high_low():
-    logger.network_logger.info("** Trigger High/Low Reset - Source " + str(request.remote_addr))
-    auto_set_triggers_wait_time(set_high_low=True)
-    return message_and_return("Trigger High/Low Reset", url="/ConfigurationsHTML")
+def html_auto_set_lowest_trigger_high_low():
+    log_msg = "** Triggers High/Low Seconds Setting was Automatically Set to Lowest Recommended - Source "
+    logger.network_logger.info(log_msg + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_high_low, set_lowest=True)
+    msg_1 = "Trigger High/Low Seconds Settings Set to Lowest"
+    msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the Lowest recommended values."
+    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+
+
+@html_config_trigger_high_low_routes.route("/SetRecommendedTriggerHighLowSeconds")
+@auth.login_required
+def html_auto_set_default_trigger_high_low():
+    log_msg = "** Triggers High/Low Seconds Setting was Automatically Set to Default - Source "
+    logger.network_logger.info(log_msg + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_high_low)
+    msg_1 = "Trigger High/Low Seconds Settings Set to Recommended"
+    msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the recommend defaults."
+    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
