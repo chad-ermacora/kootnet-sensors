@@ -91,8 +91,10 @@
                                     <li><a href="#line4_1">Main/Primary</a></li>
                                     <li><a href="#line4_2">Installed Sensors</a></li>
                                     <li><a href="#line4_3">Displays</a></li>
-                                    <li><a href="#line4_4">Triggers</a></li>
-                                    <li><a href="#line4_5">Terminal access</a></li>
+                                    <li><a href="#line4_4">Interval Recording</a></li>
+                                    <li><a href="#line4_5">High/Low Triggers</a></li>
+                                    <li><a href="#line4_6">Variance Triggers</a></li>
+                                    <li><a href="#line4_7">Terminal access</a></li>
                                 </ul>
 							</li>
                             <li><a href="#line5">MQTT</a>
@@ -146,8 +148,8 @@
                         <div class="intro1">
                             <ul>
                                 <li><strong>Kootnet Sensors : </strong>Documentation</li>
-                                <li><strong>Document Version : </strong>0.1</li>
-                                <li><strong>Last Updated : </strong>June 20th, 2020</li>
+                                <li><strong>Document Version : </strong>0.3</li>
+                                <li><strong>Last Updated : </strong>July 3rd, 2020</li>
                                 <li><strong>Author  : </strong>Chad Ermacora</li>
                                 <li><strong>Source Code : </strong> <a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
                                 <li><strong>License : </strong> <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
@@ -325,10 +327,10 @@
                             <br>
                             <strong>Installed Sensors</strong>: Currently Installed Sensors (Most sensors will disable them selves if initialization fails)<br>
                             <br>
-                            <strong>Program Status</strong>: Status of the different aspects of Kootnet Sensors. Availible Status's are Disabled, Enabled <br>
+                            <strong>Program Status</strong>: Status of the different aspects of Kootnet Sensors. Available Status's are Disabled, Enabled <br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/KSMain2.png" alt="" class="img-responsive">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/KSMain2.1.png" alt="" class="img-responsive">
 
                         <h4 id="line3_3"><u>Sensor Readings</u></h4>
                         <p>
@@ -340,9 +342,12 @@
 
                         <h4 id="line3_4"><u>Database</u></h4>
                         <p>
-                            The main Index page for Kootnet Sensors is the Database Information Page. On this page you can download the SQLite3 database in RAW or Zip format.
+                            The main Index page for Kootnet Sensors is the Database Information Page.
+                            On this page you can download the SQLite3 database in RAW or Zip format.
                             You can also upload a RAW SQLite3 database to replace the existing one.
                             This is meant to allow the creation of graphs on faster PCs and the transfer of old data to new sensors.<br><br>
+                            <strong>Note</strong>: <i>When a Database is "Replaced" using the Upload function, the old Database is
+                            zipped in the same folder using the following file name *Date_Time*SensorDatabase.zip.</i><br>
                             <strong>Note</strong>: <i>The SQLite3 database holds all sensor recordings as well as Notes.</i><br>
                             <strong>Note</strong>: <i>The Sensor Checkin Database is a separate SQLite3 database that currently cannot be downloaded.</i>
                         </p>
@@ -353,11 +358,23 @@
                             The Notes page is where you can add, modify and remove notes in the SQL database.
                             There is a "Date/Time" function under the Insert menu meant to be used to add a standard date stamp
                             of when you are working on your notes but also to identify exactly when you find an interesting data point in the sensor recordings.
-                            This way others can create a graph to locate data the note is refering to.
+                            This way others can create a graph to visualize the data in which the note is referring.
                         </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorNotes_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_6"><u>Plotly Graphing</u></h4>
+                        <p>
+                            The Graphing section allows you to create Line graphs from Interval Recordings and Point Plots from Trigger Recordings.
+                        </p>
+                        <p>
+                            <strong>SQL Recording Type</strong>: Use Data from Interval or Trigger Recordings<br>
+                            <strong>Render Engine</strong>: View Graphs with WebGL (Faster Hardware Rendering) or CPU (Slower Compatibility Mode)<br>
+                            <strong>Start DateTime</strong>: Retrieve Data starting from this Date & Time<br>
+                            <strong>End DateTime</strong>: Retrieve Data up to this Date & Time<br>
+                            <strong>Add Plot Data after skipping</strong>: This skips the set amount of data points then adds one<br>
+                            Example. Skip 12, add one, skip 12, add one, etc, etc<br>
+                            <strong>Hour Offset</strong>: Add the set amount of hours to the recorded UTC0 DateTime before plotting<br>
+                        </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/SensorGraphing_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_7"><u>Advanced</u></h4>
@@ -367,14 +384,14 @@
                             You can also view RAW configurations, Python Module Versions & Sensor Checkin Statistics.
                             Power, SQL and Login update functions are located here as well.
                         </p>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_advanced_June_2020.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/html_advanced.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_8"><u>Logs</u></h4>
                         <p>
-                            The Logs are broken into 3 tabs, Primary, Network and Sensors.<br>
-                            The Primary log holds general program operations information.<br>
-                            The Network Log holds information regarding network commands and operations.<br>
-                            The Sensors Log holds information regarding hardware sensor operations.
+                            The Logs are broken into 3 tabs, Primary, Network and Sensors.<br><br>
+                            <strong>Primary log</strong>: General program operations<br>
+                            <strong>Network log</strong>: Network operations<br>
+                            <strong>Sensors log</strong>: Hardware Sensor Operations<br>
                         </p>
                         <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/Sensor_logs_June_2020.png" alt="" class="img-responsive img-thumbnail">
 
@@ -392,19 +409,76 @@
                         <!-- end row -->
 
                         <h4 id="line4_1"><u>Main/Primary</u></h4>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/main_config.png" alt="" class="img-responsive img-thumbnail">
+                        <p>
+                            <strong>HTTPS Port Number</strong>: Port used to access the Sensors HTTPS Web Portal<br>
+                            <strong>Enable Debug</strong>: Adds extra logging to help with software debugging<br>
+                            <strong>Enable Sensor Checkin</strong>: Sends System Information and Logs to the specified Checkin Server<br>
+                            <strong>Hours between Checkin's</strong>: Hours to wait before sending the next Sensor Checkin<br>
+                            <strong>Checkin Server Address & Port</strong>: The IP or DNS Address of the server followed by a colon and port #<br>
+                            Example. 192.168.1.105:10065 or pi-server.some_url.com:10065<br>
+                            <strong>Enable Static Offset</strong>: Add the set number to the Environmental Temperature readings<br>
+                            <strong>Enable Pi Temperature Correction Factor</strong>: This subtracts the set multiplication
+                            of the difference between the Raspberry Pi CPU temperature and the Environmental Temperature<br>
+                            The formula is ('Raw Env Temperature' + 'Static Offset') - ((PiTemperature - RawEnvTemperature) x CF)<br>
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_main.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_2"><u>Installed Sensors</u></h4>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_installed_sensors.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_installed_sensors_RP.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_installed_pimoroni.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_installed_other.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_3"><u>Display</u></h4>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/config_display.png" alt="" class="img-responsive img-thumbnail">
+                        <p>
+                            If you have installed a supported Mini Display, you can enable it here and set what will be
+                            displayed at the set interval.
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_display.png" alt="" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_4"><u>Triggers</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail"><br>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <h4 id="line4_4"><u>Interval Recording</u></h4>
+                        <p>
+                            Interval Recording takes all selected and installed sensor readings and records them to the SQLite3 Database every set amount of seconds.
+                        </p>
+                        <p>
+                            <strong>WARNING</strong>: <i>Setting 'Seconds between recordings' lower then the slowest
+                            sensor's latency may produce unexpected results. Check the 'Sensor Latency' page within
+                            the Sensor's Web Portal to find the slowest sensor (AKA Highest latency) and use at least 4x the reading.</i><br>
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_interval_sql.png" alt="" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_5"><u>Terminal Configurations</u></h4>
+                        <h4 id="line4_5"><u>High/Low Trigger Recording</u></h4>
+                        <p>
+                            High/Low Trigger recording only writes to the database on changes of 'state', for instance,
+                            if you have a low trigger of 10 and a high trigger of 20,
+                            it will be in a 'Normal' state if the number is above 10 but lower then 20,
+                            a 'Low' state if the number is below 10 and a 'High' state if above 20.
+                        </p>
+                        <p>
+                            <strong>WARNING</strong>: <i>Setting the 'Seconds between readings' lower then
+                            what is set by using the 'Lowest' button may produce unexpected results, however,
+                            the 'Lowest' setting is generated by multiplying the raw delay between readings by 10,
+                            so there is a bit of room for adjustment.
+                            Remember to account for other aspects of the program that may access the sensor,
+                            such as MQTT, Interval Recordings, Other Trigger Recordings, website access,
+                            Online Services, etc.</i><br>
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_high_low_triggers.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_6"><u>Variance Trigger Recording</u></h4>
+                        <p>
+                            Trigger Variance recording writes readings to the SQLite3 database when the readings have changed
+                            more then the set "Variance", for example, a set variance of 0.3 would write to the Database
+                            when the reading changes from 4.3 to 4.9 as well as if it changed from 4.3 to 3.9.
+                            The "Seconds between readings" is how many seconds it waits before getting it's 2nd reading
+                            and comparing the difference of the two against the set Variance.
+                        </p>
+                        <p>
+                            <strong>WARNING</strong>: <i>Setting the 'Seconds between readings' lower then
+                            what is set by using the 'Lowest' button may produce unexpected results.</i><br>
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_variances_triggers.png" alt="" class="img-responsive img-thumbnail">
+
+                        <h4 id="line4_7"><u>Terminal Configurations</u></h4>
                         <p>
                             The Terminal Configuration Tool allows you to control some aspects of the sensor using the sensor's local Terminal.
                             To run the Terminal Configuration Tool, open a terminal and run the following command.
@@ -447,13 +521,28 @@
                         <!-- end row -->
 
                         <h4 id="line5_1"><u>Publisher</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <p>
+                            Send Sensor readings to an MQTT Broker.<br><br>
+                            <strong>Enable MQTT Publisher</strong>: Enables and start sending selected readings to the
+                            MQTT Broker Address<br>
+                            <strong>Broker DNS Address or IP</strong>: Enter the DNS or IP Address of the
+                            MQTT Broker Server you wish to send readings to<br>
+                            <strong>Broker Port #</strong>: Set the MQTT Broker's Port #<br>
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_publisher.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line5_2"><u>Subscriber</u></h4>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/06/MQTT_Subscriber_View_June_2020.png" alt="" class="img-responsive img-thumbnail">
+                        <p>
+                            Subscribe to a MQTT Broker Server and Topics. View the results on the Web Portal's "MQTT Subscriber" page.
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_subscriber.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line5_3"><u>Broker (Eclipse Mosquitto)</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <p>
+                            Installs & Enables the Eclipse MQTT Mosquitto Server on the local sensor using apt-get.
+                            Optionally set a custom Mosquitto configuration.
+                        </p>
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_broker.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -469,13 +558,14 @@
                         <!-- end row -->
 
                         <h4 id="line6_1"><u>Open Sense Map</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_open_sense_map.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_open_sense_map_reg.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line6_2"><u>Weather Underground</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_wu.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line6_3"><u>Luftdaten</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_luftdaten.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -516,13 +606,14 @@
                         <!-- end row -->
 
                         <h4 id="line8_1"><u>Main View</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_view.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_view_cleanup.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line8_2"><u>Sensor Search</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_sensor_search.png" alt="" class="img-responsive img-thumbnail">
 
                         <h4 id="line8_3"><u>Configuration</u></h4>
-                        <img src="ChangeMe" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_checkin_server.png" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -559,7 +650,7 @@
                         </div>
                         <!-- end row -->
 
-                        <h4>Terminal Configurations Tool</h4>
+                        <h4><a href="#line4_7">Terminal Configurations Tool</a></h4>
                         <p>
                             Run the following command in a terminal to manage the local Sensor outside the Web Portal.<br><br>
                             <strong>Note</strong>: <i>You may find useful information in the program logs located in /home/kootnet_data/logs</i>
