@@ -382,10 +382,16 @@ def get_particulate_matter(return_as_dictionary=False):
         return no_sensor_present
     if return_as_dictionary:
         return pm_readings
-    return [pm_readings[database_variables.particulate_matter_1],
-            pm_readings[database_variables.particulate_matter_2_5],
-            pm_readings[database_variables.particulate_matter_4],
-            pm_readings[database_variables.particulate_matter_10]]
+    return_list = []
+    if pm_readings[database_variables.particulate_matter_1] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_1])
+    if pm_readings[database_variables.particulate_matter_2_5] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_2_5])
+    if pm_readings[database_variables.particulate_matter_4] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_4])
+    if pm_readings[database_variables.particulate_matter_10] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_10])
+    return return_list
 
 
 def get_lumen():
