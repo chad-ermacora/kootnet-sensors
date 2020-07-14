@@ -52,7 +52,6 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         ]
 
         self.enable_trigger_variance = 0
-
         self.cpu_temperature_enabled = 0
         self.env_temperature_enabled = 0
         self.pressure_enabled = 0
@@ -69,25 +68,25 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self.gyroscope_enabled = 0
 
         self.cpu_temperature_variance = 5.0
-        self.cpu_temperature_wait_seconds = 1.0
+        self.cpu_temperature_wait_seconds = 60.0
 
         self.env_temperature_variance = 5.0
-        self.env_temperature_wait_seconds = 1.0
+        self.env_temperature_wait_seconds = 60.0
 
         self.pressure_variance = 10
-        self.pressure_wait_seconds = 1.0
+        self.pressure_wait_seconds = 60.0
 
         self.humidity_variance = 5.0
-        self.humidity_wait_seconds = 1.0
+        self.humidity_wait_seconds = 60.0
 
         self.altitude_variance = 10
-        self.altitude_wait_seconds = 1.0
+        self.altitude_wait_seconds = 60.0
 
         self.distance_variance = 5.0
-        self.distance_wait_seconds = 1.0
+        self.distance_wait_seconds = 2.0
 
         self.lumen_variance = 100.0
-        self.lumen_wait_seconds = 1.0
+        self.lumen_wait_seconds = 10.0
 
         self.red_variance = 15.0
         self.orange_variance = 15.0
@@ -95,18 +94,18 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         self.green_variance = 15.0
         self.blue_variance = 15.0
         self.violet_variance = 15.0
-        self.colour_wait_seconds = 10.0
+        self.colour_wait_seconds = 60.0
 
         self.ultra_violet_index_variance = 5.0
         self.ultra_violet_a_variance = 10.0
         self.ultra_violet_b_variance = 10.0
-        self.ultra_violet_wait_seconds = 5.0
+        self.ultra_violet_wait_seconds = 60.0
 
         self.gas_resistance_index_variance = 100.0
         self.gas_oxidising_variance = 100.0
         self.gas_reducing_variance = 100.0
         self.gas_nh3_variance = 100.0
-        self.gas_wait_seconds = 30.0
+        self.gas_wait_seconds = 60.0
 
         self.particulate_matter_1_variance = 4.0
         self.particulate_matter_2_5_variance = 4.0
@@ -296,9 +295,6 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("seconds_gyroscope") is not None:
             self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
         self.update_configuration_settings_list()
-
-    def reset_settings(self):
-        self.__init__(load_from_file=False)
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """

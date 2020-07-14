@@ -67,27 +67,27 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
 
         self.cpu_temperature_low = 10.0
         self.cpu_temperature_high = 75.0
-        self.cpu_temperature_wait_seconds = 10.0
+        self.cpu_temperature_wait_seconds = 60.0
 
         self.env_temperature_low = -5.0
         self.env_temperature_high = 35.0
-        self.env_temperature_wait_seconds = 10.0
+        self.env_temperature_wait_seconds = 60.0
 
         self.pressure_low = 350
         self.pressure_high = 1200
-        self.pressure_wait_seconds = 10.0
+        self.pressure_wait_seconds = 60.0
 
         self.humidity_low = 25.0
         self.humidity_high = 80.0
-        self.humidity_wait_seconds = 10.0
+        self.humidity_wait_seconds = 60.0
 
         self.altitude_low = 200
         self.altitude_high = 1000
-        self.altitude_wait_seconds = 10.0
+        self.altitude_wait_seconds = 60.0
 
         self.distance_low = 1.0
         self.distance_high = 555.0
-        self.distance_wait_seconds = 10
+        self.distance_wait_seconds = 2
 
         self.lumen_low = 25.0
         self.lumen_high = 1000.0
@@ -105,7 +105,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.blue_high = 215.0
         self.violet_low = 15.0
         self.violet_high = 215.0
-        self.colour_wait_seconds = 20.0
+        self.colour_wait_seconds = 60.0
 
         self.ultra_violet_index_low = 25.0
         self.ultra_violet_index_high = 225.0
@@ -113,7 +113,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.ultra_violet_a_high = 210.0
         self.ultra_violet_b_low = 20.0
         self.ultra_violet_b_high = 210.0
-        self.ultra_violet_wait_seconds = 10.0
+        self.ultra_violet_wait_seconds = 60.0
 
         self.gas_resistance_index_low = 100.0
         self.gas_resistance_index_high = 800.0
@@ -123,7 +123,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.gas_reducing_high = 800.0
         self.gas_nh3_low = 100.0
         self.gas_nh3_high = 800.0
-        self.gas_wait_seconds = 15.0
+        self.gas_wait_seconds = 60.0
 
         self.particulate_matter_1_low = 40.0
         self.particulate_matter_1_high = 114.0
@@ -133,7 +133,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.particulate_matter_4_high = 114.0
         self.particulate_matter_10_low = 41.0
         self.particulate_matter_10_high = 114.0
-        self.particulate_matter_wait_seconds = 15.0
+        self.particulate_matter_wait_seconds = 60.0
 
         self.accelerometer_x_low = 0.1
         self.accelerometer_x_high = 0.9
@@ -141,7 +141,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.accelerometer_y_high = 0.9
         self.accelerometer_z_low = 0.1
         self.accelerometer_z_high = 0.9
-        self.accelerometer_wait_seconds = 1
+        self.accelerometer_wait_seconds = 0.3
 
         self.magnetometer_x_low = 40.0
         self.magnetometer_x_high = 60.0
@@ -149,7 +149,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.magnetometer_y_high = 60.0
         self.magnetometer_z_low = 40.0
         self.magnetometer_z_high = 60.0
-        self.magnetometer_wait_seconds = 1
+        self.magnetometer_wait_seconds = 0.3
 
         self.gyroscope_x_low = 10.0
         self.gyroscope_x_high = 70.0
@@ -157,7 +157,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         self.gyroscope_y_high = 70.0
         self.gyroscope_z_low = 10.0
         self.gyroscope_z_high = 70.0
-        self.gyroscope_wait_seconds = 1
+        self.gyroscope_wait_seconds = 0.3
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -378,9 +378,6 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("seconds_gyroscope") is not None:
             self.gyroscope_wait_seconds = float(html_request.form.get("seconds_gyroscope"))
         self.update_configuration_settings_list()
-
-    def reset_settings(self):
-        self.__init__(load_from_file=False)
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
