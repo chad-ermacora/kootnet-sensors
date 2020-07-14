@@ -64,4 +64,4 @@ class CreateLSM303D:
             mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
             logger.sensors_logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed: " + str(error))
         self.sensor_in_use = False
-        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+        return [round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)]

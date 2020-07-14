@@ -48,7 +48,7 @@ class CreateICM20948:
             mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
             logger.sensors_logger.error("Pimoroni ICM20948 Magnetometer XYZ - Failed: " + str(error))
         self.sensor_in_use = False
-        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+        return [round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)]
 
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
@@ -61,7 +61,7 @@ class CreateICM20948:
             logger.sensors_logger.error("Pimoroni ICM20948 Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         self.sensor_in_use = False
-        return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+        return [round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)]
 
     def gyroscope_xyz(self):
         """ Returns Gyroscope X, Y, Z as Floats. """
@@ -74,4 +74,4 @@ class CreateICM20948:
             logger.sensors_logger.error("Pimoroni ICM20948 Gyroscope XYZ - Failed: " + str(error))
             gyro_x, gyro_y, gyro_z = 0.0, 0.0, 0.0
         self.sensor_in_use = False
-        return round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)
+        return [round(gyro_x, round_decimal_to), round(gyro_y, round_decimal_to), round(gyro_z, round_decimal_to)]

@@ -222,7 +222,7 @@ class CreateEnviroPlus:
         return gas_list_oxidised_reduced_nh3
 
     def particulate_matter_data(self):
-        """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a list. """
+        """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 as a Dictionary. """
         if (time.time() - self.pm_readings_last_updated) > readings_update_threshold_sec:
             update_readings = True
             while self.sensor_in_use:

@@ -49,4 +49,4 @@ class CreateMSA301:
             logger.sensors_logger.error("Pimoroni MSA301 Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         self.sensor_in_use = False
-        return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+        return [round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)]
