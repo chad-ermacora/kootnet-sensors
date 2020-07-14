@@ -50,7 +50,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_cpu_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_cpu_temperature"
                                value="{{ TriggerLowCPUTemperature }}">
                     </label>
                 </div>
@@ -59,7 +59,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_cpu_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_cpu_temperature"
                                value="{{ TriggerHighCPUTemperature }}">
                     </label>
                 </div>
@@ -68,7 +68,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_cpu_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_cpu_temperature"
                                value="{{ SecondsCPUTemperature }}">
                     </label>
                 </div>
@@ -87,7 +87,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_pressure"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_pressure"
                                value="{{ TriggerLowPressure }}">
                     </label>
                 </div>
@@ -96,7 +96,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_pressure"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_pressure"
                                value="{{ TriggerHighPressure }}">
                     </label>
                 </div>
@@ -105,7 +105,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_pressure"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_pressure"
                                value="{{ SecondsPressure }}">
                     </label>
                 </div>
@@ -124,7 +124,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_humidity"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_humidity"
                                value="{{ TriggerLowHumidity }}">
                     </label>
                 </div>
@@ -133,7 +133,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_humidity"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_humidity"
                                value="{{ TriggerHighHumidity }}">
                     </label>
                 </div>
@@ -142,7 +142,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_humidity"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_humidity"
                                value="{{ SecondsHumidity }}">
                     </label>
                 </div>
@@ -161,7 +161,7 @@
                     <label style="color: black">
                         Index Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gas_index"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_index"
                                value="{{ TriggerLowGasIndex }}">
                     </label>
                 </div>
@@ -170,7 +170,7 @@
                     <label style="color: black">
                         Index High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gas_index"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_index"
                                value="{{ TriggerHighGasIndex }}">
                     </label>
                 </div>
@@ -179,7 +179,7 @@
                     <label style="color: black">
                         Oxidising Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gas_oxidising"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
                                value="{{ TriggerLowGasOxidising }}">
                     </label>
                 </div>
@@ -188,7 +188,7 @@
                     <label style="color: black">
                         Oxidising High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gas_oxidising"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
                                value="{{ TriggerHighGasOxidising }}">
                     </label>
                 </div>
@@ -197,7 +197,7 @@
                     <label style="color: black">
                         Reducing Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gas_reducing"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_reducing"
                                value="{{ TriggerLowGasReducing }}">
                     </label>
                 </div>
@@ -206,7 +206,7 @@
                     <label style="color: black">
                         Reducing High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gas_reducing"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_reducing"
                                value="{{ TriggerHighGasReducing }}">
                     </label>
                 </div>
@@ -215,7 +215,7 @@
                     <label style="color: black">
                         NH3 Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gas_nh3"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_nh3"
                                value="{{ TriggerLowGasNH3 }}">
                     </label>
                 </div>
@@ -224,7 +224,7 @@
                     <label style="color: black">
                         NH3 High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gas_nh3"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_nh3"
                                value="{{ TriggerHighGasNH3 }}">
                     </label>
                 </div>
@@ -233,7 +233,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_gas"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_gas"
                                value="{{ SecondsGas }}">
                     </label>
                 </div>
@@ -252,7 +252,7 @@
                     <label style="color: black">
                         PM1 Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_pm1"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_pm1"
                                value="{{ TriggerLowPM1 }}">
                     </label>
                 </div>
@@ -261,7 +261,7 @@
                     <label style="color: black">
                         PM1 High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_pm1"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_pm1"
                                value="{{ TriggerHighPM1 }}">
                     </label>
                 </div>
@@ -270,7 +270,7 @@
                     <label style="color: black;">
                         PM2.5 Low Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_low_pm2_5"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm2_5"
                                value="{{ TriggerLowPM25 }}">
                     </label>
                 </div>
@@ -279,7 +279,7 @@
                     <label style="color: black;">
                         PM2.5 High Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_high_pm2_5"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm2_5"
                                value="{{ TriggerHighPM25 }}">
                     </label>
                 </div>
@@ -288,7 +288,7 @@
                     <label style="color: black;">
                         PM4 Low Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_low_pm4"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm4"
                                value="{{ TriggerLowPM4 }}">
                     </label>
                 </div>
@@ -297,7 +297,7 @@
                     <label style="color: black;">
                         PM4 High Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_high_pm4"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm4"
                                value="{{ TriggerHighPM4 }}">
                     </label>
                 </div>
@@ -306,7 +306,7 @@
                     <label style="color: black;">
                         PM10 Low Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_low_pm10"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm10"
                                value="{{ TriggerLowPM10 }}">
                     </label>
                 </div>
@@ -315,7 +315,7 @@
                     <label style="color: black;">
                         PM10 High Trigger
                         <br>
-                        <input style="width: 75px;" type="number" step="0.0001" name="trigger_high_pm10"
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm10"
                                value="{{ TriggerHighPM10 }}">
                     </label>
                 </div>
@@ -324,7 +324,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_pm"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_pm"
                                value="{{ SecondsPM }}">
                     </label>
                 </div>
@@ -343,7 +343,7 @@
                     <label style="color: black">
                         X Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_accelerometer_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_accelerometer_x"
                                value="{{ TriggerLowAccelerometerX }}">
                     </label>
                 </div>
@@ -352,7 +352,7 @@
                     <label style="color: black">
                         X High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_accelerometer_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_accelerometer_x"
                                value="{{ TriggerHighAccelerometerX }}">
                     </label>
                 </div>
@@ -361,7 +361,7 @@
                     <label style="color: black">
                         Y Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_accelerometer_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_accelerometer_y"
                                value="{{ TriggerLowAccelerometerY }}">
                     </label>
                 </div>
@@ -370,7 +370,7 @@
                     <label style="color: black">
                         Y High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_accelerometer_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_accelerometer_y"
                                value="{{ TriggerHighAccelerometerY }}">
                     </label>
                 </div>
@@ -379,7 +379,7 @@
                     <label style="color: black">
                         Z Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_accelerometer_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_accelerometer_z"
                                value="{{ TriggerLowAccelerometerZ }}">
                     </label>
                 </div>
@@ -388,7 +388,7 @@
                     <label style="color: black">
                         Z High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_accelerometer_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_accelerometer_z"
                                value="{{ TriggerHighAccelerometerZ }}">
                     </label>
                 </div>
@@ -397,7 +397,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_accelerometer"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_accelerometer"
                                value="{{ SecondsAccelerometer }}">
                     </label>
                 </div>
@@ -416,7 +416,7 @@
                     <label style="color: black">
                         X Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_magnetometer_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_magnetometer_x"
                                value="{{ TriggerLowMagnetometerX }}">
                     </label>
                 </div>
@@ -425,7 +425,7 @@
                     <label style="color: black">
                         X High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_magnetometer_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_magnetometer_x"
                                value="{{ TriggerHighMagnetometerX }}">
                     </label>
                 </div>
@@ -434,7 +434,7 @@
                     <label style="color: black">
                         Y Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_magnetometer_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_magnetometer_y"
                                value="{{ TriggerLowMagnetometerY }}">
                     </label>
                 </div>
@@ -443,7 +443,7 @@
                     <label style="color: black">
                         Y High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_magnetometer_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_magnetometer_y"
                                value="{{ TriggerHighMagnetometerY }}">
                     </label>
                 </div>
@@ -452,7 +452,7 @@
                     <label style="color: black">
                         Z Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_magnetometer_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_magnetometer_z"
                                value="{{ TriggerLowMagnetometerZ }}">
                     </label>
                 </div>
@@ -461,7 +461,7 @@
                     <label style="color: black">
                         Z High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_magnetometer_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_magnetometer_z"
                                value="{{ TriggerHighMagnetometerZ }}">
                     </label>
                 </div>
@@ -470,7 +470,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_magnetometer"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_magnetometer"
                                value="{{ SecondsMagnetometer }}">
                     </label>
                 </div>
@@ -489,7 +489,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_env_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_env_temperature"
                                value="{{ TriggerLowEnvTemperature }}">
                     </label>
                 </div>
@@ -498,7 +498,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_env_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_env_temperature"
                                value="{{ TriggerHighEnvTemperature }}">
                     </label>
                 </div>
@@ -507,7 +507,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_env_temperature"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_env_temperature"
                                value="{{ SecondsEnvTemperature }}">
                     </label>
                 </div>
@@ -526,7 +526,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_altitude"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_altitude"
                                value="{{ TriggerLowAltitude }}">
                     </label>
                 </div>
@@ -535,7 +535,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_altitude"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_altitude"
                                value="{{ TriggerHighAltitude }}">
                     </label>
                 </div>
@@ -544,7 +544,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_altitude"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_altitude"
                                value="{{ SecondsAltitude }}">
                     </label>
                 </div>
@@ -563,7 +563,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_distance"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_distance"
                                value="{{ TriggerLowDistance }}">
                     </label>
                 </div>
@@ -572,7 +572,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_distance"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_distance"
                                value="{{ TriggerHighDistance }}">
                     </label>
                 </div>
@@ -581,7 +581,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_distance"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_distance"
                                value="{{ SecondsDistance }}">
                     </label>
                 </div>
@@ -600,7 +600,7 @@
                     <label style="color: black">
                         Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_lumen"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_lumen"
                                value="{{ TriggerLowLumen }}">
                     </label>
                 </div>
@@ -609,7 +609,7 @@
                     <label style="color: black">
                         High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_lumen"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_lumen"
                                value="{{ TriggerHighLumen }}">
                     </label>
                 </div>
@@ -618,7 +618,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_lumen"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_lumen"
                                value="{{ SecondsLumen }}">
                     </label>
                 </div>
@@ -637,7 +637,7 @@
                     <label style="color: black">
                         Red Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_red"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_red"
                                value="{{ TriggerLowRed }}">
                     </label>
                 </div>
@@ -646,7 +646,7 @@
                     <label style="color: black">
                         Red High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_red"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_red"
                                value="{{ TriggerHighRed }}">
                     </label>
                 </div>
@@ -655,7 +655,7 @@
                     <label style="color: black">
                         Orange Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_orange"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_orange"
                                value="{{ TriggerLowOrange }}">
                     </label>
                 </div>
@@ -664,7 +664,7 @@
                     <label style="color: black">
                         Orange High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_orange"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_orange"
                                value="{{ TriggerHighOrange }}">
                     </label>
                 </div>
@@ -673,7 +673,7 @@
                     <label style="color: black">
                         Yellow Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_yellow"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_yellow"
                                value="{{ TriggerLowYellow }}">
                     </label>
                 </div>
@@ -682,7 +682,7 @@
                     <label style="color: black">
                         Yellow High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_yellow"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_yellow"
                                value="{{ TriggerHighYellow }}">
                     </label>
                 </div>
@@ -691,7 +691,7 @@
                     <label style="color: black">
                         Green Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_green"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_green"
                                value="{{ TriggerLowGreen }}">
                     </label>
                 </div>
@@ -700,7 +700,7 @@
                     <label style="color: black">
                         Green High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_green"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_green"
                                value="{{ TriggerHighGreen }}">
                     </label>
                 </div>
@@ -709,7 +709,7 @@
                     <label style="color: black">
                         Blue Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_blue"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_blue"
                                value="{{ TriggerLowBlue }}">
                     </label>
                 </div>
@@ -718,7 +718,7 @@
                     <label style="color: black">
                         Blue High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_blue"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_blue"
                                value="{{ TriggerHighBlue }}">
                     </label>
                 </div>
@@ -727,7 +727,7 @@
                     <label style="color: black">
                         Violet Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_violet"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_violet"
                                value="{{ TriggerLowViolet }}">
                     </label>
                 </div>
@@ -736,7 +736,7 @@
                     <label style="color: black">
                         Violet High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_violet"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_violet"
                                value="{{ TriggerHighViolet }}">
                     </label>
                 </div>
@@ -745,7 +745,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_colour"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_colour"
                                value="{{ SecondsColour }}">
                     </label>
                 </div>
@@ -764,7 +764,7 @@
                     <label style="color: black">
                         UVA Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_ultra_violet_a"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
                                value="{{ TriggerLowUltraVioletA }}">
                     </label>
                 </div>
@@ -773,7 +773,7 @@
                     <label style="color: black">
                         UVA High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_ultra_violet_a"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
                                value="{{ TriggerHighUltraVioletA }}">
                     </label>
                 </div>
@@ -782,7 +782,7 @@
                     <label style="color: black">
                         UVB Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_ultra_violet_b"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
                                value="{{ TriggerLowUltraVioletB }}">
                     </label>
                 </div>
@@ -791,7 +791,7 @@
                     <label style="color: black">
                         UVB High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_ultra_violet_b"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
                                value="{{ TriggerHighUltraVioletB }}">
                     </label>
                 </div>
@@ -800,7 +800,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_ultra_violet"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_ultra_violet"
                                value="{{ SecondsUltraViolet }}">
                     </label>
                 </div>
@@ -819,7 +819,7 @@
                     <label style="color: black">
                         X Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gyroscope_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gyroscope_x"
                                value="{{ TriggerLowGyroscopeX }}">
                     </label>
                 </div>
@@ -828,7 +828,7 @@
                     <label style="color: black">
                         X High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gyroscope_x"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gyroscope_x"
                                value="{{ TriggerHighGyroscopeX }}">
                     </label>
                 </div>
@@ -837,7 +837,7 @@
                     <label style="color: black">
                         Y Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gyroscope_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gyroscope_y"
                                value="{{ TriggerLowGyroscopeY }}">
                     </label>
                 </div>
@@ -846,7 +846,7 @@
                     <label style="color: black">
                         Y High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gyroscope_y"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gyroscope_y"
                                value="{{ TriggerHighGyroscopeY }}">
                     </label>
                 </div>
@@ -855,7 +855,7 @@
                     <label style="color: black">
                         Z Low Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_low_gyroscope_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gyroscope_z"
                                value="{{ TriggerLowGyroscopeZ }}">
                     </label>
                 </div>
@@ -864,7 +864,7 @@
                     <label style="color: black">
                         Z High Trigger
                         <br>
-                        <input style="width: 75px" type="number" step="0.0001" name="trigger_high_gyroscope_z"
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gyroscope_z"
                                value="{{ TriggerHighGyroscopeZ }}">
                     </label>
                 </div>
@@ -873,7 +873,7 @@
                     <label style="color: black">
                         Seconds between readings
                         <br>
-                        <input style="width: 75px" type="number" step="0.1" name="seconds_gyroscope"
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_gyroscope"
                                value="{{ SecondsGyroscope }}">
                     </label>
                 </div>
