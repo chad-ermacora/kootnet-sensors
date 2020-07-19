@@ -20,8 +20,7 @@ from operations_modules import logger
 from operations_modules import software_version
 from upgrade_modules.old_configuration_conversions import generic_upgrade_functions
 from upgrade_modules.old_configuration_conversions.alpha_to_beta import upgrade_alpha_to_beta
-from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30, \
-    upgrade_beta_30_x_to_30_90, upgrade_beta_30_90_to_30_138
+from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
 from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31_21
 
 
