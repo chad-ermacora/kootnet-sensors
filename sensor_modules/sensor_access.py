@@ -366,9 +366,8 @@ def get_gas(return_as_dictionary=False):
 
 def get_particulate_matter(return_as_dictionary=False):
     """ Returns selected Particulate Matter readings in a Dictionary. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus and \
-            app_config_access.installed_sensors.pimoroni_pms5003:
-        pm_readings = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()
+    if app_config_access.installed_sensors.pimoroni_pms5003:
+        pm_readings = sensors_direct.pimoroni_pms5003_a.particulate_matter_data()
     elif app_config_access.installed_sensors.sensirion_sps30:
         pm_readings = sensors_direct.sensirion_sps30_a.particulate_matter_data()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
