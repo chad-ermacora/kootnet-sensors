@@ -29,6 +29,7 @@ class CreateRPSystem:
         except Exception as error:
             logger.sensors_logger.error("Raspberry Pi System Access Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.raspberry_pi = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def cpu_temperature(self):
         """ Returns System CPU Temperature as a Float. """

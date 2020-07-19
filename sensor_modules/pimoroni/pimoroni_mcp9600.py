@@ -40,6 +40,7 @@ class CreateMCP9600:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni MCP9600 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_mcp9600 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def temperature(self):
         """ Returns Temperature as a Float. """

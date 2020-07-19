@@ -40,6 +40,7 @@ class CreateVEML6075:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VEML6075 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_veml6075 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def ultra_violet_index(self):
         """ Returns Ultra Violet Index. """

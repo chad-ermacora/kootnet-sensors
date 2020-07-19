@@ -65,6 +65,7 @@ class CreateSPS30:
         except Exception as error:
             logger.sensors_logger.error("Sensirion SPS30 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.sensirion_sps30 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def particulate_matter_data(self):
         """ Returns 3 Particulate Matter readings pm1, pm25, pm4 and pm10 as a list. """

@@ -37,6 +37,7 @@ class CreateW1ThermSenor:
         except Exception as error:
             logger.sensors_logger.error("W1ThermSensor Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.w1_therm_sensor = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def temperature(self):
         """ Returns Temperature as a Float. """

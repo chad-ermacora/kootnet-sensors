@@ -35,6 +35,7 @@ class CreateEnviro:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_enviro = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def temperature(self):
         """ Returns Temperature as a Float in Celsius. """
