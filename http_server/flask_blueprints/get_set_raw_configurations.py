@@ -77,6 +77,81 @@ def set_installed_sensors():
     return "Failed"
 
 
+@html_get_config_routes.route("/GetIntervalConfiguration")
+def get_interval_config():
+    logger.network_logger.debug("* Interval Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.interval_recording_config.get_config_as_str()
+
+
+@html_get_config_routes.route("/SetIntervalConfiguration", methods=["PUT"])
+@auth.login_required
+def set_interval_config():
+    try:
+        if request.form.get("test_run"):
+            app_config_access.interval_recording_config.load_from_file = False
+        else:
+            logger.network_logger.debug("* Interval Configuration Set by " + str(request.remote_addr))
+        app_config_access.interval_recording_config.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.interval_recording_config.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Interval from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
+
+
+@html_get_config_routes.route("/GetHighLowTriggerConfiguration")
+def get_high_low_trigger_config():
+    logger.network_logger.debug("* High Low Trigger Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.trigger_high_low.get_config_as_str()
+
+
+@html_get_config_routes.route("/SetHighLowTriggerConfiguration", methods=["PUT"])
+@auth.login_required
+def set_high_low_trigger_config():
+    try:
+        if request.form.get("test_run"):
+            app_config_access.trigger_high_low.load_from_file = False
+        else:
+            logger.network_logger.debug("* High/Low Trigger Configuration Set by " + str(request.remote_addr))
+        app_config_access.trigger_high_low.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.trigger_high_low.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set High/Low Trigger from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
+
+
+@html_get_config_routes.route("/GetVarianceConfiguration")
+def get_variance_config():
+    logger.network_logger.debug("* Variance Trigger Configuration Sent to " + str(request.remote_addr))
+    return app_config_access.trigger_variances.get_config_as_str()
+
+
+@html_get_config_routes.route("/SetVarianceConfiguration", methods=["PUT"])
+@auth.login_required
+def set_variance_config():
+    try:
+        if request.form.get("test_run"):
+            app_config_access.trigger_variances.load_from_file = False
+        else:
+            logger.network_logger.debug("* Variance Trigger Configuration Set by " + str(request.remote_addr))
+        app_config_access.trigger_variances.set_config_with_str(request.form.get("command_data"))
+        if request.form.get("test_run") is None:
+            app_config_access.trigger_variances.save_config_to_file()
+            app_generic_functions.thread_function(sensor_access.restart_services)
+        return "OK"
+    except Exception as error:
+        log_msg = "Failed to set Trigger Variances from " + str(request.remote_addr)
+        logger.network_logger.error(log_msg + " - " + str(error))
+    return "Failed"
+
+
 @html_get_config_routes.route("/GetDisplayConfiguration")
 def get_display_config():
     logger.network_logger.debug("* Display Configuration Sent to " + str(request.remote_addr))
@@ -97,31 +172,6 @@ def set_display_config():
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Display Configuration from " + str(request.remote_addr)
-        logger.network_logger.error(log_msg + " - " + str(error))
-    return "Failed"
-
-
-@html_get_config_routes.route("/GetVarianceConfiguration")
-def get_variance_config():
-    logger.network_logger.debug("* Variance Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.trigger_variances.get_config_as_str()
-
-
-@html_get_config_routes.route("/SetVarianceConfiguration", methods=["PUT"])
-@auth.login_required
-def set_variance_config():
-    try:
-        if request.form.get("test_run"):
-            app_config_access.trigger_variances.load_from_file = False
-        else:
-            logger.network_logger.debug("* Variance Configuration Set by " + str(request.remote_addr))
-        app_config_access.trigger_variances.set_config_with_str(request.form.get("command_data"))
-        if request.form.get("test_run") is None:
-            app_config_access.trigger_variances.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
-        return "OK"
-    except Exception as error:
-        log_msg = "Failed to set Trigger Variances from " + str(request.remote_addr)
         logger.network_logger.error(log_msg + " - " + str(error))
     return "Failed"
 
