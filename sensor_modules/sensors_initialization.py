@@ -24,6 +24,7 @@ from sensor_modules import linux_os as _linux_os
 from sensor_modules import kootnet_dummy_sensors as _kootnet_dummy_sensors
 from sensor_modules import raspberry_pi_system as _raspberry_pi_system
 from sensor_modules.pimoroni import pimoroni_enviroplus as _pimoroni_enviroplus
+from sensor_modules.pimoroni import pimoroni_pms5003 as _pimoroni_pms5003
 from sensor_modules.pimoroni import pimoroni_vl53l1x as _pimoroni_vl53l1x
 from sensor_modules.pimoroni import pimoroni_enviro as _pimoroni_enviro
 from sensor_modules.pimoroni import pimoroni_lsm303d as _pimoroni_lsm303d
@@ -100,6 +101,9 @@ class CreateSensorAccess:
             if installed_sensors.pimoroni_enviroplus and not self.pimoroni_enviroplus_a.initialized_sensor:
                 self.pimoroni_enviroplus_a = _pimoroni_enviroplus.CreateEnviroPlus()
                 self.pimoroni_enviroplus_a.initialized_sensor = True
+            if installed_sensors.pimoroni_pms5003 and not self.pimoroni_pms5003_a.initialized_sensor:
+                self.pimoroni_pms5003_a = _pimoroni_pms5003.CreatePimoroniPMS5003()
+                self.pimoroni_pms5003_a.initialized_sensor = True
             if installed_sensors.pimoroni_sgp30 and not self.pimoroni_sgp30_a.initialized_sensor:
                 self.pimoroni_sgp30_a = _pimoroni_sgp30.CreateSGP30()
                 self.pimoroni_sgp30_a.initialized_sensor = True
@@ -155,6 +159,7 @@ class CreateSensorAccess:
         self.pimoroni_bmp280_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviro_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviroplus_a = CreateNoSensorsDummySensor()
+        self.pimoroni_pms5003_a = CreateNoSensorsDummySensor()
         self.pimoroni_sgp30_a = CreateNoSensorsDummySensor()
         self.pimoroni_msa301_a = CreateNoSensorsDummySensor()
         self.pimoroni_lsm303d_a = CreateNoSensorsDummySensor()
