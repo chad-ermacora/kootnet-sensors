@@ -40,13 +40,13 @@ def get_interval_readings():
 @html_sensor_readings_routes.route("/GetSensorsLatency")
 def get_sensors_latency():
     logger.network_logger.debug("* Sensor Latency sent to " + str(request.remote_addr))
-    names_latency_list = sensor_access.get_sensors_latency()
+    latency_dic = sensor_access.get_sensors_latency()
     try:
         text_part1 = ""
         text_part2 = ""
         beginning_part = []
         end_part = []
-        for name, entry in zip(names_latency_list[0], names_latency_list[1]):
+        for name, entry in latency_dic.items():
             if entry is not None:
                 beginning_part.append(name)
                 end_part.append(entry)

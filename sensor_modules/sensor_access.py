@@ -144,13 +144,16 @@ def get_last_updated():
 
 def get_sensors_latency():
     """ Returns sensors latency in seconds as a dictionary. """
-    sensor_function_list = [get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
-                            get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
-                            get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz,
-                            get_gyroscope_xyz]
-    sensor_names_list = ["cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
-                         "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
-                         "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
+    sensor_function_list = [
+        get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
+        get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
+        get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz
+    ]
+    sensor_names_list = [
+        "cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
+        "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
+        "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"
+    ]
 
     sensor_latency_dic = {}
     for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
