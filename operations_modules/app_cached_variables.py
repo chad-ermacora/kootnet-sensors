@@ -18,7 +18,6 @@
 """
 from platform import system
 from os import geteuid
-from queue import Queue
 
 
 class CreateNetworkSystemCommands:
@@ -379,15 +378,37 @@ creating_the_big_zip = False
 creating_databases_zip = False
 creating_logs_zip = False
 
+creating_combo_report = False
+creating_system_report = False
+creating_config_report = False
+creating_readings_report = False
+creating_latency_report = False
+
+# Cached Reports
+default_report = """
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="robots" content="noindex">
+        <title>Kootnet Sensor</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    </head>
+    <body style='background-color: black;'>
+        <h2><a style='text-decoration: underline; color: red;' href='/SensorControlManage';>Back to Sensor Control</a></h3>
+        <p style='color: white;'>No report found, please generated the report first</p>
+    </body>
+</html>
+"""
+html_combo_report = default_report
+html_system_report = default_report
+html_config_report = default_report
+html_readings_report = default_report
+html_latency_report = default_report
+
 # Login used for remote sensors (Used in Sensor Control)
 http_login = ""
 http_password = ""
-
-# Used to get data from multiple remote sensors at the "same" time.
-flask_return_data_queue = Queue()
-data_queue = Queue()
-data_queue2 = Queue()
-data_queue3 = Queue()
 
 # Download Sensor SQL Database in a zip placeholder
 sensor_database_zipped = b''

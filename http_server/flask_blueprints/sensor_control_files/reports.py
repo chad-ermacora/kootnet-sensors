@@ -18,6 +18,7 @@
 """
 import time
 from threading import Thread
+from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -271,7 +272,7 @@ class CreateReplacementVariables:
             return ""
 
 
-def get_online_report(ip_address, report_type="systems_report"):
+def get_online_report(ip_address, data_queue, report_type="systems_report"):
     report_type_config = app_config_access.sensor_control_config.radio_report_config
     report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
     report_type_latency_sensors = app_config_access.sensor_control_config.radio_report_sensors_latency
@@ -309,59 +310,65 @@ def get_online_report(ip_address, report_type="systems_report"):
                 else:
                     sensor_report = sensor_report.replace(command_and_replacement[1], command_and_replacement[0])
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
-            if report_type == report_type_config:
-                app_cached_variables.data_queue2.put([sensor_name, sensor_report])
-            elif report_type == report_type_latency_sensors or report_type == report_type_test_sensors:
-                app_cached_variables.data_queue3.put([sensor_name, sensor_report])
-            else:
-                app_cached_variables.data_queue.put([sensor_name, sensor_report])
+            data_queue.put([sensor_name, sensor_report])
     except Exception as error:
         log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
         logger.network_logger.warning(log_msg)
+        data_queue.put([ip_address, "Failed"])
 
 
-def get_sensor_control_report(address_list, report_type="systems_report"):
+def generate_sensor_control_report(address_list, report_type="systems_report"):
     """
     Returns a HTML report based on report_type and sensor addresses provided (IP or DNS addresses as a list).
     Default: systems_report
     """
-    config_report = app_config_access.sensor_control_config.radio_report_config
-    sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-    latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
-    html_sensor_report_end = html_report_system_end
-
     new_report = html_report_system_start
-    if report_type == config_report:
+    html_sensor_report_end = html_report_system_end
+    if report_type == app_config_access.sensor_control_config.radio_report_system:
+        app_cached_variables.creating_system_report = True
+    if report_type == app_config_access.sensor_control_config.radio_report_config:
+        app_cached_variables.creating_config_report = True
         new_report = html_report_config_start
         html_sensor_report_end = html_report_config_end
-    elif report_type == sensors_report:
+    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
+        app_cached_variables.creating_readings_report = True
         new_report = html_report_sensors_test_start
         html_sensor_report_end = html_report_sensors_test_end
-    elif report_type == latency_report:
+    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
+        app_cached_variables.creating_latency_report = True
         new_report = html_report_sensors_latency_start
         html_sensor_report_end = html_report_sensors_test_end
     new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
 
+    data_queue = Queue()
     sensor_reports = []
     threads = []
     for address in address_list:
-        threads.append(Thread(target=get_online_report, args=[address, report_type]))
+        threads.append(Thread(target=get_online_report, args=[address, data_queue, report_type]))
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
 
-    data_queue = app_cached_variables.data_queue
-    if report_type == config_report:
-        data_queue = app_cached_variables.data_queue2
-    if report_type == sensors_report or report_type == latency_report:
-        data_queue = app_cached_variables.data_queue3
     while not data_queue.empty():
         sensor_reports.append(data_queue.get())
         data_queue.task_done()
 
     sensor_reports.sort()
+
     for report in sensor_reports:
         new_report += str(report[1])
     new_report += html_sensor_report_end
-    return new_report
+
+    if report_type == app_config_access.sensor_control_config.radio_report_config:
+        app_cached_variables.html_config_report = new_report
+        app_cached_variables.creating_config_report = False
+    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
+        app_cached_variables.html_readings_report = new_report
+        app_cached_variables.creating_readings_report = False
+    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
+        app_cached_variables.html_latency_report = new_report
+        app_cached_variables.creating_latency_report = False
+    else:
+        app_cached_variables.html_system_report = new_report
+        app_cached_variables.creating_system_report = False

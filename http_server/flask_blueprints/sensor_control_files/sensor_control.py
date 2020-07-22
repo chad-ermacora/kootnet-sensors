@@ -29,10 +29,10 @@ from configuration_modules.config_installed_sensors import CreateInstalledSensor
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
-from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
+from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
     check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
-    create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, get_html_reports_combo, \
+    create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, generate_html_reports_combo, \
     sensor_control_management, get_sum_db_sizes, CreateSensorHTTPCommand
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
@@ -56,19 +56,15 @@ def html_sensor_control_management():
                 ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
                 return check_sensor_status_sensor_control(ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_combo:
-                return get_html_reports_combo(ip_list, skip_rewrite_link=True)
+                app_generic_functions.thread_function(_thread_combo_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_system:
-                system_report = app_config_access.sensor_control_config.radio_report_system
-                return get_sensor_control_report(ip_list, report_type=system_report)
+                app_generic_functions.thread_function(_thread_system_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_config:
-                config_report = app_config_access.sensor_control_config.radio_report_config
-                return get_sensor_control_report(ip_list, report_type=config_report)
+                app_generic_functions.thread_function(_thread_config_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_test_sensors:
-                sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-                return get_sensor_control_report(ip_list, report_type=sensors_report)
+                app_generic_functions.thread_function(_thread_readings_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
-                latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
-                return get_sensor_control_report(ip_list, report_type=latency_report)
+                app_generic_functions.thread_function(_thread_latency_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_download_reports:
                 app_cached_variables.creating_the_reports_zip = True
                 logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
@@ -102,6 +98,57 @@ def html_sensor_control_management():
                 app_cached_variables.creating_the_big_zip = True
                 app_generic_functions.thread_function(create_the_big_zip, args=ip_list)
     return sensor_control_management()
+
+
+def _thread_combo_report(ip_list):
+    generate_html_reports_combo(ip_list, skip_rewrite_link=True)
+
+
+def _thread_system_report(ip_list):
+    system_report = app_config_access.sensor_control_config.radio_report_system
+    generate_sensor_control_report(ip_list, report_type=system_report)
+
+
+def _thread_config_report(ip_list):
+    config_report = app_config_access.sensor_control_config.radio_report_config
+    generate_sensor_control_report(ip_list, report_type=config_report)
+
+
+def _thread_readings_report(ip_list):
+    sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
+    generate_sensor_control_report(ip_list, report_type=sensors_report)
+
+
+def _thread_latency_report(ip_list):
+    latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
+    generate_sensor_control_report(ip_list, report_type=latency_report)
+
+
+@html_sensor_control_routes.route("/GetComboReport")
+@auth.login_required
+def html_get_combo_report():
+    return app_cached_variables.html_combo_report
+
+
+@html_sensor_control_routes.route("/GetSystemReport")
+def html_get_system_report():
+    return app_cached_variables.html_system_report
+
+
+@html_sensor_control_routes.route("/GetConfigReport")
+@auth.login_required
+def html_get_config_report():
+    return app_cached_variables.html_config_report
+
+
+@html_sensor_control_routes.route("/GetReadingsReport")
+def html_get_readings_report():
+    return app_cached_variables.html_readings_report
+
+
+@html_sensor_control_routes.route("/GetLatencyReport")
+def html_get_latency_report():
+    return app_cached_variables.html_latency_report
 
 
 @html_sensor_control_routes.route("/MultiSCSaveSettings", methods=["POST"])

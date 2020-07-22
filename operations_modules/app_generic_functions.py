@@ -343,15 +343,6 @@ def get_zip_size(zip_file):
     return files_size
 
 
-def get_data_queue_items():
-    """ Returns an item from the app_cached_variables.data_queue. """
-    que_data = []
-    while not app_cached_variables.data_queue.empty():
-        que_data.append(app_cached_variables.data_queue.get())
-        app_cached_variables.data_queue.task_done()
-    return que_data
-
-
 def replace_text_lists(original_text, old_list, new_list):
     """
     Replaces text in the provided 'original_text' argument.

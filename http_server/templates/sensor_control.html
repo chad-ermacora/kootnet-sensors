@@ -154,6 +154,31 @@
         <div class="mui-tabs__pane mui--is-active" id="main-tab">
             <br>
             <label style="color: red; display: inline-block; text-align: center; width: 600px;">
+                Open Generated Reports
+                <br>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetComboReport';" type="button">
+                    Combination
+                </button>
+                <br>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetSystemReport';" type="button">
+                    System
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetConfigReport';" type="button">
+                    Configuration
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetReadingsReport';" type="button">
+                    Readings
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetLatencyReport';" type="button">
+                    Latency
+                </button>
+            </label>
+            <label style="color: red; display: inline-block; text-align: center; width: 600px;">
                 Available Zip Downloads
                 <br>
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
@@ -195,45 +220,44 @@
                             Online Status
                             <span class="checkmark_radio"></span>
                         </label>
-                        <br>
+                        <h4 style="text-decoration: underline; color: purple;">Generate Report</h4>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedComboReports }}
                                    id="RadioComboReports" value="combo_report">
-                            Combination Report
+                            Combination
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSystemReports }}
                                    id="RadioSystemReports" value="systems_report">
-                            Systems Report
+                            Systems
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    id="RadioConfigReports" value="config_report">
-                            Configurations Report
+                            Configurations
                             <span class="checkmark_radio"></span>
                         </label>
-                        <br>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
                                    id="RadioSensorsTests" value="sensors_test_report">
-                            Sensors Reading Report
+                            Readings
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSensorsLatencyReports }}
                                    id="RadioSensorsLatency" value="sensors_latency_report">
-                            Sensors Latency Report
+                            latencies
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
-                        <h4 style="text-decoration: underline; color: purple;">Download Zip File</h4>
+                        <h4 style="text-decoration: underline; color: purple;">Generate Zip File</h4>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedDownloadBig }}
                                    id="RadioDownloadBigZip"
-                                   value="sensors_download_everything" {{ DownloadBigDisabled }}>
+                                   value="sensors_download_everything">
                             Create "The Big Zip" (Reports, Logs & Databases)
                             <span class="checkmark_radio"></span>
                         </label>
@@ -241,7 +265,7 @@
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
                                    id="RadioDownloadReports"
-                                   value="sensors_download_reports" {{ DisabledDownloadReports }}>
+                                   value="sensors_download_reports">
                             Combination Report
                             <span class="checkmark_radio"></span>
                         </label>

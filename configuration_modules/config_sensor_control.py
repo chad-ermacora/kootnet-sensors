@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from threading import Thread
+from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -37,6 +38,8 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
                                       "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
                                       "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
                                       "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+
+        self.local_queue = Queue()
 
         self.radio_check_status = "online_status"
         self.radio_report_combo = "combo_report"
@@ -115,23 +118,19 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             for thread in threaded_checks:
                 thread.join()
 
-            while not app_cached_variables.flask_return_data_queue.empty():
-                online_ip_list.append(app_cached_variables.flask_return_data_queue.get())
-                app_cached_variables.flask_return_data_queue.task_done()
+            while not self.local_queue.empty():
+                online_ip_list.append(self.local_queue.get())
+                self.local_queue.task_done()
         except Exception as error:
             logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
         return online_ip_list
 
-    @staticmethod
-    def _check_address(sensor_address):
-        """
-        Checks if a remote sensor is online and if so, saves the results to a queue.
-        Queue located at app_cached_variables.flask_return_data_queue.
-        """
+    def _check_address(self, sensor_address):
+        """ Checks if a remote sensor is online and if so, saves the results to a queue. """
         try:
             sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
             if sensor_online_check == "OK":
-                app_cached_variables.flask_return_data_queue.put(sensor_address)
+                self.local_queue.put(sensor_address)
         except Exception as error:
             logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))
 
