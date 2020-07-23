@@ -13,6 +13,16 @@
             Installed Sensors
         </a></li>
         <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="checkin-config-tab">
+            Checkin Server & View
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="display-config-tab">
+            Display
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="sensor-control-tab">
+            Sensor Control
+        </a></li>
+        <br>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="interval-recording-tab">
             Interval Recording
         </a></li>
@@ -43,12 +53,6 @@
             Open Sense Map
         </a></li>
         <br>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="display-config-tab">
-            Display
-        </a></li>
-        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="sensor-control-tab">
-            Sensor Control
-        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
             Networking
         </a></li>
@@ -86,6 +90,17 @@
             <h4 style="color: #00B0FF;">Location: {{ ISLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ InstalledSensorsConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="checkin-config-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Checkin Server & View</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ CheckinConfigLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ CheckinServerViewConfiguration }}</span>
         </div>
     </div>
 

@@ -136,6 +136,8 @@ def html_raw_configurations_view():
         MCLocation=file_locations.primary_config,
         InstalledSensorsConfiguration=str(get_file_content(file_locations.installed_sensors_config)),
         ISLocation=file_locations.installed_sensors_config,
+        CheckinServerViewConfiguration=str(get_file_content(file_locations.checkin_configuration)),
+        CheckinConfigLocation=file_locations.checkin_configuration,
         DisplayConfiguration=str(get_file_content(file_locations.display_config)),
         DCLocation=file_locations.display_config,
         IntervalConfiguration=str(get_file_content(file_locations.interval_config)),
