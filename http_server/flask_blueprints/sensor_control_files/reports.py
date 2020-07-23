@@ -36,7 +36,7 @@ from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
-from sensor_modules.sensor_access import get_system_datetime
+from sensor_modules.sensor_access import get_system_datetime, get_temperature_correction
 
 running_with_root = app_cached_variables.running_with_root
 if software_version.old_version == software_version.version:
@@ -175,13 +175,15 @@ class CreateReplacementVariables:
             installed_sensors_config.config_settings_names[2] = rpi_model_name
 
             text_debug = self.get_enabled_disabled_text(sensors_config.enable_debug_logging)
+            text_checkin = self.get_enabled_disabled_text(sensors_config.enable_checkin)
             text_display = self.get_enabled_disabled_text(display_config.enable_display)
             text_interval_recording = self.get_enabled_disabled_text(interval_config.enable_interval_recording)
             text_interval_seconds = str(interval_config.sleep_duration_interval)
             text_trigger_recording = self.get_enabled_disabled_text(variance_trigger_config.enable_trigger_variance)
             enable_high_low_trigger_recording = high_low_trigger_config.enable_high_low_trigger_recording
             text_trigger_recording += " / " + self.get_enabled_disabled_text(enable_high_low_trigger_recording)
-            text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp)
+            text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp) + " / "
+            text_custom_temperature += self.get_enabled_disabled_text(sensors_config.enable_temperature_comp_factor)
 
             wifi_network_colour = "orangered"
             if len(wifi_ssid) > 0:
@@ -190,6 +192,10 @@ class CreateReplacementVariables:
             debug_colour = "#F4A460"
             if sensors_config.enable_debug_logging:
                 debug_colour = "lightgreen"
+
+            checkin_colour = "#F4A460"
+            if sensors_config.enable_checkin:
+                checkin_colour = "lightgreen"
 
             display_colour = "#F4A460"
             if display_config.enable_display:
@@ -205,23 +211,24 @@ class CreateReplacementVariables:
                 trigger_recording_colour = "lightgreen"
 
             temp_offset_colour = "#F4A460"
-            if sensors_config.enable_custom_temp:
+            if sensors_config.enable_custom_temp or sensors_config.enable_temperature_comp_factor:
                 temp_offset_colour = "lightgreen"
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
+                             [text_checkin, "{{ SensorCheckin }}"],
                              [text_display, "{{ Display }}"],
                              [text_interval_recording, "{{ IntervalRecording }}"],
                              [text_interval_seconds, "{{ IntervalSeconds }}"],
                              [text_trigger_recording, "{{ TriggerRecording }}"],
-                             [text_custom_temperature, "{{ EnableTemperatureOffset }}"],
-                             [str(sensors_config.temperature_offset), "{{ TemperatureOffset }}"],
+                             [text_custom_temperature, "{{ TemperatureOffset }}"],
                              [wifi_ssid, "{{ WifiNetwork }}"],
                              [weather_underground_enabled, "{{ WeatherUnderground }}"],
                              [luftdaten_enabled, "{{ Luftdaten }}"],
                              [open_sense_map_enabled, "{{ OpenSenseMap }}"],
                              [wifi_network_colour, "{{ WifiNetworkColour }}"],
                              [debug_colour, "{{ DebugLoggingColour }}"],
+                             [checkin_colour, "{{ CheckinColour }}"],
                              [display_colour, "{{ DisplayColour }}"],
                              [interval_recording_colour, "{{ IntervalRecordingColour }}"],
                              [trigger_recording_colour, "{{ TriggerRecordingColour }}"],
@@ -229,7 +236,8 @@ class CreateReplacementVariables:
                              [weather_underground_colour, "{{ WeatherUndergroundColour }}"],
                              [luftdaten_colour, "{{ LuftdatenColour }}"],
                              [open_sense_map_colour, "{{ OpenSenseMapColour }}"],
-                             [installed_sensors_config.get_installed_names_str(), "{{ InstalledSensors }}"]]
+                             [installed_sensors_config.get_installed_names_str(skip_root_check=True),
+                              "{{ InstalledSensors }}"]]
             return value_replace
         except Exception as error:
             log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Config Report Failed: " + str(error)
