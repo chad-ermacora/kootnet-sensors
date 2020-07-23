@@ -174,12 +174,14 @@ class CreateReplacementVariables:
                 rpi_model_name = "Raspberry Pi"
             installed_sensors_config.config_settings_names[2] = rpi_model_name
 
-            text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
-            text_display = str(self.get_enabled_disabled_text(display_config.enable_display))
-            text_interval_recording = str(self.get_enabled_disabled_text(interval_config.enable_interval_recording))
+            text_debug = self.get_enabled_disabled_text(sensors_config.enable_debug_logging)
+            text_display = self.get_enabled_disabled_text(display_config.enable_display)
+            text_interval_recording = self.get_enabled_disabled_text(interval_config.enable_interval_recording)
             text_interval_seconds = str(interval_config.sleep_duration_interval)
-            text_trigger_recording = str(self.get_enabled_disabled_text(variance_trigger_config.enable_trigger_variance))
-            text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
+            text_trigger_recording = self.get_enabled_disabled_text(variance_trigger_config.enable_trigger_variance)
+            enable_high_low_trigger_recording = high_low_trigger_config.enable_high_low_trigger_recording
+            text_trigger_recording += " / " + self.get_enabled_disabled_text(enable_high_low_trigger_recording)
+            text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp)
 
             wifi_network_colour = "orangered"
             if len(wifi_ssid) > 0:
@@ -198,7 +200,8 @@ class CreateReplacementVariables:
                 interval_recording_colour = "lightgreen"
 
             trigger_recording_colour = "#F4A460"
-            if variance_trigger_config.enable_trigger_variance:
+            if variance_trigger_config.enable_trigger_variance or \
+                    app_config_access.trigger_high_low.enable_high_low_trigger_recording:
                 trigger_recording_colour = "lightgreen"
 
             temp_offset_colour = "#F4A460"
