@@ -201,7 +201,7 @@ class CreateReplacementVariables:
 
             trigger_recording_colour = "#F4A460"
             if variance_trigger_config.enable_trigger_variance or \
-                    app_config_access.trigger_high_low.enable_high_low_trigger_recording:
+                    high_low_trigger_config.enable_high_low_trigger_recording:
                 trigger_recording_colour = "lightgreen"
 
             temp_offset_colour = "#F4A460"
