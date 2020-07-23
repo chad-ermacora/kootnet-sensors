@@ -143,7 +143,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.update_configuration_settings_list()
         self.load_from_file = True
 
-    def get_installed_names_str(self):
+    def get_installed_names_str(self, skip_root_check=False):
         """ Returns Installed Sensors as a String. """
         logger.primary_logger.debug("Returning Installed Sensors as a string for " + str(self.config_file_location))
         new_file_content = ""
@@ -151,7 +151,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             if int(setting):
                 new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
-            if geteuid():
+            if not skip_root_check and geteuid():
                 return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
             return new_file_content[:-4]
         return "N/A"
