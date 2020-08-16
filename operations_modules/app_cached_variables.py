@@ -425,3 +425,23 @@ sc_in_memory_zip = b''
 # HTML Sensor Notes Variables
 notes_total_count = 0
 note_current = 1
+
+# Quick Graph's Variables
+quick_graph_max_sql_entries = 20000
+quick_graph_skip_sql_entries = 3
+quick_graph_hours = 48
+quick_graph_uptime = 0
+quick_graph_cpu_temp = 1
+quick_graph_env_temp = 1
+quick_graph_pressure = 0
+quick_graph_altitude = 0
+quick_graph_humidity = 0
+quick_graph_distance = 0
+quick_graph_gas = 0
+quick_graph_particulate_matter = 0
+quick_graph_lumen = 0
+quick_graph_colours = 0
+quick_graph_ultra_violet = 0
+quick_graph_acc = 0
+quick_graph_mag = 0
+quick_graph_gyro = 0
