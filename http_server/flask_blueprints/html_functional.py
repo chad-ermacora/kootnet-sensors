@@ -50,6 +50,11 @@ def menu_style_css():
     return send_file(html_extras_dir + "/style.css")
 
 
+@html_functional_routes.route("/Chart.min.js")
+def charts_min_js():
+    return send_file(html_extras_dir + "/Chart.bundle.min.js")
+
+
 @html_functional_routes.route("/jquery.min.js")
 def jquery_slim_min_js():
     return send_file(html_extras_dir + "/jquery-3.4.1.min.js")
