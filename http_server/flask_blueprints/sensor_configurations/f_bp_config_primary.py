@@ -51,6 +51,7 @@ def get_config_primary_tab():
                                PageURL="/ConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
+                               HourOffset=app_config_access.primary_config.utc0_hour_offset,
                                CheckedSensorCheckIns=sensor_check_ins,
                                CheckinHours=app_config_access.primary_config.checkin_wait_in_hours,
                                CheckinAddress=app_config_access.primary_config.checkin_url,

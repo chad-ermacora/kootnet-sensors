@@ -28,11 +28,11 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 9
+        self.valid_setting_count = 10
         self.config_settings_names = [
             "HTTPS Port Number (Default is 10065)", "Enable Debug Logging", "Enable Custom Temperature Offset",
             "Current Temperature Offset", "Enable Temperature Compensation Factor", "Temperature Compensation Factor",
-            "Enable Sensor Check-Ins", "Checkin URL", "Checkin Every X Hours"
+            "Enable Sensor Check-Ins", "Checkin URL", "Checkin Every X Hours", "Hours Offset from UTC 0"
         ]
 
         self.enable_checkin = 1
@@ -41,6 +41,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.checkin_url = "server.dragonwarz.net:10065"
 
         self.enable_debug_logging = 0
+        self.utc0_hour_offset = 0.0
 
         self.enable_custom_temp = 0
         self.temperature_offset = 0.0
@@ -74,6 +75,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         else:
             logger.set_logging_level(debug_enabled=False)
 
+        if html_request.form.get("program_hour_offset") is not None:
+            self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
+
         if html_request.form.get("enable_custom_temp_offset") is not None:
             new_temp = float(html_request.form.get("custom_temperature_offset"))
             self.enable_custom_temp = 1
@@ -102,7 +106,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_settings = [
             str(self.web_portal_port), str(self.enable_debug_logging), str(self.enable_custom_temp),
             str(self.temperature_offset), str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor),
-            str(self.enable_checkin), str(self.checkin_url), str(self.checkin_wait_in_hours)
+            str(self.enable_checkin), str(self.checkin_url), str(self.checkin_wait_in_hours), str(self.utc0_hour_offset)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -116,6 +120,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_checkin = int(self.config_settings[6])
             self.checkin_url = self.config_settings[7].strip()
             self.checkin_wait_in_hours = float(self.config_settings[8].strip())
+            self.utc0_hour_offset = float(self.config_settings[9].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))
