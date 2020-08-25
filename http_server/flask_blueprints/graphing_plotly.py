@@ -23,17 +23,18 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
+from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state, get_html_checkbox_state
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 
 html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
 
 
-@html_plotly_graphing_routes.route("/PlotlyGraph")
-def html_plotly_graphing():
-    logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
+@html_plotly_graphing_routes.route("/Graphing")
+def html_graphing():
+    logger.network_logger.debug("* Graphing viewed by " + str(request.remote_addr))
 
     extra_message = ""
     button_disabled = ""
@@ -52,15 +53,32 @@ def html_plotly_graphing():
         triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
     except FileNotFoundError:
         triggers_creation_date = "No Plotly Graph Found"
-
-    return render_template("plotly_graph.html",
-                           PageURL="/PlotlyGraph",
+    return render_template("graphing.html",
+                           PageURL="/Graphing",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ExtraTextMessage=extra_message,
                            CreateButtonDisabled=button_disabled,
                            IntervalPlotlyDate=interval_creation_date,
-                           TriggerPlotlyDate=triggers_creation_date)
+                           TriggerPlotlyDate=triggers_creation_date,
+                           UTCOffset=app_config_access.primary_config.utc0_hour_offset,
+                           SkipSQLEntries=app_cached_variables.quick_graph_skip_sql_entries,
+                           MaxSQLEntries=app_cached_variables.quick_graph_max_sql_entries,
+                           SensorUptimeChecked=get_html_checkbox_state(app_cached_variables.quick_graph_uptime),
+                           CPUTemperatureChecked=get_html_checkbox_state(app_cached_variables.quick_graph_cpu_temp),
+                           EnvTemperatureChecked=get_html_checkbox_state(app_cached_variables.quick_graph_env_temp),
+                           PressureChecked=get_html_checkbox_state(app_cached_variables.quick_graph_pressure),
+                           AltitudeChecked=get_html_checkbox_state(app_cached_variables.quick_graph_altitude),
+                           HumidityChecked=get_html_checkbox_state(app_cached_variables.quick_graph_humidity),
+                           DistanceChecked=get_html_checkbox_state(app_cached_variables.quick_graph_distance),
+                           GasChecked=get_html_checkbox_state(app_cached_variables.quick_graph_gas),
+                           PMChecked=get_html_checkbox_state(app_cached_variables.quick_graph_particulate_matter),
+                           LumenChecked=get_html_checkbox_state(app_cached_variables.quick_graph_lumen),
+                           ColoursChecked=get_html_checkbox_state(app_cached_variables.quick_graph_colours),
+                           UltraVioletChecked=get_html_checkbox_state(app_cached_variables.quick_graph_ultra_violet),
+                           AccChecked=get_html_checkbox_state(app_cached_variables.quick_graph_acc),
+                           MagChecked=get_html_checkbox_state(app_cached_variables.quick_graph_mag),
+                           GyroChecked=get_html_checkbox_state(app_cached_variables.quick_graph_gyro))
 
 
 @html_plotly_graphing_routes.route("/CreatePlotlyGraph", methods=["POST"])
@@ -86,12 +104,12 @@ def html_create_plotly_graph():
             new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
 
             if len(new_graph_data.graph_columns) < 4:
-                return message_and_return("Please Select at least One Sensor", url="/PlotlyGraph")
+                return message_and_return("Please Select at least One Sensor", url="/Graphing")
             else:
                 app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
-    return html_plotly_graphing()
+    return html_graphing()
 
 
 @html_plotly_graphing_routes.route("/ViewIntervalPlotlyGraph")
