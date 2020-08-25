@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import strftime
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -57,6 +57,10 @@ def html_system_information():
 
     enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
     enable_trigger_recording = app_config_access.trigger_variances.enable_trigger_variance
+
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+
     return render_template(
         "sensor_information.html",
         PageURL="/SensorInformation",
@@ -70,7 +74,7 @@ def html_system_information():
         NewStandardKootnetVersion=app_cached_variables.standard_version_available,
         NewDevelopmentalKootnetVersion=app_cached_variables.developmental_version_available,
         LastUpdated=app_cached_variables.program_last_updated,
-        DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
+        DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
         SystemUptime=sensor_access.get_uptime_str(),
         SensorReboots=app_cached_variables.reboot_count,
         CPUTemperature=sensor_access.get_cpu_temperature(),
@@ -183,6 +187,9 @@ def html_sensors_readings():
                 uv_b = uv_readings[app_cached_variables.database_variables.ultra_violet_b]
 
         red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
+
+        utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+        current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
         return render_template(
             "sensor_readings.html",
             PageURL="/SensorReadings",
@@ -191,7 +198,7 @@ def html_sensors_readings():
             URLRedirect="SensorReadings",
             HostName=app_cached_variables.hostname,
             IPAddress=app_cached_variables.ip,
-            DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
+            DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
             SystemUptime=sensor_access.get_uptime_str(),
             CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
             RAWEnvTemperature=str(raw_temp) + " °C",
@@ -268,6 +275,9 @@ def _get_ems_for_render_template():
 def html_sensors_latency():
     logger.network_logger.debug("** Sensor Latency accessed from " + str(request.remote_addr))
     sensors_latency = sensor_access.get_sensors_latency()
+
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
     return render_template(
         "sensor_readings.html",
         PageURL="/TestSensorLatency",
@@ -276,7 +286,7 @@ def html_sensors_latency():
         URLRedirect="TestSensorLatency",
         HostName="Sensor Latency",
         IPAddress=app_cached_variables.ip,
-        DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
+        DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
         SystemUptime=sensor_access.get_uptime_str(),
         CPUTemperature=str(sensors_latency["cpu_temperature"]) + " Seconds",
         RAWEnvTemperature=str(sensors_latency["environment_temperature"]) + " Seconds",
