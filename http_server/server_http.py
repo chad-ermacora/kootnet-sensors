@@ -55,6 +55,7 @@ try:
         html_config_checkin_server_routes
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.sensor_control_files.sensor_control import html_sensor_control_routes
+    from http_server.flask_blueprints.graphing import html_graphing_routes
     from http_server.flask_blueprints.graphing_quick import html_quick_graphing_routes
     from http_server.flask_blueprints.graphing_plotly import html_plotly_graphing_routes
     from http_server.flask_blueprints.system_commands import html_system_commands_routes
@@ -81,7 +82,7 @@ except ImportError as https_import_error_msg_raw:
     html_sensor_config_routes, html_sensor_readings_routes, html_get_config_routes = None, None, None
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     html_config_mqtt_subscriber_routes, html_sensor_check_ins_routes, html_quick_graphing_routes = None, None, None
-    html_config_checkin_server_routes, Flask, Compress, WSGIServer = None, None, None, None
+    html_graphing_routes, html_config_checkin_server_routes, Flask, Compress, WSGIServer = None, None, None, None, None
 
 
 class CreateSensorHTTP:
@@ -112,6 +113,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_config_checkin_server_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_sensor_control_routes)
+        app.register_blueprint(html_graphing_routes)
         app.register_blueprint(html_quick_graphing_routes)
         app.register_blueprint(html_plotly_graphing_routes)
         app.register_blueprint(html_system_commands_routes)
