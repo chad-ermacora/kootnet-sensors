@@ -48,10 +48,10 @@ def html_edit_online_services_luftdaten():
             if app_cached_variables.luftdaten_thread is not None:
                 app_cached_variables.luftdaten_thread.shutdown_thread = True
                 app_cached_variables.restart_luftdaten_thread = True
-        return message_and_return(return_text, url="/ConfigurationsHTML")
+        return message_and_return(return_text, url="/3rdPartyConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Luftdaten set Error")
-        return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+        return message_and_return("Bad Configuration POST Request", url="/3rdPartyConfigurationsHTML")
 
 
 def get_config_luftdaten_tab():
@@ -64,7 +64,7 @@ def get_config_luftdaten_tab():
         luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
         luftdaten_station_id = app_config_access.luftdaten_config.station_id
         return render_template("edit_configurations/config_luftdaten.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/3rdPartyConfigurationsHTML",
                                CheckedLuftdatenEnabled=luftdaten_checked,
                                LuftdatenIntervalSeconds=luftdaten_interval_seconds,
                                DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,

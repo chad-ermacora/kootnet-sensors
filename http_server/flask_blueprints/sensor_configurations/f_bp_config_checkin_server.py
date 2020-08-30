@@ -32,13 +32,13 @@ def html_set_checkin_settings():
     if request.method == "POST":
         app_config_access.checkin_config.update_with_html_request(request)
         app_config_access.checkin_config.save_config_to_file()
-    return message_and_return("Checkin Server Settings Saved", url="/ConfigurationsHTML")
+    return message_and_return("Checkin Server Settings Saved", url="/CheckinServerConfigurationHTML")
 
 
 def get_config_checkin_server_tab():
     enable_checkin_recording = app_config_access.checkin_config.enable_checkin_recording
     return render_template("edit_configurations/config_checkin_server.html",
-                           PageURL="/ConfigurationsHTML",
+                           PageURL="/CheckinServerConfigurationHTML",
                            CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
                            ContactInPastDays=app_config_access.checkin_config.count_contact_days,
                            CheckinHourOffset=app_config_access.checkin_config.hour_offset,

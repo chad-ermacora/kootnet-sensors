@@ -35,10 +35,10 @@ def html_set_display_config():
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
             app_cached_variables.restart_mini_display_thread = True
-            return message_and_return(get_restart_service_text("Display"), url="/ConfigurationsHTML")
+            return message_and_return(get_restart_service_text("Display"), url="/DisplayConfigurationsHTML")
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Display Configuration - Error: " + str(error))
-            return message_and_return("Bad Display Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Display Configuration POST Request", url="/DisplayConfigurationsHTML")
 
 
 def get_config_display_tab():
@@ -68,7 +68,7 @@ def get_config_display_tab():
         magnetometer = app_config_access.display_config.magnetometer
         gyroscope = app_config_access.display_config.gyroscope
         return render_template("edit_configurations/config_display.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/DisplayConfigurationsHTML",
                                CheckedEnableDisplay=display,
                                DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
                                DisplayNumericalChecked=display_numerical_checked,

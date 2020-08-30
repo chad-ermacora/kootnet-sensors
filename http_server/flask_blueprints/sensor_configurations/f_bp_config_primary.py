@@ -34,11 +34,11 @@ def html_set_config_main():
             app_config_access.primary_config.update_with_html_request(request)
             app_config_access.primary_config.save_config_to_file()
             page_msg = "Main Configuration Set & Applied"
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MainConfigurationsHTML")
 
 
 def get_config_primary_tab():
@@ -48,7 +48,7 @@ def get_config_primary_tab():
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
         custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
         return render_template("edit_configurations/config_primary.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
                                HourOffset=app_config_access.primary_config.utc0_hour_offset,

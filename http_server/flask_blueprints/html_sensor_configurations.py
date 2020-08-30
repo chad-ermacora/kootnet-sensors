@@ -66,25 +66,73 @@ html_sensor_config_routes = Blueprint("html_sensor_config_routes", __name__)
 running_with_root = app_cached_variables.running_with_root
 
 
-@html_sensor_config_routes.route("/ConfigurationsHTML")
+@html_sensor_config_routes.route("/MainConfigurationsHTML")
 @auth.login_required
-def html_edit_configurations():
-    logger.network_logger.debug("** HTML Configurations accessed from " + str(request.remote_addr))
+def html_edit_main_configurations():
+    logger.network_logger.debug("** HTML Main Configurations accessed from " + str(request.remote_addr))
     return render_template(
-        "edit_configurations.html",
-        PageURL="/ConfigurationsHTML",
+        "edit_main_configs.html",
+        PageURL="/MainConfigurationsHTML",
         RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
         RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
         ConfigPrimaryTab=get_config_primary_tab(),
         ConfigIntervalRecordingTab=get_config_interval_recording_tab(),
         ConfigTriggerHighLowTab=get_config_trigger_high_low_tab(),
         ConfigTriggerVariancesTab=get_config_trigger_variances_tab(),
-        ConfigInstalledSensorsTab=get_config_installed_sensors_tab(),
-        ConfigDisplayTab=get_config_display_tab(),
-        ConfigCheckinServerTab=get_config_checkin_server_tab(),
+        ConfigInstalledSensorsTab=get_config_installed_sensors_tab()
+    )
+
+
+@html_sensor_config_routes.route("/DisplayConfigurationsHTML")
+@auth.login_required
+def html_edit_display_configurations():
+    logger.network_logger.debug("** HTML Display Configurations accessed from " + str(request.remote_addr))
+    return render_template(
+        "edit_display_config.html",
+        PageURL="/DisplayConfigurationsHTML",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        ConfigDisplayTab=get_config_display_tab()
+    )
+
+
+@html_sensor_config_routes.route("/CheckinServerConfigurationHTML")
+@auth.login_required
+def html_edit_checkin_server_configuration():
+    logger.network_logger.debug("** HTML Checkin Server Configuration accessed from " + str(request.remote_addr))
+    return render_template(
+        "edit_checkin_server_config.html",
+        PageURL="/CheckinServerConfigurationHTML",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        ConfigCheckinServerTab=get_config_checkin_server_tab()
+    )
+
+
+@html_sensor_config_routes.route("/MQTTConfigurationsHTML")
+@auth.login_required
+def html_edit_mqtt_configurations():
+    logger.network_logger.debug("** HTML MQTT Configurations accessed from " + str(request.remote_addr))
+    return render_template(
+        "edit_mqtt_configs.html",
+        PageURL="/MQTTConfigurationsHTML",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
         ConfigMQTTBrokerTab=get_config_mqtt_broker_tab(),
         ConfigMQTTPublisherTab=get_config_mqtt_publisher_tab(),
-        ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab(),
+        ConfigMQTTSubscriberTab=get_config_mqtt_subscriber_tab()
+    )
+
+
+@html_sensor_config_routes.route("/3rdPartyConfigurationsHTML")
+@auth.login_required
+def html_edit_3rd_party_configurations():
+    logger.network_logger.debug("** HTML 3rd Party Configurations accessed from " + str(request.remote_addr))
+    return render_template(
+        "edit_3rd_party_configs.html",
+        PageURL="/3rdPartyConfigurationsHTML",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
         ConfigWUTab=get_config_weather_underground_tab(),
         ConfigLuftdatenTab=get_config_luftdaten_tab(),
         ConfigOSMTab=get_config_osm_tab()

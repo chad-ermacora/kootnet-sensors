@@ -48,11 +48,11 @@ def html_set_config_mqtt_broker():
             else:
                 return_text = "MQTT Broker Configuration Saved & Service Stopped"
                 stop_mqtt_broker_server()
-            return_page = message_and_return(return_text, url="/ConfigurationsHTML")
+            return_page = message_and_return(return_text, url="/MQTTConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Broker Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MQTTConfigurationsHTML")
 
 
 def get_config_mqtt_broker_tab():
@@ -61,7 +61,7 @@ def get_config_mqtt_broker_tab():
         if os.path.isfile(file_locations.mosquitto_configuration):
             mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
         return render_template("edit_configurations/config_mqtt_broker.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MQTTConfigurationsHTML",
                                BrokerServerChecked=get_html_checkbox_state(check_mqtt_broker_server_running()),
                                BrokerMosquittoConfig=mosquitto_configuration)
     except Exception as error:

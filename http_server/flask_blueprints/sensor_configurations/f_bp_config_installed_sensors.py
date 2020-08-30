@@ -39,18 +39,18 @@ def html_set_installed_sensors():
             app_config_access.installed_sensors.save_config_to_file()
             sensor_access.sensors_direct.__init__()
             recording_interval.available_sensors.__init__()
-            return_page = message_and_return("Installed Sensors Set & Re-Initialized", url="/ConfigurationsHTML")
+            return_page = message_and_return("Installed Sensors Set & Re-Initialized", url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
-            return message_and_return("Bad Installed Sensors POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Installed Sensors POST Request", url="/MainConfigurationsHTML")
 
 
 def get_config_installed_sensors_tab():
     try:
         installed_sensors = app_config_access.installed_sensors
         return render_template("edit_configurations/config_installed_sensors.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
                                KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
                                RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),

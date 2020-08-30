@@ -36,11 +36,11 @@ def html_set_config_interval_recording():
             app_config_access.interval_recording_config.save_config_to_file()
             page_msg = "Config Set, Restarting Interval Server"
             app_cached_variables.restart_interval_recording_thread = True
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MainConfigurationsHTML")
 
 
 def get_config_interval_recording_tab():
@@ -48,7 +48,7 @@ def get_config_interval_recording_tab():
     try:
         return render_template(
             "edit_configurations/config_interval_recording.html",
-            PageURL="/ConfigurationsHTML",
+            PageURL="/MainConfigurationsHTML",
             CheckedInterval=get_html_checkbox_state(interval_config.enable_interval_recording),
             IntervalDelay=float(interval_config.sleep_duration_interval),
             CheckedSensorUptime=get_html_checkbox_state(interval_config.sensor_uptime_enabled),

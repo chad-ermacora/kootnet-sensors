@@ -37,11 +37,11 @@ def html_set_trigger_variances():
             app_config_access.trigger_variances.save_config_to_file()
             page_msg = "Trigger Variances Set, Please Restart Program"
             app_cached_variables.html_service_restart = True
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
-    return message_and_return("Bad Trigger Variances POST Request", url="/ConfigurationsHTML")
+    return message_and_return("Bad Trigger Variances POST Request", url="/MainConfigurationsHTML")
 
 
 @html_config_trigger_variances_routes.route("/SetTriggerVariancesLowestSeconds")
@@ -51,7 +51,7 @@ def html_set_lowest_trigger_variances_seconds():
     auto_set_triggers_wait_time(app_config_access.trigger_variances, set_lowest=True)
     msg_1 = "Trigger Variance Seconds Settings Set to Lowest"
     msg_2 = "The Variance Trigger recording 'seconds' settings have been set to the Lowest recommended values."
-    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
 
 
 @html_config_trigger_variances_routes.route("/ResetTriggerVariances")
@@ -61,14 +61,14 @@ def html_reset_trigger_variances():
     auto_set_triggers_wait_time(app_config_access.trigger_variances)
     msg_1 = "Trigger Variance Seconds Settings Set to Default"
     msg_2 = "The Variance Trigger recording 'seconds' settings have been set to recommended defaults."
-    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
 
 
 def get_config_trigger_variances_tab():
     try:
         variances = app_config_access.trigger_variances
         return render_template("edit_configurations/config_trigger_variances.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                CheckedTrigger=get_html_checkbox_state(variances.enable_trigger_variance),
                                CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
                                TriggerCPUTemperature=variances.cpu_temperature_variance,

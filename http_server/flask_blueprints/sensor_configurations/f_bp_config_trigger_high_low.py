@@ -32,7 +32,7 @@ def get_config_trigger_high_low_tab():
         high_low_settings = app_config_access.trigger_high_low
         recording_enabled = get_html_checkbox_state(high_low_settings.enable_high_low_trigger_recording)
         return render_template("edit_configurations/config_trigger_high_low.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                CheckedEnableHLTRecording=recording_enabled,
                                CheckedCPUTemperature=get_html_checkbox_state(high_low_settings.cpu_temperature_enabled),
                                TriggerLowCPUTemperature=high_low_settings.cpu_temperature_low,
@@ -141,11 +141,11 @@ def html_set_trigger_high_low():
             app_config_access.trigger_high_low.save_config_to_file()
             page_msg = "Trigger High/Low Set, Please Restart Program"
             app_cached_variables.html_service_restart = True
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.warning("HTML Apply - Trigger High/Low - Error: " + str(error))
-    return message_and_return("Bad Trigger High/Low POST Request", url="/ConfigurationsHTML")
+    return message_and_return("Bad Trigger High/Low POST Request", url="/MainConfigurationsHTML")
 
 
 @html_config_trigger_high_low_routes.route("/SetLowestTriggerHighLowSeconds")
@@ -156,7 +156,7 @@ def html_auto_set_lowest_trigger_high_low():
     auto_set_triggers_wait_time(app_config_access.trigger_high_low, set_lowest=True)
     msg_1 = "Trigger High/Low Seconds Settings Set to Lowest"
     msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the Lowest recommended values."
-    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
 
 
 @html_config_trigger_high_low_routes.route("/SetRecommendedTriggerHighLowSeconds")
@@ -167,4 +167,4 @@ def html_auto_set_default_trigger_high_low():
     auto_set_triggers_wait_time(app_config_access.trigger_high_low)
     msg_1 = "Trigger High/Low Seconds Settings Set to Recommended"
     msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the recommend defaults."
-    return message_and_return(msg_1, text_message2=msg_2, url="/ConfigurationsHTML")
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
