@@ -57,7 +57,7 @@ def _start_plotly_graph(graph_data):
 
     # Adjust dates to Database timezone in UTC 0
     sql_column_names = app_cached_variables.database_variables
-    new_time_offset = int(graph_data.datetime_offset) * -1
+    new_time_offset = float(graph_data.datetime_offset) * -1
     get_sql_graph_start = server_plotly_graph_extras.adjust_datetime(graph_data.graph_start, new_time_offset)
     get_sql_graph_end = server_plotly_graph_extras.adjust_datetime(graph_data.graph_end, new_time_offset)
 
@@ -339,7 +339,7 @@ def apply_sql_date_time_hour_offset(datetime_list, hour_offset):
     count = 0
     try:
         for data in datetime_list:
-            datetime_list[count] = server_plotly_graph_extras.adjust_datetime(data, int(hour_offset))
+            datetime_list[count] = server_plotly_graph_extras.adjust_datetime(data, float(hour_offset))
             count = count + 1
     except Exception as error:
         logger.primary_logger.error("Bad SQL DateTime Conversion during Plotly Graph - " + str(error))
