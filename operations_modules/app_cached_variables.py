@@ -314,6 +314,8 @@ checkin_search_sensors_log = ""
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
 interval_recording_thread = CreateEmptyThreadClass()
+report_email_thread = CreateEmptyThreadClass()
+graph_email_thread = CreateEmptyThreadClass()
 mini_display_thread = CreateEmptyThreadClass()
 interactive_sensor_thread = CreateEmptyThreadClass()
 mqtt_publisher_thread = CreateEmptyThreadClass()
@@ -357,6 +359,8 @@ trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 # After the thread restarts, it sets this back to False
 restart_interval_recording_thread = False
 restart_all_trigger_threads = False
+restart_report_email_thread = False
+restart_graph_email_thread = False
 restart_mini_display_thread = False
 restart_mqtt_publisher_thread = False
 restart_mqtt_subscriber_thread = False
