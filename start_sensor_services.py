@@ -35,12 +35,15 @@ except Exception as import_error_raw:
         sleep(3600)
 from operations_modules.software_version import start_new_version_check_server
 from configuration_modules import app_config_access
+from operations_modules.app_cached_variables_update import start_ip_hostname_refresh
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_high_low_triggers import start_trigger_high_low_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_variance_recording_server
 from operations_modules.software_checkin import start_sensor_checkin_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
+from operations_modules.email_server import start_report_email_server
+from operations_modules.email_server import start_graph_email_server
 from operations_modules.mqtt.server_mqtt_publisher import start_mqtt_publisher_server
 from operations_modules.mqtt.server_mqtt_subscriber import start_mqtt_subscriber_server
 from operations_modules.online_services_modules.luftdaten import start_luftdaten_server
@@ -83,6 +86,13 @@ start_sensor_checkin_server()
 
 # Start Version Check Server (Checks for updates)
 start_new_version_check_server()
+
+# Start Interval Emails
+start_report_email_server()
+start_graph_email_server()
+
+# Updates IP and hostname cache every hour
+start_ip_hostname_refresh()
 
 logger.primary_logger.debug(" -- Thread Initializations Complete")
 while True:
