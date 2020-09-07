@@ -19,10 +19,12 @@
 from datetime import datetime, timedelta
 from flask import render_template, Blueprint, request
 from operations_modules import logger
+from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import get_file_content
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
-from http_server.flask_blueprints.graphing_plotly import html_graphing
+from http_server.flask_blueprints.graphing import html_graphing
 
 html_quick_graphing_routes = Blueprint("html_quick_graphing_routes", __name__)
 db_v = app_cached_variables.database_variables
@@ -89,8 +91,12 @@ def html_live_graphing():
     return get_html_live_graphing_page()
 
 
-def get_html_live_graphing_page():
-    selected_sensor_list = [app_cached_variables.quick_graph_uptime]
+def get_html_live_graphing_page(email_graph=False):
+    if email_graph:
+        graph_past_hours = app_config_access.email_notifications_config.graph_past_hours
+    else:
+        graph_past_hours = app_cached_variables.quick_graph_hours
+
     sensors_list = [
         [app_cached_variables.quick_graph_uptime, db_v.sensor_uptime],
         [app_cached_variables.quick_graph_cpu_temp, db_v.system_temperature],
@@ -149,7 +155,7 @@ def get_html_live_graphing_page():
                     html_code += "<div style='height: 300px'><canvas id='" + sensor_db_name[
                         1] + """'></canvas></div>\n"""
                     tmp_starter = start_sensor_code.replace("{{ ChartName }}", sensor_db_name[1])
-                    tmp_starter = tmp_starter.replace("{{ DisplayHours }}", str(app_cached_variables.quick_graph_hours))
+                    tmp_starter = tmp_starter.replace("{{ DisplayHours }}", str(graph_past_hours))
 
                     sensor_dates = get_graph_datetime_from_column(sensor_db_name[1])
                     checkin_hour_offset = app_config_access.primary_config.utc0_hour_offset
@@ -170,9 +176,22 @@ def get_html_live_graphing_page():
                     graph_javascript_code = graph_javascript_code.replace("{{ Measurement }}", sensor_measurement)
         except Exception as error:
             logger.network_logger.warning("Live Graph - Error Adding Graph: " + str(error))
+    if email_graph:
+        quick_graph = get_file_content(file_locations.program_root_dir + "/http_server/templates/graphing_quick.html")
+
+        replacement_text = ["{{ SensorName }}", "{{ TotalSQLEntries }}", "{{ HourOffset }}",
+                            "{{ GraphJSCode |safe }}", "{{ GraphHTMLCode |safe }}"]
+
+        new_values = [app_cached_variables.hostname, total_data_points, graph_past_hours,
+                      graph_javascript_code, html_code]
+
+        for replace_name, content in zip(replacement_text, new_values):
+            quick_graph = quick_graph.replace(replace_name, str(content))
+        return quick_graph
     return render_template("graphing_quick.html",
                            TotalSQLEntries=total_data_points,
-                           HourOffset=app_cached_variables.quick_graph_hours,
+                           SensorName=app_cached_variables.hostname,
+                           HourOffset=graph_past_hours,
                            GraphJSCode=graph_javascript_code,
                            GraphHTMLCode=html_code)
 

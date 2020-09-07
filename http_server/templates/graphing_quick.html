@@ -15,9 +15,10 @@
     <form class="mui-form" method="POST" action="/LiveGraphView">
         <fieldset style="text-align: center;">
             <br>
-            <h3 style="color: red;">Viewing {{ TotalSQLEntries }} data points per Sensor</h3>
+            <h3 style="color: red;">Sensor: {{ SensorName }}</h3>
+            <h4 style="color: red;">Viewing {{ TotalSQLEntries }} data points per Sensor</h4>
             <div class="mui-textfield">
-                <label style="color: red; font-size: medium;">Hours to View<br><br>
+                <label style="color: red; font-size: medium;">Hours Displayed<br><br>
                     <input style="width: 70px;" type="number" min="0.001" max="8760.0" step="any"
                            name="graph_hours" required value="{{ HourOffset }}">
                 </label>
