@@ -101,3 +101,10 @@ def valid_sensor_reading(reading):
     if reading == no_sensor_present:
         return False
     return True
+
+
+def email_is_valid(email):
+    regex = "^(?!\.)[0-9a-zA-Z\.]+(?<!\.)@(?!\.)[0-9a-zA-Z\.]+(?<!\.)$"
+    if re.search(regex, str(email)):
+        return True
+    return False
