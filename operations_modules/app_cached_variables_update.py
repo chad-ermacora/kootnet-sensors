@@ -28,10 +28,8 @@ from operations_modules import network_wifi
 from sensor_modules import sensor_access
 
 
-def update_cached_variables(delayed_update=False):
+def update_cached_variables():
     """ Updates app_cached_variables.py variables. """
-    thread_function(_delayed_cache_update, args=delayed_update)
-
     app_cached_variables.total_ram_memory = psutil.virtual_memory().total / 1000000
     if app_cached_variables.total_ram_memory > 1000:
         app_cached_variables.total_ram_memory = app_cached_variables.total_ram_memory / 1000
@@ -72,13 +70,17 @@ def update_cached_variables(delayed_update=False):
     app_cached_variables.operating_system_name = os_name
 
 
-def _delayed_cache_update(delay=True):
+def start_ip_hostname_refresh():
+    thread_function(_ip_hostname_refresh)
+
+
+def _ip_hostname_refresh():
     """
-    Updates app_cached_variables.py variables that may require a bit of time before they are ready.
-    Gives 5 seconds before updating the variables within.
-    Used after the program starts to allow things like the IP address to be obtained.
+    Updates app_cached_variables.py variables that may change while running.
+    Gives 5 seconds before updating the variables within to allow network to be up.
     """
-    if delay:
-        sleep(5)
-    app_cached_variables.ip = sensor_access.get_ip()
-    app_cached_variables.hostname = sensor_access.get_hostname()
+    sleep(5)
+    while True:
+        app_cached_variables.ip = sensor_access.get_ip()
+        app_cached_variables.hostname = sensor_access.get_hostname()
+        sleep(3600)
