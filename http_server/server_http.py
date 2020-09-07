@@ -65,6 +65,7 @@ try:
     from http_server.flask_blueprints.get_set_raw_configurations import html_get_config_routes
     from http_server.flask_blueprints.legacy_control_center import html_legacy_cc_routes
     from http_server.flask_blueprints.sensor_info_and_readings import html_sensor_info_readings_routes
+    from http_server.flask_blueprints.sensor_configurations.f_bp_config_email import html_email_routes
     from flask import Flask
     from flask_compress import Compress
     from gevent.pywsgi import WSGIServer
@@ -83,6 +84,7 @@ except ImportError as https_import_error_msg_raw:
     html_legacy_cc_routes, html_sensor_info_readings_routes, html_local_download_routes = None, None, None
     html_config_mqtt_subscriber_routes, html_sensor_check_ins_routes, html_quick_graphing_routes = None, None, None
     html_graphing_routes, html_config_checkin_server_routes, Flask, Compress, WSGIServer = None, None, None, None, None
+    html_email_routes = None
 
 
 class CreateSensorHTTP:
@@ -123,8 +125,9 @@ class CreateSensorHTTP:
         app.register_blueprint(html_get_config_routes)
         app.register_blueprint(html_legacy_cc_routes)
         app.register_blueprint(html_sensor_info_readings_routes)
+        app.register_blueprint(html_email_routes)
 
-        update_cached_variables(delayed_update=True)
+        update_cached_variables()
 
         try:
             flask_http_ip = app_config_access.primary_config.flask_http_ip
