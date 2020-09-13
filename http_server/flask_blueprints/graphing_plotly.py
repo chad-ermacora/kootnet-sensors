@@ -48,8 +48,8 @@ def html_create_plotly_graph():
             # The format the received datetime should look like "2019-01-01 00:00:00"
             new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
             new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
-            new_graph_data.datetime_offset = request.form.get("HourOffset")
-            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL").strip())
+            new_graph_data.datetime_offset = float(request.form.get("HourOffset"))
+            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL"))
             new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
 
             if len(new_graph_data.graph_columns) < 4:
