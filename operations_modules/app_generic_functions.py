@@ -19,6 +19,7 @@
 import os
 import psutil
 import time
+from datetime import datetime, timedelta
 import requests
 import logging
 from io import BytesIO
@@ -396,3 +397,27 @@ def get_response_bg_colour(response_time):
         logger.network_logger.debug("Check Online Status Error: " + str(error))
         background_colour = "purple"
     return background_colour
+
+
+def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
+    """ Adjusts the provided datetime as a string by the provided hour offset and returns the result as a string. """
+    try:
+        cleaned_datetime = var_datetime.strip()
+        year = cleaned_datetime[:4]
+        month_var = cleaned_datetime[5:7]
+        day_var = cleaned_datetime[8:10]
+        hour_var = cleaned_datetime[11:13]
+        min_var = cleaned_datetime[14:16]
+        second_var = cleaned_datetime[17:19]
+
+        original_date_time = year + "-" + month_var + "-" + day_var + " " + \
+                             hour_var + ":" + min_var + ":" + second_var
+        adjusted_date = datetime.strptime(original_date_time, "%Y-%m-%d %H:%M:%S")
+        adjusted_date = adjusted_date + timedelta(hours=hour_offset)
+        replacement_date = adjusted_date.strftime("%Y-%m-%d %H:%M:%S")
+        if return_datetime_obj:
+            return adjusted_date
+        return replacement_date
+    except Exception as error:
+        logger.primary_logger.warning("Date Adjustment Error: " + str(error))
+        return var_datetime
