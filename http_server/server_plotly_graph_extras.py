@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from datetime import datetime, timedelta
 from operations_modules import logger
 from http_server import server_plotly_graph_variables
 try:
@@ -39,25 +38,6 @@ class CreateGraphScatterData:
         self.sql_data_list = []
 
         self.set_marker = set_marker
-
-
-def adjust_datetime(var_datetime, datetime_offset):
-    """
-    Adjusts the provided datetime by the provided hour offset and returns the result as a string.
-
-    Used for graph datetime's accurate to 0.001 second
-    """
-    try:
-        tmp_ms = ""
-        if len(var_datetime) > 19:
-            tmp_ms = str(var_datetime)[-4:]
-            var_datetime = datetime.strptime(str(var_datetime)[:-4], "%Y-%m-%d %H:%M:%S")
-        else:
-            var_datetime = datetime.strptime(var_datetime, "%Y-%m-%d %H:%M:%S")
-        new_time = var_datetime + timedelta(hours=datetime_offset)
-        return str(new_time) + tmp_ms
-    except Exception as error:
-        logger.primary_logger.error("Plotly Graph - Date Conversion Error - " + str(error))
 
 
 def add_plots(graph_data):
