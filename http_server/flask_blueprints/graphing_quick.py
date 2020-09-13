@@ -21,7 +21,7 @@ from flask import render_template, Blueprint, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_generic_functions import get_file_content, adjust_datetime
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
 from http_server.flask_blueprints.graphing import html_graphing
@@ -146,7 +146,7 @@ def get_html_live_graphing_page(email_graph=False):
 
     graph_javascript_code = ""
     html_code = ""
-    total_data_points = len(get_graph_data_from_column(db_v.all_tables_datetime))
+    total_data_points = _get_graph_db_data(db_v.all_tables_datetime, get_len_only=True)
     for sensor_db_name, sensor_measurement, colour in zip(sensors_list, measurements_list, colour_list):
         try:
             if sensor_db_name[0]:
@@ -209,8 +209,9 @@ def get_graph_data_from_column(sql_column, graph_table="IntervalData",
                     " WHERE " + sql_column + \
                     " IS NOT NULL AND DateTime BETWEEN datetime('" + start_date + \
                     "') AND datetime('" + end_date + \
-                    "') ORDER BY DateTime DESC LIMIT " + str(app_cached_variables.quick_graph_max_sql_entries)
-    return _skip_sql_entries(sql_execute_get_data(var_sql_query))
+                    "') AND ROWID % " + str(app_cached_variables.quick_graph_skip_sql_entries + 1) + " = 0" + \
+                    " ORDER BY DateTime DESC LIMIT " + str(app_cached_variables.quick_graph_max_sql_entries)
+    return sql_execute_get_data(var_sql_query)
 
 
 def get_graph_datetime_from_column(sql_column, graph_table="IntervalData",
@@ -221,51 +222,25 @@ def get_graph_datetime_from_column(sql_column, graph_table="IntervalData",
                          " WHERE " + sql_column + \
                          " IS NOT NULL AND DateTime BETWEEN datetime('" + start_date + \
                          "') AND datetime('" + end_date + \
-                         "') ORDER BY DateTime DESC LIMIT " + str(app_cached_variables.quick_graph_max_sql_entries)
-    return _skip_sql_entries(sql_execute_get_data(var_time_sql_query))
+                         "') AND ROWID % " + str(app_cached_variables.quick_graph_skip_sql_entries + 1) + " = 0" + \
+                         " ORDER BY DateTime DESC LIMIT " + str(app_cached_variables.quick_graph_max_sql_entries)
+    return sql_execute_get_data(var_time_sql_query)
 
 
-def _skip_sql_entries(sql_data_list):
-    if not app_cached_variables.quick_graph_skip_sql_entries:
-        return sql_data_list
-    final_return = []
-    count = 0
-    for entry in sql_data_list:
-        if count > app_cached_variables.quick_graph_skip_sql_entries:
-            final_return.append(entry)
-            count = 0
-        count += 1
-    return final_return
-
-
-def _get_graph_db_data(database_column):
+def _get_graph_db_data(database_column, get_len_only=False):
     hours_to_view = app_cached_variables.quick_graph_hours
     start_date = (datetime.utcnow() - timedelta(hours=hours_to_view)).strftime("%Y-%m-%d %H:%M:%S")
+    if get_len_only:
+        return len(get_graph_datetime_from_column(database_column, start_date=start_date))
     temp_data = get_graph_data_from_column(database_column, start_date=start_date)
     temp_dates = get_graph_datetime_from_column(database_column, start_date=start_date)
     if len(temp_data) < 2:
         return False
-    env_temp_data = " "
+    db_temp_data = " "
     for var_datetime, var_data in zip(temp_dates, temp_data):
-        try:
-            cleaned_datetime = var_datetime[0].strip()
-            year = cleaned_datetime[:4]
-            month_var = cleaned_datetime[5:7]
-            day_var = cleaned_datetime[8:10]
-            hour_var = cleaned_datetime[11:13]
-            min_var = cleaned_datetime[14:16]
-            second_var = cleaned_datetime[17:19]
-
-            original_date_time = year + "-" + month_var + "-" + day_var + " " + \
-                                 hour_var + ":" + min_var + ":" + second_var
-            adjusted_date = datetime.strptime(original_date_time, "%Y-%m-%d %H:%M:%S")
-            adjusted_date = adjusted_date + timedelta(hours=app_config_access.primary_config.utc0_hour_offset)
-            replacement_dates = adjusted_date.strftime("%Y-%m-%d %H:%M:%S")
-
-            env_temp_data += "{ x: '" + replacement_dates + "', y: " + var_data[0] + " },"
-        except Exception as error:
-            logger.network_logger.warning("Live Graph - Error Adding Graph Data: " + str(error))
-    return env_temp_data[:-1]
+        replacement_dates = adjust_datetime(var_datetime[0], app_config_access.primary_config.utc0_hour_offset)
+        db_temp_data += "{ x: '" + replacement_dates + "', y: " + var_data[0] + " },"
+    return db_temp_data[:-1]
 
 
 start_sensor_code = """
