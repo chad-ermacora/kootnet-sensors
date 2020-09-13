@@ -93,7 +93,7 @@ def html_live_graphing():
 
 def get_html_live_graphing_page(email_graph=False):
     if email_graph:
-        graph_past_hours = app_config_access.email_notifications_config.graph_past_hours
+        graph_past_hours = app_config_access.email_config.graph_past_hours
     else:
         graph_past_hours = app_cached_variables.quick_graph_hours
 
