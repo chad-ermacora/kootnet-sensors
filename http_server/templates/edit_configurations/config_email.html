@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        .mui-form {
+            background-color: #00B0FF;
+        }
+
+        .mui-checkbox {
+            display: inline-block;
+        }
+    </style>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active">
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="reports-email-tab">
+                Reports
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="graphs-email-tab">
+                Graphs
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="server-settings-email-tab">
+                Server Settings
+            </a>
+        </li>
+    </ul>
+
+    <div class="mui-tabs__pane mui--is-active" id="reports-email-tab">
+        <br>
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/UpdateReportsEmailSettings">
+            <fieldset style="text-align: center;">
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">Email
+                        Reports</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line4_1"
+                       target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
+
+                <form class="mui-form" method="POST">
+                    <h3 style="color: black;"><strong>Test Reports Email</strong></h3>
+
+                    <div class="mui-textfield">
+                        <label style="color: black; font-size: medium;">
+                            Email to<br>
+                            <input style="width: 350px;" type="text" maxlength="250" name="test_email_address"
+                                   placeholder="someone@somewhere.com">
+                        </label>
+                        <br>
+                    </div>
+
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            type="submit" formaction="/SendReportsEmail">
+                        Send Email
+                    </button>
+                </form>
+
+                <hr>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="email_combo_report" {{ CheckedEmailComboReport }}>
+                        Enable Combo Report Emails
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+                <br>
+
+                <label for="email_reports_send_interval" style="font-size: medium;">Send Email<br></label>
+                <select style="font-size: medium;" name="email_reports_send_interval" id="email_reports_send_interval">
+                    <option value="daily" {{ EmailReportsSelectedDaily }}>Daily</option>
+                    <option value="weekly" {{ EmailReportsSelectedWeekly }}>Weekly</option>
+                    <option value="monthly" {{ EmailReportsSelectedMonthly }}>Monthly</option>
+                    <option value="yearly" {{ EmailReportsSelectedYearly }}>Yearly</option>
+                </select>
+
+                <br>
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        <input type="time" name="send_email_report_at_time" required
+                               placeholder="24" min="1" value="{{ EmailReportAtHourMin }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <label style="color: black;">
+                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    <textarea style="max-width: 500px; max-height: 350px; min-width: 300px; min-height: 150px;"
+                              name="send_reports_to_email_address" value="">{{ EmailReportsToCSVAddresses }}</textarea>
+                </label>
+
+                <br>
+
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="graphs-email-tab">
+        <br>
+        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
+              action="/UpdateGraphEmailSettings">
+            <fieldset style="text-align: center;">
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">Email
+                        Graphs</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line4_1"
+                       target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
+
+                <form class="mui-form" method="POST">
+                    <h3 style="color: black;"><strong>Test Graph Email</strong></h3>
+
+                    <div class="mui-textfield">
+                        <label style="color: black; font-size: medium;">
+                            Email to<br>
+                            <input style="width: 350px;" type="text" maxlength="250" name="test_email_address"
+                                   placeholder="someone@somewhere.com">
+                        </label>
+                        <br>
+                    </div>
+
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            type="submit" formaction="/SendGraphEmail">
+                        Send Email
+                    </button>
+                </form>
+
+                <hr>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="email_graphs" {{ CheckedEmailGraphs }}>
+                        Enable Graph Emails
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+                <br>
+
+                <label for="email_graph_send_interval" style="font-size: medium;">Send Email<br></label>
+                <select style="font-size: medium;" name="email_graph_send_interval" id="email_graph_send_interval">
+                    <option value="daily" {{ EmailGraphSelectedDaily }}>Daily</option>
+                    <option value="weekly" {{ EmailGraphSelectedWeekly }}>Weekly</option>
+                    <option value="monthly" {{ EmailGraphSelectedMonthly }}>Monthly</option>
+                    <option value="yearly" {{ EmailGraphSelectedYearly }}>Yearly</option>
+                </select>
+
+                <br>
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        <input type="time" name="send_email_graph_at_time" required
+                               placeholder="24" min="1" value="{{ EmailGraphAtHourMin }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <label style="color: black;">
+                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    <textarea style="max-width: 500px; max-height: 350px; min-width: 300px; min-height: 150px;"
+                              name="send_graphs_to_email_address">{{ EmailGraphsToCSVAddresses }}</textarea>
+                </label>
+
+                <br>
+
+                <h3 style="color: black;"><strong>Graph Settings</strong></h3>
+
+                <label>Graph Type
+                    <div class="mui-radio">
+                        <label class="container_radio">
+                            <input type="radio" name="graph_type" value="QuickGraphs" {{ QuickGraphChecked }}>
+                            Quick Graphs
+                            <span class="checkmark_radio"></span>
+                        </label>
+                        <label class="container_radio">
+                            <input type="radio" name="graph_type" value="PlotlyGraphs" {{ PlotlyGraphChecked }}
+                                   disabled>
+                            Plotly Graphs
+                            <span class="checkmark_radio"></span>
+                        </label>
+                    </div>
+                </label>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        Graph the past X hours
+                        <br>
+                        <br>
+                        <input style="width: 65px;" type="number" name="graph_past_hours" required
+                               placeholder="24" min="1" value="{{ GraphsPastHours }}">
+                    </label>
+                </div>
+
+                <br>
+                <br>
+
+                <h4 style="color: black;"><strong>Select Sensors to include in the Graph</strong></h4>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
+                        Select All
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+                <div id="graph-sensor-choices">
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="SensorUptime" value="" {{ SensorUptimeChecked }}>
+                            Sensor Uptime
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="CPUTemp" value="" {{ CPUTemperatureChecked }}>
+                            CPU Temperature
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="EnvTemp" value="" {{ EnvTemperatureChecked }}>
+                            Environmental Temperature
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Pressure" value="" {{ PressureChecked }}>
+                            Pressure
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Altitude" value="" {{ AltitudeChecked }}>
+                            Altitude
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Humidity" value="" {{ HumidityChecked }}>
+                            Humidity
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Distance" value="" {{ DistanceChecked }}>
+                            Distance
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Gas" value="" {{ GasChecked }}>
+                            Gas
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="ParticulateMatter" value="" {{ PMChecked }}>
+                            Particulate Matter
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Lumen" value="" {{ LumenChecked }}>
+                            Lumen
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Colours" value="" {{ ColoursChecked }}>
+                            Colours
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="UltraViolet" value="" {{ UltraVioletChecked }}>
+                            Ultra Violet
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Accelerometer" value="" {{ AccChecked }}>
+                            Accelerometer
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Magnetometer" value="" {{ MagChecked }}>
+                            Magnetometer
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <div class="mui-checkbox" style="display: inline-block">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="Gyroscope" value="" {{ GyroChecked }}>
+                            Gyroscope
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+                    <br>
+
+                    <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="mui-tabs__pane" id="server-settings-email-tab" style="max-width: 550px; min-height: 300px;">
+        <br>
+        <form class="mui-form" method="POST" action="/UpdateServerEmailSettings">
+            <fieldset style="text-align: center;">
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">Email Server
+                        Settings</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line4_1"
+                       target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
+
+                <form class="mui-form" method="POST">
+                    <h3 style="color: black;"><strong>Test SMTP Server Settings</strong></h3>
+
+                    <div class="mui-textfield">
+                        <label style="color: black; font-size: medium;">
+                            Send Email to<br>
+                            <input style="width: 350px;" type="text" maxlength="250" name="test_email_address"
+                                   placeholder="someone@somewhere.com">
+                        </label>
+                        <br>
+                    </div>
+
+                    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                            type="submit" formaction="/SendTestEmail">
+                        Send Email
+                    </button>
+                </form>
+
+                <hr>
+
+                <h3 style="color: black;"><strong>SMTP Server Settings</strong></h3>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        Send Email as/from<br>
+                        <input style="width: 350px;" type="text" maxlength="250" name="server_sending_email"
+                               placeholder="someone@somewhere.com" value="{{ ServerSendingEmail }}">
+                    </label>
+                    <br>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        Server Address<br>
+                        <input style="width: 400px;" type="text" maxlength="250" name="server_smtp_address"
+                               placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="email_ssl" {{ CheckedEmailSSL }}>
+                        Enable TLS
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        SMTP Port Number
+                        <br>
+                        <br>
+                        <input style="width: 65px;" type="number" name="server_smtp_port" required
+                               placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}">
+                    </label>
+                </div>
+
+                <br>
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        Username<br>
+                        <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
+                               placeholder="someone" value="{{ ServerSMTPUser }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black; font-size: medium;">
+                        Password<br>
+                        <input style="width: 200px;" type="password" maxlength="250" name="server_smtp_password">
+                    </label>
+                </div>
+
+                <br>
+                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+                <br>
+            </fieldset>
+        </form>
+    </div>
+
+    <script>
+        jQuery('#SelectAllCheckboxes').change(function () {
+            if (jQuery(this).prop('checked')) {
+                jQuery("div[id=graph-sensor-choices] input:checkbox").prop('checked', true);
+            } else {
+                jQuery("div[id=graph-sensor-choices] input:checkbox").prop('checked', false);
+            }
+        });
+    </script>
+{% endblock %}
