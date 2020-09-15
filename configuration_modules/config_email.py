@@ -22,24 +22,26 @@ from operations_modules.app_generic_functions import CreateGeneralConfiguration
 from operations_modules.app_validation_checks import email_is_valid
 
 
-class CreateNotificationsConfiguration(CreateGeneralConfiguration):
-    """ Creates the Notifications Configuration object and loads settings from file (by default). """
+class CreateEmailConfiguration(CreateGeneralConfiguration):
+    """ Creates the Email Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 31
         self.config_settings_names = [
-            "Send Emails From", "SMTP Server Address", "Enable SMTP SSL/TLS", "SMTP Server Port #", "SMTP UserName",
-            "SMTP Password", "Enable Report Emails", "Sending Report every", "Send Report to CSV Emails",
-            "Enable Graph Emails", "Sending Graph every", "Graph the Past X Hours",
-            "Graph Type (0=Quick Graph, 1=Plotly Graph)", "Send Graph to CSV emails", "Graph Sensor Uptime",
-            "Graph CPU Temperature", "Graph Environmental Temperature", "Graph Pressure", "Graph Altitude",
-            "Graph Humidity", "Graph Distance", "Graph GAS", "Graph Particulate Matter", "Graph Lumen", "Graph Colour",
-            "Graph Ultra Violet", "Graph Accelerometer", "Graph Magnetometer", "Graph Gyroscope",
-            "Email Report at Time of Day", "Email Graph at Time of Day"
+            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS", "SMTP server port #",
+            "SMTP user name", "SMTP password", "Enable Reports email server", "Send Report every",
+            "Send Report to CSV emails", "Enable Graph email server", "Sending Graph every", "Graph the past hours",
+            "Graph type (0=Quick Graph, 1=Plotly Graph)", "Send Graph to CSV emails", "Graph sensor uptime",
+            "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
+            "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
+            "Graph ultra violet", "Graph accelerometer", "Graph magnetometer", "Graph gyroscope",
+            "Email Report at time of day", "Email Graph at time of day"
         ]
-        self.send_on_start = 1
+
+        # If set to 1+, emails are sent on program start for Graphs and Reports (They must be enabled)
+        self.send_on_start = 0
 
         self.server_sending_email = ""
         self.server_smtp_address = ""
@@ -49,7 +51,6 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
         self.server_smtp_password = ""
 
         self.enable_combo_report_emails = 0
-        self.email_reports_every_hours = 48
         self.email_reports_daily = False
         self.email_reports_weekly = False
         self.email_reports_monthly = False
@@ -58,7 +59,6 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
         self.send_report_to_csv_emails = ""
 
         self.enable_graph_emails = 0
-        self.graph_send_every_hours = 48
         self.email_graph_daily = False
         self.email_graph_weekly = False
         self.email_graph_monthly = False
@@ -70,7 +70,7 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
 
         # Enable or Disable Sensors to Graph.  0 = Disabled, 1 = Enabled
         self.sensor_uptime = 1
-        self.system_temperature = 0
+        self.system_temperature = 1
         self.env_temperature = 1
         self.pressure = 0
         self.altitude = 0
@@ -97,6 +97,7 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
     def update_with_html_request_reports(self, html_request):
         """ Updates the email reports configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Email Reports Configuration Update Check")
+
         self.enable_combo_report_emails = 0
         if html_request.form.get("email_combo_report") is not None:
             self.enable_combo_report_emails = 1
@@ -125,6 +126,7 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
     def update_with_html_request_graph(self, html_request):
         """ Updates the email graph configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Email Graph Configuration Update Check")
+
         self.enable_graph_emails = 0
         if html_request.form.get("email_graphs") is not None:
             self.enable_graph_emails = 1
@@ -208,6 +210,7 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
     def update_with_html_request_server(self, html_request):
         """ Updates the email server configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Email Server Configuration Update Check")
+
         if html_request.form.get("server_sending_email") is not None:
             server_sending_email = html_request.form.get("server_sending_email").strip()
             if email_is_valid(server_sending_email):
@@ -305,10 +308,10 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
             self.email_graph_time_of_day = self.config_settings[30].strip()
         except Exception as error:
             if self.load_from_file:
-                logger.primary_logger.debug("Email Notifications Config: " + str(error))
+                logger.primary_logger.debug("Email Config: " + str(error))
             self.update_configuration_settings_list()
             if self.load_from_file:
-                logger.primary_logger.info("Saving Email Notifications Configuration.")
+                logger.primary_logger.info("Saving Email Configuration.")
                 self.save_config_to_file()
 
     def _get_report_text_interval(self):
@@ -333,6 +336,8 @@ class CreateNotificationsConfiguration(CreateGeneralConfiguration):
 
 
 def _validate_csv_emails(csv_emails_string):
+    """ Checks provided CSV string of emails for valid emails. Returns CSV string of valid emails. """
+
     return_string = ""
     try:
         for email in csv_emails_string.split(","):
