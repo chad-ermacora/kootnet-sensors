@@ -30,9 +30,10 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 10
         self.config_settings_names = [
-            "HTTPS Port Number (Default is 10065)", "Enable Debug Logging", "Enable Custom Temperature Offset",
-            "Current Temperature Offset", "Enable Temperature Compensation Factor", "Temperature Compensation Factor",
-            "Enable Sensor Check-Ins", "Checkin URL", "Checkin Every X Hours", "Hours Offset from UTC 0"
+            "HTTPS port number (Default is 10065)", "Enable debug logging", "Enable temperature offset",
+            "Temperature offset", "Enable temperature compensation factor", "Temperature compensation factor",
+            "Enable sensor check-ins", "Checkin URL", "Checkin every hours",
+            "DateTime offset in hours (Program uses UTC 0)"
         ]
 
         self.enable_checkin = 1
@@ -103,6 +104,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         self.config_settings = [
             str(self.web_portal_port), str(self.enable_debug_logging), str(self.enable_custom_temp),
             str(self.temperature_offset), str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor),

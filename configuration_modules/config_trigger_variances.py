@@ -139,7 +139,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
 
     # noinspection PyAttributeOutsideInit
     def update_with_html_request(self, html_request):
-        """ Creates and returns a Trigger Variance configuration object instance based on provided HTML configurations. """
+        """ Updates the Trigger Variance configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Variance Triggers Update Check")
 
         self.enable_trigger_variance = 0

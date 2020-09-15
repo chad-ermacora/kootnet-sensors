@@ -28,14 +28,14 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.osm_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 25
-        self.config_settings_names = ["Enable Open Sense Map", "SenseBox ID", "Send to Server in Seconds",
-                                      "Temperature Sensor ID", "Pressure Sensor ID", "Altitude Sensor ID",
-                                      "Humidity Sensor ID", "Gas VOC Sensor ID", "Gas NH3 Sensor ID",
-                                      "Gas Oxidised Sensor ID", "Gas Reduced Sensor ID", "PM 1.0 Sensor ID",
-                                      "PM 2.5 Sensor ID", "PM 4 Sensor ID", "PM 10 Sensor ID", "Lumen Sensor ID",
-                                      "Red Sensor ID", "Orange Sensor ID", "Yellow Sensor ID", "Green Sensor ID",
-                                      "Blue Sensor ID", "Violet Sensor ID", "Ultra Violet Index Sensor ID",
-                                      "Ultra Violet A Sensor ID", "Ultra Violet B Sensor ID"]
+        self.config_settings_names = [
+            "Enable Open Sense Map", "SenseBox ID", "Send to Server in Seconds", "Temperature Sensor ID",
+            "Pressure Sensor ID", "Altitude Sensor ID", "Humidity Sensor ID", "Gas VOC Sensor ID", "Gas NH3 Sensor ID",
+            "Gas Oxidised Sensor ID", "Gas Reduced Sensor ID", "PM 1.0 Sensor ID", "PM 2.5 Sensor ID", "PM 4 Sensor ID",
+            "PM 10 Sensor ID", "Lumen Sensor ID", "Red Sensor ID", "Orange Sensor ID", "Yellow Sensor ID",
+            "Green Sensor ID", "Blue Sensor ID", "Violet Sensor ID", "Ultra Violet Index Sensor ID",
+            "Ultra Violet A Sensor ID", "Ultra Violet B Sensor ID"
+        ]
 
         self.open_sense_map_main_url_start = "https://api.opensensemap.org/boxes"
         self.open_sense_map_login_url = "https://api.opensensemap.org/users/sign-in"
@@ -81,6 +81,7 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Open Sense Map configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting Open Sense Map Configuration Update Check")
+
         self.open_sense_map_enabled = 0
         if html_request.form.get("enable_open_sense_map") is not None:
             self.open_sense_map_enabled = 1
@@ -141,14 +142,16 @@ class CreateOpenSenseMapConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.open_sense_map_enabled), str(self.sense_box_id), str(self.interval_seconds),
-                                str(self.temperature_id), str(self.pressure_id), str(self.altitude_id),
-                                str(self.humidity_id), str(self.gas_voc_id), str(self.gas_nh3_id),
-                                str(self.gas_oxidised_id), str(self.gas_reduced_id), str(self.pm1_id),
-                                str(self.pm2_5_id), str(self.pm4_id), str(self.pm10_id), str(self.lumen_id),
-                                str(self.red_id), str(self.orange_id), str(self.yellow_id), str(self.green_id),
-                                str(self.blue_id), str(self.violet_id), str(self.ultra_violet_index_id),
-                                str(self.ultra_violet_a_id), str(self.ultra_violet_b_id)]
+
+        self.config_settings = [
+            str(self.open_sense_map_enabled), str(self.sense_box_id), str(self.interval_seconds),
+            str(self.temperature_id), str(self.pressure_id), str(self.altitude_id), str(self.humidity_id),
+            str(self.gas_voc_id), str(self.gas_nh3_id), str(self.gas_oxidised_id), str(self.gas_reduced_id),
+            str(self.pm1_id), str(self.pm2_5_id), str(self.pm4_id), str(self.pm10_id), str(self.lumen_id),
+            str(self.red_id), str(self.orange_id), str(self.yellow_id), str(self.green_id), str(self.blue_id),
+            str(self.violet_id), str(self.ultra_violet_index_id), str(self.ultra_violet_a_id),
+            str(self.ultra_violet_b_id)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

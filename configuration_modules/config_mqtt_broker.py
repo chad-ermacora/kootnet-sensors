@@ -44,6 +44,7 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the MQTT Broker configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML MQTT Broker Configuration Update Check")
+
         self.enable_mqtt_broker = 0
         if html_request.form.get("enable_broker_server") is not None:
             self.enable_mqtt_broker = 1
@@ -53,6 +54,7 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         self.config_settings = [str(self.enable_mqtt_broker)]
 
     def _update_variables_from_settings_list(self):

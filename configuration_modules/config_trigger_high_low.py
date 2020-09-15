@@ -170,9 +170,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
 
     # noinspection PyAttributeOutsideInit
     def update_with_html_request(self, html_request):
-        """
-            Creates and returns a Trigger High/Low configuration object instance based on provided HTML configurations.
-        """
+        """ Updates the High/Low Trigger configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML High/Low Triggers Update Check")
 
         self._disable_all_triggers()
@@ -381,6 +379,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         self.config_settings = [
             str(self.cpu_temperature_enabled), str(self.cpu_temperature_low), str(self.cpu_temperature_high),
             str(self.cpu_temperature_wait_seconds), str(self.env_temperature_enabled), str(self.env_temperature_low),

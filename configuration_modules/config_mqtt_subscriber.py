@@ -28,10 +28,11 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_subscriber_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Subscriber Settings here. Enable = 1 & Disable = 0"
         self.valid_setting_count = 8
-        self.config_settings_names = ["Enable MQTT Subscriber", "Broker Server Address", "Broker Port #",
-                                      "Enable Authentication", "User Name (Optional)", "Password (Optional)",
-                                      "MQTT Quality of Service Level (0-2)",
-                                      "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#"]
+        self.config_settings_names = [
+            "Enable MQTT Subscriber", "Broker Server Address", "Broker Port #", "Enable Authentication",
+            "User Name (Optional)", "Password (Optional)", "MQTT Quality of Service Level (0-2)",
+            "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#"
+        ]
 
         self.enable_mqtt_subscriber = 0
         self.broker_address = ""
@@ -55,6 +56,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the MQTT Subscriber configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML MQTT Subscriber Configuration Update Check")
+
         self.enable_mqtt_subscriber = 0
         if html_request.form.get("enable_mqtt_subscriber") is not None:
             self.enable_mqtt_subscriber = 1
@@ -83,18 +85,16 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         topics_text = ""
         for topic in self.subscribed_topics_list:
             topics_text += topic + ","
         topics_text = topics_text[:-1]
-        self.config_settings = [str(self.enable_mqtt_subscriber),
-                                str(self.broker_address),
-                                str(self.broker_server_port),
-                                str(self.enable_broker_auth),
-                                str(self.broker_user),
-                                str(self.broker_password),
-                                str(self.mqtt_subscriber_qos),
-                                topics_text]
+        self.config_settings = [
+            str(self.enable_mqtt_subscriber), str(self.broker_address), str(self.broker_server_port),
+            str(self.enable_broker_auth), str(self.broker_user), str(self.broker_password),
+            str(self.mqtt_subscriber_qos), topics_text
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

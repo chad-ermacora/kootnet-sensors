@@ -28,8 +28,10 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.checkin_configuration, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 4
-        self.config_settings_names = ["Enable Check-Ins", "Count Sensors Checked-In the past X Days",
-                                      "Offset Date Stamp by X Hours", "Delete sensors with checkin older then X Days"]
+        self.config_settings_names = [
+            "Enable Check-Ins Server", "Count Sensors Checked-In the past X Days", "Offset Date Stamp by X Hours",
+            "Delete sensors with checkin older then X Days"
+        ]
 
         self.enable_checkin_recording = 0
         self.count_contact_days = 7.0
@@ -63,8 +65,11 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_checkin_recording), str(self.count_contact_days), str(self.hour_offset),
-                                str(self.delete_sensors_older_days)]
+
+        self.config_settings = [
+            str(self.enable_checkin_recording), str(self.count_contact_days), str(self.hour_offset),
+            str(self.delete_sensors_older_days)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

@@ -29,10 +29,10 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 17
         self.config_settings_names = [
-            "Enable Interval Recording", "Recording Interval in Seconds * Caution *", "Enable Sensor Uptime",
-            "Enable CPU Temperature", "Enable Environmental Temperature", "Enable Pressure", "Enable Humidity",
-            "Enable Altitude", "Enable Distance", "Enable Lumen", "Enable Colour", "Enable Ultra Violet", "Enable GAS",
-            "Enable Particulate Matter", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope"
+            "Enable interval recording", "Recording interval in seconds * Caution *", "Enable sensor uptime",
+            "Enable CPU temperature", "Enable environmental temperature", "Enable pressure", "Enable humidity",
+            "Enable altitude", "Enable distance", "Enable lumen", "Enable color", "Enable ultra violet", "Enable GAS",
+            "Enable particulate matter", "Enable accelerometer", "Enable magnetometer", "Enable gyroscope"
         ]
 
         self.enable_interval_recording = 1
@@ -67,6 +67,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Interval Recording configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Interval Recording Configuration Update Check")
+
         self.enable_interval_recording = 0
         self.sensor_uptime_enabled = 0
         self.cpu_temperature_enabled = 0
@@ -124,6 +125,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         self.config_settings = [
             str(self.enable_interval_recording), str(self.sleep_duration_interval), str(self.sensor_uptime_enabled),
             str(self.cpu_temperature_enabled), str(self.env_temperature_enabled), str(self.pressure_enabled),

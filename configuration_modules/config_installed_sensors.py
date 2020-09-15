@@ -25,7 +25,7 @@ from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
 class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
-    """ Creates the Primary Configuration object and loads settings from file (by default). """
+    """ Creates the Installed Sensors Configuration object and loads settings from file (by default). """
 
     def __init__(self, load_from_file=True):
         installed_sensors_config = file_locations.installed_sensors_config
@@ -33,14 +33,14 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 24
         w1_therm_sensor = "W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"
-        self.config_settings_names = ["Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT",
-                                      "Pimoroni BH1745", "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280",
-                                      "Pimoroni BME680", "Pimoroni EnviroPHAT", "Pimoroni Enviro+", "Pimoroni SGP30",
-                                      "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948",
-                                      "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
-                                      "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96'' SPI Colour LCD (160x80)",
-                                      "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30",
-                                      w1_therm_sensor]
+        self.config_settings_names = [
+            "Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
+            "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680", "Pimoroni EnviroPHAT",
+            "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D",
+            "Pimoroni ICM20948", "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
+            "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96'' SPI Colour LCD (160x80)",
+            "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor
+        ]
 
         self.no_sensors = True
 
@@ -87,6 +87,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Installed Sensors configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
+
         self.__init__(load_from_file=False)
         try:
             self.linux_system = 0
@@ -146,6 +147,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def get_installed_names_str(self, skip_root_check=False):
         """ Returns Installed Sensors as a String. """
         logger.primary_logger.debug("Returning Installed Sensors as a string for " + str(self.config_file_location))
+
         new_file_content = ""
         for setting, setting_name in zip(self.config_settings, self.config_settings_names):
             if int(setting):
@@ -158,14 +160,17 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.kootnet_dummy_sensor), str(self.linux_system), str(self.raspberry_pi),
-                                str(self.raspberry_pi_sense_hat), str(self.pimoroni_bh1745), str(self.pimoroni_as7262),
-                                str(self.pimoroni_mcp9600), str(self.pimoroni_bmp280), str(self.pimoroni_bme680),
-                                str(self.pimoroni_enviro), str(self.pimoroni_enviroplus), str(self.pimoroni_sgp30),
-                                str(self.pimoroni_pms5003), str(self.pimoroni_msa301), str(self.pimoroni_lsm303d),
-                                str(self.pimoroni_icm20948), str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559),
-                                str(self.pimoroni_veml6075), str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735),
-                                str(self.pimoroni_mono_oled_luma), str(self.sensirion_sps30), str(self.w1_therm_sensor)]
+
+        self.config_settings = [
+            str(self.kootnet_dummy_sensor), str(self.linux_system), str(self.raspberry_pi),
+            str(self.raspberry_pi_sense_hat), str(self.pimoroni_bh1745), str(self.pimoroni_as7262),
+            str(self.pimoroni_mcp9600), str(self.pimoroni_bmp280), str(self.pimoroni_bme680), str(self.pimoroni_enviro),
+            str(self.pimoroni_enviroplus), str(self.pimoroni_sgp30), str(self.pimoroni_pms5003),
+            str(self.pimoroni_msa301), str(self.pimoroni_lsm303d), str(self.pimoroni_icm20948),
+            str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
+            str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735), str(self.pimoroni_mono_oled_luma),
+            str(self.sensirion_sps30), str(self.w1_therm_sensor)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -205,6 +210,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
 
     def get_raspberry_pi_model(self):
         """ Returns the local Raspberry Pi model. """
+
         if self.raspberry_pi and os.path.isfile("/proc/device-tree/model"):
             try:
                 pi_version = str(check_output("cat /proc/device-tree/model", shell=True))[2:-5]
