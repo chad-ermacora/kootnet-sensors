@@ -53,6 +53,9 @@
             Open Sense Map
         </a></li>
         <br>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="email-tab">
+            Email
+        </a></li>
         <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="networking-tab">
             Networking
         </a></li>
@@ -115,6 +118,17 @@
         </div>
     </div>
 
+    <div class="mui-tabs__pane" id="sensor-control-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Sensor Control Config</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ SCCLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ SensorControlConfiguration }}</span>
+        </div>
+    </div>
+
     <div class="mui-tabs__pane" id="interval-recording-tab">
         <div class="mui-container-fluid">
             <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
@@ -145,40 +159,6 @@
             <h4 style="color: #00B0FF;">Location: {{ TVLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ TriggerConfiguration }}</span>
-        </div>
-    </div>
-
-
-    <div class="mui-tabs__pane" id="sensor-control-tab">
-        <div class="mui-container-fluid">
-            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
-                <u>Sensor Control Config</u>
-            </a></h2>
-            <h4 style="color: #00B0FF;">Location: {{ SCCLocation }}</h4>
-            <br>
-            <span style="color: greenyellow; white-space: pre-wrap;">{{ SensorControlConfiguration }}</span>
-        </div>
-    </div>
-
-    <div class="mui-tabs__pane" id="networking-tab">
-        <div class="mui-container-fluid">
-            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
-                <u>Networking Configuration</u>
-            </a></h2>
-            <h4 style="color: #00B0FF;">Location: {{ NCLocation }}</h4>
-            <br>
-            <span style="color: greenyellow; white-space: pre-wrap;">{{ NetworkConfiguration }}</span>
-        </div>
-    </div>
-
-    <div class="mui-tabs__pane" id="wifi-tab">
-        <div class="mui-container-fluid">
-            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
-                <u>Wireless Configuration</u>
-            </a></h2>
-            <h4 style="color: #00B0FF;">Location: {{ WCLocation }}</h4>
-            <br>
-            <span style="color: greenyellow; white-space: pre-wrap;">{{ WiFiConfiguration }}</span>
         </div>
     </div>
 
@@ -245,6 +225,39 @@
             <h4 style="color: #00B0FF;">Location: {{ OSMCLocation }}</h4>
             <br>
             <span style="color: greenyellow; white-space: pre-wrap;">{{ OpenSenseMapConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="email-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Email Configuration</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ ECLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ EmailConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="networking-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Networking Configuration</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ NCLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ NetworkConfiguration }}</span>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="wifi-tab">
+        <div class="mui-container-fluid">
+            <h2 style="color: #90CAF9"><a style="text-decoration: underline; color: red;" href="/HTMLRawConfigurations">
+                <u>Wireless Configuration</u>
+            </a></h2>
+            <h4 style="color: #00B0FF;">Location: {{ WCLocation }}</h4>
+            <br>
+            <span style="color: greenyellow; white-space: pre-wrap;">{{ WiFiConfiguration }}</span>
         </div>
     </div>
 
