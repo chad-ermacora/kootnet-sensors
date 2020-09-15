@@ -28,13 +28,13 @@ from http_server.server_http_generic_functions import get_html_hidden_state, get
 from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
 
 html_email_routes = Blueprint("html_email_routes", __name__)
+email_config = app_config_access.email_config
 
 
 @html_email_routes.route("/EmailConfigurationsHTML")
 @auth.login_required
 def html_get_config_email_page():
     logger.network_logger.debug("** Sensor Email Configuration accessed from " + str(request.remote_addr))
-    email_config = app_config_access.email_config
 
     quick_graph_checked = "checked"
     plotly_graph_checked = ""
@@ -42,49 +42,47 @@ def html_get_config_email_page():
         plotly_graph_checked = "checked"
         quick_graph_checked = ""
 
-    return render_template(
-        "edit_configurations/config_email.html",
-        PageURL="/EmailConfigurationsHTML",
-        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-        CheckedEmailComboReport=get_html_checkbox_state(email_config.enable_combo_report_emails),
-        EmailReportsSelectedDaily=get_html_selected_state(app_config_access.email_config.email_reports_daily),
-        EmailReportsSelectedWeekly=get_html_selected_state(app_config_access.email_config.email_reports_weekly),
-        EmailReportsSelectedMonthly=get_html_selected_state(app_config_access.email_config.email_reports_monthly),
-        EmailReportsSelectedYearly=get_html_selected_state(app_config_access.email_config.email_reports_yearly),
-        EmailReportAtHourMin=app_config_access.email_config.email_reports_time_of_day,
-        EmailReportsToCSVAddresses=email_config.send_report_to_csv_emails,
-        CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
-        EmailGraphSelectedDaily=get_html_selected_state(app_config_access.email_config.email_graph_daily),
-        EmailGraphSelectedWeekly=get_html_selected_state(app_config_access.email_config.email_graph_weekly),
-        EmailGraphSelectedMonthly=get_html_selected_state(app_config_access.email_config.email_graph_monthly),
-        EmailGraphSelectedYearly=get_html_selected_state(app_config_access.email_config.email_graph_yearly),
-        EmailGraphAtHourMin=app_config_access.email_config.email_graph_time_of_day,
-        EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails,
-        QuickGraphChecked=quick_graph_checked,
-        PlotlyGraphChecked=plotly_graph_checked,
-        GraphsPastHours=email_config.graph_past_hours,
-        SensorUptimeChecked=get_html_checkbox_state(email_config.sensor_uptime),
-        CPUTemperatureChecked=get_html_checkbox_state(email_config.system_temperature),
-        EnvTemperatureChecked=get_html_checkbox_state(email_config.env_temperature),
-        PressureChecked=get_html_checkbox_state(email_config.pressure),
-        AltitudeChecked=get_html_checkbox_state(email_config.altitude),
-        HumidityChecked=get_html_checkbox_state(email_config.humidity),
-        DistanceChecked=get_html_checkbox_state(email_config.distance),
-        GasChecked=get_html_checkbox_state(email_config.gas),
-        PMChecked=get_html_checkbox_state(email_config.particulate_matter),
-        LumenChecked=get_html_checkbox_state(email_config.lumen),
-        ColoursChecked=get_html_checkbox_state(email_config.color),
-        UltraVioletChecked=get_html_checkbox_state(email_config.ultra_violet),
-        AccChecked=get_html_checkbox_state(email_config.accelerometer),
-        MagChecked=get_html_checkbox_state(email_config.magnetometer),
-        GyroChecked=get_html_checkbox_state(email_config.gyroscope),
-        ServerSendingEmail=email_config.server_sending_email,
-        ServerSMTPAddress=email_config.server_smtp_address,
-        CheckedEmailSSL=get_html_checkbox_state(email_config.server_smtp_ssl_enabled),
-        ServerSMTPPort=email_config.server_smtp_port,
-        ServerSMTPUser=email_config.server_smtp_user
-    )
+    return render_template("edit_configurations/config_email.html",
+                           PageURL="/EmailConfigurationsHTML",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+                           CheckedEmailComboReport=get_html_checkbox_state(email_config.enable_combo_report_emails),
+                           EmailReportsSelectedDaily=get_html_selected_state(email_config.email_reports_daily),
+                           EmailReportsSelectedWeekly=get_html_selected_state(email_config.email_reports_weekly),
+                           EmailReportsSelectedMonthly=get_html_selected_state(email_config.email_reports_monthly),
+                           EmailReportsSelectedYearly=get_html_selected_state(email_config.email_reports_yearly),
+                           EmailReportAtHourMin=email_config.email_reports_time_of_day,
+                           EmailReportsToCSVAddresses=email_config.send_report_to_csv_emails,
+                           CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
+                           EmailGraphSelectedDaily=get_html_selected_state(email_config.email_graph_daily),
+                           EmailGraphSelectedWeekly=get_html_selected_state(email_config.email_graph_weekly),
+                           EmailGraphSelectedMonthly=get_html_selected_state(email_config.email_graph_monthly),
+                           EmailGraphSelectedYearly=get_html_selected_state(email_config.email_graph_yearly),
+                           EmailGraphAtHourMin=email_config.email_graph_time_of_day,
+                           EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails,
+                           QuickGraphChecked=quick_graph_checked,
+                           PlotlyGraphChecked=plotly_graph_checked,
+                           GraphsPastHours=email_config.graph_past_hours,
+                           SensorUptimeChecked=get_html_checkbox_state(email_config.sensor_uptime),
+                           CPUTemperatureChecked=get_html_checkbox_state(email_config.system_temperature),
+                           EnvTemperatureChecked=get_html_checkbox_state(email_config.env_temperature),
+                           PressureChecked=get_html_checkbox_state(email_config.pressure),
+                           AltitudeChecked=get_html_checkbox_state(email_config.altitude),
+                           HumidityChecked=get_html_checkbox_state(email_config.humidity),
+                           DistanceChecked=get_html_checkbox_state(email_config.distance),
+                           GasChecked=get_html_checkbox_state(email_config.gas),
+                           PMChecked=get_html_checkbox_state(email_config.particulate_matter),
+                           LumenChecked=get_html_checkbox_state(email_config.lumen),
+                           ColoursChecked=get_html_checkbox_state(email_config.color),
+                           UltraVioletChecked=get_html_checkbox_state(email_config.ultra_violet),
+                           AccChecked=get_html_checkbox_state(email_config.accelerometer),
+                           MagChecked=get_html_checkbox_state(email_config.magnetometer),
+                           GyroChecked=get_html_checkbox_state(email_config.gyroscope),
+                           ServerSendingEmail=email_config.server_sending_email,
+                           ServerSMTPAddress=email_config.server_smtp_address,
+                           CheckedEmailSSL=get_html_checkbox_state(email_config.server_smtp_ssl_enabled),
+                           ServerSMTPPort=email_config.server_smtp_port,
+                           ServerSMTPUser=email_config.server_smtp_user)
 
 
 @html_email_routes.route("/SendTestEmail", methods=["POST"])
@@ -124,9 +122,9 @@ def html_send_graph_email():
 @auth.login_required
 def html_update_reports_email_settings():
     logger.network_logger.debug("** HTML Reports Email settings updated - Source: " + str(request.remote_addr))
-    app_config_access.email_config.update_with_html_request_reports(request)
-    app_config_access.email_config.update_configuration_settings_list()
-    app_config_access.email_config.save_config_to_file()
+    email_config.update_with_html_request_reports(request)
+    email_config.update_configuration_settings_list()
+    email_config.save_config_to_file()
     app_cached_variables.restart_report_email_thread = True
     return html_get_config_email_page()
 
@@ -135,9 +133,9 @@ def html_update_reports_email_settings():
 @auth.login_required
 def html_update_graph_email_settings():
     logger.network_logger.debug("** HTML Graph Email settings updated - Source: " + str(request.remote_addr))
-    app_config_access.email_config.update_with_html_request_graph(request)
-    app_config_access.email_config.update_configuration_settings_list()
-    app_config_access.email_config.save_config_to_file()
+    email_config.update_with_html_request_graph(request)
+    email_config.update_configuration_settings_list()
+    email_config.save_config_to_file()
     app_cached_variables.restart_graph_email_thread = True
     return html_get_config_email_page()
 
@@ -146,7 +144,7 @@ def html_update_graph_email_settings():
 @auth.login_required
 def html_update_server_email_settings():
     logger.network_logger.debug("** HTML Server Email settings updated - Source: " + str(request.remote_addr))
-    app_config_access.email_config.update_with_html_request_server(request)
-    app_config_access.email_config.update_configuration_settings_list()
-    app_config_access.email_config.save_config_to_file()
+    email_config.update_with_html_request_server(request)
+    email_config.update_configuration_settings_list()
+    email_config.save_config_to_file()
     return html_get_config_email_page()
