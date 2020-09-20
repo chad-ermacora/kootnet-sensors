@@ -52,8 +52,8 @@ def sensor_notes():
                 if app_cached_variables.note_current > app_cached_variables.notes_total_count:
                     app_cached_variables.note_current = 1
             elif button_operation == "save_note":
+                note_text = request.form.get("note_text")
                 if app_cached_variables.notes_total_count > 0:
-                    note_text = request.form.get("note_text")
                     note_auto_date_times = get_db_note_dates().split(",")
                     note_custom_date_times = get_db_note_user_dates().split(",")
                     primary_note_date_time = note_auto_date_times[app_cached_variables.note_current - 1]
@@ -62,6 +62,12 @@ def sensor_notes():
                                                 custom_note_date_time + app_cached_variables.command_data_separator + \
                                                 note_text
                     update_note_in_database(updated_note_and_datetime)
+                else:
+                    app_cached_variables.notes_total_count += 1
+                    app_cached_variables.note_current = app_cached_variables.notes_total_count
+                    current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                    new_note_and_datetime = current_datetime + app_cached_variables.command_data_separator + note_text
+                    add_note_to_database(new_note_and_datetime)
 
             elif button_operation == "next":
                 app_cached_variables.note_current += 1
