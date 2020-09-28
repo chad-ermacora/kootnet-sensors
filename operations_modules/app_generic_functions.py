@@ -452,5 +452,6 @@ def remove_line_from_text(text_var, line_numbers_list):
         if index not in line_numbers_list:
             return_config += line_content + "\n"
         else:
-            return_config += "Line removed for viewing, usually a username or password\n"
+            setting_description = line_content.split("=")[1]
+            return_config += "Removed_for_viewing = " + setting_description + "\n"
     return return_config
