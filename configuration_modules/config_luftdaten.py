@@ -40,7 +40,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
         self.interval_seconds = 180
         self.station_id = self._get_cpu_serial()
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             sw_version_text_list = software_version.version.split(".")
             sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
@@ -64,9 +64,9 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
             self.interval_seconds = float(html_request.form.get("station_interval"))
             if self.interval_seconds < 10.0:
                 self.interval_seconds = 10.0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [str(self.luftdaten_enabled), str(self.interval_seconds)]
@@ -77,7 +77,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
             self.interval_seconds = float(self.config_settings[1])
         except Exception as error:
             logger.primary_logger.debug("Luftdaten Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Luftdaten Configuration.")
                 self.save_config_to_file()

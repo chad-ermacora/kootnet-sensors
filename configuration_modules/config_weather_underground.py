@@ -51,7 +51,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
         self.wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
         self.wu_action = "&action=updateraw"
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -87,9 +87,9 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
             self.station_key = ""
             if html_request.form.get("station_key") is not None and html_request.form.get("station_key") is not "":
                 self.station_key = str(html_request.form.get("station_key")).strip()
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
@@ -107,7 +107,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
             self.wu_rapid_fire_enabled = int(self.config_settings[5])
         except Exception as error:
             logger.primary_logger.debug("Weather Underground Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Weather Underground Configuration.")
                 self.save_config_to_file()

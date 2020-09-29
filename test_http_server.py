@@ -473,7 +473,7 @@ SOMETHINGELSE = Weather Underground Station Key
         self.station_id = "Test_1"
         self.station_key = "Test_2"
         self.wu_rapid_fire_enabled = 0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.weather_underground_enabled = 1
@@ -482,7 +482,7 @@ SOMETHINGELSE = Weather Underground Station Key
         self.station_id = "Test_3"
         self.station_key = "Test_5"
         self.wu_rapid_fire_enabled = 1
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateLuftdatenConfigurationTest(CreateLuftdatenConfiguration):
@@ -495,12 +495,12 @@ class CreateLuftdatenConfigurationTest(CreateLuftdatenConfiguration):
     def set_settings_for_test1(self):
         self.luftdaten_enabled = 0
         self.interval_seconds = 9663.09
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
         self.luftdaten_enabled = 1
         self.interval_seconds = 55712.21
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
 
 class CreateOpenSenseMapConfigurationTest(CreateOpenSenseMapConfiguration):
