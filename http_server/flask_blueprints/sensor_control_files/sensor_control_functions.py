@@ -26,10 +26,35 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
+from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
+from configuration_modules.config_email import CreateEmailConfiguration
 from http_server.server_http_generic_functions import get_html_hidden_state
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
+
+initial_primary_select = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
+default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
+default_primary_config = default_primary_config.replace("\n", "\\n")
+default_installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False).get_config_as_str()
+default_installed_sensors_config = default_installed_sensors_config.replace("\n", "\\n")
+default_interval_recording_config = CreateIntervalRecordingConfiguration(load_from_file=False).get_config_as_str()
+default_interval_recording_config = default_interval_recording_config.replace("\n", "\\n")
+default_variance_config = CreateTriggerVariancesConfiguration(load_from_file=False).get_config_as_str()
+default_variance_config = default_variance_config.replace("\n", "\\n")
+default_high_low_config = CreateTriggerHighLowConfiguration(load_from_file=False).get_config_as_str()
+default_high_low_config = default_high_low_config.replace("\n", "\\n")
+default_display_config = CreateDisplayConfiguration(load_from_file=False).get_config_as_str()
+default_display_config = default_display_config.replace("\n", "\\n")
+default_email_config = CreateEmailConfiguration(load_from_file=False).get_config_as_str()
+default_email_config = default_email_config.replace("\n", "\\n")
+default_wifi_config = "https://manpages.debian.org/stretch/wpasupplicant/wpa_supplicant.conf.5.en.html"
+default_network_config = "https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 
 class CreateSensorHTTPCommand:
@@ -530,7 +555,21 @@ def sensor_control_management():
                            SensorIP18=app_config_access.sensor_control_config.sensor_ip_dns18,
                            SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
                            SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
-                           SensorControlEditConfig=render_template("sensor_control_edit_configs.html"))
+                           SensorControlEditConfig=_get_sensor_control_edit_configs())
+
+
+def _get_sensor_control_edit_configs():
+    return render_template("sensor_control_edit_configs.html",
+                           InitialPrimaryConfig=initial_primary_select,
+                           DefaultPrimaryText=default_primary_config,
+                           DefaultInstalledSensorsText=default_installed_sensors_config,
+                           DefaultIntervalRecText=default_interval_recording_config,
+                           DefaultVarianceRecText=default_variance_config,
+                           DefaultHighLowRecText=default_high_low_config,
+                           DefaultDisplayText=default_display_config,
+                           DefaultEmailText=default_email_config,
+                           DefaultWifiText=default_wifi_config,
+                           DefaultNetworkText=default_network_config)
 
 
 def get_sum_db_sizes(ip_list):

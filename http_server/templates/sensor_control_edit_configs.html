@@ -1,872 +1,86 @@
 {% block content %}
 
-    <div class="tabs-holder">
-        <ul class="mui-tabs__bar">
-            <li class="mui--is-active">
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="primary-config-tab">
-                    Main
-                </a>
-            </li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="installed-sensors-tab">
-                    Installed Sensors
-                </a>
-            </li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="wifi-config-tab">
-                    WiFi
-                </a>
-            </li>
-
-            <br>
-
-            <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="online-services-tab">
-                Online Services
-            </a></li>
-
-            <li>
-                <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-                   data-mui-controls="trigger-variances-tab">
-                    Trigger Variances
-                </a>
-            </li>
-        </ul>
-    </div>
-
     <br>
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active">
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="single-config-tab">
+                Configuration
+            </a>
+        </li>
 
-    <div class="mui-tabs__pane mui--is-active" id="primary-config-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="multi-config-tab">
+                Multi (Zip)
+            </a>
+        </li>
+
+        <li>
+            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="online-services-config-tab">
+                3rd Party Services
+            </a>
+        </li>
+    </ul>
+
+    <div class="mui-tabs__pane mui--is-active" id="single-config-tab">
+        <form class="mui-form" method="POST"
+              style="max-width: 550px; min-height: 300px;">
+            <br>
             <fieldset style="text-align: center; background-color: #00B0FF;">
-                <h2><u><a style="color: black;">Main Configuration</a></u></h2>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="debug_logging">
-                        Enable Debug Logging
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="enable_interval_recording" id="enable_interval_recording" checked>
-                        Record sensors to SQL database based on set Interval
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Seconds between Interval recordings
-                        <br>
-                        <input style="width: 75px" type="number" step="0.1" min="1" name="interval_delay_seconds"
-                               value="300.0">
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="enable_trigger_recording">
-                        Record sensors to SQL database based on set Triggers
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
+                <label for="config_selection" style="font-size: medium;">Select Configuration<br></label>
+                <select style="font-size: medium;" name="config_selection" id="config_selection"
+                        onchange="ConfigChange()">
+                    <option value="primary">Primary</option>
+                    <option value="installed_sensors">Installed Sensors</option>
+                    <option value="interval_recording">Interval Recording</option>
+                    <option value="variance_trigger_recording">Variance Trigger Recording</option>
+                    <option value="high_low_recording">High/Low Trigger Recording</option>
+                    <option value="display">Display</option>
+                    <option value="email">Email</option>
+                    <option value="wifi">wpa_supplicant.conf (Wifi)</option>
+                    <option value="network">dhcpcd.conf (Network)</option>
+                </select>
 
                 <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" id="enable_custom_temp_offset" name="enable_custom_temp_offset">
-                        Enable Environmental Temperature Offset
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-textfield">
-                    <label style="color: black">Current Environmental Temperature Offset
-                        <br>
-                        <input style="width: 75px;" type="number" step="0.01" min="-100" max="100"
-                               name="custom_temperature_offset" value="10.0" disabled>
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised" formaction="SensorControlEditConfigMain">
-                    Send Update
-                </button>
-            </fieldset>
-        </form>
-    </div>
-
-    <div class="mui-tabs__pane" id="installed-sensors-tab">
-        <form class="mui-form" method="POST" style="width: 575px; min-height: 300px;">
-            <fieldset style="text-align: center;">
-                <h2><u><a style="color: black;">Supported System & Sensor Modules</a></u></h2>
-
-                <h4><u>Raspberry Pi</u></h4>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="linux_system" checked>
-                        Gnu/Linux
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
                 <br>
 
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="raspberry_pi">
-                        Raspberry Pi - Any Model
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="raspberry_pi_sense_hat">
-                        Sense HAT
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <h4><u>Pimoroni</u></h4>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_bh1745">
-                        BH1745
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_as7262">
-                        AS7262
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_bmp280">
-                        BMP280
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_bme680">
-                        BME680
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_enviro">
-                        EnviroPHAT
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_enviroplus">
-                        Enviro+
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_pms5003">
-                        PMS5003
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_lsm303d">
-                        LSM303D
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_icm20948">
-                        ICM20948
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_vl53l1x">
-                        VL53L1X
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <br>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_ltr_559">
-                        LTR-559
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_veml6075">
-                        VEML6075
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_matrix_11x7">
-                        11x7 LED Matrix
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_st7735">
-                        10.96'' SPI Colour LCD (160x80)
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="pimoroni_mono_oled_luma">
-                        1.12'' Mono OLED (128x128, white/black)
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised"
-                        formaction="SensorControlEditInstalledSensors">
-                    Send Update
-                </button>
-            </fieldset>
-        </form>
-    </div>
-
-    <div class="mui-tabs__pane" id="wifi-config-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
-            <fieldset style="text-align: center;">
-                <h2><u><a style="color: black;">WiFi Configuration</a></u></h2>
-
-                <label>
-                    <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
-                        Two Character Country Code
-                    </a>
-                    <br>
-                    <input type="text" style="width: 25px" maxlength="2" minlength="2"
-                           name="country_code" value="CA" required>
+                <label>Text Configuration<br>
+                <textarea name="new_config_str" id="new_config_str" style="min-width: 450px; min-height: 350px;">{{ InitialPrimaryConfig }}</textarea>
                 </label>
 
                 <br>
-                <br>
 
-                <label>Wireless Security</label>
-                <div class="mui-radio">
-                    <label class="container_radio">Secured (WEP/WPA/WPA2)
-                        <input type="radio" name="wifi_security1" value="wireless_wpa" checked>
-                        <span class="checkmark_radio"></span>
-                    </label>
-                    <label class="container_radio">Open (None)
-                        <input type="radio" name="wifi_security1" value="wireless_none">
-                        <span class="checkmark_radio"></span>
-                    </label>
-                </div>
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Wireless Network Name (SSID)
-                        <br>
-                        <input style="width: 150px" type="text" name="ssid1" maxlength="32"
-                               placeholder="eg. MyWirelessNetwork">
-                    </label>
-                </div>
-                <br>
-                <div class="mui-textfield">
-                    <label style="color: black">
-                        Wireless Key
-                        <br>
-                        <input style="width: 175px" type="password" name="wifi_key1"
-                               placeholder="Leave blank to use previous Key" minlength="8" maxlength="63">
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised" formaction="SensorControlEditConfigWifi">
-                    Send Update
-                </button>
+                <button type="submit" formaction="/PushConfiguration" class="mui-btn mui-btn--raised">Send Configuration</button>
             </fieldset>
         </form>
     </div>
 
-    <div class="mui-tabs__pane" id="trigger-variances-tab">
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
-            <fieldset style="text-align: center;">
-                <h2><u><a style="color: black">Trigger Variances</a></u></h2>
-                <div class="mui-checkbox" style="display: inline-block;">
-                    <label class="container_checkbox">
-                        <input type="checkbox" name="checkbox_sensor_uptime" checked>
-                        Sensor Uptime
-                        <span class="checkmark_checkbox"></span>
-                    </label>
-                </div>
-                <div class="mui-textfield">
-                    <label style="color: black;">
-                        Days between SQL writes of sensor uptime
-                        <br>
-                        <input style="width: 75px;" type="number" step="0.01" name="days_sensor_uptime" value="30.0">
-                    </label>
-                </div>
+    <div class="mui-tabs__pane" id="multi-config-tab">
+        <br>
+        <fieldset style="text-align: center;">
+            <button type="button" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                Download local sensors configs as a zip
+            </button>
 
+            <br>
+            <br>
+
+            <form method="post" enctype="multipart/form-data">
+                <label style="color: red;">Zip of Configurations<br><br>
+                    <input style="color: #00B0FF;" type="file" name="command_data" accept=".zip" required>
+                </label>
                 <br>
-
-                <div class="mui-row" style="alignment: center;">
-                    <div class="mui-col-md-4">
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="checkbox_cpu_temperature">
-                                CPU Temperature
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_cpu_temperature"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1"
-                                       name="seconds_cpu_temperature"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="pressure">
-                                Pressure
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_pressure"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_pressure"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="humidity">
-                                Humidity
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.01" name="trigger_humidity"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_humidity"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="gas">
-                                Gas
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Index Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_index"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Oxidising Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_oxidising"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Reducing Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_reducing"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                NH3 Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_gas_nh3"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_gas"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="particulate_matter">
-                                Particulate Matter
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                PM1 Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_pm1"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                PM2.5 Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_pm2_5"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                PM10 Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_pm10"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_pm"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="accelerometer">
-                                Accelerometer
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                X Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="accelerometer_x"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Y Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="accelerometer_y"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Z Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="accelerometer_z"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1"
-                                       name="seconds_accelerometer"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="magnetometer">
-                                Magnetometer
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                X Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="magnetometer_x"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Y Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="magnetometer_y"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Z Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="magnetometer_z"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1"
-                                       name="seconds_magnetometer"
-                                       value="10.0">
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="mui-col-md-4">
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="env_temperature">
-                                Environmental Temperature
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px;" type="number" step="0.0001" name="trigger_env_temperature"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1"
-                                       name="seconds_env_temperature"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="altitude">
-                                Altitude
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_altitude"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_altitude"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="distance">
-                                Distance
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_distance"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_distance"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="lumen">
-                                Lumen
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="trigger_lumen"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_lumen"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="colour">
-                                Colour
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Red Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="red"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Orange Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="orange"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Yellow Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="yellow"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Green Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="green"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Blue Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="blue"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Violet Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="violet"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_colour"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="ultra_violet">
-                                Ultra Violet
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                UVA Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="ultra_violet_a"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                UVB Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="ultra_violet_b"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1"
-                                       name="seconds_ultra_violet"
-                                       value="10.0">
-                            </label>
-                        </div>
-
-                        <br>
-
-                        <div class="mui-checkbox" style="display: inline-block;">
-                            <label class="container_checkbox">
-                                <input type="checkbox" name="gyroscope">
-                                Gyroscope
-                                <span class="checkmark_checkbox"></span>
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                X Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="gyroscope_x"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Y Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="gyroscope_y"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Z Trigger variance
-                                <br>
-                                <input style="width: 75px" type="number" step="0.0001" name="gyroscope_z"
-                                       value="10.0">
-                            </label>
-                        </div>
-                        <div class="mui-textfield">
-                            <label style="color: black">
-                                Seconds between readings
-                                <br>
-                                <input style="width: 75px" type="number" step="0.1" min="0.1" name="seconds_gyroscope"
-                                       value="10.0">
-                            </label>
-                        </div>
-                    </div>
-                </div>
                 <br>
-                <button type="submit" class="mui-btn mui-btn--raised"
-                        formaction="/SensorControlEditTriggerVariances">
-                    Send Update
+                <button type="submit" formaction="/PushConfigurationZip" class="mui-btn mui-btn--raised" disabled>
+                    Send Configurations
                 </button>
-            </fieldset>
-        </form>
+            </form>
+        </fieldset>
     </div>
 
-    <div class="mui-tabs__pane" id="online-services-tab">
+    <div class="mui-tabs__pane" id="online-services-config-tab">
         <br>
         <fieldset style="text-align: center;">
             <div class="mui-container-fluid" style="background-color: #00B0FF;">
@@ -874,7 +88,7 @@
                 <h5><b>
                     This will update Configurations on ALL listed Sensors for the selected Online Service
                 </b></h5>
-                <label>Choose Online Service to Update</label>
+                <label>Choose 3rd Party Service to Update</label>
                 <div class="mui-radio">
                     <label class="container_radio" style="font-size: small;">
                         <input type="radio" name="online_service_selected_action" value="weather_underground"
@@ -910,11 +124,48 @@
                     </label>
                 </div>
                 <br>
-                <button type="submit" class="mui-btn mui-btn--raised" formaction="/SCActiveOnlineServices">
+                <button type="submit" class="mui-btn mui-btn--raised" formaction="/SetActiveOnlineServices">
                     Send Update
                 </button>
             </div>
         </fieldset>
     </div>
+
+    <script>
+
+    function ConfigChange() {
+        let primary_config = '{{ DefaultPrimaryText }}';
+        let installed_sensors_config = '{{ DefaultInstalledSensorsText }}';
+        let interval_rec_config = '{{ DefaultIntervalRecText }}';
+        let variance_rec_config = '{{ DefaultVarianceRecText }}';
+        let high_low_rec_config = '{{ DefaultHighLowRecText }}';
+        let display_config = '{{ DefaultDisplayText }}';
+        let email_config = '{{ DefaultEmailText }}';
+        let wifi_config = '{{ DefaultWifiText }}';
+        let network_config = '{{ DefaultNetworkText }}';
+
+        let selected_value = document.getElementById('config_selection').value
+
+        if (selected_value === 'primary') {
+                document.getElementById('new_config_str').value = primary_config;
+        } else if (selected_value === 'installed_sensors') {
+                document.getElementById('new_config_str').value = installed_sensors_config;
+        }  else if (selected_value === 'interval_recording') {
+                document.getElementById('new_config_str').value = interval_rec_config;
+        }  else if (selected_value === 'variance_trigger_recording') {
+                document.getElementById('new_config_str').value = variance_rec_config;
+        }  else if (selected_value === 'high_low_recording') {
+                document.getElementById('new_config_str').value = high_low_rec_config;
+        }  else if (selected_value === 'display') {
+                document.getElementById('new_config_str').value = display_config;
+        }  else if (selected_value === 'email') {
+                document.getElementById('new_config_str').value = email_config;
+        }  else if (selected_value === 'wifi') {
+                document.getElementById('new_config_str').value = wifi_config;
+        }  else if (selected_value === 'network') {
+                document.getElementById('new_config_str').value = network_config;
+        }
+    }
+    </script>
 
 {% endblock %}
