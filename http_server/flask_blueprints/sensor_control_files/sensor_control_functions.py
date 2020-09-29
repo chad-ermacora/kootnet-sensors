@@ -53,8 +53,8 @@ default_display_config = CreateDisplayConfiguration(load_from_file=False).get_co
 default_display_config = default_display_config.replace("\n", "\\n")
 default_email_config = CreateEmailConfiguration(load_from_file=False).get_config_as_str()
 default_email_config = default_email_config.replace("\n", "\\n")
-default_wifi_config = "https://manpages.debian.org/stretch/wpasupplicant/wpa_supplicant.conf.5.en.html"
-default_network_config = "https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
+default_wifi_config = "# https://manpages.debian.org/stretch/wpasupplicant/wpa_supplicant.conf.5.en.html"
+default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 
 class CreateSensorHTTPCommand:
