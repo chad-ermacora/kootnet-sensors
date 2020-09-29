@@ -30,7 +30,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         installed_sensors_config = file_locations.installed_sensors_config
         CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 24
         w1_therm_sensor = "W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"
         self.config_settings_names = [
@@ -38,8 +38,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680", "Pimoroni EnviroPHAT",
             "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D",
             "Pimoroni ICM20948", "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
-            "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96'' SPI Colour LCD (160x80)",
-            "Pimoroni 1.12'' Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor
+            "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96 SPI Colour LCD (160x80)",
+            "Pimoroni 1.12 Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor
         ]
 
         self.no_sensors = True

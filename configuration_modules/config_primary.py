@@ -27,7 +27,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 10
         self.config_settings_names = [
             "HTTPS port number (Default is 10065)", "Enable debug logging", "Enable temperature offset",

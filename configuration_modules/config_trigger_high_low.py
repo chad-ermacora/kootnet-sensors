@@ -27,39 +27,39 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         trigger_high_low_config = file_locations.trigger_high_low_config
         CreateGeneralConfiguration.__init__(self, trigger_high_low_config, load_from_file=load_from_file)
-        self.config_file_header = "Configure High Low Trigger Settings.  0 = Disabled, 1 = Enabled"
+        self.config_file_header = "0 = Disabled and 1 = Enabled"
         self.config_settings_names = [
             "Enable CPU Temperature", "CPU Temperature Low Trigger", "CPU Temperature High Trigger",
-            "Seconds between 'CPU Temperature' readings", "Enable Environmental Temperature",
+            "Seconds between CPU Temperature readings", "Enable Environmental Temperature",
             "Environmental Temperature Low Trigger", "Environmental Temperature High Trigger",
-            "Seconds between 'Env Temperature' readings", "Enable Pressure", "Pressure Low Trigger",
-            "Pressure High Trigger", "Seconds between 'Pressure' readings", "Enable Altitude", "Altitude Low Trigger",
-            "Altitude High Trigger", "Seconds between 'Altitude' readings", "Enable Humidity", "Humidity Low Trigger",
-            "Humidity High Trigger", "Seconds between 'Humidity' readings", "Enable Distance", "Distance Low Trigger",
-            "Distance High Trigger", "Seconds between 'Distance' readings", "Enable Gas",
+            "Seconds between Env Temperature readings", "Enable Pressure", "Pressure Low Trigger",
+            "Pressure High Trigger", "Seconds between Pressure readings", "Enable Altitude", "Altitude Low Trigger",
+            "Altitude High Trigger", "Seconds between Altitude readings", "Enable Humidity", "Humidity Low Trigger",
+            "Humidity High Trigger", "Seconds between Humidity readings", "Enable Distance", "Distance Low Trigger",
+            "Distance High Trigger", "Seconds between Distance readings", "Enable Gas",
             "Gas Resistance Index Low Trigger", "Gas Resistance Index High Trigger", "Gas Oxidising Low Trigger",
             "Gas Oxidising High Trigger", "Gas Reducing Low Trigger", "Gas Reducing High Trigger",
-            "Gas NH3 Low Trigger", "Gas NH3 High Trigger", "Seconds between 'Gas' readings",
+            "Gas NH3 Low Trigger", "Gas NH3 High Trigger", "Seconds between Gas readings",
             "Enable Particulate Matter (PM)", "Particulate Matter 1 (PM1) Low Trigger",
             "Particulate Matter 1 (PM1) High Trigger", "Particulate Matter 2.5 (PM2.5) Low Trigger",
             "Particulate Matter 2.5 (PM2.5) High Trigger", "Particulate Matter 4 (PM4) Low Trigger",
             "Particulate Matter 4 (PM4) High Trigger", "Particulate Matter 10 (PM10) Low Trigger",
-            "Particulate Matter 10 (PM10) High Trigger", "Seconds between 'PM' readings", "Enable Lumen",
-            "Lumen Low Trigger", "Lumen High Trigger", "Seconds between 'Lumen' readings", "Enable Colour",
+            "Particulate Matter 10 (PM10) High Trigger", "Seconds between PM readings", "Enable Lumen",
+            "Lumen Low Trigger", "Lumen High Trigger", "Seconds between Lumen readings", "Enable Colour",
             "Red Low Trigger", "Red High Trigger", "Orange Low Trigger", "Orange High Trigger", "Yellow Low Trigger",
             "Yellow High Trigger", "Green Low Trigger", "Green High Trigger", "Blue Low Trigger", "Blue High Trigger",
-            "Violet Low Trigger", "Violet High Trigger", "Seconds between 'Colour' readings", "Enable Ultra Violet",
+            "Violet Low Trigger", "Violet High Trigger", "Seconds between Colour readings", "Enable Ultra Violet",
             "Ultra Violet Index Low Trigger", "Ultra Violet Index High Trigger", "Ultra Violet A Low Trigger",
             "Ultra Violet A High Trigger", "Ultra Violet B Low Trigger", "Ultra Violet B High Trigger",
-            "Seconds between 'Ultra Violet' readings", "Enable Accelerometer", "Accelerometer X Low Trigger",
+            "Seconds between Ultra Violet readings", "Enable Accelerometer", "Accelerometer X Low Trigger",
             "Accelerometer X High Trigger", "Accelerometer Y Low Trigger", "Accelerometer Y High Trigger",
-            "Accelerometer Z Low Trigger", "Accelerometer Z High Trigger", "Seconds between 'Accelerometer' readings",
+            "Accelerometer Z Low Trigger", "Accelerometer Z High Trigger", "Seconds between Accelerometer readings",
             "Enable Magnetometer", "Magnetometer X Low Trigger", "Magnetometer X High Trigger",
             "Magnetometer Y Low Trigger", "Magnetometer Y High Trigger", "Magnetometer Z Low Trigger",
-            "Magnetometer Z High Trigger", "Seconds between 'Magnetometer' readings", "Enable Gyroscope",
+            "Magnetometer Z High Trigger", "Seconds between Magnetometer readings", "Enable Gyroscope",
             "Gyroscope X Low Trigger", "Gyroscope X High Trigger", "Gyroscope Y Low Trigger",
             "Gyroscope Y High Trigger", "Gyroscope Z Low Trigger", "Gyroscope Z High Trigger",
-            "Seconds between 'Gyroscope' readings", "Enable High/Low Trigger Recording"
+            "Seconds between Gyroscope readings", "Enable High/Low Trigger Recording"
         ]
         self.valid_setting_count = len(self.config_settings_names)
 

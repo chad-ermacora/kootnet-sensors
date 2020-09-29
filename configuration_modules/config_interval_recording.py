@@ -26,7 +26,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.interval_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 17
         self.config_settings_names = [
             "Enable interval recording", "Recording interval in seconds * Caution *", "Enable sensor uptime",

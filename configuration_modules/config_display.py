@@ -26,7 +26,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 18
         self.config_settings_names = [
             "Enable display", "Display every minutes", "Display type", "Show sensor uptime",

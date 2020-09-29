@@ -27,28 +27,28 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         trigger_variances_config = file_locations.trigger_variances_config
         CreateGeneralConfiguration.__init__(self, trigger_variances_config, load_from_file=load_from_file)
-        self.config_file_header = "Configure Variance Settings.  0 = Disabled, 1 = Enabled"
+        self.config_file_header = "0 = Disabled and 1 = Enabled"
         self.valid_setting_count = 61
         self.config_settings_names = [
             "Enable Trigger Variances", "Enable CPU Temperature", "CPU Temperature variance",
-            "Seconds between 'CPU Temperature' readings", "Enable Environmental Temperature",
-            "Environmental Temperature variance", "Seconds between 'Env Temperature' readings",
-            "Enable Pressure", "Pressure variance", "Seconds between 'Pressure' readings",
-            "Enable Altitude", "Altitude variance", "Seconds between 'Altitude' readings",
-            "Enable Humidity", "Humidity variance", "Seconds between 'Humidity' readings", "Enable Distance",
-            "Distance variance", "Seconds between 'Distance' readings", "Enable Gas", "Gas Resistance Index variance",
-            "Gas Oxidising variance", "Gas Reducing variance", "Gas NH3 variance", "Seconds between 'Gas' readings",
+            "Seconds between CPU Temperature readings", "Enable Environmental Temperature",
+            "Environmental Temperature variance", "Seconds between Env Temperature readings",
+            "Enable Pressure", "Pressure variance", "Seconds between Pressure readings",
+            "Enable Altitude", "Altitude variance", "Seconds between Altitude readings",
+            "Enable Humidity", "Humidity variance", "Seconds between Humidity readings", "Enable Distance",
+            "Distance variance", "Seconds between Distance readings", "Enable Gas", "Gas Resistance Index variance",
+            "Gas Oxidising variance", "Gas Reducing variance", "Gas NH3 variance", "Seconds between Gas readings",
             "Enable Particulate Matter (PM)", "Particulate Matter 1 (PM1) variance",
             "Particulate Matter 2.5 (PM2.5) variance", "Particulate Matter 10 (PM10) variance",
-            "Seconds between 'PM' readings", "Enable Lumen", "Lumen variance", "Seconds between 'Lumen' readings",
+            "Seconds between PM readings", "Enable Lumen", "Lumen variance", "Seconds between Lumen readings",
             "Enable Colour", "Red variance", "Orange variance", "Yellow variance", "Green variance", "Blue variance",
-            "Violet variance", "Seconds between 'Colour' readings", "Enable Ultra Violet",
+            "Violet variance", "Seconds between Colour readings", "Enable Ultra Violet",
             "Ultra Violet Index variance", "Ultra Violet A variance", "Ultra Violet B variance",
-            "Seconds between 'Ultra Violet' readings", "Enable Accelerometer", "Accelerometer X variance",
-            "Accelerometer Y variance", "Accelerometer Z variance", "Seconds between 'Accelerometer' readings",
+            "Seconds between Ultra Violet readings", "Enable Accelerometer", "Accelerometer X variance",
+            "Accelerometer Y variance", "Accelerometer Z variance", "Seconds between Accelerometer readings",
             "Enable Magnetometer", "Magnetometer X variance", "Magnetometer Y variance", "Magnetometer Z variance",
-            "Seconds between 'Magnetometer' readings", "Enable Gyroscope", "Gyroscope X variance",
-            "Gyroscope Y variance", "Gyroscope Z variance", "Seconds between 'Gyroscope' readings"
+            "Seconds between Magnetometer readings", "Enable Gyroscope", "Gyroscope X variance",
+            "Gyroscope Y variance", "Gyroscope Z variance", "Seconds between Gyroscope readings"
         ]
 
         self.enable_trigger_variance = 0

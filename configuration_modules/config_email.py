@@ -27,7 +27,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 31
         self.config_settings_names = [
             "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS", "SMTP server port #",
