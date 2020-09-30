@@ -11,13 +11,6 @@
 
         <li>
             <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
-               data-mui-controls="multi-config-tab">
-                Multi (Zip)
-            </a>
-        </li>
-
-        <li>
-            <a style="color: red; background-color: #212121;" data-mui-toggle="tab"
                data-mui-controls="online-services-config-tab">
                 3rd Party Services
             </a>
@@ -55,29 +48,6 @@
                 <button type="submit" formaction="/PushConfiguration" class="mui-btn mui-btn--raised">Send Configuration</button>
             </fieldset>
         </form>
-    </div>
-
-    <div class="mui-tabs__pane" id="multi-config-tab">
-        <br>
-        <fieldset style="text-align: center;">
-            <button type="button" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
-                Download local sensors configs as a zip
-            </button>
-
-            <br>
-            <br>
-
-            <form method="post" enctype="multipart/form-data">
-                <label style="color: red;">Zip of Configurations<br><br>
-                    <input style="color: #00B0FF;" type="file" name="command_data" accept=".zip" required>
-                </label>
-                <br>
-                <br>
-                <button type="submit" formaction="/PushConfigurationZip" class="mui-btn mui-btn--raised" disabled>
-                    Send Configurations
-                </button>
-            </form>
-        </fieldset>
     </div>
 
     <div class="mui-tabs__pane" id="online-services-config-tab">

@@ -125,12 +125,6 @@ def receive_push_config():
     return ""
 
 
-@html_sensor_control_receive_routes.route("/ReceiveConfigurationsZip")
-@auth.login_required
-def receive_configurations_zip():
-    logger.network_logger.info("* Received 'Zipped Configurations' from " + str(request.remote_addr))
-
-
 @html_sensor_control_receive_routes.route("/ReceiveActiveOnlineServices", methods=["POST"])
 @auth.login_required
 def receive_online_services():
