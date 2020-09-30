@@ -25,6 +25,7 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
     ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/pyserial-3.4-py2.py3-none-any.whl
     ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/click-7.1.2-py2.py3-none-any.whl \
     ${PYTHON_MODULES_DIR}/itsdangerous-1.1.0-py2.py3-none-any.whl \
+    ${PYTHON_MODULES_DIR}/python_dateutil-2.8.1-py2.py3-none-any.whl \
     ${PYTHON_MODULES_DIR}/Werkzeug-1.0.1-py2.py3-none-any.whl \
     ${PYTHON_MODULES_DIR}/Jinja2-2.11.2-py2.py3-none-any.whl \
     ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
