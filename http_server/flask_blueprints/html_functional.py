@@ -100,6 +100,31 @@ def tinymce_ui_content_min_css():
     return send_file(html_extras_dir + "/tinymce/skins/ui/oxide-dark/content.min.css")
 
 
+@html_functional_routes.route("/icons/default/icons.min.js")
+def tinymce_icons():
+    return send_file(html_extras_dir + "/tinymce/icons/default/icons.min.js")
+
+
+@html_functional_routes.route("/skins/ui/oxide/content.inline.min.css")
+def tinymce_ui_content_inline_min_css():
+    return send_file(html_extras_dir + "/tinymce/skins/ui/oxide-dark/content.inline.min.css")
+
+
+@html_functional_routes.route("/skins/ui/oxide/content.mobile.min.css")
+def tinymce_ui_content_mobile_min_css():
+    return send_file(html_extras_dir + "/tinymce/skins/ui/oxide-dark/content.mobile.min.css")
+
+
+@html_functional_routes.route("/skins/ui/oxide/skin.mobile.min.css")
+def tinymce_ui_content_mobile_skin():
+    return send_file(html_extras_dir + "/tinymce/skins/ui/oxide-dark/skin.mobile.min.css")
+
+
+@html_functional_routes.route("/skins/ui/oxide/fonts/tinymce-mobile.woff")
+def tinymce_ui_content_wolf_font():
+    return send_file(html_extras_dir + "/tinymce/skins/ui/oxide-dark/fonts/tinymce-mobile.woff")
+
+
 @html_functional_routes.route("/skins/content/default/content.min.css")
 def tinymce_content_min_css():
     return send_file(html_extras_dir + "/tinymce/skins/content/dark/content.min.css")
