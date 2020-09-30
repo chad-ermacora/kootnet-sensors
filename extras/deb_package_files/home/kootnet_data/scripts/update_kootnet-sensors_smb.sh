@@ -28,5 +28,5 @@ apt-get update
 apt-get -y install ${MOUNT_DIR}${DEB_INSTALLER}
 umount ${MOUNT_DIR}
 # Save DateTime and Update type to file (Used in program to show last updated)
-date >${CONFIG_DIR}/last_updated.txt
+date -u >${CONFIG_DIR}/last_updated.txt
 echo ' - SMB' >>${CONFIG_DIR}/last_updated.txt

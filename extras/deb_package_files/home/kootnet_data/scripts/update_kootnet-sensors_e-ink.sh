@@ -23,7 +23,7 @@ bash /opt/kootnet-sensors/scripts/copy_shortcuts.sh
 # Update & Enable Auto Start Applications. Set Wireless Networks. Set File Permissions
 bash /opt/kootnet-sensors/scripts/set_fake_hw_clock.sh
 # Save datetime to last updated file
-date > ${CONFIG_DIR}/last_updated.txt
+date -u > ${CONFIG_DIR}/last_updated.txt
 echo ' - EInk' >> ${CONFIG_DIR}/last_updated.txt
 printf '\nDone\n\n'
 systemctl restart SensorCommands

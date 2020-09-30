@@ -5,7 +5,7 @@ PYTHON_MODULES_DIR=${INSTALL_DIR}/extras/python_modules
 CONFIG_DIR="/etc/kootnet"
 if [[ ! -f ${CONFIG_DIR}/installed_version.txt ]]; then
   echo 'New_Install.99.999' >${CONFIG_DIR}/installed_version.txt
-  date >${CONFIG_DIR}/installed_datetime.txt
+  date -u >${CONFIG_DIR}/installed_datetime.txt
 fi
 if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   python3 -m venv --system-site-packages ${PYTHON_VENV_DIR}
@@ -72,7 +72,7 @@ ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
 echo '*/1 * * * * fake-hwclock' >>/tmp/tmp34441.txt
 crontab -u root /tmp/tmp34441.txt
 rm /tmp/tmp34441.txt
-date >${CONFIG_DIR}/last_updated.txt
+date -u >${CONFIG_DIR}/last_updated.txt
 echo ' - DEB' >>${CONFIG_DIR}/last_updated.txt
 systemctl daemon-reload
 systemctl enable KootnetSensors
