@@ -16,7 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from datetime import datetime, timedelta
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from time import sleep
 import smtplib
 import ssl
@@ -290,20 +291,23 @@ def _get_graph_sleep_time():
     return sleep_seconds
 
 
-def _get_email_sleep_seconds(day=0, month=0, year=0, hour=8, minute=0):
+def _get_email_sleep_seconds(year=0, month=0, day=0, hour=8, minute=0):
+    """ Returns seconds between now and the years/months/days from now at the provided hour/minute """
     try:
-        utc0_hour_offset = timedelta(hours=app_config_access.primary_config.utc0_hour_offset)
-        utc_now = datetime.utcnow() + utc0_hour_offset
-        if day == 1 and not month and not year:
-            next_datetime = utc_now.replace(hour=hour, minute=minute)
-            return_seconds = (next_datetime - utc_now).total_seconds()
-            if 86400 > return_seconds > 0:
-                return return_seconds
+        adjusted_utc_now = datetime.utcnow() + relativedelta(hours=app_config_access.primary_config.utc0_hour_offset)
+        next_datetime = adjusted_utc_now + relativedelta(years=year, months=month, days=day, hour=hour, minute=minute)
 
-        next_datetime = utc_now.replace(
-            day=utc_now.day + day, month=utc_now.month + month, year=utc_now.year + year, hour=hour, minute=minute
-        )
-        return_total_seconds = (next_datetime - utc_now).total_seconds()
+        if not year and not month and day == 1:
+            if adjusted_utc_now.hour <= hour:
+                if adjusted_utc_now.hour < hour:
+                    hours_in_seconds = ((hour - adjusted_utc_now.hour) * 60 * 60)
+                    minutes_in_seconds = ((minute - adjusted_utc_now.minute) * 60)
+                    return_total_seconds = hours_in_seconds + minutes_in_seconds
+                    return return_total_seconds
+                elif adjusted_utc_now.minute < minute:
+                    return_total_seconds = ((minute - adjusted_utc_now.minute) * 60)
+                    return return_total_seconds
+        return_total_seconds = (next_datetime - adjusted_utc_now).total_seconds()
         return return_total_seconds
     except Exception as error:
         logger.primary_logger.warning("Getting email sleep time in seconds error: " + str(error))
