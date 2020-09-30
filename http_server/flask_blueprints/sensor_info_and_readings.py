@@ -93,11 +93,26 @@ def html_system_information():
     )
 
 
-@html_sensor_info_readings_routes.route("/SensorTriggerStatus")
-def html_trigger_status():
+@html_sensor_info_readings_routes.route("/SensorRecordingStatus")
+def html_sql_recording_status():
+    interval_recording_config = app_config_access.interval_recording_config
     return render_template(
-        "trigger_recording_status.html",
-        PageURL="/SensorTriggerStatus",
+        "sql_recording_status.html",
+        PageURL="/SensorRecordingStatus",
+        IntervalCPUTemp=_get_enabled_state(interval_recording_config.cpu_temperature_enabled),
+        IntervalEnvTemp=_get_enabled_state(interval_recording_config.env_temperature_enabled),
+        IntervalPressure=_get_enabled_state(interval_recording_config.pressure_enabled),
+        IntervalAltitude=_get_enabled_state(interval_recording_config.altitude_enabled),
+        IntervalHumidity=_get_enabled_state(interval_recording_config.humidity_enabled),
+        IntervalDistance=_get_enabled_state(interval_recording_config.distance_enabled),
+        IntervalLumen=_get_enabled_state(interval_recording_config.lumen_enabled),
+        IntervalVisibleEMS=_get_enabled_state(interval_recording_config.colour_enabled),
+        IntervalUltraViolet=_get_enabled_state(interval_recording_config.ultra_violet_enabled),
+        IntervalGAS=_get_enabled_state(interval_recording_config.gas_enabled),
+        IntervalPM=_get_enabled_state(interval_recording_config.particulate_matter_enabled),
+        IntervalAccelerometer=_get_enabled_state(interval_recording_config.accelerometer_enabled),
+        IntervalMagnetometer=_get_enabled_state(interval_recording_config.magnetometer_enabled),
+        IntervalGyroscope=_get_enabled_state(interval_recording_config.gyroscope_enabled),
         TriggerVarianceCPUTemp=app_cached_variables.trigger_variance_thread_cpu_temp.current_state,
         TriggerVarianceEnvTemp=app_cached_variables.trigger_variance_thread_env_temp.current_state,
         TriggerVariancePressure=app_cached_variables.trigger_variance_thread_pressure.current_state,
@@ -127,6 +142,12 @@ def html_trigger_status():
         TriggerHighLowMagnetometer=str(app_cached_variables.trigger_high_low_magnetometer.current_state),
         TriggerHighLowGyroscope=str(app_cached_variables.trigger_high_low_gyroscope.current_state)
     )
+
+
+def _get_enabled_state(state):
+    if state:
+        return "Enabled"
+    return "Disabled"
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")
