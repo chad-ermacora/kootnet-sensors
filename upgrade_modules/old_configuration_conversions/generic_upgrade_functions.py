@@ -19,6 +19,7 @@
 from operations_modules import logger
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
@@ -48,6 +49,13 @@ def reset_installed_sensors(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_interval_recording_config(log_reset=True):
+    """ Writes a default Trigger Interval Recording configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Trigger Interval Recording Configuration Reset ****")
+    CreateIntervalRecordingConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_trigger_high_low_config(log_reset=True):

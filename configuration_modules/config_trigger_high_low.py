@@ -29,14 +29,14 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, trigger_high_low_config, load_from_file=load_from_file)
         self.config_file_header = "0 = Disabled and 1 = Enabled"
         self.config_settings_names = [
-            "Enable CPU Temperature", "CPU Temperature Low Trigger", "CPU Temperature High Trigger",
-            "Seconds between CPU Temperature readings", "Enable Environmental Temperature",
-            "Environmental Temperature Low Trigger", "Environmental Temperature High Trigger",
-            "Seconds between Env Temperature readings", "Enable Pressure", "Pressure Low Trigger",
-            "Pressure High Trigger", "Seconds between Pressure readings", "Enable Altitude", "Altitude Low Trigger",
-            "Altitude High Trigger", "Seconds between Altitude readings", "Enable Humidity", "Humidity Low Trigger",
-            "Humidity High Trigger", "Seconds between Humidity readings", "Enable Distance", "Distance Low Trigger",
-            "Distance High Trigger", "Seconds between Distance readings", "Enable Gas",
+            "Enable High/Low Trigger Recording", "Enable CPU Temperature", "CPU Temperature Low Trigger",
+            "CPU Temperature High Trigger", "Seconds between CPU Temperature readings",
+            "Enable Environmental Temperature", "Environmental Temperature Low Trigger",
+            "Environmental Temperature High Trigger", "Seconds between Env Temperature readings", "Enable Pressure",
+            "Pressure Low Trigger", "Pressure High Trigger", "Seconds between Pressure readings", "Enable Altitude",
+            "Altitude Low Trigger", "Altitude High Trigger", "Seconds between Altitude readings", "Enable Humidity",
+            "Humidity Low Trigger", "Humidity High Trigger", "Seconds between Humidity readings", "Enable Distance",
+            "Distance Low Trigger", "Distance High Trigger", "Seconds between Distance readings", "Enable Gas",
             "Gas Resistance Index Low Trigger", "Gas Resistance Index High Trigger", "Gas Oxidising Low Trigger",
             "Gas Oxidising High Trigger", "Gas Reducing Low Trigger", "Gas Reducing High Trigger",
             "Gas NH3 Low Trigger", "Gas NH3 High Trigger", "Seconds between Gas readings",
@@ -59,7 +59,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             "Magnetometer Z High Trigger", "Seconds between Magnetometer readings", "Enable Gyroscope",
             "Gyroscope X Low Trigger", "Gyroscope X High Trigger", "Gyroscope Y Low Trigger",
             "Gyroscope Y High Trigger", "Gyroscope Z Low Trigger", "Gyroscope Z High Trigger",
-            "Seconds between Gyroscope readings", "Enable High/Low Trigger Recording"
+            "Seconds between Gyroscope readings"
         ]
         self.valid_setting_count = len(self.config_settings_names)
 
@@ -381,9 +381,10 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
-            str(self.cpu_temperature_enabled), str(self.cpu_temperature_low), str(self.cpu_temperature_high),
-            str(self.cpu_temperature_wait_seconds), str(self.env_temperature_enabled), str(self.env_temperature_low),
-            str(self.env_temperature_high), str(self.env_temperature_wait_seconds), str(self.pressure_enabled),
+            str(self.enable_high_low_trigger_recording), str(self.cpu_temperature_enabled),
+            str(self.cpu_temperature_low), str(self.cpu_temperature_high), str(self.cpu_temperature_wait_seconds),
+            str(self.env_temperature_enabled), str(self.env_temperature_low), str(self.env_temperature_high),
+            str(self.env_temperature_wait_seconds), str(self.pressure_enabled),
             str(self.pressure_low), str(self.pressure_high), str(self.pressure_wait_seconds),
             str(self.altitude_enabled), str(self.altitude_low), str(self.altitude_high),
             str(self.altitude_wait_seconds), str(self.humidity_enabled), str(self.humidity_low),
@@ -411,106 +412,106 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
             str(self.magnetometer_z_high), str(self.magnetometer_wait_seconds), str(self.gyroscope_enabled),
             str(self.gyroscope_x_low), str(self.gyroscope_x_high), str(self.gyroscope_y_low),
             str(self.gyroscope_y_high), str(self.gyroscope_z_low), str(self.gyroscope_z_high),
-            str(self.gyroscope_wait_seconds), str(self.enable_high_low_trigger_recording)
+            str(self.gyroscope_wait_seconds)
         ]
 
     def _update_variables_from_settings_list(self):
         try:
-            self.cpu_temperature_enabled = int(self.config_settings[0])
-            self.cpu_temperature_low = float(self.config_settings[1])
-            self.cpu_temperature_high = float(self.config_settings[2])
-            self.cpu_temperature_wait_seconds = float(self.config_settings[3])
-            self.env_temperature_enabled = int(self.config_settings[4])
-            self.env_temperature_low = float(self.config_settings[5])
-            self.env_temperature_high = float(self.config_settings[6])
-            self.env_temperature_wait_seconds = float(self.config_settings[7])
-            self.pressure_enabled = int(self.config_settings[8])
-            self.pressure_low = float(self.config_settings[9])
-            self.pressure_high = float(self.config_settings[10])
-            self.pressure_wait_seconds = float(self.config_settings[11])
-            self.altitude_enabled = int(self.config_settings[12])
-            self.altitude_low = float(self.config_settings[13])
-            self.altitude_high = float(self.config_settings[14])
-            self.altitude_wait_seconds = float(self.config_settings[15])
-            self.humidity_enabled = int(self.config_settings[16])
-            self.humidity_low = float(self.config_settings[17])
-            self.humidity_high = float(self.config_settings[18])
-            self.humidity_wait_seconds = float(self.config_settings[19])
-            self.distance_enabled = int(self.config_settings[20])
-            self.distance_low = float(self.config_settings[21])
-            self.distance_high = float(self.config_settings[22])
-            self.distance_wait_seconds = float(self.config_settings[23])
-            self.gas_enabled = int(self.config_settings[24])
-            self.gas_resistance_index_low = float(self.config_settings[25])
-            self.gas_resistance_index_high = float(self.config_settings[26])
-            self.gas_oxidising_low = float(self.config_settings[27])
-            self.gas_oxidising_high = float(self.config_settings[28])
-            self.gas_reducing_low = float(self.config_settings[29])
-            self.gas_reducing_high = float(self.config_settings[30])
-            self.gas_nh3_low = float(self.config_settings[31])
-            self.gas_nh3_high = float(self.config_settings[32])
-            self.gas_wait_seconds = float(self.config_settings[33])
-            self.particulate_matter_enabled = int(self.config_settings[34])
-            self.particulate_matter_1_low = float(self.config_settings[35])
-            self.particulate_matter_1_high = float(self.config_settings[36])
-            self.particulate_matter_2_5_low = float(self.config_settings[37])
-            self.particulate_matter_2_5_high = float(self.config_settings[38])
-            self.particulate_matter_4_low = float(self.config_settings[39])
-            self.particulate_matter_4_high = float(self.config_settings[40])
-            self.particulate_matter_10_low = float(self.config_settings[41])
-            self.particulate_matter_10_high = float(self.config_settings[42])
-            self.particulate_matter_wait_seconds = float(self.config_settings[43])
-            self.lumen_enabled = int(self.config_settings[44])
-            self.lumen_low = float(self.config_settings[45])
-            self.lumen_high = float(self.config_settings[46])
-            self.lumen_wait_seconds = float(self.config_settings[47])
-            self.colour_enabled = int(self.config_settings[48])
-            self.red_low = float(self.config_settings[49])
-            self.red_high = float(self.config_settings[50])
-            self.orange_low = float(self.config_settings[51])
-            self.orange_high = float(self.config_settings[52])
-            self.yellow_low = float(self.config_settings[53])
-            self.yellow_high = float(self.config_settings[54])
-            self.green_high = float(self.config_settings[55])
-            self.green_low = float(self.config_settings[56])
-            self.blue_high = float(self.config_settings[57])
-            self.blue_low = float(self.config_settings[58])
-            self.violet_high = float(self.config_settings[59])
-            self.violet_low = float(self.config_settings[60])
-            self.colour_wait_seconds = float(self.config_settings[61])
-            self.ultra_violet_enabled = int(self.config_settings[62])
-            self.ultra_violet_index_low = float(self.config_settings[63])
-            self.ultra_violet_index_high = float(self.config_settings[64])
-            self.ultra_violet_a_low = float(self.config_settings[65])
-            self.ultra_violet_a_high = float(self.config_settings[66])
-            self.ultra_violet_b_low = float(self.config_settings[67])
-            self.ultra_violet_b_high = float(self.config_settings[68])
-            self.ultra_violet_wait_seconds = float(self.config_settings[69])
-            self.accelerometer_enabled = int(self.config_settings[70])
-            self.accelerometer_x_low = float(self.config_settings[71])
-            self.accelerometer_x_high = float(self.config_settings[72])
-            self.accelerometer_y_low = float(self.config_settings[73])
-            self.accelerometer_y_high = float(self.config_settings[74])
-            self.accelerometer_z_low = float(self.config_settings[75])
-            self.accelerometer_z_high = float(self.config_settings[76])
-            self.accelerometer_wait_seconds = float(self.config_settings[77])
-            self.magnetometer_enabled = int(self.config_settings[78])
-            self.magnetometer_x_low = float(self.config_settings[79])
-            self.magnetometer_x_high = float(self.config_settings[80])
-            self.magnetometer_y_low = float(self.config_settings[81])
-            self.magnetometer_y_high = float(self.config_settings[82])
-            self.magnetometer_z_low = float(self.config_settings[83])
-            self.magnetometer_z_high = float(self.config_settings[84])
-            self.magnetometer_wait_seconds = float(self.config_settings[85])
-            self.gyroscope_enabled = int(self.config_settings[86])
-            self.gyroscope_x_low = float(self.config_settings[87])
-            self.gyroscope_x_high = float(self.config_settings[88])
-            self.gyroscope_y_low = float(self.config_settings[89])
-            self.gyroscope_y_high = float(self.config_settings[90])
-            self.gyroscope_z_low = float(self.config_settings[91])
-            self.gyroscope_z_high = float(self.config_settings[92])
-            self.gyroscope_wait_seconds = float(self.config_settings[93])
-            self.enable_high_low_trigger_recording = int(self.config_settings[94])
+            self.enable_high_low_trigger_recording = int(self.config_settings[0])
+            self.cpu_temperature_enabled = int(self.config_settings[1])
+            self.cpu_temperature_low = float(self.config_settings[2])
+            self.cpu_temperature_high = float(self.config_settings[3])
+            self.cpu_temperature_wait_seconds = float(self.config_settings[4])
+            self.env_temperature_enabled = int(self.config_settings[5])
+            self.env_temperature_low = float(self.config_settings[6])
+            self.env_temperature_high = float(self.config_settings[7])
+            self.env_temperature_wait_seconds = float(self.config_settings[8])
+            self.pressure_enabled = int(self.config_settings[9])
+            self.pressure_low = float(self.config_settings[10])
+            self.pressure_high = float(self.config_settings[11])
+            self.pressure_wait_seconds = float(self.config_settings[12])
+            self.altitude_enabled = int(self.config_settings[13])
+            self.altitude_low = float(self.config_settings[14])
+            self.altitude_high = float(self.config_settings[15])
+            self.altitude_wait_seconds = float(self.config_settings[16])
+            self.humidity_enabled = int(self.config_settings[17])
+            self.humidity_low = float(self.config_settings[18])
+            self.humidity_high = float(self.config_settings[19])
+            self.humidity_wait_seconds = float(self.config_settings[20])
+            self.distance_enabled = int(self.config_settings[21])
+            self.distance_low = float(self.config_settings[22])
+            self.distance_high = float(self.config_settings[23])
+            self.distance_wait_seconds = float(self.config_settings[24])
+            self.gas_enabled = int(self.config_settings[25])
+            self.gas_resistance_index_low = float(self.config_settings[26])
+            self.gas_resistance_index_high = float(self.config_settings[27])
+            self.gas_oxidising_low = float(self.config_settings[28])
+            self.gas_oxidising_high = float(self.config_settings[29])
+            self.gas_reducing_low = float(self.config_settings[30])
+            self.gas_reducing_high = float(self.config_settings[31])
+            self.gas_nh3_low = float(self.config_settings[32])
+            self.gas_nh3_high = float(self.config_settings[33])
+            self.gas_wait_seconds = float(self.config_settings[34])
+            self.particulate_matter_enabled = int(self.config_settings[35])
+            self.particulate_matter_1_low = float(self.config_settings[36])
+            self.particulate_matter_1_high = float(self.config_settings[37])
+            self.particulate_matter_2_5_low = float(self.config_settings[38])
+            self.particulate_matter_2_5_high = float(self.config_settings[39])
+            self.particulate_matter_4_low = float(self.config_settings[40])
+            self.particulate_matter_4_high = float(self.config_settings[41])
+            self.particulate_matter_10_low = float(self.config_settings[42])
+            self.particulate_matter_10_high = float(self.config_settings[43])
+            self.particulate_matter_wait_seconds = float(self.config_settings[44])
+            self.lumen_enabled = int(self.config_settings[45])
+            self.lumen_low = float(self.config_settings[46])
+            self.lumen_high = float(self.config_settings[47])
+            self.lumen_wait_seconds = float(self.config_settings[48])
+            self.colour_enabled = int(self.config_settings[49])
+            self.red_low = float(self.config_settings[50])
+            self.red_high = float(self.config_settings[51])
+            self.orange_low = float(self.config_settings[52])
+            self.orange_high = float(self.config_settings[53])
+            self.yellow_low = float(self.config_settings[54])
+            self.yellow_high = float(self.config_settings[55])
+            self.green_high = float(self.config_settings[56])
+            self.green_low = float(self.config_settings[57])
+            self.blue_high = float(self.config_settings[58])
+            self.blue_low = float(self.config_settings[59])
+            self.violet_high = float(self.config_settings[60])
+            self.violet_low = float(self.config_settings[61])
+            self.colour_wait_seconds = float(self.config_settings[62])
+            self.ultra_violet_enabled = int(self.config_settings[63])
+            self.ultra_violet_index_low = float(self.config_settings[64])
+            self.ultra_violet_index_high = float(self.config_settings[65])
+            self.ultra_violet_a_low = float(self.config_settings[66])
+            self.ultra_violet_a_high = float(self.config_settings[67])
+            self.ultra_violet_b_low = float(self.config_settings[68])
+            self.ultra_violet_b_high = float(self.config_settings[69])
+            self.ultra_violet_wait_seconds = float(self.config_settings[70])
+            self.accelerometer_enabled = int(self.config_settings[71])
+            self.accelerometer_x_low = float(self.config_settings[72])
+            self.accelerometer_x_high = float(self.config_settings[73])
+            self.accelerometer_y_low = float(self.config_settings[74])
+            self.accelerometer_y_high = float(self.config_settings[75])
+            self.accelerometer_z_low = float(self.config_settings[76])
+            self.accelerometer_z_high = float(self.config_settings[77])
+            self.accelerometer_wait_seconds = float(self.config_settings[78])
+            self.magnetometer_enabled = int(self.config_settings[79])
+            self.magnetometer_x_low = float(self.config_settings[80])
+            self.magnetometer_x_high = float(self.config_settings[81])
+            self.magnetometer_y_low = float(self.config_settings[82])
+            self.magnetometer_y_high = float(self.config_settings[83])
+            self.magnetometer_z_low = float(self.config_settings[84])
+            self.magnetometer_z_high = float(self.config_settings[85])
+            self.magnetometer_wait_seconds = float(self.config_settings[86])
+            self.gyroscope_enabled = int(self.config_settings[87])
+            self.gyroscope_x_low = float(self.config_settings[88])
+            self.gyroscope_x_high = float(self.config_settings[89])
+            self.gyroscope_y_low = float(self.config_settings[90])
+            self.gyroscope_y_high = float(self.config_settings[91])
+            self.gyroscope_z_low = float(self.config_settings[92])
+            self.gyroscope_z_high = float(self.config_settings[93])
+            self.gyroscope_wait_seconds = float(self.config_settings[94])
         except Exception as error:
             logger.primary_logger.debug("Trigger High/Low Config: " + str(error))
             self.update_configuration_settings_list()
