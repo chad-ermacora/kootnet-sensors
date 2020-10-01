@@ -94,6 +94,21 @@ def html_live_graphing():
 def get_html_live_graphing_page(email_graph=False):
     if email_graph:
         graph_past_hours = app_config_access.email_config.graph_past_hours
+        app_cached_variables.quick_graph_uptime = app_config_access.email_config.sensor_uptime
+        app_cached_variables.quick_graph_cpu_temp = app_config_access.email_config.system_temperature
+        app_cached_variables.quick_graph_env_temp = app_config_access.email_config.env_temperature
+        app_cached_variables.quick_graph_pressure = app_config_access.email_config.pressure
+        app_cached_variables.quick_graph_altitude = app_config_access.email_config.altitude
+        app_cached_variables.quick_graph_humidity = app_config_access.email_config.humidity
+        app_cached_variables.quick_graph_distance = app_config_access.email_config.distance
+        app_cached_variables.quick_graph_gas = app_config_access.email_config.gas
+        app_cached_variables.quick_graph_particulate_matter = app_config_access.email_config.particulate_matter
+        app_cached_variables.quick_graph_lumen = app_config_access.email_config.lumen
+        app_cached_variables.quick_graph_colours = app_config_access.email_config.color
+        app_cached_variables.quick_graph_ultra_violet = app_config_access.email_config.ultra_violet
+        app_cached_variables.quick_graph_acc = app_config_access.email_config.accelerometer
+        app_cached_variables.quick_graph_mag = app_config_access.email_config.magnetometer
+        app_cached_variables.quick_graph_gyro = app_config_access.email_config.gyroscope
     else:
         graph_past_hours = app_cached_variables.quick_graph_hours
 
