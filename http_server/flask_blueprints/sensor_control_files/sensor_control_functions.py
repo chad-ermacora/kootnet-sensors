@@ -33,7 +33,7 @@ from configuration_modules.config_trigger_variances import CreateTriggerVariance
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
-from http_server.server_http_generic_functions import get_html_hidden_state
+from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
@@ -623,3 +623,9 @@ def get_data_queue_items(data_queue):
         que_data.append(data_queue.get())
         data_queue.task_done()
     return que_data
+
+
+def sensor_addresses_required_msg():
+    msg_1 = "Please set at least one remote sensor address"
+    msg_2 = "Press the button 'SHOW/HIDE IP LIST' under remote management to set sensor addresses."
+    return message_and_return(msg_1, text_message2=msg_2, url="SensorControlManage")

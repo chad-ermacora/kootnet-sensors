@@ -29,7 +29,7 @@ from http_server.flask_blueprints.sensor_control_files.reports import generate_s
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
     check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
     create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, generate_html_reports_combo, \
-    sensor_control_management, get_sum_db_sizes, CreateSensorHTTPCommand
+    sensor_control_management, get_sum_db_sizes, CreateSensorHTTPCommand, sensor_addresses_required_msg
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
 
@@ -44,13 +44,19 @@ def html_sensor_control_management():
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
         app_config_access.sensor_control_config.update_with_html_request(request)
-        ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+        ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
 
         if len(ip_list) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
-                ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
                 return check_sensor_status_sensor_control(ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_report_combo:
+        else:
+            return sensor_addresses_required_msg()
+
+        if len(ip_list) > 0:
+            ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+            if len(ip_list) < 1:
+                return message_and_return("All sensors appear to be Offline", url="/SensorControlManage")
+            if sc_action == app_config_access.sensor_control_config.radio_report_combo:
                 app_generic_functions.thread_function(_thread_combo_report, ip_list)
             elif sc_action == app_config_access.sensor_control_config.radio_report_system:
                 app_generic_functions.thread_function(_thread_system_report, ip_list)
@@ -92,6 +98,8 @@ def html_sensor_control_management():
                     app_cached_variables.sc_big_zip_in_memory = False
                 app_cached_variables.creating_the_big_zip = True
                 app_generic_functions.thread_function(create_the_big_zip, args=ip_list)
+        else:
+            return sensor_addresses_required_msg()
     return sensor_control_management()
 
 
@@ -333,39 +341,37 @@ def sc_push_online_config():
 
 
 def _push_data_to_sensors(url_command, html_dictionary_data):
+    if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
+        return sensor_addresses_required_msg()
     if _missing_login_credentials():
         return _get_missing_login_credentials_page()
 
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        for ip in ip_list:
-            http_command_instance = CreateSensorHTTPCommand(ip, url_command, command_data=html_dictionary_data)
-            http_command_instance.send_http_command()
+    if len(ip_list) < 1:
+        return message_and_return("All sensors appear to be Offline", url="/SensorControlManage")
+    for ip in ip_list:
+        http_command_instance = CreateSensorHTTPCommand(ip, url_command, command_data=html_dictionary_data)
+        http_command_instance.send_http_command()
     msg2 = "HTML configuration data sent to " + str(len(ip_list)) + " Sensors"
     return message_and_return("Sensor Control - Configuration(s) Sent", url="/SensorControlManage", text_message2=msg2)
 
 
-@html_sensor_control_routes.route("/PushConfigurationZip", methods=["POST"])
-@auth.login_required
-def sc_push_configurations_zip():
-    logger.network_logger.debug("* 'Configurations by Zip' sent to sensors")
-    pass
-
-
 def run_system_command(command, include_data=None):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
+    if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
+        return sensor_addresses_required_msg()
+    if _missing_login_credentials():
+        return _get_missing_login_credentials_page()
     ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-    if len(ip_list) > 0:
-        if _missing_login_credentials():
-            return _get_missing_login_credentials_page()
-        for ip in ip_list:
-            thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
-            thread.daemon = True
-            thread.start()
-        msg1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
-        return message_and_return(msg1, url="/SensorControlManage")
-    msg2 = "Error sending System Command '" + command + "' to " + str(len(ip_list)) + " Sensors"
-    return message_and_return("Sensor Control - System Commands", url="/SensorControlManage", text_message2=msg2)
+    if len(ip_list) < 1:
+        return message_and_return("All sensors appear to be Offline", url="/SensorControlManage")
+
+    for ip in ip_list:
+        thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
+        thread.daemon = True
+        thread.start()
+    msg1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
+    return message_and_return(msg1, url="/SensorControlManage")
 
 
 def _system_command_thread(ip, command, include_data=None):
