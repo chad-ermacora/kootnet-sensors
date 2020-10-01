@@ -23,6 +23,7 @@ from configuration_modules.config_interval_recording import CreateIntervalRecord
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
+from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
 from configuration_modules.config_mqtt_publisher import CreateMQTTPublisherConfiguration
 from configuration_modules.config_mqtt_subscriber import CreateMQTTSubscriberConfiguration
@@ -77,6 +78,13 @@ def reset_display_config(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Display Configuration Reset ****")
     CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_email_config(log_reset=True):
+    """ Writes a default Email configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Email Configuration Reset ****")
+    CreateEmailConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_mqtt_broker_config(log_reset=True):
@@ -138,8 +146,11 @@ def reset_checkin_config(log_reset=True):
 def reset_all_silent():
     reset_primary_config(log_reset=False)
     reset_installed_sensors(log_reset=False)
+    reset_interval_recording_config(log_reset=False)
+    reset_trigger_high_low_config(log_reset=False)
     reset_trigger_variance_config(log_reset=False)
     reset_display_config(log_reset=False)
+    reset_email_config(log_reset=False)
     reset_mqtt_broker_config(log_reset=False)
     reset_mqtt_publisher_config(log_reset=False)
     reset_mqtt_subscriber_config(log_reset=False)

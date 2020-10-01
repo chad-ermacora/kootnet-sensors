@@ -1,13 +1,22 @@
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content
-from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import successful_upgrade_message
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
+from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import successful_upgrade_message, \
+    reset_trigger_high_low_config, reset_email_config, reset_checkin_config, reset_primary_config, \
+    reset_interval_recording_config, reset_trigger_variance_config
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 
 
-def upgrade_beta_30_x_to_31_21():
+def upgrade_beta_30_x_to_31():
+    reset_trigger_high_low_config(log_reset=False)
+    reset_email_config(log_reset=False)
+    reset_checkin_config(log_reset=False)
+
+    old_installed_sensors_string = get_file_content(file_locations.installed_sensors_config).strip()
+    write_file_to_disk(file_locations.installed_sensors_config, old_installed_sensors_string + "\n0 = new sensor")
+
     new_interval_recording = CreateIntervalRecordingConfiguration(load_from_file=False)
     new_primary_config = CreatePrimaryConfiguration(load_from_file=False)
     new_t_v_config = CreateTriggerVariancesConfiguration(load_from_file=False)
@@ -31,8 +40,11 @@ def upgrade_beta_30_x_to_31_21():
             new_t_v_config.enable_trigger_variance = 1
         new_interval_recording.update_configuration_settings_list()
         new_interval_recording.save_config_to_file()
+        successful_upgrade_message("Interval Recording")
     except Exception as error:
         logger.primary_logger.error("Problem during Primary Configuration Upgrade: " + str(error))
+        reset_primary_config()
+        reset_interval_recording_config()
 
     try:
         variance_trigger_config_lines = get_file_content(file_locations.trigger_variances_config).strip().split("\n")
@@ -102,3 +114,4 @@ def upgrade_beta_30_x_to_31_21():
         successful_upgrade_message("Variance Triggers")
     except Exception as error:
         logger.primary_logger.error("Trigger Variance Config: " + str(error))
+        reset_trigger_variance_config()
