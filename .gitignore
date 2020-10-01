@@ -156,3 +156,4 @@ venv.bak/
 /extras/python_modules/pyusb-1.0.2-py3-none-any.whl
 /extras/python_modules/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv6l.whl
 /extras/python_modules/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv7l.whl
+/extras/python_modules/python_dateutil-2.8.1-py2.py3-none-any.whl
