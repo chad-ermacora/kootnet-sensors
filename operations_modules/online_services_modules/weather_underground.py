@@ -137,7 +137,7 @@ def get_weather_underground_readings():
             baromin = float(pressure_hpa) * 0.029529983071445
             return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
         except Exception as error:
-            logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure inhg: " + str(error))
+            logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure into Hg: " + str(error))
 
     ultra_violet = sensor_access.get_ultra_violet(return_as_dictionary=True)
     if ultra_violet != no_sensor_present:
