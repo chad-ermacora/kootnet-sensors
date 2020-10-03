@@ -1,7 +1,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
-from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import successful_upgrade_message, \
+from upgrade_modules.generic_upgrade_functions import successful_upgrade_message, \
     reset_trigger_high_low_config, reset_email_config, reset_checkin_config, reset_primary_config, \
     reset_interval_recording_config, reset_trigger_variance_config
 from configuration_modules.config_primary import CreatePrimaryConfiguration
