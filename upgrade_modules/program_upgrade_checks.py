@@ -37,7 +37,7 @@ def run_configuration_upgrade_checks():
     if previous_version.major_version == "New_Install":
         logger.primary_logger.info(" - New Install Detected")
         no_changes = False
-        generic_upgrade_functions.reset_all_silent()
+        generic_upgrade_functions.reset_all_configurations(log_reset=False)
     elif previous_version.major_version == "Unknown":
         logger.primary_logger.warning("Unknown Previous Version Detected")
         no_changes = False
