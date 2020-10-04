@@ -143,19 +143,23 @@ def reset_checkin_config(log_reset=True):
     CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_all_silent():
-    reset_primary_config(log_reset=False)
-    reset_installed_sensors(log_reset=False)
-    reset_interval_recording_config(log_reset=False)
-    reset_trigger_high_low_config(log_reset=False)
-    reset_trigger_variance_config(log_reset=False)
-    reset_display_config(log_reset=False)
-    reset_email_config(log_reset=False)
-    reset_mqtt_broker_config(log_reset=False)
-    reset_mqtt_publisher_config(log_reset=False)
-    reset_mqtt_subscriber_config(log_reset=False)
-    reset_weather_underground_config(log_reset=False)
-    reset_luftdaten_config(log_reset=False)
-    reset_open_sense_map_config(log_reset=False)
-    reset_sensor_control_config(log_reset=False)
-    reset_checkin_config(log_reset=False)
+def reset_all_configurations(log_reset=True):
+    """
+    Resets all configuration files to Default settings.
+    If log_reset is True, adds log entry for each reset.  Default True.
+    """
+    reset_primary_config(log_reset=log_reset)
+    reset_installed_sensors(log_reset=log_reset)
+    reset_interval_recording_config(log_reset=log_reset)
+    reset_trigger_high_low_config(log_reset=log_reset)
+    reset_trigger_variance_config(log_reset=log_reset)
+    reset_display_config(log_reset=log_reset)
+    reset_email_config(log_reset=log_reset)
+    reset_mqtt_broker_config(log_reset=log_reset)
+    reset_mqtt_publisher_config(log_reset=log_reset)
+    reset_mqtt_subscriber_config(log_reset=log_reset)
+    reset_weather_underground_config(log_reset=log_reset)
+    reset_luftdaten_config(log_reset=log_reset)
+    reset_open_sense_map_config(log_reset=log_reset)
+    reset_sensor_control_config(log_reset=log_reset)
+    reset_checkin_config(log_reset=log_reset)
