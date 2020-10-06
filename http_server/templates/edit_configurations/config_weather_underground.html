@@ -33,8 +33,7 @@
 
                 <div class="mui-textfield">
                     <label style="color: black;">
-                        Seconds between Updates
-                        <br>
+                        Seconds between Updates<br>
                         <input style="width: 75px;" type="number" min="1" name="weather_underground_interval"
                                value="{{ WUIntervalSeconds }}" {{ DisabledWUInterval }}>
                     </label>
@@ -51,23 +50,25 @@
 
                 <div class="mui-textfield">
                     <label style="color: black;">
-                        Station ID
-                        <br>
+                        Station ID<br>
                         <input style="width: 125px;" type="text" maxlength="15" name="station_id"
                                value="{{ WUStationID }}" {{ DisabledStationID }}>
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-textfield">
                     <label style="color: black;">
-                        Station Key
-                        <br>
+                        Station Key<br>
                         <input style="width: 175px;" type="password" maxlength="15" name="station_key"
                                placeholder="Leave blank to use previous Key"
                                value="" {{ DisabledStationKey }}>
                     </label>
                 </div>
+
                 <br>
+
                 <button type="submit" class="mui-btn mui-btn--raised">Update</button>
             </fieldset>
         </form>

@@ -37,12 +37,17 @@
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
               action="/EditConfigIPv4">
             <fieldset style="text-align: center;">
-                <h2><u><a style="color: black;" href="{{ PageURL }}">Network Configuration</a></u></h2>
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">Network Configuration</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line10_1" target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
 
                 <div class="mui-textfield">
                     <label style="color: black;">
-                        HostName
-                        <br>
+                        HostName<br>
                         <input style="width: 125px;" type="text" id="ip_hostname" name="ip_hostname" required
                                placeholder="eg. KootenayLake09" minlength="2" maxlength="62"
                                value="{{ IPHostname }}">
@@ -50,6 +55,7 @@
                 </div>
 
                 <br>
+
                 <h4><u>Wireless IP Settings</u></h4>
 
                 <div class="mui-checkbox" style="display: inline-block;">
@@ -70,6 +76,8 @@
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-textfield" style="inset-inline-end: auto">
                     <label style="color: black">
                         <a style="color: black" target="_blank"
@@ -83,6 +91,8 @@
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-textfield">
                     <label style="color: black">
                         Gateway
@@ -93,6 +103,8 @@
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-textfield">
                     <label style="color: black">
                         Primary DNS
@@ -102,6 +114,8 @@
                                value="{{ IPDNS1 }}" {{ IPDNS1Disabled }}>
                     </label>
                 </div>
+
+                <br>
 
                 <div class="mui-textfield">
                     <label style="color: black">
@@ -122,7 +136,13 @@
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
               action="/EditConfigWifi">
             <fieldset style="text-align: center">
-                <h2><u><a style="color: black" href="{{ PageURL }}">WiFi Configuration</a></u></h2>
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">WiFi Configuration</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line10_2" target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
 
                 <label>
                     <a style="color: black" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
@@ -184,18 +204,15 @@
         <form class="mui-form" method="POST" enctype="multipart/form-data" style="max-width: 550px; min-height: 300px;"
               action="/EditSSL">
             <fieldset style="text-align: center;">
-                <h2><u><a style="color: black;" href="{{ PageURL }}">Set Custom SSL Certificate</a></u></h2>
+                <h2>
+                    <u><strong><a style="color: black;" href="{{ PageURL }}">HTTPS SSL Certificate</a></strong></u><br>
+                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line10_3" target="_blank">
+                        Click Here for Help
+                    </a>
+                    <hr>
+                </h2>
                 <p style="color: darkred;"><b>
                     Warning: Invalid Certificate/Key pairs will prevent access to the Web Portal.
-                </b></p>
-                <p><b>
-                    To restore access from an Invalid Certificate or Key
-                    <br>
-                    delete ALL files located in the following folder on the local sensor
-                    <br>
-                    then restart the sensor software
-                    <br><br>
-                    {{ SSLFileLocation }}
                 </b></p>
 
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
@@ -204,6 +221,7 @@
                 </button>
 
                 <br>
+                <br>
 
                 <h4><u>Certificate File</u></h4>
                 <input type="file" name="custom_crt" accept=".crt,.pem" required>
@@ -211,7 +229,7 @@
                 <h4><u>Key File</u></h4>
                 <input type="file" name="custom_key" accept=".key,.pem" required>
                 <br><br>
-                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
+                <button type="submit" class="mui-btn mui-btn--raised">
                     Upload Custom SSL Files
                 </button>
             </fieldset>
