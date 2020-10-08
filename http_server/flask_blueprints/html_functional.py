@@ -273,11 +273,12 @@ def doc_custom_css():
 
 @html_functional_routes.route('/logout')
 def logout():
-    return render_template("message_return.html",
-                           PageURL="/",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           TextMessage="Logout OK.  Returning to Home."), 401
+    return render_template(
+        "message_return.html",
+        PageURL="/",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        TextMessage="Logout OK.  Returning to Home."), 401
 
 
 @auth.verify_password

@@ -245,7 +245,7 @@
 
         <li>
             <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                    onclick="window.location.href = '/logout';">
+                    onclick="logout()">
                 Logout
             </button>
         </li>
@@ -354,6 +354,12 @@
                 window.location = "/RebootSystem"
             }
         }
+
+        function logout() {
+            window.location= window.location.href.replace(/:\/\//, '://log:out@')
+            window.location= "/logout"
+        }
+
     </script>
     <div class="mui-appbar mui--appbar-line-height">
         <div class="mui-container-fluid" style="background-color: black;">
