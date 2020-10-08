@@ -38,6 +38,7 @@ check_portal_login = app_cached_variables.CreateNetworkGetCommands().check_porta
 
 
 @html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
+@auth.login_required
 def html_sensor_control_management():
     logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
     if request.method == "POST":
