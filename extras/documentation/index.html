@@ -181,7 +181,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <a href="/KootnetSensorHardware.jpg" data-rel="prettyPhoto" target="_blank">
-                                    <img src="/KootnetSensorHardware.jpg" alt="" class="img-responsive img-thumbnail">
+                                    <img src="/KootnetSensorHardware.jpg" alt="Demo Sensor Units" class="img-responsive img-thumbnail">
                                 </a>
 
                                 <p>
@@ -259,16 +259,16 @@
                         <strong>Operating System : </strong>Ubuntu, Debian, Raspbian/Raspberry Pi OS<br>
                         <strong>Other Requirements : </strong>Internet Access<br>
                         <strong>Note : </strong><i>Most installs finish within a few minutes but the Raspberry Pi Zero
-                        can take up to 30 minutes</i><br>
+                        can take up to 30 minutes.</i><br>
 
                         <strong>Note : </strong><i>You must use the 32bit Raspbian/Raspberry Pi OS for proper Hardware
-                        Sensor functionality</i><br><br>
+                        Sensor functionality.</i><br><br>
 
                         <h4 id="line2_1">Installation using a GUI Desktop</h4>
                         <p>
                             Installation from a supported GUI based Operating system is fairly straight forward.
-                            Click one of the following links to download Kootnet sensors,
-                            then double click the downloaded file and look for an install button to start the install process.
+                            Click one of the following links to download Kootnet sensors, then double click the
+                            downloaded file and look for an install button to start the install process.
                         </p>
                         <p>
                             <a href="http://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">
@@ -290,13 +290,15 @@
 						<h4 id="line2_2">Installation using a Terminal</h4>
 						
 						<p>
-                            To install using a terminal, enter the following command, hit enter and wait for it to finish.<br>
+                            To install using a terminal, enter the following command, hit enter and wait for it
+                            to finish.<br>
                         </p>
 
 						<pre class="brush: bash">wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
 
                         <p>
-                            If the installation completes successfully, you'll be given the default Username/Password & URL to access the sensor.
+                            If the installation completes successfully, you'll be given the default Username/Password
+                            & URL to access the sensor.
                         </p>
 
                         <h4 id="line2_3">Removal using the Terminal</h4>
@@ -308,7 +310,7 @@
 
                         <p>
                             <strong><i>Note</i></strong>: The Sensor's Databases, Configurations & Python Virtual
-                            Environment will be kept
+                            Environment will be kept.
                         </p>
 
                     </section>
@@ -330,12 +332,9 @@
                             Kootnet Sensors has a built in HTTPS server (Web Portal) to monitor, manage and operate
                             the Sensor. There is also a 'Remote Management' section in the Web Portal for managing up
                             to 20 remote sensors. Assuming the sensor's IP is 192.168.10.11, you can access the sensor
-                            at https://192.168.10.11:10065 from any device with a web browser on the same network.
-                        </p>
+                            at https://192.168.10.11:10065 from any device with a web browser on the same network.<br><br>
 
-                        <p>
-                            The following sections will go into more details regarding definitions and functionality.<br>
-                            <i>Please note, Internet is required for viewing pictures in the following sections.</i>
+                            <strong>Note</strong>: <i>Internet is required for viewing pictures in the following sections.</i>
                         </p>
 
                         <p>
@@ -352,7 +351,8 @@
                         <h4 id="line3_2"><u>System Information</u></h4>
 
                         <p>
-                            The System Information page has all the information you need to get a quick overview of the Sensor's status.
+                            The System Information page has all the information you need to get a quick overview
+                            of the Sensor's status.
                         </p>
 
                         <p>
@@ -374,13 +374,13 @@
                             them selves if initialization fails).<br><br>
 
                             <strong>Program Status</strong>: Status of the different aspects of Kootnet Sensors.
-                            Available Status include Running, Stopped, Enabled & Disabled<br>
+                            Available Status include Running, Stopped, Enabled & Disabled.<br>
 
                             <strong>Detailed Recording Status</strong>: Opens a new page to display the status of
                             individual sensors under each SQL recording type.<br>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/01_system_information.gif" alt="System Information" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_3"><u>Sensor Readings</u></h4>
                         <p>
@@ -388,7 +388,7 @@
                             If the sensor is missing or not enabled, it will show "NoSensor".
                             Most sensor names can be clicked to take you to the relevant Wikipedia page.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/02_sensor_readings.gif" alt="Sensor Readings" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_4"><u>Sensors Latency</u></h4>
                         <p>
@@ -401,7 +401,7 @@
                             in the program.
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/03_sensor_latency.gif" alt="Sensor Latency" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_5"><u>Database</u></h4>
                         <p>
@@ -422,7 +422,7 @@
                             <strong>Note</strong>: <i>The SQLite3 database holds all sensor recordings as well as Notes.</i><br>
                             <strong>Note</strong>: <i>The Sensor Checkin Database is a separate SQLite3 database.</i>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/19_config_database.gif" alt="Database" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_6"><u>Notes</u></h4>
                         <p>
@@ -432,7 +432,7 @@
                             "High temperatures and particulate matter starting June 23rd, 2011 are due to an
                             approaching wild fire".
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/04_notes.gif" alt="Notes" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_7"><u>Graphing</u></h4>
                         <p>
@@ -464,7 +464,9 @@
                             Example. Skip 12, add one, skip 12, add one, etc, etc<br>
                             <strong>Hour Offset</strong>: Add the set amount of hours to the recorded UTC0 DateTime before plotting<br>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+
+                        <img src="http://kootenay-networks.com/ks_help_imgs/05_graphing_plotly.gif" alt="Plotly Graph" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/06_graphing_quick.gif" alt="Quick Graph" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_8"><u>Advanced</u></h4>
                         <p>
@@ -473,7 +475,8 @@
                             You can also view RAW configurations & Python Module Versions.
                             Power, SQL and Login update functions are located here as well.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+
+                        <img src="http://kootenay-networks.com/ks_help_imgs/37_advanced.gif" alt="Advanced" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_9"><u>Logs</u></h4>
                         <p>
@@ -484,8 +487,6 @@
                             <strong>Network log</strong>: Network operations<br>
                             <strong>Sensors log</strong>: Hardware sensor operations<br>
                         </p>
-
-                        <img src="" alt="" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -512,13 +513,13 @@
 
                             <strong>Enable Static Offset</strong>: Add the set number to the Environmental Temperature readings<br>
                             <strong>Enable Pi Temperature Correction Factor</strong>: This subtracts the set multiplication
-                            of the difference between the Raspberry Pi CPU temperature and the Environmental Temperature<br>
-                            The formula is ('Raw Env Temperature' + 'Static Offset') - ((PiTemperature - RawEnvTemperature) x CF)<br><br>
+                            of the difference between the Raspberry Pi CPU temperature and the Environmental Temperature.<br>
+                            ('Raw Env Temperature' + 'Static Offset') - ((PiTemperature - RawEnvTemperature) x CF)<br><br>
 
                             <strong>Note</strong>: <i>The database holds the un-adjusted temperature readings and the
-                            adjustment amount in separate columns</i><br>
+                            adjustment amount in separate columns.</i><br>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/12_config_main.gif" alt="Main Config" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_2"><u>Installed Sensors</u></h4>
                         <p>
@@ -526,16 +527,16 @@
                             and Other. Most sensors if physically missing or broken will automatically disable
                             them selves in the program.<br><br>
 
-                            You can find a "Kootnet Dummy Sensors" under the other tab to simulate sensor readings for
+                            You can find "Kootnet Dummy Sensors" under the other tab to simulate sensor readings for
                             demonstration and testing purposes.<br><br>
 
                             If you have any problems using un-tested sensors and are willing to give me remote access
                             to your sensor for debugging, please contact me through my
                             <a href="http://kootenay-networks.com/?page_id=11" target="_blank">website</a>.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
-                        <img src="" alt="" class="img-responsive img-thumbnail">
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/13_config_is_1.gif" alt="RPi HW" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/14_config_is_2.gif" alt="Pimoroni HW" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/15_config_is_3.gif" alt="Other HW" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_3"><u>Interval Recording</u></h4>
                         <p>
@@ -550,7 +551,7 @@
                             page within the Sensor's Web Portal to find the slowest sensor (AKA Highest latency) and
                             use at least 4x the reading.</i><br>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/16_config_sql_rec_interval.gif" alt="Interval Recording" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_4"><u>High/Low Trigger Recording</u></h4>
                         <p>
@@ -568,10 +569,13 @@
                             such as MQTT, Interval Recordings, Other Trigger Recordings, website access,
                             Online Services, etc.</i><br>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/17_config_sql_rec_high_low.gif" alt="High/Low Recording" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_5"><u>Variance Trigger Recording</u></h4>
                         <p>
+                            <strong>WARNING</strong>: <i>Variance Trigger Recording is experimental and requires
+                            more resources and sensor access then other types of recording.</i><br><br>
+
                             Trigger Variance recording writes readings to the SQLite3 database when the readings have
                             changed more then the set "Variance", for example, a set variance of 0.3 would write to the
                             Database when the reading changes from 4.3 to 4.9 as well as if it changed from 4.3 to 3.9.
@@ -580,16 +584,17 @@
                         </p>
                         <p>
                             <strong>WARNING</strong>: <i>Setting the 'Seconds between readings' lower then
-                            what is set by using the 'Set Seconds to Lowest' button may produce unexpected results.</i><br>
+                            what is set by using the 'Set Seconds to Lowest' button may produce unexpected
+                            results.</i>
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/18_config_sql_rec_trigger.gif" alt="Variance Recording" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_6"><u>Display</u></h4>
                         <p>
-                            If you have installed a supported hardware Display, you can enable it's use here
+                            If you have installed a supported hardware display, you can enable it's use here
                             and set what will be displayed at the set interval.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/20_config_display.gif" alt="Display" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_7"><u>Terminal Configuration Tool</u></h4>
                         <p>
@@ -601,13 +606,13 @@
                         <pre class="brush: bash">sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py</pre><br>
 
                         <p>
-                            From the TCT you can, edit the primary config and installed sensors, reset all configurations,
+                            From the TCT you can edit the primary config, installed sensors, reset all configurations,
                             overwrite the Web Portal login, update the program's Python modules, upgrade the sensor software,
-                            create a new self-signed SSL certificate, Enable/Disable Kootnet Sensors,
+                            create a new self-signed SSL certificate, Enable/Disable Kootnet Sensors auto-start,
                             restart the sensor software and finally run a local test on the sensor.<br><br>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/terminal_config_tool.gif" alt="TCT" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -627,31 +632,32 @@
                         <p>
                             Send reports automatically to one or more emails in a zip file at the set
                             day/week/month/year + time. You can also generate and send a report to a single email with
-                            the click of a button.<br><br>
+                            the click of a button on this page.<br><br>
 
-                            <strong>Note</strong>: <i>You must configure the SMTP settings before Email Reports will function</i>
+                            <strong>Note</strong>: <i>You must configure the SMTP settings before Email Reports will function.</i>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/21_email_reports.gif" alt="Email Reports" class="img-responsive img-thumbnail">
 
                         <h4 id="line5_2"><u>Graphs</u></h4>
 
                         <p>
                             Send graphs automatically to one or more emails in a zip file at the set
                             day/week/month/year + time. You can also generate and send a graph to a single email with
-                            the click of a button.<br><br>
+                            the click of a button on this page.<br><br>
 
-                            <strong>Note</strong>: <i>You must configure the SMTP settings before Email Graphs will function</i>
+                            <strong>Note</strong>: <i>You must configure the SMTP settings before Email Graphs will function.</i>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/22_email_graphs.gif" alt="Email Graphs" class="img-responsive img-thumbnail">
 
                         <h4 id="line5_3"><u>SMTP Settings</u></h4>
                         <p>
-                            Configure the SMTP server settings here. You will need to get your email provider's SMTP
-                            server settings and enter them here.
+                            To allow email operations, you will need to get your email provider's SMTP server settings
+                            and enter them here.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+
+                        <img src="http://kootenay-networks.com/ks_help_imgs/23_email_smtp.gif" alt="Email SMTP Settings" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -690,16 +696,17 @@
                             <strong>Quality of Service Level</strong>: There are 3 QoS options, which are<br>
                             Level 0 = Send data without any verification or retries<br>
                             Level 2 = Keep sending the same data until an acknowledgement packet is received<br>
-                            Level 3 = Send only once with 2x acknowledgement packets for verification<br><br>
+                            Level 3 = Only dual verified readings are registered, if not verified, it retries. If the
+                            same reading is sent more then once, only one will be registered on the MQTT Broker<br><br>
 
                             <strong>Note</strong>: <i>Both the MQTT Publisher & Broker (Server) must support and
-                            enable the QoS level to be effective</i><br><br>
+                            enable the QoS level to be effective.</i><br><br>
 
                             <strong>MQTT Topic Authentication</strong>: If the MQTT Broker server is password protected,
                             enter that information here<br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_publisher.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/28_mqtt_publisher.gif" alt="MQTT Publisher" class="img-responsive img-thumbnail">
 
                         <h4 id="line6_2"><u>Subscriber</u></h4>
                         <p>
@@ -714,7 +721,7 @@
                             all sensor readings from the sensor DRSjk3K only.
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_subscriber.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/29_mqtt_subscriber.gif" alt="MQTT Subscriber" class="img-responsive img-thumbnail">
 
                         <h4 id="line6_3"><u>Broker (Eclipse Mosquitto)</u></h4>
                         <p>
@@ -722,7 +729,7 @@
                             Optionally set a custom <a href="https://mosquitto.org/man/mosquitto-conf-5.html" target="_blank">
                             Mosquitto configuration</a>.
                         </p>
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_mqtt_broker.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/27_mqtt_broker.gif" alt="MQTT Broker" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -766,8 +773,8 @@
                             sensor history.</i><br><br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_open_sense_map.png" alt="" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_open_sense_map_reg.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/30_3rd_party_osm_1.gif" alt="Open Sense Map" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/31_3rd_party_osm_2.gif" alt="Open Sense Map" class="img-responsive img-thumbnail">
 
                         <h4 id="line7_2"><u>Weather Underground</u></h4>
                         <blockquote>
@@ -786,7 +793,7 @@
                             the Station ID and Key in the Weather Underground settings on the Kootnet Sensor.
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_wu.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/32_3rd_party_wu.gif" alt="Weather Underground" class="img-responsive img-thumbnail">
 
                         <h4 id="line7_3"><u>Luftdaten</u></h4>
                         <blockquote>
@@ -807,7 +814,7 @@
                             The sensor should automatically start posting readings to Luftdaten within a day.
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_luftdaten.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/33_3rd_party_luftdaten.gif" alt="Luftdaten" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -828,19 +835,20 @@
                             Populate the Sensors list with sensor addresses you wish to interact with using the Remote
                             Management page. The Username and Password are optional and not required for many
                             of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
-                            "System Commands", you will need to enter a valid Username and Password. <br><br>
+                            "System Commands", you will need to enter a valid Username and Password for the remote
+                            sensors. <br><br>
 
                             <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
-                            such as sensor21.mysensors.org</i><br>
+                            such as sensor21.mysensors.org.</i><br>
                             <strong>Note</strong>: <i>If your sensor uses a different port other then the default
-                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088</i><br>
+                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088.</i><br>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/07_rm_ip_list.gif" alt="RSM Address List" class="img-responsive img-thumbnail">
 
                         <h4 id="line8_2"><u>Sensor Checks & Downloads</u></h4>
 
-                        <p>Checks and Downloads are for gather information about your sensor(s).</p>
+                        <p>Checks and Downloads are for gathering information about the remote sensor(s).</p>
 
                         <p><b><u>View</u></b></p>
                         <p>
@@ -868,11 +876,12 @@
                             pop-ups in your browser.<br><br>
 
                             Using the "Relayed Download" option can be useful when you have a site with multiple
-                            sensors, as you only need to access one sensor remotely to get data from many other sensors.<br><br>
+                            sensors, as you only need to access one sensor remotely to get data from many other
+                            sensors.<br><br>
 
-                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them</i><br>
+                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them.</i><br>
                             <strong>Note</strong>: <i>In order for direct downloads to work, you must be on the
-                            same network as the corresponding sensors you are downloading from</i><br><br>
+                            same network as the corresponding sensors you are downloading from.</i><br><br>
 
                             <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
                             a combination report as well as zip files of each sensors database and logs<br>
@@ -883,7 +892,7 @@
                             <strong>Logs</strong>: Creates a zip on the local sensor containing all the sensor's Logs<br>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/08_rm_checks_downloads.gif" alt="RSM Information" class="img-responsive img-thumbnail">
 
                         <h4 id="line8_3"><u>Push Sensor Configurations</u></h4>
                         <p>
@@ -893,16 +902,17 @@
                             automatically populates with a default configuration.<br><br>
 
                             <strong>Note</strong>: <i>For maximum compatibility, be sure to have the same Kootnet Sensors
-                            version on both the pushing sensor and receiving sensors</i><br>
+                            version on both the pushing sensor and receiving sensors.</i><br>
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/09_rm_configs.gif" alt="RSM Config" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/10_rm_config_3rd_party.gif" alt="RSM 3rd Party Config" class="img-responsive img-thumbnail">
 
                         <h4 id="line8_4"><u>Push System Commands</u></h4>
                         <p>
                             Use the various drop down menu's to initiate upgrades or sensor restarts.
                         </p>
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/11_rm_system.gif" alt="RSM System Commands" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -926,17 +936,17 @@
                             "Local Management".
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_view.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/24_checkin_main.gif" alt="Checkin Main" class="img-responsive img-thumbnail">
 
                         <h4 id="line9_2"><u>Database Cleanup</u></h4>
                         <p>
                             Use the Database Cleanup section to view the Checkin sensor's database size and remove old
                             data entries.<br><br>
 
-                            <strong>Note</strong>: <i>Data deletions cannot be undone</i>
+                            <strong>Note</strong>: <i>Data deletions cannot be undone.</i>
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_view_cleanup.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/25_checkin_cleanup.gif" alt="Checkin Cleanup" class="img-responsive img-thumbnail">
 
                         <h4 id="line9_3"><u>Sensor Search</u></h4>
                         <p>
@@ -947,7 +957,7 @@
                             it will be disabled.
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/checkin_sensor_search.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/24_checkin_main_search.gif" alt="Checkin Search" class="img-responsive img-thumbnail">
 
                         <h4 id="line9_4"><u>Configuration</u></h4>
                         <p>
@@ -968,7 +978,7 @@
                             sensors from the Checkin database.
                         </p>
 
-                        <img src="http://kootenay-networks.com/wp-content/uploads/2020/07/config_checkin_server.png" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/26_checkin_config.gif" alt="Checkin Settings" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -989,7 +999,7 @@
                             or enable DHCP.
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/34_network_main.gif" alt="Networking Main" class="img-responsive img-thumbnail">
 
                         <h4 id="line10_2"><u>Wifi</u></h4>
                         <p>
@@ -997,20 +1007,20 @@
                             <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">country code</a>.
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/35_network_wifi.gif" alt="Networking Wifi" class="img-responsive img-thumbnail">
 
                         <h4 id="line10_3"><u>SSL Certificate</u></h4>
                         <p>
                             Use this section to create a new self signed SSL certificate or upload a custom one for
-                            3rd party verification, which will prevent the warning page when first accessing the sensor.
-                            Please note, uploading invalid certificates can result in the inability to
+                            3rd party verification, which will prevent the warning page when first accessing the sensor
+                            Web Portal. Please note, uploading invalid certificates can result in the inability to
                             use the Kootnet Sensors Web Portal. If you are unable to access the Web Portal after
                             changing the certificate, login to the Kootnet Sensor locally
                             (with a keyboard/mouse/monitor) and create a new self signed SSL certificate through the
                             <a href="#line4_7">Terminal Configuration Tool</a>.
                         </p>
 
-                        <img src="" alt="" class="img-responsive img-thumbnail">
+                        <img src="http://kootenay-networks.com/ks_help_imgs/36_network_ssl.gif" alt="Networking SSL" class="img-responsive img-thumbnail">
 
                     </section>
                     <!-- end section -->
@@ -1026,7 +1036,7 @@
                         <!-- end row -->
 
                         <strong>Note</strong>: <i>You may find useful information in the program <a href="#line3_9">logs </a>
-                        to help diagnose issues</i>
+                        to help diagnose issues.</i>
 
                         <h3 id="line11_1"><u>Installation & Upgrade Problems</u></h3>
 
@@ -1059,12 +1069,15 @@
                         <p>
                             <strong>Bad Hardware or File Corruption</strong> (Such as a corrupt SD Card)<br>
                             <strong><i>Errors may include</i></strong>: Missing dependencies in the Kootnet Sensor logs<br>
-                            Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)"
-                            from the <a href="#line4_7">Terminal Configurations Tool</a>, if that fails
-                            do a fresh flash of Raspbian on the SD card and <a href="#line2">re-install Kootnet Sensors</a><br><br>
+                            <strong>Possible Fixes:</strong><br>
+                            1. Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)" from the
+                            <a href="#line4_7">Terminal Configurations Tool</a><br>
+                            2. Do a fresh flash of Raspbian on the SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
+                            3. Replace your current SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
+                            4. Try a different Raspberry Pi and <a href="#line2">install Kootnet Sensors</a><br><br>
 
                             <strong>Note</strong>: <i>You may want to copy the <a href="#line3_5">main SQL3 database</a>
-                            to save your sensor recordings & notes before flashing the SD card</i>
+                            to save your sensor recordings & notes before flashing the SD card.</i>
                         </p>
 
                     </section>
