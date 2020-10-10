@@ -38,7 +38,6 @@ check_portal_login = app_cached_variables.CreateNetworkGetCommands().check_porta
 
 
 @html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
-@auth.login_required
 def html_sensor_control_management():
     logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
     if request.method == "POST":
@@ -129,7 +128,6 @@ def _thread_latency_report(ip_list):
 
 
 @html_sensor_control_routes.route("/GetComboReport")
-@auth.login_required
 def html_get_combo_report():
     return app_cached_variables.html_combo_report
 
@@ -140,7 +138,6 @@ def html_get_system_report():
 
 
 @html_sensor_control_routes.route("/GetConfigReport")
-@auth.login_required
 def html_get_config_report():
     return app_cached_variables.html_config_report
 
@@ -211,6 +208,7 @@ def download_sc_reports_zip():
 
 
 @html_sensor_control_routes.route("/DownloadSCLogsZip")
+@auth.login_required
 def download_sc_logs_zip():
     logger.network_logger.debug("* Download SC Logs Zipped Accessed by " + str(request.remote_addr))
     try:
@@ -230,6 +228,7 @@ def download_sc_logs_zip():
 
 
 @html_sensor_control_routes.route("/DownloadSCBigZip")
+@auth.login_required
 def download_sc_big_zip():
     logger.network_logger.debug("* Download 'The Big Zip' Accessed by " + str(request.remote_addr))
     try:
