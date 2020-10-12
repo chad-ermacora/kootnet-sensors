@@ -30,7 +30,7 @@ from operations_modules.software_version import CreateRefinedVersion
 from tests import test_http_server
 
 compatible_version_str = "Beta.31.x"
-refined_compatible_version = CreateRefinedVersion("Beta.31.22")
+refined_compatible_version = CreateRefinedVersion("Beta.31.106")
 remote_sensor_version = CreateRefinedVersion()
 
 
@@ -60,8 +60,12 @@ def run_tests():
                     remote_sensor_version.minor_version >= refined_compatible_version.minor_version:
                 print(" ------ Starting Tests ------")
                 print("   " + strftime("%B %d, %Y %H:%M:%S") + "\n")
+                print("   Configuration Tests\n")
                 suite = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp)
                 suite.run(unittest.TestResult())
+                print("\n\n   Display & Sensor Reading Tests\n")
+                suite2 = unittest.TestLoader().loadTestsFromTestCase(test_http_server.TestApp2)
+                suite2.run(unittest.TestResult())
             else:
                 print("-- Incompatible Version Detected --\n")
                 print_msg = "-- Compatible Version: " + refined_compatible_version.get_version_string()
