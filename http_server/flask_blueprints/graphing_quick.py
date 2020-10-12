@@ -206,7 +206,7 @@ def get_html_live_graphing_page(email_graph=False):
     return render_template("graphing_quick.html",
                            TotalSQLEntries=total_data_points,
                            SensorName=app_cached_variables.hostname,
-                           HourOffset=graph_past_hours,
+                           GraphPastHours=graph_past_hours,
                            GraphJSCode=graph_javascript_code,
                            GraphHTMLCode=html_code)
 

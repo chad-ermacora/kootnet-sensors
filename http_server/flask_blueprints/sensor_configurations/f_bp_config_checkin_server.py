@@ -41,5 +41,4 @@ def get_config_checkin_server_tab():
                            PageURL="/CheckinServerConfigurationHTML",
                            CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
                            ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-                           CheckinHourOffset=app_config_access.checkin_config.hour_offset,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days)

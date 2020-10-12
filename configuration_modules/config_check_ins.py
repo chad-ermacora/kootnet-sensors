@@ -27,15 +27,14 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.checkin_configuration, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
-        self.valid_setting_count = 4
+        self.valid_setting_count = 3
         self.config_settings_names = [
-            "Enable Check-Ins Server", "Count Sensors Checked-In the past X Days", "Offset Date Stamp by X Hours",
+            "Enable Check-Ins Server", "Count Sensors Checked-In the past X Days",
             "Delete sensors with checkin older then X Days"
         ]
 
         self.enable_checkin_recording = 0
         self.count_contact_days = 7.0
-        self.hour_offset = 0.0
         self.delete_sensors_older_days = 365.0
 
         self.update_configuration_settings_list()
@@ -57,8 +56,6 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
                 self.enable_checkin_recording = 1
             if html_request.form.get("contact_in_past_days") is not None:
                 self.count_contact_days = float(html_request.form.get("contact_in_past_days"))
-            if html_request.form.get("checkin_hour_offset") is not None:
-                self.hour_offset = float(html_request.form.get("checkin_hour_offset"))
         if html_request.form.get("delete_sensors_older_days") is not None:
             self.delete_sensors_older_days = float(html_request.form.get("delete_sensors_older_days"))
         self.update_configuration_settings_list()
@@ -67,16 +64,14 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
-            str(self.enable_checkin_recording), str(self.count_contact_days), str(self.hour_offset),
-            str(self.delete_sensors_older_days)
+            str(self.enable_checkin_recording), str(self.count_contact_days), str(self.delete_sensors_older_days)
         ]
 
     def _update_variables_from_settings_list(self):
         try:
             self.enable_checkin_recording = int(self.config_settings[0])
             self.count_contact_days = float(self.config_settings[1])
-            self.hour_offset = float(self.config_settings[2])
-            self.delete_sensors_older_days = float(self.config_settings[3])
+            self.delete_sensors_older_days = float(self.config_settings[2])
         except Exception as error:
             logger.primary_logger.debug("Checkin Config: " + str(error))
             self.update_configuration_settings_list()

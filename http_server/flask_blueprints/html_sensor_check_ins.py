@@ -126,7 +126,6 @@ def view_sensor_check_ins():
                            CheckinSensorStatistics=sensor_statistics,
                            CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
                            ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-                           CheckinHourOffset=app_config_access.checkin_config.hour_offset,
                            CheckinDBSize=db_size_mb,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days)
 
@@ -271,7 +270,7 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
 
-        checkin_hour_offset = app_config_access.checkin_config.hour_offset
+        checkin_hour_offset = app_config_access.primary_config.hour_offset
         web_view_last_checkin_date = clean_last_checkin_date
         if clean_last_checkin_date != "NA":
             checkin_date_converted = datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S")
