@@ -63,6 +63,8 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         ]
         self.valid_setting_count = len(self.config_settings_names)
 
+        self.enable_high_low_trigger_recording = 0
+
         self._disable_all_triggers()
 
         self.cpu_temperature_low = 10.0
