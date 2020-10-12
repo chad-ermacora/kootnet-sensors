@@ -36,7 +36,7 @@ from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
-from sensor_modules.sensor_access import get_system_datetime, get_temperature_correction
+from sensor_modules.sensor_access import get_system_datetime
 
 running_with_root = app_cached_variables.running_with_root
 if software_version.old_version == software_version.version:
@@ -88,7 +88,7 @@ class CreateReplacementVariables:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
             get_interval_config_command = self.remote_sensor_commands.interval_configuration_file
             get_high_low_config_command = self.remote_sensor_commands.high_low_trigger_configuration_file
-            get_variance_config_command = self.remote_sensor_commands.variance_config
+            get_variance_config_command = self.remote_sensor_commands.variance_config_file
             get_display_config = self.remote_sensor_commands.display_configuration_file
             command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
             command_config_os_wu = self.remote_sensor_commands.weather_underground_config_file
