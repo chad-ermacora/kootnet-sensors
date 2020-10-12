@@ -270,7 +270,7 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
 
-        checkin_hour_offset = app_config_access.primary_config.hour_offset
+        checkin_hour_offset = app_config_access.primary_config.utc0_hour_offset
         web_view_last_checkin_date = clean_last_checkin_date
         if clean_last_checkin_date != "NA":
             checkin_date_converted = datetime.strptime(clean_last_checkin_date[:19], "%Y-%m-%d %H:%M:%S")
