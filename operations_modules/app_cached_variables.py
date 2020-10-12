@@ -48,20 +48,25 @@ class CreateNetworkSetCommands:
     def __init__(self):
         self.set_host_name = "SetHostName"
         self.set_datetime = "SetDateTime"
+
         self.set_primary_configuration = "SetPrimaryConfiguration"
         self.set_installed_sensors = "SetInstalledSensors"
+
         self.set_interval_configuration = "SetIntervalConfiguration"
         self.set_high_low_trigger_config = "SetHighLowTriggerConfiguration"
         self.set_variance_configuration = "SetVarianceConfiguration"
+
+        self.set_display_config = "SetDisplayConfiguration"
+        self.set_email_configuration = "SetEmailConfiguration"
         self.set_sensor_control_configuration = "SetSensorControlConfiguration"
+        self.set_wifi_configuration = "SetWifiConfiguration"
+
+        self.set_mqtt_publisher_configuration = "SetMQTTPublisherConfiguration"
+        self.set_mqtt_subscriber_configuration = "SetMQTTSubscriberConfiguration"
+
         self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
         self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
         self.set_open_sense_map_configuration = "SetOpenSenseMapConfiguration"
-        self.set_wifi_configuration = "SetWifiConfiguration"
-
-        # self.put_sql_note = "PutDatabaseNote"
-        # self.delete_sql_note = "DeleteDatabaseNote"
-        # self.update_sql_note = "UpdateDatabaseNote"
 
 
 class CreateNetworkGetCommands:
@@ -70,34 +75,42 @@ class CreateNetworkGetCommands:
     def __init__(self):
         self.check_online_status = "CheckOnlineStatus"
         self.check_portal_login = "TestLogin"
+
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"
         self.sensor_zipped_sql_database_size = "GetZippedSQLDatabaseSize"
-        self.sensor_configuration = "GetConfigurationReport"
+
         self.sensor_configuration_file = "GetConfiguration"
         self.installed_sensors_file = "GetInstalledSensors"
         self.interval_configuration_file = "GetIntervalConfiguration"
         self.high_low_trigger_configuration_file = "GetHighLowTriggerConfiguration"
-        self.variance_config = "GetVarianceConfiguration"
+        self.variance_config_file = "GetVarianceConfiguration"
         self.display_configuration_file = "GetDisplayConfiguration"
+        self.email_configuration_file = "GetEmailConfiguration"
+        self.mqtt_publisher_configuration_file = "GetMQTTPublisherConfiguration"
+        self.mqtt_subscriber_configuration_file = "GetMQTTSubscriberConfiguration"
         self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
         self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
         self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
-        self.system_data = "GetSystemData"
+
         self.primary_log = "GetPrimaryLog"
         self.network_log = "GetNetworkLog"
         self.sensors_log = "GetSensorsLog"
         self.download_zipped_logs = "DownloadZippedLogs"
         self.download_zipped_logs_size = "GetZippedLogsSize"
+
         self.download_zipped_everything = "DownloadZippedEverything"
+
         self.sensor_readings = "GetIntervalSensorReadings"
         self.sensors_latency = "GetSensorsLatency"
+
         self.sensor_name = "GetHostName"
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
+
         self.cpu_temp = "GetCPUTemperature"
         self.environmental_temp = "GetEnvTemperature"
         self.env_temp_offset = "GetTempOffsetEnv"
@@ -124,6 +137,7 @@ class CreateNetworkGetCommands:
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
+
         self.database_notes = "GetDatabaseNotes"
         self.database_note_dates = "GetDatabaseNoteDates"
         self.database_user_note_dates = "GetDatabaseNoteUserDates"
@@ -133,7 +147,10 @@ class CreateDatabaseVariables:
     """ Creates a object instance holding SQLite3 database table and row names. """
 
     def __init__(self):
+        self.table_interval = "IntervalData"
+        self.table_trigger = "TriggerData"
         self.table_other = "OtherData"
+
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
@@ -142,15 +159,13 @@ class CreateDatabaseVariables:
         self.sensor_check_in_primary_log = "primary_log"
         self.sensor_check_in_sensors_log = "sensors_log"
 
-        self.all_tables_datetime = "DateTime"
-
-        self.table_trigger = "TriggerData"
         self.trigger_state = "TriggerState"
 
-        self.table_interval = "IntervalData"
+        self.all_tables_datetime = "DateTime"
         self.sensor_name = "SensorName"
         self.ip = "IP"
         self.sensor_uptime = "SensorUpTime"
+
         self.system_temperature = "SystemTemp"
         self.env_temperature = "EnvironmentTemp"
         self.env_temperature_offset = "EnvTempOffset"
@@ -158,6 +173,7 @@ class CreateDatabaseVariables:
         self.altitude = "Altitude"
         self.humidity = "Humidity"
         self.distance = "Distance"
+
         self.gas_resistance_index = "Gas_Resistance_Index"
         self.gas_oxidising = "Gas_Oxidising"
         self.gas_reducing = "Gas_Reducing"
