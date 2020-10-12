@@ -27,7 +27,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
-import test_http_server
+from tests import test_http_server
 
 compatible_version_str = "Beta.31.x"
 refined_compatible_version = CreateRefinedVersion("Beta.31.22")
