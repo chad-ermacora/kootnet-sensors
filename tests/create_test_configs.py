@@ -571,16 +571,83 @@ class CreateTriggerVariancesConfigurationTest(CreateTriggerVariancesConfiguratio
         self.update_configuration_settings_list()
 
 
-# TODO: Finish test1 / test2
 class CreateEmailConfigurationTest(CreateEmailConfiguration):
     def __init__(self):
         CreateEmailConfiguration.__init__(self, load_from_file=False)
 
     def set_settings_for_test1(self):
-        pass
+        self.server_sending_email = "test@test.com"
+        self.server_smtp_address = "somemailserver.overthere.com"
+        self.server_smtp_ssl_enabled = 1
+        self.server_smtp_port = 587
+        self.server_smtp_user = "test_user"
+        self.server_smtp_password = "test_pass"
+
+        self.enable_combo_report_emails = 0
+        self.send_report_every = self.send_option_monthly
+        self.email_reports_time_of_day = "11:05"
+        self.send_report_to_csv_emails = "test@test.com"
+
+        self.enable_graph_emails = 0
+        self.send_graph_every = self.send_option_monthly
+        self.email_graph_time_of_day = "03:28"
+        self.graph_past_hours = 11
+        self.graph_type = 0  # 0 = Quick Graph / 1+ = Plotly Graph
+        self.send_graphs_to_csv_emails = "test@test.com"
+
+        # Enable or Disable Sensors to Graph.  0 = Disabled, 1 = Enabled
+        self.sensor_uptime = 1
+        self.system_temperature = 1
+        self.env_temperature = 1
+        self.pressure = 1
+        self.altitude = 1
+        self.humidity = 1
+        self.distance = 1
+        self.gas = 1
+        self.particulate_matter = 1
+        self.lumen = 1
+        self.color = 1
+        self.ultra_violet = 1
+        self.accelerometer = 1
+        self.magnetometer = 1
+        self.gyroscope = 1
 
     def set_settings_for_test2(self):
-        pass
+        self.server_sending_email = "test44@test.com"
+        self.server_smtp_address = "somemailserver44.overthere.com"
+        self.server_smtp_ssl_enabled = 1
+        self.server_smtp_port = 465
+        self.server_smtp_user = "test_user2"
+        self.server_smtp_password = "test_pass2"
+
+        self.enable_combo_report_emails = 0
+        self.send_report_every = self.send_option_yearly
+        self.email_reports_time_of_day = "08:55"
+        self.send_report_to_csv_emails = "test@test.com"
+
+        self.enable_graph_emails = 0
+        self.send_graph_every = self.send_option_weekly
+        self.email_graph_time_of_day = "04:35"
+        self.graph_past_hours = 22
+        self.graph_type = 0  # 0 = Quick Graph / 1+ = Plotly Graph
+        self.send_graphs_to_csv_emails = "test2@test.com"
+
+        # Enable or Disable Sensors to Graph.  0 = Disabled, 1 = Enabled
+        self.sensor_uptime = 0
+        self.system_temperature = 0
+        self.env_temperature = 0
+        self.pressure = 0
+        self.altitude = 0
+        self.humidity = 0
+        self.distance = 0
+        self.gas = 0
+        self.particulate_matter = 0
+        self.lumen = 0
+        self.color = 0
+        self.ultra_violet = 0
+        self.accelerometer = 0
+        self.magnetometer = 0
+        self.gyroscope = 0
 
 
 class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
@@ -588,10 +655,96 @@ class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
         CreateMQTTPublisherConfiguration.__init__(self, load_from_file=False)
 
     def set_settings_for_test1(self):
-        pass
+        self.enable_mqtt_publisher = 0
+        self.broker_address = "testing.testers.com"
+        self.broker_server_port = 1883
+        self.enable_broker_auth = 1
+        self.broker_user = "test_user"
+        self.broker_password = "test_pass"
+        self.seconds_to_wait = 76
+
+        self.mqtt_publisher_qos = 1
+
+        self.send_all_as_json = 1
+        self.sensor_uptime = 1
+        self.system_temperature = 1
+        self.env_temperature = 1
+        self.pressure = 1
+        self.altitude = 1
+        self.humidity = 1
+        self.distance = 1
+        self.gas = 1
+        self.particulate_matter = 1
+        self.lumen = 1
+        self.color = 1
+        self.ultra_violet = 1
+        self.accelerometer = 1
+        self.magnetometer = 1
+        self.gyroscope = 1
+        self.mqtt_base_topic = "KS/D44444Fg/"
+
+        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
+        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
+        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
+        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
+        self.pressure_topic = self.mqtt_base_topic + "Pressure"
+        self.altitude_topic = self.mqtt_base_topic + "Altitude"
+        self.humidity_topic = self.mqtt_base_topic + "Humidity"
+        self.distance_topic = self.mqtt_base_topic + "Distance"
+        self.gas_topic = self.mqtt_base_topic + "Gas"
+        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
+        self.lumen_topic = self.mqtt_base_topic + "Lumen"
+        self.color_topic = self.mqtt_base_topic + "Color"
+        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
+        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
+        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
+        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
 
     def set_settings_for_test2(self):
-        pass
+        self.enable_mqtt_publisher = 0
+        self.broker_address = "testing2.testers.com"
+        self.broker_server_port = 54443
+        self.enable_broker_auth = 0
+        self.broker_user = "test_user2"
+        self.broker_password = "test_pass2"
+        self.seconds_to_wait = 44
+
+        self.mqtt_publisher_qos = 2
+
+        self.send_all_as_json = 0
+        self.sensor_uptime = 0
+        self.system_temperature = 0
+        self.env_temperature = 0
+        self.pressure = 0
+        self.altitude = 0
+        self.humidity = 0
+        self.distance = 0
+        self.gas = 0
+        self.particulate_matter = 0
+        self.lumen = 0
+        self.color = 0
+        self.ultra_violet = 0
+        self.accelerometer = 0
+        self.magnetometer = 0
+        self.gyroscope = 0
+        self.mqtt_base_topic = "KS/D4347sSd4Fg/"
+
+        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
+        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
+        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
+        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
+        self.pressure_topic = self.mqtt_base_topic + "Pressure"
+        self.altitude_topic = self.mqtt_base_topic + "Altitude"
+        self.humidity_topic = self.mqtt_base_topic + "Humidity"
+        self.distance_topic = self.mqtt_base_topic + "Distance"
+        self.gas_topic = self.mqtt_base_topic + "Gas"
+        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
+        self.lumen_topic = self.mqtt_base_topic + "Lumen"
+        self.color_topic = self.mqtt_base_topic + "Color"
+        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
+        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
+        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
+        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
 
 
 class CreateMQTTSubscriberConfigurationTest(CreateMQTTSubscriberConfiguration):
