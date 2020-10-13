@@ -30,9 +30,10 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 31
         self.config_settings_names = [
-            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS", "SMTP server port #",
-            "SMTP user name", "SMTP password", "Enable Reports email server", "Send Report every",
-            "Send Report to CSV emails", "Enable Graph email server", "Sending Graph every", "Graph the past hours",
+            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS",
+            "SMTP server port #", "SMTP user name", "SMTP password", "Enable Reports email server",
+            "Send Report every (daily, weekly, monthly, yearly)", "Send Report to CSV emails",
+            "Enable Graph email server", "Sending Graph every (daily, weekly, monthly, yearly)", "Graph the past hours",
             "Graph type (0=Quick Graph, 1=Plotly Graph)", "Send Graph to CSV emails", "Graph sensor uptime",
             "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
             "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
@@ -50,19 +51,18 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.server_smtp_user = ""
         self.server_smtp_password = ""
 
+        self.send_option_daily = "daily"
+        self.send_option_weekly = "weekly"
+        self.send_option_monthly = "monthly"
+        self.send_option_yearly = "yearly"
+
         self.enable_combo_report_emails = 0
-        self.email_reports_daily = False
-        self.email_reports_weekly = False
-        self.email_reports_monthly = False
-        self.email_reports_yearly = False
+        self.send_report_every = self.send_option_monthly
         self.email_reports_time_of_day = "07:00"
         self.send_report_to_csv_emails = ""
 
         self.enable_graph_emails = 0
-        self.email_graph_daily = False
-        self.email_graph_weekly = False
-        self.email_graph_monthly = False
-        self.email_graph_yearly = False
+        self.send_graph_every = self.send_option_monthly
         self.email_graph_time_of_day = "07:00"
         self.graph_past_hours = 48
         self.graph_type = 0  # 0 = Quick Graph / 1+ = Plotly Graph
@@ -102,20 +102,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("email_combo_report") is not None:
             self.enable_combo_report_emails = 1
         if html_request.form.get("email_reports_send_interval") is not None:
-            interval_type = html_request.form.get("email_reports_send_interval")
-            self.email_reports_daily = False
-            self.email_reports_weekly = False
-            self.email_reports_monthly = False
-            self.email_reports_yearly = False
-
-            if interval_type == "daily":
-                self.email_reports_daily = True
-            elif interval_type == "weekly":
-                self.email_reports_weekly = True
-            elif interval_type == "monthly":
-                self.email_reports_monthly = True
-            elif interval_type == "yearly":
-                self.email_reports_yearly = True
+            self.send_report_every = html_request.form.get("email_reports_send_interval")
         if html_request.form.get("send_email_report_at_time") is not None:
             self.email_reports_time_of_day = html_request.form.get("send_email_report_at_time")
         if html_request.form.get("send_reports_to_email_address") is not None:
@@ -131,20 +118,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("email_graphs") is not None:
             self.enable_graph_emails = 1
         if html_request.form.get("email_graph_send_interval") is not None:
-            interval_type = html_request.form.get("email_graph_send_interval")
-            self.email_graph_daily = False
-            self.email_graph_weekly = False
-            self.email_graph_monthly = False
-            self.email_graph_yearly = False
-
-            if interval_type == "daily":
-                self.email_graph_daily = True
-            elif interval_type == "weekly":
-                self.email_graph_weekly = True
-            elif interval_type == "monthly":
-                self.email_graph_monthly = True
-            elif interval_type == "yearly":
-                self.email_graph_yearly = True
+            self.send_graph_every = html_request.form.get("email_graph_send_interval")
         if html_request.form.get("send_email_graph_at_time") is not None:
             self.email_graph_time_of_day = html_request.form.get("send_email_graph_at_time")
         if html_request.form.get("send_graphs_to_email_address") is not None:
@@ -236,13 +210,13 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.config_settings = [
             str(self.server_sending_email), str(self.server_smtp_address), str(self.server_smtp_ssl_enabled),
             str(self.server_smtp_port), str(self.server_smtp_user), str(self.server_smtp_password),
-            str(self.enable_combo_report_emails), self._get_report_text_interval(),
-            str(self.send_report_to_csv_emails), str(self.enable_graph_emails), self._get_graph_text_interval(),
-            str(self.graph_past_hours), str(self.graph_type), str(self.send_graphs_to_csv_emails),
-            str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature), str(self.pressure),
-            str(self.altitude), str(self.humidity), str(self.distance), str(self.gas), str(self.particulate_matter),
-            str(self.lumen), str(self.color), str(self.ultra_violet), str(self.accelerometer), str(self.magnetometer),
-            str(self.gyroscope), str(self.email_reports_time_of_day), str(self.email_graph_time_of_day)
+            str(self.enable_combo_report_emails), self.send_report_every, str(self.send_report_to_csv_emails),
+            str(self.enable_graph_emails), self.send_graph_every, str(self.graph_past_hours), str(self.graph_type),
+            str(self.send_graphs_to_csv_emails), str(self.sensor_uptime), str(self.system_temperature),
+            str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
+            str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
+            str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.email_reports_time_of_day),
+            str(self.email_graph_time_of_day)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -253,42 +227,17 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.server_smtp_port = int(self.config_settings[3].strip())
             self.server_smtp_user = self.config_settings[4].strip()
             self.server_smtp_password = self.config_settings[5].strip()
+
             self.enable_combo_report_emails = int(self.config_settings[6].strip())
-
-            temp_report_resend = self.config_settings[7].strip()
-            self.email_reports_daily = False
-            self.email_reports_weekly = False
-            self.email_reports_monthly = False
-            self.email_reports_yearly = False
-            if temp_report_resend == "daily":
-                self.email_reports_daily = True
-            elif temp_report_resend == "weekly":
-                self.email_reports_weekly = True
-            elif temp_report_resend == "monthly":
-                self.email_reports_monthly = True
-            elif temp_report_resend == "yearly":
-                self.email_reports_yearly = True
-
+            self.send_report_every = self.config_settings[7].strip()
             self.send_report_to_csv_emails = self.config_settings[8].strip()
+
             self.enable_graph_emails = int(self.config_settings[9].strip())
-
-            temp_graph_resend = self.config_settings[10].strip()
-            self.email_graph_daily = False
-            self.email_graph_weekly = False
-            self.email_graph_monthly = False
-            self.email_graph_yearly = False
-            if temp_graph_resend == "daily":
-                self.email_graph_daily = True
-            elif temp_graph_resend == "weekly":
-                self.email_graph_weekly = True
-            elif temp_graph_resend == "monthly":
-                self.email_graph_monthly = True
-            elif temp_graph_resend == "yearly":
-                self.email_graph_yearly = True
-
+            self.send_graph_every = self.config_settings[10].strip()
             self.graph_past_hours = float(self.config_settings[11].strip())
             self.graph_type = int(self.config_settings[12].strip())
             self.send_graphs_to_csv_emails = self.config_settings[13].strip()
+
             self.sensor_uptime = int(self.config_settings[14].strip())
             self.system_temperature = int(self.config_settings[15].strip())
             self.env_temperature = int(self.config_settings[16].strip())
@@ -304,6 +253,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.accelerometer = int(self.config_settings[26].strip())
             self.magnetometer = int(self.config_settings[27].strip())
             self.gyroscope = int(self.config_settings[28].strip())
+
             self.email_reports_time_of_day = self.config_settings[29].strip()
             self.email_graph_time_of_day = self.config_settings[30].strip()
         except Exception as error:
@@ -313,26 +263,6 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             if self.load_from_file:
                 logger.primary_logger.info("Saving Email Configuration.")
                 self.save_config_to_file()
-
-    def _get_report_text_interval(self):
-        if self.email_reports_daily:
-            return "daily"
-        elif self.email_reports_weekly:
-            return "weekly"
-        elif self.email_reports_monthly:
-            return "monthly"
-        elif self.email_reports_yearly:
-            return "yearly"
-
-    def _get_graph_text_interval(self):
-        if self.email_graph_daily:
-            return "daily"
-        elif self.email_graph_weekly:
-            return "weekly"
-        elif self.email_graph_monthly:
-            return "monthly"
-        elif self.email_graph_yearly:
-            return "yearly"
 
 
 def _validate_csv_emails(csv_emails_string):

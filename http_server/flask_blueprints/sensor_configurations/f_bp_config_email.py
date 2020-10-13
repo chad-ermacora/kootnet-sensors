@@ -42,22 +42,24 @@ def html_get_config_email_page():
         plotly_graph_checked = "checked"
         quick_graph_checked = ""
 
+    report_send_selected_options = _get_send_option_selection(email_config.send_report_every)
+    graph_send_selected_options = _get_send_option_selection(email_config.send_graph_every)
     return render_template("edit_configurations/config_email.html",
                            PageURL="/EmailConfigurationsHTML",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            CheckedEmailComboReport=get_html_checkbox_state(email_config.enable_combo_report_emails),
-                           EmailReportsSelectedDaily=get_html_selected_state(email_config.email_reports_daily),
-                           EmailReportsSelectedWeekly=get_html_selected_state(email_config.email_reports_weekly),
-                           EmailReportsSelectedMonthly=get_html_selected_state(email_config.email_reports_monthly),
-                           EmailReportsSelectedYearly=get_html_selected_state(email_config.email_reports_yearly),
+                           EmailReportsSelectedDaily=report_send_selected_options[0],
+                           EmailReportsSelectedWeekly=report_send_selected_options[1],
+                           EmailReportsSelectedMonthly=report_send_selected_options[2],
+                           EmailReportsSelectedYearly=report_send_selected_options[3],
                            EmailReportAtHourMin=email_config.email_reports_time_of_day,
                            EmailReportsToCSVAddresses=email_config.send_report_to_csv_emails,
                            CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
-                           EmailGraphSelectedDaily=get_html_selected_state(email_config.email_graph_daily),
-                           EmailGraphSelectedWeekly=get_html_selected_state(email_config.email_graph_weekly),
-                           EmailGraphSelectedMonthly=get_html_selected_state(email_config.email_graph_monthly),
-                           EmailGraphSelectedYearly=get_html_selected_state(email_config.email_graph_yearly),
+                           EmailGraphSelectedDaily=graph_send_selected_options[0],
+                           EmailGraphSelectedWeekly=graph_send_selected_options[1],
+                           EmailGraphSelectedMonthly=graph_send_selected_options[2],
+                           EmailGraphSelectedYearly=graph_send_selected_options[3],
                            EmailGraphAtHourMin=email_config.email_graph_time_of_day,
                            EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails,
                            QuickGraphChecked=quick_graph_checked,
@@ -83,6 +85,21 @@ def html_get_config_email_page():
                            CheckedEmailSSL=get_html_checkbox_state(email_config.server_smtp_ssl_enabled),
                            ServerSMTPPort=email_config.server_smtp_port,
                            ServerSMTPUser=email_config.server_smtp_user)
+
+
+def _get_send_option_selection(selected_send_every):
+    send_options = [
+        email_config.send_option_daily, email_config.send_option_weekly,
+        email_config.send_option_monthly, email_config.send_option_yearly
+    ]
+
+    selected_values = []
+    for send_type in send_options:
+        if selected_send_every == send_type:
+            selected_values.append("selected")
+        else:
+            selected_values.append("")
+    return selected_values
 
 
 @html_email_routes.route("/SendTestEmail", methods=["POST"])

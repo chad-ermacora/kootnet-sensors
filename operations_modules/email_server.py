@@ -190,7 +190,7 @@ def _report_email_server():
             else:
                 logger.network_logger.warning("Invalid Email found in Report Emails")
     while not app_cached_variables.restart_report_email_thread:
-        main_sleep = _get_reports_sleep_time()
+        main_sleep = _get_email_send_sleep_time(email_config.send_report_every, email_config.email_reports_time_of_day)
         sleep_total = 0
         while sleep_total < main_sleep and not app_cached_variables.restart_report_email_thread:
             sleep(5)
@@ -239,7 +239,7 @@ def _graph_email_server():
 
     while not app_cached_variables.restart_graph_email_thread:
         sleep_total = 0
-        main_sleep = _get_graph_sleep_time()
+        main_sleep = _get_email_send_sleep_time(email_config.send_graph_every, email_config.email_graph_time_of_day)
         while sleep_total < main_sleep and not app_cached_variables.restart_graph_email_thread:
             sleep(5)
             sleep_total += 5
@@ -259,34 +259,18 @@ def _graph_email_server():
         logger.network_logger.debug("Graph Emails Sent")
 
 
-def _get_reports_sleep_time():
+def _get_email_send_sleep_time(send_every, sleep_time_of_day):
     sleep_seconds = 604800
-    hour = int(email_config.email_reports_time_of_day[0:2])
-    minute = int(email_config.email_reports_time_of_day[3:5])
+    hour = int(sleep_time_of_day[0:2])
+    minute = int(sleep_time_of_day[3:5])
 
-    if email_config.email_reports_daily:
+    if send_every == email_config.send_option_daily:
         sleep_seconds = _get_email_sleep_seconds(day=1, hour=hour, minute=minute)
-    elif email_config.email_reports_weekly:
+    elif send_every == email_config.send_option_weekly:
         sleep_seconds = _get_email_sleep_seconds(day=7, hour=hour, minute=minute)
-    elif email_config.email_reports_monthly:
+    elif send_every == email_config.send_option_monthly:
         sleep_seconds = _get_email_sleep_seconds(month=1, hour=hour, minute=minute)
-    elif email_config.email_reports_yearly:
-        sleep_seconds = _get_email_sleep_seconds(year=1, hour=hour, minute=minute)
-    return sleep_seconds
-
-
-def _get_graph_sleep_time():
-    sleep_seconds = 604800
-    hour = int(email_config.email_graph_time_of_day[0:2])
-    minute = int(email_config.email_graph_time_of_day[3:5])
-
-    if email_config.email_graph_daily:
-        sleep_seconds = _get_email_sleep_seconds(day=1, hour=hour, minute=minute)
-    elif email_config.email_graph_weekly:
-        sleep_seconds = _get_email_sleep_seconds(day=7, hour=hour, minute=minute)
-    elif email_config.email_graph_monthly:
-        sleep_seconds = _get_email_sleep_seconds(month=1, hour=hour, minute=minute)
-    elif email_config.email_graph_yearly:
+    elif send_every == email_config.send_option_yearly:
         sleep_seconds = _get_email_sleep_seconds(year=1, hour=hour, minute=minute)
     return sleep_seconds
 
