@@ -315,7 +315,9 @@ sensor_get_commands = [
 if __name__ == '__main__':
     if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
         if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-            unittest.main()
+            gui_command = "sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_gui_test_http_server.py\n"
+            print("\n-- CLI tests are currently disabled, please use the GUI --\nRun: " + gui_command)
+            # unittest.main()
         else:
             print("\n-- Incorrect Sensor Login --\n")
     else:
