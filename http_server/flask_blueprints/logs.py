@@ -30,6 +30,7 @@ html_logs_routes = Blueprint("html_logs_routes", __name__)
 
 
 @html_logs_routes.route("/GetLogsHTML")
+@auth.login_required
 def html_get_log_view():
     logger.network_logger.debug("** HTML Logs accessed from " + str(request.remote_addr))
     primary_log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
@@ -92,6 +93,7 @@ def _get_zipped_logs():
 
 
 @html_logs_routes.route("/DownloadZippedLogs")
+@auth.login_required
 def download_zipped_logs():
     logger.network_logger.debug("* Download Zip of all Logs Accessed by " + str(request.remote_addr))
     zip_name = "Logs_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
@@ -102,18 +104,21 @@ def download_zipped_logs():
 
 
 @html_logs_routes.route("/GetPrimaryLog")
+@auth.login_required
 def get_raw_primary_log():
     logger.network_logger.debug("* Raw Primary Log Sent to " + str(request.remote_addr))
     return logger.get_sensor_log(file_locations.primary_log)
 
 
 @html_logs_routes.route("/GetNetworkLog")
+@auth.login_required
 def get_raw_network_log():
     logger.network_logger.debug("* Raw Network Log Sent to " + str(request.remote_addr))
     return logger.get_sensor_log(file_locations.network_log)
 
 
 @html_logs_routes.route("/GetSensorsLog")
+@auth.login_required
 def get_raw_sensors_log():
     logger.network_logger.debug("* Raw Sensors Log Sent to " + str(request.remote_addr))
     return logger.get_sensor_log(file_locations.sensors_log)

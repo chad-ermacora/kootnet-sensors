@@ -39,5 +39,5 @@ apt-get update
 apt-get -y --reinstall --allow-downgrades install /tmp${DEB_INSTALLER}
 umount /mnt/supernas
 # Save DateTime and Update type to file (Used in program to show last updated)
-date >${CONFIG_DIR}/last_updated.txt
+date -u >${CONFIG_DIR}/last_updated.txt
 echo ' - Clean SMB ' >>${CONFIG_DIR}/last_updated.txt

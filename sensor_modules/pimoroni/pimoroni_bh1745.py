@@ -41,6 +41,7 @@ class CreateBH1745:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni BH1745 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_bh1745 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def lumen(self):
         """ Returns Lumen as a Float. """
@@ -66,4 +67,4 @@ class CreateBH1745:
             logger.sensors_logger.error("Pimoroni BH1745 RGB - Failed: " + str(error))
             rgb_red, rgb_green, rgb_blue = 0, 0, 0
         self.sensor_in_use = False
-        return round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)
+        return [round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)]

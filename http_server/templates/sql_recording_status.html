@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Recording Status</title>
+</head>
+
+<style>
+    .mui-container-fluid {
+        font-weight: bold;
+        font-size: large;
+    }
+
+    .mui-col-md-3 {
+        background-color: #0BB10D;
+        width: 260px;
+    }
+</style>
+
+<body style="background: black;">
+<fieldset>
+    <div class="mui-container-fluid" style="display: inline-block; padding-left: 20px;">
+        <h2 style="text-align: center;"><a style="color: red;" href="/SensorRecordingStatus">Interval</a></h2>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">CPU Temp: {{ IntervalCPUTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Env Temp: {{ IntervalEnvTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Pressure: {{ IntervalPressure }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Altitude: {{ IntervalAltitude }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Humidity: {{ IntervalHumidity }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Distance: {{ IntervalDistance }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Lumen: {{ IntervalLumen }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Visible EMS: {{ IntervalVisibleEMS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Ultra Violet: {{ IntervalUltraViolet }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">GAS: {{ IntervalGAS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">PM: {{ IntervalPM }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Accelerometer: {{ IntervalAccelerometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Magnetometer: {{ IntervalMagnetometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Gyroscope: {{ IntervalGyroscope }}</div>
+        </div>
+        <br>
+    </div>
+
+    <div class="mui-container-fluid" style="display: inline-block; padding-left: 20px;">
+        <h2 style="text-align: center;"><a style="color: red;" href="/SensorRecordingStatus">High/Low Triggers</a></h2>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">CPU Temp: {{ TriggerHighLowCPUTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Env Temp: {{ TriggerHighLowEnvTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Pressure: {{ TriggerHighLowPressure }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Altitude: {{ TriggerHighLowAltitude }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Humidity: {{ TriggerHighLowHumidity }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Distance: {{ TriggerHighLowDistance }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Lumen: {{ TriggerHighLowLumen }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Visible EMS: {{ TriggerHighLowVisibleEMS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Ultra Violet: {{ TriggerHighLowUltraViolet }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">GAS: {{ TriggerHighLowGAS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">PM: {{ TriggerHighLowPM }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Accelerometer: {{ TriggerHighLowAccelerometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Magnetometer: {{ TriggerHighLowMagnetometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Gyroscope: {{ TriggerHighLowGyroscope }}</div>
+        </div>
+        <br>
+    </div>
+
+    <div class="mui-container-fluid" style="display: inline-block; padding-left: 20px;">
+        <h2 style="text-align: center;"><a style="color: red;" href="/SensorRecordingStatus">Variance Triggers</a></h2>
+
+        <div class="mui-row">
+            <div class="mui-col-md-3">CPU Temp: {{ TriggerVarianceCPUTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Env Temp: {{ TriggerVarianceEnvTemp }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Pressure: {{ TriggerVariancePressure }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Altitude: {{ TriggerVarianceAltitude }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Humidity: {{ TriggerVarianceHumidity }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Distance: {{ TriggerVarianceDistance }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Lumen: {{ TriggerVarianceLumen }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Visible EMS: {{ TriggerVarianceVisibleEMS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Ultra Violet: {{ TriggerVarianceUltraViolet }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">GAS: {{ TriggerVarianceGAS }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">PM: {{ TriggerVariancePM }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Accelerometer: {{ TriggerVarianceAccelerometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Magnetometer: {{ TriggerVarianceMagnetometer }}</div>
+        </div>
+        <div class="mui-row">
+            <div class="mui-col-md-3">Gyroscope: {{ TriggerVarianceGyroscope }}</div>
+        </div>
+        <br>
+    </div>
+</fieldset>
+</body>
+</html>

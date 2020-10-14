@@ -25,47 +25,49 @@ from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 
-checkin_wait_time_sec = 86400
-
 
 class CreateCheckinServer:
     def __init__(self):
-        logger.primary_logger.debug(" -- Sensor Checkin Server Started")
         sleep(30)
+        logger.primary_logger.debug(" -- Sensor CheckIns Started")
 
         previous_primary_logs = ""
         previous_sensors_logs = ""
         previous_installed_sensors = ""
         while True:
-            try:
-                current_installed_sensors = app_config_access.installed_sensors.get_installed_names_str()
-                current_primary_logs = logger.get_sensor_log(file_locations.primary_log, max_lines=40)
-                current_sensors_logs = logger.get_sensor_log(file_locations.sensors_log, max_lines=40)
-                if current_installed_sensors == previous_installed_sensors:
-                    current_installed_sensors = ""
-                else:
-                    previous_installed_sensors = current_installed_sensors
+            if app_config_access.primary_config.enable_checkin:
+                try:
+                    current_installed_sensors = app_config_access.installed_sensors.get_installed_names_str()
+                    current_primary_logs = logger.get_sensor_log(file_locations.primary_log, max_lines=40)
+                    current_sensors_logs = logger.get_sensor_log(file_locations.sensors_log, max_lines=40)
+                    if current_installed_sensors == previous_installed_sensors:
+                        current_installed_sensors = ""
+                    else:
+                        previous_installed_sensors = current_installed_sensors
 
-                if current_primary_logs == previous_primary_logs:
-                    current_primary_logs = ""
-                else:
-                    previous_primary_logs = current_primary_logs
+                    if current_primary_logs == previous_primary_logs:
+                        current_primary_logs = ""
+                    else:
+                        previous_primary_logs = current_primary_logs
 
-                if current_sensors_logs == previous_sensors_logs:
-                    current_sensors_logs = ""
-                else:
-                    previous_sensors_logs = current_sensors_logs
-
-                requests.post(url=app_config_access.primary_config.checkin_url, timeout=5, verify=False,
-                              data={"checkin_id": app_config_access.primary_config.sensor_checkin_id,
-                                    "program_version": version,
-                                    "sensor_uptime": sensor_access.get_uptime_minutes(),
-                                    "installed_sensors": current_installed_sensors,
-                                    "primary_log": current_primary_logs,
-                                    "sensor_log": current_sensors_logs})
-            except Exception as error:
-                logger.network_logger.debug("Failed to send Checkin ID: " + str(error))
-            sleep(checkin_wait_time_sec)
+                    if current_sensors_logs == previous_sensors_logs:
+                        current_sensors_logs = ""
+                    else:
+                        previous_sensors_logs = current_sensors_logs
+                    url = "https://" + app_config_access.primary_config.checkin_url + "/SensorCheckin"
+                    requests.post(url=url, timeout=10, verify=False,
+                                  data={"checkin_id": app_config_access.primary_config.sensor_id,
+                                        "program_version": version,
+                                        "sensor_uptime": sensor_access.get_uptime_minutes(),
+                                        "installed_sensors": current_installed_sensors,
+                                        "primary_log": current_primary_logs,
+                                        "sensor_log": current_sensors_logs})
+                except Exception as error:
+                    logger.network_logger.debug("Failed to send Checkin ID: " + str(error))
+                sleep_duration = app_config_access.primary_config.checkin_wait_in_hours * 60 * 60
+                sleep(sleep_duration)
+            else:
+                sleep(30)
 
 
 def start_sensor_checkin_server():

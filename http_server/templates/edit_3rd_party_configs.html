@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-form {
+            background-color: #00B0FF;
+        }
+
+        .mui-col-md-4 {
+            width: 275px;
+        }
+
+        .mui-checkbox {
+            display: inline-block;
+        }
+    </style>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="open-sense-map-tab">
+            Open Sense Map
+        </a></li>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="weather-underground-tab">
+            Weather Underground
+        </a></li>
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab" data-mui-controls="luftdaten-tab">
+            Luftdaten
+        </a></li>
+    </ul>
+
+    <br>
+
+    {{ ConfigOSMTab|safe }}
+    {{ ConfigWUTab|safe }}
+    {{ ConfigLuftdatenTab|safe }}
+
+{% endblock %}

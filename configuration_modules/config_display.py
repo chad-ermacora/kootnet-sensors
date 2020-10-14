@@ -26,13 +26,14 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 18
-        self.config_settings_names = ["Enable Display", "Display every X Minutes", "Display Type", "Show Sensor Uptime",
-                                      "Show System Temperature", "Show Environmental Temperature", "Show Pressure",
-                                      "Show Altitude", "Show Humidity", "Show Distance", "Show GAS",
-                                      "Show Particulate Matter", "Show Lumen", "Show Colors", "Show Ultra Violet",
-                                      "Show Accelerometer", "Show Magnetometer", "Show Gyroscope"]
+        self.config_settings_names = [
+            "Enable display", "Display every minutes", "Display type", "Show sensor uptime",
+            "Show system temperature", "Show environmental temperature", "Show pressure", "Show altitude",
+            "Show humidity", "Show distance", "Show GAS", "Show particulate matter", "Show lumen", "Show colors",
+            "Show ultra violet", "Show accelerometer", "Show magnetometer", "Show gyroscope"
+        ]
 
         self.enable_display = 0
         self.display_type_numerical = "numerical"
@@ -43,7 +44,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
 
         # Enable or Disable Sensors to Display.  0 = Disabled, 1 = Enabled
         self.sensor_uptime = 0
-        self.system_temperature = 0
+        self.system_temperature = 1
         self.env_temperature = 0
         self.pressure = 0
         self.altitude = 0
@@ -70,7 +71,23 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Display configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Display Configuration Update Check")
-        self.__init__(load_from_file=False)
+
+        self.enable_display = 0
+        self.sensor_uptime = 0
+        self.system_temperature = 0
+        self.env_temperature = 0
+        self.pressure = 0
+        self.altitude = 0
+        self.humidity = 0
+        self.distance = 0
+        self.gas = 0
+        self.particulate_matter = 0
+        self.lumen = 0
+        self.color = 0
+        self.ultra_violet = 0
+        self.accelerometer = 0
+        self.magnetometer = 0
+        self.gyroscope = 0
 
         if html_request.form.get("enable_display") is not None:
             self.enable_display = 1
@@ -119,12 +136,14 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_display), str(self.minutes_between_display), str(self.display_type),
-                                str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature),
-                                str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
-                                str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color),
-                                str(self.ultra_violet), str(self.accelerometer), str(self.magnetometer),
-                                str(self.gyroscope)]
+
+        self.config_settings = [
+            str(self.enable_display), str(self.minutes_between_display), str(self.display_type),
+            str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature), str(self.pressure),
+            str(self.altitude), str(self.humidity), str(self.distance), str(self.gas), str(self.particulate_matter),
+            str(self.lumen), str(self.color), str(self.ultra_violet), str(self.accelerometer), str(self.magnetometer),
+            str(self.gyroscope)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

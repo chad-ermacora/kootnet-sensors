@@ -3,10 +3,13 @@ flask
 Flask-Compress
 Flask-HTTPAuth
 gevent
+greenlet
 werkzeug
 cryptography
-psutil
+paho-mqtt
 requests
+psutil
+python-dateutil
 plotly
 numpy
 # Required for Testing GUI

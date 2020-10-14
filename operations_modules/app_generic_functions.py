@@ -19,6 +19,7 @@
 import os
 import psutil
 import time
+from datetime import datetime, timedelta
 import requests
 import logging
 from io import BytesIO
@@ -43,6 +44,7 @@ class CreateGeneralConfiguration:
 
     def _init_config_variables(self):
         """ Sets configuration settings from file, saves default if missing. """
+
         try:
             if self.check_config_file_exists():
                 self.set_config_with_str(get_file_content(self.config_file_location))
@@ -63,11 +65,13 @@ class CreateGeneralConfiguration:
     def save_config_to_file(self):
         """ Saves configuration to file. """
         logger.primary_logger.debug("Saving Configuration to " + str(self.config_file_location))
+
         write_file_to_disk(self.config_file_location, self.get_config_as_str())
 
     def get_config_as_str(self):
         """ Returns configuration as a String. """
         logger.primary_logger.debug("Returning Configuration as string for " + str(self.config_file_location))
+
         new_file_content = self.config_file_header + "\n"
         for setting, setting_name in zip(self.config_settings, self.config_settings_names):
             new_file_content += str(setting) + " = " + str(setting_name) + "\n"
@@ -75,6 +79,7 @@ class CreateGeneralConfiguration:
 
     def set_config_with_str(self, config_file_text):
         """ Sets configuration with the provided Text. """
+
         if config_file_text is not None:
             config_file_text = config_file_text.strip().split("\n")
             config_file_text = config_file_text[1:]  # Remove the header that's not a setting
@@ -107,6 +112,7 @@ class CreateMonitoredThread:
 
     def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
         self.is_running = True
+        self.current_state = "Starting"
         self.function = function
         self.args = args
         self.thread_name = thread_name
@@ -128,9 +134,11 @@ class CreateMonitoredThread:
         self.restart_watch_thread = Thread(target=self._restart_count_reset_watch)
         self.restart_watch_thread.daemon = True
         self.restart_watch_thread.start()
+        self.current_state = "Running"
 
     def _restart_count_reset_watch(self):
         """ Resets self.current_restart_count to 0 if it's been longer then 60 seconds since a restart. """
+
         last_restart_time = time.time()
         last_count = 0
         while True:
@@ -144,11 +152,13 @@ class CreateMonitoredThread:
 
     def _thread_and_monitor(self):
         logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
+
         self.monitored_thread.start()
         while not self.shutdown_thread:
             if not self.monitored_thread.is_alive():
                 logger.primary_logger.info(self.thread_name + " Restarting...")
                 self.is_running = False
+                self.current_state = "Restarting"
                 self.current_restart_count += 1
                 if self.current_restart_count < self.max_restart_count:
                     if self.args is None:
@@ -158,27 +168,23 @@ class CreateMonitoredThread:
                     self.monitored_thread.daemon = True
                     self.monitored_thread.start()
                     self.is_running = True
+                    self.current_state = "Running"
                 else:
                     log_msg = self.thread_name + " has restarted " + str(self.current_restart_count)
                     log_msg += " times in less then 1 minutes."
                     logger.primary_logger.critical(log_msg + " No further restart attempts will be made.")
+                    self.current_state = "Error"
                     while True:
                         time.sleep(600)
             time.sleep(5)
+        self.current_state = "Stopped"
         self.shutdown_thread = False
-
-
-def start_and_wait_threads(threads_list):
-    """ Starts provided list of threads and waits for them all to complete. """
-    for thread in threads_list:
-        thread.start()
-    for thread in threads_list:
-        thread.join()
 
 
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
+
     if os.path.isfile(load_file):
         try:
             with open(load_file, open_type) as loaded_file:
@@ -195,6 +201,7 @@ def get_file_content(load_file, open_type="r"):
 def write_file_to_disk(file_location, file_content, open_type="w"):
     """ Writes provided file and content to local disk. """
     logger.primary_logger.debug("Writing content to " + str(file_location))
+
     try:
         with open(file_location, open_type) as write_file:
             write_file.write(file_content)
@@ -204,6 +211,7 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
 
 def thread_function(function, args=None):
     """ Starts provided function as a thread with optional arguments. """
+
     if args:
         system_thread = Thread(target=function, args=[args])
     else:
@@ -212,8 +220,18 @@ def thread_function(function, args=None):
     system_thread.start()
 
 
+def start_and_wait_threads(threads_list):
+    """ Starts provided list of threads and waits for them all to complete. """
+
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
+
+
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
     """ Returns requested remote sensor data (based on the provided command data). """
+
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -231,6 +249,7 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
 
 def send_http_command(sensor_address, command, included_data=None, test_run=None, http_port="10065", timeout=10):
     """ Sends command and data (if any) to a remote sensor. """
+
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -247,6 +266,7 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
 
 def get_http_sensor_file(sensor_address, command, http_port="10065"):
     """ Returns requested remote sensor file (based on the provided command data). """
+
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -264,6 +284,7 @@ def get_http_sensor_file(sensor_address, command, http_port="10065"):
 
 def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
     """ Sends provided text message to a remote sensor's display. """
+
     if check_for_port_in_address(sensor_address):
         ip_and_port = get_ip_and_port_split(sensor_address)
         sensor_address = ip_and_port[0]
@@ -282,6 +303,7 @@ def http_display_text_on_sensor(text_message, sensor_address, http_port="10065")
 
 def check_for_port_in_address(address):
     """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
+
     ip_split = address.strip().split(":")
     if len(ip_split) == 2:
         return True
@@ -292,6 +314,7 @@ def check_for_port_in_address(address):
 
 def get_ip_and_port_split(address):
     """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
+
     return address.split(":")
 
 
@@ -300,6 +323,7 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
     Creates a zip of 1 or more files provided as a list.
     Saves to memory or disk based on save_type & file_location
     """
+
     try:
         if save_type == "get_bytes_io":
             return_zip_file = BytesIO()
@@ -327,6 +351,7 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
 
 def get_zip_size(zip_file):
     """ Returns the size of provided Zip file. """
+
     files_size = 0.0
     try:
         with ZipFile(zip_file, 'r') as zip_file_access:
@@ -337,15 +362,6 @@ def get_zip_size(zip_file):
     return files_size
 
 
-def get_data_queue_items():
-    """ Returns an item from the app_cached_variables.data_queue. """
-    que_data = []
-    while not app_cached_variables.data_queue.empty():
-        que_data.append(app_cached_variables.data_queue.get())
-        app_cached_variables.data_queue.task_done()
-    return que_data
-
-
 def replace_text_lists(original_text, old_list, new_list):
     """
     Replaces text in the provided 'original_text' argument.
@@ -353,15 +369,15 @@ def replace_text_lists(original_text, old_list, new_list):
     old_list = a list of strings to replace in 'original_text'.
     new_list = a list of strings that will replace the 'old_list' list of strings.
     """
+
     for old_text, new_text in zip(old_list, new_list):
         original_text = original_text.replace(old_text, new_text)
     return original_text
 
 
 def clear_zip_names():
-    """
-    Set's all sensor control download names to nothing ("")
-    """
+    """ Set's all sensor control download names to nothing ("") """
+
     app_cached_variables.sc_reports_zip_name = ""
     app_cached_variables.sc_logs_zip_name = ""
     if app_cached_variables.sc_databases_zip_in_memory:
@@ -372,6 +388,7 @@ def clear_zip_names():
 
 def save_to_memory_ok(write_size):
     """ Checks to see if there is enough RAM to save file to to memory or not. """
+
     try:
         # Numbers 1,000,000 / 25,000,000. Not using underscores to maintain compatibility with Python 3.5.x
         if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
@@ -383,6 +400,7 @@ def save_to_memory_ok(write_size):
 
 def get_response_bg_colour(response_time):
     """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
+
     try:
         delay_float = float(response_time)
         background_colour = "green"
@@ -399,3 +417,41 @@ def get_response_bg_colour(response_time):
         logger.network_logger.debug("Check Online Status Error: " + str(error))
         background_colour = "purple"
     return background_colour
+
+
+def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
+    """ Adjusts the provided datetime as a string by the provided hour offset and returns the result as a string. """
+
+    try:
+        cleaned_datetime = var_datetime.strip()
+        year = cleaned_datetime[:4]
+        month_var = cleaned_datetime[5:7]
+        day_var = cleaned_datetime[8:10]
+        hour_var = cleaned_datetime[11:13]
+        min_var = cleaned_datetime[14:16]
+        second_var = cleaned_datetime[17:19]
+
+        original_date_time = year + "-" + month_var + "-" + day_var + " " + \
+                             hour_var + ":" + min_var + ":" + second_var
+        adjusted_date = datetime.strptime(original_date_time, "%Y-%m-%d %H:%M:%S")
+        adjusted_date = adjusted_date + timedelta(hours=hour_offset)
+        replacement_date = adjusted_date.strftime("%Y-%m-%d %H:%M:%S")
+        if return_datetime_obj:
+            return adjusted_date
+        return replacement_date
+    except Exception as error:
+        logger.primary_logger.warning("Date Adjustment Error: " + str(error))
+        return var_datetime
+
+
+def remove_line_from_text(text_var, line_numbers_list):
+    """ Removes specified line from provided configuration text. """
+
+    return_config = ""
+    for index, line_content in enumerate(text_var.split("\n")):
+        if index not in line_numbers_list:
+            return_config += line_content + "\n"
+        else:
+            setting_description = line_content.split("=")[1]
+            return_config += "Removed_for_viewing = " + setting_description + "\n"
+    return return_config

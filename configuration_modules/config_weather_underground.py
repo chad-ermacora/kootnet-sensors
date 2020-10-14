@@ -28,9 +28,10 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, weather_underground_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 6
-        self.config_settings_names = ["Enable Weather Underground", "Send to Server in Seconds",
-                                      "Sensor is Outdoors", "Weather Underground Station ID",
-                                      "Weather Underground Station Key", "Enable Rapid Fire Updates"]
+        self.config_settings_names = [
+            "Enable Weather Underground", "Send to Server in Seconds", "Sensor is Outdoors",
+            "Weather Underground Station ID", "Weather Underground Station Key", "Enable Rapid Fire Updates"
+        ]
 
         self.weather_underground_enabled = 0
         self.interval_seconds = 900.0
@@ -50,7 +51,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
         self.wu_software_version = "&softwaretype=Kootnet%20Sensors%20"
         self.wu_action = "&action=updateraw"
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -62,6 +63,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Weather Underground configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting Weather Underground Configuration Update Check")
+
         self.weather_underground_enabled = 0
         if html_request.form.get("enable_weather_underground") is not None:
             self.weather_underground_enabled = 1
@@ -85,13 +87,15 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
             self.station_key = ""
             if html_request.form.get("station_key") is not None and html_request.form.get("station_key") is not "":
                 self.station_key = str(html_request.form.get("station_key")).strip()
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.weather_underground_enabled), str(self.interval_seconds),
-                                str(self.outdoor_sensor), str(self.station_id),
-                                str(self.station_key), str(self.wu_rapid_fire_enabled)]
+
+        self.config_settings = [
+            str(self.weather_underground_enabled), str(self.interval_seconds), str(self.outdoor_sensor),
+            str(self.station_id), str(self.station_key), str(self.wu_rapid_fire_enabled)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:
@@ -103,7 +107,7 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
             self.wu_rapid_fire_enabled = int(self.config_settings[5])
         except Exception as error:
             logger.primary_logger.debug("Weather Underground Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Weather Underground Configuration.")
                 self.save_config_to_file()

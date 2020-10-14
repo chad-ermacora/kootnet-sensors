@@ -16,10 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import random
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules import app_cached_variables
 
 
 class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
@@ -29,19 +29,18 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
         self.valid_setting_count = 38
-        self.config_settings_names = ["Enable MQTT Publisher", "Broker Server Address", "Broker Port #",
-                                      "Enable Authentication", "User Name (Optional)", "Password (Optional)",
-                                      "Seconds Between Reading Posts", "MQTT Quality of Service Level (0-2)",
-                                      "Publish System Uptime", "Publish CPU Temperature",
-                                      "Publish Environmental Temperature", "Publish Pressure", "Publish Altitude",
-                                      "Publish Humidity", "Publish Distance", "Publish GAS",
-                                      "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
-                                      "Publish Ultra Violet", "Publish Accelerometer", "Publish Magnetometer",
-                                      "Publish Gyroscope", "System Uptime Topic", "CPU Temperature Topic",
-                                      "Environmental Temperature Topic", "Pressure Topic", "Altitude Topic",
-                                      "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
-                                      "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic",
-                                      "Magnetometer Topic", "Gyroscope Topic"]
+        self.config_settings_names = [
+            "Enable MQTT Publisher", "Broker Server Address", "Broker Port #", "Enable Authentication",
+            "User Name (Optional)", "Password (Optional)", "Seconds Between Reading Posts",
+            "MQTT Quality of Service Level (0-2)", "Publish System Uptime", "Publish CPU Temperature",
+            "Publish Environmental Temperature", "Publish Pressure", "Publish Altitude", "Publish Humidity",
+            "Publish Distance", "Publish GAS", "Publish Particulate Matter", "Publish Lumen", "Publish Colors",
+            "Publish Ultra Violet", "Publish Accelerometer", "Publish Magnetometer", "Publish Gyroscope",
+            "System Uptime Topic", "CPU Temperature Topic", "Environmental Temperature Topic", "Pressure Topic",
+            "Altitude Topic", "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
+            "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic", "Magnetometer Topic",
+            "Gyroscope Topic"
+        ]
 
         self.enable_mqtt_publisher = 0
         self.broker_address = ""
@@ -69,8 +68,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.accelerometer = 0
         self.magnetometer = 0
         self.gyroscope = 0
-
-        self.mqtt_base_topic = "KS/Default" + str(random.randint(100000, 999999)) + "/"
+        self.mqtt_base_topic = "KS/D" + app_cached_variables.tmp_sensor_id[-6:] + "/"
 
         self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
         self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
@@ -101,6 +99,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the MQTT Publisher configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML MQTT Publisher Configuration Update Check")
+
         self.__init__(load_from_file=False)
         if html_request.form.get("enable_mqtt_publisher") is not None:
             self.enable_mqtt_publisher = 1
@@ -195,44 +194,20 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.enable_mqtt_publisher),
-                                str(self.broker_address),
-                                str(self.broker_server_port),
-                                str(self.enable_broker_auth),
-                                str(self.broker_user),
-                                str(self.broker_password),
-                                str(self.seconds_to_wait),
-                                str(self.mqtt_publisher_qos),
-                                str(self.sensor_uptime),
-                                str(self.system_temperature),
-                                str(self.env_temperature),
-                                str(self.pressure),
-                                str(self.altitude),
-                                str(self.humidity),
-                                str(self.distance),
-                                str(self.gas),
-                                str(self.particulate_matter),
-                                str(self.lumen),
-                                str(self.color),
-                                str(self.ultra_violet),
-                                str(self.accelerometer),
-                                str(self.magnetometer),
-                                str(self.gyroscope),
-                                str(self.sensor_uptime_topic),
-                                str(self.system_temperature_topic),
-                                str(self.env_temperature_topic),
-                                str(self.pressure_topic),
-                                str(self.altitude_topic),
-                                str(self.humidity_topic),
-                                str(self.distance_topic),
-                                str(self.gas_topic),
-                                str(self.particulate_matter_topic),
-                                str(self.lumen_topic),
-                                str(self.color_topic),
-                                str(self.ultra_violet_topic),
-                                str(self.accelerometer_topic),
-                                str(self.magnetometer_topic),
-                                str(self.gyroscope_topic)]
+
+        self.config_settings = [
+            str(self.enable_mqtt_publisher), str(self.broker_address), str(self.broker_server_port),
+            str(self.enable_broker_auth), str(self.broker_user), str(self.broker_password), str(self.seconds_to_wait),
+            str(self.mqtt_publisher_qos), str(self.sensor_uptime), str(self.system_temperature),
+            str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
+            str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
+            str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.sensor_uptime_topic),
+            str(self.system_temperature_topic), str(self.env_temperature_topic), str(self.pressure_topic),
+            str(self.altitude_topic), str(self.humidity_topic), str(self.distance_topic), str(self.gas_topic),
+            str(self.particulate_matter_topic), str(self.lumen_topic), str(self.color_topic),
+            str(self.ultra_violet_topic), str(self.accelerometer_topic), str(self.magnetometer_topic),
+            str(self.gyroscope_topic)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

@@ -38,7 +38,7 @@ def html_edit_online_services_open_sense_map():
         return_text = "Open Sense Map Configuration Saved"
         if app_config_access.open_sense_map_config.open_sense_map_enabled:
             return_text = get_restart_service_text("Open Sense Map")
-            if app_cached_variables.open_sense_map_thread is not None:
+            if app_cached_variables.open_sense_map_thread != "Disabled":
                 if app_cached_variables.open_sense_map_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_open_sense_map_thread = True
                 else:
@@ -49,10 +49,10 @@ def html_edit_online_services_open_sense_map():
             if app_cached_variables.open_sense_map_thread is not None:
                 app_cached_variables.open_sense_map_thread.shutdown_thread = True
                 app_cached_variables.restart_open_sense_map_thread = True
-        return message_and_return(return_text, url="/ConfigurationsHTML")
+        return message_and_return(return_text, url="/3rdPartyConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Open Sense Map set Error")
-        return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+        return message_and_return("Bad Configuration POST Request", url="/3rdPartyConfigurationsHTML")
 
 
 @html_config_osm_routes.route("/OnlineServicesRegisterSensorOSM", methods=["POST"])
@@ -73,10 +73,10 @@ def html_online_services_register_sensor_osm():
             message2 = "Login Failed - Bad UserName or Password"
         else:
             message2 = "Unknown Error: " + status
-        return message_and_return(message1, text_message2=message2, url="/ConfigurationsHTML")
+        return message_and_return(message1, text_message2=message2, url="/3rdPartyConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Register Sensor with Open Sense Map Error")
-        return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+        return message_and_return("Bad Configuration POST Request", url="/3rdPartyConfigurationsHTML")
 
 
 def get_config_osm_tab():
@@ -87,7 +87,7 @@ def get_config_osm_tab():
             osm_enable_checked = "checked"
             osm_disabled = ""
         return render_template("edit_configurations/config_open_sense_map.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/3rdPartyConfigurationsHTML",
                                CheckedOSMEnabled=osm_enable_checked,
                                OSMDisabled=osm_disabled,
                                OSMStationID=app_config_access.open_sense_map_config.sense_box_id,

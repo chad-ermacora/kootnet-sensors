@@ -36,25 +36,13 @@ def html_set_config_mqtt_publisher():
         try:
             app_config_access.mqtt_publisher_config.update_with_html_request(request)
             app_config_access.mqtt_publisher_config.save_config_to_file()
-            return_text = "MQTT Publisher Configuration Saved"
-            if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
-                return_text = get_restart_service_text("MQTT Publisher")
-                if app_cached_variables.mqtt_publisher_thread is not None:
-                    if app_cached_variables.mqtt_publisher_thread.monitored_thread.is_alive():
-                        app_cached_variables.restart_mqtt_publisher_thread = True
-                    else:
-                        start_mqtt_publisher_server()
-                else:
-                    start_mqtt_publisher_server()
-            else:
-                if app_cached_variables.mqtt_publisher_thread is not None:
-                    app_cached_variables.mqtt_publisher_thread.shutdown_thread = True
-                    app_cached_variables.restart_mqtt_publisher_thread = True
-            return_page = message_and_return(return_text, url="/ConfigurationsHTML")
+            return_text = get_restart_service_text("MQTT Publisher")
+            app_cached_variables.restart_mqtt_publisher_thread = True
+            return_page = message_and_return(return_text, url="/MQTTConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Publisher Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MQTTConfigurationsHTML")
 
 
 def get_config_mqtt_publisher_tab():
@@ -85,7 +73,7 @@ def get_config_mqtt_publisher_tab():
         magnetometer = app_config_access.mqtt_publisher_config.magnetometer
         gyroscope = app_config_access.mqtt_publisher_config.gyroscope
         return render_template("edit_configurations/config_mqtt_publisher.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MQTTConfigurationsHTML",
                                MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic,
                                MQTTPublisherChecked=get_html_checkbox_state(enable_mqtt_publisher),
                                MQTTBrokerAddress=app_config_access.mqtt_publisher_config.broker_address,

@@ -39,6 +39,7 @@ class CreateLSM303D:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni LSM303D Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_lsm303d = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
@@ -64,4 +65,4 @@ class CreateLSM303D:
             mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
             logger.sensors_logger.error("Pimoroni LSM303D Magnetometer XYZ - Failed: " + str(error))
         self.sensor_in_use = False
-        return round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)
+        return [round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)]

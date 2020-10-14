@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
+from sensor_recording_modules import recording_interval
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -37,18 +38,19 @@ def html_set_installed_sensors():
             app_config_access.installed_sensors.update_with_html_request(request)
             app_config_access.installed_sensors.save_config_to_file()
             sensor_access.sensors_direct.__init__()
-            return_page = message_and_return("Installed Sensors Set & Re-Initialized", url="/ConfigurationsHTML")
+            recording_interval.available_sensors.__init__()
+            return_page = message_and_return("Installed Sensors Set & Re-Initialized", url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Installed Sensors - Error: " + str(error))
-            return message_and_return("Bad Installed Sensors POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Installed Sensors POST Request", url="/MainConfigurationsHTML")
 
 
 def get_config_installed_sensors_tab():
     try:
         installed_sensors = app_config_access.installed_sensors
         return render_template("edit_configurations/config_installed_sensors.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
                                KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
                                RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),
@@ -71,7 +73,8 @@ def get_config_installed_sensors_tab():
                                Pimoroni11x7LEDMatrix=get_html_checkbox_state(installed_sensors.pimoroni_matrix_11x7),
                                PimoroniSPILCD10_96=get_html_checkbox_state(installed_sensors.pimoroni_st7735),
                                PimoroniMonoOLED128x128BW=get_html_checkbox_state(installed_sensors.pimoroni_mono_oled_luma),
-                               SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30))
+                               SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30),
+                               W1ThermSensor=get_html_checkbox_state(installed_sensors.w1_therm_sensor))
     except Exception as error:
         logger.network_logger.error("Error building Installed Sensors configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="installed-sensors-tab")

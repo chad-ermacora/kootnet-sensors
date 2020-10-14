@@ -18,6 +18,7 @@
 """
 import time
 from threading import Thread
+from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -28,6 +29,9 @@ from operations_modules.app_generic_functions import get_response_bg_colour, get
     get_file_content, check_for_port_in_address, get_ip_and_port_split
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
+from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
@@ -82,6 +86,9 @@ class CreateReplacementVariables:
     def report_config(self, ip_address):
         try:
             get_config_command = self.remote_sensor_commands.sensor_configuration_file
+            get_interval_config_command = self.remote_sensor_commands.interval_configuration_file
+            get_high_low_config_command = self.remote_sensor_commands.high_low_trigger_configuration_file
+            get_variance_config_command = self.remote_sensor_commands.variance_config_file
             get_display_config = self.remote_sensor_commands.display_configuration_file
             command_installed_sensors = self.remote_sensor_commands.installed_sensors_file
             command_config_os_wu = self.remote_sensor_commands.weather_underground_config_file
@@ -137,6 +144,18 @@ class CreateReplacementVariables:
             installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
             installed_sensors_config.set_config_with_str(installed_sensors_raw)
 
+            interval_config_raw = get_http_sensor_reading(ip_address, command=get_interval_config_command)
+            interval_config = CreateIntervalRecordingConfiguration(load_from_file=False)
+            interval_config.set_config_with_str(interval_config_raw)
+
+            high_low_trigger_config_raw = get_http_sensor_reading(ip_address, command=get_high_low_config_command)
+            high_low_trigger_config = CreateTriggerHighLowConfiguration(load_from_file=False)
+            high_low_trigger_config.set_config_with_str(high_low_trigger_config_raw)
+
+            variance_trigger_config_raw = get_http_sensor_reading(ip_address, command=get_variance_config_command)
+            variance_trigger_config = CreateTriggerVariancesConfiguration(load_from_file=False)
+            variance_trigger_config.set_config_with_str(variance_trigger_config_raw)
+
             luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
             luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
             luftdaten_config.set_config_with_str(luftdaten_config_raw)
@@ -155,12 +174,16 @@ class CreateReplacementVariables:
                 rpi_model_name = "Raspberry Pi"
             installed_sensors_config.config_settings_names[2] = rpi_model_name
 
-            text_debug = str(self.get_enabled_disabled_text(sensors_config.enable_debug_logging))
-            text_display = str(self.get_enabled_disabled_text(display_config.enable_display))
-            text_interval_recording = str(self.get_enabled_disabled_text(sensors_config.enable_interval_recording))
-            text_interval_seconds = str(sensors_config.sleep_duration_interval)
-            text_trigger_recording = str(self.get_enabled_disabled_text(sensors_config.enable_trigger_recording))
-            text_custom_temperature = str(self.get_enabled_disabled_text(sensors_config.enable_custom_temp))
+            text_debug = self.get_enabled_disabled_text(sensors_config.enable_debug_logging)
+            text_checkin = self.get_enabled_disabled_text(sensors_config.enable_checkin)
+            text_display = self.get_enabled_disabled_text(display_config.enable_display)
+            text_interval_recording = self.get_enabled_disabled_text(interval_config.enable_interval_recording)
+            text_interval_seconds = str(interval_config.sleep_duration_interval)
+            text_trigger_recording = self.get_enabled_disabled_text(variance_trigger_config.enable_trigger_variance)
+            enable_high_low_trigger_recording = high_low_trigger_config.enable_high_low_trigger_recording
+            text_trigger_recording += " / " + self.get_enabled_disabled_text(enable_high_low_trigger_recording)
+            text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp) + " / "
+            text_custom_temperature += self.get_enabled_disabled_text(sensors_config.enable_temperature_comp_factor)
 
             wifi_network_colour = "orangered"
             if len(wifi_ssid) > 0:
@@ -170,36 +193,42 @@ class CreateReplacementVariables:
             if sensors_config.enable_debug_logging:
                 debug_colour = "lightgreen"
 
+            checkin_colour = "#F4A460"
+            if sensors_config.enable_checkin:
+                checkin_colour = "lightgreen"
+
             display_colour = "#F4A460"
             if display_config.enable_display:
                 display_colour = "lightgreen"
 
             interval_recording_colour = "#F4A460"
-            if sensors_config.enable_interval_recording:
+            if interval_config.enable_interval_recording:
                 interval_recording_colour = "lightgreen"
 
             trigger_recording_colour = "#F4A460"
-            if sensors_config.enable_trigger_recording:
+            if variance_trigger_config.enable_trigger_variance or \
+                    high_low_trigger_config.enable_high_low_trigger_recording:
                 trigger_recording_colour = "lightgreen"
 
             temp_offset_colour = "#F4A460"
-            if sensors_config.enable_custom_temp:
+            if sensors_config.enable_custom_temp or sensors_config.enable_temperature_comp_factor:
                 temp_offset_colour = "lightgreen"
 
             value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
+                             [text_checkin, "{{ SensorCheckin }}"],
                              [text_display, "{{ Display }}"],
                              [text_interval_recording, "{{ IntervalRecording }}"],
                              [text_interval_seconds, "{{ IntervalSeconds }}"],
                              [text_trigger_recording, "{{ TriggerRecording }}"],
-                             [text_custom_temperature, "{{ EnableTemperatureOffset }}"],
-                             [str(sensors_config.temperature_offset), "{{ TemperatureOffset }}"],
+                             [text_custom_temperature, "{{ TemperatureOffset }}"],
                              [wifi_ssid, "{{ WifiNetwork }}"],
                              [weather_underground_enabled, "{{ WeatherUnderground }}"],
                              [luftdaten_enabled, "{{ Luftdaten }}"],
                              [open_sense_map_enabled, "{{ OpenSenseMap }}"],
                              [wifi_network_colour, "{{ WifiNetworkColour }}"],
                              [debug_colour, "{{ DebugLoggingColour }}"],
+                             [checkin_colour, "{{ CheckinColour }}"],
                              [display_colour, "{{ DisplayColour }}"],
                              [interval_recording_colour, "{{ IntervalRecordingColour }}"],
                              [trigger_recording_colour, "{{ TriggerRecordingColour }}"],
@@ -207,7 +236,8 @@ class CreateReplacementVariables:
                              [weather_underground_colour, "{{ WeatherUndergroundColour }}"],
                              [luftdaten_colour, "{{ LuftdatenColour }}"],
                              [open_sense_map_colour, "{{ OpenSenseMapColour }}"],
-                             [installed_sensors_config.get_installed_names_str(), "{{ InstalledSensors }}"]]
+                             [installed_sensors_config.get_installed_names_str(skip_root_check=True),
+                              "{{ InstalledSensors }}"]]
             return value_replace
         except Exception as error:
             log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Config Report Failed: " + str(error)
@@ -253,7 +283,7 @@ class CreateReplacementVariables:
             return ""
 
 
-def get_online_report(ip_address, report_type="systems_report"):
+def get_online_report(ip_address, data_queue, report_type="systems_report"):
     report_type_config = app_config_access.sensor_control_config.radio_report_config
     report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
     report_type_latency_sensors = app_config_access.sensor_control_config.radio_report_sensors_latency
@@ -291,60 +321,65 @@ def get_online_report(ip_address, report_type="systems_report"):
                 else:
                     sensor_report = sensor_report.replace(command_and_replacement[1], command_and_replacement[0])
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
-            if report_type == report_type_config:
-                app_cached_variables.data_queue2.put([sensor_name, sensor_report])
-            elif report_type == report_type_latency_sensors or report_type == report_type_test_sensors:
-                app_cached_variables.data_queue3.put([sensor_name, sensor_report])
-            else:
-                app_cached_variables.data_queue.put([sensor_name, sensor_report])
+            data_queue.put([sensor_name, sensor_report])
     except Exception as error:
         log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
         logger.network_logger.warning(log_msg)
+        data_queue.put([ip_address, "Failed"])
 
 
-def get_sensor_control_report(address_list, report_type="systems_report"):
+def generate_sensor_control_report(address_list, report_type="systems_report"):
     """
     Returns a HTML report based on report_type and sensor addresses provided (IP or DNS addresses as a list).
     Default: systems_report
     """
-    config_report = app_config_access.sensor_control_config.radio_report_config
-    sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-    latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
-    html_sensor_report_end = html_report_system_end
-
     new_report = html_report_system_start
-    if report_type == config_report:
+    html_sensor_report_end = html_report_system_end
+    if report_type == app_config_access.sensor_control_config.radio_report_system:
+        app_cached_variables.creating_system_report = True
+    if report_type == app_config_access.sensor_control_config.radio_report_config:
+        app_cached_variables.creating_config_report = True
         new_report = html_report_config_start
         html_sensor_report_end = html_report_config_end
-    elif report_type == sensors_report:
+    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
+        app_cached_variables.creating_readings_report = True
         new_report = html_report_sensors_test_start
         html_sensor_report_end = html_report_sensors_test_end
-    elif report_type == latency_report:
+    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
+        app_cached_variables.creating_latency_report = True
         new_report = html_report_sensors_latency_start
         html_sensor_report_end = html_report_sensors_test_end
     new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
 
+    data_queue = Queue()
     sensor_reports = []
     threads = []
     for address in address_list:
-        threads.append(Thread(target=get_online_report, args=[address, report_type]))
+        threads.append(Thread(target=get_online_report, args=[address, data_queue, report_type]))
     for thread in threads:
         thread.start()
     for thread in threads:
         thread.join()
 
-    data_queue = app_cached_variables.data_queue
-    if report_type == config_report:
-        data_queue = app_cached_variables.data_queue2
-    if report_type == sensors_report or report_type == latency_report:
-        data_queue = app_cached_variables.data_queue3
     while not data_queue.empty():
         sensor_reports.append(data_queue.get())
         data_queue.task_done()
 
     sensor_reports.sort()
+
     for report in sensor_reports:
         new_report += str(report[1])
     new_report += html_sensor_report_end
-    return new_report
 
+    if report_type == app_config_access.sensor_control_config.radio_report_config:
+        app_cached_variables.html_config_report = new_report
+        app_cached_variables.creating_config_report = False
+    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
+        app_cached_variables.html_readings_report = new_report
+        app_cached_variables.creating_readings_report = False
+    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
+        app_cached_variables.html_latency_report = new_report
+        app_cached_variables.creating_latency_report = False
+    else:
+        app_cached_variables.html_system_report = new_report
+        app_cached_variables.creating_system_report = False

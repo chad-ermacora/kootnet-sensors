@@ -66,11 +66,11 @@ def html_set_config_mqtt_subscriber():
                 restart_mqtt_subscriber_server()
             else:
                 stop_mqtt_subscriber_server()
-            return_page = message_and_return(return_text, url="/ConfigurationsHTML")
+            return_page = message_and_return(return_text, url="/MQTTConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Subscriber Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MQTTConfigurationsHTML")
 
 
 @html_config_mqtt_subscriber_routes.route("/ClearMQTTSubscriberLog")
@@ -101,7 +101,7 @@ def get_config_mqtt_subscriber_tab():
             csv_mqtt_topics += topic + ","
         csv_mqtt_topics = csv_mqtt_topics[:-1]
         return render_template("edit_configurations/config_mqtt_subscriber.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MQTTConfigurationsHTML",
                                MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
                                MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),

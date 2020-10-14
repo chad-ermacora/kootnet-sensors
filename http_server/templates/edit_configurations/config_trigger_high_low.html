@@ -1,0 +1,961 @@
+<br>
+<form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;">
+    <fieldset style="text-align: center;">
+        <h2>
+            <u><strong><a style="color: black;" href="{{ PageURL }}">High/Low Triggers</a></strong></u><br>
+            <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line4_4" target="_blank">
+                Click Here for Help
+            </a>
+            <hr>
+        </h2>
+
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                type="button" onclick="window.location.href = '/SetRecommendedTriggerHighLowSeconds';">
+            Set Seconds to Recommended
+        </button>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                type="button" onclick="window.location.href = '/SetLowestTriggerHighLowSeconds';">
+            Set Seconds to Lowest
+        </button>
+
+        <br>
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block;">
+            <label class="container_checkbox">
+                <input type="checkbox" name="checkbox_enable_high_low_trigger_recording"
+                       value="" {{ CheckedEnableHLTRecording }}>
+                Enable High/Low Trigger Recording
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+        <hr>
+
+        <h3>Per Sensor Settings</h3>
+
+        <div class="mui-row" style="alignment: center;">
+            <div class="mui-col-md-4">
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="checkbox_cpu_temperature"
+                               value="" {{ CheckedCPUTemperature }}>
+                        CPU Temperature
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_cpu_temperature"
+                               value="{{ TriggerLowCPUTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_cpu_temperature"
+                               value="{{ TriggerHighCPUTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_cpu_temperature"
+                               value="{{ SecondsCPUTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="pressure" value="" {{ CheckedPressure }}>
+                        Pressure
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_pressure"
+                               value="{{ TriggerLowPressure }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_pressure"
+                               value="{{ TriggerHighPressure }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_pressure"
+                               value="{{ SecondsPressure }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="humidity" value="" {{ CheckedHumidity }}>
+                        Humidity
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_humidity"
+                               value="{{ TriggerLowHumidity }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_humidity"
+                               value="{{ TriggerHighHumidity }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_humidity"
+                               value="{{ SecondsHumidity }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="gas" value="" {{ CheckedGas }}>
+                        Gas
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Index Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_index"
+                               value="{{ TriggerLowGasIndex }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Index High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_index"
+                               value="{{ TriggerHighGasIndex }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Oxidising Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
+                               value="{{ TriggerLowGasOxidising }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Oxidising High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
+                               value="{{ TriggerHighGasOxidising }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Reducing Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_reducing"
+                               value="{{ TriggerLowGasReducing }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Reducing High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_reducing"
+                               value="{{ TriggerHighGasReducing }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        NH3 Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_gas_nh3"
+                               value="{{ TriggerLowGasNH3 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        NH3 High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_gas_nh3"
+                               value="{{ TriggerHighGasNH3 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_gas"
+                               value="{{ SecondsGas }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="particulate_matter" value="" {{ CheckedPM }}>
+                        Particulate Matter
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        PM1 Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_pm1"
+                               value="{{ TriggerLowPM1 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        PM1 High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_pm1"
+                               value="{{ TriggerHighPM1 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM2.5 Low Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm2_5"
+                               value="{{ TriggerLowPM25 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM2.5 High Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm2_5"
+                               value="{{ TriggerHighPM25 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM4 Low Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm4"
+                               value="{{ TriggerLowPM4 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM4 High Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm4"
+                               value="{{ TriggerHighPM4 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM10 Low Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm10"
+                               value="{{ TriggerLowPM10 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">
+                        PM10 High Trigger<br>
+                        <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm10"
+                               value="{{ TriggerHighPM10 }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_pm"
+                               value="{{ SecondsPM }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="accelerometer" value="" {{ CheckedAccelerometer }}>
+                        Accelerometer
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_accelerometer_x"
+                               value="{{ TriggerLowAccelerometerX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_accelerometer_x"
+                               value="{{ TriggerHighAccelerometerX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_accelerometer_y"
+                               value="{{ TriggerLowAccelerometerY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_accelerometer_y"
+                               value="{{ TriggerHighAccelerometerY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_accelerometer_z"
+                               value="{{ TriggerLowAccelerometerZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_accelerometer_z"
+                               value="{{ TriggerHighAccelerometerZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_accelerometer"
+                               value="{{ SecondsAccelerometer }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="magnetometer" value="" {{ CheckedMagnetometer }}>
+                        Magnetometer
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_magnetometer_x"
+                               value="{{ TriggerLowMagnetometerX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_magnetometer_x"
+                               value="{{ TriggerHighMagnetometerX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_magnetometer_y"
+                               value="{{ TriggerLowMagnetometerY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_magnetometer_y"
+                               value="{{ TriggerHighMagnetometerY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_magnetometer_z"
+                               value="{{ TriggerLowMagnetometerZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_magnetometer_z"
+                               value="{{ TriggerHighMagnetometerZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_magnetometer"
+                               value="{{ SecondsMagnetometer }}">
+                    </label>
+                </div>
+            </div>
+
+            <div class="mui-col-md-4">
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="env_temperature" value="" {{ CheckedEnvTemperature }}>
+                        Environmental Temperature
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_env_temperature"
+                               value="{{ TriggerLowEnvTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_env_temperature"
+                               value="{{ TriggerHighEnvTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_env_temperature"
+                               value="{{ SecondsEnvTemperature }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="altitude" value="" {{ CheckedAltitude }}>
+                        Altitude
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_altitude"
+                               value="{{ TriggerLowAltitude }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_altitude"
+                               value="{{ TriggerHighAltitude }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_altitude"
+                               value="{{ SecondsAltitude }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="distance" value="" {{ CheckedDistance }}>
+                        Distance
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_distance"
+                               value="{{ TriggerLowDistance }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_distance"
+                               value="{{ TriggerHighDistance }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_distance"
+                               value="{{ SecondsDistance }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="lumen" value="" {{ CheckedLumen }}>
+                        Lumen
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_lumen"
+                               value="{{ TriggerLowLumen }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_lumen"
+                               value="{{ TriggerHighLumen }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_lumen"
+                               value="{{ SecondsLumen }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="colour" value="" {{ CheckedColour }}>
+                        Colour
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Red Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_red"
+                               value="{{ TriggerLowRed }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Red High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_red"
+                               value="{{ TriggerHighRed }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Orange Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_orange"
+                               value="{{ TriggerLowOrange }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Orange High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_orange"
+                               value="{{ TriggerHighOrange }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Yellow Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_yellow"
+                               value="{{ TriggerLowYellow }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Yellow High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_yellow"
+                               value="{{ TriggerHighYellow }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Green Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_green"
+                               value="{{ TriggerLowGreen }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Green High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_green"
+                               value="{{ TriggerHighGreen }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Blue Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_blue"
+                               value="{{ TriggerLowBlue }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Blue High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_blue"
+                               value="{{ TriggerHighBlue }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Violet Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_violet"
+                               value="{{ TriggerLowViolet }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Violet High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_violet"
+                               value="{{ TriggerHighViolet }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_colour"
+                               value="{{ SecondsColour }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }}>
+                        Ultra Violet
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        UVA Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
+                               value="{{ TriggerLowUltraVioletA }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        UVA High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
+                               value="{{ TriggerHighUltraVioletA }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        UVB Low Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
+                               value="{{ TriggerLowUltraVioletB }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        UVB High Trigger<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
+                               value="{{ TriggerHighUltraVioletB }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_ultra_violet"
+                               value="{{ SecondsUltraViolet }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-checkbox" style="display: inline-block;">
+                    <label class="container_checkbox">
+                        <input type="checkbox" name="gyroscope" value="" {{ CheckedGyroscope }}>
+                        Gyroscope
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_gyroscope_x"
+                               value="{{ TriggerLowGyroscopeX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        X High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_gyroscope_x"
+                               value="{{ TriggerHighGyroscopeX }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_gyroscope_y"
+                               value="{{ TriggerLowGyroscopeY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Y High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_gyroscope_y"
+                               value="{{ TriggerHighGyroscopeY }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z Low Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_low_gyroscope_z"
+                               value="{{ TriggerLowGyroscopeZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Z High Trigger<br>
+                        <input style="width: 75px" type="number" step="any" name="trigger_high_gyroscope_z"
+                               value="{{ TriggerHighGyroscopeZ }}">
+                    </label>
+                </div>
+
+                <br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">
+                        Seconds between readings<br>
+                        <input style="width: 75px" type="number" min=0 step="any" name="seconds_gyroscope"
+                               value="{{ SecondsGyroscope }}">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <button type="submit" class="mui-btn mui-btn--raised" formaction="/EditTriggerHighLow">Update</button>
+    </fieldset>
+</form>

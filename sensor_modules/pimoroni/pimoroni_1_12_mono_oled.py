@@ -44,6 +44,7 @@ class CreateLumaOLED:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni 1.12 Mono OLED (128x128) Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_mono_oled_luma = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def _display_timed_off(self):
         while True:

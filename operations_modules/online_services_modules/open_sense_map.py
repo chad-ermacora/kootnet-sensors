@@ -94,7 +94,7 @@ def _open_sense_map_server():
                 if lumen_reading != no_sensor_present and osm_config.lumen_id != "":
                     body_json[osm_config.lumen_id] = lumen_reading
 
-                pm_readings = sensor_access.get_particulate_matter()
+                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
                 if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
                     if database_variables.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
                         pm1 = pm_readings[database_variables.particulate_matter_1]

@@ -95,8 +95,6 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
                         logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
         db_connection.close()
-        # TODO: Move VACUUM to a button instead of auto doing?
-        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
         return True
     except Exception as error:
@@ -115,19 +113,18 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
 
         create_table_and_datetime(database_variables.table_interval, db_cursor)
         create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        for column_intervals, column_trigger in zip(database_variables.get_sensor_columns_list(),
-                                                    database_variables.get_sensor_columns_list()):
-            interval_response = check_sql_table_and_column(database_variables.table_interval, column_intervals,
-                                                           db_cursor)
-            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column_trigger, db_cursor)
-            if interval_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-            if trigger_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
+        for column in database_variables.get_sensor_columns_list():
+            interval_response = check_sql_table_and_column(database_variables.table_interval, column, db_cursor)
+            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column, db_cursor)
+            for response in [interval_response, trigger_response]:
+                if response:
+                    columns_created += 1
+                else:
+                    columns_already_made += 1
+        if check_sql_table_and_column(database_variables.table_trigger, database_variables.trigger_state, db_cursor):
+            columns_created += 1
+        else:
+            columns_already_made += 1
 
         create_table_and_datetime(database_variables.table_other, db_cursor)
         for column_other in database_variables.get_other_columns_list():
@@ -141,8 +138,6 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         db_connection.close()
         debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
         logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
-        # TODO: Put the VACUUM as a button under advanced other?
-        # write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
         logger.primary_logger.debug("Checks on Main Database Complete")
         return True
     except Exception as error:
@@ -199,9 +194,9 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
     db_connection.commit()
     db_connection.close()
 
-    log_msg1 = "Full Integrity Check ran on "
+    log_msg1 = " - Full Integrity Check ran on "
     if quick:
-        log_msg1 = "Quick Integrity Check ran on "
+        log_msg1 = " - Quick Integrity Check ran on "
     integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
     logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
 

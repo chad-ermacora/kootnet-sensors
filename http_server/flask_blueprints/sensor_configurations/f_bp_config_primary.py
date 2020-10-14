@@ -18,14 +18,11 @@
 """
 from flask import Blueprint, render_template, request
 from operations_modules import logger
-from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_disabled_state, \
-    message_and_return
+from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
 html_config_primary_routes = Blueprint("html_config_primary_routes", __name__)
-running_with_root = app_cached_variables.running_with_root
 
 
 @html_config_primary_routes.route("/EditConfigMain", methods=["POST"])
@@ -36,37 +33,32 @@ def html_set_config_main():
         try:
             app_config_access.primary_config.update_with_html_request(request)
             app_config_access.primary_config.save_config_to_file()
-            page_msg = "Config Set, Please Restart Program"
-            app_cached_variables.html_service_restart = True
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            page_msg = "Main Configuration Set & Applied"
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Configuration POST Request", url="/MainConfigurationsHTML")
 
 
 def get_config_primary_tab():
     try:
         debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-        interval_recording = get_html_checkbox_state(app_config_access.primary_config.enable_interval_recording)
-        trigger_recording = get_html_checkbox_state(app_config_access.primary_config.enable_trigger_recording)
+        sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
         custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
         custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
-
         return render_template("edit_configurations/config_primary.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/MainConfigurationsHTML",
                                IPWebPort=app_config_access.primary_config.web_portal_port,
                                CheckedDebug=debug_logging,
-                               CheckedInterval=interval_recording,
-                               DisabledIntervalDelay=get_html_disabled_state(interval_recording),
-                               IntervalDelay=float(app_config_access.primary_config.sleep_duration_interval),
-                               CheckedTrigger=trigger_recording,
+                               HourOffset=app_config_access.primary_config.utc0_hour_offset,
+                               CheckedSensorCheckIns=sensor_check_ins,
+                               CheckinHours=app_config_access.primary_config.checkin_wait_in_hours,
+                               CheckinAddress=app_config_access.primary_config.checkin_url,
                                CheckedCustomTempOffset=custom_temp_offset,
-                               DisabledCustomTempOffset=get_html_disabled_state(custom_temp_offset),
                                temperature_offset=float(app_config_access.primary_config.temperature_offset),
                                CheckedCustomTempComp=custom_temp_comp,
-                               CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor),
-                               DisabledCustomTempComp=get_html_disabled_state(custom_temp_comp))
+                               CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor))
     except Exception as error:
         logger.network_logger.error("Error building Primary configuration page: " + str(error))
         return render_template("edit_configurations/config_load_error.html", TabID="primary-config-tab")

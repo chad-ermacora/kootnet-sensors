@@ -2,15 +2,23 @@
     <form id="mqtt-form" class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
           action="/EditConfigMQTTSubscriber">
         <fieldset style="text-align: center;">
-            <h3><u><strong><a style="color: black;" href="{{ PageURL }}">MQTT Subscriber Configuration</a></strong></u></h3>
+            <h3>
+                <u><strong><a style="color: black;" href="http://mqtt.org/" target="_blank">
+                    MQTT Subscriber Configuration
+                </a></strong></u><br>
+                <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line6_2" target="_blank">
+                    Click Here for Help
+                </a>
+                <hr>
+            </h3>
 
-            <hr>
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="button" onclick="window.open('/MQTTSubscriberView', '_blank');">
+                Click Here to View Subscriber Data Stream
+            </button>
 
-            <h5><b>
-                Subscribe to a
-                <a style="color: black;" href="http://mqtt.org/" target="_blank"><u>MQTT</u></a> Broker
-                <a style="color: black;" href="/MQTTSubscriberView">(View)</a>
-            </b></h5>
+            <br>
+            <br>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -28,6 +36,8 @@
                            value="{{ MQTTBrokerAddress }}">
                 </label>
             </div>
+
+            <br>
 
             <div class="mui-textfield">
                 <label style="color: black;">
@@ -71,6 +81,8 @@
                 </label>
             </div>
 
+            <br>
+
             <div class="mui-textfield">
                 <label style="color: black;">
                     Password (Optional)
@@ -80,16 +92,18 @@
             </div>
 
             <br>
+            <hr>
 
             <label>
-                <a style="color: black;" target="_blank" href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
+                <a style="color: black;" target="_blank"
+                   href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
                     MQTT Topics
                 </a>
                 <br>
                 <i>Add one or more Topics separated by a comma Eg. KS/Sensor1/Temp,KS/Sensor2/Temp</i>
                 <br>
                 <br>
-                <textarea name="subscriber_topics" cols="60" rows="20">{{ SubscriberTopics }}</textarea>
+                <textarea name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
             </label>
             <br>
             <br>

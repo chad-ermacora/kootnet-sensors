@@ -18,12 +18,10 @@
 """
 from operations_modules import logger
 from operations_modules import software_version
-from upgrade_modules.old_configuration_conversions.generic_upgrade_functions import reset_all_silent, \
-    reset_primary_config, reset_installed_sensors
+from upgrade_modules import generic_upgrade_functions
 from upgrade_modules.old_configuration_conversions.alpha_to_beta import upgrade_alpha_to_beta
 from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
-from upgrade_modules.old_configuration_conversions.beta_30_x_to_30_90 import upgrade_beta_30_x_to_30_90
-from upgrade_modules.old_configuration_conversions.beta_30_90_to_30_138 import upgrade_beta_30_90_to_30_138
+from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31
 
 
 def run_configuration_upgrade_checks():
@@ -31,42 +29,46 @@ def run_configuration_upgrade_checks():
      Checks previous written version of the program to the current version.
      If the current version is different, start upgrade functions.
     """
-    logger.primary_logger.debug(" -- Configuration Upgrade Check Starting ...")
+    logger.primary_logger.debug(" - Configuration Upgrade Check Starting ...")
     previous_version = software_version.CreateRefinedVersion(software_version.old_version)
     current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
 
     if previous_version.major_version == "New_Install":
-        logger.primary_logger.info("New Install Detected")
+        logger.primary_logger.info(" - New Install Detected")
         no_changes = False
-        reset_all_silent()
+        generic_upgrade_functions.reset_all_configurations(log_reset=False)
     elif previous_version.major_version == "Unknown":
         logger.primary_logger.warning("Unknown Previous Version Detected")
         no_changes = False
-        reset_installed_sensors()
-        reset_primary_config()
+        generic_upgrade_functions.reset_installed_sensors()
+        generic_upgrade_functions.reset_primary_config()
     else:
         msg = "Old Version: " + software_version.old_version + " || New Version: " + software_version.version
-        logger.primary_logger.info(msg)
+        logger.primary_logger.info(" - " + msg)
 
         if previous_version.major_version == "Beta":
             if previous_version.feature_version > current_version.feature_version:
                 logger.primary_logger.warning("The current version appears to be older then the previous version")
                 log_msg1 = "Configurations compatibility can not be guaranteed, "
-                logger.primary_logger.warning(log_msg1 + "resetting Primary and Installed Sensors Configurations")
+                logger.primary_logger.warning(log_msg1 + "resetting Primary and Installed Sensors configurations")
                 no_changes = False
-                reset_installed_sensors()
-                reset_primary_config()
+                generic_upgrade_functions.reset_installed_sensors()
+                generic_upgrade_functions.reset_primary_config()
+            elif previous_version.feature_version == 31:
+                if previous_version.minor_version < 107:
+                    no_changes = False
+                    generic_upgrade_functions.reset_checkin_config()
+                if previous_version.minor_version < 100:
+                    no_changes = False
+                    generic_upgrade_functions.reset_trigger_high_low_config()
             elif previous_version.feature_version == 30:
-                if previous_version.minor_version < 138:
-                    no_changes = False
-                    upgrade_beta_30_90_to_30_138()
-                if previous_version.minor_version < 90:
-                    no_changes = False
-                    upgrade_beta_30_x_to_30_90()
+                no_changes = False
+                upgrade_beta_30_x_to_31()
             elif previous_version.feature_version == 29:
                 no_changes = False
                 upgrade_beta_29_to_30()
+                upgrade_beta_30_x_to_31()
         elif previous_version.major_version == "Alpha":
             no_changes = False
             upgrade_alpha_to_beta()
@@ -74,10 +76,10 @@ def run_configuration_upgrade_checks():
             msg = "Bad or Missing Previous Version Detected - Resetting Config and Installed Sensors"
             logger.primary_logger.error(msg)
             no_changes = False
-            reset_installed_sensors()
-            reset_primary_config()
+            generic_upgrade_functions.reset_installed_sensors()
+            generic_upgrade_functions.reset_primary_config()
 
     if no_changes:
-        logger.primary_logger.info("No configuration changes detected")
+        logger.primary_logger.info(" - No configuration changes detected")
     software_version.write_program_version_to_file()
     software_version.old_version = software_version.version

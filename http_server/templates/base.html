@@ -224,13 +224,6 @@
 
         <li>
             <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                    onclick="window.location.href = '/MQTTSubscriberView';">
-                MQTT Subscriber
-            </button>
-        </li>
-
-        <li>
-            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
                     onclick="window.location.href = '/SensorNotes';">
                 Notes
             </button>
@@ -238,30 +231,30 @@
 
         <li>
             <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                    onclick="window.location.href = '/PlotlyGraph';">
+                    onclick="window.location.href = '/Graphing';">
                 Graphing
             </button>
         </li>
 
         <li>
             <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                    onclick="window.location.href = '/logout';">
+                    onclick="window.location.href = '/SensorControlManage';">
+                Remote Management
+            </button>
+        </li>
+
+        <li>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="logout()">
                 Logout
             </button>
         </li>
 
         <li>
-            <strong><a style="color: red; font-size: medium;">
-                Remote Management
-            </a></strong>
-            <ul>
-                <li>
-                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                            onclick="window.location.href = '/SensorControlManage';">
-                        Sensor Control
-                    </button>
-                </li>
-            </ul>
+            <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                    onclick="window.open('/SensorUnitHelp.html', '_blank');">
+                Help
+            </button>
         </li>
 
         <li>
@@ -271,14 +264,44 @@
             <ul>
                 <li>
                     <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                            onclick="window.location.href = '/MainConfigurationsHTML';">
+                        Main Configs
+                    </button>
+                </li>
+                <li>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
                             onclick="window.location.href = '/';">
                         Database
                     </button>
                 </li>
                 <li>
                     <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
-                            onclick="window.location.href = '/ConfigurationsHTML';">
-                        Configurations
+                            onclick="window.location.href = '/DisplayConfigurationsHTML';">
+                        Display
+                    </button>
+                </li>
+                <li>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                            onclick="window.location.href = '/EmailConfigurationsHTML';">
+                        Email
+                    </button>
+                </li>
+                <li>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                            onclick="window.location.href = '/CheckinServerConfigurationHTML';">
+                        Checkin Server
+                    </button>
+                </li>
+                <li>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                            onclick="window.location.href = '/MQTTConfigurationsHTML';">
+                        MQTT
+                    </button>
+                </li>
+                <li>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                            onclick="window.location.href = '/3rdPartyConfigurationsHTML';">
+                        3rd Party
                     </button>
                 </li>
                 <li>
@@ -311,9 +334,6 @@
                     Project Homepage</a></li>
                 <li><a style="color: #00B0FF;" href="https://github.com/chad-ermacora/sensor-rp" target="_blank">
                     GitHub Repository</a></li>
-                <li><a style="color: #00B0FF;"
-                       href="/SensorUnitHelp.html" target="_blank">
-                    Sensor Help</a></li>
             </ul>
         </li>
     </ul>
@@ -334,6 +354,12 @@
                 window.location = "/RebootSystem"
             }
         }
+
+        function logout() {
+            window.location= window.location.href.replace(/:\/\//, '://logout@')
+            window.location= "/logout"
+        }
+
     </script>
     <div class="mui-appbar mui--appbar-line-height">
         <div class="mui-container-fluid" style="background-color: black;">
@@ -342,19 +368,23 @@
 
             <a style="color: red; font-size: large;" href="{{ PageURL }}"><b>Refresh Page</b></a>
 
-            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;"><div {{ RestartServiceHidden }}>
-                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
-                        onclick="RestartServiceYesNo();">
-                    Service Restart Required
-                </button>
-            </div></div>
+            <div style="display: inline-block; position: absolute; z-index: 9; right: 10px;">
+                <div {{ RestartServiceHidden }}>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                            onclick="RestartServiceYesNo();">
+                        Service Restart Required
+                    </button>
+                </div>
+            </div>
 
-            <div style="display: inline-block; position: absolute; z-index: 99; right: 10px;"><div {{ RebootSensorHidden }}>
-                <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
-                        onclick="RebootSensorYesNo();">
-                    Sensor Restart Required
-                </button>
-            </div></div>
+            <div style="display: inline-block; position: absolute; z-index: 99; right: 10px;">
+                <div {{ RebootSensorHidden }}>
+                    <button class="mui-btn mui-btn--raised mui--bg-color-deep-orange-900 mui--color-white"
+                            onclick="RebootSensorYesNo();">
+                        Sensor Restart Required
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </header>

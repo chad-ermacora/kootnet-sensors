@@ -144,22 +144,25 @@ def get_last_updated():
 
 def get_sensors_latency():
     """ Returns sensors latency in seconds as a dictionary. """
-    sensor_function_list = [get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
-                            get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
-                            get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz,
-                            get_gyroscope_xyz]
-    sensor_names_list = ["cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
-                         "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
-                         "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"]
+    sensor_function_list = [
+        get_cpu_temperature, get_sensor_temperature, get_pressure, get_altitude, get_humidity,
+        get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
+        get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz
+    ]
+    sensor_names_list = [
+        "cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
+        "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
+        "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"
+    ]
 
-    sensor_latency_list = []
-    for sensor_function in sensor_function_list:
+    sensor_latency_dic = {}
+    for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
         thing = _get_sensor_latency(sensor_function)
         if thing is None:
-            sensor_latency_list.append(None)
+            sensor_latency_dic[sensor_name] = None
         else:
-            sensor_latency_list.append(round(thing, 6))
-    return [sensor_names_list, sensor_latency_list]
+            sensor_latency_dic[sensor_name] = round(thing, 6)
+    return sensor_latency_dic
 
 
 def _get_sensor_latency(sensor_function):
@@ -200,9 +203,13 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
         temperature = sensors_direct.pimoroni_bme680_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         temperature = sensors_direct.rp_sense_hat_a.temperature()
+    elif app_config_access.installed_sensors.w1_therm_sensor:
+        temperature = sensors_direct.w1_therm_sensor_a.temperature()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.temperature()
     else:
+        if get_both:
+            return [no_sensor_present, no_sensor_present]
         return no_sensor_present
 
     new_temp = temperature
@@ -232,6 +239,19 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
     if get_both:
         return [temperature, new_temp]
     return temperature
+
+
+def get_temperature_correction():
+    raw_and_corrected = get_sensor_temperature(get_both=True)
+    temp_difference = 0.0
+    if raw_and_corrected[0] != no_sensor_present:
+        try:
+            temp_difference = raw_and_corrected[1] - raw_and_corrected[0]
+        except Exception as error:
+            logger.sensors_logger.warning("Unable to get Env Temperature Correction amount: " + str(error))
+        return round(temp_difference, 5)
+    else:
+        return temp_difference
 
 
 def get_pressure():
@@ -347,21 +367,33 @@ def get_gas(return_as_dictionary=False):
     return gas_readings
 
 
-def get_particulate_matter():
+def get_particulate_matter(return_as_dictionary=False):
     """ Returns selected Particulate Matter readings in a Dictionary. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus and \
-            app_config_access.installed_sensors.pimoroni_pms5003:
-        pm_readings = sensors_direct.pimoroni_enviroplus_a.particulate_matter_data()
+    if app_config_access.installed_sensors.pimoroni_pms5003:
+        pm_readings = sensors_direct.pimoroni_pms5003_a.particulate_matter_data()
     elif app_config_access.installed_sensors.sensirion_sps30:
         pm_readings = sensors_direct.sensirion_sps30_a.particulate_matter_data()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
     else:
-        return {database_variables.particulate_matter_1: no_sensor_present,
-                database_variables.particulate_matter_2_5: no_sensor_present,
-                database_variables.particulate_matter_4: no_sensor_present,
-                database_variables.particulate_matter_10: no_sensor_present}
-    return pm_readings
+        if return_as_dictionary:
+            return {database_variables.particulate_matter_1: no_sensor_present,
+                    database_variables.particulate_matter_2_5: no_sensor_present,
+                    database_variables.particulate_matter_4: no_sensor_present,
+                    database_variables.particulate_matter_10: no_sensor_present}
+        return no_sensor_present
+    if return_as_dictionary:
+        return pm_readings
+    return_list = []
+    if pm_readings[database_variables.particulate_matter_1] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_1])
+    if pm_readings[database_variables.particulate_matter_2_5] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_2_5])
+    if pm_readings[database_variables.particulate_matter_4] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_4])
+    if pm_readings[database_variables.particulate_matter_10] != no_sensor_present:
+        return_list.append(pm_readings[database_variables.particulate_matter_10])
+    return return_list
 
 
 def get_lumen():

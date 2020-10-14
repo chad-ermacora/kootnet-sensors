@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from threading import Thread
+from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -32,11 +33,14 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, html_sensor_control_config, load_from_file=load_from_file)
         self.config_file_header = "This contains saved values for HTML Sensor Control"
         self.valid_setting_count = 22
-        self.config_settings_names = ["selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2",
-                                      "senor_ip_3", "senor_ip_4", "senor_ip_5", "senor_ip_6", "senor_ip_7",
-                                      "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11", "senor_ip_12",
-                                      "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17",
-                                      "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+        self.config_settings_names = [
+            "selected_action", "selected_send_type", "senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4",
+            "senor_ip_5", "senor_ip_6", "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10", "senor_ip_11",
+            "senor_ip_12", "senor_ip_13", "senor_ip_14", "senor_ip_15", "senor_ip_16", "senor_ip_17", "senor_ip_18",
+            "senor_ip_19", "senor_ip_20"
+        ]
+
+        self.local_queue = Queue()
 
         self.radio_check_status = "online_status"
         self.radio_report_combo = "combo_report"
@@ -86,11 +90,14 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
 
     def get_raw_ip_addresses_as_list(self):
         """ Returns a list of all IP addresses. """
-        current_ip_list = [self.sensor_ip_dns1, self.sensor_ip_dns2, self.sensor_ip_dns3, self.sensor_ip_dns4,
-                           self.sensor_ip_dns5, self.sensor_ip_dns6, self.sensor_ip_dns7, self.sensor_ip_dns8,
-                           self.sensor_ip_dns9, self.sensor_ip_dns10, self.sensor_ip_dns11, self.sensor_ip_dns12,
-                           self.sensor_ip_dns13, self.sensor_ip_dns14, self.sensor_ip_dns15, self.sensor_ip_dns16,
-                           self.sensor_ip_dns17, self.sensor_ip_dns18, self.sensor_ip_dns19, self.sensor_ip_dns20]
+
+        current_ip_list = [
+            self.sensor_ip_dns1, self.sensor_ip_dns2, self.sensor_ip_dns3, self.sensor_ip_dns4, self.sensor_ip_dns5,
+            self.sensor_ip_dns6, self.sensor_ip_dns7, self.sensor_ip_dns8, self.sensor_ip_dns9, self.sensor_ip_dns10,
+            self.sensor_ip_dns11, self.sensor_ip_dns12, self.sensor_ip_dns13, self.sensor_ip_dns14,
+            self.sensor_ip_dns15, self.sensor_ip_dns16, self.sensor_ip_dns17, self.sensor_ip_dns18,
+            self.sensor_ip_dns19, self.sensor_ip_dns20
+        ]
         return_ip_list = []
         for ip in current_ip_list:
             if ip != "":
@@ -99,6 +106,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
 
     def get_clean_ip_addresses_as_list(self):
         """ Returns a list of verified Online remote sensors based on 'Sensor Controls' current address list. """
+
         raw_ip_list = self.get_raw_ip_addresses_as_list()
         valid_ip_list = []
         online_ip_list = []
@@ -115,29 +123,27 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             for thread in threaded_checks:
                 thread.join()
 
-            while not app_cached_variables.flask_return_data_queue.empty():
-                online_ip_list.append(app_cached_variables.flask_return_data_queue.get())
-                app_cached_variables.flask_return_data_queue.task_done()
+            while not self.local_queue.empty():
+                online_ip_list.append(self.local_queue.get())
+                self.local_queue.task_done()
         except Exception as error:
             logger.network_logger.error("Sensor Control - Error Processing Address List: " + str(error))
         return online_ip_list
 
-    @staticmethod
-    def _check_address(sensor_address):
-        """
-        Checks if a remote sensor is online and if so, saves the results to a queue.
-        Queue located at app_cached_variables.flask_return_data_queue.
-        """
+    def _check_address(self, sensor_address):
+        """ Checks if a remote sensor is online and if so, saves the results to a queue. """
+
         try:
             sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
             if sensor_online_check == "OK":
-                app_cached_variables.flask_return_data_queue.put(sensor_address)
+                self.local_queue.put(sensor_address)
         except Exception as error:
             logger.network_logger.error("Sensor Control - Error Checking Online Status: " + str(error))
 
     def update_with_html_request(self, html_request):
         """ Updates the HTML Sensor Control configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Sensor Control Configuration Update Check")
+
         self.__init__(load_from_file=False)
         try:
             self.selected_action = html_request.form.get(self.config_settings_names[0])
@@ -176,14 +182,15 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
 
     def _update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
-        self.config_settings = [str(self.selected_action), str(self.selected_send_type),
-                                str(self.sensor_ip_dns1), str(self.sensor_ip_dns2), str(self.sensor_ip_dns3),
-                                str(self.sensor_ip_dns4), str(self.sensor_ip_dns5), str(self.sensor_ip_dns6),
-                                str(self.sensor_ip_dns7), str(self.sensor_ip_dns8), str(self.sensor_ip_dns9),
-                                str(self.sensor_ip_dns10), str(self.sensor_ip_dns11), str(self.sensor_ip_dns12),
-                                str(self.sensor_ip_dns13), str(self.sensor_ip_dns14), str(self.sensor_ip_dns15),
-                                str(self.sensor_ip_dns16), str(self.sensor_ip_dns17), str(self.sensor_ip_dns18),
-                                str(self.sensor_ip_dns19), str(self.sensor_ip_dns20)]
+
+        self.config_settings = [
+            str(self.selected_action), str(self.selected_send_type), str(self.sensor_ip_dns1), str(self.sensor_ip_dns2),
+            str(self.sensor_ip_dns3), str(self.sensor_ip_dns4), str(self.sensor_ip_dns5), str(self.sensor_ip_dns6),
+            str(self.sensor_ip_dns7), str(self.sensor_ip_dns8), str(self.sensor_ip_dns9), str(self.sensor_ip_dns10),
+            str(self.sensor_ip_dns11), str(self.sensor_ip_dns12), str(self.sensor_ip_dns13), str(self.sensor_ip_dns14),
+            str(self.sensor_ip_dns15), str(self.sensor_ip_dns16), str(self.sensor_ip_dns17), str(self.sensor_ip_dns18),
+            str(self.sensor_ip_dns19), str(self.sensor_ip_dns20)
+        ]
 
     def _update_variables_from_settings_list(self):
         try:

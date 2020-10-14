@@ -19,7 +19,6 @@
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from flask import Blueprint, render_template, request
-from operations_modules.server_display import start_display_server
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
@@ -35,22 +34,11 @@ def html_set_display_config():
         try:
             app_config_access.display_config.update_with_html_request(request)
             app_config_access.display_config.save_config_to_file()
-            if app_config_access.display_config.enable_display:
-                if app_cached_variables.mini_display_thread is not None:
-                    if app_cached_variables.mini_display_thread.monitored_thread.is_alive():
-                        app_cached_variables.restart_mini_display_thread = True
-                    else:
-                        start_display_server()
-                else:
-                    start_display_server()
-            else:
-                if app_cached_variables.mini_display_thread is not None:
-                    app_cached_variables.mini_display_thread.shutdown_thread = True
-                    app_cached_variables.restart_mini_display_thread = True
-            return message_and_return(get_restart_service_text("Display"), url="/ConfigurationsHTML")
+            app_cached_variables.restart_mini_display_thread = True
+            return message_and_return(get_restart_service_text("Display"), url="/DisplayConfigurationsHTML")
         except Exception as error:
             logger.primary_logger.error("HTML Apply - Display Configuration - Error: " + str(error))
-            return message_and_return("Bad Display Configuration POST Request", url="/ConfigurationsHTML")
+            return message_and_return("Bad Display Configuration POST Request", url="/DisplayConfigurationsHTML")
 
 
 def get_config_display_tab():
@@ -80,7 +68,7 @@ def get_config_display_tab():
         magnetometer = app_config_access.display_config.magnetometer
         gyroscope = app_config_access.display_config.gyroscope
         return render_template("edit_configurations/config_display.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/DisplayConfigurationsHTML",
                                CheckedEnableDisplay=display,
                                DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
                                DisplayNumericalChecked=display_numerical_checked,

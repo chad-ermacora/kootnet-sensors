@@ -42,7 +42,6 @@ def set_http_auth_from_file():
                 app_cached_variables.http_flask_password = auth_file_lines[1].strip()
         except Exception as error:
             logger.primary_logger.error("Problem loading Web Login Credentials - Using Defaults: " + str(error))
-            logger.primary_logger.warning("It is Recommended to change default Login Credentials")
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
             app_cached_variables.http_flask_user = default_http_flask_user
             app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
@@ -50,12 +49,12 @@ def set_http_auth_from_file():
         log_msg = "Web Login Credentials not found, using and saving default of Kootnet/sensors"
         logger.primary_logger.warning(log_msg)
         logger.primary_logger.warning("It is Recommended to change default Login Credentials")
-        save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
+        save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
         app_cached_variables.http_flask_user = default_http_flask_user
         app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
-def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
+def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging_enabled=True):
     """ Saves Web Portal (flask app) login credentials to file. """
     try:
         if len(new_http_flask_user) < min_length_username or len(new_http_flask_password) < min_length_password:
@@ -68,7 +67,8 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password):
             save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
             with open(file_locations.http_auth, "w") as auth_file:
                 auth_file.write(save_data)
-            logger.primary_logger.info("New Web Portal Username & Password Set")
+            if logging_enabled:
+                logger.primary_logger.info("New Web Portal Username & Password Set")
     except Exception as error:
         logger.primary_logger.error("Error saving Flask HTTPS Authentication: " + str(error))
 

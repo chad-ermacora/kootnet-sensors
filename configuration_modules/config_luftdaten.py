@@ -29,7 +29,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
         CreateGeneralConfiguration.__init__(self, file_locations.luftdaten_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 & Disable = 0"
         self.valid_setting_count = 2
-        self.config_settings_names = ["Enable Luftdaten", "Send to Server in Seconds"]
+        self.config_settings_names = ["Enable Luftdaten", "Send to server every (Seconds)"]
 
         self.luftdaten_url = "https://api.luftdaten.info/v1/push-sensor-data/"
         self.madavi_url = "https://api-rrd.madavi.de/data.php"
@@ -40,7 +40,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
         self.interval_seconds = 180
         self.station_id = self._get_cpu_serial()
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             sw_version_text_list = software_version.version.split(".")
             sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
@@ -55,6 +55,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
     def update_with_html_request(self, html_request):
         """ Updates the Luftdaten configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting Luftdaten Configuration Update Check")
+
         self.luftdaten_enabled = 0
         if html_request.form.get("enable_luftdaten") is not None:
             self.luftdaten_enabled = 1
@@ -63,10 +64,11 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
             self.interval_seconds = float(html_request.form.get("station_interval"))
             if self.interval_seconds < 10.0:
                 self.interval_seconds = 10.0
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
+
         self.config_settings = [str(self.luftdaten_enabled), str(self.interval_seconds)]
 
     def _update_variables_from_settings_list(self):
@@ -75,7 +77,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
             self.interval_seconds = float(self.config_settings[1])
         except Exception as error:
             logger.primary_logger.debug("Luftdaten Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Luftdaten Configuration.")
                 self.save_config_to_file()
@@ -83,6 +85,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
     @staticmethod
     def _get_cpu_serial():
         """ Returns Raspberry Pi CPU Serial number. """
+
         try:
             with open('/proc/cpuinfo', 'r') as f:
                 for line in f:

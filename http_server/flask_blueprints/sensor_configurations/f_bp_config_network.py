@@ -110,6 +110,7 @@ def set_custom_ssl():
             os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
             os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
             logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
+            app_cached_variables.html_service_restart = 1
             return message_and_return("Sensor SSL Certificate OK", text_message2=return_message_ok, url="/")
         logger.network_logger.error("Invalid Uploaded SSL Certificate")
         return message_and_return("Sensor SSL Certificate Failed", text_message2=return_message_fail, url="/")

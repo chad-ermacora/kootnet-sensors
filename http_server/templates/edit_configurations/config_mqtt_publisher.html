@@ -10,16 +10,15 @@
     <form id="mqtt-form" class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
           action="/EditConfigMQTTPublisher">
         <fieldset style="text-align: center;">
-            <h3><u><strong>
-                <a style="color: black;" href="{{ PageURL }}">MQTT Publisher Configuration</a>
-            </strong></u></h3>
-
-            <hr>
-
-            <h5><b>
-                Publish (Send) Sensor readings to a
-                <a style="color: black;" href="http://mqtt.org/" target="_blank"><u>MQTT</u></a> Broker
-            </b></h5>
+            <h3>
+                <u><strong><a style="color: black;" href="http://mqtt.org/" target="_blank">
+                    MQTT Publisher Configuration
+                </a></strong></u><br>
+                <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line6_1" target="_blank">
+                    Click Here for Help
+                </a>
+                <hr>
+            </h3>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -31,21 +30,23 @@
 
             <div class="mui-textfield">
                 <label style="color: black;">
-                    Broker Address or IP
-                    <br>
+                    Broker DNS Address or IP<br>
                     <input style="width: 350px;" type="text" maxlength="250" name="publish_broker_address"
                            value="{{ MQTTBrokerAddress }}">
                 </label>
             </div>
 
+            <br>
+
             <div class="mui-textfield">
                 <label style="color: black;">
-                    Broker Port #
-                    <br>
+                    Broker Port #<br>
                     <input style="width: 75px;" type="number" min="1" max="65535" name="publish_broker_port"
                            value="{{ MQTTBrokerPort }}">
                 </label>
             </div>
+
+            <br>
 
             <div class="mui-textfield">
                 <label style="color: black;">
@@ -89,6 +90,8 @@
                 </label>
             </div>
 
+            <br>
+
             <div class="mui-textfield">
                 <label style="color: black;">
                     Password (Optional)
@@ -98,8 +101,9 @@
             </div>
 
             <br>
+            <hr>
 
-            <h3><u><strong>Sensors to Publish</strong></u></h3>
+            <h3>Per Sensors Settings</h3>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">

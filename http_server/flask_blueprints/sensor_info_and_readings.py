@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import strftime
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -33,15 +33,17 @@ html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes",
 @html_sensor_info_readings_routes.route("/index")
 @html_sensor_info_readings_routes.route("/index.html")
 def index():
-    return render_template("index.html",
-                           PageURL="/index",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           HostName=app_cached_variables.hostname,
-                           SQLDatabaseLocation=file_locations.sensor_database,
-                           SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-                           SQLDatabaseSize=sensor_access.get_db_size(),
-                           NumberNotes=sensor_access.get_db_notes_count())
+    return render_template(
+        "index.html",
+        PageURL="/index",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        HostName=app_cached_variables.hostname,
+        SQLDatabaseLocation=file_locations.sensor_database,
+        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
+        SQLDatabaseSize=sensor_access.get_db_size(),
+        NumberNotes=sensor_access.get_db_notes_count()
+    )
 
 
 @html_sensor_info_readings_routes.route("/About")
@@ -51,107 +53,101 @@ def html_system_information():
     if app_config_access.primary_config.enable_debug_logging:
         debug_logging = "Enabled"
 
-    display_enabled = get_text_running_thread_state(app_config_access.display_config.enable_display,
-                                                    app_cached_variables.mini_display_thread)
-
-    interval_recording = get_text_running_thread_state(app_config_access.primary_config.enable_interval_recording,
-                                                       app_cached_variables.interval_recording_thread)
-
-    trigger_recording = "Disabled"
-    enable_trigger_button = "disabled"
-    if app_config_access.primary_config.enable_trigger_recording:
-        trigger_recording = "Enabled"
-        enable_trigger_button = ""
-    if app_config_access.primary_config.enable_trigger_recording:
-        trigger_uptime = get_text_running_thread_state(app_config_access.trigger_variances.sensor_uptime_enabled,
-                                                       app_cached_variables.trigger_thread_sensor_uptime)
-        trigger_cpu_temp = get_text_running_thread_state(app_config_access.trigger_variances.cpu_temperature_enabled,
-                                                         app_cached_variables.trigger_thread_cpu_temp)
-        trigger_env_temp = get_text_running_thread_state(app_config_access.trigger_variances.env_temperature_enabled,
-                                                         app_cached_variables.trigger_thread_env_temp)
-        trigger_pressure = get_text_running_thread_state(app_config_access.trigger_variances.pressure_enabled,
-                                                         app_cached_variables.trigger_thread_pressure)
-        trigger_altitude = get_text_running_thread_state(app_config_access.trigger_variances.altitude_enabled,
-                                                         app_cached_variables.trigger_thread_altitude)
-        trigger_humidity = get_text_running_thread_state(app_config_access.trigger_variances.humidity_enabled,
-                                                         app_cached_variables.trigger_thread_humidity)
-        trigger_distance = get_text_running_thread_state(app_config_access.trigger_variances.distance_enabled,
-                                                         app_cached_variables.trigger_thread_distance)
-        trigger_lumen = get_text_running_thread_state(app_config_access.trigger_variances.lumen_enabled,
-                                                      app_cached_variables.trigger_thread_lumen)
-        trigger_visible_ems = get_text_running_thread_state(app_config_access.trigger_variances.colour_enabled,
-                                                            app_cached_variables.trigger_thread_visible_ems)
-        trigger_accelerometer = get_text_running_thread_state(app_config_access.trigger_variances.accelerometer_enabled,
-                                                              app_cached_variables.trigger_thread_accelerometer)
-        trigger_magnetometer = get_text_running_thread_state(app_config_access.trigger_variances.magnetometer_enabled,
-                                                             app_cached_variables.trigger_thread_magnetometer)
-        trigger_gyroscope = get_text_running_thread_state(app_config_access.trigger_variances.gyroscope_enabled,
-                                                          app_cached_variables.trigger_thread_gyroscope)
-    else:
-        trigger_uptime = get_text_running_thread_state(False, None)
-        trigger_cpu_temp = get_text_running_thread_state(False, None)
-        trigger_env_temp = get_text_running_thread_state(False, None)
-        trigger_pressure = get_text_running_thread_state(False, None)
-        trigger_altitude = get_text_running_thread_state(False, None)
-        trigger_humidity = get_text_running_thread_state(False, None)
-        trigger_distance = get_text_running_thread_state(False, None)
-        trigger_lumen = get_text_running_thread_state(False, None)
-        trigger_visible_ems = get_text_running_thread_state(False, None)
-        trigger_accelerometer = get_text_running_thread_state(False, None)
-        trigger_magnetometer = get_text_running_thread_state(False, None)
-        trigger_gyroscope = get_text_running_thread_state(False, None)
-
-    wu_enabled = app_config_access.weather_underground_config.weather_underground_enabled
-    weather_underground = get_text_running_thread_state(wu_enabled, app_cached_variables.weather_underground_thread)
-
-    luftdaten = get_text_running_thread_state(app_config_access.luftdaten_config.luftdaten_enabled,
-                                              app_cached_variables.luftdaten_thread)
-
-    open_sense_map = get_text_running_thread_state(app_config_access.open_sense_map_config.open_sense_map_enabled,
-                                                   app_cached_variables.open_sense_map_thread)
-
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
 
-    return render_template("sensor_information.html",
-                           PageURL="/SensorInformation",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           HostName=app_cached_variables.hostname,
-                           IPAddress=app_cached_variables.ip,
-                           OSVersion=app_cached_variables.operating_system_name,
-                           KootnetSensorID=app_config_access.primary_config.sensor_checkin_id,
-                           KootnetVersion=software_version.version,
-                           NewStandardKootnetVersion=app_cached_variables.standard_version_available,
-                           NewDevelopmentalKootnetVersion=app_cached_variables.developmental_version_available,
-                           LastUpdated=app_cached_variables.program_last_updated,
-                           DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
-                           SystemUptime=sensor_access.get_uptime_str(),
-                           SensorReboots=app_cached_variables.reboot_count,
-                           CPUTemperature=sensor_access.get_cpu_temperature(),
-                           RAMUsage=sensor_access.get_memory_usage_percent(),
-                           TotalRAM=total_ram_entry,
-                           DiskUsage=sensor_access.get_disk_usage_percent(),
-                           DebugLogging=debug_logging,
-                           SupportedDisplay=display_enabled,
-                           IntervalRecording=interval_recording,
-                           TriggerRecording=trigger_recording,
-                           TriggerButtonDisabled=enable_trigger_button,
-                           TriggerSensorUptime=trigger_uptime,
-                           TriggerCPUTemp=trigger_cpu_temp,
-                           TriggerEnvTemp=trigger_env_temp,
-                           TriggerPressure=trigger_pressure,
-                           TriggerAltitude=trigger_altitude,
-                           TriggerHumidity=trigger_humidity,
-                           TriggerDistance=trigger_distance,
-                           TriggerLumen=trigger_lumen,
-                           TriggerVisibleEMS=trigger_visible_ems,
-                           TriggerAccelerometer=trigger_accelerometer,
-                           TriggerMagnetometer=trigger_magnetometer,
-                           TriggerGyroscope=trigger_gyroscope,
-                           WeatherUndergroundService=weather_underground,
-                           LuftdatenService=luftdaten,
-                           OpenSenseMapService=open_sense_map,
-                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
+    enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
+    enable_trigger_recording = app_config_access.trigger_variances.enable_trigger_variance
+
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+
+    return render_template(
+        "sensor_information.html",
+        PageURL="/SensorInformation",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        HostName=app_cached_variables.hostname,
+        IPAddress=app_cached_variables.ip,
+        OSVersion=app_cached_variables.operating_system_name,
+        KootnetSensorID=app_config_access.primary_config.sensor_id,
+        KootnetVersion=software_version.version,
+        NewStandardKootnetVersion=app_cached_variables.standard_version_available,
+        NewDevelopmentalKootnetVersion=app_cached_variables.developmental_version_available,
+        LastUpdated=app_cached_variables.program_last_updated,
+        DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
+        SystemUptime=sensor_access.get_uptime_str(),
+        SensorReboots=app_cached_variables.reboot_count,
+        CPUTemperature=sensor_access.get_cpu_temperature(),
+        RAMUsage=sensor_access.get_memory_usage_percent(),
+        TotalRAM=total_ram_entry,
+        DiskUsage=sensor_access.get_disk_usage_percent(),
+        InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
+        IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
+        TriggerHighLowRecording=_get_text_check_enabled(enable_high_low_trigger_recording),
+        TriggerVarianceRecording=_get_text_check_enabled(enable_trigger_recording),
+        DebugLogging=debug_logging,
+        SupportedDisplay=app_cached_variables.mini_display_thread.current_state,
+        OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,
+        WeatherUndergroundService=app_cached_variables.weather_underground_thread.current_state,
+        LuftdatenService=app_cached_variables.luftdaten_thread.current_state
+    )
+
+
+@html_sensor_info_readings_routes.route("/SensorRecordingStatus")
+def html_sql_recording_status():
+    interval_recording_config = app_config_access.interval_recording_config
+    return render_template(
+        "sql_recording_status.html",
+        PageURL="/SensorRecordingStatus",
+        IntervalCPUTemp=_get_enabled_state(interval_recording_config.cpu_temperature_enabled),
+        IntervalEnvTemp=_get_enabled_state(interval_recording_config.env_temperature_enabled),
+        IntervalPressure=_get_enabled_state(interval_recording_config.pressure_enabled),
+        IntervalAltitude=_get_enabled_state(interval_recording_config.altitude_enabled),
+        IntervalHumidity=_get_enabled_state(interval_recording_config.humidity_enabled),
+        IntervalDistance=_get_enabled_state(interval_recording_config.distance_enabled),
+        IntervalLumen=_get_enabled_state(interval_recording_config.lumen_enabled),
+        IntervalVisibleEMS=_get_enabled_state(interval_recording_config.colour_enabled),
+        IntervalUltraViolet=_get_enabled_state(interval_recording_config.ultra_violet_enabled),
+        IntervalGAS=_get_enabled_state(interval_recording_config.gas_enabled),
+        IntervalPM=_get_enabled_state(interval_recording_config.particulate_matter_enabled),
+        IntervalAccelerometer=_get_enabled_state(interval_recording_config.accelerometer_enabled),
+        IntervalMagnetometer=_get_enabled_state(interval_recording_config.magnetometer_enabled),
+        IntervalGyroscope=_get_enabled_state(interval_recording_config.gyroscope_enabled),
+        TriggerVarianceCPUTemp=app_cached_variables.trigger_variance_thread_cpu_temp.current_state,
+        TriggerVarianceEnvTemp=app_cached_variables.trigger_variance_thread_env_temp.current_state,
+        TriggerVariancePressure=app_cached_variables.trigger_variance_thread_pressure.current_state,
+        TriggerVarianceAltitude=app_cached_variables.trigger_variance_thread_altitude.current_state,
+        TriggerVarianceHumidity=app_cached_variables.trigger_variance_thread_humidity.current_state,
+        TriggerVarianceDistance=app_cached_variables.trigger_variance_thread_distance.current_state,
+        TriggerVarianceLumen=app_cached_variables.trigger_variance_thread_lumen.current_state,
+        TriggerVarianceVisibleEMS=app_cached_variables.trigger_variance_thread_visible_ems.current_state,
+        TriggerVarianceUltraViolet=str(app_cached_variables.trigger_variance_thread_ultra_violet.current_state),
+        TriggerVarianceGAS=str(app_cached_variables.trigger_variance_thread_gas.current_state),
+        TriggerVariancePM=str(app_cached_variables.trigger_variance_thread_particulate_matter.current_state),
+        TriggerVarianceAccelerometer=app_cached_variables.trigger_variance_thread_accelerometer.current_state,
+        TriggerVarianceMagnetometer=app_cached_variables.trigger_variance_thread_magnetometer.current_state,
+        TriggerVarianceGyroscope=app_cached_variables.trigger_variance_thread_gyroscope.current_state,
+        TriggerHighLowCPUTemp=app_cached_variables.trigger_high_low_cpu_temp.current_state,
+        TriggerHighLowEnvTemp=app_cached_variables.trigger_high_low_env_temp.current_state,
+        TriggerHighLowPressure=app_cached_variables.trigger_high_low_pressure.current_state,
+        TriggerHighLowAltitude=app_cached_variables.trigger_high_low_altitude.current_state,
+        TriggerHighLowHumidity=app_cached_variables.trigger_high_low_humidity.current_state,
+        TriggerHighLowDistance=app_cached_variables.trigger_high_low_distance.current_state,
+        TriggerHighLowLumen=app_cached_variables.trigger_high_low_lumen.current_state,
+        TriggerHighLowVisibleEMS=str(app_cached_variables.trigger_high_low_visible_colours.current_state),
+        TriggerHighLowUltraViolet=str(app_cached_variables.trigger_high_low_ultra_violet.current_state),
+        TriggerHighLowGAS=str(app_cached_variables.trigger_high_low_gas.current_state),
+        TriggerHighLowPM=str(app_cached_variables.trigger_high_low_particulate_matter.current_state),
+        TriggerHighLowAccelerometer=str(app_cached_variables.trigger_high_low_accelerometer.current_state),
+        TriggerHighLowMagnetometer=str(app_cached_variables.trigger_high_low_magnetometer.current_state),
+        TriggerHighLowGyroscope=str(app_cached_variables.trigger_high_low_gyroscope.current_state)
+    )
+
+
+def _get_enabled_state(state):
+    if state:
+        return "Enabled"
+    return "Disabled"
 
 
 @html_sensor_info_readings_routes.route("/TestSensor")
@@ -188,7 +184,7 @@ def html_sensors_readings():
             if app_cached_variables.database_variables.gas_nh3 in gas_readings:
                 gas_nh3 = gas_readings[app_cached_variables.database_variables.gas_nh3]
 
-        pm_readings = sensor_access.get_particulate_matter()
+        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
         pm_1 = app_cached_variables.no_sensor_present
         pm_2_5 = app_cached_variables.no_sensor_present
         pm_4 = app_cached_variables.no_sensor_present
@@ -212,52 +208,59 @@ def html_sensors_readings():
                 uv_b = uv_readings[app_cached_variables.database_variables.ultra_violet_b]
 
         red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
-        return render_template("sensor_readings.html",
-                               PageURL="/SensorReadings",
-                               RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                               RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                               URLRedirect="SensorReadings",
-                               HostName=app_cached_variables.hostname,
-                               IPAddress=app_cached_variables.ip,
-                               DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
-                               SystemUptime=sensor_access.get_uptime_str(),
-                               CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
-                               RAWEnvTemperature=str(raw_temp) + " °C",
-                               AdjustedEnvTemperature=str(adjusted_temp) + " °C",
-                               EnvTemperatureOffset=str(temp_offset),
-                               EnvTemperatureComp=str(temp_comp),
-                               Pressure=str(sensor_access.get_pressure()) + " hPa",
-                               Altitude=str(sensor_access.get_altitude()) + " Meters",
-                               Humidity=str(sensor_access.get_humidity()) + " %RH",
-                               Distance=str(sensor_access.get_distance()) + " ?",
-                               GasResistanceIndex=str(gas_index) + " kΩ",
-                               GasOxidising=str(gas_oxidising) + " kΩ",
-                               GasReducing=str(gas_reducing) + " kΩ",
-                               GasNH3=str(gas_nh3) + " kΩ",
-                               PM1=str(pm_1) + " µg/m³",
-                               PM25=str(pm_2_5) + " µg/m³",
-                               PM4=str(pm_4) + " µg/m³",
-                               PM10=str(pm_10) + " µg/m³",
-                               Lumen=str(sensor_access.get_lumen()) + " lm",
-                               Red=str(red),
-                               Orange=str(orange),
-                               Yellow=str(yellow),
-                               Green=str(green),
-                               Blue=str(blue),
-                               Violet=str(violet),
-                               UVA=str(uv_a),
-                               UVB=str(uv_b),
-                               Acc=str(sensor_access.get_accelerometer_xyz()) + " g",
-                               Mag=str(sensor_access.get_magnetometer_xyz()) + " μT",
-                               Gyro=str(sensor_access.get_gyroscope_xyz()) + " °/s")
+
+        utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+        current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+        return render_template(
+            "sensor_readings.html",
+            PageURL="/SensorReadings",
+            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+            URLRedirect="SensorReadings",
+            HostName=app_cached_variables.hostname,
+            IPAddress=app_cached_variables.ip,
+            DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
+            SystemUptime=sensor_access.get_uptime_str(),
+            CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
+            RAWEnvTemperature=str(raw_temp) + " °C",
+            AdjustedEnvTemperature=str(adjusted_temp) + " °C",
+            EnvTemperatureOffset=str(temp_offset),
+            EnvTemperatureComp=str(temp_comp),
+            Pressure=str(sensor_access.get_pressure()) + " hPa",
+            Altitude=str(sensor_access.get_altitude()) + " Meters",
+            Humidity=str(sensor_access.get_humidity()) + " %RH",
+            Distance=str(sensor_access.get_distance()) + " ?",
+            GasResistanceIndex=str(gas_index) + " kΩ",
+            GasOxidising=str(gas_oxidising) + " kΩ",
+            GasReducing=str(gas_reducing) + " kΩ",
+            GasNH3=str(gas_nh3) + " kΩ",
+            PM1=str(pm_1) + " µg/m³",
+            PM25=str(pm_2_5) + " µg/m³",
+            PM4=str(pm_4) + " µg/m³",
+            PM10=str(pm_10) + " µg/m³",
+            Lumen=str(sensor_access.get_lumen()) + " lm",
+            Red=str(red),
+            Orange=str(orange),
+            Yellow=str(yellow),
+            Green=str(green),
+            Blue=str(blue),
+            Violet=str(violet),
+            UVA=str(uv_a),
+            UVB=str(uv_b),
+            Acc=str(sensor_access.get_accelerometer_xyz()) + " g",
+            Mag=str(sensor_access.get_magnetometer_xyz()) + " μT",
+            Gyro=str(sensor_access.get_gyroscope_xyz()) + " °/s"
+        )
     except Exception as error:
         logger.primary_logger.error("Unable to generate Readings Page: " + str(error))
-        return render_template("message_return.html",
-                               PageURL="/",
-                               RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                               RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                               TextMessage="Unable to generate Readings Page",
-                               message2=str(error))
+        return render_template(
+            "message_return.html",
+            PageURL="/",
+            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+            TextMessage="Unable to generate Readings Page",
+            message2=str(error)
+        )
 
 
 def _get_ems_for_render_template():
@@ -293,51 +296,50 @@ def _get_ems_for_render_template():
 def html_sensors_latency():
     logger.network_logger.debug("** Sensor Latency accessed from " + str(request.remote_addr))
     sensors_latency = sensor_access.get_sensors_latency()
-    return render_template("sensor_readings.html",
-                           PageURL="/TestSensorLatency",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           URLRedirect="TestSensorLatency",
-                           HostName="Sensor Latency",
-                           IPAddress=app_cached_variables.ip,
-                           DateTime=strftime("%Y-%m-%d %H:%M - %Z"),
-                           SystemUptime=sensor_access.get_uptime_str(),
-                           CPUTemperature=str(sensors_latency[1][0]) + " Seconds",
-                           RAWEnvTemperature=str(sensors_latency[1][1]) + " Seconds",
-                           AdjustedEnvTemperature="",
-                           EnvTemperatureOffset="",
-                           Pressure=str(sensors_latency[1][2]) + " Seconds",
-                           Altitude=str(sensors_latency[1][3]) + " Seconds",
-                           Humidity=str(sensors_latency[1][4]) + " Seconds",
-                           Distance=str(sensors_latency[1][5]) + " Seconds",
-                           GasResistanceIndex="All GAS: " + str(sensors_latency[1][6]) + " Seconds",
-                           GasOxidising="",
-                           GasReducing="",
-                           GasNH3="",
-                           PM1="All PM: " + str(sensors_latency[1][7]) + " Seconds",
-                           PM25="",
-                           PM10="",
-                           Lumen=str(sensors_latency[1][8]) + " Seconds",
-                           Red="All EMS Colors: " + str(sensors_latency[1][9]) + " Seconds",
-                           Orange="",
-                           Yellow="",
-                           Green="",
-                           Blue="",
-                           Violet="",
-                           UVA="All UV: " + str(sensors_latency[1][10]) + " Seconds",
-                           UVB="",
-                           Acc=str(sensors_latency[1][11]) + " Seconds",
-                           Mag=str(sensors_latency[1][12]) + " Seconds",
-                           Gyro=str(sensors_latency[1][13]) + " Seconds")
+
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+    return render_template(
+        "sensor_readings.html",
+        PageURL="/TestSensorLatency",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        URLRedirect="TestSensorLatency",
+        HostName="Sensor Latency",
+        IPAddress=app_cached_variables.ip,
+        DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
+        SystemUptime=sensor_access.get_uptime_str(),
+        CPUTemperature=str(sensors_latency["cpu_temperature"]) + " Seconds",
+        RAWEnvTemperature=str(sensors_latency["environment_temperature"]) + " Seconds",
+        AdjustedEnvTemperature="",
+        EnvTemperatureOffset="",
+        Pressure=str(sensors_latency["pressure"]) + " Seconds",
+        Altitude=str(sensors_latency["altitude"]) + " Seconds",
+        Humidity=str(sensors_latency["humidity"]) + " Seconds",
+        Distance=str(sensors_latency["distance"]) + " Seconds",
+        GasResistanceIndex="All GAS: " + str(sensors_latency["gas"]) + " Seconds",
+        GasOxidising="",
+        GasReducing="",
+        GasNH3="",
+        PM1="All PM: " + str(sensors_latency["particulate_matter"]) + " Seconds",
+        PM25="",
+        PM10="",
+        Lumen=str(sensors_latency["lumen"]) + " Seconds",
+        Red="All EMS Colors: " + str(sensors_latency["colours"]) + " Seconds",
+        Orange="",
+        Yellow="",
+        Green="",
+        Blue="",
+        Violet="",
+        UVA="All UV: " + str(sensors_latency["ultra_violet"]) + " Seconds",
+        UVB="",
+        Acc=str(sensors_latency["accelerometer_xyz"]) + " Seconds",
+        Mag=str(sensors_latency["magnetometer_xyz"]) + " Seconds",
+        Gyro=str(sensors_latency["gyroscope_xyz"]) + " Seconds"
+    )
 
 
-def get_text_running_thread_state(service_enabled, thread_variable):
-    """ Checks to see if a 'service' thread is running and returns the result as text. """
-    if service_enabled:
-        return_text = "Stopped"
-        if thread_variable is None:
-            return_text = "Missing Sensor"
-        elif thread_variable.is_running:
-            return_text = "Running"
-        return return_text
+def _get_text_check_enabled(setting):
+    if setting:
+        return "Enabled"
     return "Disabled"

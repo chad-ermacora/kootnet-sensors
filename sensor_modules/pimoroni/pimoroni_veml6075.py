@@ -40,6 +40,7 @@ class CreateVEML6075:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni VEML6075 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_veml6075 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def ultra_violet_index(self):
         """ Returns Ultra Violet Index. """
@@ -66,9 +67,8 @@ class CreateVEML6075:
         except Exception as error:
             uva, uvb = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed: " + str(error))
-        return_list_uva_uvb = [round(float(uva), round_decimal_to), round(float(uvb), round_decimal_to)]
         self.sensor_in_use = False
-        return return_list_uva_uvb
+        return [round(float(uva), round_decimal_to), round(float(uvb), round_decimal_to)]
 
     def ultra_violet_comparator(self):
         """ Returns 2 Ultra Violet comparator as a list. """
@@ -80,6 +80,5 @@ class CreateVEML6075:
         except Exception as error:
             uv_comp1, uv_comp2 = [0.0, 0.0]
             logger.sensors_logger.error("Pimoroni VEML6075 UVA & UVB Readings - Failed: " + str(error))
-        return_list_uv_comparator = [round(float(uv_comp1), round_decimal_to), round(float(uv_comp2), round_decimal_to)]
         self.sensor_in_use = False
-        return return_list_uv_comparator
+        return [round(float(uv_comp1), round_decimal_to), round(float(uv_comp2), round_decimal_to)]

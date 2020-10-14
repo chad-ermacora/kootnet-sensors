@@ -37,6 +37,7 @@ class CreateMSA301:
         except Exception as error:
             logger.sensors_logger.error("Pimoroni MSA301 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_msa301 = 0
+            app_config_access.installed_sensors.update_configuration_settings_list()
 
     def accelerometer_xyz(self):
         """ Returns Accelerometer X, Y, Z as Floats. """
@@ -49,4 +50,4 @@ class CreateMSA301:
             logger.sensors_logger.error("Pimoroni MSA301 Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         self.sensor_in_use = False
-        return round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)
+        return [round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)]

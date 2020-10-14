@@ -137,7 +137,7 @@ def get_weather_underground_readings():
             baromin = float(pressure_hpa) * 0.029529983071445
             return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
         except Exception as error:
-            logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure inhg: " + str(error))
+            logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure into Hg: " + str(error))
 
     ultra_violet = sensor_access.get_ultra_violet(return_as_dictionary=True)
     if ultra_violet != no_sensor_present:
@@ -145,7 +145,7 @@ def get_weather_underground_readings():
             uv_index = ultra_violet[database_variables.ultra_violet_index]
             return_readings_str += "&UV=" + str(round(uv_index, round_decimal_to))
 
-    pm_readings = sensor_access.get_particulate_matter()
+    pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
     if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
         if database_variables.particulate_matter_2_5 in pm_readings:
             pm_2_5 = pm_readings[database_variables.particulate_matter_2_5]

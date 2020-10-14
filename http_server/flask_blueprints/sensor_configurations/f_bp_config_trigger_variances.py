@@ -20,6 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import app_cached_variables
+from sensor_recording_modules.triggers_auto_set import auto_set_triggers_wait_time
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -36,28 +37,39 @@ def html_set_trigger_variances():
             app_config_access.trigger_variances.save_config_to_file()
             page_msg = "Trigger Variances Set, Please Restart Program"
             app_cached_variables.html_service_restart = True
-            return_page = message_and_return(page_msg, url="/ConfigurationsHTML")
+            return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
             logger.primary_logger.warning("HTML Apply - Trigger Variances - Error: " + str(error))
-    return message_and_return("Bad Trigger Variances POST Request", url="/ConfigurationsHTML")
+    return message_and_return("Bad Trigger Variances POST Request", url="/MainConfigurationsHTML")
+
+
+@html_config_trigger_variances_routes.route("/SetTriggerVariancesLowestSeconds")
+@auth.login_required
+def html_set_lowest_trigger_variances_seconds():
+    logger.network_logger.info("** Trigger Variances Auto Set to Lowest Recommended - Source " + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_variances, set_lowest=True)
+    msg_1 = "Trigger Variance Seconds Settings Set to Lowest"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to the Lowest recommended values."
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
 
 
 @html_config_trigger_variances_routes.route("/ResetTriggerVariances")
 @auth.login_required
 def html_reset_trigger_variances():
-    logger.network_logger.info("** Trigger Variances Reset - Source " + str(request.remote_addr))
-    app_config_access.trigger_variances.reset_settings()
-    return message_and_return("Trigger Variances Reset", url="/ConfigurationsHTML")
+    logger.network_logger.info("** Trigger Variances Reset to Default - Source " + str(request.remote_addr))
+    auto_set_triggers_wait_time(app_config_access.trigger_variances)
+    msg_1 = "Trigger Variance Seconds Settings Set to Default"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to recommended defaults."
+    return message_and_return(msg_1, text_message2=msg_2, url="/MainConfigurationsHTML")
 
 
 def get_config_trigger_variances_tab():
     try:
         variances = app_config_access.trigger_variances
         return render_template("edit_configurations/config_trigger_variances.html",
-                               PageURL="/ConfigurationsHTML",
-                               CheckedSensorUptime=get_html_checkbox_state(variances.sensor_uptime_enabled),
-                               DaysSensorUptime=(float(variances.sensor_uptime_wait_seconds) / 60.0 / 60.0 / 24.0),
+                               PageURL="/MainConfigurationsHTML",
+                               CheckedTrigger=get_html_checkbox_state(variances.enable_trigger_variance),
                                CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
                                TriggerCPUTemperature=variances.cpu_temperature_variance,
                                SecondsCPUTemperature=variances.cpu_temperature_wait_seconds,
@@ -100,6 +112,7 @@ def get_config_trigger_variances_tab():
                                CheckedPM=get_html_checkbox_state(variances.particulate_matter_enabled),
                                TriggerPM1=variances.particulate_matter_1_variance,
                                TriggerPM25=variances.particulate_matter_2_5_variance,
+                               TriggerPM4=variances.particulate_matter_4_variance,
                                TriggerPM10=variances.particulate_matter_10_variance,
                                SecondsPM=variances.particulate_matter_wait_seconds,
                                CheckedAccelerometer=get_html_checkbox_state(variances.accelerometer_enabled),

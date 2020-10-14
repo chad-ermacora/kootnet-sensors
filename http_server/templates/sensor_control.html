@@ -57,10 +57,13 @@
         }
     </style>
 
-    <h2 style="text-decoration: underline; color: red;"><strong><a href="/SensorControlManage" style="color: red;">
-        Sensor Control
-    </a></strong></h2>
     <fieldset style="text-align: center; max-width: 565px;">
+        <h2>
+            <u><strong><a style="color: red;" href="{{ PageURL }}">Remote Sensor Management</a></strong></u><br>
+            <a style="color: green; font-size: medium;" href="/SensorUnitHelp.html#line8" target="_blank">
+                Click Here for Help
+            </a>
+        </h2>
         <h4 style="color: red;">Use this to Check & Manage up to 20 other Kootnet Sensors</h4>
         _<b id="blink_shadow">{{ ExtraTextMessage|safe }}</b>_
     </fieldset>
@@ -70,7 +73,7 @@
         <fieldset style="text-align: center;">
             <button type="button" id="ip_show_hide"
                     class="mui-btn mui-btn--raised">
-                Show/Hide IP List
+                Show/Hide Sensors List
             </button>
             <div class="ip_selection_content">
                 <div class="mui-container-fluid" style="background-color: #00B0FF;">
@@ -91,6 +94,8 @@
                         <input type="password" name="sensor_password" placeholder="Eg. SuperSecure">
                         <br>
                     </label>
+
+                    <br>
 
                     <div class="mui-row">
                         <div class="mui-col-md-3">
@@ -153,27 +158,52 @@
 
         <div class="mui-tabs__pane mui--is-active" id="main-tab">
             <br>
-            <label style="color: red; display: inline-block; text-align: center; width: 600px;">
+            <label style="color: red; display: inline-block; text-align: center; max-width: 600px;">
+                Open Generated Reports
+                <br>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetComboReport';" type="button">
+                    Combination
+                </button>
+                <br>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetSystemReport';" type="button">
+                    System
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetConfigReport';" type="button">
+                    Configuration
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetReadingsReport';" type="button">
+                    Readings
+                </button>
+                <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                        onclick="location.href='/GetLatencyReport';" type="button">
+                    Latency
+                </button>
+            </label>
+            <label style="color: red; display: inline-block; text-align: center; max-width: 600px;">
                 Available Zip Downloads
                 <br>
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="this.disabled=true; location.href='/DownloadSCReportsZip';"
-                        type="submit" {{ DownloadReportsZipDisabled }}>
+                        type="button" {{ DownloadReportsZipDisabled }}>
                     Reports
                 </button>
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="this.disabled=true; location.href='/DownloadSCDatabasesZip';"
-                        type="submit" {{ DownloadDatabasesDisabled }}>
+                        type="button" {{ DownloadDatabasesDisabled }}>
                     Databases
                 </button>
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="this.disabled=true; location.href='/DownloadSCLogsZip';"
-                        type="submit" {{ DownloadLogsDisabled }}>
+                        type="button" {{ DownloadLogsDisabled }}>
                     Logs
                 </button>
                 <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                         onclick="this.disabled=true; location.href='/DownloadSCBigZip';"
-                        type="submit" {{ DownloadBigZipDisabled }}>
+                        type="button" {{ DownloadBigZipDisabled }}>
                     The Big Zip
                 </button>
             </label>
@@ -195,45 +225,44 @@
                             Online Status
                             <span class="checkmark_radio"></span>
                         </label>
-                        <br>
+                        <h4 style="text-decoration: underline; color: purple;">Generate Report</h4>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedComboReports }}
                                    id="RadioComboReports" value="combo_report">
-                            Combination Report
+                            Combination
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSystemReports }}
                                    id="RadioSystemReports" value="systems_report">
-                            Systems Report
+                            Systems
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedConfigReports }}
                                    id="RadioConfigReports" value="config_report">
-                            Configurations Report
+                            Configurations
                             <span class="checkmark_radio"></span>
                         </label>
-                        <br>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSensorsTestReports }}
                                    id="RadioSensorsTests" value="sensors_test_report">
-                            Sensors Reading Report
+                            Readings
                             <span class="checkmark_radio"></span>
                         </label>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedSensorsLatencyReports }}
                                    id="RadioSensorsLatency" value="sensors_latency_report">
-                            Sensors Latency Report
+                            latencies
                             <span class="checkmark_radio"></span>
                         </label>
                         <br>
-                        <h4 style="text-decoration: underline; color: purple;">Download Zip File</h4>
+                        <h4 style="text-decoration: underline; color: purple;">Generate Zip File</h4>
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedDownloadBig }}
                                    id="RadioDownloadBigZip"
-                                   value="sensors_download_everything" {{ DownloadBigDisabled }}>
+                                   value="sensors_download_everything">
                             Create "The Big Zip" (Reports, Logs & Databases)
                             <span class="checkmark_radio"></span>
                         </label>
@@ -241,7 +270,7 @@
                         <label class="container_radio" style="font-size: medium">
                             <input type="radio" name="selected_action" {{ CheckedDownloadReports }}
                                    id="RadioDownloadReports"
-                                   value="sensors_download_reports" {{ DisabledDownloadReports }}>
+                                   value="sensors_download_reports">
                             Combination Report
                             <span class="checkmark_radio"></span>
                         </label>
@@ -289,6 +318,8 @@
                         <li><a href="/SCUpgradeSMB">SMB Upgrade</a></li>
                         <li><a style="cursor: pointer;" onclick="DevUpgradeHTTP();">DEV - HTTP Upgrade</a></li>
                         <li><a style="cursor: pointer;" onclick="DevUpgradeSMB();">DEV - SMB Upgrade</a></li>
+                        <li><a>---------------</a></li>
+                        <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
                     </ul>
                 </div>
                 <div class="mui-dropdown">
@@ -310,8 +341,6 @@
                     <ul class="mui-dropdown__menu">
                         <li><a href="/SCUpgradeSystemOS">Upgrade OS & Reboot</a></li>
                         <li><a href="/SCUpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
-                        <li><a>---------------</a></li>
-                        <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
                     </ul>
                 </div>
             </div>

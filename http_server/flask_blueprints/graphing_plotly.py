@@ -17,50 +17,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from datetime import datetime
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
-from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import message_and_return, get_html_hidden_state
+from http_server.server_http_generic_functions import message_and_return
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
+from http_server.flask_blueprints.graphing import html_graphing
 
 html_plotly_graphing_routes = Blueprint("html_plotly_graphing_routes", __name__)
-
-
-@html_plotly_graphing_routes.route("/PlotlyGraph")
-def html_plotly_graphing():
-    logger.network_logger.debug("* Plotly Graph viewed by " + str(request.remote_addr))
-
-    extra_message = ""
-    button_disabled = ""
-    if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
-        extra_message = "Creating Graph - Please Wait"
-        button_disabled = "disabled"
-
-    try:
-        unix_creation_date = os.path.getmtime(file_locations.plotly_graph_interval)
-        interval_creation_date = str(datetime.fromtimestamp(unix_creation_date))[:-7]
-    except FileNotFoundError:
-        interval_creation_date = "No Plotly Graph Found"
-
-    try:
-        triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.plotly_graph_triggers)
-        triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
-    except FileNotFoundError:
-        triggers_creation_date = "No Plotly Graph Found"
-
-    return render_template("plotly_graph.html",
-                           PageURL="/PlotlyGraph",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           ExtraTextMessage=extra_message,
-                           CreateButtonDisabled=button_disabled,
-                           IntervalPlotlyDate=interval_creation_date,
-                           TriggerPlotlyDate=triggers_creation_date)
 
 
 @html_plotly_graphing_routes.route("/CreatePlotlyGraph", methods=["POST"])
@@ -81,17 +48,17 @@ def html_create_plotly_graph():
             # The format the received datetime should look like "2019-01-01 00:00:00"
             new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
             new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
-            new_graph_data.datetime_offset = request.form.get("HourOffset")
-            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL").strip())
+            new_graph_data.datetime_offset = float(request.form.get("HourOffset"))
+            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL"))
             new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
 
             if len(new_graph_data.graph_columns) < 4:
-                return message_and_return("Please Select at least One Sensor", url="/PlotlyGraph")
+                return message_and_return("Please Select at least One Sensor", url="/Graphing")
             else:
                 app_generic_functions.thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
-    return html_plotly_graphing()
+    return html_graphing()
 
 
 @html_plotly_graphing_routes.route("/ViewIntervalPlotlyGraph")

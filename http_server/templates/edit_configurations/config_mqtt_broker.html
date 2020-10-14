@@ -1,15 +1,17 @@
-<div class="mui-tabs__pane" id="mqtt-broker-tab">
+<div class="mui-tabs__pane mui--is-active" id="mqtt-broker-tab">
     <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;"
           action="/EditConfigMQTTBroker">
         <fieldset style="text-align: center;">
-            <h3><u><strong><a style="color: black;" href="{{ PageURL }}">MQTT Broker Configuration</a></strong></u></h3>
-
-            <h5><b>
-                Enable & Start a local
-                <a style="color: black;" href="https://en.wikipedia.org/wiki/MQTT#MQTT_broker" target="_blank"><u>
-                    MQTT Broker</u></a>
-                 (Receive Readings)
-            </b></h5>
+            <h3>
+                <u><strong><a href="https://github.com/eclipse/mosquitto/blob/master/mosquitto.conf" target="_blank"
+                              style="color: black;">
+                    MQTT Broker Configuration
+                </a></strong></u><br>
+                <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line6_3" target="_blank">
+                    Click Here for Help
+                </a>
+                <hr>
+            </h3>
 
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
@@ -22,15 +24,10 @@
             <br>
 
             <label>
-                <a style="color: black;" target="_blank"
-                   href="https://github.com/eclipse/mosquitto/blob/master/mosquitto.conf"><u>
-                    Mosquitto Configuration
-                </u></a>
-                <br>
                 <i>Leave Configuration Blank for a default open MQTT Broker</i>
                 <br>
                 <br>
-                <textarea name="mosquitto_config" cols="60" rows="20">{{ BrokerMosquittoConfig }}</textarea>
+                <textarea name="mosquitto_config" cols="50" rows="20">{{ BrokerMosquittoConfig }}</textarea>
             </label>
 
             <br>

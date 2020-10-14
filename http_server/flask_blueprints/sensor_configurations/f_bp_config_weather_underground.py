@@ -38,7 +38,7 @@ def html_edit_online_services_wu():
         return_text = "Weather Underground Configuration Saved"
         if app_config_access.weather_underground_config.weather_underground_enabled:
             return_text = get_restart_service_text("Weather Underground")
-            if app_cached_variables.weather_underground_thread is not None:
+            if app_cached_variables.weather_underground_thread != "Disabled":
                 if app_cached_variables.weather_underground_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_weather_underground_thread = True
                 else:
@@ -49,10 +49,10 @@ def html_edit_online_services_wu():
             if app_cached_variables.weather_underground_thread is not None:
                 app_cached_variables.weather_underground_thread.shutdown_thread = True
                 app_cached_variables.restart_weather_underground_thread = True
-        return message_and_return(return_text, url="/ConfigurationsHTML")
+        return message_and_return(return_text, url="/3rdPartyConfigurationsHTML")
     else:
         logger.primary_logger.error("HTML Edit Weather Underground set Error")
-        return message_and_return("Bad Configuration POST Request", url="/ConfigurationsHTML")
+        return message_and_return("Bad Configuration POST Request", url="/3rdPartyConfigurationsHTML")
 
 
 def get_config_weather_underground_tab():
@@ -77,7 +77,7 @@ def get_config_weather_underground_tab():
         wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
         wu_station_id = app_config_access.weather_underground_config.station_id
         return render_template("edit_configurations/config_weather_underground.html",
-                               PageURL="/ConfigurationsHTML",
+                               PageURL="/3rdPartyConfigurationsHTML",
                                CheckedWUEnabled=wu_checked,
                                CheckedWURapidFire=wu_rapid_fire_checked,
                                DisabledWURapidFire=wu_rapid_fire_disabled,

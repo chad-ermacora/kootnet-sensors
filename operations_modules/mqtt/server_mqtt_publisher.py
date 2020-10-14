@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from extras.python_modules.paho.mqtt import client as mqtt
+from paho.mqtt import client as mqtt
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
@@ -29,16 +29,20 @@ database_variables = app_cached_variables.database_variables
 
 
 def start_mqtt_publisher_server():
-    if app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
-        text_name = "MQTT Publisher"
-        function = _mqtt_publisher_server
-        app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(function, thread_name=text_name)
-    else:
+    text_name = "MQTT Publisher"
+    function = _mqtt_publisher_server
+    app_cached_variables.mqtt_publisher_thread = CreateMonitoredThread(function, thread_name=text_name)
+    if not app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
         logger.primary_logger.debug("MQTT Publisher Disabled in Configuration")
+        app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
 
 
 def _mqtt_publisher_server():
     """ Starts MQTT Publisher and runs based on settings found in the MQTT Publisher configuration file. """
+    app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
+    while not app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
+        sleep(5)
+    app_cached_variables.mqtt_publisher_thread.current_state = "Running"
     app_cached_variables.restart_mqtt_publisher_thread = False
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:
         # Sleep a few seconds to allow the local broker to start first
@@ -119,7 +123,7 @@ def _mqtt_publisher_server():
                                payload=_readings_to_text(sensor_access.get_gas()),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                pm_readings = sensor_access.get_particulate_matter()
+                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
                 temp_send_readings = [pm_readings[database_variables.particulate_matter_1],
                                       pm_readings[database_variables.particulate_matter_2_5],
                                       pm_readings[database_variables.particulate_matter_4],

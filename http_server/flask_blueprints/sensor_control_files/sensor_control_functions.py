@@ -19,16 +19,42 @@
 import time
 import requests
 from threading import Thread
+from queue import Queue
 from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
-from http_server.server_http_generic_functions import get_html_hidden_state
-from http_server.flask_blueprints.sensor_control_files.reports import get_sensor_control_report
+from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
+from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
+from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
+from configuration_modules.config_email import CreateEmailConfiguration
+from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return
+from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
+
+initial_primary_select = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
+default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
+default_primary_config = default_primary_config.replace("\n", "\\n")
+default_installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False).get_config_as_str()
+default_installed_sensors_config = default_installed_sensors_config.replace("\n", "\\n")
+default_interval_recording_config = CreateIntervalRecordingConfiguration(load_from_file=False).get_config_as_str()
+default_interval_recording_config = default_interval_recording_config.replace("\n", "\\n")
+default_variance_config = CreateTriggerVariancesConfiguration(load_from_file=False).get_config_as_str()
+default_variance_config = default_variance_config.replace("\n", "\\n")
+default_high_low_config = CreateTriggerHighLowConfiguration(load_from_file=False).get_config_as_str()
+default_high_low_config = default_high_low_config.replace("\n", "\\n")
+default_display_config = CreateDisplayConfiguration(load_from_file=False).get_config_as_str()
+default_display_config = default_display_config.replace("\n", "\\n")
+default_email_config = CreateEmailConfiguration(load_from_file=False).get_config_as_str()
+default_email_config = default_email_config.replace("\n", "\\n")
+default_wifi_config = "# https://manpages.debian.org/stretch/wpasupplicant/wpa_supplicant.conf.5.en.html"
+default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 
 class CreateSensorHTTPCommand:
@@ -66,16 +92,18 @@ def check_sensor_status_sensor_control(address_list):
     Uses provided remote sensor IP or DNS addresses (as a list) and checks if it's online.
     Returns a flask rendered template with results as an HTML page.
     """
+    data_queue = Queue()
+
     text_insert = ""
     threads = []
     for address in address_list:
-        threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, True]))
+        threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, data_queue, True]))
     app_generic_functions.start_and_wait_threads(threads)
 
     address_responses = []
-    while not app_cached_variables.data_queue.empty():
-        address_responses.append(app_cached_variables.data_queue.get())
-        app_cached_variables.data_queue.task_done()
+    while not data_queue.empty():
+        address_responses.append(data_queue.get())
+        data_queue.task_done()
 
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
@@ -107,10 +135,12 @@ def create_all_databases_zipped(ip_list):
     Downloads remote sensor databases from provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
-    try:
-        _queue_name_and_file_list(ip_list, command=network_commands.sensor_sql_database)
+    data_queue = Queue()
 
-        data_list = app_generic_functions.get_data_queue_items()
+    try:
+        _queue_name_and_file_list(ip_list, data_queue, command=network_commands.sensor_sql_database)
+
+        data_list = get_data_queue_items(data_queue)
         database_names = []
         sensors_database = []
         for sensor_data in data_list:
@@ -142,10 +172,11 @@ def create_multiple_sensor_logs_zipped(ip_list):
     Downloads remote sensor logs from provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
+    data_queue = Queue()
     try:
-        _queue_name_and_file_list(ip_list, command=network_commands.download_zipped_logs)
+        _queue_name_and_file_list(ip_list, data_queue, command=network_commands.download_zipped_logs)
 
-        data_list = app_generic_functions.get_data_queue_items()
+        data_list = get_data_queue_items(data_queue)
         database_names = []
         sensors_database = []
         for sensor_data in data_list:
@@ -163,9 +194,9 @@ def create_multiple_sensor_logs_zipped(ip_list):
     logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Complete")
 
 
-def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
+def get_remote_sensor_check_and_delay(address, data_queue, add_hostname=False, add_db_size=False, add_logs_size=False):
     """
-    Checks a remote sensor's response time and add's it to the app_cached_variables.data_queue.
+    Checks a remote sensor's response time and add's it to the data_queue
     Optional: Include hostname, database size and zipped log size.
     """
     get_sensor_reading = app_generic_functions.get_http_sensor_reading
@@ -185,11 +216,11 @@ def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=F
         task_end_time = "NA "
         sensor_hostname = "Offline"
         download_size = "NA"
-    app_cached_variables.data_queue.put({"address": address,
-                                         "status": str(sensor_status),
-                                         "response_time": str(task_end_time),
-                                         "sensor_hostname": str(sensor_hostname),
-                                         "download_size": str(download_size)})
+    data_queue.put({"address": address,
+                    "status": str(sensor_status),
+                    "response_time": str(task_end_time),
+                    "sensor_hostname": str(sensor_hostname),
+                    "download_size": str(download_size)})
 
 
 def put_all_reports_zipped_to_cache(ip_list):
@@ -199,7 +230,8 @@ def put_all_reports_zipped_to_cache(ip_list):
     """
     try:
         hostname = app_cached_variables.hostname
-        html_reports = [get_html_reports_combo(ip_list)]
+        generate_html_reports_combo(ip_list)
+        html_reports = [app_cached_variables.html_combo_report]
         html_report_names = ["ReportCombo.html"]
         app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(html_report_names, html_reports)
         app_cached_variables.sc_reports_zip_name = "Reports_from_" + hostname + "_" + str(time.time())[:-8] + ".zip"
@@ -215,6 +247,8 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
     Function option "download_type" dictates which type of download.
     Default = sensors_download_databases
     """
+    data_queue = Queue()
+
     download_command = network_commands.sensor_sql_database
     download_type_message = "the SQLite3 Database Zipped"
     add_zipped_database_size = True
@@ -237,14 +271,16 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
 
     threads = []
     for address in address_list:
-        threads.append(Thread(target=get_remote_sensor_check_and_delay, args=[address, False, add_zipped_database_size,
-                                                                              add_zipped_logs_size]))
+        threads.append(Thread(target=get_remote_sensor_check_and_delay,
+                              args=[address, data_queue, False,
+                                    add_zipped_database_size,
+                                    add_zipped_logs_size]))
     app_generic_functions.start_and_wait_threads(threads)
 
     address_responses = []
-    while not app_cached_variables.data_queue.empty():
-        address_responses.append(app_cached_variables.data_queue.get())
-        app_cached_variables.data_queue.task_done()
+    while not data_queue.empty():
+        address_responses.append(data_queue.get())
+        data_queue.task_done()
 
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
@@ -276,7 +312,7 @@ def downloads_sensor_control(address_list, download_type="sensors_download_datab
                            ExtraMessage=extra_message)
 
 
-def get_html_reports_combo(ip_list, skip_rewrite_link=False):
+def generate_html_reports_combo(ip_list, skip_rewrite_link=False):
     """
     Returns a combination of all reports in HTML format.
     Reports are downloaded from the provided list of remote sensors (IP or DNS addresses)
@@ -287,16 +323,20 @@ def get_html_reports_combo(ip_list, skip_rewrite_link=False):
         sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
         latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
 
-        html_system_report = get_sensor_control_report(ip_list, report_type=system_report)
-        html_config_report = get_sensor_control_report(ip_list, report_type=config_report)
-        html_readings_report = get_sensor_control_report(ip_list, report_type=sensors_report)
-        html_latency_report = get_sensor_control_report(ip_list, report_type=latency_report)
+        generate_sensor_control_report(ip_list, report_type=system_report)
+        generate_sensor_control_report(ip_list, report_type=config_report)
+        generate_sensor_control_report(ip_list, report_type=sensors_report)
+        generate_sensor_control_report(ip_list, report_type=latency_report)
 
+        html_system_report = app_cached_variables.html_system_report
+        html_config_report = app_cached_variables.html_config_report
+        html_readings_report = app_cached_variables.html_readings_report
+        html_latency_report = app_cached_variables.html_latency_report
         if not skip_rewrite_link:
-            html_system_report = _replace_text_in_report(html_system_report, "System")
-            html_config_report = _replace_text_in_report(html_config_report, "Configuration")
-            html_readings_report = _replace_text_in_report(html_readings_report, "Sensor Readings")
-            html_latency_report = _replace_text_in_report(html_latency_report, "Sensor Latency")
+            html_system_report = _replace_text_in_report(app_cached_variables.html_system_report, "System")
+            html_config_report = _replace_text_in_report(app_cached_variables.html_config_report, "Configuration")
+            html_readings_report = _replace_text_in_report(app_cached_variables.html_readings_report, "Sensor Readings")
+            html_latency_report = _replace_text_in_report(app_cached_variables.html_latency_report, "Sensor Latency")
 
         html_final_combo_return = app_generic_functions.get_file_content(file_locations.html_combo_report)
         html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
@@ -306,7 +346,7 @@ def get_html_reports_combo(ip_list, skip_rewrite_link=False):
     except Exception as error:
         logger.primary_logger.error("Sensor Control - Unable to Generate Reports for Download: " + str(error))
         html_final_combo_return = "Error"
-    return html_final_combo_return
+    app_cached_variables.html_combo_report = html_final_combo_return
 
 
 def _replace_text_in_report(report, new_text):
@@ -323,16 +363,19 @@ def create_the_big_zip(ip_list):
     Downloads everything from sensors based on provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
+    data_queue = Queue()
+
     new_name = "TheBigZip_" + app_cached_variables.hostname + "_" + str(time.time())[:-8] + ".zip"
     app_cached_variables.sc_big_zip_name = new_name
 
     if len(ip_list) > 0:
         try:
             return_names = ["ReportCombo.html"]
-            return_files = [get_html_reports_combo(ip_list)]
+            generate_html_reports_combo(ip_list)
+            return_files = [app_cached_variables.html_combo_report]
 
-            _queue_name_and_file_list(ip_list, network_commands.download_zipped_everything)
-            ip_name_and_data = app_generic_functions.get_data_queue_items()
+            _queue_name_and_file_list(ip_list, data_queue, network_commands.download_zipped_everything)
+            ip_name_and_data = get_data_queue_items(data_queue)
 
             for sensor in ip_name_and_data:
                 current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".zip"
@@ -354,18 +397,18 @@ def create_the_big_zip(ip_list):
             app_cached_variables.sc_big_zip_name = ""
 
 
-def _queue_name_and_file_list(ip_list, command):
+def _queue_name_and_file_list(ip_list, data_queue, command):
     threads = []
     for address in ip_list:
-        threads.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
+        threads.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, data_queue, command]))
     app_generic_functions.start_and_wait_threads(threads)
 
 
-def _worker_queue_list_ip_name_file(address, command):
+def _worker_queue_list_ip_name_file(address, data_queue, command):
     try:
         sensor_name = app_generic_functions.get_http_sensor_reading(address, command="GetHostName")
         sensor_data = app_generic_functions.get_http_sensor_file(address, command)
-        app_cached_variables.data_queue.put([address, sensor_name, sensor_data])
+        data_queue.put([address, sensor_name, sensor_data])
     except Exception as error:
         logger.network_logger.error("Sensor Control - Get Remote File Failed: " + str(error))
 
@@ -445,22 +488,28 @@ def sensor_control_management():
     if not app_cached_variables.creating_logs_zip and app_cached_variables.sc_logs_zip_name != "":
         download_logs_zip = ""
 
-    extra_message = ""
-    disabled_reports_zip = ""
-    disabled_big_zip = ""
-    disable_run_action_button = ""
+    disable_run_action_button = "disabled"
     if app_cached_variables.creating_the_big_zip:
         extra_message = "Creating Big Zip"
-        disable_run_action_button = "disabled"
     elif app_cached_variables.creating_the_reports_zip:
         extra_message = "Creating Reports Zip"
-        disable_run_action_button = "disabled"
     elif app_cached_variables.creating_databases_zip:
         extra_message = "Creating Databases Zip"
-        disable_run_action_button = "disabled"
     elif app_cached_variables.creating_logs_zip:
         extra_message = "Creating Logs Zip"
-        disable_run_action_button = "disabled"
+    elif app_cached_variables.creating_combo_report:
+        extra_message = "Creating Combo Report"
+    elif app_cached_variables.creating_system_report:
+        extra_message = "Creating System Report"
+    elif app_cached_variables.creating_config_report:
+        extra_message = "Creating Configuration Report"
+    elif app_cached_variables.creating_readings_report:
+        extra_message = "Creating Readings Report"
+    elif app_cached_variables.creating_latency_report:
+        extra_message = "Creating Latency Report"
+    else:
+        disable_run_action_button = ""
+        extra_message = ""
 
     return render_template("sensor_control.html",
                            PageURL="/SensorControlManage",
@@ -484,8 +533,6 @@ def sensor_control_management():
                            CheckedDownloadDatabases=radio_checked_download_database,
                            CheckedDownloadLogs=radio_checked_download_logs,
                            CheckedDownloadBig=radio_checked_download_big_zip,
-                           DownloadBigDisabled=disabled_big_zip,
-                           DisabledDownloadReports=disabled_reports_zip,
                            DisabledRelayedDownload=disabled_download_relayed,
                            DisabledDirectDownload=disabled_download_direct,
                            SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
@@ -508,32 +555,45 @@ def sensor_control_management():
                            SensorIP18=app_config_access.sensor_control_config.sensor_ip_dns18,
                            SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
                            SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
-                           SensorControlEditConfig=render_template("sensor_control_edit_configs.html"))
+                           SensorControlEditConfig=_get_sensor_control_edit_configs())
+
+
+def _get_sensor_control_edit_configs():
+    return render_template("sensor_control_edit_configs.html",
+                           InitialPrimaryConfig=initial_primary_select,
+                           DefaultPrimaryText=default_primary_config,
+                           DefaultInstalledSensorsText=default_installed_sensors_config,
+                           DefaultIntervalRecText=default_interval_recording_config,
+                           DefaultVarianceRecText=default_variance_config,
+                           DefaultHighLowRecText=default_high_low_config,
+                           DefaultDisplayText=default_display_config,
+                           DefaultEmailText=default_email_config,
+                           DefaultWifiText=default_wifi_config,
+                           DefaultNetworkText=default_network_config)
 
 
 def get_sum_db_sizes(ip_list):
-    """
-    Gets the size of remote sensors zipped database based on provided IP or DNS addresses (as a list)
-    Puts results into app_cached_variables.flask_return_data_queue
-    """
+    """ Gets the size of remote sensors zipped database based on provided IP or DNS addresses (as a list) """
+    data_queue = Queue()
+
     databases_size = 0.0
     try:
         threads = []
         for address in ip_list:
-            threads.append(Thread(target=_worker_get_db_size, args=[address]))
+            threads.append(Thread(target=_worker_get_db_size, args=[address, data_queue]))
         app_generic_functions.start_and_wait_threads(threads)
 
-        while not app_cached_variables.flask_return_data_queue.empty():
-            db_size = app_cached_variables.flask_return_data_queue.get()
+        while not data_queue.empty():
+            db_size = data_queue.get()
             databases_size += db_size
-            app_cached_variables.flask_return_data_queue.task_done()
+            data_queue.task_done()
     except Exception as error:
         logger.network_logger.error("Sensor Control - Unable to retrieve Database Sizes Sum: " + str(error))
     logger.network_logger.debug("Total DB Sizes in MB: " + str(databases_size))
     return databases_size
 
 
-def _worker_get_db_size(address):
+def _worker_get_db_size(address, data_queue):
     get_http_sensor_reading = app_generic_functions.get_http_sensor_reading
     get_database_size_command = network_commands.sensor_sql_database_size
     try:
@@ -542,7 +602,7 @@ def _worker_get_db_size(address):
         while try_get and get_error_count < 3:
             try:
                 db_size = float(get_http_sensor_reading(address, command=get_database_size_command))
-                app_cached_variables.flask_return_data_queue.put(db_size)
+                data_queue.put(db_size)
                 try_get = False
             except Exception as error:
                 log_msg = "Sensor Control - Error getting sensor DB Size for "
@@ -550,7 +610,22 @@ def _worker_get_db_size(address):
                 logger.network_logger.debug("Sensor Control DB Sizes Error: " + str(error))
                 get_error_count += 1
         if get_error_count > 2:
-            app_cached_variables.flask_return_data_queue.put(0)
+            data_queue.put(0)
     except Exception as error:
         log_msg = "Sensor Control - Unable to retrieve Database Size for " + address + ": " + str(error)
         logger.network_logger.error(log_msg)
+
+
+def get_data_queue_items(data_queue):
+    """ Returns a list of items from a data_queue. """
+    que_data = []
+    while not data_queue.empty():
+        que_data.append(data_queue.get())
+        data_queue.task_done()
+    return que_data
+
+
+def sensor_addresses_required_msg():
+    msg_1 = "Please set at least one remote sensor address"
+    msg_2 = "Press the button 'SHOW/HIDE IP LIST' under remote management to set sensor addresses."
+    return message_and_return(msg_1, text_message2=msg_2, url="SensorControlManage")

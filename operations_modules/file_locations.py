@@ -49,7 +49,6 @@ if os.geteuid() != 0:
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
-sensor_html_help = program_root_dir + "/extras/SensorUnitHelp.html"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
 log_directory = sensor_data_dir + "/logs/"
@@ -59,7 +58,8 @@ sensors_log = log_directory + "sensors_log.txt"
 mqtt_subscriber_log = log_directory + "mqtt_subscriber_log.txt"
 log_zip_file = log_directory + "all_logs.zip"
 
-sensor_checkin_id = sensor_config_dir + "/sensor_checkin_id.txt"
+checkin_configuration = sensor_config_dir + "/checkin_config.txt"
+sensor_id = sensor_config_dir + "/sensor_id.txt"
 old_version_file = sensor_config_dir + "/installed_version.txt"
 program_last_updated = sensor_config_dir + "/last_updated.txt"
 
@@ -68,9 +68,12 @@ mqtt_broker_config = sensor_config_dir + "/mqtt_broker_config.conf"
 mosquitto_configuration = "/etc/mosquitto/conf.d/kootnet_mosquitto.conf"
 mqtt_subscriber_config = sensor_config_dir + "/mqtt_subscriber_config.conf"
 mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
+email_config = sensor_config_dir + "/email_config.conf"
 display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
+interval_config = sensor_config_dir + "/interval_recording.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
+trigger_high_low_config = sensor_config_dir + "/trigger_high_low.conf"
 
 http_auth = sensor_config_dir + "/auth.conf"
 
@@ -98,32 +101,6 @@ http_ssl_folder = program_root_dir + "/http_server/ssl_files"
 http_ssl_key = http_ssl_folder + "/kootnet_default.key"
 http_ssl_csr = http_ssl_folder + "/kootnet_default.csr"
 http_ssl_crt = http_ssl_folder + "/kootnet_default.crt"
-
-j_query_js = program_root_dir + "/http_server/extras/jquery-3.4.1.min.js"
-mui_min_css = program_root_dir + "/http_server/extras/mui.min-ver-0.9.43.css"
-mui_colors_min_css = program_root_dir + "/http_server/extras/mui-colors.min-ver-0.9.43.css"
-mui_min_js = program_root_dir + "/http_server/extras/mui.min-ver-0.9.43.js"
-menu_script = program_root_dir + "/http_server/extras/menu.js"
-menu_css_style = program_root_dir + "/http_server/extras/style.css"
-html_icon = program_root_dir + "/extras/icon.ico"
-
-tinymce_min_js = program_root_dir + "/http_server/extras/tinymce/tinymce.min.js"
-tinymce_theme_min_js = program_root_dir + "/http_server/extras/tinymce/themes/silver/theme.min.js"
-tinymce_jquery_min_js = program_root_dir + "/http_server/extras/tinymce/jquery.tinymce.min.js"
-tinymce_skin_min_css = program_root_dir + "/http_server/extras/tinymce/skins/ui/oxide-dark/skin.min.css"
-tinymce_ui_content_min_css = program_root_dir + "/http_server/extras/tinymce/skins/ui/oxide-dark/content.min.css"
-tinymce_content_min_css = program_root_dir + "/http_server/extras/tinymce/skins/content/dark/content.min.css"
-
-tinymce_plugin_link = program_root_dir + "/http_server/extras/tinymce/plugins/link/plugin.min.js"
-tinymce_plugin_autolink = program_root_dir + "/http_server/extras/tinymce/plugins/autolink/plugin.min.js"
-tinymce_plugin_lists = program_root_dir + "/http_server/extras/tinymce/plugins/lists/plugin.min.js"
-tinymce_plugin_print = program_root_dir + "/http_server/extras/tinymce/plugins/print/plugin.min.js"
-tinymce_plugin_wordcount = program_root_dir + "/http_server/extras/tinymce/plugins/wordcount/plugin.min.js"
-tinymce_plugin_code = program_root_dir + "/http_server/extras/tinymce/plugins/code/plugin.min.js"
-tinymce_plugin_insertdatetime = program_root_dir + "/http_server/extras/tinymce/plugins/insertdatetime/plugin.min.js"
-tinymce_plugin_fullscreen = program_root_dir + "/http_server/extras/tinymce/plugins/fullscreen/plugin.min.js"
-tinymce_plugin_spellchecker = program_root_dir + "/http_server/extras/tinymce/plugins/spellchecker/plugin.min.js"
-tinymce_plugin_help = program_root_dir + "/http_server/extras/tinymce/plugins/help/plugin.min.js"
 
 html_combo_report = program_root_dir + "/http_server/templates/non-flask/report_3_combo.html"
 

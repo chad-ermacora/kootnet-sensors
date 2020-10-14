@@ -53,13 +53,6 @@
 
     <br>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/ViewSensorCheckin';">
-        View Sensor Checkin Statistics
-    </button>
-
-    <br>
-
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Standard Upgrades
@@ -73,21 +66,6 @@
 
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Power Commands
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/RestartServices">Restart Program</a></li>
-            <li><a href="/RebootSystem">Reboot System</a></li>
-            <li><a>---------------</a></li>
-            <li><a style="cursor: pointer;" onclick="SensorShutdown();">Shutdown System</a></li>
-        </ul>
-    </div>
-
-    <br>
-
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Developmental Upgrades
             <span class="mui-caret"></span>
         </button>
@@ -96,6 +74,20 @@
             <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
         </ul>
     </div>
+
+    <br>
+
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            SQL
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/VacuumMainSQLDatabase">Shrink Main SQL Database</a></li>
+            <li><a href="/VacuumCheckInsSQLDatabase">Shrink Sensor Check-Ins SQL Database</a></li>
+        </ul>
+    </div>
+
     <div class="mui-dropdown">
         <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
             Other
@@ -112,6 +104,19 @@
         </ul>
     </div>
 
+    <div class="mui-dropdown">
+        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+            Power Commands
+            <span class="mui-caret"></span>
+        </button>
+        <ul class="mui-dropdown__menu">
+            <li><a href="/RestartServices">Restart Program</a></li>
+            <li><a href="/RebootSystem">Reboot System</a></li>
+            <li><a>---------------</a></li>
+            <li><a style="cursor: pointer;" onclick="SensorShutdown();">Shutdown System</a></li>
+        </ul>
+    </div>
+
     <div>
         <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditLogin">
             <div id="update_login_credentials">
@@ -119,17 +124,17 @@
 
                 <div class="mui-textfield">
                     <label style="color: lightblue;">
-                        Username
-                        <br>
+                        Username<br>
                         <input style="width: 125px;" type="text" id="login_username" name="login_username" required
                                placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
                     </label>
                 </div>
 
+                <br>
+
                 <div class="mui-textfield">
                     <label style="color: lightblue;">
-                        Password
-                        <br>
+                        Password<br>
                         <input style="width: 125px;" type="password" id="login_password" name="login_password" required
                                placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
                     </label>

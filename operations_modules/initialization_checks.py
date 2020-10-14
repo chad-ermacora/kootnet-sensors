@@ -24,7 +24,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import write_file_to_disk
+from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
     run_database_integrity_check
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
@@ -39,23 +39,19 @@ def run_program_start_checks():
     """
     logger.primary_logger.info(" -- Pre-Start Initializations Started")
     _check_directories()
-    _set_file_permissions()
     _check_ssl_files()
     _check_sensor_id()
+    _set_file_permissions()
+
     if software_version.old_version != software_version.version:
         run_database_integrity_check(file_locations.sensor_database, quick=False)
         run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
-        db_check_threads = [Thread(target=check_main_database_structure),
-                            Thread(target=check_checkin_database_structure)]
-        for thread in db_check_threads:
-            thread.daemon = True
-            thread.start()
-        for thread in db_check_threads:
-            thread.join()
         run_configuration_upgrade_checks()
+        thread_function(check_checkin_database_structure)
     else:
         run_database_integrity_check(file_locations.sensor_database)
         run_database_integrity_check(file_locations.sensor_checkin_database)
+    thread_function(check_main_database_structure)
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
@@ -78,11 +74,15 @@ def _check_sensor_id():
     The Sensor ID is Randomly Generated and used to track Software Usage and Online History of Sensors.
     """
     try:
-        if not os.path.isfile(file_locations.sensor_checkin_id):
-            random_id = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(32)])
-            write_file_to_disk(file_locations.sensor_checkin_id, random_id)
+        if not os.path.isfile(file_locations.sensor_id):
+            random_id = ''.join([random.choice(string.ascii_letters + string.digits) for _ in range(32)])
+            write_file_to_disk(file_locations.sensor_id, random_id)
+        else:
+            random_id = get_file_content(file_locations.sensor_id).strip()
     except Exception as error:
         logger.primary_logger.error("Problem Creating Sensor ID: " + str(error))
+        random_id = "Error"
+    app_cached_variables.tmp_sensor_id = random_id
 
 
 def _set_file_permissions():

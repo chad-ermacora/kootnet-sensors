@@ -1,0 +1,63 @@
+<form id="mqtt-form" class="mui-form" method="POST" action="/SaveCheckinSettings"
+      style="background-color: #00B0FF; max-width: 550px; min-height: 300px;">
+    <fieldset style="text-align: center;">
+        <div>
+            <h3>
+                <u><strong><a style="color: black;" href="{{ PageURL }}">Checkin Server Settings</a></strong></u><br>
+                <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line9_4" target="_blank">
+                    Click Here for Help
+                </a>
+                <hr>
+            </h3>
+
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="button" onclick="window.open('/ViewSensorCheckin', '_blank');">
+                Click Here to View Sensor Checkin Statistics
+            </button>
+
+            <hr>
+
+            <div class="mui-checkbox" style="display: inline-block;">
+                <label class="container_checkbox" style="color: black; font-size: medium;">
+                    Enable Sensor CheckIns Server
+                    <input type="checkbox" name="enable_checkin" value="" {{ CheckedEnableCheckin }}>
+                    <span class="checkmark_checkbox"></span>
+                </label>
+            </div>
+
+            <hr>
+
+            <h3><u><strong>
+                Checkin View Settings
+            </strong></u></h3>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    Show Sensor count for sensors that have Checked in the past X days
+                    <br>
+                    <input style="width: 75px;" type="number" max="3650" step="0.1"
+                           name="contact_in_past_days"
+                           value="{{ ContactInPastDays }}">
+                </label>
+            </div>
+
+            <br>
+            <br>
+
+            <div class="mui-textfield">
+                <label style="color: black; font-size: medium;">
+                    Default "Delete Sensor's with Check ins older then X days" setting<br>
+                    <input style="width: 75px;" type="number" max="3650" step="0.1"
+                           name="delete_sensors_older_days"
+                           value="{{ DeleteSensorsOlderDays }}">
+                </label>
+            </div>
+
+            <br>
+            <br>
+
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+
+        </div>
+    </fieldset>
+</form>
