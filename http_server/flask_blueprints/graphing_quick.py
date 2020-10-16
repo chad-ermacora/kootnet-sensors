@@ -93,9 +93,11 @@ def html_live_graphing():
 
 def get_html_live_graphing_page(email_graph=False):
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    graph_past_hours = app_cached_variables.quick_graph_hours
 
     if email_graph:
         graph_past_hours = app_config_access.email_config.graph_past_hours
+        app_cached_variables.quick_graph_hours = graph_past_hours
         app_cached_variables.quick_graph_uptime = app_config_access.email_config.sensor_uptime
         app_cached_variables.quick_graph_cpu_temp = app_config_access.email_config.system_temperature
         app_cached_variables.quick_graph_env_temp = app_config_access.email_config.env_temperature
@@ -111,8 +113,6 @@ def get_html_live_graphing_page(email_graph=False):
         app_cached_variables.quick_graph_acc = app_config_access.email_config.accelerometer
         app_cached_variables.quick_graph_mag = app_config_access.email_config.magnetometer
         app_cached_variables.quick_graph_gyro = app_config_access.email_config.gyroscope
-    else:
-        graph_past_hours = app_cached_variables.quick_graph_hours
 
     sensors_list = [
         [app_cached_variables.quick_graph_uptime, db_v.sensor_uptime],
