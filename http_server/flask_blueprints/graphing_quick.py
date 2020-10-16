@@ -170,7 +170,7 @@ def get_html_live_graphing_page(email_graph=False):
                     html_code += "<div style='height: 300px'><canvas id='" + sensor_db_name[
                         1] + """'></canvas></div>\n"""
                     tmp_starter = start_sensor_code.replace("{{ ChartName }}", sensor_db_name[1])
-                    tmp_starter = tmp_starter.replace("{{ DisplayHours }}", str(graph_past_hours))
+                    tmp_starter = tmp_starter.replace("{{ GraphPastHours }}", str(graph_past_hours))
 
                     sensor_dates = get_graph_datetime_from_column(sensor_db_name[1])
                     checkin_hour_offset = app_config_access.primary_config.utc0_hour_offset
