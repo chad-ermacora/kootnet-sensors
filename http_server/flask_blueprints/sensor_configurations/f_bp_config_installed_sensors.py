@@ -61,6 +61,7 @@ def get_config_installed_sensors_tab():
                                PimoroniBMP280=get_html_checkbox_state(installed_sensors.pimoroni_bmp280),
                                PimoroniBME680=get_html_checkbox_state(installed_sensors.pimoroni_bme680),
                                PimoroniEnviroPHAT=get_html_checkbox_state(installed_sensors.pimoroni_enviro),
+                               PimoroniEnviro2=get_html_checkbox_state(installed_sensors.pimoroni_enviro2),
                                PimoroniEnviroPlus=get_html_checkbox_state(installed_sensors.pimoroni_enviroplus),
                                PimoroniPMS5003=get_html_checkbox_state(installed_sensors.pimoroni_pms5003),
                                PimoroniSGP30=get_html_checkbox_state(installed_sensors.pimoroni_sgp30),

@@ -193,6 +193,8 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
     """ Returns sensors Environmental temperature. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_enviro2:
+        temperature = sensors_direct.pimoroni_enviro2_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_mcp9600:
@@ -258,6 +260,8 @@ def get_pressure():
     """ Returns sensors pressure. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         pressure = sensors_direct.pimoroni_enviro_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_enviro2:
+        pressure = sensors_direct.pimoroni_enviro2_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         pressure = sensors_direct.pimoroni_enviroplus_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
@@ -291,7 +295,9 @@ def get_altitude(qnh=1013.25):
 
 def get_humidity():
     """ Returns sensors humidity. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus:
+    if app_config_access.installed_sensors.pimoroni_enviro2:
+        humidity = sensors_direct.pimoroni_enviro2_a.humidity()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
         humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_bme680:
         humidity = sensors_direct.pimoroni_bme680_a.humidity()
@@ -324,7 +330,9 @@ def get_dew_point():
 
 def get_distance():
     """ Returns sensors distance. """
-    if app_config_access.installed_sensors.pimoroni_enviroplus:
+    if app_config_access.installed_sensors.pimoroni_enviro2:
+        distance = sensors_direct.pimoroni_enviro2_a.distance()
+    elif app_config_access.installed_sensors.pimoroni_enviroplus:
         distance = sensors_direct.pimoroni_enviroplus_a.distance()
     elif app_config_access.installed_sensors.pimoroni_vl53l1x:
         distance = sensors_direct.pimoroni_vl53l1x_a.distance()
@@ -400,6 +408,8 @@ def get_lumen():
     """ Returns sensors lumen. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         lumen = sensors_direct.pimoroni_enviro_a.lumen()
+    elif app_config_access.installed_sensors.pimoroni_enviro2:
+        lumen = sensors_direct.pimoroni_enviro2_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         lumen = sensors_direct.pimoroni_enviroplus_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_bh1745:
@@ -558,6 +568,10 @@ def display_message(text_msg, check_test=False):
             if app_config_access.installed_sensors.pimoroni_enviroplus:
                 if not check_test:
                     thread_function(sensors_direct.pimoroni_enviroplus_a.display_text, args=text_msg)
+                display_missing = False
+            if app_config_access.installed_sensors.pimoroni_enviro2:
+                if not check_test:
+                    thread_function(sensors_direct.pimoroni_enviro2_a.display_text, args=text_msg)
                 display_missing = False
             if display_missing:
                 return False

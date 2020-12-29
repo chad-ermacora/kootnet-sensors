@@ -45,7 +45,7 @@ class CreateEnviro:
         try:
             env_temp = float(self.enviro_import.weather.temperature())
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro Temperature - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Temperature - Failed: " + str(error))
             env_temp = 0.0
         self.sensor_in_use = False
         return round(env_temp, round_decimal_to)
@@ -58,7 +58,7 @@ class CreateEnviro:
         try:
             pressure_hpa = self.enviro_import.weather.pressure(unit="hPa")
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro Pressure - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Pressure - Failed: " + str(error))
             pressure_hpa = 0
         self.sensor_in_use = False
         return int(pressure_hpa)
@@ -71,7 +71,7 @@ class CreateEnviro:
         try:
             var_lumen = self.enviro_import.light.light()
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro Lumen - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Lumen - Failed: " + str(error))
             var_lumen = 0
         self.sensor_in_use = False
         return int(var_lumen)
@@ -84,7 +84,7 @@ class CreateEnviro:
         try:
             rgb_red, rgb_green, rgb_blue = self.enviro_import.light.rgb()
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro RGB - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT RGB - Failed: " + str(error))
             rgb_red, rgb_green, rgb_blue = 0.0, 0.0, 0.0
         self.sensor_in_use = False
         return [round(rgb_red, round_decimal_to), round(rgb_green, round_decimal_to), round(rgb_blue, round_decimal_to)]
@@ -97,7 +97,7 @@ class CreateEnviro:
         try:
             acc_x, acc_y, acc_z = self.enviro_import.motion.accelerometer()
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro Accelerometer XYZ - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Accelerometer XYZ - Failed: " + str(error))
             acc_x, acc_y, acc_z = 0.0, 0.0, 0.0
         self.sensor_in_use = False
         return [round(acc_x, round_decimal_to), round(acc_y, round_decimal_to), round(acc_z, round_decimal_to)]
@@ -111,6 +111,6 @@ class CreateEnviro:
             mag_x, mag_y, mag_z = self.enviro_import.motion.magnetometer()
         except Exception as error:
             mag_x, mag_y, mag_z = 0.0, 0.0, 0.0
-            logger.sensors_logger.error("Pimoroni Enviro Magnetometer XYZ - Failed: " + str(error))
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Magnetometer XYZ - Failed: " + str(error))
         self.sensor_in_use = False
         return [round(mag_x, round_decimal_to), round(mag_y, round_decimal_to), round(mag_z, round_decimal_to)]
