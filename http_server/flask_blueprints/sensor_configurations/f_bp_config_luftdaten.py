@@ -57,9 +57,6 @@ def html_edit_online_services_luftdaten():
 def get_config_luftdaten_tab():
     try:
         luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
-        luftdaten_interval_seconds_disabled = "disabled"
-        if app_config_access.luftdaten_config.luftdaten_enabled:
-            luftdaten_interval_seconds_disabled = ""
 
         luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
         luftdaten_station_id = app_config_access.luftdaten_config.station_id
@@ -67,7 +64,6 @@ def get_config_luftdaten_tab():
                                PageURL="/3rdPartyConfigurationsHTML",
                                CheckedLuftdatenEnabled=luftdaten_checked,
                                LuftdatenIntervalSeconds=luftdaten_interval_seconds,
-                               DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
                                LuftdatenStationID=luftdaten_station_id)
     except Exception as error:
         logger.network_logger.error("Error building Luftdaten configuration page: " + str(error))
