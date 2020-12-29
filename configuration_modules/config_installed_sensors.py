@@ -35,11 +35,12 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         w1_therm_sensor = "W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"
         self.config_settings_names = [
             "Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
-            "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680", "Pimoroni EnviroPHAT",
-            "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003", "Pimoroni MSA301", "Pimoroni LSM303D",
-            "Pimoroni ICM20948", "Pimoroni VL53L1X", "Pimoroni LTR-559", "Pimoroni VEML6075",
-            "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96 SPI Colour LCD (160x80)",
-            "Pimoroni 1.12 Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor, "Enviro with LCD"
+            "Pimoroni AS7262", "Pimoroni MCP9600", "Pimoroni BMP280", "Pimoroni BME680",
+            "Pimoroni Enviro pHAT (No Display)", "Pimoroni Enviro+", "Pimoroni SGP30", "Pimoroni PMS5003",
+            "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948", "Pimoroni VL53L1X", "Pimoroni LTR-559",
+            "Pimoroni VEML6075", "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96 SPI Colour LCD (160x80)",
+            "Pimoroni 1.12 Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor,
+            "Pimoroni Enviro with Display"
         ]
 
         self.no_sensors = True
