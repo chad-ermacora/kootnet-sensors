@@ -161,6 +161,7 @@ class CreateSensorAccess:
         self.pimoroni_mcp9600_a = CreateNoSensorsDummySensor()
         self.pimoroni_bmp280_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviro_a = CreateNoSensorsDummySensor()
+        self.pimoroni_enviro2_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviroplus_a = CreateNoSensorsDummySensor()
         self.pimoroni_pms5003_a = CreateNoSensorsDummySensor()
         self.pimoroni_sgp30_a = CreateNoSensorsDummySensor()
