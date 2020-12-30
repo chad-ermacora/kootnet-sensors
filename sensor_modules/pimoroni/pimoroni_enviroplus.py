@@ -34,7 +34,7 @@ pause_sensor_during_access_sec_gas = 0.095
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
 
-    def __init__(self, enviro_plus=True):
+    def __init__(self, enviro_hw_ver_2_w_screen=False):
         try:
             self.display_off_count = 0
             self.display_is_on = True
@@ -48,7 +48,7 @@ class CreateEnviroPlus:
             bme280_import = __import__("sensor_modules.drivers.enviroplus.custom-bme280", fromlist="BME280")
             self.ltr_559 = ltr559_import.LTR559()
             self.bme280 = bme280_import.BME280()
-            if enviro_plus:
+            if not enviro_hw_ver_2_w_screen:
                 self.gas_access = __import__("sensor_modules.drivers.enviroplus.mics6814", fromlist=["read_all"])
             # Setup & Initialize display
             st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735"])
@@ -60,13 +60,13 @@ class CreateEnviroPlus:
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
 
-            if enviro_plus:
+            if not enviro_hw_ver_2_w_screen:
                 logger.sensors_logger.debug("Pimoroni Enviro+ Initialization - OK")
             else:
                 logger.sensors_logger.debug("Pimoroni Enviro /w Display Initialization - OK")
 
         except Exception as error:
-            if enviro_plus:
+            if not enviro_hw_ver_2_w_screen:
                 logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
                 app_config_access.installed_sensors.pimoroni_enviroplus = 0
             else:
