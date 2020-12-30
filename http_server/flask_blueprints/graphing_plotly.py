@@ -39,6 +39,7 @@ def html_create_plotly_graph():
         try:
             new_graph_data = server_plotly_graph_variables.CreateGraphData()
             new_graph_data.graph_table = request.form.get("SQLRecordingType")
+            new_graph_data.max_sql_queries = int(request.form.get("MaxSQLData"))
 
             if request.form.get("PlotlyRenderType") == "OpenGL":
                 new_graph_data.enable_plotly_webgl = True
