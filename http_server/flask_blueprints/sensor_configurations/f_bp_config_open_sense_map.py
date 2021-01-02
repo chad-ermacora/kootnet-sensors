@@ -38,7 +38,7 @@ def html_edit_online_services_open_sense_map():
         return_text = "Open Sense Map Configuration Saved"
         if app_config_access.open_sense_map_config.open_sense_map_enabled:
             return_text = get_restart_service_text("Open Sense Map")
-            if app_cached_variables.open_sense_map_thread != "Disabled":
+            if app_cached_variables.open_sense_map_thread.current_state != "Disabled":
                 if app_cached_variables.open_sense_map_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_open_sense_map_thread = True
                 else:
