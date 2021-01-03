@@ -32,6 +32,13 @@ from http_server.server_http_generic_functions import get_html_hidden_state, get
 html_sensor_check_ins_routes = Blueprint("html_sensor_check_ins_routes", __name__)
 max_statistics_lines = 200
 
+db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
+db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
+db_sensor_check_in_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
+db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
+db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
+db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
+
 
 @html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST"])
 def remote_sensor_check_ins():
@@ -41,12 +48,6 @@ def remote_sensor_check_ins():
             logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
 
             current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-            db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
-            db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
-            db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
-            db_sensor_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
-            db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
-            db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
 
             try:
                 db_connection = sqlite3.connect(file_locations.sensor_checkin_database)
@@ -54,7 +55,7 @@ def remote_sensor_check_ins():
 
                 create_table_and_datetime(checkin_id, db_cursor)
                 check_sql_table_and_column(checkin_id, db_sensor_check_in_version, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_installed_sensors, db_cursor)
+                check_sql_table_and_column(checkin_id, db_sensor_check_in_installed_sensors, db_cursor)
                 check_sql_table_and_column(checkin_id, db_sensor_uptime, db_cursor)
                 check_sql_table_and_column(checkin_id, db_sensor_check_in_primary_log, db_cursor)
                 check_sql_table_and_column(checkin_id, db_sensor_check_in_sensors_log, db_cursor)
@@ -64,7 +65,7 @@ def remote_sensor_check_ins():
                 sql_ex_string = "INSERT OR IGNORE INTO '" + checkin_id + "' (" + \
                                 db_all_tables_datetime + "," + \
                                 db_sensor_check_in_version + "," + \
-                                db_sensor_installed_sensors + "," + \
+                                db_sensor_check_in_installed_sensors + "," + \
                                 db_sensor_uptime + "," + \
                                 db_sensor_check_in_primary_log + "," + \
                                 db_sensor_check_in_sensors_log + ")" + \
@@ -219,10 +220,12 @@ def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checki
     app_cached_variables.checkin_search_primary_log = ""
     app_cached_variables.checkin_search_sensors_log = ""
     if sensor_id.isalnum():
-        get_primary_log_sql = "SELECT primary_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + sensor_id + \
+                              "' ORDER BY " + db_all_tables_datetime + " DESC;"
         primary_logs = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
 
-        get_sensors_log_sql = "SELECT sensors_log FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        get_sensors_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + sensor_id + \
+                              "' ORDER BY " + db_all_tables_datetime + " DESC;"
         sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
 
         found_log = False
@@ -245,18 +248,22 @@ def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checki
 
 def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin_database):
     if sensor_id.isalnum():
-        get_sensor_checkin_count_per_id_sql = "SELECT count('DateTime') FROM '" + sensor_id + "';"
+        get_sensor_checkin_count_per_id_sql = "SELECT count('" + db_all_tables_datetime + "') FROM '" + sensor_id + "';"
         checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_location)
 
-        get_last_sensor_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        get_last_sensor_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
+                                           "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
         last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
 
-        get_current_version_sql = "SELECT KootnetVersion FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        get_current_version_sql = "SELECT " + db_sensor_check_in_version + " FROM '" + sensor_id + \
+                                  "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
         current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
 
-        get_installed_sensors_sql = "SELECT installed_sensors FROM '" + sensor_id + "' ORDER BY DateTime DESC;"
+        get_installed_sensors_sql = "SELECT " + db_sensor_check_in_installed_sensors + " FROM '" + sensor_id + \
+                                    "' ORDER BY " + db_all_tables_datetime + " DESC;"
         current_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
 
+        checkin_search_sensor_installed_sensors = ""
         found_installed_sensors = False
         for data_entry in current_installed_sensors:
             if found_installed_sensors:
@@ -264,9 +271,11 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
             for log_entry in data_entry:
                 if log_entry != "":
                     app_cached_variables.checkin_search_sensor_installed_sensors = str(log_entry)
+                    checkin_search_sensor_installed_sensors = str(log_entry)
                     found_installed_sensors = True
 
-        get_current_uptime_sql = "SELECT SensorUpTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+        get_current_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + sensor_id + \
+                                 "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
         current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
         clean_last_checkin_date = _get_sql_element(last_checkin_date)
 
@@ -278,7 +287,7 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
             web_view_last_checkin_date = checkin_date_converted.strftime("%Y-%m-%d %H:%M:%S")
         return "Sensor ID: " + sensor_id + \
                "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
-               "\n" + app_cached_variables.checkin_search_sensor_installed_sensors + \
+               "\n" + checkin_search_sensor_installed_sensors + \
                "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
                "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
                "\nLast Check-in DateTime: " + str(web_view_last_checkin_date) + "\n\n"
@@ -305,35 +314,32 @@ def clear_check_ins_counts():
 
 def _clear_old_sensor_checkin_data(sensor_id):
     db_location = file_locations.sensor_checkin_database
-    db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
-    db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
-    db_sensor_check_in_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
-    db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
-    db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
-    db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
 
     get_last_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
-                                "' ORDER BY DateTime DESC LIMIT 1;"
+                                "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
 
     get_version_sql = "SELECT " + db_sensor_check_in_version + " FROM '" + sensor_id + \
-                      "' ORDER BY DateTime DESC LIMIT 1;"
+                      "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     sensor_version = sql_execute_get_data(get_version_sql, sql_database_location=db_location)
 
     get_installed_sensors_sql = "SELECT " + db_sensor_check_in_installed_sensors + " FROM '" + sensor_id + \
-                                "' WHERE " + db_sensor_check_in_installed_sensors + " != '' ORDER BY DateTime DESC LIMIT 1;"
+                                "' WHERE " + db_sensor_check_in_installed_sensors + \
+                                " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     sensor_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
 
     get_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + sensor_id + \
-                     "' ORDER BY DateTime DESC LIMIT 1;"
+                     "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     sensor_uptime = sql_execute_get_data(get_uptime_sql, sql_database_location=db_location)
 
     get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + sensor_id + \
-                          "' WHERE " + db_sensor_check_in_primary_log + " != '' ORDER BY DateTime DESC LIMIT 1;"
+                          "' WHERE " + db_sensor_check_in_primary_log + \
+                          " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     sensor_primary_log = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
 
     get_sensor_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + sensor_id + \
-                         "' WHERE " + db_sensor_check_in_sensors_log + " != '' ORDER BY DateTime DESC LIMIT 1;"
+                         "' WHERE " + db_sensor_check_in_sensors_log + \
+                         " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
     sensor_sensor_log = sql_execute_get_data(get_sensor_log_sql, sql_database_location=db_location)
 
     write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_location)
@@ -381,7 +387,8 @@ def _get_check_in_sensor_ids(include_last_datetime=False):
         if include_last_datetime:
             return_sensor_ids_list = []
             for sensor_id in cleaned_sensor_list:
-                get_last_checkin_date_sql = "SELECT DateTime FROM '" + sensor_id + "' ORDER BY DateTime DESC LIMIT 1;"
+                get_last_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
+                                            "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
                 raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
                 clean_last_checkin_date = _get_sql_element(raw_last_checkin_date)
                 if clean_last_checkin_date != "NA":

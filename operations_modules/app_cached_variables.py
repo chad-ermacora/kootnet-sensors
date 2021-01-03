@@ -144,9 +144,9 @@ class CreateDatabaseVariables:
         self.other_table_column_notes = "Notes"
 
         self.sensor_check_in_version = "KootnetVersion"
-        self.sensor_check_in_installed_sensors = "installed_sensors"
-        self.sensor_check_in_primary_log = "primary_log"
-        self.sensor_check_in_sensors_log = "sensors_log"
+        self.sensor_check_in_installed_sensors = "InstalledSensors"
+        self.sensor_check_in_primary_log = "PrimaryLog"
+        self.sensor_check_in_sensors_log = "SensorsLog"
 
         self.trigger_state = "TriggerState"
 
