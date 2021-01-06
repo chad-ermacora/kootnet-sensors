@@ -481,7 +481,7 @@ def get_ultra_violet(return_as_dictionary=False):
     return uv_reading
 
 
-def get_accelerometer_xyz():
+def get_accelerometer_xyz(return_as_dictionary=False):
     """ Returns sensors Accelerometer XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
@@ -497,10 +497,14 @@ def get_accelerometer_xyz():
         xyz = sensors_direct.dummy_sensors.accelerometer_xyz()
     else:
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.acc_x: xyz[0],
+                database_variables.acc_y: xyz[1],
+                database_variables.acc_z: xyz[2]}
     return xyz
 
 
-def get_magnetometer_xyz():
+def get_magnetometer_xyz(return_as_dictionary=False):
     """ Returns sensors Magnetometer XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
@@ -514,10 +518,14 @@ def get_magnetometer_xyz():
         xyz = sensors_direct.dummy_sensors.magnetometer_xyz()
     else:
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.mag_x: xyz[0],
+                database_variables.mag_y: xyz[1],
+                database_variables.mag_z: xyz[2]}
     return xyz
 
 
-def get_gyroscope_xyz():
+def get_gyroscope_xyz(return_as_dictionary=False):
     """ Returns sensors Gyroscope XYZ as tuple. """
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
@@ -527,6 +535,10 @@ def get_gyroscope_xyz():
         xyz = sensors_direct.dummy_sensors.gyroscope_xyz()
     else:
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.gyro_x: xyz[0],
+                database_variables.gyro_y: xyz[1],
+                database_variables.gyro_z: xyz[2]}
     return xyz
 
 
