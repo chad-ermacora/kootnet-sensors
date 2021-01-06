@@ -163,32 +163,44 @@ class CreateDatabaseVariables:
         self.humidity = "Humidity"
         self.distance = "Distance"
 
+        self.gas_all_dic = "All_Gas_As_Dictionary"
         self.gas_resistance_index = "Gas_Resistance_Index"
         self.gas_oxidising = "Gas_Oxidising"
         self.gas_reducing = "Gas_Reducing"
         self.gas_nh3 = "Gas_NH3"
+
+        self.particulate_matter_all_dic = "All_Particulate_Matter_As_Dictionary"
         self.particulate_matter_1 = "Particulate_Matter_1"
         self.particulate_matter_2_5 = "Particulate_Matter_2_5"
         self.particulate_matter_4 = "Particulate_Matter_4"
         self.particulate_matter_10 = "Particulate_Matter_10"
 
         self.lumen = "Lumen"
+
+        self.colour_all_dic = "All_Colours_As_Dictionary"
         self.red = "Red"
         self.orange = "Orange"
         self.yellow = "Yellow"
         self.green = "Green"
         self.blue = "Blue"
         self.violet = "Violet"
+
+        self.ultra_violet_all_dic = "All_Ultra_Violet_As_Dictionary"
         self.ultra_violet_index = "Ultra_Violet_Index"
         self.ultra_violet_a = "Ultra_Violet_A"
         self.ultra_violet_b = "Ultra_Violet_B"
 
+        self.acc_all_dic = "All_Acceleration_As_Dictionary"
         self.acc_x = "Acc_X"
         self.acc_y = "Acc_Y"
         self.acc_z = "Acc_Z"
+
+        self.mag_all_dic = "All_Magnetometer_As_Dictionary"
         self.mag_x = "Mag_X"
         self.mag_y = "Mag_Y"
         self.mag_z = "Mag_Z"
+
+        self.gyro_all_dic = "All_Gyroscope_As_Dictionary"
         self.gyro_x = "Gyro_X"
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
