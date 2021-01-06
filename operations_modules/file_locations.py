@@ -48,6 +48,7 @@ if os.geteuid() != 0:
                 print("Make Directory Error: " + str(error))
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
+mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
 
