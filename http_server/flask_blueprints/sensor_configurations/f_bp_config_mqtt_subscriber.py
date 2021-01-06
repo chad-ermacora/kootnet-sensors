@@ -95,6 +95,7 @@ def get_config_mqtt_subscriber_tab():
             qos_level_2 = get_html_selected_state(True)
 
         enable_mqtt_subscriber = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber
+        enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
         enable_broker_auth = app_config_access.mqtt_subscriber_config.enable_broker_auth
         csv_mqtt_topics = ""
         for topic in app_config_access.mqtt_subscriber_config.subscribed_topics_list:
@@ -103,6 +104,7 @@ def get_config_mqtt_subscriber_tab():
         return render_template("edit_configurations/config_mqtt_subscriber.html",
                                PageURL="/MQTTConfigurationsHTML",
                                MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
+                               MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
                                MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
                                MQTTQoSLevel0=qos_level_0,
