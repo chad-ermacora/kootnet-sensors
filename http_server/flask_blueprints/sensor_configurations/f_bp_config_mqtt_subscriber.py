@@ -16,15 +16,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import zip_files, get_file_content
 from configuration_modules import app_config_access
 from operations_modules.mqtt.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
     get_restart_service_text, get_html_selected_state, get_html_hidden_state
+from sensor_modules.sensor_access import get_file_size
 
 html_config_mqtt_subscriber_routes = Blueprint("html_config_mqtt_subscriber_routes", __name__)
 
@@ -50,6 +52,27 @@ def html_get_mqtt_subscriber_view():
                            MQTTSubscriberEnabledText=enabled_text,
                            MQTTEnabledColor=enabled_color,
                            SubscriberTopics=mqtt_subscriber_log_content)
+
+
+@html_config_mqtt_subscriber_routes.route("/DownloadMQTTSubSQLDatabase")
+@auth.login_required
+def html_download_mqtt_subscriber_db_zipped():
+    log_msg = "** HTML MQTT Subscriber - Download Database Zipped - Source: "
+    logger.network_logger.debug(log_msg + str(request.remote_addr))
+    zip_name = "MQTT_Database_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
+    database_name = "MQTT_Subscriber_Database_" + app_cached_variables.hostname + ".sqlite"
+    database_content = get_file_content(file_locations.mqtt_subscriber_database, open_type="rb")
+    return_zip_file = zip_files([database_name], [database_content])
+    return send_file(return_zip_file, attachment_filename=zip_name, as_attachment=True)
+
+
+@html_config_mqtt_subscriber_routes.route("/DownloadMQTTSubSQLDatabaseRAW")
+@auth.login_required
+def html_download_mqtt_subscriber_db_raw():
+    log_msg = "** HTML MQTT Subscriber - Download Database raw - Source: "
+    logger.network_logger.debug(log_msg + str(request.remote_addr))
+    database_name = "MQTT_Subscriber_Database_" + app_cached_variables.hostname + ".sqlite"
+    return send_file(file_locations.mqtt_subscriber_database, attachment_filename=database_name, as_attachment=True)
 
 
 @html_config_mqtt_subscriber_routes.route("/EditConfigMQTTSubscriber", methods=["POST"])
@@ -105,6 +128,7 @@ def get_config_mqtt_subscriber_tab():
                                PageURL="/MQTTConfigurationsHTML",
                                MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
                                MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
+                               MQTTSubDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
                                MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
                                MQTTQoSLevel0=qos_level_0,
