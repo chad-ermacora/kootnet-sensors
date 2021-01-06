@@ -120,16 +120,11 @@ def _mqtt_publisher_server():
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
                 client.publish(app_config_access.mqtt_publisher_config.gas_topic,
-                               payload=_readings_to_text(sensor_access.get_gas()),
+                               payload=str(sensor_access.get_gas(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-                temp_send_readings = [pm_readings[database_variables.particulate_matter_1],
-                                      pm_readings[database_variables.particulate_matter_2_5],
-                                      pm_readings[database_variables.particulate_matter_4],
-                                      pm_readings[database_variables.particulate_matter_10]]
                 client.publish(app_config_access.mqtt_publisher_config.particulate_matter_topic,
-                               payload=_readings_to_text(temp_send_readings),
+                               payload=str(sensor_access.get_particulate_matter(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
                 client.publish(app_config_access.mqtt_publisher_config.lumen_topic,
@@ -137,23 +132,23 @@ def _mqtt_publisher_server():
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
                 client.publish(app_config_access.mqtt_publisher_config.color_topic,
-                               payload=_readings_to_text(sensor_access.get_ems_colors()),
+                               payload=str(sensor_access.get_ems_colors(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
                 client.publish(app_config_access.mqtt_publisher_config.ultra_violet_topic,
-                               payload=_readings_to_text(sensor_access.get_ultra_violet()),
+                               payload=str(sensor_access.get_ultra_violet(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
                 client.publish(app_config_access.mqtt_publisher_config.accelerometer_topic,
-                               payload=_readings_to_text(sensor_access.get_accelerometer_xyz()),
+                               payload=str(sensor_access.get_accelerometer_xyz(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
                 client.publish(app_config_access.mqtt_publisher_config.magnetometer_topic,
-                               payload=_readings_to_text(sensor_access.get_magnetometer_xyz()),
+                               payload=str(sensor_access.get_magnetometer_xyz(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
             if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
                 client.publish(app_config_access.mqtt_publisher_config.gyroscope_topic,
-                               payload=_readings_to_text(sensor_access.get_gyroscope_xyz()),
+                               payload=str(sensor_access.get_gyroscope_xyz(return_as_dictionary=True)),
                                qos=mqtt_publisher_qos)
         except Exception as error:
             logger.primary_logger.error("MQTT Publisher Failure: " + str(error))
@@ -167,16 +162,3 @@ def _mqtt_publisher_server():
     client.disconnect(reasoncode=0)
     client.connected_flag = False
     client.disconnect_flag = True
-
-
-def _readings_to_text(readings):
-    return_text = ""
-    if type(readings) is not list and type(readings) is not tuple:
-        return str(readings)
-    elif len(readings) > 0:
-        for reading in readings:
-            return_text += str(reading) + ","
-        return_text = return_text[:-1]
-    else:
-        return app_cached_variables.no_sensor_present
-    return return_text
