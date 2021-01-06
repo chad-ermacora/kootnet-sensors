@@ -21,6 +21,8 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
 from operations_modules import app_cached_variables
 
+database_variables = app_cached_variables.database_variables
+
 
 class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     """ Creates the MQTT Publisher Configuration object and loads settings from file (by default). """
@@ -68,26 +70,26 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.accelerometer = 0
         self.magnetometer = 0
         self.gyroscope = 0
-        self.mqtt_base_topic = "KS/D" + app_cached_variables.tmp_sensor_id[-6:] + "/"
+        self.mqtt_base_topic = "KS" + app_cached_variables.tmp_sensor_id[-12:] + "/"
 
         self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
-        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
-        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
-        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
-        self.pressure_topic = self.mqtt_base_topic + "Pressure"
-        self.altitude_topic = self.mqtt_base_topic + "Altitude"
-        self.humidity_topic = self.mqtt_base_topic + "Humidity"
-        self.distance_topic = self.mqtt_base_topic + "Distance"
-        self.gas_topic = self.mqtt_base_topic + "Gas"
-        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
-        self.lumen_topic = self.mqtt_base_topic + "Lumen"
-        self.color_topic = self.mqtt_base_topic + "Color"
-        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
-        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
-        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
-        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
+        self.sensor_uptime_topic = self.mqtt_base_topic + database_variables.sensor_uptime
+        self.system_temperature_topic = self.mqtt_base_topic + database_variables.system_temperature
+        self.env_temperature_topic = self.mqtt_base_topic + database_variables.env_temperature
+        self.pressure_topic = self.mqtt_base_topic + database_variables.pressure
+        self.altitude_topic = self.mqtt_base_topic + database_variables.altitude
+        self.humidity_topic = self.mqtt_base_topic + database_variables.humidity
+        self.distance_topic = self.mqtt_base_topic + database_variables.distance
+        self.gas_topic = self.mqtt_base_topic + database_variables.gas_all_dic
+        self.particulate_matter_topic = self.mqtt_base_topic + database_variables.particulate_matter_all_dic
+        self.lumen_topic = self.mqtt_base_topic + database_variables.lumen
+        self.color_topic = self.mqtt_base_topic + database_variables.colour_all_dic
+        self.ultra_violet_topic = self.mqtt_base_topic + database_variables.ultra_violet_all_dic
+        self.accelerometer_topic = self.mqtt_base_topic + database_variables.acc_all_dic
+        self.magnetometer_topic = self.mqtt_base_topic + database_variables.mag_all_dic
+        self.gyroscope_topic = self.mqtt_base_topic + database_variables.gyro_all_dic
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -189,10 +191,28 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.magnetometer_topic = html_request.form.get("topic_mqtt_magnetometer")
         if html_request.form.get("topic_mqtt_gyroscope").strip() != "":
             self.gyroscope_topic = html_request.form.get("topic_mqtt_gyroscope")
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         self.load_from_file = True
 
-    def _update_configuration_settings_list(self):
+    def reset_publisher_topics(self):
+        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
+        self.sensor_uptime_topic = self.mqtt_base_topic + database_variables.sensor_uptime
+        self.system_temperature_topic = self.mqtt_base_topic + database_variables.system_temperature
+        self.env_temperature_topic = self.mqtt_base_topic + database_variables.env_temperature
+        self.pressure_topic = self.mqtt_base_topic + database_variables.pressure
+        self.altitude_topic = self.mqtt_base_topic + database_variables.altitude
+        self.humidity_topic = self.mqtt_base_topic + database_variables.humidity
+        self.distance_topic = self.mqtt_base_topic + database_variables.distance
+        self.gas_topic = self.mqtt_base_topic + database_variables.gas_all_dic
+        self.particulate_matter_topic = self.mqtt_base_topic + database_variables.particulate_matter_all_dic
+        self.lumen_topic = self.mqtt_base_topic + database_variables.lumen
+        self.color_topic = self.mqtt_base_topic + database_variables.colour_all_dic
+        self.ultra_violet_topic = self.mqtt_base_topic + database_variables.ultra_violet_all_dic
+        self.accelerometer_topic = self.mqtt_base_topic + database_variables.acc_all_dic
+        self.magnetometer_topic = self.mqtt_base_topic + database_variables.mag_all_dic
+        self.gyroscope_topic = self.mqtt_base_topic + database_variables.gyro_all_dic
+
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
@@ -253,7 +273,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.gyroscope_topic = self.config_settings[37].strip()
         except Exception as error:
             logger.primary_logger.debug("MQTT Publisher Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving MQTT Publisher Configuration.")
                 self.save_config_to_file()
