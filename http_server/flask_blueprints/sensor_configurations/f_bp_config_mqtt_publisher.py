@@ -23,7 +23,6 @@ from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
     get_restart_service_text, get_html_selected_state
-from operations_modules.mqtt.server_mqtt_publisher import start_mqtt_publisher_server
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
 
@@ -43,6 +42,17 @@ def html_set_config_mqtt_publisher():
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Publisher Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/MQTTConfigurationsHTML")
+
+
+@html_config_mqtt_publisher_routes.route("/ResetMQTTPublisherTopics")
+@auth.login_required
+def html_reset_mqtt_publisher_topics():
+    logger.network_logger.debug("** HTML Reset - MQTT Publisher Topics - Source: " + str(request.remote_addr))
+    app_config_access.mqtt_publisher_config.reset_publisher_topics()
+    app_config_access.mqtt_publisher_config.update_configuration_settings_list()
+    app_config_access.mqtt_publisher_config.save_config_to_file()
+    page_msg = "MQTT Publisher Topics reset to defaults"
+    return message_and_return(page_msg, url="/MQTTConfigurationsHTML")
 
 
 def get_config_mqtt_publisher_tab():
@@ -74,7 +84,7 @@ def get_config_mqtt_publisher_tab():
         gyroscope = app_config_access.mqtt_publisher_config.gyroscope
         return render_template("edit_configurations/config_mqtt_publisher.html",
                                PageURL="/MQTTConfigurationsHTML",
-                               MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic,
+                               MQTTBaseTopic=app_config_access.mqtt_publisher_config.mqtt_base_topic[:-1],
                                MQTTPublisherChecked=get_html_checkbox_state(enable_mqtt_publisher),
                                MQTTBrokerAddress=app_config_access.mqtt_publisher_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_publisher_config.broker_server_port),
