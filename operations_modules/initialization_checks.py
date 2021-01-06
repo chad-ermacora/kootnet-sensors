@@ -19,14 +19,13 @@
 import os
 import random
 import string
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
-    run_database_integrity_check
+    run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
 
 create_directories_for_files = [file_locations.mosquitto_configuration]
@@ -46,11 +45,14 @@ def run_program_start_checks():
     if software_version.old_version != software_version.version:
         run_database_integrity_check(file_locations.sensor_database, quick=False)
         run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
+        run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
         run_configuration_upgrade_checks()
         thread_function(check_checkin_database_structure)
+        thread_function(check_mqtt_subscriber_database_structure)
     else:
         run_database_integrity_check(file_locations.sensor_database)
         run_database_integrity_check(file_locations.sensor_checkin_database)
+        run_database_integrity_check(file_locations.mqtt_subscriber_database)
     thread_function(check_main_database_structure)
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 

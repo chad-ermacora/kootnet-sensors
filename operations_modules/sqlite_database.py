@@ -102,6 +102,34 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         return False
 
 
+def check_mqtt_subscriber_database_structure(database_location=file_locations.mqtt_subscriber_database):
+    logger.primary_logger.debug("Running Check on 'MQTT Subscriber' Database")
+    try:
+        db_connection = sqlite3.connect(database_location)
+        db_cursor = db_connection.cursor()
+
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        mqtt_sensor_strings = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
+
+        for sensor_string in mqtt_sensor_strings:
+            cleaned_id = str(sensor_string[0]).strip()
+
+            for column in database_variables.get_sensor_columns_list():
+                try:
+                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                    db_cursor.execute(add_columns_sql)
+                except Exception as error:
+                    if str(error)[:21] != "duplicate column name":
+                        logger.primary_logger.error("Checkin Database Error: " + str(error))
+        db_connection.commit()
+        db_connection.close()
+        logger.primary_logger.debug("Check on 'Checkin' Database Complete")
+        return True
+    except Exception as error:
+        logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
+        return False
+
+
 def check_main_database_structure(database_location=file_locations.sensor_database):
     """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
     logger.primary_logger.debug("Running Checks on Main Database")
