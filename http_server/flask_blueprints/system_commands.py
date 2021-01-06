@@ -88,7 +88,7 @@ def get_sensor_program_version():
 @html_system_commands_routes.route("/GetSQLDBSize")
 def get_sql_db_size():
     logger.network_logger.debug("* Sensor's Database Size sent to " + str(request.remote_addr))
-    return str(sensor_access.get_db_size())
+    return str(sensor_access.get_file_size())
 
 
 @html_system_commands_routes.route("/UploadSQLDatabase", methods=["GET", "POST"])

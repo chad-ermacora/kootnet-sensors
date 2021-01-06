@@ -103,10 +103,10 @@ def get_system_reboot_count():
     return no_sensor_present
 
 
-def get_db_size():
-    """ Returns SQL Database size in MB. """
+def get_file_size(file_location=file_locations.sensor_database):
+    """ Returns provided file size in MB. By default returns main Database Size. """
     if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_sql_db_size()
+        return sensors_direct.operating_system_a.get_file_size_in_mb(file_location=file_location)
     return no_sensor_present
 
 

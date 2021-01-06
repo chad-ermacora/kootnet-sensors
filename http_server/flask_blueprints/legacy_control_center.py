@@ -60,7 +60,7 @@ def cc_get_system_data():
            "," + str(software_version.version) + \
            "," + str(round(float(sensor_access.get_cpu_temperature()), 2)) + \
            "," + str(sensor_access.get_disk_usage_gb()) + \
-           "," + str(sensor_access.get_db_size()) + \
+           "," + str(sensor_access.get_file_size()) + \
            "," + str(sensor_access.get_last_updated())
 
 

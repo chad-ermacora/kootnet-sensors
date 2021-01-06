@@ -41,7 +41,7 @@ def index():
         HostName=app_cached_variables.hostname,
         SQLDatabaseLocation=file_locations.sensor_database,
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_db_size(),
+        SQLDatabaseSize=sensor_access.get_file_size(),
         NumberNotes=sensor_access.get_db_notes_count()
     )
 

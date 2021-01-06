@@ -141,13 +141,13 @@ class CreateLinuxSystem:
         return return_disk_usage
 
     @staticmethod
-    def get_sql_db_size():
-        """ Returns Sensor SQLite DB Size in MB as a Float. """
+    def get_file_size_in_mb(file_location):
+        """ Returns Size of a file in MB as a Float. """
         try:
             # Num 1,000,000. Not using underscores to maintain compatibility with Python 3.5.x
-            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1000000
+            db_size_mb = os.path.getsize(file_location) / 1000000
         except Exception as error:
-            logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
+            logger.sensors_logger.error("Linux System - Getting File Size Failed: " + str(error))
             db_size_mb = 0.0
         return round(db_size_mb, round_decimal_to)
 
