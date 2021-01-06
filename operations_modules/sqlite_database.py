@@ -50,7 +50,7 @@ def write_to_sql_database(sql_query, data_entries,
             db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
         db_connection.close()
-        logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database)
+        logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
         logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
