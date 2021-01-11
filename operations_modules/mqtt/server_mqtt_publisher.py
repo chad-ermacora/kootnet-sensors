@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from paho.mqtt import client as mqtt
+from paho.mqtt import publish
 from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
@@ -47,111 +47,25 @@ def _mqtt_publisher_server():
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:
         # Sleep a few seconds to allow the local broker to start first
         sleep(3)
+
     broker_address = app_config_access.mqtt_publisher_config.broker_address
     broker_server_port = app_config_access.mqtt_publisher_config.broker_server_port
-    client = mqtt.Client()
-
-    not_connected = True
-    max_tries_log = 0
-    while not_connected and not app_cached_variables.restart_mqtt_publisher_thread:
-        try:
-            if app_config_access.mqtt_publisher_config.enable_broker_auth and \
-                    app_config_access.mqtt_publisher_config.broker_user != "":
-                user = app_config_access.mqtt_publisher_config.broker_user
-                password = app_config_access.mqtt_publisher_config.broker_password
-                if password != "":
-                    client.username_pw_set(user, password=password)
-                else:
-                    client.username_pw_set(user)
-            mqtt_return_code = client.connect(broker_address, broker_server_port)
-            logger.network_logger.debug("MQTT Publisher Connection Code: " + str(mqtt_return_code))
-            client.loop_start()
-            not_connected = False
-            log_msg = " -- MQTT Publisher Started publishing to "
-            logger.primary_logger.info(log_msg + str(app_config_access.mqtt_publisher_config.broker_address))
-        except Exception as error:
-            seconds_to_wait = 10
-            if max_tries_log < 5:
-                logger.network_logger.warning("MQTT Publisher Client Connection Failure: " + str(error))
-            elif max_tries_log == 5:
-                log_msg1 = "MQTT Publisher Client Connection has failed 5 times in a row. "
-                logger.primary_logger.error(log_msg1 + "Attempts limited to every 5 minutes. Logging Disabled.")
-            if max_tries_log >= 5:
-                logger.network_logger.debug("MQTT Publisher Connection Failure # " + str(max_tries_log))
-                seconds_to_wait = 300
-            max_tries_log += 1
-
-            sleep_fraction_interval = 5
-            sleep_total = 0
-            while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
-                sleep(sleep_fraction_interval)
-                sleep_total += sleep_fraction_interval
+    mqtt_pub_auth = None
+    if app_config_access.mqtt_publisher_config.enable_broker_auth and \
+            app_config_access.mqtt_publisher_config.broker_user != "":
+        user = app_config_access.mqtt_publisher_config.broker_user
+        password = app_config_access.mqtt_publisher_config.broker_password
+        if password != "":
+            mqtt_pub_auth = {"username": user}
+        else:
+            mqtt_pub_auth = {"username": user, "password": password}
 
     while not app_cached_variables.restart_mqtt_publisher_thread:
-        mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
+        publish_msgs = get_publish_messages()
         try:
-            if app_config_access.mqtt_publisher_config.sensor_uptime:
-                client.publish(app_config_access.mqtt_publisher_config.sensor_uptime_topic,
-                               payload=str(sensor_access.get_uptime_minutes()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.system_temperature and available_sensors.has_cpu_temperature:
-                client.publish(app_config_access.mqtt_publisher_config.system_temperature_topic,
-                               payload=str(sensor_access.get_cpu_temperature()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.env_temperature and available_sensors.has_env_temperature:
-                client.publish(app_config_access.mqtt_publisher_config.env_temperature_topic,
-                               payload=str(sensor_access.get_sensor_temperature()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.pressure and available_sensors.has_pressure:
-                client.publish(app_config_access.mqtt_publisher_config.pressure_topic,
-                               payload=str(sensor_access.get_pressure()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.altitude and available_sensors.has_altitude:
-                client.publish(app_config_access.mqtt_publisher_config.altitude_topic,
-                               payload=str(sensor_access.get_altitude()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.humidity and available_sensors.has_humidity:
-                client.publish(app_config_access.mqtt_publisher_config.humidity_topic,
-                               payload=str(sensor_access.get_humidity()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.distance and available_sensors.has_distance:
-                client.publish(app_config_access.mqtt_publisher_config.distance_topic,
-                               payload=str(sensor_access.get_distance()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
-                client.publish(app_config_access.mqtt_publisher_config.gas_topic,
-                               payload=str(sensor_access.get_gas(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-                client.publish(app_config_access.mqtt_publisher_config.particulate_matter_topic,
-                               payload=str(sensor_access.get_particulate_matter(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
-                client.publish(app_config_access.mqtt_publisher_config.lumen_topic,
-                               payload=str(sensor_access.get_lumen()),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
-                client.publish(app_config_access.mqtt_publisher_config.color_topic,
-                               payload=str(sensor_access.get_ems_colors(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
-                client.publish(app_config_access.mqtt_publisher_config.ultra_violet_topic,
-                               payload=str(sensor_access.get_ultra_violet(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
-                client.publish(app_config_access.mqtt_publisher_config.accelerometer_topic,
-                               payload=str(sensor_access.get_accelerometer_xyz(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
-                client.publish(app_config_access.mqtt_publisher_config.magnetometer_topic,
-                               payload=str(sensor_access.get_magnetometer_xyz(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
-            if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
-                client.publish(app_config_access.mqtt_publisher_config.gyroscope_topic,
-                               payload=str(sensor_access.get_gyroscope_xyz(return_as_dictionary=True)),
-                               qos=mqtt_publisher_qos)
+            publish.multiple(publish_msgs, hostname=broker_address, port=broker_server_port, auth=mqtt_pub_auth)
         except Exception as error:
-            logger.primary_logger.error("MQTT Publisher Failure: " + str(error))
+            logger.primary_logger.error("MQTT Publisher Send Failure: " + str(error))
 
         sleep_fraction_interval = 5
         sleep_total = 0
@@ -159,6 +73,91 @@ def _mqtt_publisher_server():
         while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
             sleep(sleep_fraction_interval)
             sleep_total += sleep_fraction_interval
-    client.disconnect(reasoncode=0)
-    client.connected_flag = False
-    client.disconnect_flag = True
+
+
+def get_publish_messages():
+    publish_msgs = []
+    mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
+    try:
+        if app_config_access.mqtt_publisher_config.sensor_uptime:
+            add_topic = app_config_access.mqtt_publisher_config.sensor_uptime_topic
+            sensor_data = str(sensor_access.get_uptime_minutes())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.system_temperature and available_sensors.has_cpu_temperature:
+            add_topic = app_config_access.mqtt_publisher_config.system_temperature_topic
+            sensor_data = str(sensor_access.get_cpu_temperature())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.env_temperature and available_sensors.has_env_temperature:
+            add_topic = app_config_access.mqtt_publisher_config.env_temperature_topic
+            sensor_data = str(sensor_access.get_sensor_temperature())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.pressure and available_sensors.has_pressure:
+            add_topic = app_config_access.mqtt_publisher_config.pressure_topic
+            sensor_data = str(sensor_access.get_pressure())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.altitude and available_sensors.has_altitude:
+            add_topic = app_config_access.mqtt_publisher_config.altitude_topic
+            sensor_data = str(sensor_access.get_altitude())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.humidity and available_sensors.has_humidity:
+            add_topic = app_config_access.mqtt_publisher_config.humidity_topic
+            sensor_data = str(sensor_access.get_humidity())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.distance and available_sensors.has_distance:
+            add_topic = app_config_access.mqtt_publisher_config.distance_topic
+            sensor_data = str(sensor_access.get_distance())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
+            add_topic = app_config_access.mqtt_publisher_config.gas_topic
+            sensor_data = str(sensor_access.get_gas(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
+            add_topic = app_config_access.mqtt_publisher_config.particulate_matter_topic
+            sensor_data = str(sensor_access.get_particulate_matter(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
+            add_topic = app_config_access.mqtt_publisher_config.lumen_topic
+            sensor_data = str(sensor_access.get_lumen())
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
+            add_topic = app_config_access.mqtt_publisher_config.color_topic
+            sensor_data = str(sensor_access.get_ems_colors(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
+            add_topic = app_config_access.mqtt_publisher_config.ultra_violet_topic
+            sensor_data = str(sensor_access.get_ultra_violet(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
+            add_topic = app_config_access.mqtt_publisher_config.accelerometer_topic
+            sensor_data = str(sensor_access.get_accelerometer_xyz(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
+            add_topic = app_config_access.mqtt_publisher_config.magnetometer_topic
+            sensor_data = str(sensor_access.get_magnetometer_xyz(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
+            add_topic = app_config_access.mqtt_publisher_config.gyroscope_topic
+            sensor_data = str(sensor_access.get_gyroscope_xyz(return_as_dictionary=True))
+            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+
+        return publish_msgs
+    except Exception as error:
+        logger.primary_logger.error("MQTT Publisher Sensor Get Failure: " + str(error))
+        add_topic = "Getting Sensor Data Failed for " + app_config_access.mqtt_publisher_config.mqtt_base_topic
+        sensor_data = "Error"
+        publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        return publish_msgs
