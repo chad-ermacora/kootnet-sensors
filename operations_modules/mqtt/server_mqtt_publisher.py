@@ -65,7 +65,7 @@ def _mqtt_publisher_server():
         try:
             publish.multiple(publish_msgs, hostname=broker_address, port=broker_server_port, auth=mqtt_pub_auth)
         except Exception as error:
-            logger.primary_logger.error("MQTT Publisher Send Failure: " + str(error))
+            logger.network_logger.error("MQTT Publisher Send Failure: " + str(error))
 
         sleep_fraction_interval = 5
         sleep_total = 0
