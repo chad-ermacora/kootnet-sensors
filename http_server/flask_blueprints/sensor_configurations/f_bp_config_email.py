@@ -24,7 +24,7 @@ from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_hidden_state, get_html_checkbox_state, \
-    message_and_return, get_html_selected_state
+    message_and_return
 from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
 
 html_email_routes = Blueprint("html_email_routes", __name__)

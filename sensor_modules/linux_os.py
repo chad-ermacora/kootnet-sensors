@@ -14,7 +14,6 @@ import psutil
 from time import strftime
 from operations_modules.app_cached_variables import database_variables, current_platform
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
 
