@@ -61,10 +61,14 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
 
         self.enable_mqtt_subscriber = 0
         self.enable_mqtt_sql_recording = 0
+        self.enable_broker_auth = 0
+
         if html_request.form.get("enable_mqtt_subscriber") is not None:
             self.enable_mqtt_subscriber = 1
         if html_request.form.get("enable_mqtt_sql_recording") is not None:
             self.enable_mqtt_sql_recording = 1
+        if html_request.form.get("enable_broker_auth") is not None:
+            self.enable_broker_auth = 1
 
         if html_request.form.get("sub_broker_address") is not None:
             self.broker_address = html_request.form.get("sub_broker_address")
@@ -73,8 +77,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
                 self.broker_server_port = int(html_request.form.get("sub_broker_port"))
             except Exception as error:
                 logger.network_logger.error("Invalid Broker Port #: " + str(error))
-        if html_request.form.get("enable_broker_auth") is not None:
-            self.enable_broker_auth = 1
+
         if html_request.form.get("broker_username") is not None:
             self.broker_user = str(html_request.form.get("broker_username"))
         if html_request.form.get("broker_password") is not None:
