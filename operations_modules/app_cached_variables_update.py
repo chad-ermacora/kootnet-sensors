@@ -16,8 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
+import os
 import psutil
+from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -68,6 +69,7 @@ def update_cached_variables():
     app_cached_variables.program_last_updated = sensor_access.get_last_updated()
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
     app_cached_variables.operating_system_name = os_name
+    update_uploaded_databases_names_list()
 
 
 def start_ip_hostname_refresh():
@@ -84,3 +86,13 @@ def _ip_hostname_refresh():
         app_cached_variables.ip = sensor_access.get_ip()
         app_cached_variables.hostname = sensor_access.get_hostname()
         sleep(3600)
+
+
+def update_uploaded_databases_names_list():
+    app_cached_variables.uploaded_databases_list = []
+    try:
+        _, _, filenames = next(os.walk(file_locations.uploaded_databases_folder))
+        for database_name in filenames:
+            app_cached_variables.uploaded_databases_list.append(database_name)
+    except Exception as custom_db_error:
+        logger.primary_logger.warning(" -- Make Directory Error: " + str(custom_db_error))
