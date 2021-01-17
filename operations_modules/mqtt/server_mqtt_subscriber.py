@@ -35,22 +35,29 @@ class CreateMQTTSubscriberTopicsRetrieval:
         mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
         cb_auth = None
 
-        if app_config_access.mqtt_subscriber_config.enable_broker_auth:
+        if app_config_access.mqtt_subscriber_config.enable_broker_auth and \
+                app_config_access.mqtt_subscriber_config.broker_user != "":
             broker_user = app_config_access.mqtt_subscriber_config.broker_user
             broker_password = None
-            if app_config_access.mqtt_subscriber_config.broker_user != "":
-                if app_config_access.mqtt_subscriber_config.broker_password != "":
-                    broker_password = app_config_access.mqtt_subscriber_config.broker_password
-                cb_auth = {'username': broker_user, 'password': broker_password}
+            if app_config_access.mqtt_subscriber_config.broker_password != "":
+                broker_password = app_config_access.mqtt_subscriber_config.broker_password
+            cb_auth = {'username': broker_user, 'password': broker_password}
 
-        subscribe.callback(self._on_mqtt_message, subscribed_topics_list, hostname=broker_address,
+        subscribe.callback(callback=_on_mqtt_message, topics=subscribed_topics_list, hostname=broker_address,
                            port=broker_server_port, auth=cb_auth, tls=None, qos=mqtt_qos)
 
-    @staticmethod
-    def _on_mqtt_message(client, userdata, message):
-        logger.mqtt_subscriber_logger.info(str(message.topic) + " = " + str(message.payload.decode("UTF-8")))
-        if app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording:
-            _write_mqtt_message_to_sql_database(message)
+
+# When using publish.multiple you CANNOT use callbacks. It prevents data transmission (stops after connecting)
+# Keeping for diagnostics only
+def _subscriber_on_connect(client, userdata, flags, rc):
+    logger.network_logger.debug("MQTT Subscriber Connection Code: " + str(rc) + " Flag: " + str(flags))
+    print("MQTT Subscription Connection Code: " + str(rc) + " Flag: " + str(flags))
+
+
+def _on_mqtt_message(client, userdata, message):
+    logger.mqtt_subscriber_logger.info(str(message.topic) + " = " + str(message.payload.decode("UTF-8")))
+    if app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording:
+        _write_mqtt_message_to_sql_database(message)
 
 
 def start_mqtt_subscriber_server():
