@@ -253,6 +253,11 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+class CreateEmptyThreadClass:
+    def __init__(self):
+        self.current_state = "Disabled"
+
+
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
                  "RestartService": "systemctl daemon-reload ; systemctl restart KootnetSensors.service",
@@ -273,11 +278,6 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
                  "ShutdownSystem": "shutdown -h now"}
 
 
-class CreateEmptyThreadClass:
-    def __init__(self):
-        self.current_state = "Disabled"
-
-
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
@@ -291,6 +291,9 @@ total_ram_memory = 0.0
 total_ram_memory_size_type = " MB"
 tmp_sensor_id = ""
 database_variables = CreateDatabaseVariables()
+
+# Names of all the uploaded databases for graphing (Only names, no directory path)
+uploaded_databases_list = []
 
 # Is filled with Currently available online Stable / Developmental versions
 standard_version_available = "Retrieving ..."
