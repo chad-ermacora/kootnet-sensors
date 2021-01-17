@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import file_locations
+from operations_modules.app_cached_variables import database_variables
 
 graph_creation_in_progress = False
 
@@ -74,12 +75,8 @@ class CreateGraphData:
         self.row_count = 0
         self.graph_collection = []
 
-        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
-                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Altitude", "Humidity", "Lumen",
-                              "Distance", "Gas_Resistance_Index", "Gas_Oxidising", "Gas_Reducing", "Gas_NH3",
-                              "Particulate_Matter_1", "Particulate_Matter_2_5", "Particulate_Matter_10",
-                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Ultra_Violet_Index",
-                              "Ultra_Violet_A", "Ultra_Violet_B"]
+        # graph_columns is a list of SQL database column names
+        self.graph_columns = database_variables.get_sensor_columns_list()
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
