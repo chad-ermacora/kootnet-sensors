@@ -34,18 +34,13 @@ except Exception as error:
 
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
+uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 
 if os.geteuid() != 0:
-    sensor_data_dir = "/home/" + str(getuser()).strip() + "/kootnet_data"
-    sensor_config_dir = "/home/" + str(getuser()).strip() + "/kootnet_data/config"
-
-    directory_list = [sensor_data_dir, sensor_config_dir, sensor_data_dir + "/logs", sensor_data_dir + "/scripts"]
-    for directory in directory_list:
-        if not os.path.isdir(directory):
-            try:
-                os.mkdir(directory)
-            except Exception as error:
-                print("Make Directory Error: " + str(error))
+    system_user = str(getuser()).strip()
+    sensor_data_dir = "/home/" + system_user + "/kootnet_data"
+    sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
+    uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"

@@ -28,8 +28,6 @@ from operations_modules.sqlite_database import check_main_database_structure, ch
     run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
 
-create_directories_for_files = [file_locations.mosquitto_configuration]
-
 
 def run_program_start_checks():
     """
@@ -58,16 +56,22 @@ def run_program_start_checks():
 
 
 def _check_directories():
-    try:
-        if app_cached_variables.running_with_root:
-            for directory_check in create_directories_for_files:
-                current_directory = ""
-                for found_dir in directory_check.split("/")[1:-1]:
-                    current_directory += "/" + str(found_dir)
-                    if not os.path.isdir(current_directory):
-                        os.mkdir(current_directory)
-    except Exception as error:
-        logger.primary_logger.error("Problem Checking Program Directories: " + str(error))
+    create_directories = [file_locations.sensor_data_dir, file_locations.sensor_config_dir,
+                          file_locations.uploaded_databases_folder, file_locations.sensor_data_dir + "/logs",
+                          file_locations.sensor_data_dir + "/scripts"]
+
+    if os.geteuid() == 0:
+        current_directory = ""
+        for found_dir in file_locations.mosquitto_configuration.split("/")[1:-1]:
+            current_directory += "/" + str(found_dir)
+            create_directories.append(current_directory)
+
+    for directory in create_directories:
+        if not os.path.isdir(directory):
+            try:
+                os.mkdir(directory)
+            except Exception as error:
+                logger.primary_logger.warning(" -- Make Directory Error: " + str(error))
 
 
 def _check_sensor_id():
