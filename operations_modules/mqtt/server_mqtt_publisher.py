@@ -55,8 +55,8 @@ def _mqtt_publisher_server():
             app_config_access.mqtt_publisher_config.broker_user != "":
         user = app_config_access.mqtt_publisher_config.broker_user
         password = app_config_access.mqtt_publisher_config.broker_password
-        if password != "":
-            mqtt_pub_auth = {"username": user}
+        if password == "":
+            mqtt_pub_auth = {"username": user, "password": None}
         else:
             mqtt_pub_auth = {"username": user, "password": password}
 
@@ -73,6 +73,20 @@ def _mqtt_publisher_server():
         while sleep_total < seconds_to_wait and not app_cached_variables.restart_mqtt_publisher_thread:
             sleep(sleep_fraction_interval)
             sleep_total += sleep_fraction_interval
+
+
+# When using publish.multiple you CANNOT use callbacks. It prevents data transmission (stops after connecting)
+# Keeping for diagnostics only
+def _publish_on_connect(client, userdata, flags, rc):
+    logger.network_logger.debug("MQTT Publisher Connection Code: " + str(rc))
+    print("MQTT Publisher Connection Code: " + str(rc))
+
+
+# When using publish.multiple you CANNOT use callbacks. It prevents data transmission (stops after connecting)
+# Keeping for diagnostics only
+def _publish_on_pub(client, userdata, mid):
+    logger.network_logger.debug("MQTT Publisher Pub Code: " + str(mid))
+    print("MQTT Publisher Pub Code: " + str(mid))
 
 
 def get_publish_messages():
