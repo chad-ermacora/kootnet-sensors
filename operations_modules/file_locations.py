@@ -85,6 +85,7 @@ osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
 
 plotly_graph_interval = sensor_data_dir + "/IntervalPlotlySensorGraph.html"
 plotly_graph_triggers = sensor_data_dir + "/TriggersPlotlySensorGraph.html"
+plotly_graph_mqtt = sensor_data_dir + "/MQTTPlotlySensorGraph.html"
 
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
