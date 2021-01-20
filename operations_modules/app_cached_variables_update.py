@@ -94,5 +94,6 @@ def update_uploaded_databases_names_list():
         _, _, filenames = next(os.walk(file_locations.uploaded_databases_folder))
         for database_name in filenames:
             app_cached_variables.uploaded_databases_list.append(database_name)
+        app_cached_variables.uploaded_databases_list.sort()
     except Exception as custom_db_error:
         logger.primary_logger.warning(" -- Make Directory Error: " + str(custom_db_error))
