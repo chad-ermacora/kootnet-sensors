@@ -23,64 +23,47 @@ from operations_modules import logger
 from configuration_modules import app_config_access
 
 round_decimal_to = 5
-pause_sensor_during_access_sec = 0.1
-gas_keep_alive_update_sec = 1
+# Update readings in seconds
+sleep_between_readings_seconds = 1
 
 
 class CreateSGP30:
     """ Creates Function access to the Pimoroni SGP30. """
 
     def __init__(self):
-        self.sensor_in_use = False
+        self.gas_resistance_var = 0.0
+        self.e_co2_var = 0.0
+
         try:
             sgp30_import = __import__("sensor_modules.drivers.sgp30", fromlist=["SGP30"])
             self.sensor = sgp30_import.SGP30()
-            self.sensor_in_use = True
             self.sensor.start_measurement()
-            self.sensor_in_use = False
-            self.thread_gas_keep_alive = Thread(target=self._gas_readings_keep_alive)
-            self.thread_gas_keep_alive.daemon = True
-            self.thread_gas_keep_alive.start()
+            self.thread_readings_updater = Thread(target=self._readings_updater)
+            self.thread_readings_updater.daemon = True
+            self.thread_readings_updater.start()
             logger.sensors_logger.debug("Pimoroni SGP30 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni SGP30 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_sgp30 = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
 
-    def _gas_readings_keep_alive(self):
-        logger.sensors_logger.debug("Pimoroni SGP30 Gas keep alive started")
+    def _readings_updater(self):
+        logger.sensors_logger.debug("Pimoroni SGP30 readings updater started")
         while True:
-            while self.sensor_in_use:
-                time.sleep(pause_sensor_during_access_sec)
-            self.sensor_in_use = True
-            self.sensor.get_air_quality()
-            self.sensor_in_use = False
-            time.sleep(gas_keep_alive_update_sec)
+            try:
+                eco2, tvoc = self.sensor.get_air_quality()
+                self.gas_resistance_var = tvoc / 1000
+                self.e_co2_var = eco2 / 1000
+            except Exception as error:
+                logger.sensors_logger.error("Pimoroni SGP30 Readings Update Failed: " + str(error))
+                self.gas_resistance_var = 0.0
+                self.e_co2_var = 0.0
+            time.sleep(sleep_between_readings_seconds)
 
     def gas_resistance_index(self):
         """ Returns Gas Resistance Index as a float in kΩ. """
-        while self.sensor_in_use:
-            time.sleep(pause_sensor_during_access_sec)
-        self.sensor_in_use = True
-        eco2, tvoc = self.sensor.get_air_quality()
-        self.sensor_in_use = False
-        try:
-            gas_var = round(tvoc / 1000, round_decimal_to)
-        except Exception as error:
-            gas_var = 0.0
-            logger.sensors_logger.error("Pimoroni SGP30 GAS Resistance - Failed: " + str(error))
-        return gas_var
+        return round(self.gas_resistance_var, round_decimal_to)
 
     def gas_e_co2(self):
         """ Returns Equivalent CO2 as a float in kΩ? """
-        while self.sensor_in_use:
-            time.sleep(pause_sensor_during_access_sec)
-        self.sensor_in_use = True
-        eco2, tvoc = self.sensor.get_air_quality()
-        self.sensor_in_use = False
-        try:
-            gas_var = round(eco2 / 1000, round_decimal_to)
-        except Exception as error:
-            gas_var = 0.0
-            logger.sensors_logger.error("Pimoroni SGP30 E-CO2 Resistance - Failed: " + str(error))
-        return gas_var
+        return round(self.e_co2_var, round_decimal_to)
