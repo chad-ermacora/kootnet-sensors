@@ -178,18 +178,22 @@ def _get_sensor_latency(sensor_function):
         return 0.0
 
 
-def get_cpu_temperature():
+def get_cpu_temperature(return_as_dictionary=False):
     """ Returns sensors CPU temperature. """
     if app_config_access.installed_sensors.raspberry_pi:
         temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         temperature = sensors_direct.dummy_sensors.cpu_temperature()
     else:
+        if return_as_dictionary:
+            return {database_variables.system_temperature: no_sensor_present}
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.system_temperature: temperature}
     return temperature
 
 
-def get_sensor_temperature(temperature_correction=True, get_both=False):
+def get_sensor_temperature(temperature_correction=True, get_both=False, return_as_dictionary=False):
     """ Returns sensors Environmental temperature. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
@@ -212,6 +216,8 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
     else:
         if get_both:
             return [no_sensor_present, no_sensor_present]
+        if return_as_dictionary:
+            return {database_variables.env_temperature: no_sensor_present}
         return no_sensor_present
 
     new_temp = temperature
@@ -240,23 +246,23 @@ def get_sensor_temperature(temperature_correction=True, get_both=False):
             return new_temp
     if get_both:
         return [temperature, new_temp]
+    if return_as_dictionary:
+        return {database_variables.env_temperature: temperature}
     return temperature
 
 
 def get_temperature_correction():
     raw_and_corrected = get_sensor_temperature(get_both=True)
-    temp_difference = 0.0
     if raw_and_corrected[0] != no_sensor_present:
         try:
             temp_difference = raw_and_corrected[1] - raw_and_corrected[0]
+            return round(temp_difference, 5)
         except Exception as error:
             logger.sensors_logger.warning("Unable to get Env Temperature Correction amount: " + str(error))
-        return round(temp_difference, 5)
-    else:
-        return temp_difference
+    return 0.0
 
 
-def get_pressure():
+def get_pressure(return_as_dictionary=False):
     """ Returns sensors pressure. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         pressure = sensors_direct.pimoroni_enviro_a.pressure()
@@ -273,16 +279,22 @@ def get_pressure():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pressure = sensors_direct.dummy_sensors.pressure()
     else:
+        if return_as_dictionary:
+            return {database_variables.pressure: no_sensor_present}
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.pressure: pressure}
     return pressure
 
 
-def get_altitude(qnh=1013.25):
+def get_altitude(qnh=1013.25, return_as_dictionary=False):
     """ Returns sensors altitude. """
     round_decimal_to = 5
     temperature = get_sensor_temperature()
     pressure = get_pressure()
     if pressure == no_sensor_present or temperature == no_sensor_present:
+        if return_as_dictionary:
+            return {database_variables.altitude: no_sensor_present}
         return no_sensor_present
 
     try:
@@ -290,10 +302,12 @@ def get_altitude(qnh=1013.25):
     except Exception as error:
         var_altitude = 0.0
         logger.sensors_logger.error("Altitude Calculation using Temperature & Pressure Failed: " + str(error))
+    if return_as_dictionary:
+        return {database_variables.altitude: round(var_altitude, round_decimal_to)}
     return round(var_altitude, round_decimal_to)
 
 
-def get_humidity():
+def get_humidity(return_as_dictionary=False):
     """ Returns sensors humidity. """
     if app_config_access.installed_sensors.pimoroni_enviro2:
         humidity = sensors_direct.pimoroni_enviro2_a.humidity()
@@ -306,7 +320,11 @@ def get_humidity():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         humidity = sensors_direct.dummy_sensors.humidity()
     else:
+        if return_as_dictionary:
+            return {database_variables.humidity: no_sensor_present}
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.humidity: humidity}
     return humidity
 
 
@@ -328,7 +346,7 @@ def get_dew_point():
     return 0.0
 
 
-def get_distance():
+def get_distance(return_as_dictionary=False):
     """ Returns sensors distance. """
     if app_config_access.installed_sensors.pimoroni_enviro2:
         distance = sensors_direct.pimoroni_enviro2_a.distance()
@@ -341,7 +359,11 @@ def get_distance():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         distance = sensors_direct.dummy_sensors.distance()
     else:
+        if return_as_dictionary:
+            return {database_variables.distance: no_sensor_present}
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.distance: distance}
     return distance
 
 
@@ -404,7 +426,7 @@ def get_particulate_matter(return_as_dictionary=False):
     return return_list
 
 
-def get_lumen():
+def get_lumen(return_as_dictionary=False):
     """ Returns sensors lumen. """
     if app_config_access.installed_sensors.pimoroni_enviro:
         lumen = sensors_direct.pimoroni_enviro_a.lumen()
@@ -419,7 +441,11 @@ def get_lumen():
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         lumen = sensors_direct.dummy_sensors.lumen()
     else:
+        if return_as_dictionary:
+            return {database_variables.lumen: no_sensor_present}
         return no_sensor_present
+    if return_as_dictionary:
+        return {database_variables.lumen: lumen}
     return lumen
 
 
