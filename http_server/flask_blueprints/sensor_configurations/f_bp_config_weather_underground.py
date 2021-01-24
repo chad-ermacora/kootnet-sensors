@@ -23,7 +23,7 @@ from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
     get_restart_service_text
-from operations_modules.online_services_modules.weather_underground import start_weather_underground_server
+from online_services_modules.weather_underground import start_weather_underground_server
 
 html_config_weather_underground_routes = Blueprint("html_config_weather_underground_routes", __name__)
 

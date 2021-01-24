@@ -22,8 +22,8 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return, get_restart_service_text
-from operations_modules.online_services_modules.open_sense_map import start_open_sense_map_server
-from operations_modules.online_services_modules.open_sense_map import add_sensor_to_account
+from online_services_modules.open_sense_map import start_open_sense_map_server
+from online_services_modules.open_sense_map import add_sensor_to_account
 
 html_config_osm_routes = Blueprint("html_config_osm_routes", __name__)
 

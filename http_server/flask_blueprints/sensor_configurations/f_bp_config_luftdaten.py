@@ -22,7 +22,7 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
-from operations_modules.online_services_modules.luftdaten import start_luftdaten_server
+from online_services_modules.luftdaten import start_luftdaten_server
 
 html_config_luftdaten_routes = Blueprint("html_config_luftdaten_routes", __name__)
 
