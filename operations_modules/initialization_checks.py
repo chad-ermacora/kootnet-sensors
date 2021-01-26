@@ -88,7 +88,7 @@ def _check_sensor_id():
     except Exception as error:
         logger.primary_logger.error("Problem Creating Sensor ID: " + str(error))
         random_id = "Error"
-    app_cached_variables.tmp_sensor_id = random_id
+    app_cached_variables.tmp_sensor_id = "KS" + random_id
 
 
 def _set_file_permissions():
