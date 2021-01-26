@@ -299,15 +299,23 @@
             <h3><u><strong><a style="color: black;">Sensor MQTT Topics</a></strong></u><br></h3>
 
             <p>
-                Unless you need to change the Topics, it is recommended to leave them as default.<br><br>
-                If you want to change what the "Sensor's name" is in the MQTT Database, change only the
-                first part of each topic before the '/'.
+                Unless you need to change the Topics, it is recommended to leave them as default.
             </p>
 
+            <br>
+
             <div class="mui-textfield">
-                Default Base topic (Sensor's unique ID)
-                <h4 style="color: darkblue;">{{ MQTTBaseTopic }}</h4>
+                <label style="color: black;">
+                    MQTT Base Topic(s)<br>
+                    Ex. Sensor1 or Home/Sensor1<br>
+                    Used as the Sensor's Name in MQTT subscriber recording
+                    <br>
+                    <input style="width: 275px;" type="text" maxlength="250" name="topic_mqtt_base_topic"
+                           value="{{ MQTTBaseTopic }}">
+                </label>
             </div>
+
+            <br><br>
 
             <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                 type="button" onclick="window.location.href = '/ResetMQTTPublisherTopics';">

@@ -30,7 +30,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 38
+        self.valid_setting_count = 39
         self.config_settings_names = [
             "Enable MQTT Publisher", "Broker Server Address", "Broker Port #", "Enable Authentication",
             "User Name (Optional)", "Password (Optional)", "Seconds Between Reading Posts",
@@ -41,7 +41,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             "System Uptime Topic", "CPU Temperature Topic", "Environmental Temperature Topic", "Pressure Topic",
             "Altitude Topic", "Humidity Topic", "Distance Topic", "GAS Topic", "Particulate Matter Topic",
             "Lumen Topic", "Colors Topic", "Ultra Violet Topic", "Accelerometer Topic", "Magnetometer Topic",
-            "Gyroscope Topic"
+            "Gyroscope Topic", "MQTT Base Topic"
         ]
 
         self.enable_mqtt_publisher = 0
@@ -105,6 +105,10 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.__init__(load_from_file=False)
         if html_request.form.get("enable_mqtt_publisher") is not None:
             self.enable_mqtt_publisher = 1
+
+        base_topic = str(html_request.form.get("topic_mqtt_base_topic"))
+        if base_topic != "":
+            self.mqtt_base_topic = base_topic + "/"
 
         if html_request.form.get("publish_broker_address") is not None:
             self.broker_address = html_request.form.get("publish_broker_address")
@@ -226,7 +230,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             str(self.altitude_topic), str(self.humidity_topic), str(self.distance_topic), str(self.gas_topic),
             str(self.particulate_matter_topic), str(self.lumen_topic), str(self.color_topic),
             str(self.ultra_violet_topic), str(self.accelerometer_topic), str(self.magnetometer_topic),
-            str(self.gyroscope_topic)
+            str(self.gyroscope_topic), str(self.mqtt_base_topic)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -271,6 +275,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.accelerometer_topic = self.config_settings[35].strip()
             self.magnetometer_topic = self.config_settings[36].strip()
             self.gyroscope_topic = self.config_settings[37].strip()
+            self.mqtt_base_topic = self.config_settings[38].strip()
         except Exception as error:
             logger.primary_logger.debug("MQTT Publisher Config: " + str(error))
             self.update_configuration_settings_list()
