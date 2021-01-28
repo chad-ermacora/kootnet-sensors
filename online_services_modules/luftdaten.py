@@ -68,8 +68,12 @@ def _luftdaten_server():
 
 def _bmp280():
     try:
-        temperature = float(sensor_access.get_sensor_temperature())
-        pressure = float(sensor_access.get_pressure()) * 100.0
+        temperature = sensor_access.get_environment_temperature()
+        if temperature is not None:
+            temperature = temperature[database_variables.env_temperature]
+        pressure = sensor_access.get_pressure()
+        if pressure is not None:
+            pressure = pressure[database_variables.pressure] * 100.0
 
         headers = {"X-PIN": "3",
                    "X-Sensor": "raspi-" + luftdaten_config.station_id,
@@ -91,8 +95,16 @@ def _bmp280():
 
 def _bme280():
     try:
-        temperature = sensor_access.get_sensor_temperature()
-        pressure = sensor_access.get_pressure() * 100
+        temperature = sensor_access.get_environment_temperature()
+        if temperature is not None:
+            temperature = temperature[database_variables.env_temperature]
+        pressure = sensor_access.get_pressure()
+        if pressure is not None:
+            pressure = pressure[database_variables.pressure] * 100
+
+        humidity = sensor_access.get_humidity()
+        if humidity is not None:
+            humidity = humidity[database_variables.humidity]
 
         headers = {"X-PIN": "11",
                    "X-Sensor": "raspi-" + luftdaten_config.station_id,
@@ -100,10 +112,11 @@ def _bme280():
                    "cache-control": "no-cache"}
 
         post_reply = requests.post(url=luftdaten_config.luftdaten_url,
-                                   json={"software_version": luftdaten_config.return_software_version, "sensordatavalues": [
-                                       {"value_type": "temperature", "value": str(temperature)},
-                                       {"value_type": "pressure", "value": str(pressure)},
-                                       {"value_type": "humidity", "value": str(sensor_access.get_humidity())}]},
+                                   json={"software_version": luftdaten_config.return_software_version,
+                                         "sensordatavalues": [
+                                             {"value_type": "temperature", "value": str(temperature)},
+                                             {"value_type": "pressure", "value": str(pressure)},
+                                             {"value_type": "humidity", "value": str(humidity)}]},
                                    headers=headers)
         if post_reply.ok:
             logger.network_logger.debug("Luftdaten - BME280 OK - Status Code: " + str(post_reply.status_code))
@@ -116,23 +129,23 @@ def _bme280():
 
 def _pms5003():
     try:
-        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-        pm10_reading = ""
-        pm25_reading = ""
-        if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
+        pm_readings = sensor_access.get_particulate_matter()
+        pm10_reading = 0.0
+        pm25_reading = 0.0
+        if pm_readings is not None:
             if database_variables.particulate_matter_10 in pm_readings:
-                pm10_reading = str(pm_readings[database_variables.particulate_matter_10])
+                pm10_reading = pm_readings[database_variables.particulate_matter_10]
             if database_variables.particulate_matter_2_5 in pm_readings:
-                pm25_reading = str(pm_readings[database_variables.particulate_matter_2_5])
+                pm25_reading = pm_readings[database_variables.particulate_matter_2_5]
             headers = {"X-PIN": "1",
                        "X-Sensor": "raspi-" + luftdaten_config.station_id,
                        "Content-Type": "application/json",
                        "cache-control": "no-cache"}
 
             post_reply = requests.post(url=luftdaten_config.luftdaten_url,
-                                       json={"software_version": luftdaten_config.return_software_version, "sensordatavalues": [
-                                           {"value_type": "P1", "value": pm10_reading},
-                                           {"value_type": "P2", "value": pm25_reading}]},
+                                       json={"software_version": luftdaten_config.return_software_version,
+                                             "sensordatavalues": [{"value_type": "P1", "value": str(pm10_reading)},
+                                                                  {"value_type": "P2", "value": str(pm25_reading)}]},
                                        headers=headers)
             if post_reply.ok:
                 logger.network_logger.debug("Luftdaten - PMS5003 OK - Status Code: " + str(post_reply.status_code))

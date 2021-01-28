@@ -29,7 +29,7 @@ from sensor_modules import sensor_access
 
 
 no_sensor_present = app_cached_variables.no_sensor_present
-database_variables = app_cached_variables.database_variables
+db_v = app_cached_variables.database_variables
 
 
 def start_open_sense_map_server():
@@ -51,88 +51,88 @@ def _open_sense_map_server():
         while not app_cached_variables.restart_open_sense_map_thread:
             body_json = {}
             try:
-                env_temperature = str(sensor_access.get_sensor_temperature())
-                if env_temperature != no_sensor_present and osm_config.temperature_id != "":
-                    body_json[osm_config.temperature_id] = env_temperature
+                env_temperature = sensor_access.get_environment_temperature()
+                if env_temperature is not None and osm_config.temperature_id != "":
+                    body_json[osm_config.temperature_id] = env_temperature[db_v.env_temperature]
 
-                pressure_reading = str(sensor_access.get_pressure())
-                if pressure_reading != no_sensor_present and osm_config.pressure_id != "":
-                    body_json[osm_config.pressure_id] = pressure_reading
+                pressure_reading = sensor_access.get_pressure()
+                if pressure_reading is not None and osm_config.pressure_id != "":
+                    body_json[osm_config.pressure_id] = pressure_reading[db_v.pressure]
 
-                altitude_reading = str(sensor_access.get_altitude())
-                if altitude_reading != no_sensor_present and osm_config.altitude_id != "":
-                    body_json[osm_config.altitude_id] = altitude_reading
+                altitude_reading = sensor_access.get_altitude()
+                if altitude_reading is not None and osm_config.altitude_id != "":
+                    body_json[osm_config.altitude_id] = altitude_reading[db_v.altitude]
 
-                humidity_reading = str(sensor_access.get_humidity())
-                if humidity_reading != no_sensor_present and osm_config.humidity_id != "":
-                    body_json[osm_config.humidity_id] = str(sensor_access.get_humidity())
+                humidity_reading = sensor_access.get_humidity()
+                if humidity_reading is not None and osm_config.humidity_id != "":
+                    body_json[osm_config.humidity_id] = humidity_reading[db_v.humidity]
 
-                gas_readings = sensor_access.get_gas(return_as_dictionary=True)
-                if gas_readings != no_sensor_present:
-                    if database_variables.gas_resistance_index in gas_readings and osm_config.gas_voc_id != "":
-                        gas_voc = gas_readings[database_variables.gas_resistance_index]
-                        body_json[osm_config.gas_voc_id] = str(gas_voc)
-                    if database_variables.gas_oxidising in gas_readings and osm_config.gas_oxidised_id != "":
-                        gas_oxidised = gas_readings[database_variables.gas_oxidising]
-                        body_json[osm_config.gas_oxidised_id] = str(gas_oxidised)
-                    if database_variables.gas_reducing in gas_readings and osm_config.gas_reduced_id != "":
-                        gas_reduced = gas_readings[database_variables.gas_reducing]
-                        body_json[osm_config.gas_reduced_id] = str(gas_reduced)
-                    if database_variables.gas_nh3 in gas_readings and osm_config.gas_nh3_id != "":
-                        gas_nh3 = gas_readings[database_variables.gas_nh3]
-                        body_json[osm_config.gas_nh3_id] = str(gas_nh3)
+                gas_readings = sensor_access.get_gas()
+                if gas_readings is not None:
+                    if db_v.gas_resistance_index in gas_readings and osm_config.gas_voc_id != "":
+                        gas_voc = gas_readings[db_v.gas_resistance_index]
+                        body_json[osm_config.gas_voc_id] = gas_voc
+                    if db_v.gas_oxidising in gas_readings and osm_config.gas_oxidised_id != "":
+                        gas_oxidised = gas_readings[db_v.gas_oxidising]
+                        body_json[osm_config.gas_oxidised_id] = gas_oxidised
+                    if db_v.gas_reducing in gas_readings and osm_config.gas_reduced_id != "":
+                        gas_reduced = gas_readings[db_v.gas_reducing]
+                        body_json[osm_config.gas_reduced_id] = gas_reduced
+                    if db_v.gas_nh3 in gas_readings and osm_config.gas_nh3_id != "":
+                        gas_nh3 = gas_readings[db_v.gas_nh3]
+                        body_json[osm_config.gas_nh3_id] = gas_nh3
 
-                lumen_reading = str(sensor_access.get_lumen())
-                if lumen_reading != no_sensor_present and osm_config.lumen_id != "":
-                    body_json[osm_config.lumen_id] = lumen_reading
+                lumen_reading = sensor_access.get_lumen()
+                if lumen_reading is not None and osm_config.lumen_id != "":
+                    body_json[osm_config.lumen_id] = lumen_reading[db_v.lumen]
 
-                pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-                if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
-                    if database_variables.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
-                        pm1 = pm_readings[database_variables.particulate_matter_1]
-                        body_json[osm_config.pm1_id] = str(pm1)
-                    if database_variables.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
-                        pm2_5 = pm_readings[database_variables.particulate_matter_2_5]
-                        body_json[osm_config.pm2_5_id] = str(pm2_5)
-                    if database_variables.particulate_matter_4 in pm_readings and osm_config.pm4_id != "":
-                        pm4 = pm_readings[database_variables.particulate_matter_4]
-                        body_json[osm_config.pm4_id] = str(pm4)
-                    if database_variables.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
-                        pm10 = pm_readings[database_variables.particulate_matter_10]
-                        body_json[osm_config.pm10_id] = str(pm10)
+                pm_readings = sensor_access.get_particulate_matter()
+                if pm_readings is not None:
+                    if db_v.particulate_matter_1 in pm_readings and osm_config.pm1_id != "":
+                        pm1 = pm_readings[db_v.particulate_matter_1]
+                        body_json[osm_config.pm1_id] = pm1
+                    if db_v.particulate_matter_2_5 in pm_readings and osm_config.pm2_5_id != "":
+                        pm2_5 = pm_readings[db_v.particulate_matter_2_5]
+                        body_json[osm_config.pm2_5_id] = pm2_5
+                    if db_v.particulate_matter_4 in pm_readings and osm_config.pm4_id != "":
+                        pm4 = pm_readings[db_v.particulate_matter_4]
+                        body_json[osm_config.pm4_id] = pm4
+                    if db_v.particulate_matter_10 in pm_readings and osm_config.pm10_id != "":
+                        pm10 = pm_readings[db_v.particulate_matter_10]
+                        body_json[osm_config.pm10_id] = pm10
 
-                colors = sensor_access.get_ems_colors(return_as_dictionary=True)
-                if colors != no_sensor_present:
-                    if database_variables.red in colors and osm_config.red_id != "":
-                        red = colors[database_variables.red]
-                        body_json[osm_config.red_id] = str(red)
-                    if database_variables.orange in colors and osm_config.orange_id != "":
-                        orange = colors[database_variables.orange]
-                        body_json[osm_config.orange_id] = str(orange)
-                    if database_variables.yellow in colors and osm_config.yellow_id != "":
-                        yellow = colors[database_variables.yellow]
-                        body_json[osm_config.yellow_id] = str(yellow)
-                    if database_variables.green in colors and osm_config.green_id != "":
-                        green = colors[database_variables.green]
-                        body_json[osm_config.green_id] = str(green)
-                    if database_variables.blue in colors and osm_config.blue_id != "":
-                        blue = colors[database_variables.blue]
-                        body_json[osm_config.blue_id] = str(blue)
-                    if database_variables.violet in colors and osm_config.violet_id != "":
-                        violet = colors[database_variables.violet]
-                        body_json[osm_config.violet_id] = str(violet)
+                colors = sensor_access.get_ems_colors()
+                if colors is not None:
+                    if db_v.red in colors and osm_config.red_id != "":
+                        red = colors[db_v.red]
+                        body_json[osm_config.red_id] = red
+                    if db_v.orange in colors and osm_config.orange_id != "":
+                        orange = colors[db_v.orange]
+                        body_json[osm_config.orange_id] = orange
+                    if db_v.yellow in colors and osm_config.yellow_id != "":
+                        yellow = colors[db_v.yellow]
+                        body_json[osm_config.yellow_id] = yellow
+                    if db_v.green in colors and osm_config.green_id != "":
+                        green = colors[db_v.green]
+                        body_json[osm_config.green_id] = green
+                    if db_v.blue in colors and osm_config.blue_id != "":
+                        blue = colors[db_v.blue]
+                        body_json[osm_config.blue_id] = blue
+                    if db_v.violet in colors and osm_config.violet_id != "":
+                        violet = colors[db_v.violet]
+                        body_json[osm_config.violet_id] = violet
 
-                uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
-                if uv_readings != no_sensor_present:
-                    if database_variables.ultra_violet_index in uv_readings and osm_config.ultra_violet_index_id != "":
-                        uv_index = uv_readings[database_variables.ultra_violet_index]
-                        body_json[osm_config.ultra_violet_index_id] = str(uv_index)
-                    if database_variables.ultra_violet_a in uv_readings and osm_config.ultra_violet_a_id != "":
-                        uv_a = uv_readings[database_variables.ultra_violet_a]
-                        body_json[osm_config.ultra_violet_a_id] = str(uv_a)
-                    if database_variables.ultra_violet_b in uv_readings and osm_config.ultra_violet_b_id != "":
-                        uv_b = uv_readings[database_variables.ultra_violet_b]
-                        body_json[osm_config.ultra_violet_b_id] = str(uv_b)
+                uv_readings = sensor_access.get_ultra_violet()
+                if uv_readings is not None:
+                    if db_v.ultra_violet_index in uv_readings and osm_config.ultra_violet_index_id != "":
+                        uv_index = uv_readings[db_v.ultra_violet_index]
+                        body_json[osm_config.ultra_violet_index_id] = uv_index
+                    if db_v.ultra_violet_a in uv_readings and osm_config.ultra_violet_a_id != "":
+                        uv_a = uv_readings[db_v.ultra_violet_a]
+                        body_json[osm_config.ultra_violet_a_id] = uv_a
+                    if db_v.ultra_violet_b in uv_readings and osm_config.ultra_violet_b_id != "":
+                        uv_b = uv_readings[db_v.ultra_violet_b]
+                        body_json[osm_config.ultra_violet_b_id] = uv_b
 
                 if len(body_json) > 0:
                     html_get_response = requests.post(url=url, headers=url_header, json=body_json)

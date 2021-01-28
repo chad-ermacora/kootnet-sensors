@@ -23,7 +23,6 @@ from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from configuration_modules.app_config_access import weather_underground_config
-from operations_modules.app_validation_checks import valid_sensor_reading
 from sensor_modules import sensor_access
 
 
@@ -103,8 +102,9 @@ def get_weather_underground_readings():
     round_decimal_to = 5
     return_readings_str = ""
 
-    temp_c = sensor_access.get_sensor_temperature()
-    if valid_sensor_reading(temp_c):
+    temp_c = sensor_access.get_environment_temperature()
+    if temp_c is not None:
+        temp_c = temp_c[database_variables.env_temperature]
         try:
             temperature_f = (float(temp_c) * (9.0 / 5.0)) + 32.0
             if weather_underground_config.outdoor_sensor:
@@ -116,14 +116,16 @@ def get_weather_underground_readings():
             logger.sensors_logger.error(log_msg)
 
     humidity = sensor_access.get_humidity()
-    if valid_sensor_reading(humidity):
+    if humidity is not None:
+        humidity = humidity[database_variables.humidity]
         if weather_underground_config.outdoor_sensor:
             return_readings_str += "&humidity=" + str(round(humidity, round_decimal_to))
         else:
             return_readings_str += "&indoorhumidity=" + str(round(humidity, round_decimal_to))
 
     out_door_dew_point = sensor_access.get_dew_point()
-    if valid_sensor_reading(out_door_dew_point) and weather_underground_config.outdoor_sensor:
+    if out_door_dew_point is not None and weather_underground_config.outdoor_sensor:
+        out_door_dew_point = out_door_dew_point[database_variables.dew_point]
         try:
             dew_point_f = (float(out_door_dew_point) * (9.0 / 5.0)) + 32.0
             return_readings_str += "&dewptf=" + str(round(dew_point_f, round_decimal_to))
@@ -132,21 +134,22 @@ def get_weather_underground_readings():
             logger.sensors_logger.error(log_msg)
 
     pressure_hpa = sensor_access.get_pressure()
-    if valid_sensor_reading(pressure_hpa):
+    if pressure_hpa is not None:
+        pressure_hpa = pressure_hpa[database_variables.pressure]
         try:
             baromin = float(pressure_hpa) * 0.029529983071445
             return_readings_str += "&baromin=" + str(round(baromin, round_decimal_to))
         except Exception as error:
             logger.sensors_logger.error("Weather Underground - Unable to calculate Pressure into Hg: " + str(error))
 
-    ultra_violet = sensor_access.get_ultra_violet(return_as_dictionary=True)
-    if ultra_violet != no_sensor_present:
+    ultra_violet = sensor_access.get_ultra_violet()
+    if ultra_violet is not None:
         if database_variables.ultra_violet_index in ultra_violet:
             uv_index = ultra_violet[database_variables.ultra_violet_index]
             return_readings_str += "&UV=" + str(round(uv_index, round_decimal_to))
 
-    pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-    if pm_readings[database_variables.particulate_matter_1] != app_cached_variables.no_sensor_present:
+    pm_readings = sensor_access.get_particulate_matter()
+    if pm_readings is not None:
         if database_variables.particulate_matter_2_5 in pm_readings:
             pm_2_5 = pm_readings[database_variables.particulate_matter_2_5]
             return_readings_str += "&AqPM2.5=" + str(round(pm_2_5, round_decimal_to))
