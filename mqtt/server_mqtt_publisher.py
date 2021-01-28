@@ -23,9 +23,10 @@ from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
-from sensor_recording_modules.recording_interval import available_sensors
 
 database_variables = app_cached_variables.database_variables
+mqtt_base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic
+mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
 
 
 def start_mqtt_publisher_server():
@@ -91,88 +92,80 @@ def _publish_on_pub(client, userdata, mid):
 
 def get_publish_messages():
     publish_msgs = []
-    mqtt_base_topic = app_config_access.mqtt_publisher_config.mqtt_base_topic
-    mqtt_publisher_qos = app_config_access.mqtt_publisher_config.mqtt_publisher_qos
     try:
         if app_config_access.mqtt_publisher_config.sensor_uptime:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.sensor_uptime_topic
-            sensor_data = str(sensor_access.get_uptime_minutes())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+            sensor_data = sensor_access.get_uptime_minutes()
+            if sensor_data is not None:
+                sensor_data = {database_variables.sensor_uptime: sensor_data}
+                add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.sensor_uptime_topic
+                publish_msgs.append({"topic": add_topic, "payload": str(sensor_data), "qos": mqtt_publisher_qos})
 
-        if app_config_access.mqtt_publisher_config.system_temperature and available_sensors.has_cpu_temperature:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.system_temperature_topic
-            sensor_data = str(sensor_access.get_cpu_temperature())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.system_temperature:
+            topic = app_config_access.mqtt_publisher_config.system_temperature_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_cpu_temperature, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.env_temperature and available_sensors.has_env_temperature:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.env_temperature_topic
-            sensor_data = str(sensor_access.get_sensor_temperature())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.env_temperature:
+            topic = app_config_access.mqtt_publisher_config.env_temperature_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_environment_temperature, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.pressure and available_sensors.has_pressure:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.pressure_topic
-            sensor_data = str(sensor_access.get_pressure())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.pressure:
+            topic = app_config_access.mqtt_publisher_config.pressure_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_pressure, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.altitude and available_sensors.has_altitude:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.altitude_topic
-            sensor_data = str(sensor_access.get_altitude())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.altitude:
+            topic = app_config_access.mqtt_publisher_config.altitude_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_altitude, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.humidity and available_sensors.has_humidity:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.humidity_topic
-            sensor_data = str(sensor_access.get_humidity())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.humidity:
+            topic = app_config_access.mqtt_publisher_config.humidity_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_humidity, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.distance and available_sensors.has_distance:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.distance_topic
-            sensor_data = str(sensor_access.get_distance())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.distance:
+            topic = app_config_access.mqtt_publisher_config.distance_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_distance, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.gas and available_sensors.has_gas:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.gas_topic
-            sensor_data = str(sensor_access.get_gas(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.gas:
+            topic = app_config_access.mqtt_publisher_config.gas_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_gas, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.particulate_matter and available_sensors.has_particulate_matter:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.particulate_matter_topic
-            sensor_data = str(sensor_access.get_particulate_matter(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.particulate_matter:
+            topic = app_config_access.mqtt_publisher_config.particulate_matter_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_particulate_matter, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.lumen and available_sensors.has_lumen:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.lumen_topic
-            sensor_data = str(sensor_access.get_lumen())
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.lumen:
+            topic = app_config_access.mqtt_publisher_config.lumen_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_lumen, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.color and available_sensors.has_color:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.color_topic
-            sensor_data = str(sensor_access.get_ems_colors(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.color:
+            topic = app_config_access.mqtt_publisher_config.color_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_ems_colors, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.ultra_violet and available_sensors.has_ultra_violet:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.ultra_violet_topic
-            sensor_data = str(sensor_access.get_ultra_violet(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.ultra_violet:
+            topic = app_config_access.mqtt_publisher_config.ultra_violet_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_ultra_violet, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.accelerometer and available_sensors.has_acc:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.accelerometer_topic
-            sensor_data = str(sensor_access.get_accelerometer_xyz(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.accelerometer:
+            topic = app_config_access.mqtt_publisher_config.accelerometer_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_accelerometer_xyz, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.magnetometer and available_sensors.has_mag:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.magnetometer_topic
-            sensor_data = str(sensor_access.get_magnetometer_xyz(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
+        if app_config_access.mqtt_publisher_config.magnetometer:
+            topic = app_config_access.mqtt_publisher_config.magnetometer_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_magnetometer_xyz, topic, publish_msgs)
 
-        if app_config_access.mqtt_publisher_config.gyroscope and available_sensors.has_gyro:
-            add_topic = mqtt_base_topic + app_config_access.mqtt_publisher_config.gyroscope_topic
-            sensor_data = str(sensor_access.get_gyroscope_xyz(return_as_dictionary=True))
-            publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
-
-        return publish_msgs
+        if app_config_access.mqtt_publisher_config.gyroscope:
+            topic = app_config_access.mqtt_publisher_config.gyroscope_topic
+            publish_msgs = _add_sensor_to_publish_msgs(sensor_access.get_gyroscope_xyz, topic, publish_msgs)
     except Exception as error:
         logger.primary_logger.error("MQTT Publisher Sensor Get Failure: " + str(error))
         add_topic = "Getting Sensor Data Failed for " + app_config_access.mqtt_publisher_config.mqtt_base_topic
         sensor_data = "Error"
-        publish_msgs.append({"topic": add_topic, "payload": sensor_data, "qos": mqtt_publisher_qos})
-        return publish_msgs
+        publish_msgs.append({"topic": add_topic, "payload": str(sensor_data), "qos": mqtt_publisher_qos})
+    return publish_msgs
+
+
+def _add_sensor_to_publish_msgs(sensor_function, sensor_topic_text, publish_msgs_list):
+    add_topic = mqtt_base_topic + sensor_topic_text
+    sensor_data = sensor_function()
+    if sensor_data is not None:
+        publish_msgs_list.append({"topic": add_topic, "payload": str(sensor_data), "qos": mqtt_publisher_qos})
+    return publish_msgs_list
