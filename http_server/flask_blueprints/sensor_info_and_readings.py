@@ -53,6 +53,10 @@ def html_system_information():
     if app_config_access.primary_config.enable_debug_logging:
         debug_logging = "Enabled"
 
+    cpu_temp = sensor_access.get_cpu_temperature()
+    if cpu_temp is not None:
+        cpu_temp = cpu_temp[app_cached_variables.database_variables.system_temperature]
+
     total_ram_entry = str(app_cached_variables.total_ram_memory) + app_cached_variables.total_ram_memory_size_type
 
     enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
@@ -77,7 +81,7 @@ def html_system_information():
         DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
         SystemUptime=sensor_access.get_uptime_str(),
         SensorReboots=app_cached_variables.reboot_count,
-        CPUTemperature=sensor_access.get_cpu_temperature(),
+        CPUTemperature=str(cpu_temp),
         RAMUsage=sensor_access.get_memory_usage_percent(),
         TotalRAM=total_ram_entry,
         DiskUsage=sensor_access.get_disk_usage_percent(),
@@ -154,13 +158,17 @@ def _get_enabled_state(state):
 @html_sensor_info_readings_routes.route("/SensorReadings")
 def html_sensors_readings():
     logger.network_logger.debug("** Sensor Readings accessed from " + str(request.remote_addr))
+    db_v = app_cached_variables.database_variables
     try:
-        temp_list = sensor_access.get_sensor_temperature(get_both=True)
-        raw_temp = "NoSensor"
-        adjusted_temp = "NoSensor"
-        if len(temp_list) == 2:
-            raw_temp = temp_list[0]
-            adjusted_temp = temp_list[1]
+        cpu_temp = sensor_access.get_cpu_temperature()
+        if cpu_temp is not None:
+            cpu_temp = cpu_temp[db_v.system_temperature]
+
+        raw_temp = sensor_access.get_environment_temperature(temperature_correction=False)
+        adjusted_temp = sensor_access.get_environment_temperature()
+        if raw_temp is not None:
+            raw_temp = raw_temp[db_v.env_temperature]
+            adjusted_temp = adjusted_temp[db_v.env_temperature]
 
         temp_offset = "Disabled"
         if app_config_access.primary_config.enable_custom_temp:
@@ -169,67 +177,108 @@ def html_sensors_readings():
         if app_config_access.primary_config.enable_temperature_comp_factor:
             temp_comp = str(app_config_access.primary_config.temperature_comp_factor)
 
-        gas_readings = sensor_access.get_gas(return_as_dictionary=True)
-        gas_index = app_cached_variables.no_sensor_present
-        gas_oxidising = app_cached_variables.no_sensor_present
-        gas_reducing = app_cached_variables.no_sensor_present
-        gas_nh3 = app_cached_variables.no_sensor_present
-        if gas_readings != app_cached_variables.no_sensor_present:
-            if app_cached_variables.database_variables.gas_resistance_index in gas_readings:
-                gas_index = gas_readings[app_cached_variables.database_variables.gas_resistance_index]
-            if app_cached_variables.database_variables.gas_oxidising in gas_readings:
-                gas_oxidising = gas_readings[app_cached_variables.database_variables.gas_oxidising]
-            if app_cached_variables.database_variables.gas_reducing in gas_readings:
-                gas_reducing = gas_readings[app_cached_variables.database_variables.gas_reducing]
-            if app_cached_variables.database_variables.gas_nh3 in gas_readings:
-                gas_nh3 = gas_readings[app_cached_variables.database_variables.gas_nh3]
+        pressure = sensor_access.get_pressure()
+        if pressure is not None:
+            pressure = pressure[db_v.pressure]
 
-        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-        pm_1 = app_cached_variables.no_sensor_present
-        pm_2_5 = app_cached_variables.no_sensor_present
-        pm_4 = app_cached_variables.no_sensor_present
-        pm_10 = app_cached_variables.no_sensor_present
-        if app_cached_variables.database_variables.particulate_matter_1 in pm_readings:
-            pm_1 = pm_readings[app_cached_variables.database_variables.particulate_matter_1]
-        if app_cached_variables.database_variables.particulate_matter_2_5 in pm_readings:
-            pm_2_5 = pm_readings[app_cached_variables.database_variables.particulate_matter_2_5]
-        if app_cached_variables.database_variables.particulate_matter_4 in pm_readings:
-            pm_4 = pm_readings[app_cached_variables.database_variables.particulate_matter_4]
-        if app_cached_variables.database_variables.particulate_matter_10 in pm_readings:
-            pm_10 = pm_readings[app_cached_variables.database_variables.particulate_matter_10]
+        altitude = sensor_access.get_altitude()
+        if altitude is not None:
+            altitude = altitude[db_v.altitude]
 
-        uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
-        uv_a = app_cached_variables.no_sensor_present
-        uv_b = app_cached_variables.no_sensor_present
-        if uv_readings != app_cached_variables.no_sensor_present:
-            if app_cached_variables.database_variables.ultra_violet_a in uv_readings:
-                uv_a = uv_readings[app_cached_variables.database_variables.ultra_violet_a]
-            if app_cached_variables.database_variables.ultra_violet_b in uv_readings:
-                uv_b = uv_readings[app_cached_variables.database_variables.ultra_violet_b]
+        humidity = sensor_access.get_humidity()
+        if humidity is not None:
+            humidity = humidity[db_v.humidity]
 
-        red, orange, yellow, green, blue, violet = _get_ems_for_render_template()
+        distance = sensor_access.get_distance()
+        if distance is not None:
+            distance = distance[db_v.distance]
+
+        gas_readings = sensor_access.get_gas()
+        gas_index = None
+        gas_oxidising = None
+        gas_reducing = None
+        gas_nh3 = None
+        if gas_readings is not None:
+            if db_v.gas_resistance_index in gas_readings:
+                gas_index = gas_readings[db_v.gas_resistance_index]
+            if db_v.gas_oxidising in gas_readings:
+                gas_oxidising = gas_readings[db_v.gas_oxidising]
+            if db_v.gas_reducing in gas_readings:
+                gas_reducing = gas_readings[db_v.gas_reducing]
+            if db_v.gas_nh3 in gas_readings:
+                gas_nh3 = gas_readings[db_v.gas_nh3]
+
+        pm_readings = sensor_access.get_particulate_matter()
+        pm_1 = None
+        pm_2_5 = None
+        pm_4 = None
+        pm_10 = None
+        if pm_readings is not None:
+            if db_v.particulate_matter_1 in pm_readings:
+                pm_1 = pm_readings[db_v.particulate_matter_1]
+            if db_v.particulate_matter_2_5 in pm_readings:
+                pm_2_5 = pm_readings[db_v.particulate_matter_2_5]
+            if db_v.particulate_matter_4 in pm_readings:
+                pm_4 = pm_readings[db_v.particulate_matter_4]
+            if db_v.particulate_matter_10 in pm_readings:
+                pm_10 = pm_readings[db_v.particulate_matter_10]
+
+        lumen = sensor_access.get_lumen()
+        if lumen is not None:
+            lumen = lumen[db_v.lumen]
+
+        red = None
+        orange = None
+        yellow = None
+        green = None
+        blue = None
+        violet = None
+        colors = sensor_access.get_ems_colors()
+        if colors is not None:
+            if db_v.red in colors:
+                red = colors[db_v.red]
+            if db_v.orange in colors:
+                orange = colors[db_v.orange]
+            if db_v.yellow in colors:
+                yellow = colors[db_v.yellow]
+            if db_v.green in colors:
+                green = colors[db_v.green]
+            if db_v.blue in colors:
+                blue = colors[db_v.blue]
+            if db_v.violet in colors:
+                violet = colors[db_v.violet]
+
+        uv_readings = sensor_access.get_ultra_violet()
+        uv_a = None
+        uv_b = None
+        if uv_readings is not None:
+            if db_v.ultra_violet_a in uv_readings:
+                uv_a = uv_readings[db_v.ultra_violet_a]
+            if db_v.ultra_violet_b in uv_readings:
+                uv_b = uv_readings[db_v.ultra_violet_b]
 
         utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
         current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+
         return render_template(
             "sensor_readings.html",
             PageURL="/SensorReadings",
             RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
             RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
             URLRedirect="SensorReadings",
-            HostName=app_cached_variables.hostname,
-            IPAddress=app_cached_variables.ip,
-            DateTime=current_datetime.strftime("%Y-%m-%d %H:%M:%S") + " UTC" + str(utc0_hour_offset),
-            SystemUptime=sensor_access.get_uptime_str(),
-            CPUTemperature=str(sensor_access.get_cpu_temperature()) + " °C",
+            HostName=str(app_cached_variables.hostname),
+            IPAddress=str(app_cached_variables.ip),
+            DateTime=str(current_datetime.strftime("%Y-%m-%d %H:%M:%S")) + " UTC" + str(utc0_hour_offset),
+            SystemUptime=str(sensor_access.get_uptime_str()),
+            CPUTemperature=str(cpu_temp) + " °C",
             RAWEnvTemperature=str(raw_temp) + " °C",
             AdjustedEnvTemperature=str(adjusted_temp) + " °C",
             EnvTemperatureOffset=str(temp_offset),
             EnvTemperatureComp=str(temp_comp),
-            Pressure=str(sensor_access.get_pressure()) + " hPa",
-            Altitude=str(sensor_access.get_altitude()) + " Meters",
-            Humidity=str(sensor_access.get_humidity()) + " %RH",
-            Distance=str(sensor_access.get_distance()) + " ?",
+            Pressure=str(pressure) + " hPa",
+            Altitude=str(altitude) + " Meters",
+            Humidity=str(humidity) + " %RH",
+            Distance=str(distance) + " ?",
             GasResistanceIndex=str(gas_index) + " kΩ",
             GasOxidising=str(gas_oxidising) + " kΩ",
             GasReducing=str(gas_reducing) + " kΩ",
@@ -238,7 +287,7 @@ def html_sensors_readings():
             PM25=str(pm_2_5) + " µg/m³",
             PM4=str(pm_4) + " µg/m³",
             PM10=str(pm_10) + " µg/m³",
-            Lumen=str(sensor_access.get_lumen()) + " lm",
+            Lumen=str(lumen) + " lm",
             Red=str(red),
             Orange=str(orange),
             Yellow=str(yellow),
@@ -261,35 +310,6 @@ def html_sensors_readings():
             TextMessage="Unable to generate Readings Page",
             message2=str(error)
         )
-
-
-def _get_ems_for_render_template():
-    colors = sensor_access.get_ems_colors(return_as_dictionary=True)
-    if colors == app_cached_variables.no_sensor_present:
-        return [app_cached_variables.no_sensor_present, app_cached_variables.no_sensor_present,
-                app_cached_variables.no_sensor_present, app_cached_variables.no_sensor_present,
-                app_cached_variables.no_sensor_present, app_cached_variables.no_sensor_present]
-
-    red = app_cached_variables.no_sensor_present
-    orange = app_cached_variables.no_sensor_present
-    yellow = app_cached_variables.no_sensor_present
-    green = app_cached_variables.no_sensor_present
-    blue = app_cached_variables.no_sensor_present
-    violet = app_cached_variables.no_sensor_present
-
-    if app_cached_variables.database_variables.red in colors:
-        red = colors[app_cached_variables.database_variables.red]
-    if app_cached_variables.database_variables.orange in colors:
-        orange = colors[app_cached_variables.database_variables.orange]
-    if app_cached_variables.database_variables.yellow in colors:
-        yellow = colors[app_cached_variables.database_variables.yellow]
-    if app_cached_variables.database_variables.green in colors:
-        green = colors[app_cached_variables.database_variables.green]
-    if app_cached_variables.database_variables.blue in colors:
-        blue = colors[app_cached_variables.database_variables.blue]
-    if app_cached_variables.database_variables.violet in colors:
-        violet = colors[app_cached_variables.database_variables.violet]
-    return [red, orange, yellow, green, blue, violet]
 
 
 @html_sensor_info_readings_routes.route("/TestSensorLatency")
