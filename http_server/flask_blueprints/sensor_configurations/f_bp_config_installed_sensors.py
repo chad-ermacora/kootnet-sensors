@@ -21,7 +21,6 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
-from sensor_recording_modules import recording_interval
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
 
@@ -38,7 +37,6 @@ def html_set_installed_sensors():
             app_config_access.installed_sensors.update_with_html_request(request)
             app_config_access.installed_sensors.save_config_to_file()
             sensor_access.sensors_direct.__init__()
-            recording_interval.available_sensors.__init__()
             return_page = message_and_return("Installed Sensors Set & Re-Initialized", url="/MainConfigurationsHTML")
             return return_page
         except Exception as error:
