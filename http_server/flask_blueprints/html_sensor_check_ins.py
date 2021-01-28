@@ -44,7 +44,7 @@ db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
 def remote_sensor_check_ins():
     if app_config_access.checkin_config.enable_checkin_recording:
         if request.form.get("checkin_id"):
-            checkin_id = "KS" + str(request.form.get("checkin_id"))
+            checkin_id = str(request.form.get("checkin_id"))
             logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
 
             current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -196,7 +196,7 @@ def search_sensor_check_ins():
 
 
 def _update_search_sensor_check_ins(sensor_id):
-    if len(sensor_id) == 34 and sensor_id.isalnum():
+    if len(sensor_id) < 64 and sensor_id.isalnum():
         if check_sensor_id_exists(sensor_id):
             app_cached_variables.checkin_search_sensor_id = sensor_id
             new_sensor_info_string = _get_sensor_info_string(app_cached_variables.checkin_search_sensor_id)
