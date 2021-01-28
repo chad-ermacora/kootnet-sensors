@@ -35,12 +35,11 @@ html_legacy_cc_routes = Blueprint("html_legacy_cc_routes", __name__)
 def cc_get_sensor_readings():
     logger.network_logger.debug("* CC Sensor Readings sent to " + str(request.remote_addr))
     interval_readings = get_interval_sensor_readings()
-    readings_data = ""
-    for reading in interval_readings[1]:
-        readings_data += str(reading) + ","
-    readings_data = readings_data[:-1]
-    str_interval_types = interval_readings[0].split(",")
-    str_interval_types_data = readings_data.split(",")
+    str_interval_types = []
+    str_interval_types_data = []
+    for index, data in interval_readings.items():
+        str_interval_types.append(index)
+        str_interval_types_data.append(str(data))
 
     return_data = ""
     return_types = ""
@@ -53,12 +52,15 @@ def cc_get_sensor_readings():
 @html_legacy_cc_routes.route("/GetSystemData")
 def cc_get_system_data():
     logger.network_logger.debug("* CC Sensor System Data Sent to " + str(request.remote_addr))
+    cpu_temp = sensor_access.get_cpu_temperature()
+    if cpu_temp is not None:
+        cpu_temp = round(cpu_temp[app_cached_variables.database_variables.system_temperature], 2)
     return app_cached_variables.hostname + ",<a href='https://" + app_cached_variables.ip + \
            ":10065/Quick' target='_blank'>" + app_cached_variables.ip + "</a>" + \
            "," + str(sensor_access.get_system_datetime()) + \
            "," + str(sensor_access.get_uptime_minutes()) + \
            "," + str(software_version.version) + \
-           "," + str(round(float(sensor_access.get_cpu_temperature()), 2)) + \
+           "," + str(cpu_temp) + \
            "," + str(sensor_access.get_disk_usage_gb()) + \
            "," + str(sensor_access.get_file_size()) + \
            "," + str(sensor_access.get_last_updated())
@@ -108,18 +110,21 @@ def cc_get_configuration_report():
 
 
 @html_legacy_cc_routes.route("/GetDatabaseNotes")
+@auth.login_required
 def cc_get_db_notes():
     logger.network_logger.debug("* CC Sensor Notes Sent to " + str(request.remote_addr))
     return sensor_access.get_db_notes()
 
 
 @html_legacy_cc_routes.route("/GetDatabaseNoteDates")
+@auth.login_required
 def cc_get_db_note_dates():
     logger.network_logger.debug("* CC Sensor Note Dates Sent to " + str(request.remote_addr))
     return sensor_access.get_db_note_dates()
 
 
 @html_legacy_cc_routes.route("/GetDatabaseNoteUserDates")
+@auth.login_required
 def cc_get_db_note_user_dates():
     logger.network_logger.debug("* CC User Set Sensor Notes Dates Sent to " + str(request.remote_addr))
     return sensor_access.get_db_note_user_dates()
