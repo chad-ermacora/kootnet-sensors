@@ -20,7 +20,6 @@ from threading import Thread
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import app_generic_functions
-from operations_modules.app_cached_variables import database_variables, no_sensor_present
 
 round_decimal_to = 5
 # Update readings in seconds
@@ -65,11 +64,10 @@ class CreatePimoroniPMS5003:
             time.sleep(sleep_between_readings_seconds)
 
     def particulate_matter_data(self):
-        """ Returns 3 Particulate Matter readings pm1, pm25 and pm10 in a Dictionary as Floats. """
-        return {database_variables.particulate_matter_1: round(self.pm1_var, round_decimal_to),
-                database_variables.particulate_matter_2_5: round(self.pm25_var, round_decimal_to),
-                database_variables.particulate_matter_4: no_sensor_present,
-                database_variables.particulate_matter_10: round(self.pm10_var, round_decimal_to)}
+        """ Returns 3 Particulate Matter readings PM1, PM25 and PM10 in a list as floats. """
+        return [round(self.pm1_var, round_decimal_to),
+                round(self.pm25_var, round_decimal_to),
+                round(self.pm10_var, round_decimal_to)]
 
     @staticmethod
     def _enable_psm5003_serial():
