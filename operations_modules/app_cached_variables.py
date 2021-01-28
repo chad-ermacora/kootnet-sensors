@@ -161,6 +161,7 @@ class CreateDatabaseVariables:
         self.pressure = "Pressure"
         self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.dew_point = "Dew_Point"
         self.distance = "Distance"
 
         self.gas_all_dic = "All_Gas_As_Dictionary"
@@ -216,6 +217,7 @@ class CreateDatabaseVariables:
                               self.pressure,
                               self.altitude,
                               self.humidity,
+                              self.dew_point,
                               self.distance,
                               self.gas_resistance_index,
                               self.gas_oxidising,
