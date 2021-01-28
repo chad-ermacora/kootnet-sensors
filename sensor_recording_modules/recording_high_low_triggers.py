@@ -24,7 +24,6 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import sqlite_database
 from sensor_modules import sensor_access
-from sensor_recording_modules.recording_interval import available_sensors
 
 database_variables = app_cached_variables.database_variables
 
@@ -43,7 +42,7 @@ class _CreateHighLowTriggerThreadData:
         }
         self.env_temperature = {
             "enabled": config_high_low_triggers.env_temperature_enabled,
-            "get_reading_func": sensor_access.get_sensor_temperature,
+            "get_reading_func": sensor_access.get_environment_temperature,
             "sleep_duration": config_high_low_triggers.env_temperature_wait_seconds,
             "database_column": database_variables.env_temperature,
             "low_trigger": config_high_low_triggers.env_temperature_low,
@@ -202,13 +201,14 @@ class _SingleTriggerThread:
         self.custom_trigger_variables = custom_trigger_variables
         if self.custom_trigger_variables["enabled"]:
             self.current_state = "Starting"
-            if self.custom_trigger_variables["get_reading_func"]() != app_cached_variables.no_sensor_present:
+            if self.custom_trigger_variables["get_reading_func"]() is not None:
                 self.low_trigger = self.custom_trigger_variables["low_trigger"]
                 self.high_trigger = self.custom_trigger_variables["high_trigger"]
 
                 while not app_cached_variables.restart_all_trigger_threads:
                     try:
                         sensor_reading = self.custom_trigger_variables["get_reading_func"]()
+                        sensor_reading = sensor_reading[self.custom_trigger_variables["database_column"]]
                         reading_taken_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
                         if self.high_trigger > sensor_reading > self.low_trigger:
                             if self.current_state != "Normal":
@@ -235,7 +235,11 @@ class _SingleTriggerThread:
                         sleep(sleep_fraction_interval)
                         sleep_total += sleep_fraction_interval
             else:
+                log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
+                logger.primary_logger.warning(log_msg + ": Sensor Missing")
                 self.current_state = "Sensor Missing"
+                while not app_cached_variables.restart_all_trigger_threads:
+                    sleep(10)
 
     def _write_readings_to_sql(self, reading_datetime, reading, trigger_state):
         try:
@@ -260,7 +264,7 @@ class _MultiTriggerThread:
         if custom_trigger_variables["enabled"]:
             for index, _ in enumerate(custom_trigger_variables["database_column"]):
                 self.current_state[index] = "Starting"
-            if custom_trigger_variables["get_reading_func"]() != app_cached_variables.no_sensor_present:
+            if custom_trigger_variables["get_reading_func"]() is not None:
                 while not app_cached_variables.restart_all_trigger_threads:
                     try:
                         sensor_readings = custom_trigger_variables["get_reading_func"]()
@@ -268,26 +272,34 @@ class _MultiTriggerThread:
                         db_col_list = custom_trigger_variables["database_column"]
                         trig_low_list = custom_trigger_variables["low_trigger"]
                         trig_high_list = custom_trigger_variables["high_trigger"]
-                        for reading, trig_high, trig_low, db_col in zip(sensor_readings, trig_high_list,
-                                                                        trig_low_list, enumerate(db_col_list)):
-                            index = db_col[0]
-                            db_col = db_col[1]
-                            if str(reading) != app_cached_variables.no_sensor_present:
-                                if trig_low < reading < trig_high:
-                                    if self.current_state[index] != "Normal":
-                                        self.current_state[index] = "Normal"
-                                        self._write_readings_to_sql(reading_taken_at, reading,
-                                                                    self.current_state[index], db_col)
-                                elif trig_low > reading:
-                                    if self.current_state[index] != "Low":
-                                        self.current_state[index] = "Low"
-                                        self._write_readings_to_sql(reading_taken_at, reading,
-                                                                    self.current_state[index], db_col)
-                                elif trig_high < reading:
-                                    if self.current_state[index] != "High":
-                                        self.current_state[index] = "High"
-                                        self._write_readings_to_sql(reading_taken_at, reading,
-                                                                    self.current_state[index], db_col)
+                        for reading_db_name, reading in sensor_readings.items():
+                            index = 0
+                            db_col = reading_db_name
+                            column_found = False
+                            for i, column in enumerate(db_col_list):
+                                if column == reading_db_name:
+                                    column_found = True
+                                    index = i
+                                    db_col = column
+                            if column_found:
+                                trig_low = trig_low_list[index]
+                                trig_high = trig_high_list[index]
+                                if str(reading) != app_cached_variables.no_sensor_present:
+                                    if trig_low < reading < trig_high:
+                                        if self.current_state[index] != "Normal":
+                                            self.current_state[index] = "Normal"
+                                            self._write_readings_to_sql(reading_taken_at, reading,
+                                                                        self.current_state[index], db_col)
+                                    elif trig_low > reading:
+                                        if self.current_state[index] != "Low":
+                                            self.current_state[index] = "Low"
+                                            self._write_readings_to_sql(reading_taken_at, reading,
+                                                                        self.current_state[index], db_col)
+                                    elif trig_high < reading:
+                                        if self.current_state[index] != "High":
+                                            self.current_state[index] = "High"
+                                            self._write_readings_to_sql(reading_taken_at, reading,
+                                                                        self.current_state[index], db_col)
                     except Exception as error:
                         log_msg = "Trigger problem in '" + str(custom_trigger_variables["database_column"])
                         logger.primary_logger.error(log_msg + "' Trigger Thread: " + str(error))
@@ -301,7 +313,11 @@ class _MultiTriggerThread:
                         sleep(sleep_fraction_interval)
                         sleep_total += sleep_fraction_interval
             else:
+                log_msg = "High/Low Triggers: " + str(custom_trigger_variables["database_column"])
+                logger.primary_logger.warning(log_msg + ": Sensor Missing")
                 self.current_state = "Sensor Missing"
+                while not app_cached_variables.restart_all_trigger_threads:
+                    sleep(10)
 
     @staticmethod
     def _write_readings_to_sql(reading_datetime, reading, trigger_state, database_column):
@@ -323,98 +339,98 @@ def start_trigger_high_low_recording_server():
     if app_config_access.trigger_high_low.enable_high_low_trigger_recording:
         tmp_tv = _CreateHighLowTriggerThreadData()
 
-        if available_sensors.has_cpu_temperature and app_config_access.trigger_high_low.cpu_temperature_enabled:
+        if app_config_access.trigger_high_low.cpu_temperature_enabled:
             app_cached_variables.trigger_high_low_cpu_temp = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.system_temperature],
                 thread_name="High/Low Trigger CPU Temperature"
             )
 
-        if available_sensors.has_env_temperature and app_config_access.trigger_high_low.env_temperature_enabled:
+        if app_config_access.trigger_high_low.env_temperature_enabled:
             app_cached_variables.trigger_high_low_env_temp = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.env_temperature],
                 thread_name="High/Low Trigger Env Temperature"
             )
 
-        if available_sensors.has_pressure and app_config_access.trigger_high_low.pressure_enabled:
+        if app_config_access.trigger_high_low.pressure_enabled:
             app_cached_variables.trigger_high_low_pressure = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.pressure],
                 thread_name="High/Low Trigger Pressure"
             )
 
-        if available_sensors.has_humidity and app_config_access.trigger_high_low.humidity_enabled:
+        if app_config_access.trigger_high_low.humidity_enabled:
             app_cached_variables.trigger_high_low_humidity = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.humidity],
                 thread_name="High/Low Trigger Humidity"
             )
 
-        if available_sensors.has_altitude and app_config_access.trigger_high_low.altitude_enabled:
+        if app_config_access.trigger_high_low.altitude_enabled:
             app_cached_variables.trigger_high_low_altitude = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.altitude],
                 thread_name="High/Low Trigger Altitude"
             )
 
-        if available_sensors.has_distance and app_config_access.trigger_high_low.distance_enabled:
+        if app_config_access.trigger_high_low.distance_enabled:
             app_cached_variables.trigger_high_low_distance = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.distance],
                 thread_name="High/Low Trigger Distance"
             )
 
-        if available_sensors.has_lumen and app_config_access.trigger_high_low.lumen_enabled:
+        if app_config_access.trigger_high_low.lumen_enabled:
             app_cached_variables.trigger_high_low_lumen = CMT(
                 _SingleTriggerThread,
                 args=[tmp_tv.lumen],
                 thread_name="High/Low Trigger Lumen"
             )
 
-        if available_sensors.has_color and app_config_access.trigger_high_low.colour_enabled:
+        if app_config_access.trigger_high_low.colour_enabled:
             app_cached_variables.trigger_high_low_visible_colours = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.colours],
                 thread_name="High/Low Trigger Colours"
             )
 
-        if available_sensors.has_ultra_violet and app_config_access.trigger_high_low.ultra_violet_enabled:
+        if app_config_access.trigger_high_low.ultra_violet_enabled:
             app_cached_variables.trigger_high_low_ultra_violet = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.ultra_violet],
                 thread_name="High/Low Trigger Ultra Violet"
             )
 
-        if available_sensors.has_gas and app_config_access.trigger_high_low.gas_enabled:
+        if app_config_access.trigger_high_low.gas_enabled:
             app_cached_variables.trigger_high_low_gas = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.gas_resistance],
                 thread_name="High/Low Trigger Gas"
             )
 
-        if available_sensors.has_particulate_matter and app_config_access.trigger_high_low.particulate_matter_enabled:
+        if app_config_access.trigger_high_low.particulate_matter_enabled:
             app_cached_variables.trigger_high_low_particulate_matter = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.particulate_matter],
                 thread_name="High/Low Trigger Particulate Matter"
             )
 
-        if available_sensors.has_acc and app_config_access.trigger_high_low.accelerometer_enabled:
+        if app_config_access.trigger_high_low.accelerometer_enabled:
             app_cached_variables.trigger_high_low_accelerometer = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.accelerometer],
                 thread_name="High/Low Trigger Accelerometer"
             )
 
-        if available_sensors.has_mag and app_config_access.trigger_high_low.magnetometer_enabled:
+        if app_config_access.trigger_high_low.magnetometer_enabled:
             app_cached_variables.trigger_high_low_magnetometer = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.magnetometer],
                 thread_name="High/Low Trigger Magnetometer"
             )
 
-        if available_sensors.has_gyro and app_config_access.trigger_high_low.gyroscope_enabled:
+        if app_config_access.trigger_high_low.gyroscope_enabled:
             app_cached_variables.trigger_high_low_gyroscope = CMT(
                 _MultiTriggerThread,
                 args=[tmp_tv.gyroscope],
