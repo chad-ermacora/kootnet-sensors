@@ -96,13 +96,6 @@ def hostname_is_valid(text_hostname):
     return False
 
 
-def valid_sensor_reading(reading):
-    """ If sensor reads as no_sensor_present (AKA Sensor not installed or missing), returns False, otherwise True. """
-    if reading == no_sensor_present:
-        return False
-    return True
-
-
 def email_is_valid(email):
     regex = "^(?!\.)[0-9a-zA-Z\.]+(?<!\.)@(?!\.)[0-9a-zA-Z\.]+(?<!\.)$"
     if re.search(regex, str(email)):
