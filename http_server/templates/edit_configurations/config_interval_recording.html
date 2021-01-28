@@ -47,23 +47,22 @@
         <br>
 
         <div id="ir-sensor-checkboxes">
-            <div class="mui-checkbox" style="display: inline-block;">
-                <label class="container_checkbox">
-                    <input type="checkbox" name="checkbox_sensor_uptime" value="" {{ CheckedSensorUptime }}>
-                    Sensor Uptime
-                    <span class="checkmark_checkbox"></span>
-                </label>
-            </div>
-
-            <br>
-
             <div class="mui-row" style="text-align: left;">
                 <div class="mui-col-md-4" style="padding-left: 50px;">
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="checkbox_cpu_temperature"
-                                   value="" {{ CheckedCPUTemperature }}>
-                            CPU Temperature
+                            <input type="checkbox" name="checkbox_sensor_uptime" value="" {{ CheckedSensorUptime }}>
+                            Sensor Uptime
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block;">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="env_temperature" value="" {{ CheckedEnvTemperature }}>
+                            Env Temperature
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
@@ -82,8 +81,9 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="humidity" value="" {{ CheckedHumidity }}>
-                            Humidity
+                            <input type="checkbox" name="dew_point"
+                                   value="" {{ CheckedDewPoint }}>
+                            Dew Point
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
@@ -112,8 +112,8 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="accelerometer" value="" {{ CheckedAccelerometer }}>
-                            Accelerometer
+                            <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }} >
+                            Ultra Violet
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
@@ -127,14 +127,14 @@
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
-
                 </div>
 
                 <div class="mui-col-md-4" style="padding-left: 50px;">
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="env_temperature" value="" {{ CheckedEnvTemperature }}>
-                            Env Temperature
+                            <input type="checkbox" name="checkbox_cpu_temperature"
+                                   value="" {{ CheckedCPUTemperature }}>
+                            CPU Temperature
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
@@ -145,6 +145,16 @@
                         <label class="container_checkbox">
                             <input type="checkbox" name="altitude" value="" {{ CheckedAltitude }}>
                             Altitude
+                            <span class="checkmark_checkbox"></span>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div class="mui-checkbox" style="display: inline-block;">
+                        <label class="container_checkbox">
+                            <input type="checkbox" name="humidity" value="" {{ CheckedHumidity }}>
+                            Humidity
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>
@@ -183,8 +193,8 @@
 
                     <div class="mui-checkbox" style="display: inline-block;">
                         <label class="container_checkbox">
-                            <input type="checkbox" name="ultra_violet" value="" {{ CheckedUltraViolet }} >
-                            Ultra Violet
+                            <input type="checkbox" name="accelerometer" value="" {{ CheckedAccelerometer }}>
+                            Accelerometer
                             <span class="checkmark_checkbox"></span>
                         </label>
                     </div>

@@ -57,6 +57,7 @@ def get_config_interval_recording_tab():
             CheckedPressure=get_html_checkbox_state(interval_config.pressure_enabled),
             CheckedAltitude=get_html_checkbox_state(interval_config.altitude_enabled),
             CheckedHumidity=get_html_checkbox_state(interval_config.humidity_enabled),
+            CheckedDewPoint=get_html_checkbox_state(interval_config.dew_point_enabled),
             CheckedDistance=get_html_checkbox_state(interval_config.distance_enabled),
             CheckedLumen=get_html_checkbox_state(interval_config.lumen_enabled),
             CheckedColour=get_html_checkbox_state(interval_config.colour_enabled),
