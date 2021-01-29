@@ -20,8 +20,8 @@ import unittest
 from json import loads as json_loads
 from operations_modules.app_generic_functions import get_http_sensor_reading, http_display_text_on_sensor, \
     send_http_command
-from operations_modules.app_cached_variables import no_sensor_present, command_data_separator, \
-    CreateNetworkGetCommands, CreateNetworkSetCommands
+from operations_modules.app_cached_variables import command_data_separator, CreateNetworkGetCommands, \
+    CreateNetworkSetCommands
 from tests.create_test_configs import *
 
 
@@ -259,7 +259,7 @@ class TestApp2(unittest.TestCase):
 
 
 def check_no_sensor_return(sensor_data, data_name):
-    if sensor_data == no_sensor_present:
+    if sensor_data == "None":
         print("Warning: " + data_name + " Reading as No Sensor Present")
         return True
     return False

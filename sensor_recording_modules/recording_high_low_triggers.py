@@ -272,19 +272,19 @@ class _MultiTriggerThread:
                         db_col_list = custom_trigger_variables["database_column"]
                         trig_low_list = custom_trigger_variables["low_trigger"]
                         trig_high_list = custom_trigger_variables["high_trigger"]
-                        for reading_db_name, reading in sensor_readings.items():
-                            index = 0
-                            db_col = reading_db_name
-                            column_found = False
-                            for i, column in enumerate(db_col_list):
-                                if column == reading_db_name:
-                                    column_found = True
-                                    index = i
-                                    db_col = column
-                            if column_found:
-                                trig_low = trig_low_list[index]
-                                trig_high = trig_high_list[index]
-                                if str(reading) != app_cached_variables.no_sensor_present:
+                        if sensor_readings is not None:
+                            for reading_db_name, reading in sensor_readings.items():
+                                index = 0
+                                db_col = reading_db_name
+                                column_found = False
+                                for i, column in enumerate(db_col_list):
+                                    if column == reading_db_name:
+                                        column_found = True
+                                        index = i
+                                        db_col = column
+                                if column_found:
+                                    trig_low = trig_low_list[index]
+                                    trig_high = trig_high_list[index]
                                     if trig_low < reading < trig_high:
                                         if self.current_state[index] != "Normal":
                                             self.current_state[index] = "Normal"

@@ -19,7 +19,6 @@
 import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
-from operations_modules.app_cached_variables import no_sensor_present
 from operations_modules.app_generic_functions import check_for_port_in_address
 
 

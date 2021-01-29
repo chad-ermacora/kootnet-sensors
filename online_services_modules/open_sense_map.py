@@ -28,7 +28,6 @@ from online_services_modules.osm_sensor_templates import pimoroni_enviro_plus, s
 from sensor_modules import sensor_access
 
 
-no_sensor_present = app_cached_variables.no_sensor_present
 db_v = app_cached_variables.database_variables
 
 

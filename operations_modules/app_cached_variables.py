@@ -303,7 +303,6 @@ developmental_version_available = "Retrieving ..."
 
 # Static variables
 command_data_separator = "[new_data_section]"
-no_sensor_present = "NoSensor"
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"

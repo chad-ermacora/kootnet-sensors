@@ -26,7 +26,6 @@ from configuration_modules.app_config_access import weather_underground_config
 from sensor_modules import sensor_access
 
 
-no_sensor_present = app_cached_variables.no_sensor_present
 database_variables = app_cached_variables.database_variables
 
 
