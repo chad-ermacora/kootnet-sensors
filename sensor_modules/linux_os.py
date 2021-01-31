@@ -104,7 +104,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_sys_datetime_str():
-        """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
+        """ Returns System DateTime in format YYYY-MM-DD HH:MM - timezone as a String. """
         return strftime("%Y-%m-%d %H:%M - %Z")
 
     @staticmethod
