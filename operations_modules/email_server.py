@@ -57,11 +57,13 @@ def send_report_email(to_email, report_generated=False):
         ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
         generate_html_reports_combo(ip_list)
 
-    zipped_report = zip_files(["KootnetSensorReport.html"], [app_cached_variables.html_combo_report])
+    html_filename = app_cached_variables.hostname + "_KootnetSensorReport.html"
+    zip_filename = app_cached_variables.hostname + "_KSReport.zip"
+    zipped_report = zip_files([html_filename], [app_cached_variables.html_combo_report])
     payload = MIMEBase("application", "zip")
     payload.set_payload(zipped_report.read())
     encoders.encode_base64(payload)
-    payload.add_header("Content-Disposition", "attachment", filename="KSReport.zip")
+    payload.add_header("Content-Disposition", "attachment", filename=zip_filename)
     message.attach(payload)
     send_email(to_email, message)
 
@@ -76,11 +78,13 @@ def send_quick_graph_email(to_email, graph=None):
     else:
         quick_graph = graph
 
-    zipped_graph = zip_files(["KootnetSensorGraph.html"], [quick_graph])
+    html_filename = app_cached_variables.hostname + "_KootnetSensorGraph.html"
+    zip_filename = app_cached_variables.hostname + "_KSGraph.zip"
+    zipped_graph = zip_files([html_filename], [quick_graph])
     payload = MIMEBase("application", "zip")
     payload.set_payload(zipped_graph.read())
     encoders.encode_base64(payload)
-    payload.add_header("Content-Disposition", "attachment", filename="KSGraph.zip")
+    payload.add_header("Content-Disposition", "attachment", filename=zip_filename)
     message.attach(payload)
     send_email(to_email, message)
 
