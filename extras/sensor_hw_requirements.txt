@@ -1,0 +1,24 @@
+# Items here are only checked after attempting to install the local version in the DEB itself
+# Sensor HW Requirements
+spidev
+RPi.GPIO
+gpiozero
+pyserial
+smbus
+smbus2
+luma.core
+luma.oled
+# Other requirements related to the sensors
+MarkupSafe
+click
+itsdangerous
+Jinja2
+pycparser
+pyusb
+pyftdi
+colorzero
+zope.event
+zope.interface
+Brotli
+cffi
+retrying

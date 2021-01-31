@@ -66,6 +66,7 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
     ${PYTHON_MODULES_DIR}/Flask_Compress-1.5.0-py3-none-any.whl \
     ${PYTHON_MODULES_DIR}/requests-2.23.0-py2.py3-none-any.whl
     ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/plotly-4.8.1-py2.py3-none-any.whl
+    ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/extras/sensor_hw_requirements.txt
   fi
 fi
 ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
