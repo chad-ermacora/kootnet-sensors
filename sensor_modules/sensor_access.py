@@ -157,11 +157,11 @@ def get_sensors_latency():
 
     sensor_latency_dic = {}
     for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
-        thing = _get_sensor_latency(sensor_function)
-        if thing is None:
+        latency = sensor_function(get_latency=True)
+        if latency is None:
             sensor_latency_dic[sensor_name] = None
         else:
-            sensor_latency_dic[sensor_name] = round(thing, 6)
+            sensor_latency_dic[sensor_name] = round(latency, 6)
     return sensor_latency_dic
 
 
@@ -205,8 +205,10 @@ def get_all_available_sensor_readings():
     return return_dictionary
 
 
-def get_cpu_temperature():
+def get_cpu_temperature(get_latency=False):
     """ Returns sensors CPU temperature in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_cpu_temperature)
     if app_config_access.installed_sensors.raspberry_pi:
         temperature = sensors_direct.raspberry_pi_a.cpu_temperature()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
@@ -216,9 +218,15 @@ def get_cpu_temperature():
     return {database_variables.system_temperature: temperature}
 
 
-def get_environment_temperature(temperature_correction=True):
+def get_environment_temperature(temperature_correction=True, get_latency=False):
     """ Returns sensors Environmental temperature in a dictionary. """
-    if app_config_access.installed_sensors.pimoroni_enviro:
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        if get_latency:
+            return sensors_direct.pimoroni_bme680_a.sensor_latency
+        temperature = sensors_direct.pimoroni_bme680_a.temperature()
+    elif get_latency:
+        return _get_sensor_latency(get_environment_temperature)
+    elif app_config_access.installed_sensors.pimoroni_enviro:
         temperature = sensors_direct.pimoroni_enviro_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_enviro2:
         temperature = sensors_direct.pimoroni_enviro2_a.temperature()
@@ -228,8 +236,6 @@ def get_environment_temperature(temperature_correction=True):
         temperature = sensors_direct.pimoroni_mcp9600_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         temperature = sensors_direct.pimoroni_bmp280_a.temperature()
-    elif app_config_access.installed_sensors.pimoroni_bme680:
-        temperature = sensors_direct.pimoroni_bme680_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         temperature = sensors_direct.rp_sense_hat_a.temperature()
     elif app_config_access.installed_sensors.w1_therm_sensor:
@@ -268,9 +274,15 @@ def _apply_environment_temperature_correction(temperature):
     return new_temp
 
 
-def get_pressure():
+def get_pressure(get_latency=False):
     """ Returns sensors pressure in a dictionary. """
-    if app_config_access.installed_sensors.pimoroni_enviro:
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        if get_latency:
+            return sensors_direct.pimoroni_bme680_a.sensor_latency
+        pressure = sensors_direct.pimoroni_bme680_a.pressure()
+    elif get_latency:
+        return _get_sensor_latency(get_pressure)
+    elif app_config_access.installed_sensors.pimoroni_enviro:
         pressure = sensors_direct.pimoroni_enviro_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_enviro2:
         pressure = sensors_direct.pimoroni_enviro2_a.pressure()
@@ -278,8 +290,6 @@ def get_pressure():
         pressure = sensors_direct.pimoroni_enviroplus_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         pressure = sensors_direct.pimoroni_bmp280_a.pressure()
-    elif app_config_access.installed_sensors.pimoroni_bme680:
-        pressure = sensors_direct.pimoroni_bme680_a.pressure()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         pressure = sensors_direct.rp_sense_hat_a.pressure()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
@@ -289,8 +299,10 @@ def get_pressure():
     return {database_variables.pressure: pressure}
 
 
-def get_altitude(qnh=1013.25):
+def get_altitude(qnh=1013.25, get_latency=False):
     """ Returns sensors altitude in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_altitude)
     round_decimal_to = 5
     temperature = get_environment_temperature()
     pressure = get_pressure()
@@ -308,14 +320,18 @@ def get_altitude(qnh=1013.25):
     return {database_variables.altitude: round(var_altitude, round_decimal_to)}
 
 
-def get_humidity():
+def get_humidity(get_latency=False):
     """ Returns sensors humidity in a dictionary. """
-    if app_config_access.installed_sensors.pimoroni_enviro2:
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        if get_latency:
+            return sensors_direct.pimoroni_bme680_a.sensor_latency
+        humidity = sensors_direct.pimoroni_bme680_a.humidity()
+    elif get_latency:
+        return _get_sensor_latency(get_humidity)
+    elif app_config_access.installed_sensors.pimoroni_enviro2:
         humidity = sensors_direct.pimoroni_enviro2_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         humidity = sensors_direct.pimoroni_enviroplus_a.humidity()
-    elif app_config_access.installed_sensors.pimoroni_bme680:
-        humidity = sensors_direct.pimoroni_bme680_a.humidity()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
         humidity = sensors_direct.rp_sense_hat_a.humidity()
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
@@ -325,8 +341,10 @@ def get_humidity():
     return {database_variables.humidity: humidity}
 
 
-def get_dew_point():
+def get_dew_point(get_latency=False):
     """ Returns estimated dew point based on Temperature and Humidity in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_dew_point)
     variable_a = 17.27
     variable_b = 237.7
 
@@ -346,8 +364,10 @@ def get_dew_point():
     return {database_variables.dew_point: dew_point}
 
 
-def get_distance():
+def get_distance(get_latency=False):
     """ Returns sensors distance in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_distance)
     if app_config_access.installed_sensors.pimoroni_enviro2:
         distance = sensors_direct.pimoroni_enviro2_a.distance()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
@@ -363,21 +383,27 @@ def get_distance():
     return {database_variables.distance: distance}
 
 
-def get_gas():
+def get_gas(get_latency=False):
     """ Returns sensors gas readings in a dictionary. """
     gas_dic = {}
     if app_config_access.installed_sensors.pimoroni_bme680:
+        if get_latency:
+            return sensors_direct.pimoroni_bme680_a.sensor_latency
         gas_reading = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
         gas_dic.update({database_variables.gas_resistance_index: gas_reading})
+    elif app_config_access.installed_sensors.pimoroni_sgp30:
+        # TODO: Add e-co2 this sensor can do into program (In DB?)
+        if get_latency:
+            return sensors_direct.pimoroni_sgp30_a.sensor_latency
+        gas_reading = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
+        gas_dic.update({database_variables.gas_resistance_index: gas_reading})
+    elif get_latency:
+        return _get_sensor_latency(get_gas)
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         gas_readings = sensors_direct.pimoroni_enviroplus_a.gas_data()
         gas_dic.update({database_variables.gas_oxidising: gas_readings[0],
                         database_variables.gas_reducing: gas_readings[1],
                         database_variables.gas_nh3: gas_readings[2]})
-    elif app_config_access.installed_sensors.pimoroni_sgp30:
-        # TODO: Add e-co2 this sensor can do into program (In DB?)
-        gas_reading = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
-        gas_dic.update({database_variables.gas_resistance_index: gas_reading})
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         gas_readings = [sensors_direct.dummy_sensors.gas_resistance_index()]
         gas_readings += sensors_direct.dummy_sensors.gas_data()
@@ -390,20 +416,26 @@ def get_gas():
     return gas_dic
 
 
-def get_particulate_matter():
+def get_particulate_matter(get_latency=False):
     """ Returns selected Particulate Matter readings in a dictionary. """
     pm_dic = {}
     if app_config_access.installed_sensors.pimoroni_pms5003:
+        if get_latency:
+            return sensors_direct.pimoroni_pms5003_a.sensor_latency
         pm_readings = sensors_direct.pimoroni_pms5003_a.particulate_matter_data()
         pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
                        database_variables.particulate_matter_2_5: pm_readings[1],
                        database_variables.particulate_matter_10: pm_readings[2]})
     elif app_config_access.installed_sensors.sensirion_sps30:
+        if get_latency:
+            return sensors_direct.sensirion_sps30_a.sensor_latency
         pm_readings = sensors_direct.sensirion_sps30_a.particulate_matter_data()
         pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
                        database_variables.particulate_matter_2_5: pm_readings[1],
                        database_variables.particulate_matter_4: pm_readings[2],
                        database_variables.particulate_matter_10: pm_readings[3]})
+    elif get_latency:
+        return _get_sensor_latency(get_particulate_matter)
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
         pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
@@ -415,8 +447,10 @@ def get_particulate_matter():
     return pm_dic
 
 
-def get_lumen():
+def get_lumen(get_latency=False):
     """ Returns sensors lumen in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_lumen)
     if app_config_access.installed_sensors.pimoroni_enviro:
         lumen = sensors_direct.pimoroni_enviro_a.lumen()
     elif app_config_access.installed_sensors.pimoroni_enviro2:
@@ -434,10 +468,12 @@ def get_lumen():
     return {database_variables.lumen: lumen}
 
 
-def get_ems_colors():
+def get_ems_colors(get_latency=False):
     """ Returns Electromagnetic Spectrum Wavelengths (colors) in a dictionary. """
     colors_dic = {}
     if app_config_access.installed_sensors.pimoroni_as7262:
+        if get_latency:
+            return sensors_direct.pimoroni_as7262_a.sensor_latency
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
         colors_dic.update({database_variables.red: colours[0],
                            database_variables.orange: colours[1],
@@ -445,6 +481,8 @@ def get_ems_colors():
                            database_variables.green: colours[3],
                            database_variables.blue: colours[4],
                            database_variables.violet: colours[5]})
+    elif get_latency:
+        return _get_sensor_latency(get_ems_colors)
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
         colors_dic.update({database_variables.red: colours[0],
@@ -468,8 +506,10 @@ def get_ems_colors():
     return colors_dic
 
 
-def get_ultra_violet():
+def get_ultra_violet(get_latency=False):
     """ Returns Ultra Violet readings in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_ultra_violet)
     uv_dic = {}
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uv_index = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
@@ -488,8 +528,10 @@ def get_ultra_violet():
     return uv_dic
 
 
-def get_accelerometer_xyz():
+def get_accelerometer_xyz(get_latency=False):
     """ Returns sensors Accelerometer XYZ in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_accelerometer_xyz)
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.accelerometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -509,8 +551,10 @@ def get_accelerometer_xyz():
             database_variables.acc_z: xyz[2]}
 
 
-def get_magnetometer_xyz():
+def get_magnetometer_xyz(get_latency=False):
     """ Returns sensors Magnetometer XYZ in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_magnetometer_xyz)
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.magnetometer_xyz()
     elif app_config_access.installed_sensors.pimoroni_enviro:
@@ -528,8 +572,10 @@ def get_magnetometer_xyz():
             database_variables.mag_z: xyz[2]}
 
 
-def get_gyroscope_xyz():
+def get_gyroscope_xyz(get_latency=False):
     """ Returns sensors Gyroscope XYZ in a dictionary. """
+    if get_latency:
+        return _get_sensor_latency(get_gyroscope_xyz)
     if app_config_access.installed_sensors.raspberry_pi_sense_hat:
         xyz = sensors_direct.rp_sense_hat_a.gyroscope_xyz()
     elif app_config_access.installed_sensors.pimoroni_icm20948:
