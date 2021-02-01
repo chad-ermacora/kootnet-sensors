@@ -33,6 +33,7 @@ class CreateSGP30:
     def __init__(self):
         self.gas_resistance_var = 0.0
         self.e_co2_var = 0.0
+        self.sensor_latency = 0.0
 
         try:
             sgp30_import = __import__("sensor_modules.drivers.sgp30", fromlist=["SGP30"])
@@ -51,7 +52,10 @@ class CreateSGP30:
         logger.sensors_logger.debug("Pimoroni SGP30 readings updater started")
         while True:
             try:
+                start_time = time.time()
                 eco2, tvoc = self.sensor.get_air_quality()
+                end_time = time.time()
+                self.sensor_latency = float(end_time - start_time)
                 self.gas_resistance_var = tvoc / 1000
                 self.e_co2_var = eco2 / 1000
             except Exception as error:

@@ -58,6 +58,7 @@ class CreateSPS30:
         self.pm25_var = 0.0
         self.pm4_var = 0.0
         self.pm10_var = 0.0
+        self.sensor_latency = 0.0
 
         self.readings_missed = 0
 
@@ -86,7 +87,10 @@ class CreateSPS30:
         while True:
             try:
                 logger.sensors_logger.debug("Sensirion SPS30 - Pre Get Data")
+                start_time = time.time()
                 pm_data = self.sensirion_sps30_access.read_values()
+                end_time = time.time()
+                self.sensor_latency = float(end_time - start_time)
                 logger.sensors_logger.debug("Sensirion SPS30 - Post Get Data")
                 self.pm1_var = round(float(pm_data[0]), round_decimal_to)
                 self.pm25_var = round(float(pm_data[1]), round_decimal_to)

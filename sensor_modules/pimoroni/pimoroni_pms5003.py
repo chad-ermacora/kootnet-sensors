@@ -34,6 +34,7 @@ class CreatePimoroniPMS5003:
             self.pm1_var = 0.0
             self.pm25_var = 0.0
             self.pm10_var = 0.0
+            self.sensor_latency = 0.0
 
             try:
                 pms5003_import = __import__("sensor_modules.drivers.pms5003", fromlist=["PMS5003"])
@@ -52,7 +53,10 @@ class CreatePimoroniPMS5003:
         logger.sensors_logger.debug("Pimoroni PMS5003 readings updater started")
         while True:
             try:
+                start_time = time.time()
                 enviro_plus_pm_data = self.enviro_plus_pm_access.read()
+                end_time = time.time()
+                self.sensor_latency = float(end_time - start_time)
                 self.pm1_var = enviro_plus_pm_data.pm_ug_per_m3(1.0)
                 self.pm25_var = enviro_plus_pm_data.pm_ug_per_m3(2.5)
                 self.pm10_var = enviro_plus_pm_data.pm_ug_per_m3(10)

@@ -32,6 +32,7 @@ class CreateBME680:
         self.pressure_var = 0.0
         self.humidity_var = 0.0
         self.gas_resistance_var = 0.0
+        self.sensor_latency = 0.0
 
         try:
             bme680_import = __import__("sensor_modules.drivers.bme680", fromlist=["BME680"])
@@ -58,7 +59,10 @@ class CreateBME680:
         logger.sensors_logger.debug("Pimoroni BME680 readings updater started")
         while True:
             try:
+                start_time = time.time()
                 self.sensor.get_sensor_data()
+                end_time = time.time()
+                self.sensor_latency = float(end_time - start_time)
                 self.temperature_var = float(self.sensor.data.temperature)
                 self.pressure_var = float(self.sensor.data.pressure)
                 self.humidity_var = float(self.sensor.data.humidity)
