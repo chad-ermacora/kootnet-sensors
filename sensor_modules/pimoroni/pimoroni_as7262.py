@@ -16,11 +16,13 @@ pip3 install as7262
 @author: OO-Dragon
 """
 import time
+from threading import Thread
 from operations_modules import logger
 from configuration_modules import app_config_access
 
 round_decimal_to = 5
-pause_sensor_during_access_sec = 0.5
+# Update readings in seconds
+sleep_between_readings_seconds = 1
 
 
 class CreateAS7262:
@@ -28,6 +30,14 @@ class CreateAS7262:
 
     def __init__(self):
         self.sensor_in_use = False
+        self.red_650 = 0.0
+        self.orange_600 = 0.0
+        self.yellow_570 = 0.0
+        self.green_550 = 0.0
+        self.blue_500 = 0.0
+        self.violet_450 = 0.0
+        self.sensor_latency = 0.0
+
         try:
             as7262_import = __import__("sensor_modules.drivers.as7262", fromlist=["AS7262"])
             self.as7262_access = as7262_import.AS7262()
@@ -36,23 +46,43 @@ class CreateAS7262:
             self.as7262_access.set_integration_time(17.857)
             self.as7262_access.set_measurement_mode(2)
             self.as7262_access.set_illumination_led(0)
+
+            self.thread_readings_updater = Thread(target=self._readings_updater)
+            self.thread_readings_updater.daemon = True
+            self.thread_readings_updater.start()
             logger.sensors_logger.debug("Pimoroni AS7262 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni AS7262 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_as7262 = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
 
+    def _readings_updater(self):
+        logger.sensors_logger.debug("Pimoroni AS7262 readings updater started")
+        while True:
+            try:
+                start_time = time.time()
+                ems_colors_list = self.as7262_access.get_calibrated_values()
+                end_time = time.time()
+                self.sensor_latency = float(end_time - start_time)
+
+                self.red_650 = ems_colors_list.red
+                self.orange_600 = ems_colors_list.orange
+                self.yellow_570 = ems_colors_list.yellow
+                self.green_550 = ems_colors_list.green
+                self.blue_500 = ems_colors_list.blue
+                self.violet_450 = ems_colors_list.violet
+            except Exception as error:
+                logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
+                self.red_650 = 0.0
+                self.orange_600 = 0.0
+                self.yellow_570 = 0.0
+                self.green_550 = 0.0
+                self.blue_500 = 0.0
+                self.violet_450 = 0.0
+            time.sleep(sleep_between_readings_seconds)
+
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
-        while self.sensor_in_use:
-            time.sleep(pause_sensor_during_access_sec)
-        self.sensor_in_use = True
-        try:
-            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = self.as7262_access.get_calibrated_values()
-        except Exception as error:
-            logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
-            red_650, orange_600, yellow_570, green_550, blue_500, violet_450 = 0, 0, 0, 0, 0, 0
-        self.sensor_in_use = False
-        return [round(red_650, round_decimal_to), round(orange_600, round_decimal_to),
-                round(yellow_570, round_decimal_to), round(green_550, round_decimal_to),
-                round(blue_500, round_decimal_to), round(violet_450, round_decimal_to)]
+        return [round(self.red_650, round_decimal_to), round(self.orange_600, round_decimal_to),
+                round(self.yellow_570, round_decimal_to), round(self.green_550, round_decimal_to),
+                round(self.blue_500, round_decimal_to), round(self.violet_450, round_decimal_to)]
