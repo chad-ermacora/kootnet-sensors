@@ -308,8 +308,8 @@ command_data_separator = "[new_data_section]"
 plotly_theme = "plotly_dark"
 
 # Network Variables
-hostname = "Still Loading"
-ip = "Refresh Page"
+hostname = "Loading ..."
+ip = "Loading ..."
 ip_subnet = ""
 gateway = ""
 dns1 = ""
