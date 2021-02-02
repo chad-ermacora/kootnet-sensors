@@ -229,6 +229,13 @@ def run_database_integrity_check(sqlite_database_location, quick=True):
     logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
 
 
+def get_sqlite_tables_in_list(database_location):
+    """ Returns a list of SQLite3 database table names. """
+    get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+    sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
+    return sqlite_tables_list
+
+
 def sql_fetch_items_to_text(sql_query_results):
     return_msg = ""
     for item in sql_query_results:
