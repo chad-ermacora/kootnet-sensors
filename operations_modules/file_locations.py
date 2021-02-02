@@ -46,6 +46,8 @@ sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
+mqtt_database_zipped = sensor_data_dir + "/MQTTDatabaseZipped.zip"
+checkin_database_zipped = sensor_data_dir + "/CheckinDatabaseZipped.zip"
 
 log_directory = sensor_data_dir + "/logs/"
 primary_log = log_directory + "primary_log.txt"
