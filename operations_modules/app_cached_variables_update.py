@@ -25,7 +25,6 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_file_content
 from operations_modules import network_ip
 from operations_modules import network_wifi
-
 from sensor_modules import sensor_access
 
 
