@@ -19,7 +19,6 @@
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import software_version
@@ -27,23 +26,6 @@ from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_hidden_state
 
 html_sensor_info_readings_routes = Blueprint("html_sensor_info_readings_routes", __name__)
-
-
-@html_sensor_info_readings_routes.route("/")
-@html_sensor_info_readings_routes.route("/index")
-@html_sensor_info_readings_routes.route("/index.html")
-def index():
-    return render_template(
-        "index.html",
-        PageURL="/index",
-        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-        HostName=app_cached_variables.hostname,
-        SQLDatabaseLocation=file_locations.sensor_database,
-        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_file_size(),
-        NumberNotes=sensor_access.get_db_notes_count()
-    )
 
 
 @html_sensor_info_readings_routes.route("/About")
