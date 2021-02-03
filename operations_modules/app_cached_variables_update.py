@@ -69,6 +69,7 @@ def update_cached_variables():
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
     app_cached_variables.operating_system_name = os_name
     update_uploaded_databases_names_list()
+    update_backup_databases_names_list()
 
 
 def start_ip_hostname_refresh():
@@ -95,4 +96,15 @@ def update_uploaded_databases_names_list():
             app_cached_variables.uploaded_databases_list.append(database_name)
         app_cached_variables.uploaded_databases_list.sort()
     except Exception as custom_db_error:
-        logger.primary_logger.warning(" -- Make Directory Error: " + str(custom_db_error))
+        logger.primary_logger.warning(" -- Error updating uploaded DB list: " + str(custom_db_error))
+
+
+def update_backup_databases_names_list():
+    app_cached_variables.zipped_db_backup_list = []
+    try:
+        _, _, filenames = next(os.walk(file_locations.database_backup_folder))
+        for database_name in filenames:
+            app_cached_variables.zipped_db_backup_list.append(database_name)
+        app_cached_variables.zipped_db_backup_list.sort()
+    except Exception as custom_db_error:
+        logger.primary_logger.warning(" -- Error updating backed-up DB list: " + str(custom_db_error))

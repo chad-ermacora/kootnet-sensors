@@ -297,6 +297,9 @@ database_variables = CreateDatabaseVariables()
 # Names of all the uploaded databases for graphing (Only names, no directory path)
 uploaded_databases_list = []
 
+# Names of all the backed-up main databases (Only names, no directory path)
+zipped_db_backup_list = []
+
 # Is filled with Currently available online Stable / Developmental versions
 standard_version_available = "Retrieving ..."
 developmental_version_available = "Retrieving ..."
