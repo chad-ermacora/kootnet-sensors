@@ -34,14 +34,14 @@ except Exception as error:
 
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
-uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 
 if os.geteuid() != 0:
     system_user = str(getuser()).strip()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
     sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
-    uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 
+uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
+database_backup_folder = sensor_data_dir + "/database_backups"
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
