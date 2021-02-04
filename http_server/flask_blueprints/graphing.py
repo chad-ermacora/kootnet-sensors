@@ -32,6 +32,11 @@ html_graphing_routes = Blueprint("html_graphing_routes", __name__)
 @html_graphing_routes.route("/Graphing")
 def html_graphing():
     logger.network_logger.debug("* Graphing viewed by " + str(request.remote_addr))
+    custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
+
+    database_dropdown_selection_html = ""
+    for db_name in app_cached_variables.uploaded_databases_list:
+        database_dropdown_selection_html += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", db_name) + "\n"
 
     extra_message = ""
     button_disabled = ""
@@ -50,14 +55,22 @@ def html_graphing():
         triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
     except FileNotFoundError:
         triggers_creation_date = "No Plotly Graph Found"
+
+    try:
+        mqtt_plotly_file_creation_date_unix = os.path.getmtime(file_locations.plotly_graph_mqtt)
+        mqtt_creation_date = str(datetime.fromtimestamp(mqtt_plotly_file_creation_date_unix))[:-7]
+    except FileNotFoundError:
+        mqtt_creation_date = "No Plotly Graph Found"
     return render_template("graphing.html",
                            PageURL="/Graphing",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ExtraTextMessage=extra_message,
+                           UploadedDBOptionNames=database_dropdown_selection_html,
                            CreateButtonDisabled=button_disabled,
                            IntervalPlotlyDate=interval_creation_date,
                            TriggerPlotlyDate=triggers_creation_date,
+                           MQTTPlotlyDate=mqtt_creation_date,
                            UTCOffset=app_config_access.primary_config.utc0_hour_offset,
                            SkipSQLEntries=app_cached_variables.quick_graph_skip_sql_entries,
                            MaxSQLEntries=app_cached_variables.quick_graph_max_sql_entries,
