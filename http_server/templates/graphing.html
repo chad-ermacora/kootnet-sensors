@@ -38,13 +38,18 @@
 
         <h3 style="color: #cc00ff">
             <div class="tooltip">?<span class="tooltiptext">Date & Time using Sensor's TimeZone</span></div>
-            <u><a style="color: #cc00ff" href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u>:
+            <u><a style="color: #cc00ff;" href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u>:
             {{ IntervalPlotlyDate }}
         </h3>
         <h3 style="color: #cc00ff">
             <div class="tooltip">?<span class="tooltiptext">Date & Time using Sensor's TimeZone</span></div>
-            <u><a style="color: #cc00ff" href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u>:
+            <u><a style="color: #cc00ff;" href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u>:
             {{ TriggerPlotlyDate }}
+        </h3>
+        <h3 style="color: #cc00ff;">
+            <div class="tooltip">?<span class="tooltiptext">Date & Time using Sensor's TimeZone</span></div>
+            <u><a style="color: #cc00ff" href="/ViewMQTTPlotlyGraph" target="_blank">MQTT Plotly Graph</a></u>:
+            {{ MQTTPlotlyDate }}
         </h3>
 
         <form class="mui-form" method="POST" style="background-color: #00B0FF; width: 450px; border: #0BB10D;"
@@ -52,6 +57,42 @@
             <fieldset style="text-align: center;">
 
                 <legend>Graph Options</legend>
+
+                <label for="databases">Choose a Database:</label>
+                <br>
+                <select onchange="db_selection()" name="SQLDatabaseSelection" id="databases">
+                    <optgroup label="Local Databases">
+                        <option value="MainDatabase">Main</option>
+                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                    </optgroup>
+                    <optgroup label="Uploaded Databases">
+                        {{ UploadedDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+
+                <br><br>
+
+                <a style="color: purple;" href="/databases">Click Here to Upload Databases</a>
+
+                <br><br>
+
+                <div class="mui-checkbox" style="display: inline-block">
+                    <label class="container_checkbox">
+                        <input id="MQTTDatabaseCheck" type="checkbox" name="MQTTDatabaseCheck" disabled>
+                        MQTT Subscriber Database
+                        <span class="checkmark_checkbox"></span>
+                    </label>
+                </div>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">Remote Sensor ID
+                        <br>
+                        <input id="MQTTBaseTopicInput" style="width: 275px;" type="text"
+                               maxlength="128" name="MQTTCustomBaseTopic" value="KS" disabled>
+                    </label>
+                    <br>
+                </div>
+
                 <label>SQL Recording Type</label>
                 <div class="mui-radio">
                     <label class="container_radio">
@@ -141,7 +182,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="SensorUptime" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="SensorUptime" value="" checked>
                         Sensor Uptime
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -151,7 +192,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="CPUTemp" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="CPUTemp" value="" checked>
                         CPU Temperature
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -159,7 +200,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="EnvTemp" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="EnvTemp" value="" checked>
                         Environmental Temperature
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -169,7 +210,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Pressure" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Pressure" value="" checked>
                         Pressure
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -177,7 +218,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Altitude" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Altitude" value="" checked>
                         Altitude
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -185,7 +226,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Humidity" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Humidity" value="" checked>
                         Humidity
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -195,7 +236,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Distance" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Distance" value="" checked>
                         Distance
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -203,7 +244,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Gas" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Gas" value="" checked>
                         Gas
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -211,7 +252,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="ParticulateMatter" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="ParticulateMatter" value="" checked>
                         Particulate Matter
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -221,7 +262,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Lumen" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Lumen" value="" checked>
                         Lumen
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -229,7 +270,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Colours" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Colours" value="" checked>
                         Colours
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -237,7 +278,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="UltraViolet" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="UltraViolet" value="" checked>
                         Ultra Violet
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -247,7 +288,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Accelerometer" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Accelerometer" value="" checked>
                         Accelerometer
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -255,7 +296,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Magnetometer" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Magnetometer" value="" checked>
                         Magnetometer
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -263,7 +304,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Gyroscope" value="" checked>
+                        <input class="plotly_graph_checks" type="checkbox" name="Gyroscope" value="" checked>
                         Gyroscope
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -328,7 +369,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="SensorUptime" value="" {{ SensorUptimeChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="SensorUptime" value="" {{ SensorUptimeChecked }}>
                         Sensor Uptime
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -338,7 +379,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="CPUTemp" value="" {{ CPUTemperatureChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="CPUTemp" value="" {{ CPUTemperatureChecked }}>
                         CPU Temperature
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -346,7 +387,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="EnvTemp" value="" {{ EnvTemperatureChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="EnvTemp" value="" {{ EnvTemperatureChecked }}>
                         Environmental Temperature
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -356,7 +397,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Pressure" value="" {{ PressureChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Pressure" value="" {{ PressureChecked }}>
                         Pressure
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -364,7 +405,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Altitude" value="" {{ AltitudeChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Altitude" value="" {{ AltitudeChecked }}>
                         Altitude
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -372,7 +413,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Humidity" value="" {{ HumidityChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Humidity" value="" {{ HumidityChecked }}>
                         Humidity
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -382,7 +423,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Distance" value="" {{ DistanceChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Distance" value="" {{ DistanceChecked }}>
                         Distance
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -390,7 +431,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Gas" value="" {{ GasChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Gas" value="" {{ GasChecked }}>
                         Gas
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -398,7 +439,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="ParticulateMatter" value="" {{ PMChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="ParticulateMatter" value="" {{ PMChecked }}>
                         Particulate Matter
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -408,7 +449,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Lumen" value="" {{ LumenChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Lumen" value="" {{ LumenChecked }}>
                         Lumen
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -416,7 +457,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Colours" value="" {{ ColoursChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Colours" value="" {{ ColoursChecked }}>
                         Colours
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -424,7 +465,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="UltraViolet" value="" {{ UltraVioletChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="UltraViolet" value="" {{ UltraVioletChecked }}>
                         Ultra Violet
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -434,7 +475,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Accelerometer" value="" {{ AccChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Accelerometer" value="" {{ AccChecked }}>
                         Accelerometer
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -442,7 +483,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Magnetometer" value="" {{ MagChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Magnetometer" value="" {{ MagChecked }}>
                         Magnetometer
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -450,7 +491,7 @@
 
                 <div class="mui-checkbox" style="display: inline-block">
                     <label class="container_checkbox">
-                        <input type="checkbox" name="Gyroscope" value="" {{ GyroChecked }}>
+                        <input class="quick_graph_checks" type="checkbox" name="Gyroscope" value="" {{ GyroChecked }}>
                         Gyroscope
                         <span class="checkmark_checkbox"></span>
                     </label>
@@ -467,19 +508,45 @@
     <script>
         jQuery('#SelectAllCheckboxes').change(function () {
             if (jQuery(this).prop('checked')) {
-                jQuery("form input:checkbox").prop('checked', true);
+                jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', true);
             } else {
-                jQuery("form input:checkbox").prop('checked', false);
+                jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', false);
             }
         });
 
         jQuery('#SelectAllCheckboxes2').change(function () {
             if (jQuery(this).prop('checked')) {
-                jQuery("form input:checkbox").prop('checked', true);
+                jQuery(document.getElementsByClassName("plotly_graph_checks")).prop('checked', true);
             } else {
-                jQuery("form input:checkbox").prop('checked', false);
+                jQuery(document.getElementsByClassName("plotly_graph_checks")).prop('checked', false);
             }
         });
+
+        jQuery('#MQTTDatabaseCheck').change(function () {
+            if (jQuery(this).prop('checked')) {
+                document.getElementById("MQTTBaseTopicInput").disabled = false;
+            } else {
+                document.getElementById("MQTTBaseTopicInput").disabled = true;
+            }
+        });
+
+        function db_selection() {
+            if (document.getElementById("databases").value === 'MainDatabase') {
+                jQuery(document.getElementById("MQTTDatabaseCheck")).prop('checked', false);
+                document.getElementById("MQTTDatabaseCheck").disabled = true;
+                document.getElementById("MQTTBaseTopicInput").disabled = true;
+            } else if (document.getElementById("databases").value === 'MQTTSubscriberDatabase') {
+                document.getElementById("MQTTDatabaseCheck").checked = true;
+                document.getElementById("MQTTDatabaseCheck").disabled = true;
+                document.getElementById("MQTTBaseTopicInput").disabled = false;
+            }
+            else {
+                document.getElementById("MQTTDatabaseCheck").disabled = false;
+                if (jQuery(document.getElementById("MQTTDatabaseCheck")).prop('checked')) {
+                    document.getElementById("MQTTBaseTopicInput").disabled = false;
+                }
+            }
+        }
     </script>
 
     <script type="text/javascript">
