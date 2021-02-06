@@ -38,8 +38,7 @@ class CreateOtherDataEntry:
                self.sensor_readings + self.sql_query_values_end
 
 
-def write_to_sql_database(sql_query, data_entries,
-                          sql_database_location=file_locations.sensor_database):
+def write_to_sql_database(sql_query, data_entries, sql_database_location=file_locations.sensor_database):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
         db_connection = sqlite3.connect(sql_database_location)
