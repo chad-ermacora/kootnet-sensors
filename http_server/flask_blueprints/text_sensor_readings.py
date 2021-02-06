@@ -30,11 +30,14 @@ html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 def get_interval_readings():
     logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
     sensor_readings = get_interval_sensor_readings()
+    readings_name = ""
     readings_data = ""
-    for reading in sensor_readings[1]:
+    for index, reading in sensor_readings.items():
+        readings_name += str(index) + ","
         readings_data += str(reading) + ","
+    readings_name = readings_name[:-1]
     readings_data = readings_data[:-1]
-    return str(sensor_readings[0] + command_data_separator + readings_data)
+    return str(readings_name + command_data_separator + readings_data)
 
 
 @html_sensor_readings_routes.route("/GetSensorsLatency")
