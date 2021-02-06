@@ -299,16 +299,29 @@
             <hr>
 
             <h2><u><strong>Shrink (Vacuum) Database</strong></u></h2>
-            <div class="mui-dropdown">
-                <button class="mui-btn mui-btn--primary mui--bg-color-black mui--color-white" data-mui-toggle="dropdown">
+            <form method="POST" action="/VacuumSQLDatabase">
+                <label for="vacuum_databases">Choose a Database:</label>
+                <br>
+                <select name="SQLDatabaseSelection" id="vacuum_databases">
+                    <optgroup label="Local Databases">
+                        <option value="MainDatabase">Main</option>
+                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                        <option value="CheckinDatabase">Sensor Checkins</option>
+                    </optgroup>
+                    <optgroup label="Uploaded Databases">
+                        {{ UploadedDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+
+                <br><br>
+
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-black  mui--color-white"
+                        value="shrink_db" name="db_shrink"
+                        onclick="return confirm('Database Vacuum may take some time ' +
+                         'depending on the size of the Database, Continue?');">
                     Shrink Database
-                    <span class="mui-caret"></span>
                 </button>
-                <ul class="mui-dropdown__menu">
-                    <li><a href="/VacuumMainSQLDatabase">Shrink Main Database</a></li>
-                    <li><a href="/VacuumCheckInsSQLDatabase">Shrink Sensor Check-Ins Database</a></li>
-                </ul>
-            </div>
+            </form>
         </fieldset>
     </div>
 

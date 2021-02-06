@@ -292,17 +292,20 @@ def get_zipped_sql_database_size():
         return "Error"
 
 
-@html_database_routes.route("/VacuumMainSQLDatabase")
+@html_database_routes.route("/VacuumSQLDatabase", methods=["POST"])
 @auth.login_required
-def vacuum_main_database():
-    logger.network_logger.info("** Main SQL Database VACUUM Initiated by " + str(request.remote_addr))
-    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_database)
-    return message_and_return("Main SQL Database has been Shrunk", url="/SystemCommands")
-
-
-@html_database_routes.route("/VacuumCheckInsSQLDatabase")
-@auth.login_required
-def vacuum_check_ins_database():
-    logger.network_logger.info("** CheckIn SQL Database VACUUM Initiated by " + str(request.remote_addr))
-    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
-    return message_and_return("Check-Ins SQL Database has been Shrunk", url="/SystemCommands")
+def vacuum_database():
+    logger.network_logger.info("** SQL Database VACUUM Initiated by " + str(request.remote_addr))
+    post_db_location = str(request.form.get("SQLDatabaseSelection"))
+    if post_db_location == "MainDatabase":
+        db_location = file_locations.sensor_database
+    elif post_db_location == "MQTTSubscriberDatabase":
+        db_location = file_locations.mqtt_subscriber_database
+    elif post_db_location == "CheckinDatabase":
+        db_location = file_locations.sensor_checkin_database
+    else:
+        db_location = file_locations.uploaded_databases_folder + "/" + post_db_location
+    if os.path.isfile(db_location):
+        write_to_sql_database("VACUUM;", None, sql_database_location=db_location)
+        return message_and_return(post_db_location + " Database has been Shrunk", url="/databases")
+    return message_and_return(post_db_location + " Database not found", url="/databases")
