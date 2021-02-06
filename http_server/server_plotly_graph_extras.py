@@ -281,28 +281,29 @@ def _add_scatter(scatter_data):
     """
     try:
         if scatter_data.enable_plotly_webgl:
-            if scatter_data.text_graph_table == "IntervalData":
-                trace = go.Scattergl(x=scatter_data.sql_time_list,
-                                     y=scatter_data.sql_data_list,
-                                     name=scatter_data.text_sensor_name,
-                                     marker=scatter_data.set_marker)
-            else:
+            if scatter_data.text_graph_table == database_variables.table_trigger:
                 trace = go.Scattergl(x=scatter_data.sql_time_list,
                                      y=scatter_data.sql_data_list,
                                      name=scatter_data.text_sensor_name,
                                      mode="markers",
                                      marker=scatter_data.set_marker)
+            else:
+                trace = go.Scattergl(x=scatter_data.sql_time_list,
+                                     y=scatter_data.sql_data_list,
+                                     name=scatter_data.text_sensor_name,
+                                     marker=scatter_data.set_marker)
+
         else:
-            if scatter_data.graph_table == "IntervalData":
+            if scatter_data.graph_table == database_variables.table_trigger:
                 trace = go.Scatter(x=scatter_data.sql_time_list,
                                    y=scatter_data.sql_data_list,
                                    name=scatter_data.text_sensor_name,
+                                   mode="markers",
                                    marker=scatter_data.set_marker)
             else:
                 trace = go.Scatter(x=scatter_data.sql_time_list,
                                    y=scatter_data.sql_data_list,
                                    name=scatter_data.text_sensor_name,
-                                   mode="markers",
                                    marker=scatter_data.set_marker)
         return trace
     except Exception as error:
