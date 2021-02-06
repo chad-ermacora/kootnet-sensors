@@ -62,7 +62,8 @@ class CreateGraphData:
     def __init__(self):
         self.enable_plotly_webgl = False
         self.db_location = file_locations.sensor_database
-        self.graph_table = "IntervalData"
+        self.save_plotly_graph_to = file_locations.plotly_graph_interval
+        self.graph_table = database_variables.table_interval
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
         self.datetime_offset = 7.0
