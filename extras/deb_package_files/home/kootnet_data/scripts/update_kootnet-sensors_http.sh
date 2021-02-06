@@ -8,7 +8,7 @@ fi
 clear
 HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/installers"
-DEB_INSTALLER="/KootnetSensors.deb"
+DEB_INSTALLER="/KootnetSensors_online.deb"
 CONFIG_DIR="/etc/kootnet"
 INSTALL_TYPE="Standard"
 # Check for development switch

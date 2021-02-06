@@ -10,14 +10,14 @@ fi
 clear
 SMB_SERVER="//USB-Development"
 SMB_SHARE="/KootNetSMB"
-DEB_INSTALLER="/KootnetSensors.deb"
+DEB_INSTALLER="/KootnetSensors_online.deb"
 MOUNT_DIR="/mnt/supernas"
 CIFS_OPTIONS="username=myself,password='123'"
 CONFIG_DIR="/etc/kootnet"
 INSTALL_TYPE="Standard"
 # Check for Development option
 if [[ "$1" == "dev" ]]; then
-  DEB_INSTALLER="/dev/KootnetSensors.deb"
+  SMB_SHARE="/KootNetSMB/dev"
   INSTALL_TYPE="Developmental"
 fi
 printf '\n-- %s SMB UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
