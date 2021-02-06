@@ -160,7 +160,7 @@
                 <label for="databases_backup_selection">Choose a Database Backup:</label>
                 <br>
                 <select name="DatabaseBackupSelection" id="databases_backup_selection">
-                    <optgroup label="Main Backed-Up Databases">
+                    <optgroup label="Backed-Up Local Databases">
                         {{ BackupDBOptionNames |safe }}
                     </optgroup>
                 </select>
@@ -217,16 +217,29 @@
             <hr>
 
             <form method="post" enctype="multipart/form-data" action="/UploadSQLDatabase">
-                <h2><u><strong>Replace Main Database</strong></u></h2>
+                <h2><u><strong>Replace a Local Database</strong></u></h2>
 
                 <p style="font-size: medium;">
-                    <span style="color: darkred;">Warning</span>:
-                    Existing Readings & Notes will no longer be accessible<br><br>
-                    Previous Databases are backed-up<br>
-                    Find backed-up Databases on the Downloads Tab
+                    <span style="color: darkred;">Warning</span><br>
+                    Existing readings in the current database will no longer be accessible<br>
+                    If replacing the Main database, notes will also be replaced<br><br>
+                    Previous databases are backed-up<br>
+                    Find backed-up databases on the 'Downloads' Tab
                 </p>
 
                 <br>
+
+                <label for="database_replacement">Choose a Database:</label>
+                <br>
+                <select name="DatabaseReplacementSelection" id="database_replacement">
+                    <optgroup label="Local Databases">
+                        <option value="MainDatabase">Main</option>
+                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                        <option value="CheckinDatabase">Sensor Checkins</option>
+                    </optgroup>
+                </select>
+
+                <br><br>
 
                 <input style="color: black;" type="file" name="command_data"
                        accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
@@ -234,7 +247,7 @@
                 <br><br>
 
                 <button type="submit" class="mui-btn mui-btn--raised">
-                    Replace Main Database
+                    Replace Database
                 </button>
             </form>
         </fieldset>
