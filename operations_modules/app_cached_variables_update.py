@@ -16,13 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import os
 import psutil
 from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, get_file_content
+from operations_modules.app_generic_functions import thread_function, get_file_content, create_list_of_filenames
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from sensor_modules import sensor_access
@@ -68,8 +67,10 @@ def update_cached_variables():
     app_cached_variables.program_last_updated = sensor_access.get_last_updated()
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
     app_cached_variables.operating_system_name = os_name
-    update_uploaded_databases_names_list()
-    update_backup_databases_names_list()
+    backup_db_zip_filenames = create_list_of_filenames(file_locations.database_backup_folder)
+    uploaded_db_filenames = create_list_of_filenames(file_locations.uploaded_databases_folder)
+    app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
+    app_cached_variables.uploaded_databases_list = uploaded_db_filenames
 
 
 def start_ip_hostname_refresh():
@@ -86,25 +87,3 @@ def _ip_hostname_refresh():
         app_cached_variables.ip = sensor_access.get_ip()
         app_cached_variables.hostname = sensor_access.get_hostname()
         sleep(3600)
-
-
-def update_uploaded_databases_names_list():
-    app_cached_variables.uploaded_databases_list = []
-    try:
-        _, _, filenames = next(os.walk(file_locations.uploaded_databases_folder))
-        for database_name in filenames:
-            app_cached_variables.uploaded_databases_list.append(database_name)
-        app_cached_variables.uploaded_databases_list.sort()
-    except Exception as custom_db_error:
-        logger.primary_logger.warning(" -- Error updating uploaded DB list: " + str(custom_db_error))
-
-
-def update_backup_databases_names_list():
-    app_cached_variables.zipped_db_backup_list = []
-    try:
-        _, _, filenames = next(os.walk(file_locations.database_backup_folder))
-        for database_name in filenames:
-            app_cached_variables.zipped_db_backup_list.append(database_name)
-        app_cached_variables.zipped_db_backup_list.sort()
-    except Exception as custom_db_error:
-        logger.primary_logger.warning(" -- Error updating backed-up DB list: " + str(custom_db_error))

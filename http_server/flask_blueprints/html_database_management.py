@@ -7,9 +7,7 @@ from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_cached_variables_update import update_uploaded_databases_names_list, \
-    update_backup_databases_names_list
-from operations_modules.app_generic_functions import get_file_content, zip_files, get_zip_size
+from operations_modules.app_generic_functions import get_file_content, zip_files, get_zip_size, create_list_of_filenames
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, validate_sqlite_database, \
     write_to_sql_database, check_main_database_structure, check_mqtt_subscriber_database_structure, \
     check_checkin_database_structure
@@ -80,7 +78,8 @@ def html_upload_custom_database():
             else:
                 uploaded_file.save(save_sqlite_to_file)
                 if validate_sqlite_database(save_sqlite_to_file):
-                    update_uploaded_databases_names_list()
+                    uploaded_db_filenames = create_list_of_filenames(file_locations.uploaded_databases_folder)
+                    app_cached_variables.uploaded_databases_list = uploaded_db_filenames
                 else:
                     os.remove(save_sqlite_to_file)
                     return_msg = "Database Upload Error"
@@ -127,7 +126,8 @@ def html_custom_database_management():
             os.rename(db_full_path, new_db_full_path)
         elif str(request.form.get("db_management")) == "delete_db":
             os.remove(db_full_path)
-        update_uploaded_databases_names_list()
+        uploaded_db_filenames = create_list_of_filenames(file_locations.uploaded_databases_folder)
+        app_cached_variables.uploaded_databases_list = uploaded_db_filenames
         return html_databases_management()
     except Exception as error:
         return_text2 = str(error)
@@ -147,7 +147,8 @@ def html_database_backup_management():
         db_full_path = backup_db_folder + db_selected_name
         if str(request.form.get("db_backups")) == "delete_backup_db":
             os.remove(db_full_path)
-            update_backup_databases_names_list()
+            backup_db_zip_filenames = create_list_of_filenames(file_locations.database_backup_folder)
+            app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
         elif str(request.form.get("db_backups")) == "download_backup_db":
             return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
     except Exception as error:
@@ -240,7 +241,8 @@ def _zip_and_delete_database(database_location, db_save_name):
     try:
         zip_content = get_file_content(database_location, open_type="rb")
         zip_files([sql_filename], [zip_content], save_type="save_to_disk", file_location=zip_full_path)
-        update_backup_databases_names_list()
+        backup_db_zip_filenames = create_list_of_filenames(file_locations.database_backup_folder)
+        app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
         os.remove(database_location)
         return True
     except Exception as error:
@@ -287,7 +289,8 @@ def _unzip_databases(zip_location, new_db_name, overwrite=False, backup_file_nam
                         os.remove(save_sqlite_to_file)
                         log_msg = "Upload Database - Invalid Database found in Zip: "
                         logger.network_logger.warning(log_msg + db_name_in_zip)
-                    update_uploaded_databases_names_list()
+                    backup_db_zip_filenames = create_list_of_filenames(file_locations.uploaded_databases_folder)
+                    app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
                     new_db_name = _get_clean_db_name(new_db_name)
     if os.path.isfile(zip_location):
         os.remove(zip_location)
