@@ -209,6 +209,24 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
+def create_list_of_filenames(folder_location, sort_list=True):
+    """
+    Takes a folder argument and returns a list of filenames from it
+    Optional: Set sort_list to True or False to return a sorted list, Default = True
+    """
+    return_filenames_list = []
+    try:
+        _, _, filenames = next(os.walk(folder_location))
+        for f_name in filenames:
+            return_filenames_list.append(f_name)
+        if sort_list:
+            return_filenames_list.sort()
+    except Exception as custom_db_error:
+        log_msg = " -- Error getting list of filenames in folder " + folder_location + ": "
+        logger.primary_logger.warning(log_msg + str(custom_db_error))
+    return return_filenames_list
+
+
 def thread_function(function, args=None):
     """ Starts provided function as a thread with optional arguments. """
 
