@@ -57,8 +57,9 @@ def run_program_start_checks():
 
 def _check_directories():
     create_directories = [file_locations.sensor_data_dir, file_locations.sensor_config_dir,
-                          file_locations.uploaded_databases_folder, file_locations.sensor_data_dir + "/logs",
-                          file_locations.database_backup_folder, file_locations.sensor_data_dir + "/scripts"]
+                          file_locations.custom_ip_lists_folder, file_locations.uploaded_databases_folder,
+                          file_locations.sensor_data_dir + "/logs", file_locations.database_backup_folder,
+                          file_locations.sensor_data_dir + "/scripts"]
 
     if os.geteuid() == 0:
         current_directory = ""

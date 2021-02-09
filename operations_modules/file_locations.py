@@ -42,6 +42,8 @@ if os.geteuid() != 0:
 
 uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 database_backup_folder = sensor_data_dir + "/database_backups"
+custom_ip_lists_folder = sensor_config_dir + "/ip_lists"
+
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
 mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
