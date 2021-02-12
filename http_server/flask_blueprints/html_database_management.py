@@ -103,13 +103,11 @@ def _get_clean_db_name(db_text_name):
     if final_db_name.split(".")[-1] == "sqlite":
         final_db_name = final_db_name[:-7]
 
-    retry = True
-    while retry:
-        retry = False
-        for name in app_cached_variables.uploaded_databases_list:
-            if name == final_db_name + ".sqlite":
-                final_db_name = final_db_name + "1"
-                retry = True
+    count_num = 1
+    if final_db_name + ".sqlite" in app_cached_variables.uploaded_databases_list:
+        while final_db_name + str(count_num) + ".sqlite" in app_cached_variables.uploaded_databases_list:
+            count_num += 1
+        final_db_name = final_db_name + str(count_num)
     return final_db_name + ".sqlite"
 
 
