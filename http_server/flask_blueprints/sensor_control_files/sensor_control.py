@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
+import re
 from threading import Thread
 from flask import Blueprint, request, send_file
 from operations_modules import logger
@@ -23,13 +25,15 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
+from configuration_modules.config_sensor_control import CreateIPList
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import message_and_return
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import \
     check_sensor_status_sensor_control, create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
     create_the_big_zip, put_all_reports_zipped_to_cache, downloads_sensor_control, generate_html_reports_combo, \
-    sensor_control_management, get_sum_db_sizes, CreateSensorHTTPCommand, sensor_addresses_required_msg
+    sensor_control_management, get_sum_db_sizes, CreateSensorHTTPCommand, sensor_addresses_required_msg, \
+    sensor_control_management_ip_lists
 
 html_sensor_control_routes = Blueprint("html_sensor_control_routes", __name__)
 
@@ -40,67 +44,136 @@ check_portal_login = app_cached_variables.CreateNetworkGetCommands().check_porta
 @html_sensor_control_routes.route("/SensorControlManage", methods=["GET", "POST"])
 def html_sensor_control_management():
     logger.network_logger.debug("* HTML Sensor Control accessed by " + str(request.remote_addr))
+
     if request.method == "POST":
-        sc_action = request.form.get("selected_action")
-        sc_download_type = request.form.get("selected_send_type")
-        app_config_access.sensor_control_config.update_with_html_request(request)
-        ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
-
-        if len(ip_list) > 0:
-            if sc_action == app_config_access.sensor_control_config.radio_check_status:
-                return check_sensor_status_sensor_control(ip_list)
+        ip_list_command = str(request.form.get("ip_list_command"))
+        if ip_list_command == "ChangeIPList":
+            selected_ip_list = str(request.form.get("selected_ip_list"))
+            app_config_access.sensor_control_config.selected_ip_list = selected_ip_list
+            app_config_access.sensor_control_config.change_ip_list()
+        elif ip_list_command == "CreateNewIPList":
+            new_ip_list = CreateIPList()
+            new_ip_list.save_list_to_file()
+            ip_list_names = app_generic_functions.get_list_of_filenames_in_dir(file_locations.custom_ip_lists_folder)
+            app_config_access.sensor_control_config.custom_ip_list_names = ip_list_names
+            app_config_access.sensor_control_config.selected_ip_list = new_ip_list.ip_list_location.split("/")[-1]
+            app_config_access.sensor_control_config.change_ip_list()
         else:
-            return sensor_addresses_required_msg()
+            sc_action = request.form.get("selected_action")
+            sc_download_type = request.form.get("selected_send_type")
+            app_config_access.sensor_control_config.update_with_html_request(request)
+            ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
 
-        if len(ip_list) > 0:
-            ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-            if len(ip_list) < 1:
-                return message_and_return("All sensors appear to be Offline", url="/SensorControlManage")
-            if sc_action == app_config_access.sensor_control_config.radio_report_combo:
-                app_generic_functions.thread_function(_thread_combo_report, ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_report_system:
-                app_generic_functions.thread_function(_thread_system_report, ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_report_config:
-                app_generic_functions.thread_function(_thread_config_report, ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_report_test_sensors:
-                app_generic_functions.thread_function(_thread_readings_report, ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
-                app_generic_functions.thread_function(_thread_latency_report, ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_download_reports:
-                app_cached_variables.creating_the_reports_zip = True
-                logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
-                app_generic_functions.clear_zip_names()
-                app_generic_functions.thread_function(put_all_reports_zipped_to_cache, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_download_databases:
-                download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    return downloads_sensor_control(ip_list, download_type=download_sql_databases)
-                else:
-                    app_cached_variables.creating_databases_zip = True
-                    logger.network_logger.info("Sensor Control - Databases Zip Generation Started")
-                    app_generic_functions.thread_function(create_all_databases_zipped, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_download_logs:
-                app_generic_functions.clear_zip_names()
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    download_logs = app_config_access.sensor_control_config.radio_download_logs
-                    return downloads_sensor_control(ip_list, download_type=download_logs)
-                elif sc_download_type == app_config_access.sensor_control_config.radio_send_type_relayed:
-                    app_cached_variables.creating_logs_zip = True
-                    logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Started")
-                    app_generic_functions.thread_function(create_multiple_sensor_logs_zipped, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
-                logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
-                databases_size = get_sum_db_sizes(ip_list)
-                if app_generic_functions.save_to_memory_ok(databases_size):
+            if len(ip_list) > 0:
+                if sc_action == app_config_access.sensor_control_config.radio_check_status:
+                    return check_sensor_status_sensor_control(ip_list)
+            else:
+                return sensor_addresses_required_msg()
+
+            if len(ip_list) > 0:
+                ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+                if len(ip_list) < 1:
+                    return message_and_return("All sensors appear to be Offline", url="/SensorControlManage")
+                if sc_action == app_config_access.sensor_control_config.radio_report_combo:
+                    app_generic_functions.thread_function(_thread_combo_report, ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_report_system:
+                    app_generic_functions.thread_function(_thread_system_report, ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_report_config:
+                    app_generic_functions.thread_function(_thread_config_report, ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_report_test_sensors:
+                    app_generic_functions.thread_function(_thread_readings_report, ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
+                    app_generic_functions.thread_function(_thread_latency_report, ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_download_reports:
+                    app_cached_variables.creating_the_reports_zip = True
+                    logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
                     app_generic_functions.clear_zip_names()
-                    app_cached_variables.sc_big_zip_in_memory = True
-                else:
-                    app_cached_variables.sc_big_zip_in_memory = False
-                app_cached_variables.creating_the_big_zip = True
-                app_generic_functions.thread_function(create_the_big_zip, args=ip_list)
-        else:
-            return sensor_addresses_required_msg()
+                    app_generic_functions.thread_function(put_all_reports_zipped_to_cache, args=ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_download_databases:
+                    download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
+                    if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
+                        return downloads_sensor_control(ip_list, download_type=download_sql_databases)
+                    else:
+                        app_cached_variables.creating_databases_zip = True
+                        logger.network_logger.info("Sensor Control - Databases Zip Generation Started")
+                        app_generic_functions.thread_function(create_all_databases_zipped, args=ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_download_logs:
+                    app_generic_functions.clear_zip_names()
+                    if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
+                        download_logs = app_config_access.sensor_control_config.radio_download_logs
+                        return downloads_sensor_control(ip_list, download_type=download_logs)
+                    elif sc_download_type == app_config_access.sensor_control_config.radio_send_type_relayed:
+                        app_cached_variables.creating_logs_zip = True
+                        logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Started")
+                        app_generic_functions.thread_function(create_multiple_sensor_logs_zipped, args=ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
+                    logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
+                    databases_size = get_sum_db_sizes(ip_list)
+                    if app_generic_functions.save_to_memory_ok(databases_size):
+                        app_generic_functions.clear_zip_names()
+                        app_cached_variables.sc_big_zip_in_memory = True
+                    else:
+                        app_cached_variables.sc_big_zip_in_memory = False
+                    app_cached_variables.creating_the_big_zip = True
+                    app_generic_functions.thread_function(create_the_big_zip, args=ip_list)
+            else:
+                return sensor_addresses_required_msg()
     return sensor_control_management()
+
+
+@html_sensor_control_routes.route("/SensorControlManageIPLists", methods=["GET", "POST"])
+@auth.login_required
+def html_sensor_control_management_ip_lists():
+    logger.network_logger.debug("* HTML Sensor Control IP List Management accessed by " + str(request.remote_addr))
+    if request.method == "POST":
+        custom_ip_lists_folder = file_locations.custom_ip_lists_folder
+        ip_list_command = _get_clean_ip_list_name(str(request.form.get("ip_list_command")))
+        selected_ip_list = _get_clean_ip_list_name(str(request.form.get("selected_ip_list")))
+        if ip_list_command == "RenameIPList":
+            current_location = custom_ip_lists_folder + "/" + selected_ip_list
+            new_name = _get_clean_ip_list_name(str(request.form.get("ip_list_new_name")))
+            new_location = custom_ip_lists_folder + "/" + new_name
+
+            os.rename(current_location, new_location)
+
+            app_config_access.sensor_control_config.selected_ip_list = new_name
+            app_config_access.sensor_control_config.change_ip_list()
+            ip_list_names = app_generic_functions.get_list_of_filenames_in_dir(custom_ip_lists_folder)
+            app_config_access.sensor_control_config.custom_ip_list_names = ip_list_names
+        elif ip_list_command == "DeleteIPList":
+            os.remove(custom_ip_lists_folder + "/" + selected_ip_list)
+
+            ip_list_names = app_generic_functions.get_list_of_filenames_in_dir(custom_ip_lists_folder)
+            if len(ip_list_names) == 0:
+                CreateIPList().save_list_to_file()
+                ip_list_names = app_generic_functions.get_list_of_filenames_in_dir(custom_ip_lists_folder)
+
+            app_config_access.sensor_control_config.custom_ip_list_names = ip_list_names
+            app_config_access.sensor_control_config.selected_ip_list = ip_list_names[0]
+            app_config_access.sensor_control_config.change_ip_list()
+    return sensor_control_management_ip_lists()
+
+
+def _get_clean_ip_list_name(ip_list_name):
+    final_ip_list_name = ""
+    if ip_list_name is not None:
+        for letter in ip_list_name:
+            if re.match("^[A-Za-z0-9_.-]*$", letter):
+                final_ip_list_name += letter
+
+        if final_ip_list_name == "":
+            final_ip_list_name = "No_Name"
+
+        if final_ip_list_name.split(".")[-1] == "txt":
+            final_ip_list_name = final_ip_list_name[:-4]
+
+        custom_ip_list_names = app_config_access.sensor_control_config.custom_ip_list_names
+        count_num = 1
+        if final_ip_list_name + ".txt" in custom_ip_list_names:
+            while final_ip_list_name + str(count_num) + ".txt" in custom_ip_list_names:
+                count_num += 1
+            final_ip_list_name = final_ip_list_name + str(count_num)
+    return final_ip_list_name + ".txt"
 
 
 def _thread_combo_report(ip_list):
