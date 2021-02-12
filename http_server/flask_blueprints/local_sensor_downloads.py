@@ -116,7 +116,7 @@ def download_checkin_sql_database_zipped():
 def download_checkin_sql_database_raw():
     logger.network_logger.debug("* Download RAW Checkin SQL Database Accessed by " + str(request.remote_addr))
     try:
-        sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
+        sql_filename = _add_host_and_ip_to_filename("Sensors_Checkin_Database", "sqlite")
         return send_file(file_locations.sensor_checkin_database, as_attachment=True, attachment_filename=sql_filename)
     except Exception as error:
         log_msg = "* Unable to Send Checkin Database to "
