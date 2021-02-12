@@ -28,6 +28,11 @@ from sensor_modules import sensor_access
 html_basic_routes = Blueprint("html_basic_routes", __name__)
 
 
+@html_basic_routes.route("/robots.txt")
+def no_robots():
+    return "User-agent: *\nDisallow: /"
+
+
 @html_basic_routes.route("/")
 @html_basic_routes.route("/index")
 @html_basic_routes.route("/index.html")
