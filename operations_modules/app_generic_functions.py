@@ -209,7 +209,7 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
-def create_list_of_filenames(folder_location, sort_list=True):
+def get_list_of_filenames_in_dir(folder_location, sort_list=True):
     """
     Takes a folder argument and returns a list of filenames from it
     Optional: Set sort_list to True or False to return a sorted list, Default = True
