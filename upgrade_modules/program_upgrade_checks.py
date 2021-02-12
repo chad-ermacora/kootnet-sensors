@@ -56,15 +56,16 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 32:
-                if previous_version.minor_version < 4:
+                if previous_version.minor_version < 43:
+                    generic_upgrade_functions.reset_mqtt_publisher_config()
+                    generic_upgrade_functions.reset_sensor_control_config()
                     no_changes = False
             elif previous_version.feature_version == 31:
-                if previous_version.minor_version < 107:
-                    no_changes = False
-                    generic_upgrade_functions.reset_checkin_config()
-                if previous_version.minor_version < 100:
-                    no_changes = False
-                    generic_upgrade_functions.reset_trigger_high_low_config()
+                no_changes = False
+                generic_upgrade_functions.reset_mqtt_publisher_config()
+                generic_upgrade_functions.reset_sensor_control_config()
+                generic_upgrade_functions.reset_checkin_config()
+                generic_upgrade_functions.reset_trigger_high_low_config()
             elif previous_version.feature_version == 30:
                 no_changes = False
                 upgrade_beta_30_x_to_31()
