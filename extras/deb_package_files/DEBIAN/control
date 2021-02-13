@@ -1,5 +1,5 @@
 Package: kootnet-sensors
-Version: 0.32-43
+Version: 0.32-45
 Section: utils
 Priority: extra
 Architecture: all

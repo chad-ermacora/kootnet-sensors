@@ -19,7 +19,6 @@
 from multiprocessing import Process
 from operations_modules import app_cached_variables
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules.app_generic_functions import adjust_datetime
 from operations_modules.sqlite_database import sql_execute_get_data
 from http_server import server_plotly_graph_extras
@@ -88,109 +87,110 @@ def _start_plotly_graph(graph_data, db_location):
         if var_column == sql_column_names.all_tables_datetime:
             graph_data.sql_time = sql_column_date_time
         elif var_column == sql_column_names.ip:
-            graph_data.sql_ip = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_ip = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location), data_to_float=False)
             graph_data.sql_ip_date_time = sql_column_date_time
         elif var_column == sql_column_names.sensor_name:
-            graph_data.sql_host_name = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            cleaned_data = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location), data_to_float=False)
+            graph_data.sql_host_name = cleaned_data
             graph_data.sql_host_name_date_time = sql_column_date_time
         elif var_column == sql_column_names.sensor_uptime:
-            graph_data.sql_up_time = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_up_time = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_up_time_date_time = sql_column_date_time
         elif var_column == sql_column_names.system_temperature:
-            graph_data.sql_cpu_temp = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_cpu_temp = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_cpu_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.env_temperature:
-            graph_data.sql_hat_temp = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_hat_temp = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_hat_temp_date_time = sql_column_date_time
         elif var_column == sql_column_names.pressure:
-            graph_data.sql_pressure = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_pressure = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pressure_date_time = sql_column_date_time
         elif var_column == sql_column_names.altitude:
-            graph_data.sql_altitude = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_altitude = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_altitude_date_time = sql_column_date_time
         elif var_column == sql_column_names.humidity:
-            graph_data.sql_humidity = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_humidity = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_humidity_date_time = sql_column_date_time
         elif var_column == sql_column_names.distance:
-            graph_data.sql_distance = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_distance = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_distance_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_resistance_index:
-            graph_data.sql_gas_resistance = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gas_resistance = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gas_resistance_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_oxidising:
-            graph_data.sql_gas_oxidising = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gas_oxidising = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gas_oxidising_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_reducing:
-            graph_data.sql_gas_reducing = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gas_reducing = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gas_reducing_date_time = sql_column_date_time
         elif var_column == sql_column_names.gas_nh3:
-            graph_data.sql_gas_nh3 = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gas_nh3 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gas_nh3_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_1:
-            graph_data.sql_pm_1 = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_pm_1 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pm_1_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_2_5:
-            graph_data.sql_pm_2_5 = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_pm_2_5 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pm_2_5_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_10:
-            graph_data.sql_pm_10 = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_pm_10 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pm_10_date_time = sql_column_date_time
         elif var_column == sql_column_names.lumen:
-            graph_data.sql_lumen = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_lumen = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_lumen_date_time = sql_column_date_time
         elif var_column == sql_column_names.red:
-            graph_data.sql_red = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_red = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_red_date_time = sql_column_date_time
         elif var_column == sql_column_names.orange:
-            graph_data.sql_orange = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_orange = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_orange_date_time = sql_column_date_time
         elif var_column == sql_column_names.yellow:
-            graph_data.sql_yellow = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_yellow = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_yellow_date_time = sql_column_date_time
         elif var_column == sql_column_names.green:
-            graph_data.sql_green = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_green = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_green_date_time = sql_column_date_time
         elif var_column == sql_column_names.blue:
-            graph_data.sql_blue = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_blue = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_blue_date_time = sql_column_date_time
         elif var_column == sql_column_names.violet:
-            graph_data.sql_violet = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_violet = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_violet_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_index:
-            graph_data.sql_uv_index = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_uv_index = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_uv_index_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_a:
-            graph_data.sql_uv_a = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_uv_a = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_uv_a_date_time = sql_column_date_time
         elif var_column == sql_column_names.ultra_violet_b:
-            graph_data.sql_uv_b = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_uv_b = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_uv_b_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_x:
-            graph_data.sql_acc_x = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_acc_x = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_acc_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_y:
-            graph_data.sql_acc_y = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_acc_y = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_acc_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.acc_z:
-            graph_data.sql_acc_z = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_acc_z = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_acc_z_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_x:
-            graph_data.sql_mg_x = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_mg_x = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_mg_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_y:
-            graph_data.sql_mg_y = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_mg_y = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_mg_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.mag_z:
-            graph_data.sql_mg_z = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_mg_z = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_mg_z_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_x:
-            graph_data.sql_gyro_x = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gyro_x = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gyro_x_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_y:
-            graph_data.sql_gyro_y = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gyro_y = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gyro_y_date_time = sql_column_date_time
         elif var_column == sql_column_names.gyro_z:
-            graph_data.sql_gyro_z = _clean_sql_query_return(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_gyro_z = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gyro_z_date_time = sql_column_date_time
         else:
             logger.primary_logger.error(var_column + " - Does Not Exist")
@@ -296,8 +296,14 @@ def check_form_columns(form_request):
     return sql_column_selection
 
 
-def _clean_sql_query_return(sql_data_tuple):
+def _clean_sql_data(sql_data_tuple, data_to_float=True):
     cleaned_list = []
     for data in sql_data_tuple:
-        cleaned_list.append(data[0])
+        if data_to_float:
+            try:
+                cleaned_list.append(float(data[0]))
+            except Exception as error:
+                logger.primary_logger.debug("Plotly Graph data to Float Failed: " + str(error))
+        else:
+            cleaned_list.append(data[0])
     return cleaned_list
