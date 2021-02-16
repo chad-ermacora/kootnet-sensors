@@ -208,7 +208,8 @@ class CreateDatabaseVariables:
 
     def get_sensor_columns_list(self):
         """ Returns SQL Table columns used for Interval recording as a list. """
-        sensor_sql_columns = [self.sensor_name,
+        sensor_sql_columns = [self.all_tables_datetime,
+                              self.sensor_name,
                               self.ip,
                               self.sensor_uptime,
                               self.system_temperature,
