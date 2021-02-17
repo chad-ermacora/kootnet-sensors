@@ -132,6 +132,9 @@ def _start_plotly_graph(graph_data, db_location):
         elif var_column == sql_column_names.particulate_matter_2_5:
             graph_data.sql_pm_2_5 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pm_2_5_date_time = sql_column_date_time
+        elif var_column == sql_column_names.particulate_matter_4:
+            graph_data.sql_pm_4 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_pm_4_date_time = sql_column_date_time
         elif var_column == sql_column_names.particulate_matter_10:
             graph_data.sql_pm_10 = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_pm_10_date_time = sql_column_date_time
@@ -193,7 +196,7 @@ def _start_plotly_graph(graph_data, db_location):
             graph_data.sql_gyro_z = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_gyro_z_date_time = sql_column_date_time
         else:
-            logger.primary_logger.error(var_column + " - Does Not Exist")
+            logger.primary_logger.warning("Graphing Column " + var_column + " - Does Not Exist")
     _plotly_graph(graph_data)
 
 
