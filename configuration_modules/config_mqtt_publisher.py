@@ -194,8 +194,13 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
             if html_request.form.get("enable_broker_auth") is not None:
                 self.enable_broker_auth = 1
-            self.broker_user = str(html_request.form.get("broker_username"))
-            self.broker_password = str(html_request.form.get("broker_password"))
+                self.broker_user = str(html_request.form.get("broker_username"))
+                broker_pass = str(html_request.form.get("broker_password"))
+                if broker_pass != "":
+                    self.broker_password = broker_pass
+            else:
+                self.broker_user = ""
+                self.broker_password = ""
 
             if html_request.form.get("publish_seconds_wait") is not None:
                 self.seconds_to_wait = int(html_request.form.get("publish_seconds_wait"))

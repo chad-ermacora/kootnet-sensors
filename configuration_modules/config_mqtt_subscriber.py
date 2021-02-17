@@ -67,8 +67,6 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             self.enable_mqtt_subscriber = 1
         if html_request.form.get("enable_mqtt_sql_recording") is not None:
             self.enable_mqtt_sql_recording = 1
-        if html_request.form.get("enable_broker_auth") is not None:
-            self.enable_broker_auth = 1
 
         if html_request.form.get("sub_broker_address") is not None:
             self.broker_address = html_request.form.get("sub_broker_address")
@@ -78,10 +76,16 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             except Exception as error:
                 logger.network_logger.error("Invalid Broker Port #: " + str(error))
 
-        if html_request.form.get("broker_username") is not None:
+        if html_request.form.get("enable_broker_auth") is not None:
+            self.enable_broker_auth = 1
             self.broker_user = str(html_request.form.get("broker_username"))
-        if html_request.form.get("broker_password") is not None:
-            self.broker_password = str(html_request.form.get("broker_password"))
+            broker_pass = str(html_request.form.get("broker_password"))
+            if broker_pass != "":
+                self.broker_password = broker_pass
+        else:
+            self.broker_user = ""
+            self.broker_password = ""
+
         if html_request.form.get("mqtt_qos_level") is not None:
             self.mqtt_subscriber_qos = int(html_request.form.get("mqtt_qos_level"))
         if html_request.form.get("subscriber_topics") is not None:
