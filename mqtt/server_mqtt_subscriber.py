@@ -70,40 +70,52 @@ def start_mqtt_subscriber_server():
 
 
 def _write_mqtt_message_to_sql_database(mqtt_message):
+    all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
+    current_utc_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+
+    skip = True
     try:
         sensor_topic_as_list = str(mqtt_message.topic).strip().split("/")
+        payload = str(mqtt_message.payload.decode("UTF-8"))
         if len(sensor_topic_as_list) > 0:
-            current_utc_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
             sensor_id_str = sensor_topic_as_list[0]
             try:
-                column_and_data_dic = eval(str(mqtt_message.payload.decode("UTF-8")))
-                if type(column_and_data_dic) != dict:
-                    column_and_data_dic = {sensor_topic_as_list[-1]: str(mqtt_message.payload.decode("UTF-8"))}
+                column_and_data_dic = eval(payload)
+                if type(column_and_data_dic) is not dict:
+                    column_and_data_dic = {sensor_topic_as_list[-1]: payload}
+                    if all_tables_datetime in column_and_data_dic:
+                        column_and_data_dic = None
             except Exception as error:
-                log_msg = "Unable to Convert MQTT subscription data to writable SQL data: "
-                logger.network_logger.warning(log_msg + str(error))
-                column_and_data_dic = {"Decode": "Error"}
+                logger.network_logger.debug("MQTT Subscription - payload eval conversion failed: " + str(error))
+                column_and_data_dic = {sensor_topic_as_list[-1]: payload}
+                if all_tables_datetime in column_and_data_dic:
+                    column_and_data_dic = None
 
-            columns_sql_str = ""
-            data_sql_value_place_marks = ""
-            data_list = [current_utc_datetime]
-            for column_name, column_data in column_and_data_dic.items():
-                if column_name.replace("_", "JJ").isalnum():
-                    _check_sql_table_column_exists(sensor_id_str, column_name)
-                    columns_sql_str += column_name + ","
-                    data_sql_value_place_marks += "?,"
-                    data_list.append(str(column_data))
-                else:
-                    log_msg = "MQTT Subscriber SQL Recording: Incorrect sensor ID or Type - "
-                    logger.network_logger.warning(log_msg + "Must be Alphanumeric")
+            if column_and_data_dic is None:
+                logger.network_logger.debug("DateTime found in non-dic - Skipping SQL Write")
+            else:
+                if all_tables_datetime not in column_and_data_dic:
+                    column_and_data_dic[all_tables_datetime] = current_utc_datetime
 
-            if len(columns_sql_str) > 0:
-                columns_sql_str = columns_sql_str[:-1]
-                data_sql_value_place_marks = data_sql_value_place_marks[:-1]
-                sql_string = "INSERT OR IGNORE INTO " + sensor_id_str + " (" + \
-                             app_cached_variables.database_variables.all_tables_datetime + "," + \
-                             columns_sql_str + ") VALUES (?," + data_sql_value_place_marks + ")"
-                write_to_sql_database(sql_string, data_list, sql_database_location=mqtt_sub_db_location)
+                columns_sql_str = ""
+                data_sql_value_place_marks = ""
+                data_list = []
+                for column_name, column_data in column_and_data_dic.items():
+                    if column_name.replace("_", "JJ").isalnum():
+                        _check_sql_table_column_exists(sensor_id_str, column_name)
+                        columns_sql_str += column_name + ","
+                        data_sql_value_place_marks += "?,"
+                        data_list.append(str(column_data))
+                    else:
+                        log_msg = "MQTT Subscriber SQL Recording: Incorrect sensor ID or Type - "
+                        logger.network_logger.warning(log_msg + "Must be Alphanumeric")
+
+                if len(columns_sql_str) > 0:
+                    columns_sql_str = columns_sql_str[:-1]
+                    data_sql_value_place_marks = data_sql_value_place_marks[:-1]
+                    sql_string = "INSERT OR IGNORE INTO " + sensor_id_str + \
+                                 " (" + columns_sql_str + ") VALUES (" + data_sql_value_place_marks + ")"
+                    write_to_sql_database(sql_string, data_list, sql_database_location=mqtt_sub_db_location)
     except Exception as error:
         logger.primary_logger.error("MQTT Subscriber Recording Failure: " + str(error))
 
