@@ -665,7 +665,6 @@ class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
 
         self.mqtt_publisher_qos = 1
 
-        self.send_all_as_json = 1
         self.sensor_uptime = 1
         self.system_temperature = 1
         self.env_temperature = 1
@@ -681,24 +680,52 @@ class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
         self.accelerometer = 1
         self.magnetometer = 1
         self.gyroscope = 1
-        self.mqtt_base_topic = "KS/D44444Fg/"
+        self.mqtt_base_topic = "KSD44444Fg/"
 
-        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
-        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
-        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
-        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
-        self.pressure_topic = self.mqtt_base_topic + "Pressure"
-        self.altitude_topic = self.mqtt_base_topic + "Altitude"
-        self.humidity_topic = self.mqtt_base_topic + "Humidity"
-        self.distance_topic = self.mqtt_base_topic + "Distance"
-        self.gas_topic = self.mqtt_base_topic + "Gas"
-        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
-        self.lumen_topic = self.mqtt_base_topic + "Lumen"
-        self.color_topic = self.mqtt_base_topic + "Color"
-        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
-        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
-        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
-        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
+        self.sensor_host_name_topic = "ChangeMe"
+        self.sensor_ip_topic = "ChangeMe"
+        self.sensor_uptime_topic = "ChangeMe"
+        self.sensor_date_time_topic = "ChangeMe"
+        self.system_temperature_topic = "ChangeMe"
+        self.env_temperature_topic = "ChangeMe"
+        self.pressure_topic = "ChangeMe"
+        self.altitude_topic = "ChangeMe"
+        self.humidity_topic = "ChangeMe"
+        self.distance_topic = "ChangeMe"
+        self.gas_topic = "ChangeMe"
+        self.gas_resistance_index_topic = "ChangeMe"
+        self.gas_oxidising_topic = "ChangeMe"
+        self.gas_reducing_topic = "ChangeMe"
+        self.gas_nh3_topic = "ChangeMe"
+        self.particulate_matter_topic = "ChangeMe"
+        self.particulate_matter_1_topic = "ChangeMe"
+        self.particulate_matter_2_5_topic = "ChangeMe"
+        self.particulate_matter_4_topic = "ChangeMe"
+        self.particulate_matter_10_topic = "ChangeMe"
+        self.lumen_topic = "ChangeMe"
+        self.color_topic = "ChangeMe"
+        self.color_red_topic = "ChangeMe"
+        self.color_orange_topic = "ChangeMe"
+        self.color_yellow_topic = "ChangeMe"
+        self.color_green_topic = "ChangeMe"
+        self.color_blue_topic = "ChangeMe"
+        self.color_violet_topic = "ChangeMe"
+        self.ultra_violet_topic = "ChangeMe"
+        self.ultra_violet_index_topic = "ChangeMe"
+        self.ultra_violet_a_topic = "ChangeMe"
+        self.ultra_violet_b_topic = "ChangeMe"
+        self.accelerometer_topic = "ChangeMe"
+        self.accelerometer_x_topic = "ChangeMe"
+        self.accelerometer_y_topic = "ChangeMe"
+        self.accelerometer_z_topic = "ChangeMe"
+        self.magnetometer_topic = "ChangeMe"
+        self.magnetometer_x_topic = "ChangeMe"
+        self.magnetometer_y_topic = "ChangeMe"
+        self.magnetometer_z_topic = "ChangeMe"
+        self.gyroscope_topic = "ChangeMe"
+        self.gyroscope_x_topic = "ChangeMe"
+        self.gyroscope_y_topic = "ChangeMe"
+        self.gyroscope_z_topic = "ChangeMe"
 
     def set_settings_for_test2(self):
         self.enable_mqtt_publisher = 0
@@ -711,7 +738,6 @@ class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
 
         self.mqtt_publisher_qos = 2
 
-        self.send_all_as_json = 0
         self.sensor_uptime = 0
         self.system_temperature = 0
         self.env_temperature = 0
@@ -727,24 +753,52 @@ class CreateMQTTPublisherConfigurationTest(CreateMQTTPublisherConfiguration):
         self.accelerometer = 0
         self.magnetometer = 0
         self.gyroscope = 0
-        self.mqtt_base_topic = "KS/D4347sSd4Fg/"
+        self.mqtt_base_topic = "KSD43d47sSd4Fg/"
 
-        self.send_all_as_json_topic = self.mqtt_base_topic + "JSON"
-        self.sensor_uptime_topic = self.mqtt_base_topic + "SystemUpTime"
-        self.system_temperature_topic = self.mqtt_base_topic + "SystemTemperature"
-        self.env_temperature_topic = self.mqtt_base_topic + "EnvironmentTemperature"
-        self.pressure_topic = self.mqtt_base_topic + "Pressure"
-        self.altitude_topic = self.mqtt_base_topic + "Altitude"
-        self.humidity_topic = self.mqtt_base_topic + "Humidity"
-        self.distance_topic = self.mqtt_base_topic + "Distance"
-        self.gas_topic = self.mqtt_base_topic + "Gas"
-        self.particulate_matter_topic = self.mqtt_base_topic + "ParticulateMatter"
-        self.lumen_topic = self.mqtt_base_topic + "Lumen"
-        self.color_topic = self.mqtt_base_topic + "Color"
-        self.ultra_violet_topic = self.mqtt_base_topic + "UltraViolet"
-        self.accelerometer_topic = self.mqtt_base_topic + "Accelerometer"
-        self.magnetometer_topic = self.mqtt_base_topic + "Magnetometer"
-        self.gyroscope_topic = self.mqtt_base_topic + "Gyroscope"
+        self.sensor_host_name_topic = "ChangeMe1"
+        self.sensor_ip_topic = "ChangeMe1"
+        self.sensor_uptime_topic = "ChangeMe1"
+        self.sensor_date_time_topic = "ChangeMe1"
+        self.system_temperature_topic = "ChangeMe1"
+        self.env_temperature_topic = "ChangeMe1"
+        self.pressure_topic = "ChangeMe1"
+        self.altitude_topic = "ChangeMe1"
+        self.humidity_topic = "ChangeMe1"
+        self.distance_topic = "ChangeMe1"
+        self.gas_topic = "ChangeMe1"
+        self.gas_resistance_index_topic = "ChangeMe1"
+        self.gas_oxidising_topic = "ChangeMe1"
+        self.gas_reducing_topic = "ChangeMe1"
+        self.gas_nh3_topic = "ChangeMe1"
+        self.particulate_matter_topic = "ChangeMe1"
+        self.particulate_matter_1_topic = "ChangeMe1"
+        self.particulate_matter_2_5_topic = "ChangeMe1"
+        self.particulate_matter_4_topic = "ChangeMe1"
+        self.particulate_matter_10_topic = "ChangeMe1"
+        self.lumen_topic = "ChangeMe1"
+        self.color_topic = "ChangeMe1"
+        self.color_red_topic = "ChangeMe1"
+        self.color_orange_topic = "ChangeMe1"
+        self.color_yellow_topic = "ChangeMe1"
+        self.color_green_topic = "ChangeMe1"
+        self.color_blue_topic = "ChangeMe1"
+        self.color_violet_topic = "ChangeMe1"
+        self.ultra_violet_topic = "ChangeMe1"
+        self.ultra_violet_index_topic = "ChangeMe1"
+        self.ultra_violet_a_topic = "ChangeMe1"
+        self.ultra_violet_b_topic = "ChangeMe1"
+        self.accelerometer_topic = "ChangeMe1"
+        self.accelerometer_x_topic = "ChangeMe1"
+        self.accelerometer_y_topic = "ChangeMe1"
+        self.accelerometer_z_topic = "ChangeMe1"
+        self.magnetometer_topic = "ChangeMe1"
+        self.magnetometer_x_topic = "ChangeMe1"
+        self.magnetometer_y_topic = "ChangeMe1"
+        self.magnetometer_z_topic = "ChangeMe1"
+        self.gyroscope_topic = "ChangeMe1"
+        self.gyroscope_x_topic = "ChangeMe1"
+        self.gyroscope_y_topic = "ChangeMe1"
+        self.gyroscope_z_topic = "ChangeMe1"
 
 
 class CreateMQTTSubscriberConfigurationTest(CreateMQTTSubscriberConfiguration):
