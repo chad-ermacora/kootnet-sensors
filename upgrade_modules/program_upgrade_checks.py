@@ -56,7 +56,7 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 32:
-                if previous_version.minor_version < 43:
+                if previous_version.minor_version < 48:
                     generic_upgrade_functions.reset_mqtt_publisher_config()
                     generic_upgrade_functions.reset_sensor_control_config()
                     no_changes = False
