@@ -18,6 +18,7 @@
 """
 from flask import Blueprint, render_template, request
 from operations_modules import logger
+from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return
@@ -33,6 +34,7 @@ def html_set_config_main():
         try:
             app_config_access.primary_config.update_with_html_request(request)
             app_config_access.primary_config.save_config_to_file()
+            app_cached_variables.restart_sensor_checkin_thread = True
             page_msg = "Main Configuration Set & Applied"
             return_page = message_and_return(page_msg, url="/MainConfigurationsHTML")
             return return_page

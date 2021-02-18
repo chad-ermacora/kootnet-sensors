@@ -39,7 +39,7 @@ from operations_modules.app_cached_variables_update import start_ip_hostname_ref
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_high_low_triggers import start_trigger_high_low_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_variance_recording_server
-from operations_modules.software_checkin import start_sensor_checkin_server
+from operations_modules.software_checkin import start_sensor_checkins
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
 from operations_modules.email_server import start_report_email_server
@@ -82,7 +82,7 @@ start_mqtt_subscriber_server()
 
 # Start the "Call Home" Check-in server.
 # Sends Sensor ID and Kootnet Version + sometimes 25 lines of the Primary and Sensors Logs
-start_sensor_checkin_server()
+start_sensor_checkins()
 
 # Start Version Check Server (Checks for updates)
 start_new_version_check_server()
