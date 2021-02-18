@@ -23,7 +23,7 @@ from operations_modules import logger
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from operations_modules.sqlite_database import write_to_sql_database
+from operations_modules.sqlite_database import write_to_sql_database, get_clean_sql_table_name
 from operations_modules.file_locations import mqtt_subscriber_database as mqtt_sub_db_location
 
 
@@ -77,12 +77,11 @@ def _write_mqtt_message_to_sql_database(mqtt_message):
     all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
     current_utc_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
 
-    skip = True
     try:
         sensor_topic_as_list = str(mqtt_message.topic).strip().split("/")
         payload = str(mqtt_message.payload.decode("UTF-8"))
         if len(sensor_topic_as_list) > 0:
-            sensor_id_str = sensor_topic_as_list[0]
+            sensor_id_str = get_clean_sql_table_name(sensor_topic_as_list[0])
             try:
                 column_and_data_dic = eval(payload)
                 if type(column_and_data_dic) is not dict:

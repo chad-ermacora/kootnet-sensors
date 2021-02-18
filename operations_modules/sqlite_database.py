@@ -172,18 +172,20 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         return False
 
 
-def create_table_and_datetime(table, db_cursor):
-    """ Add's or verifies provided table and DateTime column in the SQLite Database. """
+def create_table_and_datetime(table_name, db_cursor):
+    """ Adds or verifies provided table and DateTime column in the SQLite Database. """
+    table_name = get_clean_sql_table_name(table_name)
     try:
         # Create or update table
-        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-        logger.primary_logger.debug("Table '" + table + "' - Created")
+        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table_name, nf="DateTime", ft="TEXT"))
+        logger.primary_logger.debug("Table '" + table_name + "' - Created")
     except Exception as error:
         logger.primary_logger.debug("SQLite3 Table Check/Creation: " + str(error))
 
 
 def check_sql_table_and_column(table_name, column_name, db_cursor):
-    """ Add's or verifies provided table and column in the SQLite Database. """
+    """ Adds or verifies provided table and column in the SQLite Database. """
+    table_name = get_clean_sql_table_name(table_name)
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         return True
@@ -248,3 +250,16 @@ def sql_fetch_items_to_text(sql_query_results):
     if len(return_msg) > 3:
         return_msg = return_msg[:-3]
     return return_msg
+
+
+def get_clean_sql_table_name(sql_table):
+    sql_table = str(sql_table).strip()
+    if sql_table[0].isdigit():
+        sql_table = "KS" + sql_table
+    if not sql_table.isalnum():
+        new_sql_table = ""
+        for character in sql_table:
+            if character.isalnum():
+                new_sql_table += character
+        sql_table = new_sql_table
+    return sql_table
