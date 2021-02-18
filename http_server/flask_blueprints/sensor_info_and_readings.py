@@ -44,8 +44,16 @@ def html_system_information():
     enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
     enable_trigger_recording = app_config_access.trigger_variances.enable_trigger_variance
 
+    enable_mqtt_sql_recording = 0
+    if app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber:
+        enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
+
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
     current_datetime = (datetime.utcnow() + timedelta(hours=utc0_hour_offset))
+
+    checkin_server_status = "Disabled"
+    if app_config_access.checkin_config.enable_checkin_recording:
+        checkin_server_status = "Running"
 
     return render_template(
         "sensor_information.html",
@@ -71,6 +79,11 @@ def html_system_information():
         IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
         TriggerHighLowRecording=_get_text_check_enabled(enable_high_low_trigger_recording),
         TriggerVarianceRecording=_get_text_check_enabled(enable_trigger_recording),
+        MQTTPublishing=app_cached_variables.mqtt_publisher_thread.current_state,
+        MQTTSubscriber=app_cached_variables.mqtt_subscriber_thread.current_state,
+        MQTTSubscriberRecording=_get_text_check_enabled(enable_mqtt_sql_recording),
+        SensorCheckins=_get_text_check_enabled(app_config_access.primary_config.enable_checkin),
+        CheckinServer=checkin_server_status,
         DebugLogging=debug_logging,
         SupportedDisplay=app_cached_variables.mini_display_thread.current_state,
         OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,

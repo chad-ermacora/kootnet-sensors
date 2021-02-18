@@ -46,9 +46,10 @@ def _mqtt_publisher_server():
     mqtt_send_format_individual_topics = app_config_access.mqtt_publisher_config.mqtt_send_format_individual_topics
     mqtt_send_format_custom_string = app_config_access.mqtt_publisher_config.mqtt_send_format_custom_string
 
-    app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
     while not app_config_access.mqtt_publisher_config.enable_mqtt_publisher:
-        sleep(5)
+        sleep(1)
+        app_cached_variables.mqtt_publisher_thread.current_state = "Disabled"
+        sleep(10)
     app_cached_variables.mqtt_publisher_thread.current_state = "Running"
     app_cached_variables.restart_mqtt_publisher_thread = False
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:

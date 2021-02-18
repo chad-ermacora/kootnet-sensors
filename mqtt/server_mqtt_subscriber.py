@@ -43,8 +43,12 @@ class CreateMQTTSubscriberTopicsRetrieval:
                 broker_password = app_config_access.mqtt_subscriber_config.broker_password
             cb_auth = {'username': broker_user, 'password': broker_password}
 
-        subscribe.callback(callback=_on_mqtt_message, topics=subscribed_topics_list, hostname=broker_address,
-                           port=broker_server_port, auth=cb_auth, tls=None, qos=mqtt_qos)
+        app_cached_variables.mqtt_subscriber_thread.current_state = "Running"
+        try:
+            subscribe.callback(callback=_on_mqtt_message, topics=subscribed_topics_list, hostname=broker_address,
+                               port=broker_server_port, auth=cb_auth, tls=None, qos=mqtt_qos)
+        except Exception as error:
+            logger.network_logger.error("MQTT Subscriber: " + str(error))
 
 
 # When using publish.multiple you CANNOT use callbacks. It prevents data transmission (stops after connecting)

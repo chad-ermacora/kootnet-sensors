@@ -338,12 +338,14 @@ checkin_search_sensors_log = ""
 
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
+sensor_checkin_thread = CreateEmptyThreadClass()
 interval_recording_thread = CreateEmptyThreadClass()
 report_email_thread = CreateEmptyThreadClass()
 graph_email_thread = CreateEmptyThreadClass()
 mini_display_thread = CreateEmptyThreadClass()
 interactive_sensor_thread = CreateEmptyThreadClass()
 mqtt_publisher_thread = CreateEmptyThreadClass()
+mqtt_subscriber_thread = CreateEmptyThreadClass()
 weather_underground_thread = CreateEmptyThreadClass()
 luftdaten_thread = CreateEmptyThreadClass()
 open_sense_map_thread = CreateEmptyThreadClass()
@@ -382,6 +384,7 @@ trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
+restart_sensor_checkin_thread = False
 restart_interval_recording_thread = False
 restart_all_trigger_threads = False
 restart_report_email_thread = False
