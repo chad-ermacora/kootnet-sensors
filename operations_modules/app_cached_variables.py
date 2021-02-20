@@ -456,6 +456,7 @@ sc_in_memory_zip = b''
 # HTML Sensor Notes Variables
 notes_total_count = 0
 note_current = 1
+cached_notes_as_list = []
 
 # Quick Graph's Variables
 quick_graph_max_sql_entries = 1000
