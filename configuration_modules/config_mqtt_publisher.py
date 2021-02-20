@@ -494,7 +494,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             database_variables.sensor_name: "{{ SystemHostName }}",
             database_variables.ip: "{{ SystemIPAddress }}",
             database_variables.sensor_uptime: "{{ SystemUpTimeMin }}",
-            database_variables.all_tables_datetime: "{{ SystemDatTime }}",
+            database_variables.all_tables_datetime: "{{ SystemDateTime }}",
             database_variables.system_temperature: "{{ SystemCPUTemp }}",
             database_variables.env_temperature: "{{ EnvTemp }}",
             database_variables.pressure: "{{ Pressure }}",
