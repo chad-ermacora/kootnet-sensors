@@ -18,8 +18,15 @@
             width: auto;
         }
     </style>
-
-    <h2 style="text-decoration: underline; color: red;"><strong>Database Management - {{ HostName }}</strong></h2>
+    <div style="text-align: center; width: 550px;">
+        <h2>
+            <strong style="text-decoration: underline; color: red;">Database Management - {{ HostName }}</strong><br>
+            <a style="color: lightblue; font-size: medium;" href="/SensorUnitHelp.html#line3_5" target="_blank">
+                Click Here for Help
+            </a>
+        </h2>
+        <br>
+    </div>
 
     <ul class="mui-tabs__bar">
         <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
@@ -179,13 +186,7 @@
         <br>
         <fieldset style="background-color: #00B0FF; width: 550px; border: #0BB10D; text-align: center;">
             <form class="mui-form" method="POST" enctype="multipart/form-data" action="/UploadCustomSQLDatabase">
-                <h2>
-                    <u><strong>Upload Databases</strong></u><br>
-                    <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#ChangeMe" target="_blank">
-                        Click Here for Help
-                    </a>
-                    <hr>
-                </h2>
+                <h2><u><strong>Upload Databases</strong></u><br></h2>
 
                 <p style="font-size: medium;">
                     Upload a zip file containing one or more SQLite3 databases<br>
