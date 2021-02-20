@@ -25,6 +25,7 @@ from http_server.server_http_generic_functions import get_html_checkbox_state, m
     get_restart_service_text, get_html_selected_state
 
 html_config_mqtt_publisher_routes = Blueprint("html_config_mqtt_publisher_routes", __name__)
+database_variables = app_cached_variables.database_variables
 
 
 @html_config_mqtt_publisher_routes.route("/EditConfigMQTTPublisher", methods=["POST"])
@@ -42,6 +43,51 @@ def html_set_config_mqtt_publisher():
         except Exception as error:
             logger.primary_logger.error("HTML MQTT Publisher Configuration set Error: " + str(error))
             return message_and_return("Bad Configuration POST Request", url="/MQTTConfigurationsHTML")
+
+
+@html_config_mqtt_publisher_routes.route("/MQTTPublisherVariables")
+def html_mqtt_publisher_replacement_values():
+    log_msg = "** HTML - MQTT Publisher replacement values access - Source: "
+    logger.network_logger.debug(log_msg + str(request.remote_addr))
+    replacement_values = app_config_access.mqtt_publisher_config.get_mqtt_replacements_dictionary()
+    return render_template("mqtt_pub_replacement_values.html",
+                           SystemHostname=replacement_values[database_variables.sensor_name],
+                           SystemIP=replacement_values[database_variables.ip],
+                           SystemUptime=replacement_values[database_variables.sensor_uptime],
+                           SystemDateTime=replacement_values[database_variables.all_tables_datetime],
+                           SystemTemperature=replacement_values[database_variables.system_temperature],
+                           EnvTemperature=replacement_values[database_variables.env_temperature],
+                           Pressure=replacement_values[database_variables.pressure],
+                           Altitude=replacement_values[database_variables.altitude],
+                           Humidity=replacement_values[database_variables.humidity],
+                           Distance=replacement_values[database_variables.distance],
+                           Lumen=replacement_values[database_variables.lumen],
+                           Red=replacement_values[database_variables.red],
+                           Orange=replacement_values[database_variables.orange],
+                           Yellow=replacement_values[database_variables.yellow],
+                           Green=replacement_values[database_variables.green],
+                           Blue=replacement_values[database_variables.blue],
+                           Violet=replacement_values[database_variables.violet],
+                           UVIndex=replacement_values[database_variables.ultra_violet_index],
+                           UVA=replacement_values[database_variables.ultra_violet_a],
+                           UVB=replacement_values[database_variables.ultra_violet_b],
+                           GASRI=replacement_values[database_variables.gas_resistance_index],
+                           GASOxidising=replacement_values[database_variables.gas_oxidising],
+                           GASReducing=replacement_values[database_variables.gas_reducing],
+                           GASNH3=replacement_values[database_variables.gas_nh3],
+                           PM1=replacement_values[database_variables.particulate_matter_1],
+                           PM2_5=replacement_values[database_variables.particulate_matter_2_5],
+                           PM4=replacement_values[database_variables.particulate_matter_4],
+                           PM10=replacement_values[database_variables.particulate_matter_10],
+                           AccelerometerX=replacement_values[database_variables.acc_x],
+                           AccelerometerY=replacement_values[database_variables.acc_y],
+                           AccelerometerZ=replacement_values[database_variables.acc_z],
+                           MagnetometerX=replacement_values[database_variables.mag_x],
+                           MagnetometerY=replacement_values[database_variables.mag_y],
+                           MagnetometerZ=replacement_values[database_variables.mag_z],
+                           GyroscopeX=replacement_values[database_variables.gyro_x],
+                           GyroscopeY=replacement_values[database_variables.gyro_y],
+                           GyroscopeZ=replacement_values[database_variables.gyro_z])
 
 
 @html_config_mqtt_publisher_routes.route("/ResetMQTTPublisherTopics")
