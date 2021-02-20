@@ -197,9 +197,9 @@ class CreateLinuxSystem:
         Returns the number of times the sensor has rebooted as a str.
         Reboot count is calculated by uptime values stored in the Database.
         """
-        sql_query = "SELECT " + str(database_variables.sensor_uptime) + \
-                    " FROM " + str(database_variables.table_interval) + \
-                    " WHERE length(" + str(database_variables.sensor_uptime) + \
+        sql_query = "SELECT " + database_variables.sensor_uptime + \
+                    " FROM " + database_variables.table_interval + \
+                    " WHERE length(" + database_variables.sensor_uptime + \
                     ") < 2"
 
         sql_column_data = sqlite_database.sql_execute_get_data(sql_query)
@@ -209,7 +209,7 @@ class CreateLinuxSystem:
         bad_entries = 0
         for entry in sql_column_data:
             try:
-                entry_int = int(str(entry)[2:-3])
+                entry_int = int(entry[0])
             except Exception as error:
                 print("Bad SQL Entry in System Uptime column: " + str(entry) + " : " + str(error))
                 bad_entries += 1
@@ -217,9 +217,7 @@ class CreateLinuxSystem:
 
             if entry_int < previous_entry:
                 reboot_count += 1
-                previous_entry = entry_int
-            else:
-                previous_entry = entry_int
+            previous_entry = entry_int
 
         if bad_entries:
             logger.sensors_logger.warning(str(bad_entries) + " bad entries in DB reboot column")

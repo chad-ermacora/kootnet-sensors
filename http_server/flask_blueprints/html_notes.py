@@ -27,19 +27,18 @@ from sensor_modules.sensor_access import add_note_to_database, update_note_in_da
     get_db_note_dates, get_db_note_user_dates
 
 html_notes_routes = Blueprint("html_notes_routes", __name__)
+db_v = app_cached_variables.database_variables
 
 
 @html_notes_routes.route("/SensorNotes", methods=["GET", "POST"])
 @auth.login_required
 def sensor_notes():
     logger.network_logger.debug("** Notes accessed from " + str(request.remote_addr))
-    note_count_sql_query = "SELECT count(" + str(app_cached_variables.database_variables.other_table_column_notes) + \
-                           ") FROM " + str(app_cached_variables.database_variables.table_other)
+    note_count_sql_query = "SELECT count(" + db_v.other_table_column_notes + ") FROM " + db_v.table_other
 
     app_cached_variables.notes_total_count = sqlite_database.sql_execute_get_data(note_count_sql_query)[0][0]
 
-    selected_note_sql_query = "SELECT " + str(app_cached_variables.database_variables.other_table_column_notes) + \
-                              " FROM " + str(app_cached_variables.database_variables.table_other)
+    selected_note_sql_query = "SELECT " + db_v.other_table_column_notes + " FROM " + db_v.table_other
     if request.method == "POST":
         if request.form.get("button_function"):
             button_operation = request.form.get("button_function")

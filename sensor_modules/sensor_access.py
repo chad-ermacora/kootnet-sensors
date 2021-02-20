@@ -681,7 +681,7 @@ def _create_str_from_list(sql_data_notes):
 
         count = 0
         for entry in sql_data_notes:
-            new_entry = str(entry)[2:-3]
+            new_entry = str(entry[0])
             new_entry = new_entry.replace(",", "[replaced_comma]")
             return_data_string += new_entry + ","
             count += 1
