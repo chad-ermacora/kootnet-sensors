@@ -80,7 +80,7 @@
                                     <li><a href="#line3_2">System Information</a></li>
                                     <li><a href="#line3_3">Sensor Readings</a></li>
                                     <li><a href="#line3_4">Sensor Latency</a></li>
-									<li><a href="#line3_5">Database</a></li>
+									<li><a href="#line3_5">Database Management</a></li>
                                     <li><a href="#line3_6">Notes</a></li>
                                     <li><a href="#line3_7">Graphing</a></li>
                                     <li><a href="#line3_8">Advanced</a></li>
@@ -158,8 +158,8 @@
                         <div class="intro1">
                             <ul>
                                 <li><strong>Kootnet Sensors : </strong>Documentation</li>
-                                <li><strong>Document Version : </strong>0.4</li>
-                                <li><strong>Last Updated : </strong>Oct 6th, 2020</li>
+                                <li><strong>Document Version : </strong>0.5</li>
+                                <li><strong>Last Updated : </strong>Feb 20th, 2021</li>
                                 <li><strong>Author  : </strong>Chad Ermacora</li>
                                 <li><strong>Source Code : </strong><a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
                                 <li><strong>License : </strong><a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
@@ -403,24 +403,21 @@
 
                         <img src="http://kootenay-networks.com/ks_help_imgs/03_sensor_latency.gif" alt="Sensor Latency" class="img-responsive img-thumbnail">
 
-                        <h4 id="line3_5"><u>Database</u></h4>
+                        <h4 id="line3_5"><u>Database Management</u></h4>
                         <p>
-                            The main index page for Kootnet Sensors is the Database Information page.
-                            On this page you can download the SQLite3 database in RAW or Zip format &
-                            upload a RAW SQLite3 database to replace the main database.
-                            Uploading a database is used to allow the creation of graphs on faster PCs and
-                            the transfer of data when replacing or upgrading a sensor.<br><br>
+                            On the Database Management page you can download all 3 SQLite3 databases that include
+                            Main, MQTT Subscriber & Sensor Checkins. Under the Uploads tab you can replace one
+                            of the 3 SQLite3 databases or upload a custom database to be used in Plotly graphing.
+                            Databases can be uploaded or downloaded in RAW or Zip format.<br><br>
 
-                            When uploading a database, the previous database is not deleted, instead, it is moved into a
-                            zip file. This ensures no data is lost if a database was mistakenly replaced.
-                            The zip file's name will use this format *Date_Time*SensorDatabase.zip,
-                            located in the same directory as the main database.<br><br>
+                            When uploading a Main database, the previous Main database is zipped and stored in a
+                            backup folder that can be accessed under the Downloads tab.<br><br>
 
                             <strong>Main Database Location</strong>: /home/kootnet_data/SensorRecordingDatabase.sqlite<br>
+                            <strong>MQTT Subscriber Database Location</strong>: /home/kootnet_data/MQTTSubscriberDatabase.sqlite<br>
                             <strong>Checkin Database Location</strong>: /home/kootnet_data/SensorCheckinDatabase.sqlite<br><br>
 
-                            <strong>Note</strong>: <i>The SQLite3 database holds all sensor recordings as well as Notes.</i><br>
-                            <strong>Note</strong>: <i>The Sensor Checkin Database is a separate SQLite3 database.</i>
+                            <strong>Note</strong>: <i>The Main SQLite3 database holds all local sensor recordings as well as Notes.</i><br>
                         </p>
                         <img src="http://kootenay-networks.com/ks_help_imgs/19_config_database.gif" alt="Database" class="img-responsive img-thumbnail">
 
@@ -438,12 +435,13 @@
                         <p>
                             There are currently 2 types of Graphing available, Plotly graphing and Quick graphing.<br><br>
 
-                            Plotly graphing allows the creation of line graphs from Interval recordings or
-                            point plots from Trigger recordings. Plotly graphs have more features, such as zooming
-                            into a section of a graph and disabling graphs from view. Plotly graphs are created
-                            in the background, leaving the web interface available for other operations.<br><br>
+                            Plotly graphing allows the creation of graphs from the local Main/MQTT Subscriber databases
+                            or a custom uploaded Main/MQTT subscriber database. Plotly graphs have more features then
+                            Quick graphs, such as zooming into a section of a graph or disabling graphed readings
+                            from view. Plotly graphs are created in the background, leaving the web interface
+                            available for other operations.<br><br>
 
-                            Quick graphing creates line graphs from Interval recordings and will prevent other
+                            Quick graphing creates line graphs from local Interval recordings and will prevent other
                             web portal operations during it's creation, however, it is generally quicker then
                             using Plotly graphing, but limited in it's features.<br><br>
 
@@ -454,9 +452,16 @@
                         <h3>Graphing Options</h3>
 
                         <p>
-                            <strong>SQL Recording Type</strong>: Use Data from Interval or Trigger Recordings<br>
+                            <strong>Choose a Database</strong>: Select a Database to get readings from.<br>
+                            <strong>Remote Sensor ID</strong>: This is required if you are graping from a
+                            MQTT Subscriber database. By default, this is the "SensorID" found on the index page of
+                            the remote sensor.<br>
+                            <strong>SQL Recording Type</strong>: When using a Main database, choose what data to graph.
+                            Interval = Interval Recording, Trigger = High/Low + Variance Trigger Recording.<br>
                             <strong>Render Engine</strong>: View Graphs with WebGL (Faster Hardware Rendering) or
                             CPU (Slower Compatibility Mode)<br>
+                            <strong>Max Plot Points</strong>: Set the maximum allowed data points to retrieve
+                            from the SQLite database.<br>
 
                             <strong>Start DateTime</strong>: Retrieve Data starting from this Date & Time<br>
                             <strong>End DateTime</strong>: Retrieve Data up to this Date & Time<br>
@@ -472,8 +477,8 @@
                         <p>
                             The Advanced page is used to execute functions that are more System related, as opposed to
                             sensor related. Find links to upgrade Kootnet Sensors, the OS & Python Modules.
-                            You can also view RAW configurations & Python Module Versions.
-                            Power, SQL and Login update functions are located here as well.
+                            You can also view RAW configurations & Python Module Versions. Power and Login update
+                            functions are located here as well.
                         </p>
 
                         <img src="http://kootenay-networks.com/ks_help_imgs/37_advanced.gif" alt="Advanced" class="img-responsive img-thumbnail">
@@ -516,8 +521,8 @@
                             of the difference between the Raspberry Pi CPU temperature and the Environmental Temperature.<br>
                             ('Raw Env Temperature' + 'Static Offset') - ((PiTemperature - RawEnvTemperature) x CF)<br><br>
 
-                            <strong>Note</strong>: <i>The database holds the un-adjusted temperature readings and the
-                            adjustment amount in separate columns.</i><br>
+                            <strong>Note</strong>: <i>The database holds the adjusted temperature readings and the
+                            amount adjusted in another columns.</i><br>
                         </p>
                         <img src="http://kootenay-networks.com/ks_help_imgs/12_config_main.gif" alt="Main Config" class="img-responsive img-thumbnail">
 
@@ -674,14 +679,20 @@
 
                         <h4 id="line6_1"><u>Publisher</u></h4>
                         <p>
-                            The MQTT Publisher sends sensor readings of your choice to an MQTT Broker. You can specify a
+                            The MQTT Publisher sends sensor readings of your choice to an MQTT Broker. By default the
+                            MQTT publisher is setup to send readings in a format for another Kootnet Sensor to use it's
+                            MQTT Subscriber and record the readings to the MQTT Subscriber database, however, you can
+                            also set up MQTT publisher to send each sensor reading to it's own
                             <a href="https://www.hivemq.com/blog/mqtt-essentials-part-5-mqtt-topics-best-practices/" target="_blank">"topic"</a>
-                            per sensor, which, by default uses the following formula,
-                            "KS/D + last 6 characters of the Sensor's ID/Sensor's Name", for example
-                            "KS/D3jHk3U/Pressure". Using the 3 levels allows you to A) Know it's a Kootnet Sensor (KS)
-                            B) Identify which sensor the readings are coming from (D3jHk3U) C) Know what type of sensor
-                            readings are being delivered (Pressure). You can of course change it to anything else that
-                            fits your needs.<br><br>
+                            or create a custom text string using Kootnet Sensor's replacement variables, of which, each
+                            replacement variable is replaced by actual sensor readings. When using "Kootnet Sensors
+                            format" or the "Custom Single String" options, the MQTT Publisher Topic is the
+                            "MQTT Base Topic(s)". If using the "Topic per sensor", each sensor adds the
+                            "MQTT Base Topic(s)" in front of it's own topic entry.<br><br>
+
+                            <strong>Note</strong>: <i>Using "Topic per sensor" sends a MQTT message for each sensor,
+                            where as "Kootnet Sensors format" and "Custom Single String" use a single MQTT message.
+                            Sending multiple messages will increase the overhead cost (Extra data/bandwidth).</i><br><br>
 
                             <strong>Enable MQTT Publisher</strong>: Enables and start sending selected readings to the
                             MQTT Broker Address<br>
@@ -713,12 +724,12 @@
                             The MQTT Subscriber is similar in options to the <a href="#line6_1">MQTT Publisher</a>,
                             but, instead of sending readings to an MQTT Broker, you receive them. Readings are sent
                             shortly after the broker receives them and can be viewed on the Web Portal's
-                            "MQTT Subscriber" page. In a future release you will also be able to save these readings
-                            to the database for centralized recordings from multiple Kootnet sensors.<br><br>
+                            "MQTT Subscriber" page. You can also save these readings to the MQTT Subscriber database
+                            for centralized recordings from multiple Kootnet sensors.<br><br>
 
                             MQTT topics can be specified bellow; By default, it is set to receive all topics (#).
-                            The wildcard "#" can be used at any point in the topic, such as KS/DRSjk3K/# will receive
-                            all sensor readings from the sensor DRSjk3K only.
+                            The wildcard "#" can be used at any point in the topic, such as KSDRSjk3K/# will receive
+                            all sensor readings from the sensor KSDRSjk3K only.
                         </p>
 
                         <img src="http://kootenay-networks.com/ks_help_imgs/29_mqtt_subscriber.gif" alt="MQTT Subscriber" class="img-responsive img-thumbnail">
@@ -837,6 +848,8 @@
                             of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
                             "System Commands", you will need to enter a valid Username and Password for the remote
                             sensors. <br><br>
+                            Multiple lists of IP's can be created, managed and swapped to for easier management of
+                            multiple sites or additional sensors.<br><br>
 
                             <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
                             such as sensor21.mysensors.org.</i><br>
@@ -884,7 +897,7 @@
                             same network as the corresponding sensors you are downloading from.</i><br><br>
 
                             <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
-                            a combination report as well as zip files of each sensors database and logs<br>
+                            a combination report as well as zip files of each sensors Main database and logs<br>
                             <strong>Combination Report</strong>: Creates a zip on the local sensor containing
                             a combination report<br>
                             <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
