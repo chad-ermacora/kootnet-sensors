@@ -66,6 +66,12 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_sensor_control_config()
                 generic_upgrade_functions.reset_checkin_config()
                 generic_upgrade_functions.reset_trigger_high_low_config()
+
+                config_classes = [generic_upgrade_functions.CreateInstalledSensorsConfiguration,
+                                  generic_upgrade_functions.CreateIntervalRecordingConfiguration,
+                                  generic_upgrade_functions.CreateMQTTSubscriberConfiguration]
+                for config_class in config_classes:
+                    generic_upgrade_functions.load_and_save_config_no_logging(config_class)
             elif previous_version.feature_version == 30:
                 no_changes = False
                 upgrade_beta_30_x_to_31()
