@@ -12,62 +12,69 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
   OS=$(awk '/^ID=/' /etc/os-release | sed 's/ID=//')
   if [ "${OS}" == "raspbian" ]; then
-    PI_MODEL=$(head -n 1 /proc/device-tree/model | cut -c1-14)
-    if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv6l.whl
-    else
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv7l.whl
+    # The following if statement checks for a whl file in the python modules folder
+    # If it doesn't find it, it means a 'online' installer or upgrade is running
+    # If it's an 'online' installer or upgrade, it just installs using python requirements files
+    if [[ ! -f ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl ]]; then
+      PI_MODEL=$(head -n 1 /proc/device-tree/model | cut -c1-14)
+      if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv6l.whl
+      else
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.0-cp37-cp37m-linux_armv7l.whl
+      fi
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/pyserial-3.4-py2.py3-none-any.whl
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/click-7.1.2-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/itsdangerous-1.1.0-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/python_dateutil-2.8.1-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/Werkzeug-1.0.1-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/Jinja2-2.11.2-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/pyusb-1.0.2-py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/pyftdi-0.51.2-py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/colorzero-1.1-py2.py3-none-any.whl
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Flask-1.1.2-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/Flask_HTTPAuth-4.1.0-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/zope.event-4.4-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/luma.core-1.14.0-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/luma.oled-3.4.0-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/paho_mqtt-1.5.0-py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/gpiozero-1.5.1-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/smbus2-0.3.0-py2.py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/guizero-1.1.0-py3-none-any.whl
+      if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv6l.whl
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv6l.whl
+      else
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv7l.whl
+        ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv7l.whl
+      fi
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/retrying-1.3.3-py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/Flask_Compress-1.5.0-py3-none-any.whl \
+      ${PYTHON_MODULES_DIR}/requests-2.23.0-py2.py3-none-any.whl
+      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/plotly-4.14.3-py2.py3-none-any.whl
     fi
-    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/pyserial-3.4-py2.py3-none-any.whl
-    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/click-7.1.2-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/itsdangerous-1.1.0-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/python_dateutil-2.8.1-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/Werkzeug-1.0.1-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/Jinja2-2.11.2-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/pyusb-1.0.2-py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/pyftdi-0.51.2-py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/colorzero-1.1-py2.py3-none-any.whl
-    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Flask-1.1.2-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/Flask_HTTPAuth-4.1.0-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/zope.event-4.4-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/luma.core-1.14.0-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/luma.oled-3.4.0-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/paho_mqtt-1.5.0-py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/gpiozero-1.5.1-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/smbus2-0.3.0-py2.py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/guizero-1.1.0-py3-none-any.whl
-    if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv6l.whl \
-      ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv6l.whl
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv6l.whl
-    else
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/Brotli-1.0.7-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/cryptography-2.9.2-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/cffi-1.14.0-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/zope.interface-5.1.0-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/greenlet-0.4.16-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/psutil-5.7.0-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/smbus-1.1.post2-cp37-cp37m-linux_armv7l.whl \
-      ${PYTHON_MODULES_DIR}/numpy-1.18.5-cp37-cp37m-linux_armv7l.whl
-      ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/gevent-20.6.0-cp37-cp37m-linux_armv7l.whl
-    fi
-    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/retrying-1.3.3-py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/Flask_Compress-1.5.0-py3-none-any.whl \
-    ${PYTHON_MODULES_DIR}/requests-2.23.0-py2.py3-none-any.whl
-    ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/plotly-4.8.1-py2.py3-none-any.whl
+  ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/extras/sensor_hw_requirements.txt
   fi
 fi
+rm -f ${PYTHON_MODULES_DIR}/*
 ${PYTHON_VENV_DIR}/bin/python3 -m pip install -U pip
 ${PYTHON_VENV_DIR}/bin/pip3 install -r ${INSTALL_DIR}/requirements.txt
 echo '*/1 * * * * fake-hwclock' >>/tmp/tmp34441.txt

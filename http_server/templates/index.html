@@ -1,76 +1,20 @@
-{% extends "base.html" %}
-
-{% block content %}
-
-    <style>
-        .mui-container-fluid {
-            font-weight: bold;
-            font-size: large;
-        }
-
-        .mui-col-md-3 {
-            background-color: #00ffff;
-            width: 175px;
-        }
-
-        .mui-col-md-8 {
-            background-color: #0BB10D;
-            width: auto;
-        }
-    </style>
-
-    <h2 style="text-decoration: underline; color: red;"><strong><a style="color: red;" href="/">
-        Database Information - {{ HostName }}
-    </a></strong></h2>
-
-    <div class="mui-container-fluid">
-        <div class="mui-row">
-            <div class="mui-col-md-3">Local Location</div>
-            <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Date Range</div>
-            <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Size on Disk</div>
-            <div class="mui-col-md-8">{{ SQLDatabaseSize }} MB</div>
-        </div>
-
-        <div class="mui-row">
-            <div class="mui-col-md-3">Number of Notes</div>
-            <div class="mui-col-md-8">{{ NumberNotes }}</div>
-        </div>
-    </div>
-
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Download SQL Database
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/DownloadSQLDatabase">Database Zipped</a></li>
-            <li><a href="/DownloadSQLDatabaseRAW">Database RAW</a></li>
-        </ul>
-    </div>
-
-    <br>
-
-    <form method="post" enctype="multipart/form-data" action="/UploadSQLDatabase">
-        <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200">
-            Upload SQL Database
-        </button>
-        <input style="color: #00B0FF;" type="file" name="command_data" accept=".database,.sql,.sqlite,.sqlite3" required>
-    </form>
-
-    <br><br>
-
-    <p style="color: red;">
-        The SQLite3 Database holds all recorded information, including sensor readings and notes.
-        <br>
-        Download it for offline access or backup purposes.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kootnet Sensors</title>
+</head>
+<body style="background-color: black;">
+    <h1><strong><u><a style="color: red;" href="/">Kootnet Sensors</a></u></strong></h1>
+    <h4><a style="color: purple;" href="/SensorInformation">Click Here to proceed to the Main Interface</a></h4>
+    <p style="color: white;">
+        <b style="color: red;">SensorID:</b> {{ SensorID }}<br><br>
+        <b style="color: red;">Version:</b> {{ KootnetVersion }}<br><br>
+        <b style="color: red;">HostName (Sensor Name):</b> {{ HostName }}<br><br>
+        <b style="color: red;">Local IP:</b> {{ LocalIP }}<br><br>
+        <b style="color: red;">Disk Space:</b> {{ DiskSpaceMessage | safe }}<br><br>
+        <b style="color: red;">Sensor's DateTime with TimeZone:</b>  {{ DateTime }}<br>
+        <b style="color: red;">Sensor's DateTime in UTC0:</b>  {{ DateTimeUTC }}
     </p>
-
-{% endblock %}
+</body>
+</html>

@@ -3,10 +3,16 @@
 {% block content %}
     <script src="/tinymce.min.js"></script>
     <script src="/jquery.tinymce.min.js"></script>
+    <div style="text-align: center; width: 500px;">
+        <h2>
+            <u><strong style="color: red;"><u>Sensor Notes</u></strong></u><br>
+            <a style="color: lightblue; font-size: medium;" href="/SensorUnitHelp.html#line3_6" target="_blank">
+                Click Here for Help
+            </a>
+        </h2>
+        <br>
+    </div>
 
-    <h2><u><strong><a style="text-decoration: underline; color: red;" href="/SensorNotes">
-        Sensor Notes
-    </a></strong></u></h2>
     <div style="display: inline-block;">
         <form style="display: inline-block;" method="POST" action="/SensorNotes">
             <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-light-blue mui--color-white">

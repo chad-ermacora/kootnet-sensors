@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
+from operations_modules.app_generic_functions import get_file_content
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
@@ -163,3 +164,16 @@ def reset_all_configurations(log_reset=True):
     reset_open_sense_map_config(log_reset=log_reset)
     reset_sensor_control_config(log_reset=log_reset)
     reset_checkin_config(log_reset=log_reset)
+
+
+def load_and_save_config_no_logging(configuration_creation_class):
+    """ Creates configuration class, loads the config and saves it without logging. """
+    new_config_instance = configuration_creation_class(load_from_file=False)
+    try:
+        old_config_text = get_file_content(new_config_instance.config_file_location)
+        new_config_instance.set_config_with_str(old_config_text)
+        new_config_instance.save_config_to_file()
+        logger.primary_logger.info(" ** Configuration " + new_config_instance.config_file_location + " Upgraded")
+    except Exception as error:
+        log_msg = " ***** Configuration " + new_config_instance.config_file_location
+        logger.primary_logger.error(log_msg + " Upgrade Failed: " + str(error))

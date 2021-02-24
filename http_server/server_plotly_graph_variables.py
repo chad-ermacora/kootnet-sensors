@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import file_locations
+from operations_modules.app_cached_variables import database_variables
 
 graph_creation_in_progress = False
 
@@ -61,7 +62,8 @@ class CreateGraphData:
     def __init__(self):
         self.enable_plotly_webgl = False
         self.db_location = file_locations.sensor_database
-        self.graph_table = "IntervalData"
+        self.save_plotly_graph_to = file_locations.plotly_graph_interval
+        self.graph_table = database_variables.table_interval
         self.graph_start = "1111-08-21 00:00:01"
         self.graph_end = "9999-01-01 00:00:01"
         self.datetime_offset = 7.0
@@ -74,12 +76,8 @@ class CreateGraphData:
         self.row_count = 0
         self.graph_collection = []
 
-        self.graph_columns = ["DateTime", "SensorName", "SensorUpTime", "IP", "SystemTemp",
-                              "EnvironmentTemp", "EnvTempOffset", "Pressure", "Altitude", "Humidity", "Lumen",
-                              "Distance", "Gas_Resistance_Index", "Gas_Oxidising", "Gas_Reducing", "Gas_NH3",
-                              "Particulate_Matter_1", "Particulate_Matter_2_5", "Particulate_Matter_10",
-                              "Red", "Orange", "Yellow", "Green", "Blue", "Violet", "Ultra_Violet_Index",
-                              "Ultra_Violet_A", "Ultra_Violet_B"]
+        # graph_columns is a list of SQL database column names
+        self.graph_columns = database_variables.get_sensor_columns_list()
         self.max_sql_queries = 200000
 
         # Graph data holders for SQL DataBase
@@ -101,6 +99,7 @@ class CreateGraphData:
         self.sql_gas_nh3 = []
         self.sql_pm_1 = []
         self.sql_pm_2_5 = []
+        self.sql_pm_4 = []
         self.sql_pm_10 = []
         self.sql_lumen = []
         self.sql_red = []
@@ -137,6 +136,7 @@ class CreateGraphData:
         self.sql_gas_nh3_date_time = []
         self.sql_pm_1_date_time = []
         self.sql_pm_2_5_date_time = []
+        self.sql_pm_4_date_time = []
         self.sql_pm_10_date_time = []
         self.sql_lumen_date_time = []
         self.sql_red_date_time = []

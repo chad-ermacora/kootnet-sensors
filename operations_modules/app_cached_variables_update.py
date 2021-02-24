@@ -16,16 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
 import psutil
+from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, get_file_content
+from operations_modules.app_generic_functions import thread_function, get_file_content, get_list_of_filenames_in_dir
 from operations_modules import network_ip
 from operations_modules import network_wifi
-
+from operations_modules.sqlite_database import sql_execute_get_data
 from sensor_modules import sensor_access
+
+db_v = app_cached_variables.database_variables
 
 
 def update_cached_variables():
@@ -68,6 +70,11 @@ def update_cached_variables():
     app_cached_variables.program_last_updated = sensor_access.get_last_updated()
     app_cached_variables.reboot_count = str(sensor_access.get_system_reboot_count())
     app_cached_variables.operating_system_name = os_name
+    backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
+    uploaded_db_filenames = get_list_of_filenames_in_dir(file_locations.uploaded_databases_folder)
+    app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
+    app_cached_variables.uploaded_databases_list = uploaded_db_filenames
+    update_cached_note_variables()
 
 
 def start_ip_hostname_refresh():
@@ -84,3 +91,17 @@ def _ip_hostname_refresh():
         app_cached_variables.ip = sensor_access.get_ip()
         app_cached_variables.hostname = sensor_access.get_hostname()
         sleep(3600)
+
+
+def update_cached_note_variables():
+    try:
+        note_count_sql_query = "SELECT count(" + db_v.other_table_column_notes + ") FROM " + db_v.table_other
+        app_cached_variables.notes_total_count = sql_execute_get_data(note_count_sql_query)[0][0]
+
+        selected_note_sql_query = "SELECT " + db_v.other_table_column_notes + " FROM " + db_v.table_other
+        sql_notes = sql_execute_get_data(selected_note_sql_query)
+        app_cached_variables.cached_notes_as_list = []
+        for note in sql_notes:
+            app_cached_variables.cached_notes_as_list.append(str(note[0]))
+    except Exception as error:
+        logger.sensors_logger.error("Unable to update cached note variables: " + str(error))

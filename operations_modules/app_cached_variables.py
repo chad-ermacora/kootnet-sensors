@@ -144,9 +144,9 @@ class CreateDatabaseVariables:
         self.other_table_column_notes = "Notes"
 
         self.sensor_check_in_version = "KootnetVersion"
-        self.sensor_check_in_installed_sensors = "installed_sensors"
-        self.sensor_check_in_primary_log = "primary_log"
-        self.sensor_check_in_sensors_log = "sensors_log"
+        self.sensor_check_in_installed_sensors = "InstalledSensors"
+        self.sensor_check_in_primary_log = "PrimaryLog"
+        self.sensor_check_in_sensors_log = "SensorsLog"
 
         self.trigger_state = "TriggerState"
 
@@ -161,41 +161,55 @@ class CreateDatabaseVariables:
         self.pressure = "Pressure"
         self.altitude = "Altitude"
         self.humidity = "Humidity"
+        self.dew_point = "Dew_Point"
         self.distance = "Distance"
 
+        self.gas_all_dic = "All_Gas_As_Dictionary"
         self.gas_resistance_index = "Gas_Resistance_Index"
         self.gas_oxidising = "Gas_Oxidising"
         self.gas_reducing = "Gas_Reducing"
         self.gas_nh3 = "Gas_NH3"
+
+        self.particulate_matter_all_dic = "All_Particulate_Matter_As_Dictionary"
         self.particulate_matter_1 = "Particulate_Matter_1"
         self.particulate_matter_2_5 = "Particulate_Matter_2_5"
         self.particulate_matter_4 = "Particulate_Matter_4"
         self.particulate_matter_10 = "Particulate_Matter_10"
 
         self.lumen = "Lumen"
+
+        self.colour_all_dic = "All_Colours_As_Dictionary"
         self.red = "Red"
         self.orange = "Orange"
         self.yellow = "Yellow"
         self.green = "Green"
         self.blue = "Blue"
         self.violet = "Violet"
+
+        self.ultra_violet_all_dic = "All_Ultra_Violet_As_Dictionary"
         self.ultra_violet_index = "Ultra_Violet_Index"
         self.ultra_violet_a = "Ultra_Violet_A"
         self.ultra_violet_b = "Ultra_Violet_B"
 
+        self.acc_all_dic = "All_Acceleration_As_Dictionary"
         self.acc_x = "Acc_X"
         self.acc_y = "Acc_Y"
         self.acc_z = "Acc_Z"
+
+        self.mag_all_dic = "All_Magnetometer_As_Dictionary"
         self.mag_x = "Mag_X"
         self.mag_y = "Mag_Y"
         self.mag_z = "Mag_Z"
+
+        self.gyro_all_dic = "All_Gyroscope_As_Dictionary"
         self.gyro_x = "Gyro_X"
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
 
     def get_sensor_columns_list(self):
         """ Returns SQL Table columns used for Interval recording as a list. """
-        sensor_sql_columns = [self.sensor_name,
+        sensor_sql_columns = [self.all_tables_datetime,
+                              self.sensor_name,
                               self.ip,
                               self.sensor_uptime,
                               self.system_temperature,
@@ -204,6 +218,7 @@ class CreateDatabaseVariables:
                               self.pressure,
                               self.altitude,
                               self.humidity,
+                              self.dew_point,
                               self.distance,
                               self.gas_resistance_index,
                               self.gas_oxidising,
@@ -241,6 +256,11 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+class CreateEmptyThreadClass:
+    def __init__(self):
+        self.current_state = "Disabled"
+
+
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
                  "RestartService": "systemctl daemon-reload ; systemctl restart KootnetSensors.service",
@@ -261,11 +281,6 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
                  "ShutdownSystem": "shutdown -h now"}
 
 
-class CreateEmptyThreadClass:
-    def __init__(self):
-        self.current_state = "Disabled"
-
-
 # The following variables are populated at runtime (Up until the next blank line)
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
@@ -280,20 +295,25 @@ total_ram_memory_size_type = " MB"
 tmp_sensor_id = ""
 database_variables = CreateDatabaseVariables()
 
+# Names of all the uploaded databases for graphing (Only names, no directory path)
+uploaded_databases_list = []
+
+# Names of all the backed-up main databases (Only names, no directory path)
+zipped_db_backup_list = []
+
 # Is filled with Currently available online Stable / Developmental versions
 standard_version_available = "Retrieving ..."
 developmental_version_available = "Retrieving ..."
 
 # Static variables
 command_data_separator = "[new_data_section]"
-no_sensor_present = "NoSensor"
 
 # Plotly Configuration Variables
 plotly_theme = "plotly_dark"
 
 # Network Variables
-hostname = "Still Loading"
-ip = "Refresh Page"
+hostname = "Loading ..."
+ip = "Loading ..."
 ip_subnet = ""
 gateway = ""
 dns1 = ""
@@ -318,12 +338,14 @@ checkin_search_sensors_log = ""
 
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
+sensor_checkin_thread = CreateEmptyThreadClass()
 interval_recording_thread = CreateEmptyThreadClass()
 report_email_thread = CreateEmptyThreadClass()
 graph_email_thread = CreateEmptyThreadClass()
 mini_display_thread = CreateEmptyThreadClass()
 interactive_sensor_thread = CreateEmptyThreadClass()
 mqtt_publisher_thread = CreateEmptyThreadClass()
+mqtt_subscriber_thread = CreateEmptyThreadClass()
 weather_underground_thread = CreateEmptyThreadClass()
 luftdaten_thread = CreateEmptyThreadClass()
 open_sense_map_thread = CreateEmptyThreadClass()
@@ -362,13 +384,13 @@ trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
+restart_sensor_checkin_thread = False
 restart_interval_recording_thread = False
 restart_all_trigger_threads = False
 restart_report_email_thread = False
 restart_graph_email_thread = False
 restart_mini_display_thread = False
 restart_mqtt_publisher_thread = False
-restart_mqtt_subscriber_thread = False
 restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
@@ -434,6 +456,7 @@ sc_in_memory_zip = b''
 # HTML Sensor Notes Variables
 notes_total_count = 0
 note_current = 1
+cached_notes_as_list = []
 
 # Quick Graph's Variables
 quick_graph_max_sql_entries = 1000

@@ -98,6 +98,9 @@ class CreateSensorAccess:
             if installed_sensors.pimoroni_enviro and not self.pimoroni_enviro_a.initialized_sensor:
                 self.pimoroni_enviro_a = _pimoroni_enviro.CreateEnviro()
                 self.pimoroni_enviro_a.initialized_sensor = True
+            if installed_sensors.pimoroni_enviro2 and not self.pimoroni_enviro2_a.initialized_sensor:
+                self.pimoroni_enviro2_a = _pimoroni_enviroplus.CreateEnviroPlus(enviro_hw_ver_2_w_screen=True)
+                self.pimoroni_enviro2_a.initialized_sensor = True
             if installed_sensors.pimoroni_enviroplus and not self.pimoroni_enviroplus_a.initialized_sensor:
                 self.pimoroni_enviroplus_a = _pimoroni_enviroplus.CreateEnviroPlus()
                 self.pimoroni_enviroplus_a.initialized_sensor = True
@@ -158,6 +161,7 @@ class CreateSensorAccess:
         self.pimoroni_mcp9600_a = CreateNoSensorsDummySensor()
         self.pimoroni_bmp280_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviro_a = CreateNoSensorsDummySensor()
+        self.pimoroni_enviro2_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviroplus_a = CreateNoSensorsDummySensor()
         self.pimoroni_pms5003_a = CreateNoSensorsDummySensor()
         self.pimoroni_sgp30_a = CreateNoSensorsDummySensor()

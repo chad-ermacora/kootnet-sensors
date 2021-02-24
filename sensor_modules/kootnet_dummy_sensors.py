@@ -9,7 +9,6 @@ Created on Mon May 4 09:34:56 2020
 import time
 import random
 from operations_modules import logger
-from operations_modules.app_cached_variables import database_variables
 
 round_decimal_to = 5
 pause_sensor_during_access_sec = 0.005
@@ -106,10 +105,10 @@ class CreateDummySensors:
         self.sensor_in_use = True
         time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
-        return {database_variables.particulate_matter_1: self._get_random_float(min_number=10, max_number=135),
-                database_variables.particulate_matter_2_5: self._get_random_float(min_number=10, max_number=135),
-                database_variables.particulate_matter_4: self._get_random_float(min_number=10, max_number=135),
-                database_variables.particulate_matter_10: self._get_random_float(min_number=10, max_number=135)}
+        return [self._get_random_float(min_number=10, max_number=135),
+                self._get_random_float(min_number=10, max_number=135),
+                self._get_random_float(min_number=10, max_number=135),
+                self._get_random_float(min_number=10, max_number=135)]
 
     def ultra_violet_index(self):
         """ Returns Ultra Violet (A,B) comparators as floats in a list. """

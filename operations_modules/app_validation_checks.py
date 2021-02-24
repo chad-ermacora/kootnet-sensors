@@ -19,7 +19,6 @@
 import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
-from operations_modules.app_cached_variables import no_sensor_present
 from operations_modules.app_generic_functions import check_for_port_in_address
 
 
@@ -94,13 +93,6 @@ def hostname_is_valid(text_hostname):
     if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
         return True
     return False
-
-
-def valid_sensor_reading(reading):
-    """ If sensor reads as no_sensor_present (AKA Sensor not installed or missing), returns False, otherwise True. """
-    if reading == no_sensor_present:
-        return False
-    return True
 
 
 def email_is_valid(email):

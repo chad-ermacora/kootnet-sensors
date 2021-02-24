@@ -59,7 +59,7 @@
 
     <fieldset style="text-align: center; max-width: 565px;">
         <h2>
-            <u><strong><a style="color: red;" href="{{ PageURL }}">Remote Sensor Management</a></strong></u><br>
+            <u style="color: red;"><strong style="color: red;">Remote Sensor Management</strong></u><br>
             <a style="color: green; font-size: medium;" href="/SensorUnitHelp.html#line8" target="_blank">
                 Click Here for Help
             </a>
@@ -68,15 +68,18 @@
         _<b id="blink_shadow">{{ ExtraTextMessage|safe }}</b>_
     </fieldset>
 
-    <form class="mui-form" method="POST" style="max-width: 600px; background-color: black;"
+    <form class="mui-form" id="main_form" method="POST" style="max-width: 600px; background-color: black;"
           action="/SensorControlManage">
+
+        <input type="text" id="ip_list_command" name="ip_list_command" value="Run" hidden>
+
         <fieldset style="text-align: center;">
             <button type="button" id="ip_show_hide"
                     class="mui-btn mui-btn--raised">
                 Show/Hide Sensors List
             </button>
             <div class="ip_selection_content">
-                <div class="mui-container-fluid" style="background-color: #00B0FF;">
+                <div class="mui-container-fluid" style="background-color: #00B0FF; width: 575px;">
                     <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
                             type="submit" name="button_action" value="save_settings" formaction="/MultiSCSaveSettings">
                         Save Settings
@@ -96,6 +99,27 @@
                     </label>
 
                     <br>
+
+                    <button class="mui-btn mui-btn--raised mui--bg-color-black  mui--color-white"
+                            onclick="create_ip_list()">
+                        Create New IP List
+                    </button>
+
+                    <br><br>
+
+                    <a href="/SensorControlManageIPLists" style="color: green;">Click here to manage IP lists</a>
+
+                    <br><br>
+
+                    <label for="ip_list_selection">Choose an IP List:</label>
+                    <br>
+                    <select name="selected_ip_list" id="ip_list_selection" onchange="change_ip_list()">
+                        <optgroup label="Custom Saved IP Lists">
+                            {{ IPListsOptionNames |safe }}
+                        </optgroup>
+                    </select>
+
+                    <br><br>
 
                     <div class="mui-row">
                         <div class="mui-col-md-3">
@@ -349,7 +373,6 @@
         <div class="mui-tabs__pane" id="edit-config-tab">
             {{ SensorControlEditConfig|safe }}
         </div>
-
     </form>
 
     <script>
@@ -472,6 +495,18 @@
         jQuery('#enable_custom_temp_offset').change(function () {
             document.getElementsByName("custom_temperature_offset")[0].disabled = !jQuery(this).prop('checked');
         });
+    </script>
+
+    <script>
+        function create_ip_list() {
+                document.getElementById("ip_list_command").value = "CreateNewIPList";
+                document.getElementById("main_form").submit()
+            }
+
+        function change_ip_list() {
+                document.getElementById("ip_list_command").value = "ChangeIPList";
+                document.getElementById("main_form").submit()
+            }
     </script>
 
 {% endblock %}

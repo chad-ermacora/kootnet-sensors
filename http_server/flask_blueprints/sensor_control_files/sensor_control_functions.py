@@ -510,7 +510,6 @@ def sensor_control_management():
     else:
         disable_run_action_button = ""
         extra_message = ""
-
     return render_template("sensor_control.html",
                            PageURL="/SensorControlManage",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
@@ -535,6 +534,7 @@ def sensor_control_management():
                            CheckedDownloadBig=radio_checked_download_big_zip,
                            DisabledRelayedDownload=disabled_download_relayed,
                            DisabledDirectDownload=disabled_download_direct,
+                           IPListsOptionNames=_get_ip_lists_drop_down(),
                            SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
                            SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
                            SensorIP3=app_config_access.sensor_control_config.sensor_ip_dns3,
@@ -556,6 +556,26 @@ def sensor_control_management():
                            SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
                            SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20,
                            SensorControlEditConfig=_get_sensor_control_edit_configs())
+
+
+def sensor_control_management_ip_lists():
+    return render_template("sensor_control_manage_ip_lists.html",
+                           PageURL="/SensorControlManageIPLists",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+                           IPListsOptionNames=_get_ip_lists_drop_down())
+
+
+def _get_ip_lists_drop_down():
+    custom_ips_option_html = "<option value='{{ IPListChangeMe }}'>{{ IPListChangeMe }}</option>"
+    selected_ip_option = "<option selected='selected' value='{{ IPListChangeMe }}'>{{ IPListChangeMe }}</option>"
+    ip_lists_dropdown_selection = ""
+    for ip_list_name in app_config_access.sensor_control_config.custom_ip_list_names:
+        if ip_list_name == app_config_access.sensor_control_config.selected_ip_list:
+            ip_lists_dropdown_selection += selected_ip_option.replace("{{ IPListChangeMe }}", ip_list_name) + "\n"
+        else:
+            ip_lists_dropdown_selection += custom_ips_option_html.replace("{{ IPListChangeMe }}", ip_list_name) + "\n"
+    return ip_lists_dropdown_selection
 
 
 def _get_sensor_control_edit_configs():

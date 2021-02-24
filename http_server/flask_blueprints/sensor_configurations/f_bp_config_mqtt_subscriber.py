@@ -20,11 +20,12 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.sqlite_database import get_sqlite_tables_in_list
 from configuration_modules import app_config_access
-from operations_modules.mqtt.server_mqtt_subscriber import restart_mqtt_subscriber_server, stop_mqtt_subscriber_server
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
-    get_restart_service_text, get_html_selected_state, get_html_hidden_state
+    get_html_selected_state, get_html_hidden_state
+from sensor_modules.sensor_access import get_file_size
 
 html_config_mqtt_subscriber_routes = Blueprint("html_config_mqtt_subscriber_routes", __name__)
 
@@ -42,14 +43,17 @@ def html_get_mqtt_subscriber_view():
     mqtt_subscriber_log_content = logger.get_sensor_log(file_locations.mqtt_subscriber_log)
     if mqtt_subscriber_log_content == "":
         mqtt_subscriber_log_content = "No MQTT Subscriber Messages"
-    return render_template("mqtt_subscriber.html",
-                           PageURL="/MQTTSubscriberView",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
-                           MQTTSubscriberEnabledText=enabled_text,
-                           MQTTEnabledColor=enabled_color,
-                           SubscriberTopics=mqtt_subscriber_log_content)
+    return render_template(
+        "mqtt_subscriber.html",
+        PageURL="/MQTTSubscriberView",
+        RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+        RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+        MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
+        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
+        MQTTSubscriberEnabledText=enabled_text,
+        MQTTEnabledColor=enabled_color,
+        SubscriberTopics=mqtt_subscriber_log_content
+    )
 
 
 @html_config_mqtt_subscriber_routes.route("/EditConfigMQTTSubscriber", methods=["POST"])
@@ -61,11 +65,7 @@ def html_set_config_mqtt_subscriber():
             app_config_access.mqtt_subscriber_config.update_with_html_request(request)
             app_config_access.mqtt_subscriber_config.save_config_to_file()
             return_text = "MQTT Subscriber Configuration Saved"
-            if app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber:
-                return_text = get_restart_service_text("MQTT Subscriber")
-                restart_mqtt_subscriber_server()
-            else:
-                stop_mqtt_subscriber_server()
+            app_cached_variables.html_service_restart = True
             return_page = message_and_return(return_text, url="/MQTTConfigurationsHTML")
             return return_page
         except Exception as error:
@@ -95,6 +95,7 @@ def get_config_mqtt_subscriber_tab():
             qos_level_2 = get_html_selected_state(True)
 
         enable_mqtt_subscriber = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber
+        enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
         enable_broker_auth = app_config_access.mqtt_subscriber_config.enable_broker_auth
         csv_mqtt_topics = ""
         for topic in app_config_access.mqtt_subscriber_config.subscribed_topics_list:
@@ -103,6 +104,8 @@ def get_config_mqtt_subscriber_tab():
         return render_template("edit_configurations/config_mqtt_subscriber.html",
                                PageURL="/MQTTConfigurationsHTML",
                                MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
+                               MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
+                               MQTTSubDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
                                MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
                                MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
                                MQTTQoSLevel0=qos_level_0,

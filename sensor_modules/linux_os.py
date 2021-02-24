@@ -14,7 +14,6 @@ import psutil
 from time import strftime
 from operations_modules.app_cached_variables import database_variables, current_platform
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import sqlite_database
 
@@ -105,7 +104,7 @@ class CreateLinuxSystem:
 
     @staticmethod
     def get_sys_datetime_str():
-        """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
+        """ Returns System DateTime in format YYYY-MM-DD HH:MM - timezone as a String. """
         return strftime("%Y-%m-%d %H:%M - %Z")
 
     @staticmethod
@@ -141,13 +140,13 @@ class CreateLinuxSystem:
         return return_disk_usage
 
     @staticmethod
-    def get_sql_db_size():
-        """ Returns Sensor SQLite DB Size in MB as a Float. """
+    def get_file_size_in_mb(file_location):
+        """ Returns Size of a file in MB as a Float. """
         try:
             # Num 1,000,000. Not using underscores to maintain compatibility with Python 3.5.x
-            db_size_mb = os.path.getsize(file_locations.sensor_database) / 1000000
+            db_size_mb = os.path.getsize(file_location) / 1000000
         except Exception as error:
-            logger.sensors_logger.error("Linux System - Interval Database Size Failed: " + str(error))
+            logger.sensors_logger.error("Linux System - Getting File Size Failed: " + str(error))
             db_size_mb = 0.0
         return round(db_size_mb, round_decimal_to)
 
@@ -198,9 +197,9 @@ class CreateLinuxSystem:
         Returns the number of times the sensor has rebooted as a str.
         Reboot count is calculated by uptime values stored in the Database.
         """
-        sql_query = "SELECT " + str(database_variables.sensor_uptime) + \
-                    " FROM " + str(database_variables.table_interval) + \
-                    " WHERE length(" + str(database_variables.sensor_uptime) + \
+        sql_query = "SELECT " + database_variables.sensor_uptime + \
+                    " FROM " + database_variables.table_interval + \
+                    " WHERE length(" + database_variables.sensor_uptime + \
                     ") < 2"
 
         sql_column_data = sqlite_database.sql_execute_get_data(sql_query)
@@ -210,7 +209,7 @@ class CreateLinuxSystem:
         bad_entries = 0
         for entry in sql_column_data:
             try:
-                entry_int = int(str(entry)[2:-3])
+                entry_int = int(entry[0])
             except Exception as error:
                 print("Bad SQL Entry in System Uptime column: " + str(entry) + " : " + str(error))
                 bad_entries += 1
@@ -218,9 +217,7 @@ class CreateLinuxSystem:
 
             if entry_int < previous_entry:
                 reboot_count += 1
-                previous_entry = entry_int
-            else:
-                previous_entry = entry_int
+            previous_entry = entry_int
 
         if bad_entries:
             logger.sensors_logger.warning(str(bad_entries) + " bad entries in DB reboot column")

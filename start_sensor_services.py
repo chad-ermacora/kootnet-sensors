@@ -39,17 +39,17 @@ from operations_modules.app_cached_variables_update import start_ip_hostname_ref
 from sensor_recording_modules.recording_interval import start_interval_recording_server
 from sensor_recording_modules.recording_high_low_triggers import start_trigger_high_low_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_variance_recording_server
-from operations_modules.software_checkin import start_sensor_checkin_server
+from operations_modules.software_checkin import start_sensor_checkins
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
 from operations_modules.email_server import start_report_email_server
 from operations_modules.email_server import start_graph_email_server
-from operations_modules.mqtt.server_mqtt_publisher import start_mqtt_publisher_server
-from operations_modules.mqtt.server_mqtt_subscriber import start_mqtt_subscriber_server
-from operations_modules.online_services_modules.luftdaten import start_luftdaten_server
-from operations_modules.online_services_modules.weather_underground import start_weather_underground_server
-from operations_modules.online_services_modules.open_sense_map import start_open_sense_map_server
-from operations_modules.mqtt.server_mqtt_broker import start_mqtt_broker_server
+from mqtt.server_mqtt_publisher import start_mqtt_publisher_server
+from mqtt.server_mqtt_subscriber import start_mqtt_subscriber_server
+from online_services_modules.luftdaten import start_luftdaten_server
+from online_services_modules.weather_underground import start_weather_underground_server
+from online_services_modules.open_sense_map import start_open_sense_map_server
+from mqtt.server_mqtt_broker import start_mqtt_broker_server
 from http_server.server_http import start_https_server
 
 logger.primary_logger.debug(" -- Starting Kootnet Sensor Threads")
@@ -82,7 +82,7 @@ start_mqtt_subscriber_server()
 
 # Start the "Call Home" Check-in server.
 # Sends Sensor ID and Kootnet Version + sometimes 25 lines of the Primary and Sensors Logs
-start_sensor_checkin_server()
+start_sensor_checkins()
 
 # Start Version Check Server (Checks for updates)
 start_new_version_check_server()

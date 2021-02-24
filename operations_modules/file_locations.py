@@ -36,20 +36,20 @@ sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
 
 if os.geteuid() != 0:
-    sensor_data_dir = "/home/" + str(getuser()).strip() + "/kootnet_data"
-    sensor_config_dir = "/home/" + str(getuser()).strip() + "/kootnet_data/config"
+    system_user = str(getuser()).strip()
+    sensor_data_dir = "/home/" + system_user + "/kootnet_data"
+    sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
 
-    directory_list = [sensor_data_dir, sensor_config_dir, sensor_data_dir + "/logs", sensor_data_dir + "/scripts"]
-    for directory in directory_list:
-        if not os.path.isdir(directory):
-            try:
-                os.mkdir(directory)
-            except Exception as error:
-                print("Make Directory Error: " + str(error))
+uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
+database_backup_folder = sensor_data_dir + "/database_backups"
+custom_ip_lists_folder = sensor_config_dir + "/ip_lists"
 
 sensor_database = sensor_data_dir + "/SensorRecordingDatabase.sqlite"
+mqtt_subscriber_database = sensor_data_dir + "/MQTTSubscriberDatabase.sqlite"
 sensor_checkin_database = sensor_data_dir + "/SensorCheckinDatabase.sqlite"
 database_zipped = sensor_data_dir + "/MainDatabaseZipped.zip"
+mqtt_database_zipped = sensor_data_dir + "/MQTTDatabaseZipped.zip"
+checkin_database_zipped = sensor_data_dir + "/CheckinDatabaseZipped.zip"
 
 log_directory = sensor_data_dir + "/logs/"
 primary_log = log_directory + "primary_log.txt"
@@ -87,8 +87,10 @@ weather_underground_config = sensor_config_dir + "/online_services_weather_under
 luftdaten_config = sensor_config_dir + "/online_services_luftdaten.conf"
 osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
 
-plotly_graph_interval = sensor_data_dir + "/IntervalPlotlySensorGraph.html"
-plotly_graph_triggers = sensor_data_dir + "/TriggersPlotlySensorGraph.html"
+plotly_graph_interval = sensor_data_dir + "/IntervalPlotlyGraph.html"
+plotly_graph_triggers = sensor_data_dir + "/TriggersPlotlyGraph.html"
+plotly_graph_mqtt = sensor_data_dir + "/MQTTPlotlyGraph.html"
+plotly_graph_custom = sensor_data_dir + "/CustomPlotlyGraph.html"
 
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"

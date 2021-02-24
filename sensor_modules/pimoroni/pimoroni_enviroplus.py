@@ -34,7 +34,7 @@ pause_sensor_during_access_sec_gas = 0.095
 class CreateEnviroPlus:
     """ Creates Function access to the Pimoroni Enviro+. """
 
-    def __init__(self):
+    def __init__(self, enviro_hw_ver_2_w_screen=False):
         try:
             self.display_off_count = 0
             self.display_is_on = True
@@ -46,9 +46,10 @@ class CreateEnviroPlus:
 
             ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
             bme280_import = __import__("sensor_modules.drivers.enviroplus.custom-bme280", fromlist="BME280")
-            self.gas_access = __import__("sensor_modules.drivers.enviroplus.mics6814", fromlist=["read_all"])
             self.ltr_559 = ltr559_import.LTR559()
             self.bme280 = bme280_import.BME280()
+            if not enviro_hw_ver_2_w_screen:
+                self.gas_access = __import__("sensor_modules.drivers.enviroplus.mics6814", fromlist=["read_all"])
             # Setup & Initialize display
             st7735_import = __import__("sensor_modules.drivers.ST7735", fromlist=["ST7735"])
             self.st7735 = st7735_import.ST7735(port=0, cs=1, dc=9, backlight=12, rotation=270, spi_speed_hz=10000000)
@@ -58,10 +59,19 @@ class CreateEnviroPlus:
             self.thread_display_power_saving = Thread(target=self._display_timed_off)
             self.thread_display_power_saving.daemon = True
             self.thread_display_power_saving.start()
-            logger.sensors_logger.debug("Pimoroni Enviro+ Initialization - OK")
+
+            if not enviro_hw_ver_2_w_screen:
+                logger.sensors_logger.debug("Pimoroni Enviro+ Initialization - OK")
+            else:
+                logger.sensors_logger.debug("Pimoroni Enviro /w Display Initialization - OK")
+
         except Exception as error:
-            logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
-            app_config_access.installed_sensors.pimoroni_enviroplus = 0
+            if not enviro_hw_ver_2_w_screen:
+                logger.sensors_logger.error("Pimoroni Enviro+ Initialization - Failed: " + str(error))
+                app_config_access.installed_sensors.pimoroni_enviroplus = 0
+            else:
+                logger.sensors_logger.error("Pimoroni Enviro /w Display Initialization - Failed: " + str(error))
+                app_config_access.installed_sensors.pimoroni_enviro2 = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
 
     def _display_timed_off(self):

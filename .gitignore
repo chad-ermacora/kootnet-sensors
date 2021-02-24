@@ -132,7 +132,7 @@ venv.bak/
 /extras/python_modules/numpy-1.18.5-cp37-cp37m-linux_armv6l.whl
 /extras/python_modules/numpy-1.18.5-cp37-cp37m-linux_armv7l.whl
 /extras/python_modules/paho_mqtt-1.5.0-py3-none-any.whl
-/extras/python_modules/plotly-4.8.1-py2.py3-none-any.whl
+/extras/python_modules/plotly-4.14.3-py2.py3-none-any.whl
 /extras/python_modules/psutil-5.7.0-cp37-cp37m-linux_armv6l.whl
 /extras/python_modules/psutil-5.7.0-cp37-cp37m-linux_armv7l.whl
 /extras/python_modules/pyserial-3.4-py2.py3-none-any.whl

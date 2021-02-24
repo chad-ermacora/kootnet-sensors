@@ -23,6 +23,8 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 
+db_v = app_cached_variables.database_variables
+
 
 def start_display_server():
     text_name = "Display"
@@ -60,71 +62,53 @@ def _display_server():
             sleep(10)
 
 
+def _get_sensor_reading_text(sensor_get_function, add_to_text):
+    sensor_reading = sensor_get_function()
+    if sensor_reading is not None:
+        try:
+            for index, reading in sensor_reading.items():
+                add_to_text += index + ": " + str(reading) + " "
+        except Exception as error:
+            logger.primary_logger.warning("Display Server error converting reading to text: " + str(error))
+    return add_to_text
+
+
 def get_numerical_display_text():
     text_message = ""
+
     if app_config_access.display_config.sensor_uptime:
-        text_message += "Uptime: " + str(sensor_access.get_uptime_minutes())
+        sensor_reading = sensor_access.get_uptime_minutes()
+        if sensor_reading is not None:
+            text_message += "SystemUptime: " + str(sensor_reading) + " "
+
     if app_config_access.display_config.system_temperature:
-        text_message += " CPU Temp: " + str(sensor_access.get_cpu_temperature())
+        text_message = _get_sensor_reading_text(sensor_access.get_cpu_temperature, text_message)
     if app_config_access.display_config.env_temperature:
-        text_message += " Env Temp: " + str(sensor_access.get_sensor_temperature())
+        text_message = _get_sensor_reading_text(sensor_access.get_environment_temperature, text_message)
     if app_config_access.display_config.pressure:
-        text_message += " Pressure: " + str(sensor_access.get_pressure())
+        text_message = _get_sensor_reading_text(sensor_access.get_pressure, text_message)
     if app_config_access.display_config.altitude:
-        text_message += " Altitude: " + str(sensor_access.get_altitude())
+        text_message = _get_sensor_reading_text(sensor_access.get_altitude, text_message)
     if app_config_access.display_config.humidity:
-        text_message += " Humidity: " + str(sensor_access.get_humidity())
+        text_message = _get_sensor_reading_text(sensor_access.get_humidity, text_message)
     if app_config_access.display_config.distance:
-        text_message += " Distance: " + str(sensor_access.get_distance())
+        text_message = _get_sensor_reading_text(sensor_access.get_distance, text_message)
     if app_config_access.display_config.gas:
-        gas_readings = sensor_access.get_gas(return_as_dictionary=True)
-        for text_name, item_value in gas_readings.items():
-            if text_name == app_cached_variables.database_variables.gas_resistance_index:
-                text_name = " Gas Index:"
-            elif text_name == app_cached_variables.database_variables.gas_oxidising:
-                text_name = " Gas Ox:"
-            elif text_name == app_cached_variables.database_variables.gas_reducing:
-                text_name = " Gas Re:"
-            elif text_name == app_cached_variables.database_variables.gas_nh3:
-                text_name = " Gas NH3:"
-            text_message += str(text_name) + str(item_value)
+        text_message = _get_sensor_reading_text(sensor_access.get_gas, text_message)
     if app_config_access.display_config.particulate_matter:
-        pm_readings = sensor_access.get_particulate_matter(return_as_dictionary=True)
-        for text_name, item_value in pm_readings.items():
-            if text_name == app_cached_variables.database_variables.particulate_matter_1:
-                text_name = " PM1:"
-            elif text_name == app_cached_variables.database_variables.particulate_matter_2_5:
-                text_name = " PM2:"
-            elif text_name == app_cached_variables.database_variables.particulate_matter_4:
-                text_name = " PM4:"
-            elif text_name == app_cached_variables.database_variables.particulate_matter_10:
-                text_name = " PM10:"
-            text_message += str(text_name) + str(item_value)
+        text_message = _get_sensor_reading_text(sensor_access.get_particulate_matter, text_message)
     if app_config_access.display_config.lumen:
-        text_message += " Lumen: " + str(sensor_access.get_lumen())
+        text_message = _get_sensor_reading_text(sensor_access.get_lumen, text_message)
     if app_config_access.display_config.color:
-        ems_color_readings = sensor_access.get_ems_colors(return_as_dictionary=True)
-        for text_name, item_value in ems_color_readings.items():
-            text_message += " " + str(text_name) + ": " + str(item_value)
+        text_message = _get_sensor_reading_text(sensor_access.get_ems_colors, text_message)
     if app_config_access.display_config.ultra_violet:
-        uv_readings = sensor_access.get_ultra_violet(return_as_dictionary=True)
-        for text_name, item_value in uv_readings.items():
-            if text_name == app_cached_variables.database_variables.ultra_violet_index:
-                text_name = " UV Index:"
-            elif text_name == app_cached_variables.database_variables.ultra_violet_a:
-                text_name = " UVA:"
-            elif text_name == app_cached_variables.database_variables.ultra_violet_b:
-                text_name = " UVB:"
-            text_message += str(text_name) + str(item_value)
+        text_message = _get_sensor_reading_text(sensor_access.get_ultra_violet, text_message)
     if app_config_access.display_config.accelerometer:
-        xzy = sensor_access.get_accelerometer_xyz()
-        text_message += " |Acc X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
+        text_message = _get_sensor_reading_text(sensor_access.get_accelerometer_xyz, text_message)
     if app_config_access.display_config.magnetometer:
-        xzy = sensor_access.get_magnetometer_xyz()
-        text_message += " |Mag X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
+        text_message = _get_sensor_reading_text(sensor_access.get_magnetometer_xyz, text_message)
     if app_config_access.display_config.gyroscope:
-        xzy = sensor_access.get_gyroscope_xyz()
-        text_message += " |Gyro X:" + str(xzy[0]) + " Y:" + str(xzy[1]) + " Z:" + str(str(xzy[2]))
+        text_message = _get_sensor_reading_text(sensor_access.get_gyroscope_xyz, text_message)
     return text_message
 
 

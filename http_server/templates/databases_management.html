@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <style>
+        .mui-container-fluid {
+            font-weight: bold;
+            font-size: large;
+        }
+
+        .mui-col-md-3 {
+            background-color: #00ffff;
+            width: 175px;
+        }
+
+        .mui-col-md-8 {
+            background-color: #0BB10D;
+            width: auto;
+        }
+    </style>
+    <div style="text-align: center; width: 550px;">
+        <h2>
+            <strong style="text-decoration: underline; color: red;">Database Management - {{ HostName }}</strong><br>
+            <a style="color: lightblue; font-size: medium;" href="/SensorUnitHelp.html#line3_5" target="_blank">
+                Click Here for Help
+            </a>
+        </h2>
+        <br>
+    </div>
+
+    <ul class="mui-tabs__bar">
+        <li class="mui--is-active"><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="database-main-tab">
+            Information
+        </a></li>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="database-downloads-tab">
+            Downloads
+        </a></li>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="database-upload-tab">
+            Uploads
+        </a></li>
+
+        <li><a style="color: red; background-color: #212121;" data-mui-toggle="tab"
+               data-mui-controls="database-management-tab">
+            Management
+        </a></li>
+    </ul>
+
+    <div class="mui-tabs__pane mui--is-active" id="database-main-tab">
+        <h2 style="color: red;"><strong><u>Main Database</u></strong></h2>
+        <div class="mui-container-fluid">
+            <div class="mui-row">
+                <div class="mui-col-md-3">Local Location</div>
+                <div class="mui-col-md-8">{{ SQLDatabaseLocation }}</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Date Range</div>
+                <div class="mui-col-md-8">{{ SQLDatabaseDateRange }}</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Size on Disk</div>
+                <div class="mui-col-md-8">{{ SQLDatabaseSize }} MB</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Number of Notes</div>
+                <div class="mui-col-md-8">{{ NumberNotes }}</div>
+            </div>
+        </div>
+
+        <h2 style="color: red;"><strong><u>MQTT Subscriber Database</u></strong></h2>
+        <div class="mui-container-fluid">
+            <div class="mui-row">
+                <div class="mui-col-md-3">Local Location</div>
+                <div class="mui-col-md-8">{{ SQLMQTTDatabaseLocation }}</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Size on Disk</div>
+                <div class="mui-col-md-8">{{ SQLMQTTDatabaseSize }} MB</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Sensors in DB</div>
+                <div class="mui-col-md-8">{{ SQLMQTTSensorsInDB }}</div>
+            </div>
+        </div>
+
+        <h2 style="color: red;"><strong><u>Sensor Checkin Database</u></strong></h2>
+        <div class="mui-container-fluid">
+            <div class="mui-row">
+                <div class="mui-col-md-3">Local Location</div>
+                <div class="mui-col-md-8">{{ SQLCheckinDatabaseLocation }}</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Size on Disk</div>
+                <div class="mui-col-md-8">{{ SQLCheckinDatabaseSize }} MB</div>
+            </div>
+
+            <div class="mui-row">
+                <div class="mui-col-md-3">Sensors in DB</div>
+                <div class="mui-col-md-8">{{ SQLCheckinSensorsInDB }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mui-tabs__pane" id="database-downloads-tab">
+        <br>
+        <fieldset style="background-color: #00B0FF; width: 550px; border: #0BB10D; text-align: center;">
+            <h2><u><strong>Download Databases</strong></u></h2>
+
+            <p style="font-size: medium;">
+                Download SQLite3 Databases for offline access or backup purposes.<br>
+                You can view and edit databases by using
+                <a style="color: blue;" href="https://sqlitebrowser.org/" target="_blank">
+                    DB Browser for SQLite
+                </a>
+            </p>
+
+            <div class="mui-dropdown">
+                <button class="mui-btn mui-btn--primary mui--bg-color-black" data-mui-toggle="dropdown">
+                    Main Database
+                    <span class="mui-caret"></span>
+                </button>
+                <ul class="mui-dropdown__menu">
+                    <li><a href="/DownloadSQLDatabase">Database Zipped</a></li>
+                    <li><a href="/DownloadSQLDatabaseRAW">Database RAW</a></li>
+                </ul>
+            </div>
+
+            <br>
+
+            <div class="mui-dropdown">
+                <button class="mui-btn mui-btn--primary mui--bg-color-black" data-mui-toggle="dropdown">
+                    MQTT Subscriber Database
+                    <span class="mui-caret"></span>
+                </button>
+                <ul class="mui-dropdown__menu">
+                    <li><a href="/DownloadSQLDatabaseMQTT">Database Zipped</a></li>
+                    <li><a href="/DownloadSQLDatabaseRAWMQTT">Database RAW</a></li>
+                </ul>
+            </div>
+
+            <br>
+
+            <div class="mui-dropdown">
+                <button class="mui-btn mui-btn--primary mui--bg-color-black" data-mui-toggle="dropdown">
+                    Checkin Server Database
+                    <span class="mui-caret"></span>
+                </button>
+                <ul class="mui-dropdown__menu">
+                    <li><a href="/DownloadSQLDatabaseCheckin">Database Zipped</a></li>
+                    <li><a href="/DownloadSQLDatabaseRAWCheckin">Database RAW</a></li>
+                </ul>
+            </div>
+
+            <br><br>
+
+            <form class="mui-form" method="POST" action="/DatabaseBackupManagement">
+                <label for="databases_backup_selection">Choose a Database Backup:</label>
+                <br>
+                <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                    <optgroup label="Backed-Up Local Databases">
+                        {{ BackupDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+
+                <br>
+
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-black mui--color-white"
+                        value="download_backup_db" name="db_backups">
+                    Download Backup
+                </button>
+            </form>
+        </fieldset>
+    </div>
+
+    <div class="mui-tabs__pane" id="database-upload-tab">
+        <br>
+        <fieldset style="background-color: #00B0FF; width: 550px; border: #0BB10D; text-align: center;">
+            <form class="mui-form" method="POST" enctype="multipart/form-data" action="/UploadCustomSQLDatabase">
+                <h2><u><strong>Upload Databases</strong></u><br></h2>
+
+                <p style="font-size: medium;">
+                    Upload a zip file containing one or more SQLite3 databases<br>
+                    or<br>
+                    Upload a single raw SQLite3 database
+                </p>
+
+                <hr>
+
+                <h2><u><strong>Add Custom Database</strong></u></h2>
+
+                <div class="mui-textfield">
+                    <label style="color: black;">Database Name
+                        <br>
+                        <input style="width: 250px;" type="text" maxlength="64"
+                               name="UploadDatabaseName" value="ChangeMe">
+                    </label>
+                    <br>
+                </div>
+
+                <input style="color: black;" type="file" name="command_data"
+                       accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
+                <br><br>
+                <button type="submit" class="mui-btn mui-btn--raised">
+                    Upload
+                </button>
+            </form>
+
+            <hr>
+
+            <form method="post" enctype="multipart/form-data" action="/UploadSQLDatabase">
+                <h2><u><strong>Replace a Local Database</strong></u></h2>
+
+                <p style="font-size: medium;">
+                    <span style="color: darkred;">Warning</span><br>
+                    Existing readings in the current database will no longer be accessible<br>
+                    If replacing the Main database, notes will also be replaced<br><br>
+                    Previous databases are backed-up<br>
+                    Find backed-up databases on the 'Downloads' Tab
+                </p>
+
+                <br>
+
+                <label for="database_replacement">Choose a Database:</label>
+                <br>
+                <select name="DatabaseReplacementSelection" id="database_replacement">
+                    <optgroup label="Local Databases">
+                        <option value="MainDatabase">Main</option>
+                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                        <option value="CheckinDatabase">Sensor Checkins</option>
+                    </optgroup>
+                </select>
+
+                <br><br>
+
+                <input style="color: black;" type="file" name="command_data"
+                       accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
+
+                <br><br>
+
+                <button type="submit" class="mui-btn mui-btn--raised">
+                    Replace Database
+                </button>
+            </form>
+        </fieldset>
+    </div>
+
+    <div class="mui-tabs__pane" id="database-management-tab">
+        <br>
+
+        <fieldset style="text-align: center; background-color: #00B0FF; width: 550px; border: #0BB10D;">
+            <form class="mui-form" method="POST" action="/CustomDatabaseManagement">
+                <h2><u><strong>Uploaded Database Management</strong></u></h2>
+                <label for="management_databases_selection">Choose a Database:</label>
+                <br>
+                <select name="ManagementDatabaseSelection" id="management_databases_selection">
+                    <optgroup label="Uploaded Databases">
+                        {{ UploadedDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+
+                <br><br>
+
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                        value="delete_db" name="db_management"
+                        onclick="return confirm('Are you sure you want to delete the Database?');">
+                    Delete Database
+                </button>
+                <br><br>
+
+                <div class="mui-textfield">
+                    <label style="color: black">Database Name
+                        <br>
+                        <input style="width: 250px;" type="text" maxlength="64"
+                               name="RenameUploadDatabaseName" value="ChangeMe">
+                    </label>
+                    <br>
+                </div>
+
+                <button type="submit" class="mui-btn mui-btn--raised" name="db_management" value="rename_db">
+                    Rename
+                </button>
+            </form>
+
+            <hr>
+
+            <form class="mui-form" method="POST" action="/DatabaseBackupManagement">
+                <h2><u><strong>Backed-up Main Databases</strong></u></h2>
+                <label for="databases_backup_selection">Choose a Database:</label>
+                <br>
+                <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                    <optgroup label="Main Backed-Up Databases">
+                        {{ BackupDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+                <br><br>
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-black mui--color-red"
+                        value="delete_backup_db" name="db_backups"
+                        onclick="return confirm('Are you sure you want to delete the Database backup?');">
+                    Delete Backup
+                </button>
+            </form>
+
+            <hr>
+
+            <h2><u><strong>Shrink (Vacuum) Database</strong></u></h2>
+            <form method="POST" action="/VacuumSQLDatabase">
+                <label for="vacuum_databases">Choose a Database:</label>
+                <br>
+                <select name="SQLDatabaseSelection" id="vacuum_databases">
+                    <optgroup label="Local Databases">
+                        <option value="MainDatabase">Main</option>
+                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                        <option value="CheckinDatabase">Sensor Checkins</option>
+                    </optgroup>
+                    <optgroup label="Uploaded Databases">
+                        {{ UploadedDBOptionNames |safe }}
+                    </optgroup>
+                </select>
+
+                <br><br>
+
+                <button type="submit" class="mui-btn mui-btn--raised mui--bg-color-black  mui--color-white"
+                        value="shrink_db" name="db_shrink"
+                        onclick="return confirm('Database Vacuum may take some time ' +
+                         'depending on the size of the Database, Continue?');">
+                    Shrink Database
+                </button>
+            </form>
+        </fieldset>
+    </div>
+
+{% endblock %}

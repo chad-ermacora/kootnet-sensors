@@ -19,17 +19,14 @@
 import os
 import random
 import string
-from threading import Thread
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
-    run_database_integrity_check
+    run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
-
-create_directories_for_files = [file_locations.mosquitto_configuration]
 
 
 def run_program_start_checks():
@@ -46,26 +43,36 @@ def run_program_start_checks():
     if software_version.old_version != software_version.version:
         run_database_integrity_check(file_locations.sensor_database, quick=False)
         run_database_integrity_check(file_locations.sensor_checkin_database, quick=False)
+        run_database_integrity_check(file_locations.mqtt_subscriber_database, quick=False)
         run_configuration_upgrade_checks()
         thread_function(check_checkin_database_structure)
+        thread_function(check_mqtt_subscriber_database_structure)
     else:
         run_database_integrity_check(file_locations.sensor_database)
         run_database_integrity_check(file_locations.sensor_checkin_database)
+        run_database_integrity_check(file_locations.mqtt_subscriber_database)
     thread_function(check_main_database_structure)
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
 
 
 def _check_directories():
-    try:
-        if app_cached_variables.running_with_root:
-            for directory_check in create_directories_for_files:
-                current_directory = ""
-                for found_dir in directory_check.split("/")[1:-1]:
-                    current_directory += "/" + str(found_dir)
-                    if not os.path.isdir(current_directory):
-                        os.mkdir(current_directory)
-    except Exception as error:
-        logger.primary_logger.error("Problem Checking Program Directories: " + str(error))
+    create_directories = [file_locations.sensor_data_dir, file_locations.sensor_config_dir,
+                          file_locations.custom_ip_lists_folder, file_locations.uploaded_databases_folder,
+                          file_locations.sensor_data_dir + "/logs", file_locations.database_backup_folder,
+                          file_locations.sensor_data_dir + "/scripts"]
+
+    if os.geteuid() == 0:
+        current_directory = ""
+        for found_dir in file_locations.mosquitto_configuration.split("/")[1:-1]:
+            current_directory += "/" + str(found_dir)
+            create_directories.append(current_directory)
+
+    for directory in create_directories:
+        if not os.path.isdir(directory):
+            try:
+                os.mkdir(directory)
+            except Exception as error:
+                logger.primary_logger.warning(" -- Make Directory Error: " + str(error))
 
 
 def _check_sensor_id():
@@ -82,7 +89,7 @@ def _check_sensor_id():
     except Exception as error:
         logger.primary_logger.error("Problem Creating Sensor ID: " + str(error))
         random_id = "Error"
-    app_cached_variables.tmp_sensor_id = random_id
+    app_cached_variables.tmp_sensor_id = "KS" + random_id
 
 
 def _set_file_permissions():

@@ -22,7 +22,7 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, get_restart_service_text
-from operations_modules.online_services_modules.luftdaten import start_luftdaten_server
+from online_services_modules.luftdaten import start_luftdaten_server
 
 html_config_luftdaten_routes = Blueprint("html_config_luftdaten_routes", __name__)
 
@@ -37,7 +37,7 @@ def html_edit_online_services_luftdaten():
         return_text = "Luftdaten Configuration Saved"
         if app_config_access.luftdaten_config.luftdaten_enabled:
             return_text = get_restart_service_text("Luftdaten")
-            if app_cached_variables.luftdaten_thread != "Disabled":
+            if app_cached_variables.luftdaten_thread.current_state != "Disabled":
                 if app_cached_variables.luftdaten_thread.monitored_thread.is_alive():
                     app_cached_variables.restart_luftdaten_thread = True
                 else:
@@ -57,9 +57,6 @@ def html_edit_online_services_luftdaten():
 def get_config_luftdaten_tab():
     try:
         luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
-        luftdaten_interval_seconds_disabled = "disabled"
-        if app_config_access.luftdaten_config.luftdaten_enabled:
-            luftdaten_interval_seconds_disabled = ""
 
         luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
         luftdaten_station_id = app_config_access.luftdaten_config.station_id
@@ -67,7 +64,6 @@ def get_config_luftdaten_tab():
                                PageURL="/3rdPartyConfigurationsHTML",
                                CheckedLuftdatenEnabled=luftdaten_checked,
                                LuftdatenIntervalSeconds=luftdaten_interval_seconds,
-                               DisabledLuftdatenInterval=luftdaten_interval_seconds_disabled,
                                LuftdatenStationID=luftdaten_station_id)
     except Exception as error:
         logger.network_logger.error("Error building Luftdaten configuration page: " + str(error))

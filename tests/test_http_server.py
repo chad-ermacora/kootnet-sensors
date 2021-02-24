@@ -20,8 +20,8 @@ import unittest
 from json import loads as json_loads
 from operations_modules.app_generic_functions import get_http_sensor_reading, http_display_text_on_sensor, \
     send_http_command
-from operations_modules.app_cached_variables import no_sensor_present, command_data_separator, \
-    CreateNetworkGetCommands, CreateNetworkSetCommands
+from operations_modules.app_cached_variables import command_data_separator, CreateNetworkGetCommands, \
+    CreateNetworkSetCommands
 from tests.create_test_configs import *
 
 
@@ -79,12 +79,6 @@ class TestApp(unittest.TestCase):
                                                   remote_get.mqtt_subscriber_configuration_file,
                                                   remote_set.set_mqtt_subscriber_configuration,
                                                   config_name="MQTT Subscriber"))
-
-    def test_sensor_control_config(self):
-        self.assertTrue(self._config_test_changes(sensor_control_config_test,
-                                                  remote_get.sensor_control_configuration_file,
-                                                  remote_set.set_sensor_control_configuration,
-                                                  config_name="Sensor Control"))
 
     def test_weather_underground_config(self):
         self.assertTrue(self._config_test_changes(weather_underground_config_test,
@@ -221,45 +215,40 @@ class TestApp2(unittest.TestCase):
             check_float_reading(sensor_responses[11], sensor_get_commands[11])
             self.assertTrue(isinstance(float(sensor_responses[11]), float))
         if not check_no_sensor_return(sensor_responses[12], sensor_get_commands[12]):
-            check_dict_floats(sensor_responses[12], sensor_get_commands[12])
-            # self.assertTrue(len(sensor_reading) == 4)
+            sensor_reading = eval(sensor_responses[12])
+            for index, reading in sensor_reading.items():
+                check_float_reading(reading, sensor_get_commands[17] + str(index))
         if not check_no_sensor_return(sensor_responses[13], sensor_get_commands[13]):
-            check_dict_floats(sensor_responses[13], sensor_get_commands[13])
-            # self.assertTrue(len(sensor_reading) == 3)
+            sensor_reading = eval(sensor_responses[13])
+            for index, reading in sensor_reading.items():
+                check_float_reading(reading, sensor_get_commands[17] + str(index))
         if not check_no_sensor_return(sensor_responses[14], sensor_get_commands[14]):
             check_float_reading(sensor_responses[14], sensor_get_commands[14])
             self.assertTrue(isinstance(float(sensor_responses[14]), float))
         if not check_no_sensor_return(sensor_responses[15], sensor_get_commands[15]):
-            check_dict_floats(sensor_responses[15], sensor_get_commands[15])
-            # self.assertTrue(isinstance(float(sensor_reading[0]), float))
-        if not check_no_sensor_return(sensor_responses[16], sensor_get_commands[16]):
-            check_dict_floats(sensor_responses[16], sensor_get_commands[16])
-            # self.assertTrue(len(sensor_responses[23][1:-1].split(",")) == 2)
-        if not check_no_sensor_return(sensor_responses[17], sensor_get_commands[17]):
-            sensor_reading = sensor_responses[17][1:-1].split(",")
-            for index, reading in enumerate(sensor_reading):
+            sensor_reading = eval(sensor_responses[15])
+            for index, reading in sensor_reading.items():
                 check_float_reading(reading, sensor_get_commands[17] + str(index))
-            self.assertTrue(isinstance(float(sensor_reading[0]), float))
-            self.assertTrue(isinstance(float(sensor_reading[1]), float))
-            self.assertTrue(isinstance(float(sensor_reading[2]), float))
+        if not check_no_sensor_return(sensor_responses[16], sensor_get_commands[16]):
+            sensor_reading = eval(sensor_responses[16])
+            for index, reading in sensor_reading.items():
+                check_float_reading(reading, sensor_get_commands[17] + str(index))
+        if not check_no_sensor_return(sensor_responses[17], sensor_get_commands[17]):
+            sensor_reading = eval(sensor_responses[17])
+            for index, reading in sensor_reading.items():
+                check_float_reading(reading, sensor_get_commands[17] + str(index))
         if not check_no_sensor_return(sensor_responses[18], sensor_get_commands[18]):
-            sensor_reading = sensor_responses[18][1:-1].split(",")
-            for index, reading in enumerate(sensor_reading):
+            sensor_reading = eval(sensor_responses[18])
+            for index, reading in sensor_reading.items():
                 check_float_reading(reading, sensor_get_commands[18] + str(index))
-            self.assertTrue(isinstance(float(sensor_reading[0]), float))
-            self.assertTrue(isinstance(float(sensor_reading[1]), float))
-            self.assertTrue(isinstance(float(sensor_reading[2]), float))
         if not check_no_sensor_return(sensor_responses[19], sensor_get_commands[19]):
-            sensor_reading = sensor_responses[19][1:-1].split(",")
-            for index, reading in enumerate(sensor_reading):
+            sensor_reading = eval(sensor_responses[19])
+            for index, reading in sensor_reading.items():
                 check_float_reading(reading, sensor_get_commands[19] + str(index))
-            self.assertTrue(isinstance(float(sensor_reading[0]), float))
-            self.assertTrue(isinstance(float(sensor_reading[1]), float))
-            self.assertTrue(isinstance(float(sensor_reading[2]), float))
 
 
 def check_no_sensor_return(sensor_data, data_name):
-    if sensor_data == no_sensor_present:
+    if sensor_data == "None":
         print("Warning: " + data_name + " Reading as No Sensor Present")
         return True
     return False
@@ -293,7 +282,6 @@ trigger_variances_config_test = CreateTriggerVariancesConfigurationTest()
 email_config_test = CreateEmailConfigurationTest()
 mqtt_publisher_config_test = CreateMQTTPublisherConfigurationTest()
 mqtt_subscriber_config_test = CreateMQTTSubscriberConfigurationTest()
-sensor_control_config_test = CreateSensorControlConfigurationTest()
 weather_underground_config_test = CreateWeatherUndergroundConfigurationTest()
 luftdaten_config_test = CreateLuftdatenConfigurationTest()
 open_sense_map_config_test = CreateOpenSenseMapConfigurationTest()

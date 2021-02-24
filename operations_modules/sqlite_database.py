@@ -38,8 +38,7 @@ class CreateOtherDataEntry:
                self.sensor_readings + self.sql_query_values_end
 
 
-def write_to_sql_database(sql_query, data_entries,
-                          sql_database_location=file_locations.sensor_database):
+def write_to_sql_database(sql_query, data_entries, sql_database_location=file_locations.sensor_database):
     """ Executes provided string with SQLite3.  Used to write sensor readings to the SQL Database. """
     try:
         db_connection = sqlite3.connect(sql_database_location)
@@ -50,7 +49,7 @@ def write_to_sql_database(sql_query, data_entries,
             db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
         db_connection.close()
-        logger.primary_logger.debug("SQL Write to DataBase OK - " + file_locations.sensor_database)
+        logger.primary_logger.debug("SQL Write to DataBase OK - " + sql_database_location)
     except Exception as error:
         logger.primary_logger.error("SQL Write to DataBase Failed - " + str(error))
         logger.primary_logger.debug("Bad SQL Write String: " + str(sql_query))
@@ -87,6 +86,34 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         for sensor_id in sensor_ids:
             cleaned_id = str(sensor_id[0]).strip()
             for column in columns:
+                try:
+                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                    db_cursor.execute(add_columns_sql)
+                except Exception as error:
+                    if str(error)[:21] != "duplicate column name":
+                        logger.primary_logger.error("Checkin Database Error: " + str(error))
+        db_connection.commit()
+        db_connection.close()
+        logger.primary_logger.debug("Check on 'Checkin' Database Complete")
+        return True
+    except Exception as error:
+        logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
+        return False
+
+
+def check_mqtt_subscriber_database_structure(database_location=file_locations.mqtt_subscriber_database):
+    logger.primary_logger.debug("Running Check on 'MQTT Subscriber' Database")
+    try:
+        db_connection = sqlite3.connect(database_location)
+        db_cursor = db_connection.cursor()
+
+        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
+        mqtt_sensor_strings = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
+
+        for sensor_string in mqtt_sensor_strings:
+            cleaned_id = str(sensor_string[0]).strip()
+
+            for column in database_variables.get_sensor_columns_list():
                 try:
                     add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
                     db_cursor.execute(add_columns_sql)
@@ -145,18 +172,20 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         return False
 
 
-def create_table_and_datetime(table, db_cursor):
-    """ Add's or verifies provided table and DateTime column in the SQLite Database. """
+def create_table_and_datetime(table_name, db_cursor):
+    """ Adds or verifies provided table and DateTime column in the SQLite Database. """
+    table_name = get_clean_sql_table_name(table_name)
     try:
         # Create or update table
-        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table, nf="DateTime", ft="TEXT"))
-        logger.primary_logger.debug("Table '" + table + "' - Created")
+        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table_name, nf="DateTime", ft="TEXT"))
+        logger.primary_logger.debug("Table '" + table_name + "' - Created")
     except Exception as error:
         logger.primary_logger.debug("SQLite3 Table Check/Creation: " + str(error))
 
 
 def check_sql_table_and_column(table_name, column_name, db_cursor):
-    """ Add's or verifies provided table and column in the SQLite Database. """
+    """ Adds or verifies provided table and column in the SQLite Database. """
+    table_name = get_clean_sql_table_name(table_name)
     try:
         db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
         return True
@@ -166,39 +195,51 @@ def check_sql_table_and_column(table_name, column_name, db_cursor):
     return False
 
 
-def validate_sqlite_database(database_location):
-    table_to_check = database_variables.table_interval
-    sql_table_check_query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + table_to_check + "';"
-    try:
-        database_connection = sqlite3.connect(database_location)
-        db_cursor = database_connection.cursor()
-        db_cursor.execute(sql_table_check_query)
-        db_return = db_cursor.fetchone()[0]
-        database_connection.close()
-        if db_return:
-            return True
-    except Exception as error:
-        logger.primary_logger.error("Database Check: " + str(error))
+def validate_sqlite_database(database_location, check_for_table=None):
+    """
+    If SQLite3 database at provided location is valid, returns True, otherwise False.
+    Optional: Add a specific table to look for as a string with check_for_table.
+    """
+    get_sql_tables = "SELECT name FROM sqlite_master WHERE type='table';"
+
+    if check_for_table is not None:
+        get_sql_tables = get_sql_tables[:-1] + " AND name='" + check_for_table + "';"
+
+    sql_db_tables = sql_execute_get_data(get_sql_tables, sql_database_location=database_location)
+
+    if len(sql_db_tables) > 0:
+        return True
     return False
 
 
 def run_database_integrity_check(sqlite_database_location, quick=True):
-    db_connection = sqlite3.connect(sqlite_database_location)
-    db_cursor = db_connection.cursor()
+    try:
+        db_connection = sqlite3.connect(sqlite_database_location)
+        db_cursor = db_connection.cursor()
 
-    if quick:
-        integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()
-    else:
-        integrity_check_fetch = db_cursor.execute("PRAGMA integrity_check;").fetchall()
+        if quick:
+            integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()
+        else:
+            integrity_check_fetch = db_cursor.execute("PRAGMA integrity_check;").fetchall()
 
-    db_connection.commit()
-    db_connection.close()
+        db_connection.commit()
+        db_connection.close()
 
-    log_msg1 = " - Full Integrity Check ran on "
-    if quick:
-        log_msg1 = " - Quick Integrity Check ran on "
-    integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
-    logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
+        log_msg1 = " - Full Integrity Check ran on "
+        if quick:
+            log_msg1 = " - Quick Integrity Check ran on "
+        integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
+        logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
+    except Exception as error:
+        log_msg = "SQLite3 Database Integrity Check Error on " + sqlite_database_location + ": "
+        logger.primary_logger.error(log_msg + str(error))
+
+
+def get_sqlite_tables_in_list(database_location):
+    """ Returns a list of SQLite3 database table names. """
+    get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
+    sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
+    return sqlite_tables_list
 
 
 def sql_fetch_items_to_text(sql_query_results):
@@ -209,3 +250,16 @@ def sql_fetch_items_to_text(sql_query_results):
     if len(return_msg) > 3:
         return_msg = return_msg[:-3]
     return return_msg
+
+
+def get_clean_sql_table_name(sql_table):
+    sql_table = str(sql_table).strip()
+    if sql_table[0].isdigit():
+        sql_table = "KS" + sql_table
+    if not sql_table.isalnum():
+        new_sql_table = ""
+        for character in sql_table:
+            if character.isalnum():
+                new_sql_table += character
+        sql_table = new_sql_table
+    return sql_table

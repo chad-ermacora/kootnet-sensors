@@ -30,34 +30,104 @@ html_local_download_routes = Blueprint("html_local_download_routes", __name__)
 
 @html_local_download_routes.route("/DownloadSQLDatabase")
 def download_sensors_sql_database_zipped():
-    logger.network_logger.debug("* Download Zipped SQL Database Accessed by " + str(request.remote_addr))
+    logger.network_logger.debug("* Download Zipped Main SQL Database Accessed by " + str(request.remote_addr))
     try:
-        file_name_part1 = app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname
-        sql_filename = file_name_part1 + "SensorDatabase.sqlite"
-        zip_filename = file_name_part1 + "SensorDatabase.zip"
+        sql_filename = _add_host_and_ip_to_filename("Sensor_Database", "sqlite")
+        zip_filename = _add_host_and_ip_to_filename("Sensor_Database", "zip")
         start_time = time.time()
         zip_content = app_generic_functions.get_file_content(file_locations.sensor_database, open_type="rb")
         app_generic_functions.zip_files([sql_filename], [zip_content], save_type="save_to_disk",
                                         file_location=file_locations.database_zipped)
         end_time = time.time()
-        logger.network_logger.info("* SQL Database zipped and sent to " + str(request.remote_addr))
+        logger.network_logger.info("* Main SQL Database zipped and sent to " + str(request.remote_addr))
         logger.network_logger.info("Zip file took " + str(round(end_time - start_time, 2)) + " seconds to create")
         return send_file(file_locations.database_zipped, as_attachment=True, attachment_filename=zip_filename)
     except Exception as error:
-        logger.primary_logger.error("* Unable to Send Database to " + str(request.remote_addr) + ": " + str(error))
+        log_msg = "* Unable to Send Main Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
         return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseRAW")
 def download_sensors_sql_database_raw():
-    logger.network_logger.debug("* Download RAW SQL Database Accessed by " + str(request.remote_addr))
+    logger.network_logger.debug("* Download RAW Main SQL Database Accessed by " + str(request.remote_addr))
     try:
-        file_name_part1 = app_cached_variables.ip.split(".")[-1] + "-" + app_cached_variables.hostname
-        sql_filename = file_name_part1 + "SensorDatabase.sqlite"
+        sql_filename = _add_host_and_ip_to_filename("Sensor_Database", "sqlite")
         return send_file(file_locations.sensor_database, as_attachment=True, attachment_filename=sql_filename)
     except Exception as error:
-        logger.primary_logger.error("* Unable to Send Database to " + str(request.remote_addr) + ": " + str(error))
+        log_msg = "* Unable to Send Main Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
         return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
+@html_local_download_routes.route("/DownloadSQLDatabaseMQTT")
+def download_mqtt_sql_database_zipped():
+    logger.network_logger.debug("* Download Zipped MQTT SQL Database Accessed by " + str(request.remote_addr))
+    try:
+        sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
+        zip_filename = _add_host_and_ip_to_filename("MQTT_Database", "zip")
+        start_time = time.time()
+        zip_content = app_generic_functions.get_file_content(file_locations.mqtt_subscriber_database, open_type="rb")
+        app_generic_functions.zip_files([sql_filename], [zip_content], save_type="save_to_disk",
+                                        file_location=file_locations.mqtt_database_zipped)
+        end_time = time.time()
+        logger.network_logger.info("* MQTT SQL Database zipped and sent to " + str(request.remote_addr))
+        logger.network_logger.info("Zip file took " + str(round(end_time - start_time, 2)) + " seconds to create")
+        return send_file(file_locations.mqtt_database_zipped, as_attachment=True, attachment_filename=zip_filename)
+    except Exception as error:
+        log_msg = "* Unable to Send MQTT Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
+        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
+@html_local_download_routes.route("/DownloadSQLDatabaseRAWMQTT")
+def download_mqtt_sql_database_raw():
+    logger.network_logger.debug("* Download RAW MQTT SQL Database Accessed by " + str(request.remote_addr))
+    try:
+        sql_filename = _add_host_and_ip_to_filename("MQTT_Database", "sqlite")
+        return send_file(file_locations.mqtt_subscriber_database, as_attachment=True, attachment_filename=sql_filename)
+    except Exception as error:
+        log_msg = "* Unable to Send MQTT Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
+        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
+@html_local_download_routes.route("/DownloadSQLDatabaseCheckin")
+def download_checkin_sql_database_zipped():
+    logger.network_logger.debug("* Download Zipped Checkin SQL Database Accessed by " + str(request.remote_addr))
+    try:
+        sql_filename = _add_host_and_ip_to_filename("Checkin_Database", "sqlite")
+        zip_filename = _add_host_and_ip_to_filename("Checkin_Database", "zip")
+        start_time = time.time()
+        zip_content = app_generic_functions.get_file_content(file_locations.sensor_checkin_database, open_type="rb")
+        app_generic_functions.zip_files([sql_filename], [zip_content], save_type="save_to_disk",
+                                        file_location=file_locations.checkin_database_zipped)
+        end_time = time.time()
+        logger.network_logger.info("* Checkin SQL Database zipped and sent to " + str(request.remote_addr))
+        logger.network_logger.info("Zip file took " + str(round(end_time - start_time, 2)) + " seconds to create")
+        return send_file(file_locations.checkin_database_zipped, as_attachment=True, attachment_filename=zip_filename)
+    except Exception as error:
+        log_msg = "* Unable to Send Checkin Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
+        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
+@html_local_download_routes.route("/DownloadSQLDatabaseRAWCheckin")
+def download_checkin_sql_database_raw():
+    logger.network_logger.debug("* Download RAW Checkin SQL Database Accessed by " + str(request.remote_addr))
+    try:
+        sql_filename = _add_host_and_ip_to_filename("Sensors_Checkin_Database", "sqlite")
+        return send_file(file_locations.sensor_checkin_database, as_attachment=True, attachment_filename=sql_filename)
+    except Exception as error:
+        log_msg = "* Unable to Send Checkin Database to "
+        logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
+        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+
+
+def _add_host_and_ip_to_filename(filename, file_extension):
+    file_name_part1 = app_cached_variables.hostname + "-" + app_cached_variables.ip.split(".")[-1]
+    return_filename = file_name_part1 + "_" + filename + "." + file_extension
+    return return_filename
 
 
 @html_local_download_routes.route("/DownloadZippedEverything")

@@ -27,12 +27,13 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.interval_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 17
+        self.valid_setting_count = 18
         self.config_settings_names = [
             "Enable interval recording", "Recording interval in seconds * Caution *", "Enable sensor uptime",
             "Enable CPU temperature", "Enable environmental temperature", "Enable pressure", "Enable humidity",
             "Enable altitude", "Enable distance", "Enable lumen", "Enable color", "Enable ultra violet", "Enable GAS",
-            "Enable particulate matter", "Enable accelerometer", "Enable magnetometer", "Enable gyroscope"
+            "Enable particulate matter", "Enable accelerometer", "Enable magnetometer", "Enable gyroscope",
+            "Enable Dew Point"
         ]
 
         self.enable_interval_recording = 1
@@ -44,6 +45,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.env_temperature_enabled = 1
         self.pressure_enabled = 1
         self.humidity_enabled = 1
+        self.dew_point_enabled = 1
         self.altitude_enabled = 1
         self.distance_enabled = 1
         self.lumen_enabled = 1
@@ -74,6 +76,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.env_temperature_enabled = 0
         self.pressure_enabled = 0
         self.humidity_enabled = 0
+        self.dew_point_enabled = 0
         self.altitude_enabled = 0
         self.distance_enabled = 0
         self.lumen_enabled = 0
@@ -99,6 +102,8 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             self.pressure_enabled = 1
         if html_request.form.get("humidity") is not None:
             self.humidity_enabled = 1
+        if html_request.form.get("dew_point") is not None:
+            self.dew_point_enabled = 1
         if html_request.form.get("gas") is not None:
             self.gas_enabled = 1
         if html_request.form.get("particulate_matter") is not None:
@@ -132,7 +137,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             str(self.humidity_enabled), str(self.altitude_enabled), str(self.distance_enabled), str(self.lumen_enabled),
             str(self.colour_enabled), str(self.ultra_violet_enabled), str(self.gas_enabled),
             str(self.particulate_matter_enabled), str(self.accelerometer_enabled), str(self.magnetometer_enabled),
-            str(self.gyroscope_enabled)
+            str(self.gyroscope_enabled), str(self.dew_point_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -154,6 +159,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             self.accelerometer_enabled = int(self.config_settings[14])
             self.magnetometer_enabled = int(self.config_settings[15])
             self.gyroscope_enabled = int(self.config_settings[16])
+            self.dew_point_enabled = int(self.config_settings[17])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Interval Config: " + str(error))

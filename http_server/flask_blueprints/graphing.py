@@ -32,32 +32,28 @@ html_graphing_routes = Blueprint("html_graphing_routes", __name__)
 @html_graphing_routes.route("/Graphing")
 def html_graphing():
     logger.network_logger.debug("* Graphing viewed by " + str(request.remote_addr))
+    custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
+
+    database_dropdown_selection_html = ""
+    for db_name in app_cached_variables.uploaded_databases_list:
+        database_dropdown_selection_html += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", db_name) + "\n"
 
     extra_message = ""
     button_disabled = ""
     if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
         extra_message = "Creating Graph - Please Wait"
         button_disabled = "disabled"
-
-    try:
-        unix_creation_date = os.path.getmtime(file_locations.plotly_graph_interval)
-        interval_creation_date = str(datetime.fromtimestamp(unix_creation_date))[:-7]
-    except FileNotFoundError:
-        interval_creation_date = "No Plotly Graph Found"
-
-    try:
-        triggers_plotly_file_creation_date_unix = os.path.getmtime(file_locations.plotly_graph_triggers)
-        triggers_creation_date = str(datetime.fromtimestamp(triggers_plotly_file_creation_date_unix))[:-7]
-    except FileNotFoundError:
-        triggers_creation_date = "No Plotly Graph Found"
     return render_template("graphing.html",
                            PageURL="/Graphing",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            ExtraTextMessage=extra_message,
+                           UploadedDBOptionNames=database_dropdown_selection_html,
                            CreateButtonDisabled=button_disabled,
-                           IntervalPlotlyDate=interval_creation_date,
-                           TriggerPlotlyDate=triggers_creation_date,
+                           IntervalPlotlyDate=_get_plotly_creation_date(file_locations.plotly_graph_interval),
+                           TriggerPlotlyDate=_get_plotly_creation_date(file_locations.plotly_graph_triggers),
+                           MQTTPlotlyDate=_get_plotly_creation_date(file_locations.plotly_graph_mqtt),
+                           CustomPlotlyDate=_get_plotly_creation_date(file_locations.plotly_graph_custom),
                            UTCOffset=app_config_access.primary_config.utc0_hour_offset,
                            SkipSQLEntries=app_cached_variables.quick_graph_skip_sql_entries,
                            MaxSQLEntries=app_cached_variables.quick_graph_max_sql_entries,
@@ -76,3 +72,12 @@ def html_graphing():
                            AccChecked=get_html_checkbox_state(app_cached_variables.quick_graph_acc),
                            MagChecked=get_html_checkbox_state(app_cached_variables.quick_graph_mag),
                            GyroChecked=get_html_checkbox_state(app_cached_variables.quick_graph_gyro))
+
+
+def _get_plotly_creation_date(file_location):
+    try:
+        plotly_file_creation_date_unix = os.path.getmtime(file_location)
+        creation_date = str(datetime.fromtimestamp(plotly_file_creation_date_unix))[:-7]
+    except FileNotFoundError:
+        creation_date = "No Plotly Graph Found"
+    return creation_date
