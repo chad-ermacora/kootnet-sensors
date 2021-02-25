@@ -32,17 +32,7 @@
         }
     </script>
 
-    <style>
-        #update_login_credentials {
-            width: 50%;
-            position: absolute;
-            margin: auto auto;
-            left: 0;
-            right: 0;
-        }
-    </style>
-
-    <div style="text-align: center; width: 450px;">
+    <div style="text-align: center; width: 550px;">
         <h2>
             <strong style="text-decoration: underline; color: red;">Advanced</strong><br>
             <a style="color: lightblue; font-size: medium;" href="/SensorUnitHelp.html#line3_8" target="_blank">
@@ -51,93 +41,90 @@
             </h2>
             <br>
         </h2>
-    </div>
 
-    <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-            onclick="window.location.href = '/HTMLRawConfigurations';">
-        View Raw Configurations & Module Versions
-    </button>
 
-    <br>
-
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Standard Upgrades
-            <span class="mui-caret"></span>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                onclick="window.location.href = '/HTMLRawConfigurations';">
+            View Raw Configurations & Module Versions
         </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeOnline">HTTP Upgrade</a></li>
-            <li><a href="/UpgradeSMB">SMB Upgrade</a></li>
-        </ul>
-    </div>
 
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Developmental Upgrades
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a style="cursor: pointer;" onclick="DevUpgradeHTTP();">DEV - HTTP Upgrade</a></li>
-            <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
-        </ul>
-    </div>
+        <br>
 
-    <br>
+        <div class="mui-dropdown">
+            <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                Standard Upgrades
+                <span class="mui-caret"></span>
+            </button>
+            <ul class="mui-dropdown__menu">
+                <li><a href="/UpgradeOnline">HTTP Upgrade</a></li>
+                <li><a href="/UpgradeSMB">SMB Upgrade</a></li>
+            </ul>
+        </div>
 
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Other
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
-            <li><a href="/UpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
-            <li><a>---------------</a></li>
-            <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
-            <li><a style="cursor: pointer;" onclick="CleanDevUpgradeHTTP();">Clean - DEV - HTTP Upgrade</a></li>
-            {#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
-            {#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
-        </ul>
-    </div>
+        <div class="mui-dropdown">
+            <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                Developmental Upgrades
+                <span class="mui-caret"></span>
+            </button>
+            <ul class="mui-dropdown__menu">
+                <li><a style="cursor: pointer;" onclick="DevUpgradeHTTP();">DEV - HTTP Upgrade</a></li>
+                <li><a href="/UpgradeSMBDev">DEV - SMB Upgrade</a></li>
+            </ul>
+        </div>
 
-    <div class="mui-dropdown">
-        <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
-            Power Commands
-            <span class="mui-caret"></span>
-        </button>
-        <ul class="mui-dropdown__menu">
-            <li><a href="/RestartServices">Restart Program</a></li>
-            <li><a href="/RebootSystem">Reboot System</a></li>
-            <li><a>---------------</a></li>
-            <li><a style="cursor: pointer;" onclick="SensorShutdown();">Shutdown System</a></li>
-        </ul>
-    </div>
+        <br>
 
-    <div>
-        <form class="mui-form" method="POST" style="max-width: 550px; min-height: 300px;" action="/EditLogin">
-            <div id="update_login_credentials">
-                <h2><u><a style="color: lightblue;" href="{{ PageURL }}">Change Login</a></u></h2>
+        <div class="mui-dropdown">
+            <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                Other
+                <span class="mui-caret"></span>
+            </button>
+            <ul class="mui-dropdown__menu">
+                <li><a href="/UpgradeSystemOS">Upgrade OS & Reboot</a></li>
+                <li><a href="/UpdatePipModules">Upgrade Python3 Modules & Restart Service</a></li>
+                <li><a>---------------</a></li>
+                <li><a style="cursor: pointer;" onclick="CleanUpgradeHTTP();">Clean - HTTP Upgrade</a></li>
+                <li><a style="cursor: pointer;" onclick="CleanDevUpgradeHTTP();">Clean - DEV - HTTP Upgrade</a></li>
+                {#            <li><a href="/UpgradeSMBClean">Clean - SMB Upgrade</a></li>#}
+                {#            <li><a href="/UpgradeSMBCleanDEV">DEV Clean - SMB Upgrade</a></li>#}
+            </ul>
+        </div>
 
-                <div class="mui-textfield">
-                    <label style="color: lightblue;">
-                        Username<br>
-                        <input style="width: 125px;" type="text" id="login_username" name="login_username" required
-                               placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
-                    </label>
-                </div>
+        <div class="mui-dropdown">
+            <button class="mui-btn mui-btn--primary" data-mui-toggle="dropdown">
+                Power Commands
+                <span class="mui-caret"></span>
+            </button>
+            <ul class="mui-dropdown__menu">
+                <li><a href="/RestartServices">Restart Program</a></li>
+                <li><a href="/RebootSystem">Reboot System</a></li>
+                <li><a>---------------</a></li>
+                <li><a style="cursor: pointer;" onclick="SensorShutdown();">Shutdown System</a></li>
+            </ul>
+        </div>
 
-                <br>
+        <form class="mui-form" method="POST" action="/EditLogin">
+            <h2><u><a style="color: lightblue;" href="{{ PageURL }}">Change Login</a></u></h2>
 
-                <div class="mui-textfield">
-                    <label style="color: lightblue;">
-                        Password<br>
-                        <input style="width: 125px;" type="password" id="login_password" name="login_password" required
-                               placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
-                    </label>
-                </div>
-                <br>
-                <button type="submit" class="mui-btn mui-btn--raised">Update</button>
+            <div class="mui-textfield">
+                <label style="color: lightblue;">
+                    Username<br>
+                    <input style="width: 125px;" type="text" id="login_username" name="login_username" required
+                           placeholder="eg. Sensor33" minlength="4" maxlength="62" value="{{ LoginUserName }}">
+                </label>
             </div>
+
+            <br>
+
+            <div class="mui-textfield">
+                <label style="color: lightblue;">
+                    Password<br>
+                    <input style="width: 125px;" type="password" id="login_password" name="login_password" required
+                           placeholder="eg. S3n50rP@s5" minlength="4" maxlength="62">
+                </label>
+            </div>
+            <br>
+            <button type="submit" class="mui-btn mui-btn--raised">Update</button>
         </form>
     </div>
 
