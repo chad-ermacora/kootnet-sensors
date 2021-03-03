@@ -25,7 +25,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import create_table_and_datetime, check_sql_table_and_column, \
-    sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name
+    sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, get_sql_element
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_hidden_state, get_html_checkbox_state
 
@@ -114,7 +114,7 @@ def view_sensor_check_ins():
                            PageURL="/ViewSensorCheckin",
                            RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
                            RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           SensorsInDatabase=_get_sql_element(sensor_count),
+                           SensorsInDatabase=get_sql_element(sensor_count),
                            TotalSensorCount=sensor_contact_count,
                            CheckinSensorStatistics=sensor_statistics,
                            CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
@@ -243,14 +243,14 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
     last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
 
     checkin_hour_offset = app_config_access.primary_config.utc0_hour_offset
-    clean_last_checkin_date = _get_sql_element(last_checkin_date)
+    clean_last_checkin_date = get_sql_element(last_checkin_date)
     web_view_last_checkin_date = _get_converted_datetime(clean_last_checkin_date, hour_offset=checkin_hour_offset)
     web_view_last_checkin_date = web_view_last_checkin_date.strftime("%Y-%m-%d %H:%M:%S")
     return "Sensor ID: " + sensor_id + \
-           "\nSoftware Version: " + _get_sql_element(current_sensor_version) + \
-           "\n" + _get_sql_element(last_installed_sensors) + \
-           "\nSensor Uptime in Minutes: " + _get_sql_element(current_sensor_uptime) + \
-           "\nTotal Checkin Count: " + _get_sql_element(checkin_count) + \
+           "\nSoftware Version: " + get_sql_element(current_sensor_version) + \
+           "\n" + get_sql_element(last_installed_sensors) + \
+           "\nSensor Uptime in Minutes: " + get_sql_element(current_sensor_uptime) + \
+           "\nTotal Checkin Count: " + get_sql_element(checkin_count) + \
            "\nLast Check-in DateTime: " + web_view_last_checkin_date + "\n\n"
 
 
@@ -305,23 +305,12 @@ def _clear_old_sensor_checkin_data(sensor_id):
                         db_sensor_check_in_sensors_log + ")" + \
                         " VALUES (?,?,?,?,?,?);"
 
-        sql_data = [_get_sql_element(raw_last_checkin_date), _get_sql_element(sensor_version),
-                    _get_sql_element(sensor_installed_sensors), _get_sql_element(sensor_uptime),
-                    _get_sql_element(sensor_primary_log), _get_sql_element(sensor_sensor_log)]
+        sql_data = [get_sql_element(raw_last_checkin_date), get_sql_element(sensor_version),
+                    get_sql_element(sensor_installed_sensors), get_sql_element(sensor_uptime),
+                    get_sql_element(sensor_primary_log), get_sql_element(sensor_sensor_log)]
         write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_location)
     except Exception as error:
         logger.network_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
-
-
-def _get_sql_element(sql_data):
-    try:
-        for entry1 in sql_data:
-            for entry2 in entry1:
-                return str(entry2)
-    except Exception as error:
-        logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
-        return "Error"
-    return ""
 
 
 def _get_check_in_sensor_ids():
@@ -352,7 +341,7 @@ def _get_sensor_id_and_last_checkin_date_as_list(sort_by_date_time=True):
         get_last_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
                                     "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
         raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
-        clean_last_checkin_date = _get_sql_element(raw_last_checkin_date)
+        clean_last_checkin_date = get_sql_element(raw_last_checkin_date)
         return_sensor_ids_list.append([sensor_id, _get_converted_datetime(clean_last_checkin_date)])
     if sort_by_date_time:
         return_sensor_ids_list.sort(key=lambda x: x[1], reverse=True)

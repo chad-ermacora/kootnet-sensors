@@ -242,6 +242,20 @@ def get_sqlite_tables_in_list(database_location):
     return sqlite_tables_list
 
 
+def get_sql_element(sql_data):
+    try:
+        for entry1 in sql_data:
+            if type(entry1) is list or type(entry1) is tuple:
+                for entry2 in entry1:
+                    return str(entry2)
+            else:
+                return str(entry1)
+    except Exception as error:
+        logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
+        return "Error"
+    return ""
+
+
 def sql_fetch_items_to_text(sql_query_results):
     return_msg = ""
     for item in sql_query_results:
