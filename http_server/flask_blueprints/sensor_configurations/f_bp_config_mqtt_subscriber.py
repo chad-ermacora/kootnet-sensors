@@ -20,7 +20,8 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.sqlite_database import get_sqlite_tables_in_list
+from operations_modules.sqlite_database import get_sqlite_tables_in_list, sql_execute_get_data, \
+    get_clean_sql_table_name, get_sql_element
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from http_server.server_http_generic_functions import get_html_checkbox_state, message_and_return, \
@@ -54,6 +55,57 @@ def html_get_mqtt_subscriber_view():
         MQTTEnabledColor=enabled_color,
         SubscriberTopics=mqtt_subscriber_log_content
     )
+
+
+@html_config_mqtt_subscriber_routes.route("/ViewMQTTSubSensors")
+@auth.login_required
+def html_get_mqtt_subscriber_sensors_list():
+    logger.network_logger.debug("** HTML MQTT Subscriber Sensors List View - Source: " + str(request.remote_addr))
+    mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
+    sensors_count = len(mqtt_subscriber_sensors)
+
+    sensors_html_list = []
+    for sensor_id in mqtt_subscriber_sensors:
+        sensor_id = get_sql_element(sensor_id)
+        sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
+
+    sensors_html_list.sort(key=lambda x: x[1], reverse=True)
+    html_sensor_table_code = ""
+    for sensor in sensors_html_list:
+        html_sensor_table_code += sensor[0]
+    return render_template("mqtt_subscriber_sensor_list.html",
+                           PageURL="/ViewMQTTSubSensors",
+                           SQLMQTTSensorsInDB=str(sensors_count),
+                           HTMLSensorsTableCode=html_sensor_table_code)
+
+
+def _get_sensor_html_table_code(sensor_id):
+    dv_v = app_cached_variables.database_variables
+    sensor_id = get_clean_sql_table_name(sensor_id)
+    html_sensor_code = """<tr>
+        <td>{{ SensorID }}</td>
+        <td>{{ SensorHostName }}</td>
+        <td>{{ IPAddress }}</td>
+        <td>{{ LastContact }}</td>
+    </tr>
+    """.replace("{{ SensorID }}", sensor_id)
+
+    columns_list = [dv_v.sensor_name, dv_v.ip, dv_v.all_tables_datetime]
+    replacement_variables = ["{{ SensorHostName }}", "{{ IPAddress }}", "{{ LastContact }}"]
+    sql_get_code = "SELECT {{ ColumnName }} FROM '" + sensor_id + "' WHERE {{ ColumnName }} != '' ORDER BY " \
+                          + app_cached_variables.database_variables.all_tables_datetime + " DESC LIMIT 1;"
+
+    results_list = []
+    for column, replacement_var in zip(columns_list, replacement_variables):
+        replacement_data = sql_execute_get_data(sql_get_code.replace("{{ ColumnName }}", column),
+                                                sql_database_location=file_locations.mqtt_subscriber_database)
+        replacement_data = get_sql_element(replacement_data)
+        results_list.append(replacement_data)
+        try:
+            html_sensor_code = html_sensor_code.replace(replacement_var, replacement_data)
+        except Exception as error:
+            logger.network_logger.warning("MQTT Subscriber Sensors List Creation: " + str(error))
+    return [html_sensor_code, results_list[-1]]
 
 
 @html_config_mqtt_subscriber_routes.route("/EditConfigMQTTSubscriber", methods=["POST"])

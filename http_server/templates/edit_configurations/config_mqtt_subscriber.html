@@ -12,14 +12,6 @@
                 <hr>
             </h3>
 
-            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                    type="button" onclick="window.open('/MQTTSubscriberView', '_blank');">
-                Click Here to View Subscriber Data Stream
-            </button>
-
-            <br>
-            <br>
-
             <div class="mui-checkbox" style="display: inline-block;">
                 <label class="container_checkbox">
                     <input type="checkbox" name="enable_mqtt_subscriber" value="" {{ MQTTSubscriberChecked }}>
@@ -38,11 +30,23 @@
                 </label>
             </div>
 
-            <br>
-
             <h4>MQTT Subscriber Database Size:<a style="color: blue; text-decoration: none;">
                 {{ MQTTSubDatabaseSize }} MB
             </a></h4>
+
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="button" onclick="window.open('/ViewMQTTSubSensors', '_blank');">
+                View MQTT Subscriber Sensors List
+            </button>
+
+            <br>
+
+            <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                    type="button" onclick="window.open('/MQTTSubscriberView', '_blank');">
+                View Subscriber Data Stream
+            </button>
+
+            <br><br>
 
             <div class="mui-textfield">
                 <label style="color: black;">
