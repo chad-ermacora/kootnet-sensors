@@ -1,10 +1,10 @@
 {% block content %}
     <link href="/mui.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/mui-colors.min.css" rel="stylesheet" type="text/css"/>
     <link href="/MenuStyle.css" rel="stylesheet" type="text/css"/>
     <script src="/mui.min.js"></script>
-    <link href="/mui-colors.min.css" rel="stylesheet" type="text/css"/>
 
-    <meta http-equiv="refresh" content="10; url = {{ PageURL }}"/>
+    <meta http-equiv="refresh" content="30; url = {{ PageURL }}"/>
 
     <script>
         function ClearMQTTSubLogs() {
@@ -21,10 +21,9 @@
                 <a style="color: red;" href="{{ PageURL }}">MQTT Subscriber Topic Posts</a>
             </strong></u></h3>
 
-            <h4 style="color: #F4A460;">This will automatically refresh every 10 seconds</h4>
+            <h4 style="color: #F4A460;">This will automatically refresh every 30 seconds</h4>
 
             <br>
-
 
             <a style="color: {{ MQTTEnabledColor }}; text-decoration: none; font-size: large;">
                 <b>{{ MQTTSubscriberEnabledText }}</b>
