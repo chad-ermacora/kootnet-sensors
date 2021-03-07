@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from flask import Blueprint, send_file, render_template, request
+from flask import Blueprint, send_file, render_template, request, send_from_directory
 from werkzeug.security import check_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
@@ -269,6 +269,21 @@ def sh_theme_dark_css():
 @html_functional_routes.route("/doc_custom.css")
 def doc_custom_css():
     return send_file(documentation_root_dir + "/css/custom.css")
+
+
+# New way to get HTTP extras sent for most above things (Does not work for current interface)
+@html_functional_routes.route('/extras/<path:filename>')
+def html_extras_folder_static_files(filename):
+    extras_folder = file_locations.program_root_dir + "/http_server/extras/"
+    return send_from_directory(extras_folder, filename)
+
+
+# Start -- HTML JS/assets/fonts/css for 'ATPro admin' interface
+@html_functional_routes.route('/atpro/<path:filename>')
+def atpro_root_static_files(filename):
+    atpro_folder = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/"
+    return send_from_directory(atpro_folder, filename)
+# End -- HTML assets for 'ATPro admin' interface
 
 
 @html_functional_routes.route('/logout')
