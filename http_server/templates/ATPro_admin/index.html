@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Kootnet Sensors</title>
+
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="icon" type="image/png" href="assets/AT-pro-logo.png"/>
+
+	<!-- Import lib -->
+	<link rel="stylesheet" type="text/css" href="fontawesome-free/css/all.min.css">
+	<!-- End import lib -->
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body class="overlay-scrollbar">
+	<!-- navbar -->
+	<div class="navbar">
+		<!-- nav left -->
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link">
+					<i class="fas fa-bars" onclick="collapseSidebar()"></i>
+				</a>
+			</li>
+			<li class="nav-item">
+				<img src="assets/AT-pro-black.png" alt="ATPro logo" class="logo logo-light">
+				<img src="assets/AT-pro-white.png" alt="ATPro logo" class="logo logo-dark">
+			</li>
+		</ul>
+		<!-- end nav left -->
+		<!-- Page Header -->
+        <h2 class="navbar-page-header">
+            Sensor ID: {{ SensorID }}
+        </h2>
+		<!-- end Page Header -->
+		<!-- nav right -->
+		<ul class="navbar-nav nav-right">
+			<li class="nav-item mode">
+				<a class="nav-link" href="#" onclick="switchTheme()">
+					<i class="fas fa-moon dark-icon"></i>
+					<i class="fas fa-sun light-icon"></i>
+				</a>
+			</li>
+			<li class="nav-item dropdown">
+				<a class="nav-link">
+					<i class="fas fa-bell dropdown-toggle" data-toggle="notification-menu"></i>
+					<span class="navbar-badge">{{ NotificationCount }}</span>
+				</a>
+				<ul id="notification-menu" class="dropdown-menu notification-menu">
+					<div class="dropdown-menu-header">
+						<span>
+							Notifications
+						</span>
+					</div>
+					<div class="dropdown-menu-content overlay-scrollbar scrollbar-hover">
+						{{ NotificationsReplacement |safe }}
+					</div>
+					<div class="dropdown-menu-footer">
+						<span>
+							View all notifications
+						</span>
+					</div>
+				</ul>
+			</li>
+			<li class="nav-item avt-wrapper">
+				<div class="avt dropdown">
+					<img src="assets/AT-pro-logo.png" alt="User image" class="dropdown-toggle" data-toggle="user-menu">
+					<ul id="user-menu" class="dropdown-menu">
+						<li class="dropdown-menu-item">
+							<a href="/" class="dropdown-menu-link">
+								<div>
+									<i class="fas fa-home"></i>
+								</div>
+								<span>Return to Index</span>
+							</a>
+						</li>
+						<li  class="dropdown-menu-item">
+							<a href="/atpro/logout" class="dropdown-menu-link">
+								<div>
+									<i class="fas fa-sign-out-alt"></i>
+								</div>
+								<span>Logout</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+		<!-- end nav right -->
+	</div>
+	<!-- end navbar -->
+	<!-- sidebar -->
+	<div class="sidebar">
+		<ul class="sidebar-nav">
+			<li class="sidebar-nav-item">
+				<a id="sensor-dashboard" href="#" onclick="SelectNav('sensor-dashboard')" class="sidebar-nav-link active">
+					<div>
+						<i class="fas fa-tachometer-alt"></i>
+					</div>
+					<span>
+						Dashboard
+					</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-readings" href="#" onclick="SelectNav('sensor-readings')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-temperature-low"></i>
+					</div>
+					<span>Live Sensor Readings</span>
+				</a>
+			</li>
+			<li  class="sidebar-nav-item">
+				<a id="sensor-notes" href="#" onclick="SelectNav('sensor-notes')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-book-open"></i>
+					</div>
+					<span>Notes</span>
+				</a>
+			</li>
+			<li  class="sidebar-nav-item">
+				<a id="sensor-graphing" href="#" onclick="SelectNav('sensor-graphing')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-chart-line"></i>
+					</div>
+					<span>Graphing</span>
+				</a>
+			</li>
+			<li  class="sidebar-nav-item">
+				<a id="sensor-rm" href="#" onclick="SelectNav('sensor-rm')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-project-diagram"></i>
+					</div>
+					<span>Remote Management</span>
+				</a>
+			</li>
+			<li  class="sidebar-nav-item">
+				<a id="sensor-settings" href="#" onclick="SelectNav('sensor-settings')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-cog"></i>
+					</div>
+					<span>Settings</span>
+				</a>
+			</li>
+            <li  class="sidebar-nav-item">
+				<a href="/atpro/logout" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-sign-out-alt"></i>
+					</div>
+					<span>Logout</span>
+				</a>
+			</li>
+			<li  class="sidebar-nav-item">
+				<a id="sensor-help" href="/SensorUnitHelp.html" target="_blank" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-question-circle"></i>
+					</div>
+					<span>Help</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<!-- end sidebar -->
+	<!-- main content -->
+	<div id="main-page-view" class="wrapper">
+        {{ MainContent | safe }}
+	</div>
+	<!-- end main content -->
+	<!-- import script -->
+	<script src="index.js"></script>
+    <script src="/jquery.min.js"></script>
+	<!-- end import script -->
+</body>
+</html>
+
+<script>
+    function SelectNav(nav_location) {
+        document.getElementById("sensor-dashboard").classList.remove("active");
+        document.getElementById("sensor-readings").classList.remove("active");
+        document.getElementById("sensor-notes").classList.remove("active");
+        document.getElementById("sensor-graphing").classList.remove("active");
+        document.getElementById("sensor-rm").classList.remove("active");
+        document.getElementById("sensor-settings").classList.remove("active");
+
+        document.getElementById(nav_location).classList.add("active");
+
+        $("#main-page-view").load("/atpro/" + nav_location);
+    }
+</script>
