@@ -27,7 +27,7 @@ https_import_error_msg = ""
 https_import_errors = True
 try:
     from http_server import server_http_auth
-    from http_server.flask_blueprints.atpro.atpro_admin_interface import html_atpro_admin_routes
+    from http_server.flask_blueprints.atpro.atpro_interface_routes import html_atpro_admin_routes
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.html_database_management import html_database_routes

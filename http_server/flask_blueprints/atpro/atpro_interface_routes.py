@@ -19,7 +19,7 @@
 import psutil
 from time import strftime
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, send_file
+from flask import Blueprint, render_template, send_file, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -27,6 +27,9 @@ from operations_modules.sqlite_database import sql_execute_get_data, get_sql_ele
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
+from http_server.server_http_generic_functions import get_html_hidden_state
+from http_server.flask_blueprints.html_notes import add_note_to_database, update_note_in_database, get_db_note_dates, \
+    get_db_note_user_dates, delete_db_note
 
 html_atpro_admin_routes = Blueprint("html_atpro_admin_routes", __name__)
 db_v = app_cached_variables.database_variables
@@ -96,12 +99,12 @@ class CreateATProVariablesClass:
 
 
 @html_atpro_admin_routes.route("/atpro/")
-def html_atpro_index():
+def html_atpro_index(run_script="SelectNav('sensor-dashboard');"):
     return render_template("ATPro_admin/index.html",
                            SensorID=app_cached_variables.tmp_sensor_id,
-                           MainContent=html_atpro_dashboard(),
                            NotificationCount=str(atpro_variables.notification_count),
-                           NotificationsReplacement=atpro_variables.get_notifications_as_string())
+                           NotificationsReplacement=atpro_variables.get_notifications_as_string(),
+                           RunScript=run_script)
 
 
 @html_atpro_admin_routes.route("/atpro/sensor-dashboard")
@@ -168,40 +171,80 @@ def _get_disk_free():
 
 @html_atpro_admin_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
-    utc_datetime = datetime.utcnow()
-    start_date = (utc_datetime - timedelta(days=1)).strftime("%Y-%m-%d %H:%M:%S")
-    end_date = utc_datetime.strftime("%Y-%m-%d %H:%M:%S")
+    all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
+    html_final_code = ""
+    for index, dic_readings in enumerate(all_readings.items()):
+        html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
 
-    var_sql_query_datetime = "SELECT DateTime FROM IntervalData WHERE DateTime" + \
-                             " IS NOT NULL AND DateTime BETWEEN datetime('" + start_date + "') " + \
-                             "AND datetime('" + end_date + "') ORDER BY DateTime DESC LIMIT 100"
-
-    var_sql_query = "SELECT " + db_v.system_temperature + " FROM IntervalData WHERE " + db_v.system_temperature + \
-                    " IS NOT NULL AND DateTime BETWEEN datetime('" + start_date + "') " + \
-                    "AND datetime('" + end_date + "') ORDER BY DateTime DESC LIMIT 100"
-
-    sql_data_datetime = sql_execute_get_data(var_sql_query_datetime)
-    sql_data = sql_execute_get_data(var_sql_query)
-    print(str(len(sql_data)))
-
-    data_str = ""
-    for data_date, data in zip(sql_data_datetime, sql_data):
-        try:
-            data_str += "{ x: '" + str(get_sql_element(data_date)) + "', y: " + str(get_sql_element(data)) + " },"
-        except Exception as error:
-            print(str(error))
-    if len(data_str) > 0:
-        data_str = data_str[:-1]
-    html_page = render_template("ATPro_admin/page_templates/sensor_readings.html",
-                                SysTempData=data_str)
-    return html_page
+    html_return_code = html_sensor_readings_row.replace("{{ Readings }}", html_final_code)
+    return render_template("ATPro_admin/page_templates/sensor_readings.html",
+                           HTMLReplacementCode=html_return_code)
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-notes")
+@html_atpro_admin_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
 def html_atpro_sensor_notes():
-    return "WIP"
-    html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
-    return html_page
+    if request.method == "POST":
+        if request.form.get("button_function"):
+            button_operation = request.form.get("button_function")
+            if button_operation == "new":
+                app_cached_variables.notes_total_count += 1
+                app_cached_variables.note_current = app_cached_variables.notes_total_count
+                app_cached_variables.cached_notes_as_list.append("New Note")
+                current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                new_note_and_datetime = current_datetime + app_cached_variables.command_data_separator + "New Note"
+                add_note_to_database(new_note_and_datetime)
+                if app_cached_variables.note_current > app_cached_variables.notes_total_count:
+                    app_cached_variables.note_current = 1
+            elif button_operation == "save":
+                note_text = request.form.get("note_text")
+                if app_cached_variables.notes_total_count > 0:
+                    note_auto_date_times = get_db_note_dates().split(",")
+                    note_custom_date_times = get_db_note_user_dates().split(",")
+                    primary_note_date_time = note_auto_date_times[app_cached_variables.note_current - 1]
+                    custom_note_date_time = note_custom_date_times[app_cached_variables.note_current - 1]
+                    updated_note_and_datetime = primary_note_date_time + app_cached_variables.command_data_separator + \
+                                                custom_note_date_time + app_cached_variables.command_data_separator + \
+                                                note_text
+                    update_note_in_database(updated_note_and_datetime)
+                else:
+                    app_cached_variables.notes_total_count += 1
+                    app_cached_variables.note_current = app_cached_variables.notes_total_count
+                    app_cached_variables.cached_notes_as_list.append(note_text)
+                    current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+                    new_note_and_datetime = current_datetime + app_cached_variables.command_data_separator + note_text
+                    add_note_to_database(new_note_and_datetime)
+                app_cached_variables.cached_notes_as_list[app_cached_variables.note_current - 1] = note_text
+            elif button_operation == "next":
+                app_cached_variables.note_current += 1
+                if app_cached_variables.note_current > app_cached_variables.notes_total_count:
+                    app_cached_variables.note_current = 1
+            elif button_operation == "back":
+                app_cached_variables.note_current -= 1
+                if app_cached_variables.note_current < 1:
+                    app_cached_variables.note_current = app_cached_variables.notes_total_count
+            elif button_operation == "go":
+                custom_current_note = request.form.get("current_note_num")
+                if app_cached_variables.notes_total_count > 0:
+                    app_cached_variables.note_current = int(custom_current_note)
+            elif button_operation == "delete":
+                if app_cached_variables.notes_total_count > 0:
+                    db_note_date_times = get_db_note_dates().split(",")
+                    app_cached_variables.cached_notes_as_list.pop(app_cached_variables.note_current - 1)
+                    delete_db_note(db_note_date_times[(app_cached_variables.note_current - 1)])
+                    app_cached_variables.notes_total_count -= 1
+                    app_cached_variables.note_current = 1
+            return html_atpro_index(run_script="SelectNav('sensor-notes');")
+    if app_cached_variables.notes_total_count > 0:
+        selected_note = app_cached_variables.cached_notes_as_list[app_cached_variables.note_current - 1]
+    else:
+        selected_note = "No Notes Found"
+    return render_template("ATPro_admin/page_templates/sensor_notes.html",
+                           PageURL="/atpro/sensor-notes",
+                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
+                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+                           CurrentNoteNumber=app_cached_variables.note_current,
+                           LastNoteNumber=str(app_cached_variables.notes_total_count),
+                           DisplayedNote=selected_note)
 
 
 @html_atpro_admin_routes.route("/atpro/sensor-graphing")
@@ -245,5 +288,27 @@ def _get_text_check_enabled(setting):
         return "Enabled"
     return "Disabled"
 
+
+html_sensor_readings_row = """
+<div class="row">
+    <div class="col-6 col-m-8 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sensor Name</th>
+                            <th>Sensor Reading</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{ Readings }}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+"""
 
 atpro_variables = CreateATProVariablesClass()
