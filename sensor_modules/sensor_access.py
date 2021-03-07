@@ -178,7 +178,7 @@ def _get_sensor_latency(sensor_function):
         return 0.0
 
 
-def get_all_available_sensor_readings():
+def get_all_available_sensor_readings(skip_system_info=False):
     """ Returns ALL sensor readings in a dictionary. """
     utc_0_date_time_now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     env_temp_raw = get_environment_temperature(temperature_correction=False)[database_variables.env_temperature]
@@ -186,11 +186,16 @@ def get_all_available_sensor_readings():
     temp_correction = 0
     if env_temp_raw is not None and env_temp_corrected is not None:
         temp_correction = env_temp_corrected - env_temp_raw
-    return_dictionary = {database_variables.all_tables_datetime: utc_0_date_time_now,
-                         database_variables.sensor_name: str(get_hostname()),
-                         database_variables.ip: str(get_ip()),
-                         database_variables.sensor_uptime: get_uptime_minutes(),
-                         database_variables.env_temperature_offset: temp_correction}
+
+    if skip_system_info:
+        return_dictionary = {}
+    else:
+        return_dictionary = {database_variables.all_tables_datetime: utc_0_date_time_now,
+                             database_variables.sensor_name: str(get_hostname()),
+                             database_variables.ip: str(get_ip()),
+                             database_variables.sensor_uptime: get_uptime_minutes(),
+                             database_variables.env_temperature_offset: temp_correction}
+
     functions_list = [get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude, get_humidity,
                       get_dew_point, get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
                       get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
@@ -361,7 +366,7 @@ def get_dew_point(get_latency=False):
     except Exception as error:
         logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
         dew_point = 0.0
-    return {database_variables.dew_point: dew_point}
+    return {database_variables.dew_point: round(dew_point, 5)}
 
 
 def get_distance(get_latency=False):
