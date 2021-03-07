@@ -26,7 +26,6 @@ from operations_modules import app_cached_variables
 from operations_modules.sqlite_database import sql_execute_get_data, get_sql_element
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.atpro import cached_pages
 from sensor_modules import sensor_access
 
 html_atpro_admin_routes = Blueprint("html_atpro_admin_routes", __name__)
