@@ -1,0 +1,116 @@
+<style>
+    form {
+        display: inline-block;
+    }
+
+    .number_input {
+        width: 40px;
+    }
+
+    .button-areas {
+        width: 500px;
+    }
+
+    .button-green, .button-red, .button-orange, .button-blue {
+        color: white;
+        border-radius: 4px;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+
+    .button-green {
+        background: rgb(28, 184, 65);
+        /* this is a green */
+    }
+
+    .button-red {
+        background: rgb(202, 60, 60);
+        /* this is a maroon */
+    }
+
+    .button-orange {
+        background: rgb(223, 117, 20);
+        /* this is an orange */
+    }
+
+    .button-blue {
+        background: rgb(66, 184, 221);
+        /* this is a light blue */
+    }
+</style>
+
+<form id="note_form" method="POST" action="/atpro/sensor-notes">
+    <input type="hidden" id="button_function" name="button_function">
+
+    <button type="button" class="pure-button button-blue" onclick="ButtonPress('back')">
+        Back
+    </button>
+
+    <div style="display: inline-block; padding-left: 20px;">
+        <button type="button" class="pure-button button-blue" onclick="ButtonPress('next')">
+            Next
+        </button>
+    </div>
+
+    <div style="display: inline-block; padding-left: 50px;">
+        <label>
+            <input class="number_input" type="number" name="current_note_num" min="1" max="{{ LastNoteNumber }}"
+                   value="{{ CurrentNoteNumber }}">
+        </label>
+        <label>out of
+            <input class="number_input" type="number" name="last_note_num" value="{{ LastNoteNumber }}" disabled>
+        </label>
+    </div>
+
+    <div style="display: inline-block; padding-left: 50px;">
+        <button type="button" class="pure-button button-orange" onclick="ButtonPress('go')">
+            Go
+        </button>
+    </div>
+
+    <br><br>
+
+    <label>
+        <textarea id="tiny" name="note_text">{{ DisplayedNote }}</textarea>
+    </label>
+
+    <br>
+
+    <button type="button" class="pure-button button-green" onclick="ButtonPress('new')">
+        New Note
+    </button>
+
+    <div style="display: inline-block; padding-left: 65px;">
+        <button type="button" class="pure-button button-red" onclick="ButtonPress('delete')">
+            Delete Note
+        </button>
+    </div>
+
+    <div style="display: inline-block; padding-left: 65px;">
+        <button type="button" class="pure-button button-green" onclick="ButtonPress('save')">
+            Save Note
+        </button>
+    </div>
+</form>
+
+<script src="/extras/tinymce/tinymce.min.js"></script>
+<script>
+    tinymce.init({
+        selector: '#tiny',
+        skin: 'oxide-dark',
+        content_css: 'dark',
+        resize: "both",
+        height: 550,
+        min_height: 300,
+        width: "auto",
+        min_width: 300,
+        menubar: 'file edit view insert format help',
+        plugins: ['autolink link lists print code insertdatetime wordcount fullscreen help'],
+        toolbar: 'undo redo | removeformat formatselect | bold italic underline forecolor | bullist numlist outdent indent | link print',
+        insertdatetime_formats: ["%B %d, %Y - %H:%M:%S"]
+    });
+
+    function ButtonPress(button_type) {
+        document.getElementById("button_function").value = button_type;
+        document.getElementById("note_form").submit()
+    }
+</script>

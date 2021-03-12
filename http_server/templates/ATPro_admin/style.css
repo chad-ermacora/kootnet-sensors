@@ -8,11 +8,15 @@
 	--light-second-color: #727475;
 	--light-background: #ffffff;
 	--light-second-background: #f1f1f1;
+	--light-menu-hover-bg-color: #31b0d5;
+	--light-button-bg-color: #D3D3D3;
 
 	--dark-color: #909090;
 	--dark-second-color: #f5f6fa;
 	--dark-background: #23242D;
 	--dark-second-background: #181818;
+	--dark-menu-hover-bg-color: #31b0d5;
+	--dark-button-bg-color: #f5f6fa;
 }
 
 .light {
@@ -20,6 +24,8 @@
 	--second-bg-color: var(--light-second-background);
 	--main-color: var(--light-color);
 	--second-color: var(--light-second-color);
+	--menu-hover-bg-color: var(--light-menu-hover-bg-color);
+	--button-bg-color: var(--light-button-bg-color);
 }
 
 .dark {
@@ -27,6 +33,8 @@
 	--second-bg-color: var(--dark-second-background);
 	--main-color: var(--dark-color);
 	--second-color: var(--dark-second-color);
+	--menu-hover-bg-color: var(--dark-menu-hover-bg-color);
+	--button-bg-color: var(--dark-button-bg-color);
 }
 
 .light .logo-dark, .light .light-icon {

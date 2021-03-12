@@ -1,0 +1,253 @@
+<style>
+    .settings-page-view {
+        display: inline-block;
+        vertical-align: top;
+        width: fit-content;
+    }
+
+    .pure-menu {
+        display: inline-block;
+    }
+
+    .pure-menu-link, .pure-menu-link:visited {
+        font-weight: bolder;
+        color: var(--main-color);
+        background-color: var(--second-bg-color);
+    }
+
+    .pure-menu-selected > .pure-menu-link, .pure-menu-selected > .pure-menu-link:visited {
+        font-weight: bolder;
+        color: red;
+        background-color: var(--second-bg-color);
+    }
+
+    .pure-menu-link:hover {
+        font-weight: bolder;
+        background-color: var(--menu-hover-bg-color);
+    }
+
+    .pure-button {
+        background-color: var(--button-bg-color);
+    }
+</style>
+
+<div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-main">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-main')">
+                    Main
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-is">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-is')">
+                    Installed Sensors
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-display">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-display')">
+                    Display
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-cs">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-cs')">
+                    Checkin Server
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-db-local settings-db-management settings-db-uploads">
+                    <a href="#" class="pure-menu-link">
+                        Databases
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-db-local')">
+                                Information & Downloads
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-db-management')">
+                                Management
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-db-uploads')">
+                                Uploads
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-interval settings-hl settings-variances">
+                    <a href="#" class="pure-menu-link">
+                        SQL Recording
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-interval')">
+                                Interval
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-hl')">
+                                High/Low Triggers
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-variances')">
+                                Variance Triggers
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-email-reports settings-email-graphs settings-email-settings">
+                    <a href="#" class="pure-menu-link">
+                        Email
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-reports')">
+                                Reports
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-graphs')">
+                                Graphs
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-settings')">
+                                SMTP Settings
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                 settings-mqtt-p settings-mqtt-s settings-mqtt-b">
+                    <a href="#" class="pure-menu-link">
+                        MQTT
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-p')">
+                                Publisher
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-s')">
+                                Subscriber
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-b')">
+                                Broker
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-osm settings-wu settings-luftdaten">
+                    <a href="#" class="pure-menu-link">
+                        3rd Party Services
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-osm')">
+                                Open Sense Map
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-wu')">
+                                Weather Underground
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-luftdaten')">
+                                Luftdaten
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div class="settings-page-view" id="settings-page-view"></div>
+
+<script>
+    function SelectSettingsNav(nav_location) {
+        document.getElementsByClassName("settings-main")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-db-local")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-interval")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-display")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-email-reports")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-cs")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-mqtt-p")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-osm")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        $("#settings-page-view").load("/atpro/" + nav_location);
+    }
+
+    {{ RunScript | safe }}
+</script>

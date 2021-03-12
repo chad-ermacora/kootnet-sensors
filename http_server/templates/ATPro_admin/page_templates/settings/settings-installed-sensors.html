@@ -1,0 +1,206 @@
+<style>
+    form {
+        text-align: center;
+    }
+    h2 ,a , a:visited {
+        color: var(--main-color);
+    }
+</style>
+
+<form class="pure-form" method="POST" action="/atpro/settings-is">
+    <h2><u><strong><a href="https://www.raspberrypi.org/products/" target="_blank">
+        Raspberry Pi Sensors
+    </a></strong></u><br></h2>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="rpi-toggle-switch" class="toggle-switch-input"
+               name="raspberry_pi" {{ RaspberryPi }}>
+        <label class="toggle-switch-label" for="rpi-toggle-switch"></label>
+        Raspberry Pi - Any Model
+    </label>
+    <label class="toggle-switch">
+        <input type="checkbox" id="sense-hat-toggle-switch" class="toggle-switch-input"
+               name="raspberry_pi_sense_hat" {{ SenseHAT }}>
+        <label class="toggle-switch-label" for="sense-hat-toggle-switch"></label>
+        Sense HAT
+    </label>
+
+    <hr>
+
+    <h2><u><strong><a href="https://shop.pimoroni.com/" target="_blank">Pimoroni Sensors</a></strong></u><br></h2>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="bh1745-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_bh1745" {{ PimoroniBH1745 }}>
+        <label class="toggle-switch-label" for="bh1745-toggle-switch"></label>
+        BH1745
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="as7262-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_as7262" {{ PimoroniAS7262 }}>
+        <label class="toggle-switch-label" for="as7262-toggle-switch"></label>
+        AS7262
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="bmp280-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_bmp280" {{ PimoroniBMP280 }}>
+        <label class="toggle-switch-label" for="bmp280-toggle-switch"></label>
+        BMP280
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="bme680-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_bme680" {{ PimoroniBME680 }}>
+        <label class="toggle-switch-label" for="bme680-toggle-switch"></label>
+        BME680
+    </label>
+
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enviro-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_enviro" {{ PimoroniEnviroPHAT }}>
+        <label class="toggle-switch-label" for="enviro-toggle-switch"></label>
+        Enviro pHAT (No Display)
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enviro2-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_enviro2" {{ PimoroniEnviro2 }}>
+        <label class="toggle-switch-label" for="enviro2-toggle-switch"></label>
+        Enviro (With Display)
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enviro_plus-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_enviroplus" {{ PimoroniEnviroPlus }}>
+        <label class="toggle-switch-label" for="enviro_plus-toggle-switch"></label>
+        Enviro+
+    </label>
+
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="pms5003-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_pms5003" {{ PimoroniPMS5003 }}>
+        <label class="toggle-switch-label" for="pms5003-toggle-switch"></label>
+        PMS5003
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="lsm303d-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_lsm303d" {{ PimoroniLSM303D }}>
+        <label class="toggle-switch-label" for="lsm303d-toggle-switch"></label>
+        LSM303D
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="icm20948-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_icm20948" {{ PimoroniICM20948 }}>
+        <label class="toggle-switch-label" for="icm20948-toggle-switch"></label>
+        ICM20948
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="vl53l1x-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_vl53l1x" {{ PimoroniVL53L1X }}>
+        <label class="toggle-switch-label" for="vl53l1x-toggle-switch"></label>
+        VL53L1X
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="ltr-559-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_ltr_559" {{ PimoroniLTR559 }}>
+        <label class="toggle-switch-label" for="ltr-559-toggle-switch"></label>
+        LTR-559
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="veml6075-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_veml6075" {{ PimoroniVEML6075 }}>
+        <label class="toggle-switch-label" for="veml6075-toggle-switch"></label>
+        VEML6075
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="11x7led-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_matrix_11x7" {{ Pimoroni11x7LEDMatrix }}>
+        <label class="toggle-switch-label" for="11x7led-toggle-switch"></label>
+        11x7 LED Matrix
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="10-96-spi-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_st7735" {{ PimoroniSPILCD10_96 }}>
+        <label class="toggle-switch-label" for="10-96-spi-toggle-switch"></label>
+        10.96'' SPI Colour LCD (160x80)
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="1-12-mono-oled-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_mono_oled_luma" {{ PimoroniMonoOLED128x128BW }}>
+        <label class="toggle-switch-label" for="1-12-mono-oled-toggle-switch"></label>
+        1.12'' Mono OLED (128x128, white/black)
+    </label>
+
+    <h4><u>Un-Tested Sensors</u></h4>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="mcp9600-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_mcp9600" {{ PimoroniMCP9600 }}>
+        <label class="toggle-switch-label" for="mcp9600-toggle-switch"></label>
+        Pimoroni MCP9600
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="sgp30-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_sgp30" {{ PimoroniSGP30 }}>
+        <label class="toggle-switch-label" for="sgp30-toggle-switch"></label>
+        Pimoroni SGP30
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="msa301-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_msa301" {{ PimoroniMSA301 }}>
+        <label class="toggle-switch-label" for="msa301-toggle-switch"></label>
+        Pimoroni MSA301
+    </label>
+
+    <hr>
+
+    <h2><u><strong>Misc. Sensors</strong></u><br></h2>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="gnu-linux-toggle-switch" class="toggle-switch-input"
+               name="linux_system" {{ GnuLinux }}>
+        <label class="toggle-switch-label" for="gnu-linux-toggle-switch"></label>
+        Gnu/Linux
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="kootnet-dummy-toggle-switch" class="toggle-switch-input"
+               name="kootnet_dummy_sensor" {{ KootnetDummySensors }}>
+        <label class="toggle-switch-label" for="kootnet-dummy-toggle-switch"></label>
+        Kootnet Dummy Sensors
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="sen-sps30-toggle-switch" class="toggle-switch-input"
+               name="sensirion_sps30" {{ SensirionSPS30 }}>
+        <label class="toggle-switch-label" for="sen-sps30-toggle-switch"></label>
+        Sensirion SPS30
+    </label>
+
+    <h4><u>Un-Tested Sensors</u></h4>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="maxim-dallas-toggle-switch" class="toggle-switch-input"
+               name="w1thermsensor" {{ W1ThermSensor }}>
+        <label class="toggle-switch-label" for="maxim-dallas-toggle-switch"></label>
+        Maxim/Dallas DS18x (x = 22, S20, B20, 25) / DS28EA00 / MAX31850K
+    </label>
+
+    <br><br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>

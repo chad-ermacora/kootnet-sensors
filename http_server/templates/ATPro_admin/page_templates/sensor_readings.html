@@ -1,72 +1,13 @@
-<div class="row">
-    <div class="col-12 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-header">
-                <h3>
-                    System Temperature
-                </h3>
-            </div>
-            <div class="card-content">
-                <canvas id="sysTempChart" height="100"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
+<style>
+    th {
+        color: red;
+        font-size: large;
+        font-weight: bolder;
+    }
+    td {
+        font-size: medium;
+        font-weight: bold;
+    }
+</style>
 
-<script src="Chart.js"></script>
-
-<script>
-    new Chart(document.getElementById('sysTempChart').getContext('2d'),
-        {
-            type: 'line',
-            data: {
-                datasets: [{
-                    label: 'System Temperature',
-                    borderColor: 'grey',
-                    fill: false,
-                    data: [ {{ SysTempData | safe }} ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                title: {
-                    display: false
-                },
-                tooltips: {
-                    mode: 'index',
-                    intersect: false,
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                scales: {
-                    xAxes: [{
-                        display: true,
-                        type: 'time',
-                        distribution: 'linear',
-                        time: {
-                            unit: 'day',
-                            tooltipFormat: 'MMM DD HH:mm:ss UTC-7.0',
-                            displayFormats: {
-                                day: 'MMM D hh:mm'
-                            }
-                        }
-                    }],
-                    yAxes: [{
-                        display: true,
-                        ticks: {
-                            beginAtZero: false
-                        },
-                        scaleLabel: {
-                            display: true,
-                            labelString: ' Minutes'
-                        }
-                    }]
-                }
-
-            }
-        }
-    );
-</script>
+{{ HTMLReplacementCode | safe }}

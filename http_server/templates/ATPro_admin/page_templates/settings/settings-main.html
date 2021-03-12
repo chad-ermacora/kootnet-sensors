@@ -1,0 +1,113 @@
+<style>
+    form {
+        text-align: center;
+    }
+</style>
+
+<form class="pure-form" method="POST" action="/atpro/settings-main">
+    <label class="toggle-switch">
+        <input type="checkbox" id="debug-toggle-switch" class="toggle-switch-input"
+               name="debug_logging" {{ CheckedDebug }}>
+        <label class="toggle-switch-label" for="debug-toggle-switch"></label>
+        Enable Debug Logging
+    </label>
+
+    <br><br>
+
+    <div>
+        <div style="display: inline-block; width: 250px;">
+            <label>
+                HTTPS Port Number
+                <br><br>
+                <input type="number" style="width: 100px;" id="ip_web_port" name="ip_web_port" required
+                       placeholder="10065" min="1024" max="65535" value="{{ IPWebPort }}">
+            </label>
+        </div>
+        <div style="display: inline-block;">
+            <label>
+                Date & Time Offset in hours<br><br>
+                <input type="number" style="width: 75px;" min="-23.5" max="23.5" step="0.25"
+                       name="program_hour_offset" value="{{ HourOffset }}">
+            </label>
+        </div>
+        <br><br>
+        <p><strong>Note</strong>: <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i></p>
+    </div>
+
+    <hr>
+
+    <div style="display: inline-block;">
+        <label class="toggle-switch">
+            <input type="checkbox" id="checkin-toggle-switch" class="toggle-switch-input"
+                   name="enable_checkin" {{ CheckedSensorCheckIns }}>
+            <label class="toggle-switch-label" for="checkin-toggle-switch"></label>
+            Enable Sensor Checkin
+        </label>
+    </div>
+
+    <br><br>
+
+    <div>
+        <label>
+            Hours between Checkins<br><br>
+            <input type="number" style="width: 75px;" name="checkin_hours" required
+                   placeholder="24" min="0.01" step="0.01" max="8760" value="{{ CheckinHours }}">
+        </label>
+    </div>
+
+    <br><br>
+
+    <div>
+        <label>
+            Checkin Server Address & Port<br>
+            Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
+            <input type="text" style="width: 450px; text-align: center;" maxlength="250" name="checkin_address"
+                   placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
+        </label>
+    </div>
+
+    <br><hr>
+
+    <div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="offset-s-toggle-switch" class="toggle-switch-input"
+                   name="enable_custom_temp_offset" {{ CheckedCustomTempOffset }}>
+            <label class="toggle-switch-label" for="offset-s-toggle-switch"></label>
+            Enable Static Offset
+        </label>
+    </div>
+
+    <div>
+        <label>
+            <input type="number" style="width: 75px;" step="0.01" min="-100" max="100"
+                   name="custom_temperature_offset"
+                   value="{{ temperature_offset }}">
+        </label>
+    </div>
+
+    <div>
+        <label class="toggle-switch">
+            <input type="checkbox" id="offset-cf-toggle-switch" class="toggle-switch-input"
+                   name="enable_custom_temp_comp" {{ CheckedCustomTempComp }}>
+            <label class="toggle-switch-label" for="offset-cf-toggle-switch"></label>
+            Enable Pi Temperature Correction Factor
+        </label>
+    </div>
+
+    <div>
+        <label>
+            <input type="number" style="width: 75px;" step="0.001" min="0" max="100"
+                   name="custom_temperature_comp" value="{{ CustomTempComp }}">
+        </label>
+    </div>
+
+    <p>
+        Compensated environmental temperature formula is as follows<br>
+        (RawEnvTemperature + StaticOffset) - ((PiTemperature - RawEnvTemperature) x CF)<br>
+        CF = Correction Factor set above
+    </p>
+
+    <br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>

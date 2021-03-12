@@ -16,89 +16,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import psutil
 from time import strftime
-from datetime import datetime, timedelta
+from datetime import datetime
 from flask import Blueprint, render_template, send_file, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.sqlite_database import sql_execute_get_data, get_sql_element
 from operations_modules.software_version import version
+from operations_modules.sqlite_database import get_sqlite_tables_in_list
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_hidden_state
 from http_server.flask_blueprints.html_notes import add_note_to_database, update_note_in_database, get_db_note_dates, \
     get_db_note_user_dates, delete_db_note
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables, \
+    html_sensor_readings_row, get_ram_free, get_disk_free
 
-html_atpro_admin_routes = Blueprint("html_atpro_admin_routes", __name__)
+html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 db_v = app_cached_variables.database_variables
 
 
-class CreateATProVariablesClass:
-    def __init__(self):
-        self.notification_count = 0
-        self.notifications_list = []
-
-    def init_tests(self):
-        self.add_notification_entry("Restart Required",
-                                    self.get_button_to_url_script("Restart Service", "/RestartServices"))
-        self.add_notification_entry("Reboot", self.get_button_to_url_script("Reboot", "/RebootSystem"))
-        self.add_notification_entry("Shutdown", self.get_button_to_url_script("Shutdown", "/ShutdownSystem"))
-
-    def get_notifications_as_string(self):
-        return_notes = ""
-        for note in self.notifications_list:
-            return_notes += str(note)
-        return return_notes
-
-    def add_notification_entry(self, notify_text, html_script):
-        function_name = "function" + str(app_cached_variables.notes_total_count + 1)
-
-        return_text = """
-        <li class="dropdown-menu-item">
-            <a onclick="{{ FunctionName }}()" class="dropdown-menu-link">
-                <div>
-                    <i class="fas fa-gift"></i>
-                </div>
-                <span>
-                    {{ NotificationText }}
-                    <br>
-                    <span>
-                        {{ DateTime }}
-                    </span>
-                </span>
-            </a>
-            <script>
-                {{ Script }}
-            </script>
-        </li>
-        """
-        return_text = return_text.replace("{{ NotificationText }}", notify_text)
-        return_text = return_text.replace("{{ DateTime }}", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
-        return_text = return_text.replace("{{ FunctionName }}", function_name)
-
-        html_script = html_script.replace("{{ FunctionName }}", function_name)
-        return_text = return_text.replace("{{ Script }}", html_script)
-
-        self.notifications_list.append(return_text)
-        self.notification_count = len(self.notifications_list)
-
-    @staticmethod
-    def get_button_to_url_script(button_text, html_link):
-        html_return_script = """
-        function {{ FunctionName }}() {
-            let r = confirm("{{ ButtonText }}");
-            if (r === true) {
-                window.location = "{{ HTMLLink }}"
-            }
-        }"""
-        html_return_script = html_return_script.replace("{{ ButtonText }}", button_text)
-        html_return_script = html_return_script.replace("{{ HTMLLink }}", html_link)
-        return html_return_script
-
-
-@html_atpro_admin_routes.route("/atpro/")
+@html_atpro_main_routes.route("/atpro/")
 def html_atpro_index(run_script="SelectNav('sensor-dashboard');"):
     return render_template("ATPro_admin/index.html",
                            SensorID=app_cached_variables.tmp_sensor_id,
@@ -107,7 +45,7 @@ def html_atpro_index(run_script="SelectNav('sensor-dashboard');"):
                            RunScript=run_script)
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-dashboard")
+@html_atpro_main_routes.route("/atpro/sensor-dashboard")
 def html_atpro_dashboard():
     atpro_variables.init_tests()
 
@@ -133,8 +71,8 @@ def html_atpro_dashboard():
                            DebugLogging=_get_text_check_enabled(enable_debug_logging),
                            CPUTemperature=str(cpu_temp),
                            SensorReboots=app_cached_variables.reboot_count,
-                           RAMUsage=_get_ram_free(),
-                           DiskUsage=_get_disk_free(),
+                           RAMUsage=get_ram_free(),
+                           DiskUsage=get_disk_free(),
                            IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
                            TriggerHighLowRecording=_get_text_check_enabled(enable_high_low_trigger_recording),
                            TriggerVarianceRecording=_get_text_check_enabled(enable_trigger_variance),
@@ -149,27 +87,7 @@ def html_atpro_dashboard():
                            InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
 
 
-def _get_ram_free():
-    try:
-        ram_available = psutil.virtual_memory().available
-        ram_available = round((ram_available / 1024 / 1024 / 1024), 2)
-    except Exception as error:
-        logger.network_logger.error("Dashboard - Getting Free RAM: " + str(error))
-        ram_available = "Error"
-    return str(ram_available) + " GB"
-
-
-def _get_disk_free():
-    try:
-        disk_available = psutil.disk_usage(file_locations.sensor_data_dir).free
-        disk_available = round((disk_available / 1024 / 1024 / 1024), 2)
-    except Exception as error:
-        logger.network_logger.error("Dashboard - Getting Free Disk Space: " + str(error))
-        disk_available = "Error"
-    return str(disk_available) + " GB"
-
-
-@html_atpro_admin_routes.route("/atpro/sensor-readings")
+@html_atpro_main_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
     html_final_code = ""
@@ -181,7 +99,7 @@ def html_atpro_sensor_readings():
                            HTMLReplacementCode=html_return_code)
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
+@html_atpro_main_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
 def html_atpro_sensor_notes():
     if request.method == "POST":
         if request.form.get("button_function"):
@@ -247,34 +165,27 @@ def html_atpro_sensor_notes():
                            DisplayedNote=selected_note)
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-graphing")
+@html_atpro_main_routes.route("/atpro/sensor-graphing")
 def html_atpro_sensor_graphing():
     return "WIP"
     html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
     return html_page
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-rm")
+@html_atpro_main_routes.route("/atpro/sensor-rm")
 def html_atpro_sensor_remote_management():
     return "WIP"
     html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
     return html_page
 
 
-@html_atpro_admin_routes.route("/atpro/sensor-settings")
-def html_atpro_sensor_settings():
-    return "WIP"
-    html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
-    return html_page
-
-
-@html_atpro_admin_routes.route("/atpro/sensor-help")
+@html_atpro_main_routes.route("/atpro/sensor-help")
 def html_atpro_sensor_help():
     documentation_root_dir = file_locations.program_root_dir + "/extras/documentation"
     return send_file(documentation_root_dir + "/index.html")
 
 
-@html_atpro_admin_routes.route("/atpro/logout")
+@html_atpro_main_routes.route("/atpro/logout")
 def html_atpro_logout():
     html_page = render_template("ATPro_admin/page_templates/message_return.html",
                                 PageURL="/atpro/",
@@ -287,28 +198,3 @@ def _get_text_check_enabled(setting):
     if setting:
         return "Enabled"
     return "Disabled"
-
-
-html_sensor_readings_row = """
-<div class="row">
-    <div class="col-6 col-m-8 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sensor Name</th>
-                            <th>Sensor Reading</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{ Readings }}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-"""
-
-atpro_variables = CreateATProVariablesClass()

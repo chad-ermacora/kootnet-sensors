@@ -1,0 +1,155 @@
+<style>
+    form {
+        text-align: center;
+        display: inline-block;
+    }
+</style>
+
+<form class="pure-form" method="POST" action="/EditDisplayConfiguration">
+    <label class="toggle-switch">
+        <input type="checkbox" id="enable-display-toggle-switch" class="toggle-switch-input"
+               name="enable_display" {{ CheckedEnableDisplay }}>
+        <label class="toggle-switch-label" for="enable-display-toggle-switch"></label>
+        Enable Display
+    </label>
+
+    <br><br>
+
+    <label>
+        Minutes between displaying sensor readings
+        <br><br>
+        <input style="width: 100px;" type="number" step="1" min="1" name="display_interval_delay_min"
+               value="{{ DisplayIntervalDelay }}">
+    </label>
+
+    <br>
+
+    <h4><u>Display Type</u></h4>
+
+    <label>
+        <input type="radio" name="display_type" value="numerical" {{ DisplayNumericalChecked }}>
+        Numerical
+    </label>
+    <label>
+        <input type="radio" name="display_type" value="graph" {{ DisplayGraphChecked }} disabled>
+        Graph
+    </label>
+
+    <br><hr>
+
+    <h3>Select Sensors to Display</h3>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="SelectAllCheckboxesDisplay" class="toggle-switch-input">
+        <label class="toggle-switch-label" for="SelectAllCheckboxesDisplay"></label>
+        Select All
+    </label>
+
+    <br>
+
+    <div id="check-all-display">
+        <label class="toggle-switch">
+            <input type="checkbox" id="uptime-toggle-switch" name="DisplaySensorUptime" {{ DisplayUptimeChecked }}>
+            <label class="toggle-switch-label" for="uptime-toggle-switch"></label>
+            Sensor Uptime
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="cpu-temp-toggle-switch" name="DisplayCPUTemp" {{ DisplayCPUTempChecked }}>
+            <label class="toggle-switch-label" for="cpu-temp-toggle-switch"></label>
+            CPU Temperature
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="env-temp-toggle-switch" name="DisplayEnvTemp" {{ DisplayEnvTempChecked }}>
+            <label class="toggle-switch-label" for="env-temp-toggle-switch"></label>
+            Environmental Temperature
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="pressure-toggle-switch" name="DisplayPressure" {{ DisplayPressureChecked }}>
+            <label class="toggle-switch-label" for="pressure-toggle-switch"></label>
+            Pressure
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="altitude-toggle-switch" name="DisplayAltitude" {{ DisplayAltitudeChecked }}>
+            <label class="toggle-switch-label" for="altitude-toggle-switch"></label>
+            Altitude
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="humidity-toggle-switch" name="DisplayHumidity" {{ DisplayHumidityChecked }}>
+            <label class="toggle-switch-label" for="humidity-toggle-switch"></label>
+            Humidity
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="distance-toggle-switch" name="DisplayDistance" {{ DisplayDistanceChecked }}>
+            <label class="toggle-switch-label" for="distance-toggle-switch"></label>
+            Distance
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="gas-toggle-switch" name="DisplayGas" {{ DisplayGASChecked }}>
+            <label class="toggle-switch-label" for="gas-toggle-switch"></label>
+            Gas
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="pm-toggle-switch" name="DisplayParticulateMatter" {{ DisplayPMChecked }}>
+            <label class="toggle-switch-label" for="pm-toggle-switch"></label>
+            Particulate Matter
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="lumen-toggle-switch" name="DisplayLumen" {{ DisplayLumenChecked }}>
+            <label class="toggle-switch-label" for="lumen-toggle-switch"></label>
+            Lumen
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="colours-toggle-switch" name="DisplayColours" {{ DisplayColoursChecked }}>
+            <label class="toggle-switch-label" for="colours-toggle-switch"></label>
+            Colours
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="uv-toggle-switch" name="DisplayUltraViolet" {{ DisplayUltraVioletChecked }}>
+            <label class="toggle-switch-label" for="uv-toggle-switch"></label>
+            Ultra Violet
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="acc-toggle-switch" name="DisplayAccelerometer" {{ DisplayAccChecked }}>
+            <label class="toggle-switch-label" for="acc-toggle-switch"></label>
+            Accelerometer
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" name="DisplayMagnetometer" {{ DisplayMagChecked }}>
+            <label class="toggle-switch-label" for="debug-toggle-switch"></label>
+            Magnetometer
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="gyro-toggle-switch" name="DisplayGyroscope" {{ DisplayGyroChecked }}>
+            <label class="toggle-switch-label" for="gyro-toggle-switch"></label>
+            Gyroscope
+        </label>
+    </div>
+
+    <br><br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>
+
+<script>
+    jQuery('#SelectAllCheckboxesDisplay').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("div[id=check-all-display] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=check-all-display] input:checkbox").prop('checked', false);
+        }
+    });
+</script>

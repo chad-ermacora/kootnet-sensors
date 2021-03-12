@@ -1,0 +1,69 @@
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="counter bg-warning">
+        <form method="POST" action="/DatabaseBackupManagement" target="_blank">
+            <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
+            <p>
+                Download SQLite3 Databases for offline access or backup purposes.<br>
+                You can view and edit databases by using
+                <a href="https://sqlitebrowser.org/" target="_blank">DB Browser for SQLite</a>
+            </p>
+            <label for="databases_backup_selection">Choose a Database Backup:</label>
+            <br>
+            <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                <optgroup label="Backed-Up Local Databases">
+                    {{ BackupDBOptionNames | safe }}
+                </optgroup>
+            </select>
+
+            <br><br>
+
+            <button type="submit" class="pure-button" value="download_backup_db" name="db_backups">
+                Download Backup
+            </button>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <h2><i class="fas fa-database"></i> Main Database</h2>
+            <h3>Location</h3>
+            <p>{{ SQLDatabaseLocation }}</p>
+            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLDatabaseSize }} MB
+            <h3>Date Range</h3>
+            <p>{{ SQLDatabaseDateRange }}</p>
+            <h3 style="display: inline-block;">Number of Notes: </h3> {{ NumberNotes }}
+            <h3>Downloads</h3>
+            <a class="pure-button" href="/DownloadSQLDatabase">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAW">Database RAW</a>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2><i class="fas fa-database"></i> MQTT Subscriber Database</h2>
+            <h3>Location</h3>
+            <p>{{ SQLMQTTDatabaseLocation }}</p>
+            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLMQTTDatabaseSize }} MB
+            <br>
+            <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLMQTTSensorsInDB }}
+            <h3>Downloads</h3>
+            <a class="pure-button" href="/DownloadSQLDatabaseMQTT">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT">Database RAW</a>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2><i class="fas fa-database"></i> Checkin Server Database</h2>
+            <h3>Location</h3>
+            <p>{{ SQLCheckinDatabaseLocation }}</p>
+            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLCheckinDatabaseSize }} MB
+            <br>
+            <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLCheckinSensorsInDB }}
+            <h3>Downloads</h3>
+            <a class="pure-button" href="/DownloadSQLDatabaseCheckin">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin">Database RAW</a>
+        </div>
+    </div>
+</div>
