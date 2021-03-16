@@ -23,7 +23,6 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
-from operations_modules.sqlite_database import get_sqlite_tables_in_list
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_hidden_state
@@ -31,18 +30,16 @@ from http_server.flask_blueprints.html_notes import add_note_to_database, update
     get_db_note_user_dates, delete_db_note
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables, \
     html_sensor_readings_row, get_ram_free, get_disk_free
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
+    get_message_page
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 db_v = app_cached_variables.database_variables
 
 
 @html_atpro_main_routes.route("/atpro/")
-def html_atpro_index(run_script="SelectNav('sensor-dashboard');"):
-    return render_template("ATPro_admin/index.html",
-                           SensorID=app_cached_variables.tmp_sensor_id,
-                           NotificationCount=str(atpro_variables.notification_count),
-                           NotificationsReplacement=atpro_variables.get_notifications_as_string(),
-                           RunScript=run_script)
+def html_atpro_index():
+    return get_html_atpro_index()
 
 
 @html_atpro_main_routes.route("/atpro/sensor-dashboard")
@@ -151,7 +148,7 @@ def html_atpro_sensor_notes():
                     delete_db_note(db_note_date_times[(app_cached_variables.note_current - 1)])
                     app_cached_variables.notes_total_count -= 1
                     app_cached_variables.note_current = 1
-            return html_atpro_index(run_script="SelectNav('sensor-notes');")
+            return get_html_atpro_index(run_script="SelectNav('sensor-notes');")
     if app_cached_variables.notes_total_count > 0:
         selected_note = app_cached_variables.cached_notes_as_list[app_cached_variables.note_current - 1]
     else:
@@ -187,11 +184,7 @@ def html_atpro_sensor_help():
 
 @html_atpro_main_routes.route("/atpro/logout")
 def html_atpro_logout():
-    html_page = render_template("ATPro_admin/page_templates/message_return.html",
-                                PageURL="/atpro/",
-                                TextMessage="Logged out - Click here to return to the Dashboard.")
-    return render_template("ATPro_admin/index.html",
-                           MainContent=html_page), 401
+    return get_message_page("Logged Out", "You have been logged out"), 401
 
 
 def _get_text_check_enabled(setting):
