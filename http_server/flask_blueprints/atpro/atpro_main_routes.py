@@ -61,12 +61,13 @@ def html_atpro_dashboard():
                            StdVersion=app_cached_variables.standard_version_available,
                            DevVersion=app_cached_variables.developmental_version_available,
                            LastUpdated=app_cached_variables.program_last_updated,
-                           DateTime=strftime("%Y-%m-%d %H:%M:%S - %Z"),
-                           DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                           DateTime=strftime("%Y-%m-%d<br>%H:%M:%S<br>%Z"),
+                           DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d<br>%H:%M:%S"),
                            HostName=app_cached_variables.hostname,
                            LocalIP=app_cached_variables.ip,
                            DebugLogging=_get_text_check_enabled(enable_debug_logging),
                            CPUTemperature=str(cpu_temp),
+                           SensorUptime=_get_uptime_str(),
                            SensorReboots=app_cached_variables.reboot_count,
                            RAMUsage=get_ram_free(),
                            DiskUsage=get_disk_free(),
@@ -191,3 +192,39 @@ def _get_text_check_enabled(setting):
     if setting:
         return "Enabled"
     return "Disabled"
+
+
+def _get_uptime_str():
+    """ Returns System UpTime as a human readable String. """
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            var_minutes = int(uptime_seconds / 60)
+    except Exception as error:
+        logger.sensors_logger.error("Get Linux uptime minutes - Failed: " + str(error))
+        var_minutes = 0
+
+    str_day_hour_min = ""
+    uptime_days = int(float(var_minutes) // 1440)
+    uptime_hours = int((float(var_minutes) % 1440) // 60)
+    uptime_min = int(float(var_minutes) % 60)
+    if uptime_days:
+        if uptime_days >= 365:
+            years = uptime_days // 365
+            if years > 1:
+                str_day_hour_min += str(years) + " Years<br>"
+            else:
+                str_day_hour_min += str(years) + " Year<br>"
+            uptime_days = uptime_days - (365 * years)
+
+        if uptime_days > 1:
+            str_day_hour_min += str(uptime_days) + " Days<br>"
+        else:
+            str_day_hour_min += str(uptime_days) + " Day<br>"
+    if uptime_hours:
+        if uptime_hours > 1:
+            str_day_hour_min += str(uptime_hours) + " Hours & "
+        else:
+            str_day_hour_min += str(uptime_hours) + " Hour & "
+    str_day_hour_min += str(uptime_min) + " Min"
+    return str_day_hour_min
