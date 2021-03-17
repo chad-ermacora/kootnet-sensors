@@ -3,7 +3,7 @@ const warningColor = '#f0932b'
 const successColor = '#6ab04c'
 const dangerColor = '#eb4d4b'
 
-const themeCookieName = 'theme'
+const themeCookieName = 'KootnetThemeCookie'
 const themeDark = 'dark'
 const themeLight = 'light'
 
