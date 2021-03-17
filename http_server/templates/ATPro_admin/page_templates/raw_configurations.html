@@ -1,0 +1,224 @@
+<style>
+    .pure-menu {
+        font-weight: bolder;
+        display: inline-block;
+    }
+
+    .pure-menu-selected > .pure-menu-link, .pure-menu-selected > .pure-menu-link:visited {
+        font-weight: bolder;
+        color: red;
+        background-color: var(--second-bg-color);
+    }
+
+    .pure-menu-link:hover {
+        font-weight: bolder;
+        background-color: var(--menu-hover-bg-color);
+    }
+</style>
+
+<div class="row" style="font-weight: bolder; text-align: center;">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-software-ver">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-software-ver')">
+                            Software Versions
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-main">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-main')">
+                            Main Configuration
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-is">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-is')">
+                            Installed Sensors
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-cs">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-cs')">
+                            Checkin Server & View
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-display">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-display')">
+                            Display
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-sc">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-sc')">
+                            Sensor Control
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <br>
+
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-ir">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-ir')">
+                            Interval Recording
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-high-low">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-high-low')">
+                            High/Low Trigger
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-variance">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-variance')">
+                            Variance Trigger
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-mqtt-b">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-mqtt-b')">
+                            MQTT Broker
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-mqtt-p">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-mqtt-p')">
+                            MQTT Publisher
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-mqtt-s">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-mqtt-s')">
+                            MQTT Subscriber
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <br>
+
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-wu">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-wu')">
+                            Weather Underground
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-luftdaten">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-luftdaten')">
+                            Luftdaten
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-osm">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-osm')">
+                            Open Sense Map
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-email">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-email')">
+                            Email
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-networking">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-networking')">
+                            Networking
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item config-wifi">
+                        <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-wifi')">
+                            WiFi
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br>
+
+<div id="raw-config-page-view"></div>
+
+<script>
+    function SelectRAWConfigNav(nav_location) {
+        document.getElementsByClassName("config-software-ver")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-main")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-cs")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-display")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-sc")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-ir")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-high-low")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-variance")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-mqtt-b")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-mqtt-p")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-mqtt-s")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-wu")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-luftdaten")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-osm")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-email")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-networking")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-wifi")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        $("#raw-config-page-view").load("/atpro/system/raw_config/" + nav_location);
+    }
+    SelectRAWConfigNav("config-software-ver");
+</script>

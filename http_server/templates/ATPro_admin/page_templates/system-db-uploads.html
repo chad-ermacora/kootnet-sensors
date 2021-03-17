@@ -20,7 +20,7 @@
 <div class="row">
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <form class="pure-form" method="POST" enctype="multipart/form-data" action="/UploadCustomSQLDatabase">
+            <form class="pure-form" method="POST" enctype="multipart/form-data" action="/atpro/system-db-uploads">
                 <h2><i class="fas fa-upload"></i> Upload Custom Database</h2>
 
                 <div>
@@ -36,14 +36,16 @@
 
                 <br><br>
 
-                <button type="submit" class="pure-button">Upload</button>
+                <button type="submit" class="pure-button" name="db_upload_button" value="upload">
+                    Upload
+                </button>
             </form>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <form class="pure-form" method="post" enctype="multipart/form-data" action="/UploadSQLDatabase">
+            <form class="pure-form" method="post" enctype="multipart/form-data" action="/atpro/system-db-uploads">
                 <h2><i class="fas fa-upload"></i> Replace a Local Database</h2>
 
                 <label for="database_replacement">Choose a Database:</label>
@@ -64,7 +66,9 @@
 
                 <br><br>
 
-                <button type="submit" class="pure-button">Replace Database</button>
+                <button type="submit" class="pure-button" name="db_upload_button" value="replace">
+                    Replace Database
+                </button>
             </form>
         </div>
     </div>

@@ -72,40 +72,8 @@
         <div class="pure-menu pure-menu-horizontal">
             <ul class="pure-menu-list">
                 <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
-                settings-db-local settings-db-management settings-db-uploads">
-                    <a href="#" class="pure-menu-link">
-                        Databases
-                    </a>
-                    <ul class="pure-menu-children">
-                        <li class="pure-menu-item">
-                            <a href="#" class="pure-menu-link"
-                               onclick="SelectSettingsNav('settings-db-local')">
-                                Information & Downloads
-                            </a>
-                        </li>
-                        <li class="pure-menu-item">
-                            <a href="#" class="pure-menu-link"
-                               onclick="SelectSettingsNav('settings-db-management')">
-                                Management
-                            </a>
-                        </li>
-                        <li class="pure-menu-item">
-                            <a href="#" class="pure-menu-link"
-                               onclick="SelectSettingsNav('settings-db-uploads')">
-                                Uploads
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <div style="display: inline-block;">
-        <div class="pure-menu pure-menu-horizontal">
-            <ul class="pure-menu-list">
-                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                 settings-interval settings-hl settings-variances">
-                    <a href="#" class="pure-menu-link">
+                    <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-interval')">
                         SQL Recording
                     </a>
                     <ul class="pure-menu-children">
@@ -137,7 +105,7 @@
             <ul class="pure-menu-list">
                 <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                 settings-email-reports settings-email-graphs settings-email-settings">
-                    <a href="#" class="pure-menu-link">
+                    <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-email-reports')">
                         Email
                     </a>
                     <ul class="pure-menu-children">
@@ -169,7 +137,7 @@
             <ul class="pure-menu-list">
                 <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                  settings-mqtt-p settings-mqtt-s settings-mqtt-b">
-                    <a href="#" class="pure-menu-link">
+                    <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-mqtt-p')">
                         MQTT
                     </a>
                     <ul class="pure-menu-children">
@@ -201,7 +169,7 @@
             <ul class="pure-menu-list">
                 <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                 settings-osm settings-wu settings-luftdaten">
-                    <a href="#" class="pure-menu-link">
+                    <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-osm')">
                         3rd Party Services
                     </a>
                     <ul class="pure-menu-children">
@@ -236,7 +204,6 @@
     function SelectSettingsNav(nav_location) {
         document.getElementsByClassName("settings-main")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-is")[0].classList.remove("pure-menu-selected");
-        document.getElementsByClassName("settings-db-local")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-interval")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-display")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-email-reports")[0].classList.remove("pure-menu-selected");

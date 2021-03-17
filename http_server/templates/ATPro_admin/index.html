@@ -76,14 +76,6 @@
 								<span>Return to Index</span>
 							</a>
 						</li>
-                        <li class="dropdown-menu-item">
-							<a href="#" onclick="SelectNav('settings-system')" class="dropdown-menu-link">
-								<div>
-									<i class="fas fa-wrench"></i>
-								</div>
-								<span>System</span>
-							</a>
-						</li>
 						<li  class="dropdown-menu-item">
 							<a href="/atpro/logout" class="dropdown-menu-link">
 								<div>
@@ -120,7 +112,7 @@
 					<span>Live Sensor Readings</span>
 				</a>
 			</li>
-			<li  class="sidebar-nav-item">
+			<li class="sidebar-nav-item">
 				<a id="sensor-notes" href="#" onclick="SelectNav('sensor-notes')" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-book-open"></i>
@@ -128,7 +120,7 @@
 					<span>Notes</span>
 				</a>
 			</li>
-			<li  class="sidebar-nav-item">
+			<li class="sidebar-nav-item">
 				<a id="sensor-graphing" href="#" onclick="SelectNav('sensor-graphing')" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-chart-line"></i>
@@ -136,7 +128,7 @@
 					<span>Graphing</span>
 				</a>
 			</li>
-			<li  class="sidebar-nav-item">
+			<li class="sidebar-nav-item">
 				<a id="sensor-rm" href="#" onclick="SelectNav('sensor-rm')" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-project-diagram"></i>
@@ -144,7 +136,7 @@
 					<span>Remote Management</span>
 				</a>
 			</li>
-			<li  class="sidebar-nav-item">
+			<li class="sidebar-nav-item">
 				<a id="sensor-settings" href="#" onclick="SelectNav('sensor-settings')" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-cog"></i>
@@ -152,7 +144,15 @@
 					<span>Settings</span>
 				</a>
 			</li>
-			<li  class="sidebar-nav-item">
+            <li class="sidebar-nav-item">
+                <a id="sensor-system" href="#" onclick="SelectNav('sensor-system')" class="sidebar-nav-link">
+                    <div>
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <span>System</span>
+                </a>
+            </li>
+			<li class="sidebar-nav-item">
 				<a id="sensor-help" href="/SensorUnitHelp.html" target="_blank" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-question-circle"></i>
@@ -164,7 +164,7 @@
 	</div>
 	<!-- end sidebar -->
 	<!-- main content -->
-	<div id="main-page-view" class="wrapper"></div>
+	<div id="main-page-view" class="wrapper">{{ OptionalHTML | safe }}</div>
 	<!-- end main content -->
 	<!-- import script -->
 	<script src="index.js"></script>
@@ -174,15 +174,18 @@
 </html>
 
 <script>
-    function SelectNav(nav_location) {
-        document.getElementById("sensor-dashboard").classList.remove("active");
-        document.getElementById("sensor-readings").classList.remove("active");
-        document.getElementById("sensor-notes").classList.remove("active");
-        document.getElementById("sensor-graphing").classList.remove("active");
-        document.getElementById("sensor-rm").classList.remove("active");
-        document.getElementById("sensor-settings").classList.remove("active");
+    function SelectNav(nav_location, skip_menu_select=false) {
+        if (skip_menu_select === false) {
+            document.getElementById("sensor-dashboard").classList.remove("active");
+            document.getElementById("sensor-readings").classList.remove("active");
+            document.getElementById("sensor-notes").classList.remove("active");
+            document.getElementById("sensor-graphing").classList.remove("active");
+            document.getElementById("sensor-rm").classList.remove("active");
+            document.getElementById("sensor-settings").classList.remove("active");
+            document.getElementById("sensor-system").classList.remove("active");
 
-        document.getElementById(nav_location).classList.add("active");
+            document.getElementById(nav_location).classList.add("active");
+        }
 
         $("#main-page-view").load("/atpro/" + nav_location);
     }

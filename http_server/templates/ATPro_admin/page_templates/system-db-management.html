@@ -1,14 +1,11 @@
-
-
-
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-warning">
-            <form class="pure-form" method="POST" action="/DatabaseBackupManagement" target="_blank">
+            <form class="pure-form" method="POST" action="/atpro/system-db-management" target="_blank">
                 <h2><i class="fas fa-file-archive"></i> Database Backups</h2>
-                <label for="databases_backup_selection">Choose a Database:</label>
+                <label for="db_backup_selection">Choose a Database:</label>
                 <br>
-                <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                <select name="db_selected" id="db_backup_selection">
                     <optgroup label="Main Backed-Up Databases">
                         {{ BackupDBOptionNames |safe }}
                     </optgroup>
@@ -16,7 +13,7 @@
 
                 <br><br>
 
-                <button type="submit" class="pure-button" value="delete_backup_db" name="db_backups"
+                <button type="submit" class="pure-button" value="delete_backup_db" name="db_management"
                         onclick="return confirm('Are you sure you want to delete the Database backup?');">
                     Delete Backup
                 </button>
@@ -26,7 +23,7 @@
 
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-primary">
-            <form class="pure-form" method="POST" action="/atpro/settings-db-management">
+            <form class="pure-form" method="POST" action="/atpro/system-db-management">
                 <h2><i class="fas fa-database"></i> Uploaded Databases</h2>
                 <label for="db_selected">Choose a Database:</label>
                 <br>
@@ -59,7 +56,7 @@
 
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <form class="pure-form" method="POST" action="/VacuumSQLDatabase">
+            <form class="pure-form" method="POST" action="/atpro/system-db-management">
                 <h2><i class="fas fa-database"></i> Shrink (Vacuum) Database</h2>
                 <label for="vacuum_databases">Choose a Database:</label>
 
@@ -78,7 +75,7 @@
 
                 <br><br>
 
-                <button type="submit" class="pure-button" value="shrink_db" name="db_shrink"
+                <button type="submit" class="pure-button" value="shrink_db" name="db_management"
                         onclick="return confirm('Database Vacuum may take some time ' +
                          'depending on the size of the Database, Continue?');">
                     Shrink Database
