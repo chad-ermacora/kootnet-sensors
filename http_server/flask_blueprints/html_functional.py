@@ -310,4 +310,4 @@ def verify_password(username, password):
 
 @auth.error_handler
 def auth_error():
-    return message_and_return("Unauthorized Access")
+    return """<meta http-equiv="refresh" content="10; url = /"/><a href='/'>Unauthorized Access</a>"""
