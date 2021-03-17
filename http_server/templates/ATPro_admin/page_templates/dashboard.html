@@ -31,8 +31,8 @@
                             <td>{{ StdVersion }}</td>
                             <td>{{ DevVersion }}</td>
                             <td>{{ LastUpdated }}</td>
-                            <td>{{ DateTimeUTC }}</td>
-                            <td>{{ DateTime }}</td>
+                            <td>{{ DateTimeUTC | safe }}</td>
+                            <td>{{ DateTime | safe }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -52,6 +52,7 @@
                             <th><div class="readings-header">IP<br>Address</div></th>
                             <th><div class="readings-header">Debug<br>Logging</div></th>
                             <th><div class="readings-header">System<br>Temperature</div></th>
+                            <th><div class="readings-header">System<br>Uptime</div></th>
                             <th><div class="readings-header">System<br>Reboots</div></th>
                             <th><div class="readings-header">Available<br>RAM</div></th>
                             <th><div class="readings-header">Available<br>Drive Space</div></th>
@@ -63,6 +64,7 @@
                             <td>{{ LocalIP }}</td>
                             <td>{{ DebugLogging }}</td>
                             <td>{{ CPUTemperature }} °C</td>
+                            <td>{{ SensorUptime | safe }}</td>
                             <td>{{ SensorReboots }}</td>
                             <td>{{ RAMUsage }}</td>
                             <td>{{ DiskUsage }}</td>
@@ -149,8 +151,8 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">Sensor<br>Checkins</div></th>
-                            <th><div class="readings-header">Checkin<br>Server</div></th>
+                            <th><div class="readings-header">Sensor Checkins</div></th>
+                            <th><div class="readings-header">Checkin Server</div></th>
                         </tr>
                     </thead>
                     <tbody>
