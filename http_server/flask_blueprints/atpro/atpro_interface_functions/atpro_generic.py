@@ -42,3 +42,23 @@ def get_message_page(title, message="", page_url="sensor-dashboard"):
                                    TextTitle=title,
                                    TextMessage=message)
     return get_html_atpro_index(run_script="", main_page_view_content=message_page)
+
+
+def get_clean_db_name(db_text_name):
+    final_db_name = ""
+    for letter in db_text_name:
+        if re.match("^[A-Za-z0-9_.-]*$", letter):
+            final_db_name += letter
+
+    if final_db_name == "":
+        final_db_name = "No_Name"
+
+    if final_db_name.split(".")[-1] == "sqlite":
+        final_db_name = final_db_name[:-7]
+
+    count_num = 1
+    if final_db_name + ".sqlite" in app_cached_variables.uploaded_databases_list:
+        while final_db_name + str(count_num) + ".sqlite" in app_cached_variables.uploaded_databases_list:
+            count_num += 1
+        final_db_name = final_db_name + str(count_num)
+    return final_db_name + ".sqlite"
