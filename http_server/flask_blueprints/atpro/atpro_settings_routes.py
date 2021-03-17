@@ -22,18 +22,20 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content, get_list_of_filenames_in_dir
-from operations_modules.sqlite_database import get_sqlite_tables_in_list
+from operations_modules.app_generic_functions import get_file_content
+from operations_modules.sqlite_database import write_to_sql_database, validate_sqlite_database
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from mqtt.server_mqtt_broker import check_mqtt_broker_server_running
-from http_server.server_http_generic_functions import get_html_hidden_state, get_html_checkbox_state, \
-    get_html_selected_state, message_and_return
+from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, \
+    get_clean_db_name
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 db_v = app_cached_variables.database_variables
+uploaded_databases_folder = file_locations.uploaded_databases_folder
+sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 
 
 @html_atpro_settings_routes.route("/atpro/sensor-settings")
@@ -44,14 +46,11 @@ def html_atpro_sensor_settings(run_script="SelectSettingsNav('settings-main');")
 @html_atpro_settings_routes.route("/atpro/settings-main", methods=["GET", "POST"])
 def html_atpro_sensor_settings_main():
     if request.method == "POST":
-        try:
-            app_config_access.primary_config.update_with_html_request(request)
-            app_config_access.primary_config.save_config_to_file()
-            app_cached_variables.restart_sensor_checkin_thread = True
-            return html_atpro_sensor_settings()
-        except Exception as error:
-            logger.primary_logger.error("HTML Main Configuration set Error: " + str(error))
-            return message_and_return("Bad Configuration POST Request", url="/MainConfigurationsHTML")
+        app_config_access.primary_config.update_with_html_request(request)
+        app_config_access.primary_config.save_config_to_file()
+        app_cached_variables.restart_sensor_checkin_thread = True
+        return get_message_page("Main Settings Updated", page_url="sensor-settings")
+
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
     sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
     custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
@@ -75,17 +74,11 @@ def html_atpro_sensor_settings_main():
 def html_atpro_sensor_settings_installed_sensors():
     installed_sensors = app_config_access.installed_sensors
     if request.method == "POST":
-        try:
-            app_config_access.installed_sensors.update_with_html_request(request)
-            app_config_access.installed_sensors.save_config_to_file()
-            sensor_access.sensors_direct.__init__()
-            return html_atpro_index(run_script="SelectNav('sensor-settings');")
-        except Exception as error:
-            msg = "HTML Apply - Installed Sensors - Error: " + str(error)
-            logger.primary_logger.error(msg)
-            return render_template("ATPro_admin/page_templates/message_return.html",
-                                   PageURL="/atpro/",
-                                   TextMessage=msg)
+        app_config_access.installed_sensors.update_with_html_request(request)
+        app_config_access.installed_sensors.save_config_to_file()
+        sensor_access.sensors_direct.__init__()
+        msg = "Installed sensors updated and re-initialized"
+        return get_message_page("Installed Sensors Updated", msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-installed-sensors.html",
         PageURL="/MainConfigurationsHTML",
@@ -119,7 +112,12 @@ def html_atpro_sensor_settings_installed_sensors():
 
 @html_atpro_settings_routes.route("/atpro/settings-display", methods=["GET", "POST"])
 def html_atpro_sensor_settings_display():
-    display = get_html_checkbox_state(app_config_access.display_config.enable_display)
+    if request.method == "POST":
+        app_config_access.display_config.update_with_html_request(request)
+        app_config_access.display_config.save_config_to_file()
+        app_cached_variables.restart_mini_display_thread = True
+        return get_message_page("Display Settings Updated", "Restarting Display Service", page_url="sensor-settings")
+
     display_numerical_checked = ""
     display_graph_checked = ""
     display_type_numerical = app_config_access.display_config.display_type_numerical
@@ -128,139 +126,54 @@ def html_atpro_sensor_settings_display():
     else:
         display_graph_checked = "checked"
 
-    sensor_uptime = app_config_access.display_config.sensor_uptime
-    system_temperature = app_config_access.display_config.system_temperature
-    env_temperature = app_config_access.display_config.env_temperature
-    pressure = app_config_access.display_config.pressure
-    altitude = app_config_access.display_config.altitude
-    humidity = app_config_access.display_config.humidity
-    distance = app_config_access.display_config.distance
-    gas = app_config_access.display_config.gas
-    particulate_matter = app_config_access.display_config.particulate_matter
-    lumen = app_config_access.display_config.lumen
-    color = app_config_access.display_config.color
-    ultra_violet = app_config_access.display_config.ultra_violet
-    accelerometer = app_config_access.display_config.accelerometer
-    magnetometer = app_config_access.display_config.magnetometer
-    gyroscope = app_config_access.display_config.gyroscope
     return render_template(
         "ATPro_admin/page_templates/settings/settings-display.html",
         PageURL="/DisplayConfigurationsHTML",
-        CheckedEnableDisplay=display,
+        CheckedEnableDisplay=get_html_checkbox_state(app_config_access.display_config.enable_display),
         DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
         DisplayNumericalChecked=display_numerical_checked,
         DisplayGraphChecked=display_graph_checked,
-        DisplayUptimeChecked=get_html_checkbox_state(sensor_uptime),
-        DisplayCPUTempChecked=get_html_checkbox_state(system_temperature),
-        DisplayEnvTempChecked=get_html_checkbox_state(env_temperature),
-        DisplayPressureChecked=get_html_checkbox_state(pressure),
-        DisplayAltitudeChecked=get_html_checkbox_state(altitude),
-        DisplayHumidityChecked=get_html_checkbox_state(humidity),
-        DisplayDistanceChecked=get_html_checkbox_state(distance),
-        DisplayGASChecked=get_html_checkbox_state(gas),
-        DisplayPMChecked=get_html_checkbox_state(particulate_matter),
-        DisplayLumenChecked=get_html_checkbox_state(lumen),
-        DisplayColoursChecked=get_html_checkbox_state(color),
-        DisplayUltraVioletChecked=get_html_checkbox_state(ultra_violet),
-        DisplayAccChecked=get_html_checkbox_state(accelerometer),
-        DisplayMagChecked=get_html_checkbox_state(magnetometer),
-        DisplayGyroChecked=get_html_checkbox_state(gyroscope)
+        DisplayUptimeChecked=get_html_checkbox_state(app_config_access.display_config.sensor_uptime),
+        DisplayCPUTempChecked=get_html_checkbox_state(app_config_access.display_config.system_temperature),
+        DisplayEnvTempChecked=get_html_checkbox_state(app_config_access.display_config.env_temperature),
+        DisplayPressureChecked=get_html_checkbox_state(app_config_access.display_config.pressure),
+        DisplayAltitudeChecked=get_html_checkbox_state(app_config_access.display_config.altitude),
+        DisplayHumidityChecked=get_html_checkbox_state(app_config_access.display_config.humidity),
+        DisplayDistanceChecked=get_html_checkbox_state(app_config_access.display_config.distance),
+        DisplayGASChecked=get_html_checkbox_state(app_config_access.display_config.gas),
+        DisplayPMChecked=get_html_checkbox_state(app_config_access.display_config.particulate_matter),
+        DisplayLumenChecked=get_html_checkbox_state(app_config_access.display_config.lumen),
+        DisplayColoursChecked=get_html_checkbox_state(app_config_access.display_config.color),
+        DisplayUltraVioletChecked=get_html_checkbox_state(app_config_access.display_config.ultra_violet),
+        DisplayAccChecked=get_html_checkbox_state(app_config_access.display_config.accelerometer),
+        DisplayMagChecked=get_html_checkbox_state(app_config_access.display_config.magnetometer),
+        DisplayGyroChecked=get_html_checkbox_state(app_config_access.display_config.gyroscope)
     )
 
 
 @html_atpro_settings_routes.route("/atpro/settings-cs", methods=["GET", "POST"])
 def html_atpro_sensor_settings_checkin_server():
-    enable_checkin_recording = app_config_access.checkin_config.enable_checkin_recording
+    if request.method == "POST":
+        app_config_access.checkin_config.update_with_html_request(request)
+        app_config_access.checkin_config.save_config_to_file()
+        return get_message_page("Checkin Server Settings Updated", page_url="sensor-settings")
+
     return render_template(
         "ATPro_admin/page_templates/settings/settings-checkin-server.html",
         PageURL="/CheckinServerConfigurationHTML",
-        CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
+        CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
         DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days
     )
 
 
-@html_atpro_settings_routes.route("/atpro/settings-db-local")
-def html_atpro_sensor_settings_database_information():
-    custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
-
-    db_backup_dropdown_selection = ""
-    for zip_name in app_cached_variables.zipped_db_backup_list:
-        db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
-    return render_template(
-        "ATPro_admin/page_templates/settings/settings-db-local.html",
-        SQLDatabaseLocation=file_locations.sensor_database,
-        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_file_size(),
-        NumberNotes=sensor_access.get_db_notes_count(),
-        SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
-        SQLMQTTDatabaseSize=sensor_access.get_file_size(file_location=file_locations.mqtt_subscriber_database),
-        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
-        SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
-        SQLCheckinDatabaseSize=sensor_access.get_file_size(file_location=file_locations.sensor_checkin_database),
-        SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
-        BackupDBOptionNames=db_backup_dropdown_selection
-    )
-
-
-@html_atpro_settings_routes.route("/atpro/settings-db-management", methods=["GET", "POST"])
-def html_atpro_sensor_settings_database_management():
-    if request.method == "POST":
-        upload_db_folder = file_locations.uploaded_databases_folder + "/"
-
-        try:
-            db_full_path = upload_db_folder + str(request.form.get("db_selected"))
-            if str(request.form.get("db_management")) == "rename_db":
-                new_db_full_path = upload_db_folder + _get_clean_db_name(
-                    str(request.form.get("rename_db")))
-                os.rename(db_full_path, new_db_full_path)
-            elif str(request.form.get("db_management")) == "delete_db":
-                os.remove(db_full_path)
-            uploaded_db_filenames = get_list_of_filenames_in_dir(file_locations.uploaded_databases_folder)
-            app_cached_variables.uploaded_databases_list = uploaded_db_filenames
-            return html_atpro_index(run_script="SelectNav('sensor-settings');")
-        except Exception as error:
-            return_text2 = str(error)
-            logger.network_logger.error("Unable to rename or delete database: " + return_text2)
-        return message_and_return("Unable to rename or delete database", text_message2=return_text2, url="/databases")
-
-    custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
-    db_dropdown_selection = ""
-    for db_name in app_cached_variables.uploaded_databases_list:
-        db_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", db_name) + "\n"
-
-    db_backup_dropdown_selection = ""
-    for zip_name in app_cached_variables.zipped_db_backup_list:
-        db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
-    return render_template(
-        "ATPro_admin/page_templates/settings/settings-db-management.html",
-        HostName=app_cached_variables.hostname,
-        SQLDatabaseLocation=file_locations.sensor_database,
-        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_file_size(),
-        NumberNotes=sensor_access.get_db_notes_count(),
-        SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
-        SQLMQTTDatabaseSize=sensor_access.get_file_size(
-            file_location=file_locations.mqtt_subscriber_database),
-        SQLMQTTSensorsInDB=str(
-            len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
-        SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
-        SQLCheckinDatabaseSize=sensor_access.get_file_size(
-            file_location=file_locations.sensor_checkin_database),
-        SQLCheckinSensorsInDB=str(
-            len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
-        UploadedDBOptionNames=db_dropdown_selection,
-        BackupDBOptionNames=db_backup_dropdown_selection
-    )
-
-
-@html_atpro_settings_routes.route("/atpro/settings-db-uploads", methods=["GET", "POST"])
-def html_atpro_sensor_settings_database_uploads():
-    return render_template("ATPro_admin/page_templates/settings/settings-db-uploads.html")
-
-
 @html_atpro_settings_routes.route("/atpro/settings-interval", methods=["GET", "POST"])
 def html_atpro_sensor_settings_interval():
+    if request.method == "POST":
+        app_config_access.interval_recording_config.update_with_html_request(request)
+        app_config_access.interval_recording_config.save_config_to_file()
+        app_cached_variables.restart_interval_recording_thread = True
+        return get_message_page("Interval Recording Settings Updated", page_url="sensor-settings")
     interval_config = app_config_access.interval_recording_config
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-interval.html",
@@ -659,26 +572,7 @@ def html_atpro_sensor_settings_luftdaten():
         LuftdatenStationID=luftdaten_station_id
     )
 
+
 # @html_atpro_settings_routes.route("/atpro/settings-Change", methods=["GET", "POST"])
 # def html_atpro_sensor_settings_():
 #     return "timmy"
-
-
-def _get_clean_db_name(db_text_name):
-    final_db_name = ""
-    for letter in db_text_name:
-        if re.match("^[A-Za-z0-9_.-]*$", letter):
-            final_db_name += letter
-
-    if final_db_name == "":
-        final_db_name = "No_Name"
-
-    if final_db_name.split(".")[-1] == "sqlite":
-        final_db_name = final_db_name[:-7]
-
-    count_num = 1
-    if final_db_name + ".sqlite" in app_cached_variables.uploaded_databases_list:
-        while final_db_name + str(count_num) + ".sqlite" in app_cached_variables.uploaded_databases_list:
-            count_num += 1
-        final_db_name = final_db_name + str(count_num)
-    return final_db_name + ".sqlite"
