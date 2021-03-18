@@ -1,10 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/test-email">
+                <h3><strong>Test Reports Email</strong></h3>
+                <label>
+                    Email to<br>
+                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                           name="test_email_address" placeholder="someone@somewhere.com">
+                </label>
 
-</body>
-</html>
+                <br><br>
+
+                <button type="submit" class="pure-button" name="test_email_button" value="reports">Send Email</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-email-reports">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-report-toggle-switch" class="toggle-switch-input"
+                           name="email_combo_report" {{ CheckedEmailComboReport }}>
+                    <label class="toggle-switch-label" for="enable-report-toggle-switch"></label>
+                    Enable Combo Report Emails
+                </label>
+
+                <br><br>
+
+                <label>Send Email<br>
+                    <select name="email_reports_send_interval">
+                        <option value="daily" {{ EmailReportsSelectedDaily }}>Daily</option>
+                        <option value="weekly" {{ EmailReportsSelectedWeekly }}>Weekly</option>
+                        <option value="monthly" {{ EmailReportsSelectedMonthly }}>Monthly</option>
+                        <option value="yearly" {{ EmailReportsSelectedYearly }}>Yearly</option>
+                    </select>
+                </label>
+
+                <br><br>
+
+                <label>
+                    <input type="time" name="send_email_report_at_time" required
+                           placeholder="24" min="1" value="{{ EmailReportAtHourMin }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    <textarea style="width: 400px; height: 200px;"
+                              name="send_reports_to_email_address">{{ EmailReportsToCSVAddresses }}</textarea>
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+</div>

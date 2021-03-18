@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <form class="pure-form" method="POST" action="/atpro/test-email">
+                <h3><strong>Test SMTP Server Settings</strong></h3>
+
+                <label>
+                    Send Email to<br>
+                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                                       name="test_email_address" placeholder="someone@somewhere.com">
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button" name="test_email_button" value="settings">Send Email</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <form class="pure-form" method="POST" action="/atpro/settings-email-settings">
+                <h3><strong>SMTP Server Settings</strong></h3>
+
+                <label>
+                    Send Email as/from<br>
+                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                           name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Server Address<br>
+                    <input style="width: 400px; text-align: center;" type="text" maxlength="250"
+                           name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
+                </label>
+
+                <br><br>
+
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-email-ssl-toggle-switch" class="toggle-switch-input"
+                           name="email_ssl" {{ CheckedEmailSSL }}>
+                    <label class="toggle-switch-label" for="enable-email-ssl-toggle-switch"></label>
+                    Enable TLS
+                </label>
+
+                <br><br>
+
+                <label>
+                    SMTP Port Number<br><br>
+                    <input style="width: 125px;" type="number" name="server_smtp_port" required
+                           placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Username<br>
+                    <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
+                           placeholder="someone" value="{{ ServerSMTPUser }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Password<br>
+                    <input style="width: 200px;" type="password" maxlength="250" name="server_smtp_password">
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+</div>

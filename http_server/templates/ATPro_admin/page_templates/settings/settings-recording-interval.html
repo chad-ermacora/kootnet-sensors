@@ -1,0 +1,162 @@
+<style>
+    form {
+        text-align: center;
+    }
+</style>
+
+<form class="pure-form" method="POST" action="/atpro/settings-interval">
+    <label class="toggle-switch">
+        <input type="checkbox" id="enable-interval-toggle-switch" class="toggle-switch-input"
+               name="enable_interval_recording" {{ CheckedInterval }}>
+        <label class="toggle-switch-label" for="enable-interval-toggle-switch"></label>
+        Enable Interval Recording
+    </label>
+
+    <br><br>
+
+    <label>
+        Seconds between Interval recordings<br><br>
+        <input style="width: 75px;" type="number" step="0.1" min="1" name="interval_delay_seconds"
+               value="{{ IntervalDelay }}">
+    </label>
+
+    <br><hr>
+
+    <h3>Select Sensors to Record</h3>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="SelectAllCheckboxesIR" class="toggle-switch-input">
+        <label class="toggle-switch-label" for="SelectAllCheckboxesIR"></label>
+        Select All
+    </label>
+
+    <br>
+
+    <div id="ir-sensor-checkboxes">
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-uptime-toggle-switch" class="toggle-switch-input"
+                   name="checkbox_sensor_uptime" {{ CheckedSensorUptime }}>
+            <label class="toggle-switch-label" for="enable-uptime-toggle-switch"></label>
+            Sensor Uptime
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-cpu-temp-toggle-switch" class="toggle-switch-input"
+                   name="checkbox_cpu_temperature" {{ CheckedCPUTemperature }}>
+            <label class="toggle-switch-label" for="enable-cpu-temp-toggle-switch"></label>
+            CPU Temperature
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-env-toggle-switch" class="toggle-switch-input"
+                   name="env_temperature" {{ CheckedEnvTemperature }}>
+            <label class="toggle-switch-label" for="enable-env-toggle-switch"></label>
+            Env Temperature
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-pressure-toggle-switch" class="toggle-switch-input"
+                   name="pressure" {{ CheckedPressure }}>
+            <label class="toggle-switch-label" for="enable-pressure-toggle-switch"></label>
+            Pressure
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-altitude-toggle-switch" class="toggle-switch-input"
+                   name="altitude" {{ CheckedAltitude }}>
+            <label class="toggle-switch-label" for="enable-altitude-toggle-switch"></label>
+            Altitude
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-humidity-toggle-switch" class="toggle-switch-input"
+                   name="humidity" {{ CheckedHumidity }}>
+            <label class="toggle-switch-label" for="enable-humidity-toggle-switch"></label>
+            Humidity
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-dew-point-toggle-switch" class="toggle-switch-input"
+                   name="dew_point" {{ CheckedDewPoint }}>
+            <label class="toggle-switch-label" for="enable-dew-point-toggle-switch"></label>
+            Dew Point
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-distance-toggle-switch" class="toggle-switch-input"
+                   name="distance" {{ CheckedDistance }}>
+            <label class="toggle-switch-label" for="enable-distance-toggle-switch"></label>
+            Distance
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-gas-toggle-switch" class="toggle-switch-input"
+                   name="gas" {{ CheckedGas }}>
+            <label class="toggle-switch-label" for="enable-gas-toggle-switch"></label>
+            Gas
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-pm-toggle-switch" class="toggle-switch-input"
+                   name="particulate_matter" {{ CheckedPM }}>
+            <label class="toggle-switch-label" for="enable-pm-toggle-switch"></label>
+            Particulate Matter
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-lumen-toggle-switch" class="toggle-switch-input"
+                   name="lumen" {{ CheckedLumen }}>
+            <label class="toggle-switch-label" for="enable-lumen-toggle-switch"></label>
+            Lumen
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-colour-toggle-switch" class="toggle-switch-input"
+                   name="colour" {{ CheckedColour }}>
+            <label class="toggle-switch-label" for="enable-colour-toggle-switch"></label>
+            Colour
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-uv-toggle-switch" class="toggle-switch-input"
+                   name="ultra_violet" {{ CheckedUltraViolet }}>
+            <label class="toggle-switch-label" for="enable-uv-toggle-switch"></label>
+            Ultra Violet
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-accelerometer-toggle-switch" class="toggle-switch-input"
+                   name="accelerometer" {{ CheckedAccelerometer }}>
+            <label class="toggle-switch-label" for="enable-accelerometer-toggle-switch"></label>
+            Accelerometer
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-mag-toggle-switch" class="toggle-switch-input"
+                   name="magnetometer" {{ CheckedMagnetometer }}>
+            <label class="toggle-switch-label" for="enable-mag-toggle-switch"></label>
+            Magnetometer
+        </label>
+
+        <label class="toggle-switch">
+            <input type="checkbox" id="enable-gyroscope-toggle-switch" class="toggle-switch-input"
+                   name="gyroscope" {{ CheckedGyroscope }}>
+            <label class="toggle-switch-label" for="enable-gyroscope-toggle-switch"></label>
+            Gyroscope
+        </label>
+    </div>
+
+    <br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>
+
+<script>
+    jQuery('#SelectAllCheckboxesIR').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("div[id=ir-sensor-checkboxes] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=ir-sensor-checkboxes] input:checkbox").prop('checked', false);
+        }
+    });
+</script>

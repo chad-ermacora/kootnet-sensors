@@ -17,25 +17,23 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import re
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_content
-from operations_modules.sqlite_database import write_to_sql_database, validate_sqlite_database
+from operations_modules.app_generic_functions import get_file_content, thread_function
+from operations_modules.app_validation_checks import email_is_valid
+from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from mqtt.server_mqtt_broker import check_mqtt_broker_server_running
 from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, \
-    get_clean_db_name
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
+email_config = app_config_access.email_config
 db_v = app_cached_variables.database_variables
-uploaded_databases_folder = file_locations.uploaded_databases_folder
-sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 
 
 @html_atpro_settings_routes.route("/atpro/sensor-settings")
@@ -173,7 +171,7 @@ def html_atpro_sensor_settings_interval():
         app_config_access.interval_recording_config.update_with_html_request(request)
         app_config_access.interval_recording_config.save_config_to_file()
         app_cached_variables.restart_interval_recording_thread = True
-        return get_message_page("Interval Recording Settings Updated", page_url="sensor-settings")
+        return get_message_page("Interval Settings Saved", page_url="sensor-settings")
     interval_config = app_config_access.interval_recording_config
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-interval.html",
@@ -201,11 +199,16 @@ def html_atpro_sensor_settings_interval():
 
 @html_atpro_settings_routes.route("/atpro/settings-hl", methods=["GET", "POST"])
 def html_atpro_sensor_settings_high_low():
+    if request.method == "POST":
+        app_config_access.trigger_high_low.update_with_html_request(request)
+        app_config_access.trigger_high_low.save_config_to_file()
+        app_cached_variables.html_service_restart = True
+        return get_message_page("Trigger High/Low Settings Saved",
+                                "Please Restart Program", page_url="sensor-settings")
     high_low_settings = app_config_access.trigger_high_low
     recording_enabled = get_html_checkbox_state(high_low_settings.enable_high_low_trigger_recording)
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-high-low.html",
-        PageURL="/MainConfigurationsHTML",
         CheckedEnableHLTRecording=recording_enabled,
         CheckedCPUTemperature=get_html_checkbox_state(high_low_settings.cpu_temperature_enabled),
         TriggerLowCPUTemperature=high_low_settings.cpu_temperature_low,
@@ -304,6 +307,12 @@ def html_atpro_sensor_settings_high_low():
 
 @html_atpro_settings_routes.route("/atpro/settings-variances", methods=["GET", "POST"])
 def html_atpro_sensor_settings_variances():
+    if request.method == "POST":
+        app_config_access.trigger_variances.update_with_html_request(request)
+        app_config_access.trigger_variances.save_config_to_file()
+        app_cached_variables.html_service_restart = True
+        return get_message_page("Trigger Variances Settings Saved",
+                                "Please Restart Program", page_url="sensor-settings")
     variances = app_config_access.trigger_variances
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-variances.html",
@@ -374,17 +383,120 @@ def html_atpro_sensor_settings_variances():
 
 @html_atpro_settings_routes.route("/atpro/settings-email-reports", methods=["GET", "POST"])
 def html_atpro_sensor_settings_email_reports():
-    return render_template("ATPro_admin/page_templates/settings/settings-email-reports.html")
+    if request.method == "POST":
+        email_config.update_with_html_request_reports(request)
+        email_config.update_configuration_settings_list()
+        email_config.save_config_to_file()
+        app_cached_variables.restart_report_email_thread = True
+        return get_message_page("Email Reports Settings Saved", page_url="sensor-settings")
+
+    report_send_selected_options = _get_send_option_selection(email_config.send_report_every)
+    return render_template(
+        "ATPro_admin/page_templates/settings/settings-email-reports.html",
+        CheckedEmailComboReport=get_html_checkbox_state(email_config.enable_combo_report_emails),
+        EmailReportsSelectedDaily=report_send_selected_options[0],
+        EmailReportsSelectedWeekly=report_send_selected_options[1],
+        EmailReportsSelectedMonthly=report_send_selected_options[2],
+        EmailReportsSelectedYearly=report_send_selected_options[3],
+        EmailReportAtHourMin=email_config.email_reports_time_of_day,
+        EmailReportsToCSVAddresses=email_config.send_report_to_csv_emails
+    )
+
+
+def _get_send_option_selection(selected_send_every):
+    send_options = [
+        app_config_access.email_config.send_option_daily, app_config_access.email_config.send_option_weekly,
+        app_config_access.email_config.send_option_monthly, app_config_access.email_config.send_option_yearly
+    ]
+
+    selected_values = []
+    for send_type in send_options:
+        if selected_send_every == send_type:
+            selected_values.append("selected")
+        else:
+            selected_values.append("")
+    return selected_values
 
 
 @html_atpro_settings_routes.route("/atpro/settings-email-graphs", methods=["GET", "POST"])
 def html_atpro_sensor_settings_email_graphs():
-    return render_template("ATPro_admin/page_templates/settings/settings-email-graphs.html")
+    if request.method == "POST":
+        email_config.update_with_html_request_graph(request)
+        email_config.update_configuration_settings_list()
+        email_config.save_config_to_file()
+        app_cached_variables.restart_graph_email_thread = True
+        return get_message_page("Email Graph Settings Saved", page_url="sensor-settings")
+
+    quick_graph_checked = "checked"
+    plotly_graph_checked = ""
+    if email_config.graph_type:
+        plotly_graph_checked = "checked"
+        quick_graph_checked = ""
+
+    graph_send_selected_options = _get_send_option_selection(email_config.send_graph_every)
+
+    return render_template("ATPro_admin/page_templates/settings/settings-email-graphs.html",
+                           CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
+                           EmailGraphSelectedDaily=graph_send_selected_options[0],
+                           EmailGraphSelectedWeekly=graph_send_selected_options[1],
+                           EmailGraphSelectedMonthly=graph_send_selected_options[2],
+                           EmailGraphSelectedYearly=graph_send_selected_options[3],
+                           EmailGraphAtHourMin=email_config.email_graph_time_of_day,
+                           EmailGraphsToCSVAddresses=email_config.send_graphs_to_csv_emails,
+                           QuickGraphChecked=quick_graph_checked,
+                           PlotlyGraphChecked=plotly_graph_checked,
+                           GraphsPastHours=email_config.graph_past_hours,
+                           SensorUptimeChecked=get_html_checkbox_state(email_config.sensor_uptime),
+                           CPUTemperatureChecked=get_html_checkbox_state(email_config.system_temperature),
+                           EnvTemperatureChecked=get_html_checkbox_state(email_config.env_temperature),
+                           PressureChecked=get_html_checkbox_state(email_config.pressure),
+                           AltitudeChecked=get_html_checkbox_state(email_config.altitude),
+                           HumidityChecked=get_html_checkbox_state(email_config.humidity),
+                           DistanceChecked=get_html_checkbox_state(email_config.distance),
+                           GasChecked=get_html_checkbox_state(email_config.gas),
+                           PMChecked=get_html_checkbox_state(email_config.particulate_matter),
+                           LumenChecked=get_html_checkbox_state(email_config.lumen),
+                           ColoursChecked=get_html_checkbox_state(email_config.color),
+                           UltraVioletChecked=get_html_checkbox_state(email_config.ultra_violet),
+                           AccChecked=get_html_checkbox_state(email_config.accelerometer),
+                           MagChecked=get_html_checkbox_state(email_config.magnetometer),
+                           GyroChecked=get_html_checkbox_state(email_config.gyroscope)
+                           )
 
 
 @html_atpro_settings_routes.route("/atpro/settings-email-settings", methods=["GET", "POST"])
 def html_atpro_sensor_settings_email_smtp():
-    return render_template("ATPro_admin/page_templates/settings/settings-email-smtp.html")
+    if request.method == "POST":
+        email_config.update_with_html_request_server(request)
+        email_config.update_configuration_settings_list()
+        email_config.save_config_to_file()
+        return get_message_page("Email SMTP Settings Saved", page_url="sensor-settings")
+
+    return render_template("ATPro_admin/page_templates/settings/settings-email-smtp.html",
+                           ServerSendingEmail=email_config.server_sending_email,
+                           ServerSMTPAddress=email_config.server_smtp_address,
+                           CheckedEmailSSL=get_html_checkbox_state(email_config.server_smtp_ssl_enabled),
+                           ServerSMTPPort=email_config.server_smtp_port,
+                           ServerSMTPUser=email_config.server_smtp_user)
+
+
+@html_atpro_settings_routes.route("/atpro/test-email", methods=["POST"])
+@auth.login_required
+def html_atpro_send_reports_email():
+    logger.network_logger.debug("** HTML Reports Email Sent - Source: " + str(request.remote_addr))
+    button_pressed = request.form.get("test_email_button")
+    email_address = request.form.get("test_email_address")
+    if email_is_valid(email_address):
+        if button_pressed == "reports":
+            thread_function(send_report_email, args=email_address)
+            return get_message_page("Reports email is being sent", page_url="sensor-settings")
+        elif button_pressed == "graphs":
+            thread_function(send_quick_graph_email, args=email_address)
+            return get_message_page("Graph email is being sent", page_url="sensor-settings")
+        elif button_pressed == "settings":
+            thread_function(send_test_email, args=email_address)
+            return get_message_page("Test email is being sent", page_url="sensor-settings")
+    return get_message_page("Please Specify a valid email address to send to", page_url="sensor-settings")
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-p", methods=["GET", "POST"])
@@ -571,7 +683,6 @@ def html_atpro_sensor_settings_luftdaten():
         LuftdatenIntervalSeconds=luftdaten_interval_seconds,
         LuftdatenStationID=luftdaten_station_id
     )
-
 
 # @html_atpro_settings_routes.route("/atpro/settings-Change", methods=["GET", "POST"])
 # def html_atpro_sensor_settings_():

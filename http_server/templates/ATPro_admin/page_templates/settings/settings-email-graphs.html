@@ -1,10 +1,215 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <form class="pure-form" method="POST" action="/atpro/test-email">
+                <h3><strong>Test Graph Email</strong></h3>
 
-</body>
-</html>
+                <label>
+                    Email to<br>
+                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                                       name="test_email_address" placeholder="someone@somewhere.com">
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button" name="test_email_button" value="graphs">Send Email</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <form class="pure-form" method="POST" action="/atpro/settings-email-graphs">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-graph-toggle-switch" class="toggle-switch-input"
+                           name="email_graphs" {{ CheckedEmailGraphs }}>
+                    <label class="toggle-switch-label" for="enable-graph-toggle-switch"></label>
+                    Enable Graph Emails
+                </label>
+
+                <br><br>
+
+                <label>Send Email<br>
+                    <select name="email_graph_send_interval">
+                        <option value="daily" {{ EmailGraphSelectedDaily }}>Daily</option>
+                        <option value="weekly" {{ EmailGraphSelectedWeekly }}>Weekly</option>
+                        <option value="monthly" {{ EmailGraphSelectedMonthly }}>Monthly</option>
+                        <option value="yearly" {{ EmailGraphSelectedYearly }}>Yearly</option>
+                    </select>
+                </label>
+
+                <br><br>
+
+                <label>
+                    <input type="time" name="send_email_graph_at_time" required
+                           placeholder="24" min="1" value="{{ EmailGraphAtHourMin }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    <textarea style="width: 400px; height: 200px;"
+                              name="send_graphs_to_email_address">{{ EmailGraphsToCSVAddresses }}</textarea>
+                </label>
+
+                <br><br>
+
+                <h3><strong>Graph Settings</strong></h3>
+
+                <label>Graph Type
+                    <label>
+                        <input type="radio" name="graph_type" value="QuickGraphs" {{ QuickGraphChecked }}>
+                        Quick Graphs
+                    </label>
+                    <label>
+                        <input type="radio" name="graph_type" value="PlotlyGraphs" {{ PlotlyGraphChecked }}
+                               disabled>
+                        Plotly Graphs
+                    </label>
+                </label>
+
+                <br><br><br>
+
+                <label>
+                    Graph the past X hours<br><br>
+                    <input style="width: 100px;" type="number" name="graph_past_hours" required
+                           placeholder="24" min="1" value="{{ GraphsPastHours }}">
+                </label>
+
+                <br><br>
+
+                <label class="toggle-switch">
+                    <input type="checkbox" id="select-all-toggle-switch" class="toggle-switch-input">
+                    <label class="toggle-switch-label" for="select-all-toggle-switch"></label>
+                    Select All
+                </label>
+
+                <br><br>
+
+                <div id="graph-sensor-choices">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-uptime-toggle-switch" class="toggle-switch-input"
+                               name="SensorUptime" {{ SensorUptimeChecked }}>
+                        <label class="toggle-switch-label" for="enable-uptime-toggle-switch"></label>
+                        Sensor Uptime
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-cpu-temp-toggle-switch" class="toggle-switch-input"
+                               name="CPUTemp" {{ CPUTemperatureChecked }}>
+                        <label class="toggle-switch-label" for="enable-cpu-temp-toggle-switch"></label>
+				        CPU Temperature
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-env-temp-toggle-switch" class="toggle-switch-input"
+                               name="EnvTemp" {{ EnvTemperatureChecked }}>
+                        <label class="toggle-switch-label" for="enable-env-temp-toggle-switch"></label>
+				        Environmental Temperature
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-pressure-toggle-switch" class="toggle-switch-input"
+                               name="Pressure" {{ PressureChecked }}>
+                        <label class="toggle-switch-label" for="enable-pressure-toggle-switch"></label>
+				        Pressure
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-altitude-toggle-switch" class="toggle-switch-input"
+                               name="Altitude" {{ AltitudeChecked }}>
+                        <label class="toggle-switch-label" for="enable-altitude-toggle-switch"></label>
+				        Altitude
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-humidity-toggle-switch" class="toggle-switch-input"
+                               name="Humidity" {{ HumidityChecked }}>
+                        <label class="toggle-switch-label" for="enable-humidity-toggle-switch"></label>
+				        Humidity
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-distance-toggle-switch" class="toggle-switch-input"
+                               name="Distance" {{ DistanceChecked }}>
+                        <label class="toggle-switch-label" for="enable-distance-toggle-switch"></label>
+				        Distance
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-gas-toggle-switch" class="toggle-switch-input"
+                               name="Gas" {{ GasChecked }}>
+                        <label class="toggle-switch-label" for="enable-gas-toggle-switch"></label>
+				        Gas
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-pm-toggle-switch" class="toggle-switch-input"
+                               name="ParticulateMatter" {{ PMChecked }}>
+                        <label class="toggle-switch-label" for="enable-pm-toggle-switch"></label>
+				        Particulate Matter
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-lumen-toggle-switch" class="toggle-switch-input"
+                               name="Lumen" {{ LumenChecked }}>
+                        <label class="toggle-switch-label" for="enable-lumen-toggle-switch"></label>
+				        Lumen
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-colors-toggle-switch" class="toggle-switch-input"
+                               name="Colours" {{ ColoursChecked }}>
+                        <label class="toggle-switch-label" for="enable-colors-toggle-switch"></label>
+				        Colours
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-uv-toggle-switch" class="toggle-switch-input"
+                               name="UltraViolet" {{ UltraVioletChecked }}>
+                        <label class="toggle-switch-label" for="enable-uv-toggle-switch"></label>
+				        Ultra Violet
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-acc-toggle-switch" class="toggle-switch-input"
+                               name="Accelerometer" {{ AccChecked }}>
+                        <label class="toggle-switch-label" for="enable-acc-toggle-switch"></label>
+				        Accelerometer
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mag-toggle-switch" class="toggle-switch-input"
+                               name="Magnetometer" {{ MagChecked }}>
+                        <label class="toggle-switch-label" for="enable-mag-toggle-switch"></label>
+				        Magnetometer
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-gyro-toggle-switch" class="toggle-switch-input"
+                               name="Gyroscope" {{ GyroChecked }}>
+                        <label class="toggle-switch-label" for="enable-gyro-toggle-switch"></label>
+				        Gyroscope
+                    </label>
+                </div>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    jQuery('#select-all-toggle-switch').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("div[id=graph-sensor-choices] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=graph-sensor-choices] input:checkbox").prop('checked', false);
+        }
+    });
+</script>

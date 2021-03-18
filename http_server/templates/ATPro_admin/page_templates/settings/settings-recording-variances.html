@@ -1,0 +1,557 @@
+<form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-variances">
+    <h5 style="color: red; font-weight: bolder; font-size: large;"><b>
+        ** Warning Trigger Variances are still under active development **<br>
+        It is recommended to check the logs periodically
+    </b></h5>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enable-variance-toggle-switch" class="toggle-switch-input"
+               name="enable_trigger_recording" {{ CheckedTrigger }}>
+        <label class="toggle-switch-label" for="enable-variance-toggle-switch"></label>
+        Enable Trigger Variance Recording
+    </label>
+
+    <br><br>
+
+    <button type="button" class="pure-button" onclick="window.location.href = '/ResetTriggerVariances';">
+        Set Seconds to Recommended
+    </button>
+
+    <br><br>
+
+    <button type="button" class="pure-button" onclick="window.location.href = '/SetTriggerVariancesLowestSeconds';">
+        Set Seconds to Lowest
+    </button>
+
+    <br><hr>
+
+    <h3>Per Sensor Settings</h3>
+
+    <div class="row">
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-cpu-temp-toggle-switch" class="toggle-switch-input"
+                           name="checkbox_cpu_temperature" {{ CheckedCPUTemperature }}>
+                    <label class="toggle-switch-label" for="enable-cpu-temp-toggle-switch"></label>
+                    CPU Temperature
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_cpu_temperature"
+                           value="{{ TriggerCPUTemperature }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_cpu_temperature"
+                           value="{{ SecondsCPUTemperature }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-env_temperature-toggle-switch" class="toggle-switch-input"
+                           name="env_temperature" {{ CheckedEnvTemperature }}>
+                    <label class="toggle-switch-label" for="enable-env_temperature-toggle-switch"></label>
+                    Environmental Temperature
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_env_temperature"
+                           value="{{ TriggerEnvTemperature }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_env_temperature"
+                           value="{{ SecondsEnvTemperature }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-pressure-toggle-switch" class="toggle-switch-input"
+                           name="pressure" {{ CheckedPressure }}>
+                    <label class="toggle-switch-label" for="enable-pressure-toggle-switch"></label>
+                    Pressure
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_pressure"
+                           value="{{ TriggerPressure }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_pressure"
+                           value="{{ SecondsPressure }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-altitude-toggle-switch" class="toggle-switch-input"
+                           name="altitude" {{ CheckedAltitude }}>
+                    <label class="toggle-switch-label" for="enable-altitude-toggle-switch"></label>
+                    Altitude
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_altitude"
+                           value="{{ TriggerAltitude }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_altitude"
+                           value="{{ SecondsAltitude }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-humidity-toggle-switch" class="toggle-switch-input"
+                           name="humidity" {{ CheckedHumidity }}>
+                    <label class="toggle-switch-label" for="enable-humidity-toggle-switch"></label>
+                    Humidity
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_humidity"
+                           value="{{ TriggerHumidity }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_humidity"
+                           value="{{ SecondsHumidity }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-distance-toggle-switch" class="toggle-switch-input"
+                           name="distance" {{ CheckedDistance }}>
+                    <label class="toggle-switch-label" for="enable-distance-toggle-switch"></label>
+                    Distance
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_distance"
+                           value="{{ TriggerDistance }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_distance"
+                           value="{{ SecondsDistance }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-6 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-gas-toggle-switch" class="toggle-switch-input"
+                           name="gas" {{ CheckedGas }}>
+                    <label class="toggle-switch-label" for="enable-gas-toggle-switch"></label>
+                    Gas
+                </label>
+
+                <br><br>
+
+                <label>
+                    Index Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_gas_index"
+                           value="{{ TriggerGasIndex }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Oxidising Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_gas_oxidising"
+                           value="{{ TriggerGasOxidising }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Reducing Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_gas_reducing"
+                           value="{{ TriggerGasReducing }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    NH3 Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_gas_nh3"
+                           value="{{ TriggerGasNH3 }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_gas"
+                           value="{{ SecondsGas }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-6 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-particulate_matter-toggle-switch" class="toggle-switch-input"
+                           name="particulate_matter" {{ CheckedPM }}>
+                    <label class="toggle-switch-label" for="enable-particulate_matter-toggle-switch"></label>
+                    Particulate Matter
+                </label>
+
+                <br><br>
+
+                <label>
+                    PM1 Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_pm1"
+                           value="{{ TriggerPM1 }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    PM2.5 Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_pm2_5"
+                           value="{{ TriggerPM25 }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    PM4 Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_pm4"
+                           value="{{ TriggerPM4 }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    PM10 Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_pm10"
+                           value="{{ TriggerPM10 }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_pm"
+                           value="{{ SecondsPM }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-accelerometer-toggle-switch" class="toggle-switch-input"
+                           name="accelerometer" {{ CheckedAccelerometer }}>
+                    <label class="toggle-switch-label" for="enable-accelerometer-toggle-switch"></label>
+                    Accelerometer
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="accelerometer_x"
+                           value="{{ TriggerAccelerometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="accelerometer_y"
+                           value="{{ TriggerAccelerometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="accelerometer_z"
+                           value="{{ TriggerAccelerometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_accelerometer"
+                           value="{{ SecondsAccelerometer }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-magnetometer-toggle-switch" class="toggle-switch-input"
+                           name="magnetometer" {{ CheckedMagnetometer }}>
+                    <label class="toggle-switch-label" for="enable-magnetometer-toggle-switch"></label>
+                    Magnetometer
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="magnetometer_x"
+                           value="{{ TriggerMagnetometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="magnetometer_y"
+                           value="{{ TriggerMagnetometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="magnetometer_z"
+                           value="{{ TriggerMagnetometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_magnetometer"
+                           value="{{ SecondsMagnetometer }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-gyroscope-toggle-switch" class="toggle-switch-input"
+                           name="gyroscope" {{ CheckedGyroscope }}>
+                    <label class="toggle-switch-label" for="enable-gyroscope-toggle-switch"></label>
+                    Gyroscope
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="gyroscope_x"
+                           value="{{ TriggerGyroscopeX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="gyroscope_y"
+                           value="{{ TriggerGyroscopeY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="gyroscope_z"
+                           value="{{ TriggerGyroscopeZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_gyroscope"
+                           value="{{ SecondsGyroscope }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-lumen-toggle-switch" class="toggle-switch-input"
+                           name="lumen" {{ CheckedLumen }}>
+                    <label class="toggle-switch-label" for="enable-lumen-toggle-switch"></label>
+                    Lumen
+                </label>
+
+                <br><br>
+
+                <label>
+                    Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_lumen"
+                           value="{{ TriggerLumen }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_lumen"
+                           value="{{ SecondsLumen }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-colour-toggle-switch" class="toggle-switch-input"
+                           name="colour" {{ CheckedColour }}>
+                    <label class="toggle-switch-label" for="enable-colour-toggle-switch"></label>
+                    Colour
+                </label>
+
+                <br><br>
+
+                <label>
+                    Red Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="red"
+                           value="{{ TriggerRed }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Orange Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="orange"
+                           value="{{ TriggerOrange }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Yellow Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="yellow"
+                           value="{{ TriggerYellow }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Green Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="green"
+                           value="{{ TriggerGreen }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Blue Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="blue"
+                           value="{{ TriggerBlue }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Violet Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="violet"
+                           value="{{ TriggerViolet }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_colour"
+                           value="{{ SecondsColour }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-4 col-m-6 col-sm-12">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-ultra_violet-toggle-switch" class="toggle-switch-input"
+                           name="ultra_violet" {{ CheckedUltraViolet }}>
+                    <label class="toggle-switch-label" for="enable-ultra_violet-toggle-switch"></label>
+                    Ultra Violet
+                </label>
+
+                <br><br>
+
+                <label>
+                    UVA Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="ultra_violet_a"
+                           value="{{ TriggerUltraVioletA }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    UVB Trigger variance<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="ultra_violet_b"
+                           value="{{ TriggerUltraVioletB }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_ultra_violet"
+                           value="{{ SecondsUltraViolet }}">
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>
