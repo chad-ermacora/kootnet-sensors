@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import re
 from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
