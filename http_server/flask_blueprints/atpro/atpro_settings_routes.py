@@ -28,9 +28,10 @@ from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server, stop_mqtt_broker_server, \
     check_mqtt_broker_server_running
-from mqtt.server_mqtt_broker import check_mqtt_broker_server_running
-from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state, \
-    get_restart_service_text
+from online_services_modules.open_sense_map import start_open_sense_map_server, add_sensor_to_account
+from online_services_modules.weather_underground import start_weather_underground_server
+from online_services_modules.luftdaten import start_luftdaten_server
+from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page
 
@@ -703,16 +704,28 @@ def html_atpro_sensor_settings_mqtt_broker():
 
 @html_atpro_settings_routes.route("/atpro/settings-osm", methods=["GET", "POST"])
 def html_atpro_sensor_settings_osm():
-    osm_disabled = "disabled"
-    osm_enable_checked = ""
-    if app_config_access.open_sense_map_config.open_sense_map_enabled:
-        osm_enable_checked = "checked"
-        osm_disabled = ""
+    if request.method == "POST":
+        app_config_access.open_sense_map_config.update_with_html_request(request)
+        app_config_access.open_sense_map_config.save_config_to_file()
+        return_msg = "Stopping Open Sense Map"
+        if app_config_access.open_sense_map_config.open_sense_map_enabled:
+            return_msg = "Starting Open Sense Map"
+            if app_cached_variables.open_sense_map_thread.current_state != "Disabled":
+                if app_cached_variables.open_sense_map_thread.monitored_thread.is_alive():
+                    return_msg = "Re-Starting Open Sense Map"
+                    app_cached_variables.restart_open_sense_map_thread = True
+                else:
+                    start_open_sense_map_server()
+            else:
+                start_open_sense_map_server()
+        else:
+            if app_cached_variables.open_sense_map_thread is not None:
+                app_cached_variables.open_sense_map_thread.shutdown_thread = True
+                app_cached_variables.restart_open_sense_map_thread = True
+        return get_message_page("Open Sense Map Settings Saved", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-osm.html",
-        PageURL="/3rdPartyConfigurationsHTML",
-        CheckedOSMEnabled=osm_enable_checked,
-        OSMDisabled=osm_disabled,
+        CheckedOSMEnabled=get_html_checkbox_state(app_config_access.open_sense_map_config.open_sense_map_enabled),
         OSMStationID=app_config_access.open_sense_map_config.sense_box_id,
         OSMIntervalSeconds=app_config_access.open_sense_map_config.interval_seconds,
         OSMSEnvTempID=app_config_access.open_sense_map_config.temperature_id,
@@ -740,55 +753,83 @@ def html_atpro_sensor_settings_osm():
     )
 
 
+@html_atpro_settings_routes.route("/atpro/settings-osm-registration", methods=["POST"])
+@auth.login_required
+def html_atpro_osm_registration():
+    status = add_sensor_to_account(request)
+    message1 = "OSM Sensor Registration Failed"
+    if status == 201:
+        message1 = "Sensor Registered OK"
+        message2 = "Sensor Registered to Open Sense Map."
+    elif status == 415:
+        message2 = "Invalid or Missing content type"
+    elif status == 422:
+        message2 = "Invalid Location Setting"
+    elif status == "FailedLogin":
+        message2 = "Login Failed - Bad UserName or Password"
+    else:
+        message2 = "Unknown Error: " + status
+    return get_message_page(message1, message2, page_url="sensor-settings")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-wu", methods=["GET", "POST"])
 def html_atpro_sensor_settings_wu():
-    weather_underground_enabled = app_config_access.weather_underground_config.weather_underground_enabled
-    wu_rapid_fire_enabled = app_config_access.weather_underground_config.wu_rapid_fire_enabled
-    wu_checked = get_html_checkbox_state(weather_underground_enabled)
-    wu_rapid_fire_checked = get_html_checkbox_state(wu_rapid_fire_enabled)
-    wu_rapid_fire_disabled = "disabled"
-    wu_interval_seconds_disabled = "disabled"
-    wu_outdoor_disabled = "disabled"
-    wu_station_id_disabled = "disabled"
-    wu_station_key_disabled = "disabled"
-    if app_config_access.weather_underground_config.weather_underground_enabled:
-        wu_rapid_fire_disabled = ""
-        wu_interval_seconds_disabled = ""
-        wu_outdoor_disabled = ""
-        wu_station_id_disabled = ""
-        wu_station_key_disabled = ""
-
-    wu_interval_seconds = app_config_access.weather_underground_config.interval_seconds
-    wu_outdoor = get_html_checkbox_state(app_config_access.weather_underground_config.outdoor_sensor)
-    wu_station_id = app_config_access.weather_underground_config.station_id
+    weather_underground_config = app_config_access.weather_underground_config
+    if request.method == "POST":
+        app_config_access.weather_underground_config.update_with_html_request(request)
+        app_config_access.weather_underground_config.save_config_to_file()
+        return_msg = "Stopping Weather Underground"
+        if app_config_access.weather_underground_config.weather_underground_enabled:
+            return_msg = "Starting Weather Underground"
+            if app_cached_variables.weather_underground_thread.current_state != "Disabled":
+                if app_cached_variables.weather_underground_thread.monitored_thread.is_alive():
+                    return_msg = "Re-Starting Weather Underground"
+                    app_cached_variables.restart_weather_underground_thread = True
+                else:
+                    start_weather_underground_server()
+            else:
+                start_weather_underground_server()
+        else:
+            if app_cached_variables.weather_underground_thread is not None:
+                app_cached_variables.weather_underground_thread.shutdown_thread = True
+                app_cached_variables.restart_weather_underground_thread = True
+        return get_message_page("Weather Underground Settings Saved", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-wu.html",
-        PageURL="/3rdPartyConfigurationsHTML",
-        CheckedWUEnabled=wu_checked,
-        CheckedWURapidFire=wu_rapid_fire_checked,
-        DisabledWURapidFire=wu_rapid_fire_disabled,
-        WUIntervalSeconds=wu_interval_seconds,
-        DisabledWUInterval=wu_interval_seconds_disabled,
-        CheckedWUOutdoor=wu_outdoor,
-        DisabledWUOutdoor=wu_outdoor_disabled,
-        DisabledStationID=wu_station_id_disabled,
-        WUStationID=wu_station_id,
-        DisabledStationKey=wu_station_key_disabled
+        CheckedWUEnabled=get_html_checkbox_state(weather_underground_config.weather_underground_enabled),
+        CheckedWURapidFire=get_html_checkbox_state(weather_underground_config.wu_rapid_fire_enabled),
+        WUIntervalSeconds=weather_underground_config.interval_seconds,
+        CheckedWUOutdoor=get_html_checkbox_state(weather_underground_config.outdoor_sensor),
+        WUStationID=weather_underground_config.station_id,
     )
 
 
 @html_atpro_settings_routes.route("/atpro/settings-luftdaten", methods=["GET", "POST"])
 def html_atpro_sensor_settings_luftdaten():
-    luftdaten_checked = get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled)
-
-    luftdaten_interval_seconds = app_config_access.luftdaten_config.interval_seconds
-    luftdaten_station_id = app_config_access.luftdaten_config.station_id
+    if request.method == "POST":
+        app_config_access.luftdaten_config.update_with_html_request(request)
+        app_config_access.luftdaten_config.save_config_to_file()
+        return_msg = "Stopping Luftdaten"
+        if app_config_access.luftdaten_config.luftdaten_enabled:
+            return_msg = "Starting Luftdaten"
+            if app_cached_variables.luftdaten_thread.current_state != "Disabled":
+                if app_cached_variables.luftdaten_thread.monitored_thread.is_alive():
+                    return_msg = "Re-Starting Luftdaten"
+                    app_cached_variables.restart_luftdaten_thread = True
+                else:
+                    start_luftdaten_server()
+            else:
+                start_luftdaten_server()
+        else:
+            if app_cached_variables.luftdaten_thread is not None:
+                app_cached_variables.luftdaten_thread.shutdown_thread = True
+                app_cached_variables.restart_luftdaten_thread = True
+        return get_message_page("Luftdaten Settings Saved", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-luftdaten.html",
-        PageURL="/3rdPartyConfigurationsHTML",
-        CheckedLuftdatenEnabled=luftdaten_checked,
-        LuftdatenIntervalSeconds=luftdaten_interval_seconds,
-        LuftdatenStationID=luftdaten_station_id
+        CheckedLuftdatenEnabled=get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled),
+        LuftdatenIntervalSeconds=app_config_access.luftdaten_config.interval_seconds,
+        LuftdatenStationID=app_config_access.luftdaten_config.station_id
     )
 
 # @html_atpro_settings_routes.route("/atpro/settings-Change", methods=["GET", "POST"])

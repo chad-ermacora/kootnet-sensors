@@ -1,0 +1,32 @@
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="counter bg-primary">
+        <form class="pure-form" method="POST" action="/atpro/settings-luftdaten">
+            <label class="toggle-switch">
+                <input type="checkbox" id="enable-luftdaten-toggle-switch" class="toggle-switch-input"
+                       name="enable_luftdaten" {{ CheckedLuftdatenEnabled }}>
+                <label class="toggle-switch-label" for="enable-luftdaten-toggle-switch"></label>
+                Enable Luftdaten
+            </label>
+
+            <br><br>
+
+            <label>
+                Sensor ID<br>
+                <input style="width: 250px; text-align: center;" type="text" maxlength="100" name="station_id"
+                       value="{{ LuftdatenStationID }}">
+            </label>
+
+            <br><br>
+
+            <label>
+                Seconds between Updates<br>
+                <input style="width: 100px; text-align: center;" type="number" min="1" name="station_interval"
+                       value="{{ LuftdatenIntervalSeconds }}">
+            </label>
+
+            <br><br>
+
+            <button type="submit" class="pure-button">Update</button>
+        </form>
+    </div>
+</div>
