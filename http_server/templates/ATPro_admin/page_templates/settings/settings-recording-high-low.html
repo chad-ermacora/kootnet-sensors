@@ -1,3 +1,9 @@
+<style>
+    .variance-input-numbers {
+        width: 125px;
+    }
+</style>
+
 <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-hl">
     <label class="toggle-switch">
         <input type="checkbox" id="enable-hl-toggle-switch" class="toggle-switch-input"
@@ -23,7 +29,7 @@
     <h3>Per Sensor Settings</h3>
 
     <div class="row">
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-cpu-temp-toggle-switch" class="toggle-switch-input"
@@ -36,7 +42,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_cpu_temperature"
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_cpu_temperature"
                            value="{{ TriggerLowCPUTemperature }}">
                 </label>
 
@@ -44,7 +50,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_cpu_temperature"
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_cpu_temperature"
                            value="{{ TriggerHighCPUTemperature }}">
                 </label>
 
@@ -52,13 +58,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_cpu_temperature"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_cpu_temperature"
                            value="{{ SecondsCPUTemperature }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-env_temperature-toggle-switch" class="toggle-switch-input"
@@ -71,7 +77,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_env_temperature"
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_env_temperature"
                            value="{{ TriggerLowEnvTemperature }}">
                 </label>
 
@@ -79,7 +85,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_env_temperature"
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_env_temperature"
                            value="{{ TriggerHighEnvTemperature }}">
                 </label>
 
@@ -87,13 +93,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_env_temperature"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_env_temperature"
                            value="{{ SecondsEnvTemperature }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-pressure-toggle-switch" class="toggle-switch-input"
@@ -106,7 +112,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pressure"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pressure"
                            value="{{ TriggerLowPressure }}">
                 </label>
 
@@ -114,7 +120,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pressure"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pressure"
                            value="{{ TriggerHighPressure }}">
                 </label>
 
@@ -122,13 +128,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_pressure"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pressure"
                            value="{{ SecondsPressure }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-altitude-toggle-switch" class="toggle-switch-input"
@@ -141,7 +147,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_altitude"
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_altitude"
                            value="{{ TriggerLowAltitude }}">
                 </label>
 
@@ -149,7 +155,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_altitude"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_altitude"
                            value="{{ TriggerHighAltitude }}">
                 </label>
 
@@ -157,13 +163,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_altitude"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_altitude"
                            value="{{ SecondsAltitude }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-humidity-toggle-switch" class="toggle-switch-input"
@@ -176,7 +182,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_humidity"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_humidity"
                            value="{{ TriggerLowHumidity }}">
                 </label>
 
@@ -184,7 +190,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_humidity"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_humidity"
                            value="{{ TriggerHighHumidity }}">
                 </label>
 
@@ -192,13 +198,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_humidity"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_humidity"
                            value="{{ SecondsHumidity }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-distance-toggle-switch" class="toggle-switch-input"
@@ -211,7 +217,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_distance"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_distance"
                            value="{{ TriggerLowDistance }}">
                 </label>
 
@@ -219,7 +225,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_distance"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_distance"
                            value="{{ TriggerHighDistance }}">
                 </label>
 
@@ -227,13 +233,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_distance"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_distance"
                            value="{{ SecondsDistance }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-6 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-gas-toggle-switch" class="toggle-switch-input"
@@ -246,7 +252,7 @@
 
                 <label>
                     Index Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_gas_index"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_index"
                            value="{{ TriggerLowGasIndex }}">
                 </label>
 
@@ -254,7 +260,7 @@
 
                 <label>
                     Index High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_gas_index"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_index"
                            value="{{ TriggerHighGasIndex }}">
                 </label>
 
@@ -262,7 +268,7 @@
 
                 <label>
                     Oxidising Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
                            value="{{ TriggerLowGasOxidising }}">
                 </label>
 
@@ -270,7 +276,7 @@
 
                 <label>
                     Oxidising High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
                            value="{{ TriggerHighGasOxidising }}">
                 </label>
 
@@ -278,7 +284,7 @@
 
                 <label>
                     Reducing Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_gas_reducing"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_reducing"
                            value="{{ TriggerLowGasReducing }}">
                 </label>
 
@@ -286,7 +292,7 @@
 
                 <label>
                     Reducing High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_gas_reducing"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_reducing"
                            value="{{ TriggerHighGasReducing }}">
                 </label>
 
@@ -294,7 +300,7 @@
 
                 <label>
                     NH3 Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_gas_nh3"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_nh3"
                            value="{{ TriggerLowGasNH3 }}">
                 </label>
 
@@ -302,7 +308,7 @@
 
                 <label>
                     NH3 High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_gas_nh3"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_nh3"
                            value="{{ TriggerHighGasNH3 }}">
                 </label>
 
@@ -310,13 +316,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_gas"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gas"
                            value="{{ SecondsGas }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-6 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-pm-toggle-switch" class="toggle-switch-input"
@@ -329,7 +335,7 @@
 
                 <label>
                     PM1 Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm1"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm1"
                            value="{{ TriggerLowPM1 }}">
                 </label>
 
@@ -337,7 +343,7 @@
 
                 <label>
                     PM1 High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm1"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm1"
                            value="{{ TriggerHighPM1 }}">
                 </label>
 
@@ -345,7 +351,7 @@
 
                 <label>
                     PM2.5 Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm2_5"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm2_5"
                            value="{{ TriggerLowPM25 }}">
                 </label>
 
@@ -353,7 +359,7 @@
 
                 <label>
                     PM2.5 High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm2_5"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm2_5"
                            value="{{ TriggerHighPM25 }}">
                 </label>
 
@@ -361,7 +367,7 @@
 
                 <label>
                     PM4 Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm4"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm4"
                            value="{{ TriggerLowPM4 }}">
                 </label>
 
@@ -369,7 +375,7 @@
 
                 <label>
                     PM4 High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm4"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm4"
                            value="{{ TriggerHighPM4 }}">
                 </label>
 
@@ -377,7 +383,7 @@
 
                 <label>
                     PM10 Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_pm10"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm10"
                            value="{{ TriggerLowPM10 }}">
                 </label>
 
@@ -385,7 +391,7 @@
 
                 <label>
                     PM10 High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_pm10"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm10"
                            value="{{ TriggerHighPM10 }}">
                 </label>
 
@@ -393,214 +399,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_pm"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pm"
                            value="{{ SecondsPM }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
-            <div class="counter bg-success">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-accelerometer-toggle-switch" class="toggle-switch-input"
-                           name="accelerometer" {{ CheckedAccelerometer }}>
-                    <label class="toggle-switch-label" for="enable-accelerometer-toggle-switch"></label>
-                    Accelerometer
-                </label>
-
-                <br><br>
-
-                <label>
-                    X Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_accelerometer_x"
-                           value="{{ TriggerLowAccelerometerX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    X High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_accelerometer_x"
-                           value="{{ TriggerHighAccelerometerX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_accelerometer_y"
-                           value="{{ TriggerLowAccelerometerY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_accelerometer_y"
-                           value="{{ TriggerHighAccelerometerY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_accelerometer_z"
-                           value="{{ TriggerLowAccelerometerZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_accelerometer_z"
-                           value="{{ TriggerHighAccelerometerZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_accelerometer"
-                           value="{{ SecondsAccelerometer }}">
-                </label>
-            </div>
-        </div>
-
-        <div class="col-4 col-m-6 col-sm-12">
-            <div class="counter bg-success">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-magnetometer-toggle-switch" class="toggle-switch-input"
-                           name="magnetometer" {{ CheckedMagnetometer }}>
-                    <label class="toggle-switch-label" for="enable-magnetometer-toggle-switch"></label>
-                    Magnetometer
-                </label>
-
-                <br><br>
-
-                <label>
-                    X Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_magnetometer_x"
-                           value="{{ TriggerLowMagnetometerX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    X High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_magnetometer_x"
-                           value="{{ TriggerHighMagnetometerX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_magnetometer_y"
-                           value="{{ TriggerLowMagnetometerY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_magnetometer_y"
-                           value="{{ TriggerHighMagnetometerY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_magnetometer_z"
-                           value="{{ TriggerLowMagnetometerZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_magnetometer_z"
-                           value="{{ TriggerHighMagnetometerZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_magnetometer"
-                           value="{{ SecondsMagnetometer }}">
-                </label>
-            </div>
-        </div>
-
-        <div class="col-4 col-m-6 col-sm-12">
-            <div class="counter bg-success">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-gyroscope-toggle-switch" class="toggle-switch-input"
-                           name="gyroscope" {{ CheckedGyroscope }}>
-                    <label class="toggle-switch-label" for="enable-gyroscope-toggle-switch"></label>
-                    Gyroscope
-                </label>
-
-                <br><br>
-
-                <label>
-                    X Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_gyroscope_x"
-                           value="{{ TriggerLowGyroscopeX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    X High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_gyroscope_x"
-                           value="{{ TriggerHighGyroscopeX }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_gyroscope_y"
-                           value="{{ TriggerLowGyroscopeY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Y High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_gyroscope_y"
-                           value="{{ TriggerHighGyroscopeY }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z Low Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_low_gyroscope_z"
-                           value="{{ TriggerLowGyroscopeZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Z High Trigger<br>
-                    <input style="width: 75px;" type="number" step="any" name="trigger_high_gyroscope_z"
-                           value="{{ TriggerHighGyroscopeZ }}">
-                </label>
-
-                <br><br>
-
-                <label>
-                    Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_gyroscope"
-                           value="{{ SecondsGyroscope }}">
-                </label>
-            </div>
-        </div>
-
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-lumen-toggle-switch" class="toggle-switch-input"
@@ -613,7 +418,7 @@
 
                 <label>
                     Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_lumen"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_lumen"
                            value="{{ TriggerLowLumen }}">
                 </label>
 
@@ -621,7 +426,7 @@
 
                 <label>
                     High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_lumen"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_lumen"
                            value="{{ TriggerHighLumen }}">
                 </label>
 
@@ -629,13 +434,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_lumen"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_lumen"
                            value="{{ SecondsLumen }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-colour-toggle-switch" class="toggle-switch-input"
@@ -648,7 +453,7 @@
 
                 <label>
                     Red Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_red"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_red"
                            value="{{ TriggerLowRed }}">
                 </label>
 
@@ -656,7 +461,7 @@
 
                 <label>
                     Red High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_red"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_red"
                            value="{{ TriggerHighRed }}">
                 </label>
 
@@ -664,7 +469,7 @@
 
                 <label>
                     Orange Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_orange"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_orange"
                            value="{{ TriggerLowOrange }}">
                 </label>
 
@@ -672,7 +477,7 @@
 
                 <label>
                     Orange High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_orange"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_orange"
                            value="{{ TriggerHighOrange }}">
                 </label>
 
@@ -680,7 +485,7 @@
 
                 <label>
                     Yellow Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_yellow"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_yellow"
                            value="{{ TriggerLowYellow }}">
                 </label>
 
@@ -688,7 +493,7 @@
 
                 <label>
                     Yellow High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_yellow"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_yellow"
                            value="{{ TriggerHighYellow }}">
                 </label>
 
@@ -696,7 +501,7 @@
 
                 <label>
                     Green Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_green"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_green"
                            value="{{ TriggerLowGreen }}">
                 </label>
 
@@ -704,7 +509,7 @@
 
                 <label>
                     Green High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_green"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_green"
                            value="{{ TriggerHighGreen }}">
                 </label>
 
@@ -712,7 +517,7 @@
 
                 <label>
                     Blue Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_blue"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_blue"
                            value="{{ TriggerLowBlue }}">
                 </label>
 
@@ -720,7 +525,7 @@
 
                 <label>
                     Blue High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_blue"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_blue"
                            value="{{ TriggerHighBlue }}">
                 </label>
 
@@ -728,7 +533,7 @@
 
                 <label>
                     Violet Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_violet"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_violet"
                            value="{{ TriggerLowViolet }}">
                 </label>
 
@@ -736,7 +541,7 @@
 
                 <label>
                     Violet High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_violet"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_violet"
                            value="{{ TriggerHighViolet }}">
                 </label>
 
@@ -744,13 +549,13 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_colour"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_colour"
                            value="{{ SecondsColour }}">
                 </label>
             </div>
         </div>
 
-        <div class="col-4 col-m-6 col-sm-12">
+        <div class="col-2 col-m-4 col-sm-6">
             <div class="counter bg-success">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-ultra_violet-toggle-switch" class="toggle-switch-input"
@@ -763,7 +568,7 @@
 
                 <label>
                     UVA Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
                            value="{{ TriggerLowUltraVioletA }}">
                 </label>
 
@@ -771,7 +576,7 @@
 
                 <label>
                     UVA High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
                            value="{{ TriggerHighUltraVioletA }}">
                 </label>
 
@@ -779,7 +584,7 @@
 
                 <label>
                     UVB Low Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
                            value="{{ TriggerLowUltraVioletB }}">
                 </label>
 
@@ -787,7 +592,7 @@
 
                 <label>
                     UVB High Trigger<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
                            value="{{ TriggerHighUltraVioletB }}">
                 </label>
 
@@ -795,8 +600,209 @@
 
                 <label>
                     Seconds between readings<br>
-                    <input style="width: 75px;" type="number" min=0 step="any" name="seconds_ultra_violet"
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_ultra_violet"
                            value="{{ SecondsUltraViolet }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-accelerometer-toggle-switch" class="toggle-switch-input"
+                           name="accelerometer" {{ CheckedAccelerometer }}>
+                    <label class="toggle-switch-label" for="enable-accelerometer-toggle-switch"></label>
+                    Accelerometer
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_x"
+                           value="{{ TriggerLowAccelerometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    X High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_x"
+                           value="{{ TriggerHighAccelerometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_y"
+                           value="{{ TriggerLowAccelerometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_y"
+                           value="{{ TriggerHighAccelerometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_z"
+                           value="{{ TriggerLowAccelerometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_z"
+                           value="{{ TriggerHighAccelerometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_accelerometer"
+                           value="{{ SecondsAccelerometer }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-magnetometer-toggle-switch" class="toggle-switch-input"
+                           name="magnetometer" {{ CheckedMagnetometer }}>
+                    <label class="toggle-switch-label" for="enable-magnetometer-toggle-switch"></label>
+                    Magnetometer
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_x"
+                           value="{{ TriggerLowMagnetometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    X High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_x"
+                           value="{{ TriggerHighMagnetometerX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_y"
+                           value="{{ TriggerLowMagnetometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_y"
+                           value="{{ TriggerHighMagnetometerY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_z"
+                           value="{{ TriggerLowMagnetometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_z"
+                           value="{{ TriggerHighMagnetometerZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_magnetometer"
+                           value="{{ SecondsMagnetometer }}">
+                </label>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="counter bg-success">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-gyroscope-toggle-switch" class="toggle-switch-input"
+                           name="gyroscope" {{ CheckedGyroscope }}>
+                    <label class="toggle-switch-label" for="enable-gyroscope-toggle-switch"></label>
+                    Gyroscope
+                </label>
+
+                <br><br>
+
+                <label>
+                    X Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_x"
+                           value="{{ TriggerLowGyroscopeX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    X High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_x"
+                           value="{{ TriggerHighGyroscopeX }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_y"
+                           value="{{ TriggerLowGyroscopeY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Y High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_y"
+                           value="{{ TriggerHighGyroscopeY }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z Low Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_z"
+                           value="{{ TriggerLowGyroscopeZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Z High Trigger<br>
+                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_z"
+                           value="{{ TriggerHighGyroscopeZ }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Seconds between readings<br>
+                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gyroscope"
+                           value="{{ SecondsGyroscope }}">
                 </label>
             </div>
         </div>

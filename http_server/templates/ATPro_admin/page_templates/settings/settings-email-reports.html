@@ -1,24 +1,5 @@
 <div class="row">
-    <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-primary">
-            <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/test-email">
-                <h3><strong>Test Reports Email</strong></h3>
-                <label>
-                    Email to<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
-                           name="test_email_address" placeholder="someone@somewhere.com">
-                </label>
-
-                <br><br>
-
-                <button type="submit" class="pure-button" name="test_email_button" value="reports">Send Email</button>
-            </form>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-12 col-m-12 col-sm-12">
+    <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
             <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-email-reports">
                 <label class="toggle-switch">
@@ -49,7 +30,7 @@
                 <br><br>
 
                 <label>
-                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    Email Reports to - Use comma separated values Eg. email1@here.com,email2@there.com<br>
                     <textarea style="width: 400px; height: 200px;"
                               name="send_reports_to_email_address">{{ EmailReportsToCSVAddresses }}</textarea>
                 </label>
@@ -57,6 +38,23 @@
                 <br><br>
 
                 <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <form style="text-align: center;" class="pure-form" method="POST" action="/atpro/test-email">
+                <h3><strong>Test Reports Email</strong></h3>
+                <label>
+                    Email to<br>
+                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                           name="test_email_address" placeholder="someone@somewhere.com">
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button" name="test_email_button" value="reports">Send Email</button>
             </form>
         </div>
     </div>
