@@ -632,6 +632,25 @@ def _get_checked_send_as(radio_text):
     return ""
 
 
+@html_atpro_settings_routes.route("/atpro/settings-mqtt-p-reset-topics")
+@auth.login_required
+def html_atpro_sensor_settings_mqtt_publisher_reset_topics():
+    app_config_access.mqtt_publisher_config.reset_publisher_topics()
+    app_config_access.mqtt_publisher_config.update_configuration_settings_list()
+    app_config_access.mqtt_publisher_config.save_config_to_file()
+    return get_message_page("MQTT Publisher Topics Reset", page_url="sensor-settings")
+
+
+@html_atpro_settings_routes.route("/atpro/settings-mqtt-p-reset-custom-format")
+@auth.login_required
+def html_atpro_reset_mqtt_publisher_custom_format():
+    default_custom_format = app_config_access.mqtt_publisher_config.get_mqtt_replacements_dictionary()
+    app_config_access.mqtt_publisher_config.mqtt_custom_data_string = str(default_custom_format)
+    app_config_access.mqtt_publisher_config.update_configuration_settings_list()
+    app_config_access.mqtt_publisher_config.save_config_to_file()
+    return get_message_page("MQTT Publisher Custom Format Reset", page_url="sensor-settings")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-s", methods=["GET", "POST"])
 def html_atpro_sensor_settings_mqtt_subscriber():
     if request.method == "POST":
