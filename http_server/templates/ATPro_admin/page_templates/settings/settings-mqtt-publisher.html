@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-4 col-m-12 col-sm-12">
         <div class="counter bg-primary">
-            <form class="pure-form" method="POST" action="/EditConfigMQTTPublisher">
+            <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
                 <input type="text" name="ConfigSection" value="Main" hidden>
 
                 <label class="toggle-switch">
@@ -220,7 +220,7 @@
 
     <div class="col-8 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <form class="pure-form" method="POST" action="/EditConfigMQTTPublisher">
+            <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
                 <input type="text" name="ConfigSection" value="Advanced" hidden><br>
 
                 <label>
@@ -247,11 +247,10 @@
                     Custom Single String
                 </label>
 
-                <br>
-
                 <div id="MQTTCustomData">
+                    <br>
                     <button type="button" class="pure-button"
-                            onclick="window.location.href = '/ResetMQTTPublisherCustomFormat';">
+                            onclick="window.location.href = '/atpro/settings-mqtt-p-reset-custom-format';">
                         Reset Custom Format
                     </button>
 
@@ -264,15 +263,20 @@
                         </a><br>
                         <textarea name="mqtt_custom_data" cols="55" rows="20">{{ MQTTCustomDataFormat }}</textarea>
                     </label>
+
                     <br><br>
                 </div>
 
-                <button type="button" id="ResetTopics" class="pure-button"
-                    onclick="window.location.href = '/ResetMQTTPublisherTopics';">
-                    Reset Topics
-                </button>
+                <div id="ResetTopics">
+                    <br>
 
-                <br><br>
+                    <button type="button" class="pure-button"
+                        onclick="window.location.href = '/atpro/settings-mqtt-p-reset-topics';">
+                        Reset Topics
+                    </button>
+
+                    <br><br>
+                </div>
 
                 <div class="row" id="float_boxes_topics">
                     <label>
@@ -560,8 +564,10 @@
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_z"
                                value="{{ MQTTGyroZTopic }}">
                     </label>
-                    <br><br>
                 </div>
+
+                <br><br>
+
                 <button type="submit" class="pure-button">Update</button>
             </form>
         </div>
