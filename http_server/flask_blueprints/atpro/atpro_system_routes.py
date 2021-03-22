@@ -66,9 +66,9 @@ def html_atpro_sensor_settings_system():
 
 
 @html_atpro_system_routes.route("/atpro/system-db-local")
+@auth.login_required
 def html_atpro_sensor_settings_database_information():
     custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
-
     db_backup_dropdown_selection = ""
     for zip_name in app_cached_variables.zipped_db_backup_list:
         db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
@@ -89,10 +89,10 @@ def html_atpro_sensor_settings_database_information():
 
 
 @html_atpro_system_routes.route("/atpro/system-db-management", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_database_management():
     if request.method == "POST":
         upload_db_folder = uploaded_databases_folder + "/"
-
         try:
             db_full_path = upload_db_folder + str(request.form.get("db_selected"))
             if str(request.form.get("db_management")) == "rename_db":
@@ -125,6 +125,7 @@ def html_atpro_sensor_settings_database_management():
             return_text2 = "HTML Database Management Error: " + str(error)
             logger.network_logger.error(return_text2)
             return get_message_page("Database Management Error", str(error), page_url="sensor-settings")
+
     return render_template(
         "ATPro_admin/page_templates/system-db-management.html",
         HostName=app_cached_variables.hostname,
@@ -144,6 +145,7 @@ def html_atpro_sensor_settings_database_management():
 
 
 @html_atpro_system_routes.route("/atpro/system-db-uploads", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_database_uploads():
     if request.method == "POST":
         button_pressed = str(request.form.get("db_upload_button"))
@@ -245,6 +247,7 @@ def html_atpro_sensor_settings_database_uploads():
                 return_text2 = "No File Uploaded"
             logger.network_logger.info("Database Upload: " + return_msg + " - " + return_text2)
             return get_message_page(return_msg, return_text2, page_url="sensor-settings")
+
     return render_template("ATPro_admin/page_templates/system-db-uploads.html")
 
 
@@ -366,6 +369,7 @@ def _config_to_html_view(config_name, config_location, config_text_file, split_b
 
 
 @html_atpro_system_routes.route('/atpro/system/raw_config/<path:url_path>')
+@auth.login_required
 def atpro_raw_config_urls(url_path):
     if url_path == "config-software-ver":
         config_name = "Software Versions"
@@ -451,6 +455,7 @@ def atpro_raw_config_urls(url_path):
 
 
 @html_atpro_system_routes.route('/atpro/system/<path:url_path>')
+@auth.login_required
 def atpro_upgrade_urls(url_path):
     print(str(url_path))
     title = "Error!"
