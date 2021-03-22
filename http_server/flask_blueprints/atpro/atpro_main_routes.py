@@ -25,13 +25,13 @@ from operations_modules import app_cached_variables
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
-from http_server.server_http_generic_functions import get_html_hidden_state
+from http_server.server_http_auth import auth
 from http_server.flask_blueprints.html_notes import add_note_to_database, update_note_in_database, get_db_note_dates, \
     get_db_note_user_dates, delete_db_note
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables, \
     html_sensor_readings_row, get_ram_free, get_disk_free
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
-    get_message_page
+    get_message_page, get_text_check_enabled, get_uptime_str
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 db_v = app_cached_variables.database_variables
@@ -45,44 +45,40 @@ def html_atpro_index():
 @html_atpro_main_routes.route("/atpro/sensor-dashboard")
 def html_atpro_dashboard():
     atpro_variables.init_tests()
+    g_t_c_e = get_text_check_enabled
 
     cpu_temp = sensor_access.get_cpu_temperature()
     if cpu_temp is not None:
         cpu_temp = round(cpu_temp[app_cached_variables.database_variables.system_temperature], 3)
-
-    enable_debug_logging = app_config_access.primary_config.enable_debug_logging
-    enable_high_low_trigger_recording = app_config_access.trigger_high_low.enable_high_low_trigger_recording
-    enable_trigger_variance = app_config_access.trigger_variances.enable_trigger_variance
-    enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
-    enable_checkin = app_config_access.primary_config.enable_checkin
-    enable_checkin_recording = app_config_access.checkin_config.enable_checkin_recording
-    return render_template("ATPro_admin/page_templates/dashboard.html",
-                           KootnetVersion=version,
-                           StdVersion=app_cached_variables.standard_version_available,
-                           DevVersion=app_cached_variables.developmental_version_available,
-                           LastUpdated=app_cached_variables.program_last_updated,
-                           DateTime=strftime("%Y-%m-%d<br>%H:%M:%S<br>%Z"),
-                           DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d<br>%H:%M:%S"),
-                           HostName=app_cached_variables.hostname,
-                           LocalIP=app_cached_variables.ip,
-                           DebugLogging=_get_text_check_enabled(enable_debug_logging),
-                           CPUTemperature=str(cpu_temp),
-                           SensorUptime=_get_uptime_str(),
-                           SensorReboots=app_cached_variables.reboot_count,
-                           RAMUsage=get_ram_free(),
-                           DiskUsage=get_disk_free(),
-                           IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
-                           TriggerHighLowRecording=_get_text_check_enabled(enable_high_low_trigger_recording),
-                           TriggerVarianceRecording=_get_text_check_enabled(enable_trigger_variance),
-                           MQTTPublishing=app_cached_variables.mqtt_publisher_thread.current_state,
-                           MQTTSubscriber=app_cached_variables.mqtt_subscriber_thread.current_state,
-                           MQTTSubscriberRecording=_get_text_check_enabled(enable_mqtt_sql_recording),
-                           SensorCheckins=_get_text_check_enabled(enable_checkin),
-                           CheckinServer=_get_text_check_enabled(enable_checkin_recording),
-                           OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,
-                           WeatherUndergroundService=app_cached_variables.weather_underground_thread.current_state,
-                           LuftdatenService=app_cached_variables.luftdaten_thread.current_state,
-                           InstalledSensors=app_config_access.installed_sensors.get_installed_names_str())
+    return render_template(
+        "ATPro_admin/page_templates/dashboard.html",
+        KootnetVersion=version,
+        StdVersion=app_cached_variables.standard_version_available,
+        DevVersion=app_cached_variables.developmental_version_available,
+        LastUpdated=app_cached_variables.program_last_updated,
+        DateTime=strftime("%Y-%m-%d<br>%H:%M:%S<br>%Z"),
+        DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d<br>%H:%M:%S"),
+        HostName=app_cached_variables.hostname,
+        LocalIP=app_cached_variables.ip,
+        DebugLogging=g_t_c_e(app_config_access.primary_config.enable_debug_logging),
+        CPUTemperature=str(cpu_temp),
+        SensorUptime=get_uptime_str(),
+        SensorReboots=app_cached_variables.reboot_count,
+        RAMUsage=get_ram_free(),
+        DiskUsage=get_disk_free(),
+        InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
+        IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
+        TriggerHighLowRecording=g_t_c_e(app_config_access.trigger_high_low.enable_high_low_trigger_recording),
+        TriggerVarianceRecording=g_t_c_e(app_config_access.trigger_variances.enable_trigger_variance),
+        MQTTPublishing=app_cached_variables.mqtt_publisher_thread.current_state,
+        MQTTSubscriber=app_cached_variables.mqtt_subscriber_thread.current_state,
+        MQTTSubscriberRecording=g_t_c_e(app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording),
+        SensorCheckins=g_t_c_e(app_config_access.primary_config.enable_checkin),
+        CheckinServer=g_t_c_e(app_config_access.checkin_config.enable_checkin_recording),
+        OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,
+        WeatherUndergroundService=app_cached_variables.weather_underground_thread.current_state,
+        LuftdatenService=app_cached_variables.luftdaten_thread.current_state
+    )
 
 
 @html_atpro_main_routes.route("/atpro/sensor-readings")
@@ -91,13 +87,12 @@ def html_atpro_sensor_readings():
     html_final_code = ""
     for index, dic_readings in enumerate(all_readings.items()):
         html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
-
     html_return_code = html_sensor_readings_row.replace("{{ Readings }}", html_final_code)
-    return render_template("ATPro_admin/page_templates/sensor_readings.html",
-                           HTMLReplacementCode=html_return_code)
+    return render_template("ATPro_admin/page_templates/sensor_readings.html", HTMLReplacementCode=html_return_code)
 
 
 @html_atpro_main_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_notes():
     if request.method == "POST":
         if request.form.get("button_function"):
@@ -155,9 +150,6 @@ def html_atpro_sensor_notes():
     else:
         selected_note = "No Notes Found"
     return render_template("ATPro_admin/page_templates/sensor_notes.html",
-                           PageURL="/atpro/sensor-notes",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
                            CurrentNoteNumber=app_cached_variables.note_current,
                            LastNoteNumber=str(app_cached_variables.notes_total_count),
                            DisplayedNote=selected_note)
@@ -186,45 +178,3 @@ def html_atpro_sensor_help():
 @html_atpro_main_routes.route("/atpro/logout")
 def html_atpro_logout():
     return get_message_page("Logged Out", "You have been logged out"), 401
-
-
-def _get_text_check_enabled(setting):
-    if setting:
-        return "Enabled"
-    return "Disabled"
-
-
-def _get_uptime_str():
-    """ Returns System UpTime as a human readable String. """
-    try:
-        with open('/proc/uptime', 'r') as f:
-            uptime_seconds = float(f.readline().split()[0])
-            var_minutes = int(uptime_seconds / 60)
-    except Exception as error:
-        logger.sensors_logger.error("Get Linux uptime minutes - Failed: " + str(error))
-        var_minutes = 0
-
-    str_day_hour_min = ""
-    uptime_days = int(float(var_minutes) // 1440)
-    uptime_hours = int((float(var_minutes) % 1440) // 60)
-    uptime_min = int(float(var_minutes) % 60)
-    if uptime_days:
-        if uptime_days >= 365:
-            years = uptime_days // 365
-            if years > 1:
-                str_day_hour_min += str(years) + " Years<br>"
-            else:
-                str_day_hour_min += str(years) + " Year<br>"
-            uptime_days = uptime_days - (365 * years)
-
-        if uptime_days > 1:
-            str_day_hour_min += str(uptime_days) + " Days<br>"
-        else:
-            str_day_hour_min += str(uptime_days) + " Day<br>"
-    if uptime_hours:
-        if uptime_hours > 1:
-            str_day_hour_min += str(uptime_hours) + " Hours & "
-        else:
-            str_day_hour_min += str(uptime_hours) + " Hour & "
-    str_day_hour_min += str(uptime_min) + " Min"
-    return str_day_hour_min
