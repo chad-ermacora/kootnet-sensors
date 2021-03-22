@@ -63,3 +63,46 @@ def get_clean_db_name(db_text_name):
             count_num += 1
         final_db_name = final_db_name + str(count_num)
     return final_db_name + ".sqlite"
+
+
+
+def get_uptime_str():
+    """ Returns System UpTime as a human readable String. """
+    try:
+        with open('/proc/uptime', 'r') as f:
+            uptime_seconds = float(f.readline().split()[0])
+            var_minutes = int(uptime_seconds / 60)
+    except Exception as error:
+        logger.sensors_logger.error("Get Linux uptime minutes - Failed: " + str(error))
+        var_minutes = 0
+
+    str_day_hour_min = ""
+    uptime_days = int(float(var_minutes) // 1440)
+    uptime_hours = int((float(var_minutes) % 1440) // 60)
+    uptime_min = int(float(var_minutes) % 60)
+    if uptime_days:
+        if uptime_days >= 365:
+            years = uptime_days // 365
+            if years > 1:
+                str_day_hour_min += str(years) + " Years<br>"
+            else:
+                str_day_hour_min += str(years) + " Year<br>"
+            uptime_days = uptime_days - (365 * years)
+
+        if uptime_days > 1:
+            str_day_hour_min += str(uptime_days) + " Days<br>"
+        else:
+            str_day_hour_min += str(uptime_days) + " Day<br>"
+    if uptime_hours:
+        if uptime_hours > 1:
+            str_day_hour_min += str(uptime_hours) + " Hours & "
+        else:
+            str_day_hour_min += str(uptime_hours) + " Hour & "
+    str_day_hour_min += str(uptime_min) + " Min"
+    return str_day_hour_min
+
+
+def get_text_check_enabled(setting):
+    if setting:
+        return "Enabled"
+    return "Disabled"
