@@ -23,7 +23,7 @@
 
                 <label>
                     Broker Port #<br>
-                    <input style="width: 100px;" type="number" min="1" max="65535" name="publish_broker_port"
+                    <input style="width: 120px;" type="number" min="1" max="65535" name="publish_broker_port"
                            value="{{ MQTTBrokerPort }}">
                 </label>
 
@@ -31,7 +31,7 @@
 
                 <label>
                     Seconds between Publishing<br>
-                    <input style="width: 75px;" type="number" min="1" name="publish_seconds_wait"
+                    <input style="width: 100px;" type="number" min="1" name="publish_seconds_wait"
                            value="{{ MQTTPublishSecondsWait }}">
                 </label>
 
@@ -268,7 +268,7 @@
                 </div>
 
                 <div id="ResetTopics">
-                    <br>
+                    <h2><u>Per Sensor Topics</u></h2>
 
                     <button type="button" class="pure-button"
                         onclick="window.location.href = '/atpro/settings-mqtt-p-reset-topics';">
@@ -288,7 +288,7 @@
                     &nbsp;
 
                     <label>
-                        Sensor Uptime Topic<br>
+                        Sensor Uptime<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_uptime"
                                value="{{ MQTTUptimeTopic }}">
                     </label>
@@ -296,7 +296,7 @@
                     &nbsp;
 
                     <label>
-                        CPU Temperature Topic<br>
+                        CPU Temperature<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_cpu_temp"
                                value="{{ MQTTCPUTempTopic }}">
                     </label>
@@ -304,7 +304,7 @@
                     &nbsp;
 
                     <label>
-                        Pressure Topic<br>
+                        Pressure<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pressure"
                                value="{{ MQTTPressureTopic }}">
                     </label>
@@ -312,7 +312,7 @@
                     &nbsp;
 
                     <label>
-                        Humidity Topic<br>
+                        Humidity<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_humidity"
                                value="{{ MQTTHumidityTopic }}">
                     </label>
@@ -320,7 +320,7 @@
                     &nbsp;
 
                     <label>
-                        Lumen Topic<br>
+                        Lumen<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_lumen"
                                value="{{ MQTTLumenTopic }}">
                     </label>
@@ -328,7 +328,7 @@
                     &nbsp;
 
                     <label>
-                        Orange Topic<br>
+                        Orange<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_orange"
                                value="{{ MQTTColourOrangeTopic }}">
                     </label>
@@ -336,7 +336,7 @@
                     &nbsp;
 
                     <label>
-                        Green Topic<br>
+                        Green<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_green"
                                value="{{ MQTTColourGreenTopic }}">
                     </label>
@@ -344,7 +344,7 @@
                     &nbsp;
 
                     <label>
-                        Violet Topic<br>
+                        Violet<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_violet"
                                value="{{ MQTTColourVioletTopic }}">
                     </label>
@@ -352,7 +352,7 @@
                     &nbsp;
 
                     <label>
-                        Ultra Violet B Topic<br>
+                        Ultra Violet B<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_b"
                                value="{{ MQTTUVBTopic }}">
                     </label>
@@ -360,7 +360,7 @@
                     &nbsp;
 
                     <label>
-                        Gas Oxidising Topic<br>
+                        Gas Oxidising<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_oxidising"
                                value="{{ MQTTGASOxidisingTopic }}">
                     </label>
@@ -368,7 +368,7 @@
                     &nbsp;
 
                     <label>
-                        Gas NH3 Topic<br>
+                        Gas NH3<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_nh3"
                                value="{{ MQTTGASNH3Topic }}">
                     </label>
@@ -376,7 +376,7 @@
                     &nbsp;
 
                     <label>
-                        Particulate Matter 2.5 Topic<br>
+                        Particulate Matter 2.5<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_2_5"
                                value="{{ MQTTPM2_5Topic }}">
                     </label>
@@ -384,7 +384,7 @@
                     &nbsp;
 
                     <label>
-                        Particulate Matter 10 Topic<br>
+                        Particulate Matter 10<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_10"
                                value="{{ MQTTPM10Topic }}">
                     </label>
@@ -392,7 +392,7 @@
                     &nbsp;
 
                     <label>
-                        Accelerometer Y Topic<br>
+                        Accelerometer Y<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_y"
                                value="{{ MQTTAccYTopic }}">
                     </label>
@@ -400,7 +400,7 @@
                     &nbsp;
 
                     <label>
-                        Magnetometer X Topic<br>
+                        Magnetometer X<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_x"
                                value="{{ MQTTMagXTopic }}">
                     </label>
@@ -408,7 +408,7 @@
                     &nbsp;
 
                     <label>
-                        Magnetometer Z Topic<br>
+                        Magnetometer Z<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_z"
                                value="{{ MQTTMagZTopic }}">
                     </label>
@@ -416,7 +416,7 @@
                     &nbsp;
 
                     <label>
-                        Gyroscope Y Topic<br>
+                        Gyroscope Y<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_y"
                                value="{{ MQTTGyroYTopic }}">
                     </label>
@@ -424,7 +424,7 @@
                     &nbsp;
 
                     <label>
-                        Sensor IP Topic<br>
+                        Sensor IP<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_ip"
                                value="{{ MQTTIPTopic }}">
                     </label>
@@ -432,7 +432,7 @@
                     &nbsp;
 
                     <label>
-                        Sensor DateTime Topic<br>
+                        Sensor DateTime<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_datetime"
                                value="{{ MQTTDateTimeTopic }}">
                     </label>
@@ -440,7 +440,7 @@
                     &nbsp;
 
                     <label>
-                        Environmental Temperature Topic<br>
+                        Environmental Temperature<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_env_temp"
                                value="{{ MQTTEnvTempTopic }}">
                     </label>
@@ -448,7 +448,7 @@
                     &nbsp;
 
                     <label>
-                        Altitude Topic<br>
+                        Altitude<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_altitude"
                                value="{{ MQTTAltitudeTopic }}">
                     </label>
@@ -456,7 +456,7 @@
                     &nbsp;
 
                     <label>
-                        Distance Topic<br>
+                        Distance<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_distance"
                                value="{{ MQTTDistanceTopic }}">
                     </label>
@@ -464,7 +464,7 @@
                     &nbsp;
 
                     <label>
-                        Red Topic<br>
+                        Red<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_red"
                                value="{{ MQTTColourRedTopic }}">
                     </label>
@@ -472,7 +472,7 @@
                     &nbsp;
 
                     <label>
-                        Yellow Topic<br>
+                        Yellow<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_yellow"
                                value="{{ MQTTColourYellowTopic }}">
                     </label>
@@ -480,7 +480,7 @@
                     &nbsp;
 
                     <label>
-                        Blue Topic<br>
+                        Blue<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_blue"
                                value="{{ MQTTColourBlueTopic }}">
                     </label>
@@ -488,7 +488,7 @@
                     &nbsp;
 
                     <label>
-                        Ultra Violet A Topic<br>
+                        Ultra Violet A<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_a"
                                value="{{ MQTTUVATopic }}">
                     </label>
@@ -496,7 +496,7 @@
                     &nbsp;
 
                     <label>
-                        Gas Resistance Index Topic<br>
+                        Gas Resistance Index<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_resistance_index"
                                value="{{ MQTTGASRestIndexTopic }}">
                     </label>
@@ -504,7 +504,7 @@
                     &nbsp;
 
                     <label>
-                        Gas Reducing Topic<br>
+                        Gas Reducing<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_reducing"
                                value="{{ MQTTGASReducingTopic }}">
                     </label>
@@ -512,7 +512,7 @@
                     &nbsp;
 
                     <label>
-                        Particulate Matter 1 Topic<br>
+                        Particulate Matter 1<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_1"
                                value="{{ MQTTPM1Topic }}">
                     </label>
@@ -520,7 +520,7 @@
                     &nbsp;
 
                     <label>
-                        Particulate Matter 4 Topic<br>
+                        Particulate Matter 4<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_4"
                                value="{{ MQTTPM4Topic }}">
                     </label>
@@ -528,7 +528,7 @@
                     &nbsp;
 
                     <label>
-                        Accelerometer X Topic<br>
+                        Accelerometer X<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_x"
                                value="{{ MQTTAccXTopic }}">
                     </label>
@@ -536,7 +536,7 @@
                     &nbsp;
 
                     <label>
-                        Accelerometer Z Topic<br>
+                        Accelerometer Z<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_z"
                                value="{{ MQTTAccZTopic }}">
                     </label>
@@ -544,7 +544,7 @@
                     &nbsp;
 
                     <label>
-                        Magnetometer Y Topic<br>
+                        Magnetometer Y<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_y"
                                value="{{ MQTTMagYTopic }}">
                     </label>
@@ -552,7 +552,7 @@
                     &nbsp;
 
                     <label>
-                        Gyroscope X Topic<br>
+                        Gyroscope X<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_x"
                                value="{{ MQTTGyroXTopic }}">
                     </label>
@@ -560,7 +560,7 @@
                     &nbsp;
 
                     <label>
-                        Gyroscope Z Topic<br>
+                        Gyroscope Z<br>
                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_z"
                                value="{{ MQTTGyroZTopic }}">
                     </label>
