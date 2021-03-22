@@ -25,6 +25,7 @@ from operations_modules.app_generic_functions import get_file_content, thread_fu
 from operations_modules.app_validation_checks import email_is_valid
 from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
 from configuration_modules import app_config_access
+from sensor_recording_modules.triggers_auto_set import auto_set_triggers_wait_time
 from sensor_modules import sensor_access
 from mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broker_server, stop_mqtt_broker_server, \
     check_mqtt_broker_server_running
@@ -41,11 +42,13 @@ db_v = app_cached_variables.database_variables
 
 
 @html_atpro_settings_routes.route("/atpro/sensor-settings")
+@auth.login_required
 def html_atpro_sensor_settings(run_script="SelectSettingsNav('settings-main');"):
     return render_template("ATPro_admin/page_templates/settings.html", RunScript=run_script)
 
 
 @html_atpro_settings_routes.route("/atpro/settings-main", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_main():
     if request.method == "POST":
         app_config_access.primary_config.update_with_html_request(request)
@@ -73,6 +76,7 @@ def html_atpro_sensor_settings_main():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-is", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_installed_sensors():
     installed_sensors = app_config_access.installed_sensors
     if request.method == "POST":
@@ -81,6 +85,7 @@ def html_atpro_sensor_settings_installed_sensors():
         sensor_access.sensors_direct.__init__()
         msg = "Installed sensors updated and re-initialized"
         return get_message_page("Installed Sensors Updated", msg, page_url="sensor-settings")
+
     return render_template(
         "ATPro_admin/page_templates/settings/settings-installed-sensors.html",
         PageURL="/MainConfigurationsHTML",
@@ -113,12 +118,14 @@ def html_atpro_sensor_settings_installed_sensors():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-display", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_display():
     if request.method == "POST":
         app_config_access.display_config.update_with_html_request(request)
         app_config_access.display_config.save_config_to_file()
         app_cached_variables.restart_mini_display_thread = True
-        return get_message_page("Display Settings Updated", "Restarting Display Service", page_url="sensor-settings")
+        return_msg = "Restarting Display Service"
+        return get_message_page("Display Settings Updated", return_msg, page_url="sensor-settings")
 
     display_numerical_checked = ""
     display_graph_checked = ""
@@ -127,7 +134,6 @@ def html_atpro_sensor_settings_display():
         display_numerical_checked = "checked"
     else:
         display_graph_checked = "checked"
-
     return render_template(
         "ATPro_admin/page_templates/settings/settings-display.html",
         PageURL="/DisplayConfigurationsHTML",
@@ -154,6 +160,7 @@ def html_atpro_sensor_settings_display():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-cs", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_checkin_server():
     if request.method == "POST":
         app_config_access.checkin_config.update_with_html_request(request)
@@ -170,12 +177,14 @@ def html_atpro_sensor_settings_checkin_server():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-interval", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_interval():
     if request.method == "POST":
         app_config_access.interval_recording_config.update_with_html_request(request)
         app_config_access.interval_recording_config.save_config_to_file()
         app_cached_variables.restart_interval_recording_thread = True
         return get_message_page("Interval Settings Saved", page_url="sensor-settings")
+
     interval_config = app_config_access.interval_recording_config
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-interval.html",
@@ -202,13 +211,15 @@ def html_atpro_sensor_settings_interval():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-hl", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_high_low():
     if request.method == "POST":
         app_config_access.trigger_high_low.update_with_html_request(request)
         app_config_access.trigger_high_low.save_config_to_file()
         app_cached_variables.html_service_restart = True
-        return get_message_page("Trigger High/Low Settings Saved",
-                                "Please Restart Program", page_url="sensor-settings")
+        return_msg = "Please Restart Program"
+        return get_message_page("Trigger High/Low Settings Saved", return_msg, page_url="sensor-settings")
+
     high_low_settings = app_config_access.trigger_high_low
     recording_enabled = get_html_checkbox_state(high_low_settings.enable_high_low_trigger_recording)
     return render_template(
@@ -309,7 +320,26 @@ def html_atpro_sensor_settings_high_low():
     )
 
 
+@html_atpro_settings_routes.route("/atpro/settings-hl-triggers-lowest")
+@auth.login_required
+def html_atpro_auto_set_lowest_trigger_high_low():
+    auto_set_triggers_wait_time(app_config_access.trigger_high_low, set_lowest=True)
+    msg_1 = "Trigger High/Low Seconds Settings Set to Lowest"
+    msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the Lowest recommended values."
+    return get_message_page(msg_1, msg_2, page_url="sensor-settings")
+
+
+@html_atpro_settings_routes.route("/atpro/settings-hl-triggers-recommended")
+@auth.login_required
+def html_atpro_auto_set_default_trigger_high_low():
+    auto_set_triggers_wait_time(app_config_access.trigger_high_low)
+    msg_1 = "Trigger High/Low Seconds Settings Set to Recommended"
+    msg_2 = "The High/Low Trigger recording 'Seconds' settings have been set to the recommend defaults."
+    return get_message_page(msg_1, msg_2, page_url="sensor-settings")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-variances", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_variances():
     if request.method == "POST":
         app_config_access.trigger_variances.update_with_html_request(request)
@@ -385,7 +415,26 @@ def html_atpro_sensor_settings_variances():
     )
 
 
+@html_atpro_settings_routes.route("/atpro/settings-variances-reset")
+@auth.login_required
+def html_atpro_reset_trigger_variances():
+    auto_set_triggers_wait_time(app_config_access.trigger_variances)
+    msg_1 = "Trigger Variances Reset"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to recommended defaults."
+    return get_message_page(msg_1, msg_2, page_url="sensor-settings")
+
+
+@html_atpro_settings_routes.route("/atpro/settings-variances-low")
+@auth.login_required
+def html_atpro_set_lowest_trigger_variances_seconds():
+    auto_set_triggers_wait_time(app_config_access.trigger_variances, set_lowest=True)
+    msg_1 = "Trigger Variance Seconds Settings Set to Lowest"
+    msg_2 = "The Variance Trigger recording 'seconds' settings have been set to the Lowest recommended values."
+    return get_message_page(msg_1, msg_2, page_url="sensor-settings")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-email-reports", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_email_reports():
     if request.method == "POST":
         email_config.update_with_html_request_reports(request)
@@ -423,6 +472,7 @@ def _get_send_option_selection(selected_send_every):
 
 
 @html_atpro_settings_routes.route("/atpro/settings-email-graphs", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_email_graphs():
     if request.method == "POST":
         email_config.update_with_html_request_graph(request)
@@ -436,9 +486,7 @@ def html_atpro_sensor_settings_email_graphs():
     if email_config.graph_type:
         plotly_graph_checked = "checked"
         quick_graph_checked = ""
-
     graph_send_selected_options = _get_send_option_selection(email_config.send_graph_every)
-
     return render_template("ATPro_admin/page_templates/settings/settings-email-graphs.html",
                            CheckedEmailGraphs=get_html_checkbox_state(email_config.enable_graph_emails),
                            EmailGraphSelectedDaily=graph_send_selected_options[0],
@@ -469,6 +517,7 @@ def html_atpro_sensor_settings_email_graphs():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-email-settings", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_email_smtp():
     if request.method == "POST":
         email_config.update_with_html_request_server(request)
@@ -504,6 +553,7 @@ def html_atpro_send_reports_email():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-p", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_mqtt_publisher():
     mqtt_publisher_config = app_config_access.mqtt_publisher_config
 
@@ -544,7 +594,6 @@ def html_atpro_sensor_settings_mqtt_publisher():
     mqtt_send_format_kootnet = mqtt_publisher_config.mqtt_send_format_kootnet
     mqtt_send_format_individual_topics = mqtt_publisher_config.mqtt_send_format_individual_topics
     mqtt_send_format_custom_string = mqtt_publisher_config.mqtt_send_format_custom_string
-
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-publisher.html",
         MQTTBaseTopic=mqtt_publisher_config.mqtt_base_topic[:-1],
@@ -652,6 +701,7 @@ def html_atpro_reset_mqtt_publisher_custom_format():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-s", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_mqtt_subscriber():
     if request.method == "POST":
         app_config_access.mqtt_subscriber_config.update_with_html_request(request)
@@ -695,6 +745,7 @@ def html_atpro_sensor_settings_mqtt_subscriber():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-b", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_mqtt_broker():
     if request.method == "POST":
         app_config_access.mqtt_broker_config.update_with_html_request(request)
@@ -722,6 +773,7 @@ def html_atpro_sensor_settings_mqtt_broker():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-osm", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_osm():
     if request.method == "POST":
         app_config_access.open_sense_map_config.update_with_html_request(request)
@@ -792,6 +844,7 @@ def html_atpro_osm_registration():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-wu", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_wu():
     weather_underground_config = app_config_access.weather_underground_config
     if request.method == "POST":
@@ -824,6 +877,7 @@ def html_atpro_sensor_settings_wu():
 
 
 @html_atpro_settings_routes.route("/atpro/settings-luftdaten", methods=["GET", "POST"])
+@auth.login_required
 def html_atpro_sensor_settings_luftdaten():
     if request.method == "POST":
         app_config_access.luftdaten_config.update_with_html_request(request)
@@ -850,7 +904,3 @@ def html_atpro_sensor_settings_luftdaten():
         LuftdatenIntervalSeconds=app_config_access.luftdaten_config.interval_seconds,
         LuftdatenStationID=app_config_access.luftdaten_config.station_id
     )
-
-# @html_atpro_settings_routes.route("/atpro/settings-Change", methods=["GET", "POST"])
-# def html_atpro_sensor_settings_():
-#     return "timmy"
