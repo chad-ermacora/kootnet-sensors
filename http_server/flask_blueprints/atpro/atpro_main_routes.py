@@ -22,16 +22,20 @@ from flask import Blueprint, render_template, send_file, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import thread_function
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
+from http_server import server_plotly_graph
+from http_server import server_plotly_graph_variables
+from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.flask_blueprints.html_notes import add_note_to_database, update_note_in_database, get_db_note_dates, \
     get_db_note_user_dates, delete_db_note
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables, \
     html_sensor_readings_row, get_ram_free, get_disk_free
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_text_check_enabled, get_uptime_str
+    get_message_page, get_text_check_enabled, get_uptime_str, get_file_creation_date
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 db_v = app_cached_variables.database_variables
@@ -149,17 +153,95 @@ def html_atpro_sensor_notes():
         selected_note = app_cached_variables.cached_notes_as_list[app_cached_variables.note_current - 1]
     else:
         selected_note = "No Notes Found"
-    return render_template("ATPro_admin/page_templates/sensor_notes.html",
+    return render_template("ATPro_admin/page_templates/notes.html",
                            CurrentNoteNumber=app_cached_variables.note_current,
                            LastNoteNumber=str(app_cached_variables.notes_total_count),
                            DisplayedNote=selected_note)
 
 
-@html_atpro_main_routes.route("/atpro/sensor-graphing")
-def html_atpro_sensor_graphing():
+@html_atpro_main_routes.route("/atpro/sensor-graphing-live")
+def html_atpro_sensor_graphing_live():
     return "WIP"
-    html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
+    html_page = render_template("ATPro_admin/page_templates/graphing-live.html")
     return html_page
+
+
+@html_atpro_main_routes.route("/atpro/sensor-graphing-db")
+def html_atpro_sensor_graphing_database():
+    custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
+
+    database_dropdown_selection_html = ""
+    for db_name in app_cached_variables.uploaded_databases_list:
+        database_dropdown_selection_html += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", db_name) + "\n"
+
+    run_script = ""
+    if server_plotly_graph.server_plotly_graph_variables.graph_creation_in_progress:
+        run_script = "CreatingGraph();"
+
+    return render_template(
+        "ATPro_admin/page_templates/graphing-database.html",
+        RunScript=run_script,
+        UploadedDBOptionNames=database_dropdown_selection_html,
+        IntervalPlotlyDate=get_file_creation_date(file_locations.plotly_graph_interval),
+        TriggerPlotlyDate=get_file_creation_date(file_locations.plotly_graph_triggers),
+        MQTTPlotlyDate=get_file_creation_date(file_locations.plotly_graph_mqtt),
+        CustomPlotlyDate=get_file_creation_date(file_locations.plotly_graph_custom),
+        UTCOffset=app_config_access.primary_config.utc0_hour_offset
+    )
+
+
+@html_atpro_main_routes.route("/atpro/graphing-create-plotly", methods=["POST"])
+@auth.login_required
+def html_create_plotly_graph():
+    if not server_plotly_graph_variables.graph_creation_in_progress:
+        logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
+        invalid_msg1 = "Invalid Options Selection"
+        try:
+            new_graph_data = server_plotly_graph_variables.CreateGraphData()
+            new_graph_data.graph_table = request.form.get("SQLRecordingType")
+            new_graph_data.max_sql_queries = int(request.form.get("MaxSQLData"))
+
+            db_location = request.form.get("SQLDatabaseSelection")
+            if db_location == "MainDatabase":
+                new_graph_data.db_location = file_locations.sensor_database
+                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_interval
+                if new_graph_data.graph_table == app_cached_variables.database_variables.table_trigger:
+                    new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_triggers
+            elif db_location == "MQTTSubscriberDatabase":
+                new_graph_data.db_location = file_locations.mqtt_subscriber_database
+                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_mqtt
+            else:
+                new_graph_data.db_location = file_locations.uploaded_databases_folder + "/" + db_location
+                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_custom
+
+            if request.form.get("MQTTDatabaseCheck") is not None:
+                remote_sensor_id = str(request.form.get("MQTTCustomBaseTopic")).strip()
+                if remote_sensor_id.isalnum() and len(remote_sensor_id) < 65:
+                    new_graph_data.graph_table = remote_sensor_id
+                else:
+                    msg2 = "Invalid Remote Sensor ID"
+                    return get_message_page(invalid_msg1, msg2, page_url="sensor-graphing-db")
+
+            if request.form.get("PlotlyRenderType") == "OpenGL":
+                new_graph_data.enable_plotly_webgl = True
+            else:
+                new_graph_data.enable_plotly_webgl = False
+
+            # The format the received datetime should look like "2019-01-01 00:00:00"
+            new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
+            new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
+            new_graph_data.datetime_offset = float(request.form.get("HourOffset"))
+            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL"))
+            new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
+
+            if len(new_graph_data.graph_columns) < 4:
+                msg2 = "Please Select at least One Sensor"
+                return get_message_page(invalid_msg1, msg2, page_url="sensor-graphing-db")
+            else:
+                thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
+        except Exception as error:
+            logger.primary_logger.warning("Plotly Graph: " + str(error))
+    return get_html_atpro_index(run_script="SelectNav('sensor-graphing-db');")
 
 
 @html_atpro_main_routes.route("/atpro/sensor-rm")
