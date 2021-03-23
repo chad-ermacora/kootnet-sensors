@@ -1,0 +1,193 @@
+<form class="mui-form" method="POST" style="background-color: #00B0FF; width: 450px; border: #0BB10D;"
+      action="/LiveGraphView">
+    <fieldset style="text-align: center;">
+        <h2>
+            <u><strong style="color: black;">Quick Graphing</strong></u><br>
+            <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line3_7" target="_blank">
+                Click Here for Help
+            </a>
+            <hr>
+        </h2>
+        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
+                onclick="window.open('/LiveGraphView','targetWindow', 'toolbar=no,location=no,' +
+            'status=no,menubar=no,scrollbars=yes,resizable=yes,width=' +
+             screen.width + ',height=' + screen.height); return false;">
+            Open Graph Window
+        </button>
+
+        <hr>
+
+        <div class="mui-textfield">
+            <label style="color: black">Add Plot Data after skipping
+                <br>
+                <input style="width: 75px" type="number" min="0" max="9999" name="SkipSQL" value="{{ SkipSQLEntries }}">
+            </label>
+            <br>
+        </div>
+
+        <div class="mui-textfield">
+            <label style="color: black">Max Plot Points
+                <br>
+                <input style="width: 75px" type="number" min="5" max="999999" name="MaxSQLData" value="{{ MaxSQLEntries }}">
+            </label>
+            <br>
+        </div>
+
+        <hr>
+
+        <div class="mui-checkbox" style="display: inline-block;">
+            <label class="container_checkbox">
+                <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
+                Select All
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="SensorUptime" value="" {{ SensorUptimeChecked }}>
+                Sensor Uptime
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="CPUTemp" value="" {{ CPUTemperatureChecked }}>
+                CPU Temperature
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="EnvTemp" value="" {{ EnvTemperatureChecked }}>
+                Environmental Temperature
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Pressure" value="" {{ PressureChecked }}>
+                Pressure
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Altitude" value="" {{ AltitudeChecked }}>
+                Altitude
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Humidity" value="" {{ HumidityChecked }}>
+                Humidity
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Distance" value="" {{ DistanceChecked }}>
+                Distance
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Gas" value="" {{ GasChecked }}>
+                Gas
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="ParticulateMatter" value="" {{ PMChecked }}>
+                Particulate Matter
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Lumen" value="" {{ LumenChecked }}>
+                Lumen
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Colours" value="" {{ ColoursChecked }}>
+                Colours
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="UltraViolet" value="" {{ UltraVioletChecked }}>
+                Ultra Violet
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Accelerometer" value="" {{ AccChecked }}>
+                Accelerometer
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Magnetometer" value="" {{ MagChecked }}>
+                Magnetometer
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <div class="mui-checkbox" style="display: inline-block">
+            <label class="container_checkbox">
+                <input class="quick_graph_checks" type="checkbox" name="Gyroscope" value="" {{ GyroChecked }}>
+                Gyroscope
+                <span class="checkmark_checkbox"></span>
+            </label>
+        </div>
+
+        <br>
+        <br>
+
+        <button type="submit" class="mui-btn mui-btn--raised">Update Settings</button>
+    </fieldset>
+</form>
+
+<script>
+    jQuery('#SelectAllCheckboxes').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', true);
+        } else {
+            jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', false);
+        }
+    });
+</script>
