@@ -16,7 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 import re
+from datetime import datetime
 from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
@@ -65,7 +67,6 @@ def get_clean_db_name(db_text_name):
     return final_db_name + ".sqlite"
 
 
-
 def get_uptime_str():
     """ Returns System UpTime as a human readable String. """
     try:
@@ -106,3 +107,12 @@ def get_text_check_enabled(setting):
     if setting:
         return "Enabled"
     return "Disabled"
+
+
+def get_file_creation_date(file_location):
+    try:
+        file_creation_date_unix = os.path.getmtime(file_location)
+        creation_date = str(datetime.fromtimestamp(file_creation_date_unix))[:-7]
+    except FileNotFoundError:
+        creation_date = "File not Found"
+    return creation_date
