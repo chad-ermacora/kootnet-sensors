@@ -94,9 +94,9 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
             self.sleep_duration_interval = new_sleep_duration
 
-        if html_request.form.get("checkbox_sensor_uptime") is not None:
+        if html_request.form.get("sensor_uptime") is not None:
             self.sensor_uptime_enabled = 1
-        if html_request.form.get("checkbox_cpu_temperature") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
         if html_request.form.get("pressure") is not None:
             self.pressure_enabled = 1

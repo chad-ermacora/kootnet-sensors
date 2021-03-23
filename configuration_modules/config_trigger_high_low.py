@@ -180,7 +180,7 @@ class CreateTriggerHighLowConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("checkbox_enable_high_low_trigger_recording") is not None:
             self.enable_high_low_trigger_recording = 1
 
-        if html_request.form.get("checkbox_cpu_temperature") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
         if html_request.form.get("trigger_low_cpu_temperature") is not None:
             self.cpu_temperature_low = float(html_request.form.get("trigger_low_cpu_temperature"))

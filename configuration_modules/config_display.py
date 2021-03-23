@@ -27,12 +27,12 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.display_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 18
+        self.valid_setting_count = 19
         self.config_settings_names = [
             "Enable display", "Display every minutes", "Display type", "Show sensor uptime",
             "Show system temperature", "Show environmental temperature", "Show pressure", "Show altitude",
             "Show humidity", "Show distance", "Show GAS", "Show particulate matter", "Show lumen", "Show colors",
-            "Show ultra violet", "Show accelerometer", "Show magnetometer", "Show gyroscope"
+            "Show ultra violet", "Show accelerometer", "Show magnetometer", "Show gyroscope", "Dew Point"
         ]
 
         self.enable_display = 0
@@ -49,6 +49,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 0
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -79,6 +80,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 0
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -101,35 +103,37 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("display_type") is not None:
             self.display_type = html_request.form.get("display_type")
 
-        if html_request.form.get("DisplaySensorUptime") is not None:
+        if html_request.form.get("sensor_uptime") is not None:
             self.sensor_uptime = 1
-        if html_request.form.get("DisplayCPUTemp") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.system_temperature = 1
-        if html_request.form.get("DisplayEnvTemp") is not None:
+        if html_request.form.get("env_temperature") is not None:
             self.env_temperature = 1
-        if html_request.form.get("DisplayPressure") is not None:
+        if html_request.form.get("pressure") is not None:
             self.pressure = 1
-        if html_request.form.get("DisplayAltitude") is not None:
+        if html_request.form.get("altitude") is not None:
             self.altitude = 1
-        if html_request.form.get("DisplayHumidity") is not None:
+        if html_request.form.get("humidity") is not None:
             self.humidity = 1
-        if html_request.form.get("DisplayDistance") is not None:
+        if html_request.form.get("dew_point") is not None:
+            self.dew_point = 1
+        if html_request.form.get("distance") is not None:
             self.distance = 1
-        if html_request.form.get("DisplayGas") is not None:
+        if html_request.form.get("gas") is not None:
             self.gas = 1
-        if html_request.form.get("DisplayParticulateMatter") is not None:
+        if html_request.form.get("particulate_matter") is not None:
             self.particulate_matter = 1
-        if html_request.form.get("DisplayLumen") is not None:
+        if html_request.form.get("lumen") is not None:
             self.lumen = 1
-        if html_request.form.get("DisplayColours") is not None:
+        if html_request.form.get("colour") is not None:
             self.color = 1
-        if html_request.form.get("DisplayUltraViolet") is not None:
+        if html_request.form.get("ultra_violet") is not None:
             self.ultra_violet = 1
-        if html_request.form.get("DisplayAccelerometer") is not None:
+        if html_request.form.get("accelerometer") is not None:
             self.accelerometer = 1
-        if html_request.form.get("DisplayMagnetometer") is not None:
+        if html_request.form.get("magnetometer") is not None:
             self.magnetometer = 1
-        if html_request.form.get("DisplayGyroscope") is not None:
+        if html_request.form.get("gyroscope") is not None:
             self.gyroscope = 1
         self.update_configuration_settings_list()
         self.load_from_file = True
@@ -142,7 +146,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             str(self.sensor_uptime), str(self.system_temperature), str(self.env_temperature), str(self.pressure),
             str(self.altitude), str(self.humidity), str(self.distance), str(self.gas), str(self.particulate_matter),
             str(self.lumen), str(self.color), str(self.ultra_violet), str(self.accelerometer), str(self.magnetometer),
-            str(self.gyroscope)
+            str(self.gyroscope), str(self.dew_point)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -167,6 +171,7 @@ class CreateDisplayConfiguration(CreateGeneralConfiguration):
             self.accelerometer = int(self.config_settings[15])
             self.magnetometer = int(self.config_settings[16])
             self.gyroscope = int(self.config_settings[17])
+            self.dew_point = int(self.config_settings[18])
         except Exception as error:
             logger.primary_logger.debug("Display Config: " + str(error))
             self.update_configuration_settings_list()

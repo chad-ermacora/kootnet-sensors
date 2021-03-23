@@ -136,26 +136,26 @@ def html_atpro_sensor_settings_display():
         display_graph_checked = "checked"
     return render_template(
         "ATPro_admin/page_templates/settings/settings-display.html",
-        PageURL="/DisplayConfigurationsHTML",
         CheckedEnableDisplay=get_html_checkbox_state(app_config_access.display_config.enable_display),
         DisplayIntervalDelay=app_config_access.display_config.minutes_between_display,
         DisplayNumericalChecked=display_numerical_checked,
         DisplayGraphChecked=display_graph_checked,
-        DisplayUptimeChecked=get_html_checkbox_state(app_config_access.display_config.sensor_uptime),
-        DisplayCPUTempChecked=get_html_checkbox_state(app_config_access.display_config.system_temperature),
-        DisplayEnvTempChecked=get_html_checkbox_state(app_config_access.display_config.env_temperature),
-        DisplayPressureChecked=get_html_checkbox_state(app_config_access.display_config.pressure),
-        DisplayAltitudeChecked=get_html_checkbox_state(app_config_access.display_config.altitude),
-        DisplayHumidityChecked=get_html_checkbox_state(app_config_access.display_config.humidity),
-        DisplayDistanceChecked=get_html_checkbox_state(app_config_access.display_config.distance),
-        DisplayGASChecked=get_html_checkbox_state(app_config_access.display_config.gas),
-        DisplayPMChecked=get_html_checkbox_state(app_config_access.display_config.particulate_matter),
-        DisplayLumenChecked=get_html_checkbox_state(app_config_access.display_config.lumen),
-        DisplayColoursChecked=get_html_checkbox_state(app_config_access.display_config.color),
-        DisplayUltraVioletChecked=get_html_checkbox_state(app_config_access.display_config.ultra_violet),
-        DisplayAccChecked=get_html_checkbox_state(app_config_access.display_config.accelerometer),
-        DisplayMagChecked=get_html_checkbox_state(app_config_access.display_config.magnetometer),
-        DisplayGyroChecked=get_html_checkbox_state(app_config_access.display_config.gyroscope)
+        CheckedSensorUptime=get_html_checkbox_state(app_config_access.display_config.sensor_uptime),
+        CheckedCPUTemperature=get_html_checkbox_state(app_config_access.display_config.system_temperature),
+        CheckedEnvTemperature=get_html_checkbox_state(app_config_access.display_config.env_temperature),
+        CheckedPressure=get_html_checkbox_state(app_config_access.display_config.pressure),
+        CheckedAltitude=get_html_checkbox_state(app_config_access.display_config.altitude),
+        CheckedHumidity=get_html_checkbox_state(app_config_access.display_config.humidity),
+        CheckedDewPoint=get_html_checkbox_state(app_config_access.display_config.dew_point),
+        CheckedDistance=get_html_checkbox_state(app_config_access.display_config.distance),
+        CheckedGas=get_html_checkbox_state(app_config_access.display_config.gas),
+        CheckedPM=get_html_checkbox_state(app_config_access.display_config.particulate_matter),
+        CheckedLumen=get_html_checkbox_state(app_config_access.display_config.lumen),
+        CheckedColour=get_html_checkbox_state(app_config_access.display_config.color),
+        CheckedUltraViolet=get_html_checkbox_state(app_config_access.display_config.ultra_violet),
+        CheckedAccelerometer=get_html_checkbox_state(app_config_access.display_config.accelerometer),
+        CheckedMagnetometer=get_html_checkbox_state(app_config_access.display_config.magnetometer),
+        CheckedGyroscope=get_html_checkbox_state(app_config_access.display_config.gyroscope)
     )
 
 
@@ -498,21 +498,22 @@ def html_atpro_sensor_settings_email_graphs():
                            QuickGraphChecked=quick_graph_checked,
                            PlotlyGraphChecked=plotly_graph_checked,
                            GraphsPastHours=email_config.graph_past_hours,
-                           SensorUptimeChecked=get_html_checkbox_state(email_config.sensor_uptime),
-                           CPUTemperatureChecked=get_html_checkbox_state(email_config.system_temperature),
-                           EnvTemperatureChecked=get_html_checkbox_state(email_config.env_temperature),
-                           PressureChecked=get_html_checkbox_state(email_config.pressure),
-                           AltitudeChecked=get_html_checkbox_state(email_config.altitude),
-                           HumidityChecked=get_html_checkbox_state(email_config.humidity),
-                           DistanceChecked=get_html_checkbox_state(email_config.distance),
-                           GasChecked=get_html_checkbox_state(email_config.gas),
-                           PMChecked=get_html_checkbox_state(email_config.particulate_matter),
-                           LumenChecked=get_html_checkbox_state(email_config.lumen),
-                           ColoursChecked=get_html_checkbox_state(email_config.color),
-                           UltraVioletChecked=get_html_checkbox_state(email_config.ultra_violet),
-                           AccChecked=get_html_checkbox_state(email_config.accelerometer),
-                           MagChecked=get_html_checkbox_state(email_config.magnetometer),
-                           GyroChecked=get_html_checkbox_state(email_config.gyroscope)
+                           CheckedSensorUptime=get_html_checkbox_state(email_config.sensor_uptime),
+                           CheckedCPUTemperature=get_html_checkbox_state(email_config.system_temperature),
+                           CheckedEnvTemperature=get_html_checkbox_state(email_config.env_temperature),
+                           CheckedPressure=get_html_checkbox_state(email_config.pressure),
+                           CheckedAltitude=get_html_checkbox_state(email_config.altitude),
+                           CheckedHumidity=get_html_checkbox_state(email_config.humidity),
+                           CheckedDewPoint=get_html_checkbox_state(email_config.dew_point),
+                           CheckedDistance=get_html_checkbox_state(email_config.distance),
+                           CheckedGas=get_html_checkbox_state(email_config.gas),
+                           CheckedPM=get_html_checkbox_state(email_config.particulate_matter),
+                           CheckedLumen=get_html_checkbox_state(email_config.lumen),
+                           CheckedColour=get_html_checkbox_state(email_config.color),
+                           CheckedUltraViolet=get_html_checkbox_state(email_config.ultra_violet),
+                           CheckedAccelerometer=get_html_checkbox_state(email_config.accelerometer),
+                           CheckedMagnetometer=get_html_checkbox_state(email_config.magnetometer),
+                           CheckedGyroscope=get_html_checkbox_state(email_config.gyroscope)
                            )
 
 
@@ -563,8 +564,6 @@ def html_atpro_sensor_settings_mqtt_publisher():
         app_cached_variables.restart_mqtt_publisher_thread = True
         return get_message_page("MQTT Publisher Settings Saved", page_url="sensor-settings")
 
-    enable_mqtt_publisher = mqtt_publisher_config.enable_mqtt_publisher
-    enable_broker_auth = mqtt_publisher_config.enable_broker_auth
     mqtt_publisher_qos = mqtt_publisher_config.mqtt_publisher_qos
     qos_level_0 = ""
     qos_level_1 = ""
@@ -575,58 +574,41 @@ def html_atpro_sensor_settings_mqtt_publisher():
         qos_level_1 = get_html_selected_state(True)
     elif mqtt_publisher_qos == 2:
         qos_level_2 = get_html_selected_state(True)
-    sensor_host_name = mqtt_publisher_config.sensor_host_name
-    sensor_ip = mqtt_publisher_config.sensor_ip
-    sensor_uptime = mqtt_publisher_config.sensor_uptime
-    sensor_date_time = mqtt_publisher_config.sensor_date_time
-    system_temperature = mqtt_publisher_config.system_temperature
-    env_temperature = mqtt_publisher_config.env_temperature
-    pressure = mqtt_publisher_config.pressure
-    altitude = mqtt_publisher_config.altitude
-    humidity = mqtt_publisher_config.humidity
-    distance = mqtt_publisher_config.distance
-    particulate_matter = mqtt_publisher_config.particulate_matter
-    color = mqtt_publisher_config.color
-    ultra_violet = mqtt_publisher_config.ultra_violet
-    accelerometer = mqtt_publisher_config.accelerometer
-    magnetometer = mqtt_publisher_config.magnetometer
-    gyroscope = mqtt_publisher_config.gyroscope
-    mqtt_send_format_kootnet = mqtt_publisher_config.mqtt_send_format_kootnet
-    mqtt_send_format_individual_topics = mqtt_publisher_config.mqtt_send_format_individual_topics
-    mqtt_send_format_custom_string = mqtt_publisher_config.mqtt_send_format_custom_string
+
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-publisher.html",
         MQTTBaseTopic=mqtt_publisher_config.mqtt_base_topic[:-1],
-        MQTTPublisherChecked=get_html_checkbox_state(enable_mqtt_publisher),
+        MQTTPublisherChecked=get_html_checkbox_state(mqtt_publisher_config.enable_mqtt_publisher),
         MQTTBrokerAddress=mqtt_publisher_config.broker_address,
         MQTTBrokerPort=str(mqtt_publisher_config.broker_server_port),
         MQTTPublishSecondsWait=str(mqtt_publisher_config.seconds_to_wait),
-        MQTTPublisherAuthChecked=get_html_checkbox_state(enable_broker_auth),
+        MQTTPublisherAuthChecked=get_html_checkbox_state(mqtt_publisher_config.enable_broker_auth),
         MQTTPublisherUsername=mqtt_publisher_config.broker_user,
         PublisherQoSLevel0=qos_level_0,
         PublisherQoSLevel1=qos_level_1,
         PublisherQoSLevel2=qos_level_2,
-        MQTTHostNameChecked=get_html_checkbox_state(sensor_host_name),
-        MQTTSystemIPChecked=get_html_checkbox_state(sensor_ip),
-        MQTTUptimeChecked=get_html_checkbox_state(sensor_uptime),
-        MQTTSystemDateTimeChecked=get_html_checkbox_state(sensor_date_time),
-        MQTTCPUTempChecked=get_html_checkbox_state(system_temperature),
-        MQTTEnvTempChecked=get_html_checkbox_state(env_temperature),
-        MQTTPressureChecked=get_html_checkbox_state(pressure),
-        MQTTAltitudeChecked=get_html_checkbox_state(altitude),
-        MQTTHumidityChecked=get_html_checkbox_state(humidity),
-        MQTTDistanceChecked=get_html_checkbox_state(distance),
-        MQTTGASChecked=get_html_checkbox_state(mqtt_publisher_config.gas),
-        MQTTPMChecked=get_html_checkbox_state(particulate_matter),
-        MQTTLumenChecked=get_html_checkbox_state(mqtt_publisher_config.lumen),
-        MQTTColoursChecked=get_html_checkbox_state(color),
-        MQTTUltraVioletChecked=get_html_checkbox_state(ultra_violet),
-        MQTTAccChecked=get_html_checkbox_state(accelerometer),
-        MQTTMagChecked=get_html_checkbox_state(magnetometer),
-        MQTTGyroChecked=get_html_checkbox_state(gyroscope),
-        SASKSChecked=_get_checked_send_as(mqtt_send_format_kootnet),
-        SASIndChecked=_get_checked_send_as(mqtt_send_format_individual_topics),
-        SASCustomChecked=_get_checked_send_as(mqtt_send_format_custom_string),
+        CheckedSensorHostName=get_html_checkbox_state(mqtt_publisher_config.sensor_host_name),
+        CheckedSensorUptime=get_html_checkbox_state(mqtt_publisher_config.sensor_uptime),
+        CheckedSensorIP=get_html_checkbox_state(mqtt_publisher_config.sensor_ip),
+        CheckedSensorDateTime=get_html_checkbox_state(mqtt_publisher_config.sensor_date_time),
+        CheckedCPUTemperature=get_html_checkbox_state(mqtt_publisher_config.system_temperature),
+        CheckedEnvTemperature=get_html_checkbox_state(mqtt_publisher_config.env_temperature),
+        CheckedPressure=get_html_checkbox_state(mqtt_publisher_config.pressure),
+        CheckedAltitude=get_html_checkbox_state(mqtt_publisher_config.altitude),
+        CheckedHumidity=get_html_checkbox_state(mqtt_publisher_config.humidity),
+        CheckedDewPoint=get_html_checkbox_state(mqtt_publisher_config.dew_point),
+        CheckedDistance=get_html_checkbox_state(mqtt_publisher_config.distance),
+        CheckedGas=get_html_checkbox_state(mqtt_publisher_config.gas),
+        CheckedPM=get_html_checkbox_state(mqtt_publisher_config.particulate_matter),
+        CheckedLumen=get_html_checkbox_state(mqtt_publisher_config.lumen),
+        CheckedColour=get_html_checkbox_state(mqtt_publisher_config.color),
+        CheckedUltraViolet=get_html_checkbox_state(mqtt_publisher_config.ultra_violet),
+        CheckedAccelerometer=get_html_checkbox_state(mqtt_publisher_config.accelerometer),
+        CheckedMagnetometer=get_html_checkbox_state(mqtt_publisher_config.magnetometer),
+        CheckedGyroscope=get_html_checkbox_state(mqtt_publisher_config.gyroscope),
+        SASKSChecked=_get_checked_send_as(mqtt_publisher_config.mqtt_send_format_kootnet),
+        SASIndChecked=_get_checked_send_as(mqtt_publisher_config.mqtt_send_format_individual_topics),
+        SASCustomChecked=_get_checked_send_as(mqtt_publisher_config.mqtt_send_format_custom_string),
         MQTTCustomDataFormat=mqtt_publisher_config.mqtt_custom_data_string,
         MQTTSystemHostNameTopic=mqtt_publisher_config.sensor_host_name_topic,
         MQTTIPTopic=mqtt_publisher_config.sensor_ip_topic,

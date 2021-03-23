@@ -28,7 +28,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 31
+        self.valid_setting_count = 32
         self.config_settings_names = [
             "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS",
             "SMTP server port #", "SMTP user name", "SMTP password", "Enable Reports email server",
@@ -38,7 +38,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
             "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
             "Graph ultra violet", "Graph accelerometer", "Graph magnetometer", "Graph gyroscope",
-            "Email Report at time of day", "Email Graph at time of day"
+            "Email Report at time of day", "Email Graph at time of day", "Dew point"
         ]
 
         # If set to 1+, emails are sent on program start for Graphs and Reports (They must be enabled)
@@ -75,6 +75,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 1
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -131,6 +132,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 0
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -149,35 +151,37 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("graph_past_hours") is not None:
             self.graph_past_hours = float(html_request.form.get("graph_past_hours"))
 
-        if html_request.form.get("SensorUptime") is not None:
+        if html_request.form.get("sensor_uptime") is not None:
             self.sensor_uptime = 1
-        if html_request.form.get("CPUTemp") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.system_temperature = 1
-        if html_request.form.get("EnvTemp") is not None:
+        if html_request.form.get("env_temperature") is not None:
             self.env_temperature = 1
-        if html_request.form.get("Pressure") is not None:
+        if html_request.form.get("pressure") is not None:
             self.pressure = 1
-        if html_request.form.get("Altitude") is not None:
+        if html_request.form.get("altitude") is not None:
             self.altitude = 1
-        if html_request.form.get("Humidity") is not None:
+        if html_request.form.get("humidity") is not None:
             self.humidity = 1
-        if html_request.form.get("Distance") is not None:
+        if html_request.form.get("dew_point") is not None:
+            self.dew_point = 1
+        if html_request.form.get("distance") is not None:
             self.distance = 1
-        if html_request.form.get("Gas") is not None:
+        if html_request.form.get("gas") is not None:
             self.gas = 1
-        if html_request.form.get("ParticulateMatter") is not None:
+        if html_request.form.get("particulate_matter") is not None:
             self.particulate_matter = 1
-        if html_request.form.get("Lumen") is not None:
+        if html_request.form.get("lumen") is not None:
             self.lumen = 1
-        if html_request.form.get("Colours") is not None:
+        if html_request.form.get("colour") is not None:
             self.color = 1
-        if html_request.form.get("UltraViolet") is not None:
+        if html_request.form.get("ultra_violet") is not None:
             self.ultra_violet = 1
-        if html_request.form.get("Accelerometer") is not None:
+        if html_request.form.get("accelerometer") is not None:
             self.accelerometer = 1
-        if html_request.form.get("Magnetometer") is not None:
+        if html_request.form.get("magnetometer") is not None:
             self.magnetometer = 1
-        if html_request.form.get("Gyroscope") is not None:
+        if html_request.form.get("gyroscope") is not None:
             self.gyroscope = 1
         self.update_configuration_settings_list()
 
@@ -216,7 +220,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
             str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
             str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.email_reports_time_of_day),
-            str(self.email_graph_time_of_day)
+            str(self.email_graph_time_of_day), str(self.dew_point)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -256,6 +260,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
 
             self.email_reports_time_of_day = self.config_settings[29].strip()
             self.email_graph_time_of_day = self.config_settings[30].strip()
+            self.dew_point = int(self.config_settings[31].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Email Config: " + str(error))
