@@ -24,10 +24,10 @@
 					<i class="fas fa-bars" onclick="collapseSidebar()"></i>
 				</a>
 			</li>
-			<li class="nav-item">
+			<li class="nav-item"><a href="/atpro/">
 				<img src="assets/AT-pro-black.png" alt="ATPro logo" class="logo logo-light">
 				<img src="assets/AT-pro-white.png" alt="ATPro logo" class="logo logo-dark">
-			</li>
+			</a></li>
 		</ul>
 		<!-- end nav left -->
 		<!-- Page Header -->
@@ -120,12 +120,20 @@
 					<span>Notes</span>
 				</a>
 			</li>
-			<li class="sidebar-nav-item">
-				<a id="sensor-graphing" href="#" onclick="SelectNav('sensor-graphing')" class="sidebar-nav-link">
+            <li class="sidebar-nav-item">
+				<a id="sensor-graphing-live" href="#" onclick="SelectNav('sensor-graphing-live')" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-chart-line"></i>
 					</div>
-					<span>Graphing</span>
+					<span>Live Graphing</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-graphing-db" href="#" onclick="SelectNav('sensor-graphing-db')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-chart-bar"></i>
+					</div>
+					<span>Database Graphing</span>
 				</a>
 			</li>
 			<li class="sidebar-nav-item">
@@ -179,7 +187,8 @@
             document.getElementById("sensor-dashboard").classList.remove("active");
             document.getElementById("sensor-readings").classList.remove("active");
             document.getElementById("sensor-notes").classList.remove("active");
-            document.getElementById("sensor-graphing").classList.remove("active");
+            document.getElementById("sensor-graphing-db").classList.remove("active");
+            document.getElementById("sensor-graphing-live").classList.remove("active");
             document.getElementById("sensor-rm").classList.remove("active");
             document.getElementById("sensor-settings").classList.remove("active");
             document.getElementById("sensor-system").classList.remove("active");
