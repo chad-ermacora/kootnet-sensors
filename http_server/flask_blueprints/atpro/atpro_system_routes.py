@@ -62,7 +62,7 @@ sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 
 @html_atpro_system_routes.route("/atpro/sensor-system")
 def html_atpro_sensor_settings_system():
-    return render_template("ATPro_admin/page_templates/sensor_system.html")
+    return render_template("ATPro_admin/page_templates/system.html")
 
 
 @html_atpro_system_routes.route("/atpro/system-db-local")
