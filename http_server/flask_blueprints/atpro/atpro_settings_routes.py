@@ -619,6 +619,7 @@ def html_atpro_sensor_settings_mqtt_publisher():
         MQTTPressureTopic=mqtt_publisher_config.pressure_topic,
         MQTTAltitudeTopic=mqtt_publisher_config.altitude_topic,
         MQTTHumidityTopic=mqtt_publisher_config.humidity_topic,
+        MQTTDewPointTopic=mqtt_publisher_config.dew_point_topic,
         MQTTDistanceTopic=mqtt_publisher_config.distance_topic,
         MQTTGASTopic=mqtt_publisher_config.gas_topic,
         MQTTGASRestIndexTopic=mqtt_publisher_config.gas_resistance_index_topic,

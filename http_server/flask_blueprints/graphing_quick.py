@@ -43,6 +43,7 @@ def html_live_graphing():
         app_cached_variables.quick_graph_pressure = 0
         app_cached_variables.quick_graph_altitude = 0
         app_cached_variables.quick_graph_humidity = 0
+        app_cached_variables.quick_graph_dew_point = 0
         app_cached_variables.quick_graph_distance = 0
         app_cached_variables.quick_graph_gas = 0
         app_cached_variables.quick_graph_particulate_matter = 0
@@ -57,35 +58,37 @@ def html_live_graphing():
             app_cached_variables.quick_graph_skip_sql_entries = int(request.form.get("SkipSQL"))
         if request.form.get("MaxSQLData") is not None:
             app_cached_variables.quick_graph_max_sql_entries = int(request.form.get("MaxSQLData"))
-        if request.form.get("SensorUptime") is not None:
+        if request.form.get("sensor_uptime") is not None:
             app_cached_variables.quick_graph_uptime = 1
-        if request.form.get("CPUTemp") is not None:
+        if request.form.get("cpu_temperature") is not None:
             app_cached_variables.quick_graph_cpu_temp = 1
-        if request.form.get("EnvTemp") is not None:
+        if request.form.get("env_temperature") is not None:
             app_cached_variables.quick_graph_env_temp = 1
-        if request.form.get("Pressure") is not None:
+        if request.form.get("pressure") is not None:
             app_cached_variables.quick_graph_pressure = 1
-        if request.form.get("Altitude") is not None:
+        if request.form.get("altitude") is not None:
             app_cached_variables.quick_graph_altitude = 1
-        if request.form.get("Humidity") is not None:
+        if request.form.get("humidity") is not None:
             app_cached_variables.quick_graph_humidity = 1
-        if request.form.get("Distance") is not None:
+        if request.form.get("dew_point") is not None:
+            app_cached_variables.quick_graph_dew_point = 1
+        if request.form.get("distance") is not None:
             app_cached_variables.quick_graph_distance = 1
-        if request.form.get("Gas") is not None:
+        if request.form.get("gas") is not None:
             app_cached_variables.quick_graph_gas = 1
-        if request.form.get("ParticulateMatter") is not None:
+        if request.form.get("particulate_matter") is not None:
             app_cached_variables.quick_graph_particulate_matter = 1
-        if request.form.get("Lumen") is not None:
+        if request.form.get("lumen") is not None:
             app_cached_variables.quick_graph_lumen = 1
-        if request.form.get("Colours") is not None:
+        if request.form.get("colour") is not None:
             app_cached_variables.quick_graph_colours = 1
-        if request.form.get("UltraViolet") is not None:
+        if request.form.get("ultra_violet") is not None:
             app_cached_variables.quick_graph_ultra_violet = 1
-        if request.form.get("Accelerometer") is not None:
+        if request.form.get("accelerometer") is not None:
             app_cached_variables.quick_graph_acc = 1
-        if request.form.get("Magnetometer") is not None:
+        if request.form.get("magnetometer") is not None:
             app_cached_variables.quick_graph_mag = 1
-        if request.form.get("Gyroscope") is not None:
+        if request.form.get("gyroscope") is not None:
             app_cached_variables.quick_graph_gyro = 1
         return html_graphing()
     return get_html_live_graphing_page()

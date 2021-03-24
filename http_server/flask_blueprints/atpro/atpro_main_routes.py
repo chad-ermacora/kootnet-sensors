@@ -159,11 +159,84 @@ def html_atpro_sensor_notes():
                            DisplayedNote=selected_note)
 
 
-@html_atpro_main_routes.route("/atpro/sensor-graphing-live")
+@html_atpro_main_routes.route("/atpro/sensor-graphing-live", methods=["GET", "POST"])
 def html_atpro_sensor_graphing_live():
-    return "WIP"
-    html_page = render_template("ATPro_admin/page_templates/graphing-live.html")
-    return html_page
+    if request.method == "POST":
+        app_cached_variables.quick_graph_uptime = 0
+        app_cached_variables.quick_graph_cpu_temp = 0
+        app_cached_variables.quick_graph_env_temp = 0
+        app_cached_variables.quick_graph_pressure = 0
+        app_cached_variables.quick_graph_altitude = 0
+        app_cached_variables.quick_graph_humidity = 0
+        app_cached_variables.quick_graph_dew_point = 0
+        app_cached_variables.quick_graph_distance = 0
+        app_cached_variables.quick_graph_gas = 0
+        app_cached_variables.quick_graph_particulate_matter = 0
+        app_cached_variables.quick_graph_lumen = 0
+        app_cached_variables.quick_graph_colours = 0
+        app_cached_variables.quick_graph_ultra_violet = 0
+        app_cached_variables.quick_graph_acc = 0
+        app_cached_variables.quick_graph_mag = 0
+        app_cached_variables.quick_graph_gyro = 0
+
+        if request.form.get("SkipSQL") is not None:
+            app_cached_variables.quick_graph_skip_sql_entries = int(request.form.get("SkipSQL"))
+        if request.form.get("MaxSQLData") is not None:
+            app_cached_variables.quick_graph_max_sql_entries = int(request.form.get("MaxSQLData"))
+        if request.form.get("sensor_uptime") is not None:
+            app_cached_variables.quick_graph_uptime = 1
+        if request.form.get("cpu_temperature") is not None:
+            app_cached_variables.quick_graph_cpu_temp = 1
+        if request.form.get("env_temperature") is not None:
+            app_cached_variables.quick_graph_env_temp = 1
+        if request.form.get("pressure") is not None:
+            app_cached_variables.quick_graph_pressure = 1
+        if request.form.get("altitude") is not None:
+            app_cached_variables.quick_graph_altitude = 1
+        if request.form.get("humidity") is not None:
+            app_cached_variables.quick_graph_humidity = 1
+        if request.form.get("dew_point") is not None:
+            app_cached_variables.quick_graph_dew_point = 1
+        if request.form.get("distance") is not None:
+            app_cached_variables.quick_graph_distance = 1
+        if request.form.get("gas") is not None:
+            app_cached_variables.quick_graph_gas = 1
+        if request.form.get("particulate_matter") is not None:
+            app_cached_variables.quick_graph_particulate_matter = 1
+        if request.form.get("lumen") is not None:
+            app_cached_variables.quick_graph_lumen = 1
+        if request.form.get("colour") is not None:
+            app_cached_variables.quick_graph_colours = 1
+        if request.form.get("ultra_violet") is not None:
+            app_cached_variables.quick_graph_ultra_violet = 1
+        if request.form.get("accelerometer") is not None:
+            app_cached_variables.quick_graph_acc = 1
+        if request.form.get("magnetometer") is not None:
+            app_cached_variables.quick_graph_mag = 1
+        if request.form.get("gyroscope") is not None:
+            app_cached_variables.quick_graph_gyro = 1
+        return get_html_atpro_index(run_script="SelectNav('sensor-graphing-live');")
+    return render_template(
+        "ATPro_admin/page_templates/graphing-live.html",
+        SkipSQLEntries=app_cached_variables.quick_graph_skip_sql_entries,
+        MaxSQLEntries=app_cached_variables.quick_graph_max_sql_entries,
+        CheckedSensorUptime=get_html_checkbox_state(app_cached_variables.quick_graph_uptime),
+        CheckedCPUTemperature=get_html_checkbox_state(app_cached_variables.quick_graph_cpu_temp),
+        CheckedEnvTemperature=get_html_checkbox_state(app_cached_variables.quick_graph_env_temp),
+        CheckedPressure=get_html_checkbox_state(app_cached_variables.quick_graph_pressure),
+        CheckedAltitude=get_html_checkbox_state(app_cached_variables.quick_graph_altitude),
+        CheckedHumidity=get_html_checkbox_state(app_cached_variables.quick_graph_humidity),
+        CheckedDewPoint=get_html_checkbox_state(app_cached_variables.quick_graph_dew_point),
+        CheckedDistance=get_html_checkbox_state(app_cached_variables.quick_graph_distance),
+        CheckedGas=get_html_checkbox_state(app_cached_variables.quick_graph_gas),
+        CheckedPM=get_html_checkbox_state(app_cached_variables.quick_graph_particulate_matter),
+        CheckedLumen=get_html_checkbox_state(app_cached_variables.quick_graph_lumen),
+        CheckedColour=get_html_checkbox_state(app_cached_variables.quick_graph_colours),
+        CheckedUltraViolet=get_html_checkbox_state(app_cached_variables.quick_graph_ultra_violet),
+        CheckedAccelerometer=get_html_checkbox_state(app_cached_variables.quick_graph_acc),
+        CheckedMagnetometer=get_html_checkbox_state(app_cached_variables.quick_graph_mag),
+        CheckedGyroscope=get_html_checkbox_state(app_cached_variables.quick_graph_gyro)
+    )
 
 
 @html_atpro_main_routes.route("/atpro/sensor-graphing-db")

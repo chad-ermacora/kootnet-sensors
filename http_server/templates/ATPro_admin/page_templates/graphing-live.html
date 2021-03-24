@@ -1,193 +1,167 @@
-<form class="mui-form" method="POST" style="background-color: #00B0FF; width: 450px; border: #0BB10D;"
-      action="/LiveGraphView">
-    <fieldset style="text-align: center;">
-        <h2>
-            <u><strong style="color: black;">Quick Graphing</strong></u><br>
-            <a style="color: darkgreen; font-size: medium;" href="/SensorUnitHelp.html#line3_7" target="_blank">
-                Click Here for Help
-            </a>
-            <hr>
-        </h2>
-        <button class="mui-btn mui-btn--raised mui--bg-color-indigo-900 mui--color-blue-200"
-                onclick="window.open('/LiveGraphView','targetWindow', 'toolbar=no,location=no,' +
-            'status=no,menubar=no,scrollbars=yes,resizable=yes,width=' +
-             screen.width + ',height=' + screen.height); return false;">
-            Open Graph Window
-        </button>
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <form class="pure-form" method="POST" action="/atpro/sensor-graphing-live">
+                <button class="pure-button" onclick="OpenQuickGraphWindow()">Open Graph Window</button>
 
-        <hr>
+                <br><br>
 
-        <div class="mui-textfield">
-            <label style="color: black">Add Plot Data after skipping
+                <label>
+                    Add Plot Data after skipping<br>
+                    <input style="width: 120px;" type="number" min="0" max="9999" name="SkipSQL" value="{{ SkipSQLEntries }}">
+                </label>
+
+                <br><br>
+
+                <label>
+                    Max Plot Points<br>
+                    <input style="width: 120px;" type="number" min="5" max="999999" name="MaxSQLData" value="{{ MaxSQLEntries }}">
+                </label>
+
+                <br><br><hr><br>
+
+                <label class="toggle-switch">
+                    <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input">
+                    <label class="toggle-switch-label" for="select-all-checkboxes"></label>
+                    Select All
+                </label>
+
                 <br>
-                <input style="width: 75px" type="number" min="0" max="9999" name="SkipSQL" value="{{ SkipSQLEntries }}">
-            </label>
-            <br>
+
+                <div id="sensor-checkboxes">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="uptime-toggle" class="toggle-switch-input"
+                               name="sensor_uptime" {{ CheckedSensorUptime }}>
+                        <label class="toggle-switch-label" for="uptime-toggle"></label>
+                        Sensor Uptime
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cpu-temp-toggle" class="toggle-switch-input"
+                               name="cpu_temperature" {{ CheckedCPUTemperature }}>
+                        <label class="toggle-switch-label" for="cpu-temp-toggle"></label>
+                        CPU Temperature
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="env-temp-toggle" class="toggle-switch-input"
+                               name="env_temperature" {{ CheckedEnvTemperature }}>
+                        <label class="toggle-switch-label" for="env-temp-toggle"></label>
+                        Env Temperature
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pressure-toggle" class="toggle-switch-input"
+                               name="pressure" {{ CheckedPressure }}>
+                        <label class="toggle-switch-label" for="pressure-toggle"></label>
+                        Pressure
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="altitude-toggle" class="toggle-switch-input"
+                               name="altitude" {{ CheckedAltitude }}>
+                        <label class="toggle-switch-label" for="altitude-toggle"></label>
+                        Altitude
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="humidity-toggle" class="toggle-switch-input"
+                               name="humidity" {{ CheckedHumidity }}>
+                        <label class="toggle-switch-label" for="humidity-toggle"></label>
+                        Humidity
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dew-point-toggle" class="toggle-switch-input"
+                               name="dew_point" {{ CheckedDewPoint }}>
+                        <label class="toggle-switch-label" for="dew-point-toggle"></label>
+                        Dew Point
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="distance-toggle" class="toggle-switch-input"
+                               name="distance" {{ CheckedDistance }}>
+                        <label class="toggle-switch-label" for="distance-toggle"></label>
+                        Distance
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="gas-toggle" class="toggle-switch-input"
+                               name="gas" {{ CheckedGas }}>
+                        <label class="toggle-switch-label" for="gas-toggle"></label>
+                        Gas
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pm-toggle" class="toggle-switch-input"
+                               name="particulate_matter" {{ CheckedPM }}>
+                        <label class="toggle-switch-label" for="pm-toggle"></label>
+                        Particulate Matter
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="lumen-toggle" class="toggle-switch-input"
+                               name="lumen" {{ CheckedLumen }}>
+                        <label class="toggle-switch-label" for="lumen-toggle"></label>
+                        Lumen
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="colour-toggle" class="toggle-switch-input"
+                               name="colour" {{ CheckedColour }}>
+                        <label class="toggle-switch-label" for="colour-toggle"></label>
+                        Colour
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="uv-toggle" class="toggle-switch-input"
+                               name="ultra_violet" {{ CheckedUltraViolet }}>
+                        <label class="toggle-switch-label" for="uv-toggle"></label>
+                        Ultra Violet
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="acc-toggle" class="toggle-switch-input"
+                               name="accelerometer" {{ CheckedAccelerometer }}>
+                        <label class="toggle-switch-label" for="acc-toggle"></label>
+                        Accelerometer
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="mag-toggle" class="toggle-switch-input"
+                               name="magnetometer" {{ CheckedMagnetometer }}>
+                        <label class="toggle-switch-label" for="mag-toggle"></label>
+                        Magnetometer
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="gyroscope-toggle" class="toggle-switch-input"
+                               name="gyroscope" {{ CheckedGyroscope }}>
+                        <label class="toggle-switch-label" for="gyroscope-toggle"></label>
+                        Gyroscope
+                    </label>
+                </div>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update Settings</button>
+            </form>
         </div>
-
-        <div class="mui-textfield">
-            <label style="color: black">Max Plot Points
-                <br>
-                <input style="width: 75px" type="number" min="5" max="999999" name="MaxSQLData" value="{{ MaxSQLEntries }}">
-            </label>
-            <br>
-        </div>
-
-        <hr>
-
-        <div class="mui-checkbox" style="display: inline-block;">
-            <label class="container_checkbox">
-                <input type="checkbox" id="SelectAllCheckboxes" value="" checked>
-                Select All
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="SensorUptime" value="" {{ SensorUptimeChecked }}>
-                Sensor Uptime
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="CPUTemp" value="" {{ CPUTemperatureChecked }}>
-                CPU Temperature
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="EnvTemp" value="" {{ EnvTemperatureChecked }}>
-                Environmental Temperature
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Pressure" value="" {{ PressureChecked }}>
-                Pressure
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Altitude" value="" {{ AltitudeChecked }}>
-                Altitude
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Humidity" value="" {{ HumidityChecked }}>
-                Humidity
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Distance" value="" {{ DistanceChecked }}>
-                Distance
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Gas" value="" {{ GasChecked }}>
-                Gas
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="ParticulateMatter" value="" {{ PMChecked }}>
-                Particulate Matter
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Lumen" value="" {{ LumenChecked }}>
-                Lumen
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Colours" value="" {{ ColoursChecked }}>
-                Colours
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="UltraViolet" value="" {{ UltraVioletChecked }}>
-                Ultra Violet
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Accelerometer" value="" {{ AccChecked }}>
-                Accelerometer
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Magnetometer" value="" {{ MagChecked }}>
-                Magnetometer
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <div class="mui-checkbox" style="display: inline-block">
-            <label class="container_checkbox">
-                <input class="quick_graph_checks" type="checkbox" name="Gyroscope" value="" {{ GyroChecked }}>
-                Gyroscope
-                <span class="checkmark_checkbox"></span>
-            </label>
-        </div>
-
-        <br>
-        <br>
-
-        <button type="submit" class="mui-btn mui-btn--raised">Update Settings</button>
-    </fieldset>
-</form>
+    </div>
+</div>
 
 <script>
-    jQuery('#SelectAllCheckboxes').change(function () {
+    jQuery('#select-all-checkboxes').change(function () {
         if (jQuery(this).prop('checked')) {
-            jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', true);
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
         } else {
-            jQuery(document.getElementsByClassName("quick_graph_checks")).prop('checked', false);
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
         }
     });
+
+    function OpenQuickGraphWindow() {
+        const w_op = 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,'
+        const w_op2 = 'width=' + screen.width + ',height=' + screen.height
+        window.open('/LiveGraphView', 'targetWindow', w_op + w_op2); return false;
+    }
 </script>
