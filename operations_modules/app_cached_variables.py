@@ -468,6 +468,7 @@ quick_graph_env_temp = 1
 quick_graph_pressure = 0
 quick_graph_altitude = 0
 quick_graph_humidity = 1
+quick_graph_dew_point = 0
 quick_graph_distance = 0
 quick_graph_gas = 0
 quick_graph_particulate_matter = 0
