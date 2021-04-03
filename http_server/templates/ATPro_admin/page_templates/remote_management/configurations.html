@@ -1,0 +1,63 @@
+<label>
+    Select Configuration<br>
+    <select name="config_selection" id="config_selection" onchange="ConfigChange()">
+        <option value="primary">Primary</option>
+        <option value="installed_sensors">Installed Sensors</option>
+        <option value="interval_recording">Interval Recording</option>
+        <option value="variance_trigger_recording">Variance Trigger Recording</option>
+        <option value="high_low_recording">High/Low Trigger Recording</option>
+        <option value="display">Display</option>
+        <option value="email">Email</option>
+        <option value="wifi">wpa_supplicant.conf (Wifi)</option>
+        <option value="network">dhcpcd.conf (Network)</option>
+    </select>
+</label>
+
+<br><br>
+
+<label>
+    Text Configuration<br>
+    <textarea name="new_config_str" id="new_config_str" style="min-width: 450px; min-height: 350px;"></textarea>
+</label>
+
+<br><br>
+
+<button type="submit" formaction="/PushConfiguration" class="pure-button">Send Configuration</button>
+
+<script>
+    function ConfigChange() {
+        let primary_config = '{{ DefaultPrimaryText }}';
+        let installed_sensors_config = '{{ DefaultInstalledSensorsText }}';
+        let interval_rec_config = '{{ DefaultIntervalRecText }}';
+        let variance_rec_config = '{{ DefaultVarianceRecText }}';
+        let high_low_rec_config = '{{ DefaultHighLowRecText }}';
+        let display_config = '{{ DefaultDisplayText }}';
+        let email_config = '{{ DefaultEmailText }}';
+        let wifi_config = '{{ DefaultWifiText }}';
+        let network_config = '{{ DefaultNetworkText }}';
+
+        let selected_value = document.getElementById('config_selection').value
+
+        if (selected_value === 'primary') {
+                document.getElementById('new_config_str').value = primary_config;
+        } else if (selected_value === 'installed_sensors') {
+                document.getElementById('new_config_str').value = installed_sensors_config;
+        }  else if (selected_value === 'interval_recording') {
+                document.getElementById('new_config_str').value = interval_rec_config;
+        }  else if (selected_value === 'variance_trigger_recording') {
+                document.getElementById('new_config_str').value = variance_rec_config;
+        }  else if (selected_value === 'high_low_recording') {
+                document.getElementById('new_config_str').value = high_low_rec_config;
+        }  else if (selected_value === 'display') {
+                document.getElementById('new_config_str').value = display_config;
+        }  else if (selected_value === 'email') {
+                document.getElementById('new_config_str').value = email_config;
+        }  else if (selected_value === 'wifi') {
+                document.getElementById('new_config_str').value = wifi_config;
+        }  else if (selected_value === 'network') {
+                document.getElementById('new_config_str').value = network_config;
+        }
+    }
+
+    ConfigChange();
+</script>

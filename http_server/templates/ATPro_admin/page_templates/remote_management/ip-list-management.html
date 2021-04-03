@@ -1,0 +1,58 @@
+<style>
+    .pure-button {
+        font-weight: bolder;
+    }
+</style>
+
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <form class="pure-form" id="ip_management_form" method="POST" action="/atpro/rm-ip-list-management">
+                <input type="text" id="ip_list_command" name="ip_list_command" value="Nothing" hidden>
+
+                <label for="ip_list_selection">
+                    Choose an IP List:<br>
+                    <select name="selected_ip_list" id="ip_list_selection">
+                        <optgroup label="Custom Saved IP Lists">
+                            {{ IPListsOptionNames |safe }}
+                        </optgroup>
+                    </select>
+                </label>
+
+                <br><br>
+
+                <label>
+                    New IP List Name<br>
+                    <input type="text" name="ip_list_new_name" size="40" maxlength="64" placeholder="Eg. James_ip_list_011">
+                </label>
+
+                <br><br>
+
+                <button class="pure-button" style="color: darkgreen;"
+                        onclick="IPManagementCommand('CreateNewIPList', 'Create')">
+                    Create New IP List
+                </button>
+
+                <button type="button" class="pure-button"
+                        onclick="IPManagementCommand('RenameIPList', 'Rename')">
+                    Rename Selected IP List
+                </button>
+
+                <button type="button" class="pure-button" style="color: darkred;"
+                        onclick="IPManagementCommand('DeleteIPList', 'Delete')">
+                    Delete Selected IP List
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function IPManagementCommand(action_value, message) {
+        let r = confirm("Are you sure you want to " + message + " address list?");
+        if (r === true) {
+            document.getElementById("ip_list_command").value = action_value;
+            document.getElementById("ip_management_form").submit()
+        }
+    }
+</script>

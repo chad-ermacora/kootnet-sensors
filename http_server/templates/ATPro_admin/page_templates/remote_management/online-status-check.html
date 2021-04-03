@@ -1,0 +1,16 @@
+<div class="row">
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <h2><a href="#" onclick="SelectNav('sensor-rm')">Back to Remote Management</a></h2>
+
+            <table>
+                <tr>
+                    <th>Address</th>
+                    <th>Response Time</th>
+                    <th>Sensor Name</th>
+                </tr>
+                {{ SensorResponse | safe }}
+            </table>
+        </div>
+    </div>
+</div>

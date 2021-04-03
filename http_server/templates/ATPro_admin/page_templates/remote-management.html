@@ -1,0 +1,436 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
+<style>
+    .remote-management-page-view {
+        display: inline-block;
+        vertical-align: top;
+        width: fit-content;
+    }
+
+    .hide-p-button {
+        background: black;
+        color: red;
+        font-weight: bolder;
+    }
+
+    input[type="text"] {
+        width: 275px;
+    }
+</style>
+
+<form class="pure-form" id="main_form" method="POST" action="/atpro/sensor-rm">
+    <input type="text" id="rsm-run-command" name="rsm-run-command" value="Nothing" hidden>
+    <div class="row">
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="counter bg-success">
+                <h2>Remote Sensor Management</h2>
+                <p>Use this to Check & Manage up to 20 other Kootnet Sensors</p>
+                _<b id="blink_shadow"></b>_
+
+                <br><br>
+
+                <button type="button" id="ip-button" class="pure-button hide-p-button" onclick="ShowHideIPList()">
+                    Show Sensors Address List
+                </button>
+
+                <br><br>
+
+                <div id="ip-selection-content">
+                    <h4>Sensor Login (Optional)</h4>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>
+                                    Username<br>
+                                    <input type="text" name="sensor_username" style="width: 200px;" placeholder="Eg. Jim">
+                                </label>
+                            </div>
+
+                            &nbsp;
+
+                            <div style="display: table-cell;">
+                                <label>
+                                    Password<br>
+                                    <input type="password" name="sensor_password" style="width: 200px;" placeholder="Eg. SuperSecure">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <a href="#" onclick="SelectNav('rm-ip-list-management', skip_menu_select=true)">
+                        Click here to manage IP lists
+                    </a>
+
+                    <br><br>
+
+                    <label>
+                        Choose an IP List:<br>
+                        <select name="selected_ip_list" onchange="SensorAddressesCommand('ChangeIPList')">
+                            <optgroup label="Custom Saved IP Lists">
+                                {{ IPListsOptionNames |safe }}
+                            </optgroup>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <h3>IP or DNS Addresses</h3>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <input type="text" name="senor_ip_1" placeholder="eg. 192.168.10.11" value="{{ SensorIP1 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_3" value="{{ SensorIP3 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_5" value="{{ SensorIP5 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_7" value="{{ SensorIP7 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_9" value="{{ SensorIP9 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_11" value="{{ SensorIP11 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_13" value="{{ SensorIP13 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_15" value="{{ SensorIP15 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_17" value="{{ SensorIP17 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_19" value="{{ SensorIP19 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_2" value="{{ SensorIP2 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_4" value="{{ SensorIP4 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_6" value="{{ SensorIP6 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_8" value="{{ SensorIP8 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_10" value="{{ SensorIP10 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_12" value="{{ SensorIP12 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_14" value="{{ SensorIP14 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_16" value="{{ SensorIP16 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_18" value="{{ SensorIP18 }}">
+
+                        &nbsp;
+
+                        <input type="text" name="senor_ip_20" value="{{ SensorIP20 }}">
+
+                        &nbsp;
+                    </div>
+
+                    <br><br>
+
+                    <button class="pure-button" type="button" onclick="SensorAddressesCommand('SaveSettings')">
+                        Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="counter bg-success">
+                <h2>Reports & Downloads</h2>
+
+                <div id="download-buttons">
+                    <label>
+                        Open Generated Reports<br>
+                        <button type="button" class="pure-button" onclick="OpenReport('combination');">
+                            Combination
+                        </button>
+                        <button type="button" class="pure-button" onclick="OpenReport('system');">
+                            System
+                        </button>
+                        <button type="button" class="pure-button" onclick="OpenReport('configuration');">
+                            Configuration
+                        </button>
+                        <button type="button" class="pure-button" onclick="OpenReport('readings');">
+                            Readings
+                        </button>
+                        <button type="button" class="pure-button" onclick="OpenReport('latency');">
+                            Latency
+                        </button>
+                    </label>
+                </div>
+
+                <br><br>
+
+                <label>
+                    Available Zip Downloads<br>
+                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCReportsZip';"
+                            {{ DownloadReportsZipDisabled }}>
+                        Reports
+                    </button>
+                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCDatabasesZip';"
+                            {{ DownloadDatabasesDisabled }}>
+                        Databases
+                    </button>
+                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCLogsZip';"
+                            {{ DownloadLogsDisabled }}>
+                        Logs
+                    </button>
+                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCBigZip';"
+                            {{ DownloadBigZipDisabled }}>
+                        The Big Zip
+                    </button>
+                </label>
+            </div>
+        </div>
+
+
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="counter bg-primary">
+                <h2>Generate Reports & Downloads</h2>
+
+                <label>Choose Action</label>
+                <div>
+                    <h4>View</h4>
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioOnlineStatus" value="online_status"
+                               onclick="RadioBoxSelections()" checked>
+                        Online Status
+                    </label>
+
+                    <h4>Generate Report</h4>
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioComboReports" value="combo_report"
+                               onclick="RadioBoxSelections()">
+                        Combination
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioSystemReports" value="systems_report"
+                               onclick="RadioBoxSelections()">
+                        Systems
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioConfigReports" value="config_report"
+                               onclick="RadioBoxSelections()">
+                        Configurations
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioSensorsTests" value="sensors_test_report"
+                               onclick="RadioBoxSelections()">
+                        Readings
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioSensorsLatency" value="sensors_latency_report"
+                               onclick="RadioBoxSelections()">
+                        latencies
+                    </label>
+
+                    <h4>Generate Zip File</h4>
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioDownloadBigZip" value="sensors_download_everything"
+                               onclick="RadioBoxSelections()">
+                        Create "The Big Zip" (Reports, Logs & Databases)
+                    </label>
+
+                    <br>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioDownloadReports" value="sensors_download_reports"
+                               onclick="RadioBoxSelections()">
+                        Combination Report
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioDownloadDatabases" value="sensors_download_databases"
+                               onclick="RadioBoxSelections()">
+                        Sensor Databases
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_action" id="RadioDownloadLogs" value="sensors_download_logs"
+                               onclick="RadioBoxSelections()">
+                        Logs
+                    </label>
+
+                    <h5>Download Options</h5>
+                    <label>
+                        <input type="radio" name="selected_send_type" id="SelectedRelayedDownloads" value="relayed_download">
+                        Relayed Download
+                    </label>
+
+                    <label>
+                        <input type="radio" name="selected_send_type" id="SelectedDirectDownloads" value="direct_download">
+                        Direct Download
+                    </label>
+                </div>
+
+                <br><br>
+
+                <button class="pure-button" type="button" id="run_action_button" name="run_button_action"
+                        value="run_action" onclick="SensorAddressesCommand('RunAction')">
+                    Run Action
+                </button>
+            </div>
+        </div>
+
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="counter bg-primary">
+                <div class="pure-menu">
+                    <ul class="pure-menu-list pure-menu-horizontal pure-menu-scrollable">
+                        <li class="pure-menu-item rm-configurations">
+                            <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-configurations')">
+                                Configurations
+                            </a>
+                        </li>
+                        <li class="pure-menu-item rm-online-services">
+                            <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-online-services')">
+                                3rd Party Online Services
+                            </a>
+                        </li>
+                        <li class="pure-menu-item rm-system-commands">
+                            <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-system-commands')">
+                                System Commands
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <br>
+
+                <div id="remote-management-page-view" class="remote-management-page-view"></div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    function RadioBoxSelections() {
+        if (document.getElementById("RadioOnlineStatus").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioComboReports").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioSensorsTests").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioSensorsLatency").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioSystemReports").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioConfigReports").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioDownloadReports").checked) {
+            SelectRelayDisableBoth();
+        } else if (document.getElementById("RadioDownloadDatabases").checked) {
+            SelectEnableAll();
+        } else if (document.getElementById("RadioDownloadLogs").checked) {
+            SelectEnableAll();
+        } else if (document.getElementById("RadioDownloadBigZip").checked) {
+            SelectRelayDisableBoth();
+        }
+    }
+
+    function SelectEnableAll() {
+        document.getElementById("SelectedRelayedDownloads").disabled = false;
+        document.getElementById("SelectedDirectDownloads").disabled = false;
+    }
+
+    function SelectRelayDisableBoth() {
+        document.getElementById("SelectedRelayedDownloads").checked = true;
+        document.getElementById("SelectedRelayedDownloads").disabled = true;
+        document.getElementById("SelectedDirectDownloads").disabled = true;
+    }
+
+    RadioBoxSelections();
+</script>
+
+<script>
+    function OpenReport(nav_location) {
+        $('#download-buttons:button').attr('disabled', 'true');
+        window.open('/atpro/rm-report/' + nav_location);
+    }
+
+    function SelectRMNav(nav_location) {
+        document.getElementsByClassName("rm-configurations")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("rm-online-services")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("rm-system-commands")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        $("#remote-management-page-view").load("/atpro/rm/" + nav_location);
+    }
+
+    function ShowHideIPList() {
+        if (document.getElementById("ip-selection-content").style.display === "none") {
+            document.getElementById("ip-selection-content").style.display = "inline-block";
+            document.getElementById("ip-button").textContent = "Hide Sensors Address List";
+        } else {
+            document.getElementById("ip-selection-content").style.display = "none";
+            document.getElementById("ip-button").textContent = "Show Sensors Address List";
+        }
+    }
+
+    function SensorAddressesCommand(action_value) {
+        document.getElementById("rsm-run-command").value = action_value;
+        document.getElementById("main_form").submit()
+    }
+
+    function RunningRSM(blinking_text="Please Wait ...") {
+        var blinks = document.getElementById("blink_shadow");
+        var shadow_colour = "green";
+        blinks.textContent = blinking_text;
+        document.getElementById("run_action_button").disabled = true;
+
+        window.setTimeout(refresh_page_timed, 10000);
+
+        window.setInterval(function () {
+            blinks.style.color = shadow_colour;
+            shadow_colour = (shadow_colour === "green") ? "red" : "green";
+        }, 1000);
+    }
+
+    function refresh_page_timed() {
+        SelectNav("sensor-rm");
+    }
+
+    document.getElementById("ip-selection-content").style.display = "none";
+    SelectRMNav("rm-configurations");
+    {{ RunningRSMScript | safe }}
+</script>
