@@ -317,13 +317,6 @@ def html_create_plotly_graph():
     return get_html_atpro_index(run_script="SelectNav('sensor-graphing-db');")
 
 
-@html_atpro_main_routes.route("/atpro/sensor-rm")
-def html_atpro_sensor_remote_management():
-    return "WIP"
-    html_page = render_template("ATPro_admin/page_templates/sensor_readings.html")
-    return html_page
-
-
 @html_atpro_main_routes.route("/atpro/sensor-help")
 def html_atpro_sensor_help():
     documentation_root_dir = file_locations.program_root_dir + "/extras/documentation"
