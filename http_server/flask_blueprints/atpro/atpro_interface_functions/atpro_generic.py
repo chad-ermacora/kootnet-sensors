@@ -23,6 +23,7 @@ from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables
 
 
@@ -35,7 +36,7 @@ def get_html_atpro_index(run_script="SelectNav('sensor-dashboard');", main_page_
                            RunScript=run_script)
 
 
-def get_message_page(title, message="", page_url="sensor-dashboard"):
+def get_message_page(title, message="", page_url="sensor-dashboard", full_reload=True):
     """
     Possible page URL's include:
     sensor-dashboard, sensor-readings, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
@@ -44,7 +45,9 @@ def get_message_page(title, message="", page_url="sensor-dashboard"):
                                    NavLocation=page_url,
                                    TextTitle=title,
                                    TextMessage=message)
-    return get_html_atpro_index(run_script="", main_page_view_content=message_page)
+    if full_reload:
+        return get_html_atpro_index(run_script="", main_page_view_content=message_page)
+    return message_page
 
 
 def get_clean_db_name(db_text_name):
@@ -65,6 +68,28 @@ def get_clean_db_name(db_text_name):
             count_num += 1
         final_db_name = final_db_name + str(count_num)
     return final_db_name + ".sqlite"
+
+
+def get_clean_ip_list_name(ip_list_name):
+    final_ip_list_name = ""
+    if ip_list_name is not None:
+        for letter in ip_list_name:
+            if re.match("^[A-Za-z0-9_.-]*$", letter):
+                final_ip_list_name += letter
+
+        if final_ip_list_name == "":
+            final_ip_list_name = "No_Name"
+
+        if final_ip_list_name.split(".")[-1] == "txt":
+            final_ip_list_name = final_ip_list_name[:-4]
+
+        custom_ip_list_names = app_config_access.sensor_control_config.custom_ip_list_names
+        count_num = 1
+        if final_ip_list_name + ".txt" in custom_ip_list_names:
+            while final_ip_list_name + str(count_num) + ".txt" in custom_ip_list_names:
+                count_num += 1
+            final_ip_list_name = final_ip_list_name + str(count_num)
+    return final_ip_list_name + ".txt"
 
 
 def get_uptime_str():
