@@ -22,7 +22,7 @@ from werkzeug.security import check_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from http_server.server_http_generic_functions import get_html_hidden_state, message_and_return
+from http_server.server_http_generic_functions import get_html_hidden_state
 from http_server.server_http_auth import auth
 
 html_functional_routes = Blueprint("html_functional_routes", __name__)
