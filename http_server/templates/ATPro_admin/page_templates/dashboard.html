@@ -50,24 +50,26 @@
                         <tr>
                             <th><div class="readings-header">HostName</div></th>
                             <th><div class="readings-header">IP<br>Address</div></th>
-                            <th><div class="readings-header">Debug<br>Logging</div></th>
-                            <th><div class="readings-header">System<br>Temperature</div></th>
+                            <th><div class="readings-header">Operating<br>System</div></th>
                             <th><div class="readings-header">System<br>Uptime</div></th>
                             <th><div class="readings-header">System<br>Reboots</div></th>
                             <th><div class="readings-header">Available<br>RAM</div></th>
                             <th><div class="readings-header">Available<br>Drive Space</div></th>
+                            <th><div class="readings-header">System<br>Temperature</div></th>
+                            <th><div class="readings-header">Debug<br>Logging</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>{{ HostName }}</td>
                             <td>{{ LocalIP }}</td>
-                            <td>{{ DebugLogging }}</td>
-                            <td>{{ CPUTemperature }} °C</td>
+                            <td>{{ OperatingSystem }}</td>
                             <td>{{ SensorUptime | safe }}</td>
                             <td>{{ SensorReboots }}</td>
                             <td>{{ RAMUsage }}</td>
                             <td>{{ DiskUsage }}</td>
+                            <td>{{ CPUTemperature }} °C</td>
+                            <td>{{ DebugLogging }}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -160,6 +160,14 @@
                     <span>System</span>
                 </a>
             </li>
+            <li class="sidebar-nav-item">
+                <a id="sensor-logs" href="#" onclick="SelectNav('sensor-logs')" class="sidebar-nav-link">
+                    <div>
+                        <i class="fas fa-clipboard"></i>
+                    </div>
+                    <span>Logs</span>
+                </a>
+            </li>
 			<li class="sidebar-nav-item">
 				<a id="sensor-help" href="/SensorUnitHelp.html" target="_blank" class="sidebar-nav-link">
 					<div>
@@ -199,6 +207,7 @@
         document.getElementById("sensor-rm").classList.remove("active");
         document.getElementById("sensor-settings").classList.remove("active");
         document.getElementById("sensor-system").classList.remove("active");
+        document.getElementById("sensor-logs").classList.remove("active");
 
         document.getElementById(nav_location).classList.add("active");
     }

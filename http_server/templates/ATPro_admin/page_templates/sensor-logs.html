@@ -1,0 +1,92 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
+<style>
+    .del-buttons {
+        color: darkred;
+        background: orange;
+    }
+
+    .log-page-view {
+        color: var(--second-color);
+        font-weight: bold;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div style="text-align: center;">
+    <button class="pure-button" onclick="window.location.href = '/atpro/logs/log-download-all-zipped';">
+        Download All Logs
+    </button>&nbsp;&nbsp;
+    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('primary')">
+        Delete Primary Log
+    </button>&nbsp;&nbsp;
+    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('network')">
+        Delete Network Log
+    </button>&nbsp;&nbsp;
+    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('sensors')">
+        Delete Sensors Log
+    </button>
+
+    <br><br><hr><br>
+
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item log-primary">
+                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                    Primary Log
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item log-network">
+                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                    Network Log
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item log-sensors">
+                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                    Sensors Log
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <br><br>
+
+    <h2 id="log-header"></h2>
+
+    <h3 id="log-deleted-message"></h3>
+
+    <br>
+
+    <div class="log-page-view" id="log-page-view"></div>
+</div>
+
+<script>
+    function SelectLogNav(nav_location) {
+        document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-network")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        $("#log-header").load("/atpro/logs/" + nav_location + "-header");
+        $("#log-page-view").load("/atpro/logs/" + nav_location);
+    }
+
+    function DeleteLog(log_name) {
+        let r = confirm("Are you sure you want to delete the " + log_name + " log?");
+        if (r === true) {
+            $("#log-deleted-message").load("/atpro/delete-log/" + log_name);
+            SelectLogNav("log-" + log_name);
+        }
+    }
+
+    SelectLogNav("log-primary");
+</script>
