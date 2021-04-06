@@ -184,19 +184,24 @@
 <script>
     function SelectNav(nav_location, skip_menu_select=false) {
         if (skip_menu_select === false) {
-            document.getElementById("sensor-dashboard").classList.remove("active");
-            document.getElementById("sensor-readings").classList.remove("active");
-            document.getElementById("sensor-notes").classList.remove("active");
-            document.getElementById("sensor-graphing-db").classList.remove("active");
-            document.getElementById("sensor-graphing-live").classList.remove("active");
-            document.getElementById("sensor-rm").classList.remove("active");
-            document.getElementById("sensor-settings").classList.remove("active");
-            document.getElementById("sensor-system").classList.remove("active");
-
-            document.getElementById(nav_location).classList.add("active");
+            SelectActiveMainMenu(nav_location);
         }
 
         $("#main-page-view").load("/atpro/" + nav_location);
     }
+
+    function SelectActiveMainMenu(nav_location) {
+        document.getElementById("sensor-dashboard").classList.remove("active");
+        document.getElementById("sensor-readings").classList.remove("active");
+        document.getElementById("sensor-notes").classList.remove("active");
+        document.getElementById("sensor-graphing-db").classList.remove("active");
+        document.getElementById("sensor-graphing-live").classList.remove("active");
+        document.getElementById("sensor-rm").classList.remove("active");
+        document.getElementById("sensor-settings").classList.remove("active");
+        document.getElementById("sensor-system").classList.remove("active");
+
+        document.getElementById(nav_location).classList.add("active");
+    }
+
     {{ RunScript | safe }}
 </script>
