@@ -1,15 +1,15 @@
 <h3>Choose 3rd Party Service to Update</h3>
 
 <label>
-    <input type="radio" name="online_service_selected_action" value="weather_underground" checked>
+    <input type="radio" name="config_selection" value="weather_underground" checked>
     Weather Underground
 </label>
 <label>
-    <input type="radio" name="online_service_selected_action" value="luftdaten">
+    <input type="radio" name="config_selection" value="luftdaten">
     Luftdaten
 </label>
 <label>
-    <input type="radio" name="online_service_selected_action" value="open_sense_map">
+    <input type="radio" name="config_selection" value="open_sense_map">
     Open Sense Map
 </label>
 
@@ -31,4 +31,4 @@
 
 <br><br>
 
-<button type="submit" class="pure-button" formaction="/SetActiveOnlineServices">Send Update</button>
+<button type="submit" class="pure-button" formaction="/atpro/sensor-rm-push-config">Send Update</button>
