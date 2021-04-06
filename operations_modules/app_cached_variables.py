@@ -437,7 +437,7 @@ html_config_report = default_report
 html_readings_report = default_report
 html_latency_report = default_report
 
-# Login used for remote sensors (Used in Sensor Control)
+# Login used for remote sensors (Used in Sensor Remote Management)
 http_login = ""
 http_password = ""
 
