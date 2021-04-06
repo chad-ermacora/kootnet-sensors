@@ -1,0 +1,41 @@
+<style>
+    th {
+        font-weight: bolder;
+        text-align: center;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary">
+            <h2><a style="color: white;" onclick="SelectNav('sensor-rm');" href="#">Back to Sensor Control</a></h2>
+
+            <h4 style="color: red;">
+                ** Warning: Most browsers will block more then one download at a time. **<br>
+                ** Check for pop-up warnings and set to allow this site. **
+            </h4>
+
+            <button class="pure-button" onclick="DownloadURLS();">Start Downloads</button>
+
+            <h4>
+                This will download {{ DownloadTypeMessage }} from the following Sensors.<br>
+                {{ ExtraMessage|safe }}
+            </h4>
+
+            <table>
+                <tr>
+                    <th>Response Time</th>
+                    <th>{{ ColumnDownloadMessage }}</th>
+                    <th>Address</th>
+                </tr>
+                {{ SensorResponse | safe }}
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function DownloadURLS() {
+        {{ DownloadURLs|safe }}
+    }
+</script>
