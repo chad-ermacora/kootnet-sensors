@@ -41,7 +41,7 @@ def get_message_page(title, message="", page_url="sensor-dashboard", full_reload
     Possible page URL's include:
     sensor-dashboard, sensor-readings, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
     """
-    message_page = render_template("ATPro_admin/page_templates/message_return.html",
+    message_page = render_template("ATPro_admin/page_templates/message-return.html",
                                    NavLocation=page_url,
                                    TextTitle=title,
                                    TextMessage=message)

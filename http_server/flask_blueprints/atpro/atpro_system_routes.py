@@ -24,6 +24,7 @@ from operations_modules.app_generic_functions import thread_function, get_file_c
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     validate_sqlite_database, check_mqtt_subscriber_database_structure, check_main_database_structure, \
     check_checkin_database_structure
+
 try:
     from plotly import __version__ as plotly_version
     from numpy import __version__ as numpy_version
@@ -48,7 +49,7 @@ except ImportError as import_error:
 import os
 import zipfile
 from datetime import datetime
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, send_file
 from werkzeug.security import generate_password_hash
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, \
@@ -63,6 +64,73 @@ sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 @html_atpro_system_routes.route("/atpro/sensor-system")
 def html_atpro_sensor_settings_system():
     return render_template("ATPro_admin/page_templates/system.html")
+
+
+@html_atpro_system_routes.route("/atpro/sensor-logs")
+def html_atpro_sensor_logs():
+    return render_template("ATPro_admin/page_templates/sensor-logs.html")
+
+
+@html_atpro_system_routes.route('/atpro/logs/<path:url_path>')
+@auth.login_required
+def atpro_get_log(url_path):
+    if url_path == "log-download-all-zipped":
+        zip_name = "Logs_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
+        return_zip_file = zip_files(
+            ["log_primary.txt", "log_network.txt", "log_sensors.txt"],
+            [logger.get_sensor_log(file_locations.primary_log, max_lines=0),
+             logger.get_sensor_log(file_locations.network_log, max_lines=0),
+             logger.get_sensor_log(file_locations.sensors_log, max_lines=0)]
+        )
+        if type(return_zip_file) is str:
+            return return_zip_file
+        else:
+            return send_file(return_zip_file, as_attachment=True, attachment_filename=zip_name)
+    elif url_path == "log-primary":
+        return logger.get_sensor_log(file_locations.primary_log)
+    elif url_path == "log-primary-header":
+        primary_log_lines = logger.get_number_of_log_entries(file_locations.primary_log)
+        return _get_log_view_message("Primary Log", primary_log_lines)
+    elif url_path == "log-network":
+        return logger.get_sensor_log(file_locations.network_log)
+    elif url_path == "log-network-header":
+        network_log_lines = logger.get_number_of_log_entries(file_locations.network_log)
+        return _get_log_view_message("Network Log", network_log_lines)
+    elif url_path == "log-sensors":
+        return logger.get_sensor_log(file_locations.sensors_log)
+    elif url_path == "log-sensors-header":
+        sensors_log_lines = logger.get_number_of_log_entries(file_locations.sensors_log)
+        return _get_log_view_message("Sensors Log", sensors_log_lines)
+
+
+@html_atpro_system_routes.route('/atpro/delete-log/<path:url_path>')
+@auth.login_required
+def atpro_delete_log(url_path):
+    return_message = "Invalid Path"
+    if url_path == "primary":
+        logger.network_logger.info("** Primary Sensor Log Deleted by " + str(request.remote_addr))
+        logger.clear_primary_log()
+        return_message = "Primary Log Deleted"
+    elif url_path == "network":
+        logger.network_logger.info("** Network Sensor Log Deleted by " + str(request.remote_addr))
+        logger.clear_network_log()
+        return_message = "Network Log Deleted"
+    elif url_path == "sensors":
+        logger.network_logger.info("** Sensors Log Deleted by " + str(request.remote_addr))
+        logger.clear_sensor_log()
+        return_message = "Sensors Log Deleted"
+    return return_message
+
+
+def _get_log_view_message(log_name, log_lines_length):
+    if log_lines_length:
+        if logger.max_log_lines_return > log_lines_length:
+            text_log_entries_return = str(log_lines_length) + "/" + str(log_lines_length)
+        else:
+            text_log_entries_return = str(logger.max_log_lines_return) + "/" + str(log_lines_length)
+    else:
+        text_log_entries_return = "0/0"
+    return log_name + " - " + text_log_entries_return
 
 
 @html_atpro_system_routes.route("/atpro/system-db-local")
@@ -345,7 +413,7 @@ def _zip_and_delete_database(database_location, db_save_name):
 @auth.login_required
 def atpro_raw_configurations_view():
     logger.network_logger.debug("** HTML Raw Configurations viewed by " + str(request.remote_addr))
-    return render_template("ATPro_admin/page_templates/raw_configurations.html")
+    return render_template("ATPro_admin/page_templates/system-raw-configurations.html")
 
 
 def _config_to_html_view(config_name, config_location, config_text_file, split_by_line=True):
@@ -362,7 +430,7 @@ def _config_to_html_view(config_name, config_location, config_text_file, split_b
                 logger.network_logger.warning(log_msg + str(error))
     else:
         return_html = config_text_file.replace("\n", "<br>")
-    return render_template("ATPro_admin/page_templates/raw_configurations_template.html",
+    return render_template("ATPro_admin/page_templates/system-raw-configurations-template.html",
                            ConfigName=config_name,
                            ConfigLocation=config_location,
                            Config=return_html)
@@ -374,15 +442,15 @@ def atpro_raw_config_urls(url_path):
     if url_path == "config-software-ver":
         config_name = "Software Versions"
         module_version_text = "This will be removed\n" + \
-            kootnet_version + "=Kootnet Sensors\n" + \
-            str(flask_version) + "=Flask\n" + \
-            str(gevent_version) + "=Gevent\n" + \
-            str(greenlet_version) + "=Greenlet\n" + \
-            str(cryptography_version) + "=Cryptography\n" + \
-            str(werkzeug_version) + "=Werkzeug\n" + \
-            str(requests_version) + "=Requests\n" + \
-            str(plotly_version) + "=Plotly Graphing\n" + \
-            str(numpy_version) + "=Numpy\n"
+                              kootnet_version + "=Kootnet Sensors\n" + \
+                              str(flask_version) + "=Flask\n" + \
+                              str(gevent_version) + "=Gevent\n" + \
+                              str(greenlet_version) + "=Greenlet\n" + \
+                              str(cryptography_version) + "=Cryptography\n" + \
+                              str(werkzeug_version) + "=Werkzeug\n" + \
+                              str(requests_version) + "=Requests\n" + \
+                              str(plotly_version) + "=Plotly Graphing\n" + \
+                              str(numpy_version) + "=Numpy\n"
         return _config_to_html_view(config_name, "NA", module_version_text)
     elif url_path == "config-main":
         config_name = "Main Configuration"
@@ -517,7 +585,7 @@ def atpro_upgrade_urls(url_path):
         message = "Python3 Module Upgrades Started. This may take awhile ..."
         thread_function(_upgrade_py3_modules)
 
-    msg_page = render_template("ATPro_admin/page_templates/message_return.html",
+    msg_page = render_template("ATPro_admin/page_templates/message-return.html",
                                NavLocation="sensor-dashboard",
                                TextTitle=title,
                                TextMessage=message)

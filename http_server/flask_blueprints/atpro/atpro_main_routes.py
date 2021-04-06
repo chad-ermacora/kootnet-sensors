@@ -64,6 +64,7 @@ def html_atpro_dashboard():
         DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d<br>%H:%M:%S"),
         HostName=app_cached_variables.hostname,
         LocalIP=app_cached_variables.ip,
+        OperatingSystem=app_cached_variables.operating_system_name,
         DebugLogging=g_t_c_e(app_config_access.primary_config.enable_debug_logging),
         CPUTemperature=str(cpu_temp),
         SensorUptime=get_uptime_str(),
@@ -92,7 +93,7 @@ def html_atpro_sensor_readings():
     for index, dic_readings in enumerate(all_readings.items()):
         html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
     html_return_code = html_sensor_readings_row.replace("{{ Readings }}", html_final_code)
-    return render_template("ATPro_admin/page_templates/sensor_readings.html", HTMLReplacementCode=html_return_code)
+    return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_return_code)
 
 
 @html_atpro_main_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
