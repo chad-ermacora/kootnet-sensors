@@ -30,6 +30,7 @@ try:
     from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
     from http_server.flask_blueprints.atpro.atpro_settings_routes import html_atpro_settings_routes
     from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
+    from http_server.flask_blueprints.atpro.atpro_remote_management import html_atpro_remote_management_routes
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.html_database_management import html_database_routes
@@ -80,7 +81,7 @@ try:
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
     html_atpro_main_routes, html_atpro_settings_routes, html_database_routes = None, None, None
-    html_atpro_system_routes = None
+    html_atpro_system_routes, html_atpro_remote_management_routes = None, None
     server_http_auth, html_functional_routes, html_basic_routes, html_notes_routes = None, None, None, None
     html_config_primary_routes, html_config_installed_sensors_routes, html_config_display_routes = None, None, None
     html_config_mqtt_broker_routes, html_config_mqtt_publisher_routes, html_config_network_routes = None, None, None
@@ -106,6 +107,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_atpro_main_routes)
         app.register_blueprint(html_atpro_settings_routes)
         app.register_blueprint(html_atpro_system_routes)
+        app.register_blueprint(html_atpro_remote_management_routes)
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_database_routes)
         app.register_blueprint(html_notes_routes)
