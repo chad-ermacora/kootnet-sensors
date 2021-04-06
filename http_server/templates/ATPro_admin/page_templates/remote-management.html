@@ -199,20 +199,20 @@
 
                 <label>
                     Available Zip Downloads<br>
-                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCReportsZip';"
-                            {{ DownloadReportsZipDisabled }}>
+                    <button type="button" class="pure-button" {{ DownloadReportsZipDisabled }}
+                            onclick="this.disabled=true; SensorAddressesCommand('DownloadRSMReportsZip');">
                         Reports
                     </button>
-                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCDatabasesZip';"
-                            {{ DownloadDatabasesDisabled }}>
+                    <button type="button" class="pure-button" {{ DownloadDatabasesDisabled }}
+                            onclick="this.disabled=true; SensorAddressesCommand('DownloadRSMDatabasesZip');">
                         Databases
                     </button>
-                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCLogsZip';"
-                            {{ DownloadLogsDisabled }}>
+                    <button type="button" class="pure-button" {{ DownloadLogsDisabled }}
+                            onclick="this.disabled=true; SensorAddressesCommand('DownloadRSMLogsZip');">
                         Logs
                     </button>
-                    <button type="button" class="pure-button" onclick="this.disabled=true; location.href='/DownloadSCBigZip';"
-                            {{ DownloadBigZipDisabled }}>
+                    <button type="button" class="pure-button" {{ DownloadBigZipDisabled }}
+                            onclick="this.disabled=true; SensorAddressesCommand('DownloadRSMBigZip');">
                         The Big Zip
                     </button>
                 </label>
