@@ -293,7 +293,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
 class CreateIPList:
     """ Creates an IP list Configuration object and loads settings from file (by default). """
 
-    def __init__(self, ip_list_location=None):
+    def __init__(self, ip_list_location=None, new_name=None):
         self.sensor_ip_dns1 = ""
         self.sensor_ip_dns2 = ""
         self.sensor_ip_dns3 = ""
@@ -316,7 +316,10 @@ class CreateIPList:
         self.sensor_ip_dns20 = ""
 
         if ip_list_location is None:
-            self.ip_list_location = file_locations.custom_ip_lists_folder + "/" + self.get_new_name()
+            if new_name is None:
+                self.ip_list_location = file_locations.custom_ip_lists_folder + "/" + self.get_new_name()
+            else:
+                self.ip_list_location = file_locations.custom_ip_lists_folder + "/" + new_name
             self.save_list_to_file()
         else:
             self.ip_list_location = file_locations.custom_ip_lists_folder + "/" + ip_list_location
