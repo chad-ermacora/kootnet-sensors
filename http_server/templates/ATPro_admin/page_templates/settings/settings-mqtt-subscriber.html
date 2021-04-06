@@ -1,4 +1,4 @@
-<form class="pure-form" method="POST" action="/EditConfigMQTTSubscriber">
+<form class="pure-form" method="POST" action="/atpro/settings-mqtt-s">
     <div class="row">
         <div class="col-6 col-m-12 col-sm-12">
             <div class="counter bg-primary">
@@ -18,15 +18,17 @@
                     Save Readings to SQL Database
                 </label>
 
-                <h4>MQTT Subscriber Database Size:<a> {{ MQTTSubDatabaseSize }} MB</a></h4>
+                <h4>MQTT Subscriber Database Size: {{ MQTTSubDatabaseSize }} MB</h4>
 
-                <button class="pure-button" type="button" onclick="window.open('/ViewMQTTSubSensors', '_blank');">
+                <button class="pure-button" type="button"
+                        onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank');">
                     View MQTT Subscriber Sensors List
                 </button>
 
                 <br><br>
 
-                <button class="pure-button" type="button" onclick="window.open('/MQTTSubscriberView', '_blank');">
+                <button class="pure-button" type="button"
+                        onclick="window.open('/atpro/mqtt-subscriber-view-data-stream', '_blank');">
                     View Subscriber Data Stream
                 </button>
 

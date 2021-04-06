@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>MQTT Subscriber Data View</title>
+
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+    <meta http-equiv="refresh" content="30; url = /atpro/mqtt-subscriber-view-data-stream"/>
+</head>
+
+<style>
+    body {
+        text-align: center;
+        background: black;
+    }
+
+    p {
+        color: red;
+        font-weight: bold;
+    }
+
+    h4 {
+        color: #F4A460;
+    }
+
+    .mqtt-header {
+        color: red;
+        font-weight: bolder;
+        text-decoration-line: underline;
+    }
+
+    .mqtt-sub-enabled-text {
+        color: {{ MQTTEnabledColor }};
+        font-weight: bolder;
+    }
+
+    .mqtt-subscriber-data-view {
+        color: greenyellow;
+        white-space: pre-wrap;
+    }
+</style>
+
+<body>
+    <h2><a class="mqtt-header" href="/atpro/mqtt-subscriber-view-data-stream">MQTT Subscriber Topic Posts</a></h2>
+
+    <h4>This will automatically refresh every 30 seconds</h4>
+
+    <h2 class="mqtt-sub-enabled-text">{{ MQTTSubscriberEnabledText }}</h2>
+
+    <button class="pure-button" onclick="ClearMQTTSubLogs();">Clear Log</button>
+
+    <br><br>
+
+    <p>
+        MQTT Data from Subscribed Topics on Broker {{ MQTTSubscriberServerAddress }}<br><br>
+        Sensors in MQTT Subscriber Database: {{ SQLMQTTSensorsInDB }}
+    </p>
+
+    <br><br>
+
+    <span class="mqtt-subscriber-data-view">{{ SubscriberTopicsContent }}</span>
+</body>
+</html>
+
+<script>
+    function ClearMQTTSubLogs() {
+        let r = confirm("This cannot be undone, are you sure?");
+        if (r === true) {
+            window.location = "/atpro/mqtt-subscriber-clear-log"
+        }
+    }
+</script>
