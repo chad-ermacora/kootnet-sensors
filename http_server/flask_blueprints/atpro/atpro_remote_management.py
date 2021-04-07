@@ -171,7 +171,7 @@ def html_atpro_rm_online_services():
 
 @html_atpro_remote_management_routes.route("/atpro/rm/rm-system-commands")
 def html_atpro_rm_system_commands():
-    return render_template("ATPro_admin/page_templates/remote_management/system_commands.html")
+    return render_template("ATPro_admin/page_templates/remote_management/system-commands.html")
 
 
 @html_atpro_remote_management_routes.route('/atpro/rm-report/<path:filename>')
