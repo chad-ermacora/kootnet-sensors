@@ -34,6 +34,8 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         ]
 
         self.enable_checkin_recording = 0
+        self.main_page_max_sensors = 20
+
         self.count_contact_days = 7.0
         self.delete_sensors_older_days = 365.0
 
