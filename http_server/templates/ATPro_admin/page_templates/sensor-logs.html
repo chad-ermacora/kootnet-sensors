@@ -1,72 +1,97 @@
 <link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
 
 <style>
-    .del-buttons {
-        color: darkred;
-        background: orange;
-    }
-
     .log-page-view {
         color: var(--second-color);
         font-weight: bold;
+        text-align: left;
         white-space: pre-wrap;
     }
 </style>
 
-<div style="text-align: center;">
-    <button class="pure-button" onclick="window.location.href = '/atpro/logs/log-download-all-zipped';">
-        Download All Logs
-    </button>&nbsp;&nbsp;
-    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('primary')">
-        Delete Primary Log
-    </button>&nbsp;&nbsp;
-    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('network')">
-        Delete Network Log
-    </button>&nbsp;&nbsp;
-    <button type="button" class="pure-button del-buttons" onclick="DeleteLog('sensors')">
-        Delete Sensors Log
-    </button>
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item log-primary">
+                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                            Primary Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item log-network">
+                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                            Network Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item log-sensors">
+                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                            Sensors Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-    <br><br><hr><br>
+            <br><br>
 
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item log-primary">
-                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
-                    Primary Log
-                </a>
-            </li>
-        </ul>
+            <button class="pure-button" style="color: green;"
+                    onclick="DownloadLogsZipped()">
+                Download All Logs
+            </button>
+
+            <br><br>
+
+            <div class="pure-menu pure-menu-horizontal">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+                        <a href="#" class="pure-menu-link" style="color: red;">
+                            Delete Logs
+                        </a>
+                        <ul class="pure-menu-children">
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link"
+                                   onclick="DeleteLog('primary')">
+                                    Delete Primary Log
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link"
+                                   onclick="DeleteLog('network')">
+                                    Delete Network Log
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link"
+                                   onclick="DeleteLog('sensors')">
+                                    Delete Sensors Log
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item log-network">
-                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
-                    Network Log
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item log-sensors">
-                <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
-                    Sensors Log
-                </a>
-            </li>
-        </ul>
-    </div>
-
-    <br><br>
-
-    <h2 id="log-header"></h2>
-
-    <h3 id="log-deleted-message"></h3>
-
-    <br>
-
-    <div class="log-page-view" id="log-page-view"></div>
 </div>
+
+<br>
+
+<h2 id="log-header"></h2>
+
+<h3 id="log-deleted-message"></h3>
+
+<br>
+
+<div class="log-page-view" id="log-page-view"></div>
+
 
 <script>
     function SelectLogNav(nav_location) {
@@ -78,6 +103,13 @@
 
         $("#log-header").load("/atpro/logs/" + nav_location + "-header");
         $("#log-page-view").load("/atpro/logs/" + nav_location);
+    }
+
+    function DownloadLogsZipped() {
+        let r = confirm("Download a zip file of all logs?");
+        if (r === true) {
+            window.location.href = '/atpro/logs/log-download-all-zipped';
+        }
     }
 
     function DeleteLog(log_name) {
