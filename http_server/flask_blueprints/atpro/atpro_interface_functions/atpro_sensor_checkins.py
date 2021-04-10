@@ -24,13 +24,12 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from operations_modules.sqlite_database import create_table_and_datetime, check_sql_table_and_column, \
-    sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, get_sql_element
+from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
+    get_sql_element
 from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_hidden_state, get_html_checkbox_state
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index
 
-html_sensor_check_ins_routes = Blueprint("html_sensor_check_ins_routes", __name__)
-max_sensors_in_main_checkin_view = 20
+html_atpro_sensor_check_ins_routes = Blueprint("html_atpro_sensor_check_ins_routes", __name__)
 
 db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
 db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
@@ -40,58 +39,16 @@ db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_
 db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
 
 
-@html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST"])
-def remote_sensor_check_ins():
-    if app_config_access.checkin_config.enable_checkin_recording:
-        if request.form.get("checkin_id"):
-            checkin_id = get_clean_sql_table_name(str(request.form.get("checkin_id")))
-            logger.network_logger.debug("* Sensor ID:" + checkin_id + " checked in from " + str(request.remote_addr))
-
-            current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-
-            try:
-                db_connection = sqlite3.connect(file_locations.sensor_checkin_database)
-                db_cursor = db_connection.cursor()
-
-                create_table_and_datetime(checkin_id, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_check_in_version, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_check_in_installed_sensors, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_uptime, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_check_in_primary_log, db_cursor)
-                check_sql_table_and_column(checkin_id, db_sensor_check_in_sensors_log, db_cursor)
-                db_connection.commit()
-                db_connection.close()
-
-                sql_ex_string = "INSERT OR IGNORE INTO '" + checkin_id + "' (" + \
-                                db_all_tables_datetime + "," + \
-                                db_sensor_check_in_version + "," + \
-                                db_sensor_check_in_installed_sensors + "," + \
-                                db_sensor_uptime + "," + \
-                                db_sensor_check_in_primary_log + "," + \
-                                db_sensor_check_in_sensors_log + ")" + \
-                                " VALUES (?,?,?,?,?,?);"
-
-                sql_data = [current_datetime, str(request.form.get("program_version")),
-                            str(request.form.get("installed_sensors")), str(request.form.get("sensor_uptime")),
-                            str(request.form.get("primary_log")), str(request.form.get("sensor_log"))]
-                write_to_sql_database(sql_ex_string, sql_data, sql_database_location=file_locations.sensor_checkin_database)
-                return "OK", 202
-            except Exception as error:
-                logger.network_logger.warning("Sensor Checkin error for " + str(checkin_id) + ": " + str(error))
-        return "Failed", 400
-    return "Checkin Recording Disabled", 202
-
-
-@html_sensor_check_ins_routes.route("/ViewSensorCheckin")
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-view")
 @auth.login_required
-def view_sensor_check_ins():
+def html_atpro_sensor_checkin_main_view():
     db_location = file_locations.sensor_checkin_database
     get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
                                    "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
     sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_location)
     sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
 
-    sensor_statistics = "Per Sensor Check-in Information\n\n"
+    sensor_statistics = ""
     current_date_time = datetime.utcnow()
 
     sensor_contact_count = 0
@@ -101,7 +58,7 @@ def view_sensor_check_ins():
         checkin_date = sensor_id_and_date[1]
         if (current_date_time - checkin_date) < timedelta(days=count_contact_days):
             sensor_contact_count += 1
-        if count < max_sensors_in_main_checkin_view:
+        if count < app_config_access.checkin_config.main_page_max_sensors:
             sensor_statistics += _get_sensor_info_string(cleaned_id)
 
     if os.path.isfile(file_locations.sensor_checkin_database):
@@ -109,26 +66,25 @@ def view_sensor_check_ins():
     else:
         db_size_mb = 0.0
 
-    enable_checkin_recording = app_config_access.checkin_config.enable_checkin_recording
-    return render_template("software_checkin.html",
-                           PageURL="/ViewSensorCheckin",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
+    enabled_text = "<span style='color: red;'>Disabled</span>"
+    if app_config_access.checkin_config.enable_checkin_recording:
+        enabled_text = "<span style='color: green;'>Enabled</span>"
+    return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
+                           MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,
                            SensorsInDatabase=get_sql_element(sensor_count),
-                           TotalSensorCount=sensor_contact_count,
-                           CheckinSensorStatistics=sensor_statistics,
-                           CheckedEnableCheckin=get_html_checkbox_state(enable_checkin_recording),
-                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
                            CheckinDBSize=db_size_mb,
-                           DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days)
+                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
+                           TotalSensorCount=sensor_contact_count,
+                           DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
+                           CheckinEnabledText=enabled_text,
+                           CheckinSensorStatistics=sensor_statistics)
 
 
-@html_sensor_check_ins_routes.route("/DeleteSensorsOlderCheckin", methods=["POST"])
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-delete-old-sensors", methods=["POST"])
 @auth.login_required
 def delete_sensors_older_then():
     try:
         app_config_access.checkin_config.update_with_html_request(request, skip_all_but_delete_setting=True)
-        app_config_access.checkin_config.save_config_to_file()
         delete_sensors_older_days = app_config_access.checkin_config.delete_sensors_older_days
         datetime_sensor_ids_list = _get_sensor_id_and_last_checkin_date_as_list()
         current_date_time = datetime.utcnow()
@@ -139,25 +95,34 @@ def delete_sensors_older_then():
         write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
     except Exception as error:
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
-    return view_sensor_check_ins()
+    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
 
 
-@html_sensor_check_ins_routes.route("/CheckinSensorSearch")
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-search")
 @auth.login_required
 def view_search_sensor_check_ins():
     buttons_state = ""
     if app_cached_variables.checkin_search_sensor_id == "":
         buttons_state = "disabled"
-    return render_template("software_checkin_search.html",
-                           PageURL="/CheckinSensorSearch",
-                           SearchSensorInfo=app_cached_variables.checkin_sensor_info,
+    return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-search.html",
+                           SearchSensorInfo=app_cached_variables.checkin_sensor_info.replace("col-6", "col-12"),
                            SearchSensorDeleteDisabled=buttons_state,
-                           SearchSensorClearDisabled=buttons_state,
-                           PrimaryLog=app_cached_variables.checkin_search_primary_log,
-                           SensorLog=app_cached_variables.checkin_search_sensors_log)
+                           SearchSensorClearDisabled=buttons_state)
 
 
-@html_sensor_check_ins_routes.route("/ClearOldSearchSensorCheckIns")
+@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-primary")
+@auth.login_required
+def get_sensor_checkin_log_primary():
+    return app_cached_variables.checkin_search_primary_log.replace("\n", "<br>")
+
+
+@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-sensors")
+@auth.login_required
+def get_sensor_checkin_log_sensors():
+    return app_cached_variables.checkin_search_sensors_log.replace("\n", "<br>")
+
+
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-checkins")
 @auth.login_required
 def search_sensor_clear_old_check_ins():
     if app_cached_variables.checkin_search_sensor_id != "":
@@ -166,7 +131,7 @@ def search_sensor_clear_old_check_ins():
     return view_search_sensor_check_ins()
 
 
-@html_sensor_check_ins_routes.route("/DeleteSensorCheckinID")
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-search-delete-sensor")
 @auth.login_required
 def search_sensor_delete_senor_id():
     db_location = file_locations.sensor_checkin_database
@@ -177,7 +142,7 @@ def search_sensor_delete_senor_id():
     return view_search_sensor_check_ins()
 
 
-@html_sensor_check_ins_routes.route("/SearchCheckinSensorID", methods=["POST"])
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-id-search", methods=["POST"])
 @auth.login_required
 def search_sensor_check_ins():
     if request.form.get("sensor_id") is not None:
@@ -187,7 +152,7 @@ def search_sensor_check_ins():
 
 
 def _update_search_sensor_check_ins(sensor_id):
-    if check_sensor_id_exists(sensor_id):
+    if _check_sensor_id_exists(sensor_id):
         app_cached_variables.checkin_search_sensor_id = sensor_id
         new_sensor_info_string = _get_sensor_info_string(app_cached_variables.checkin_search_sensor_id)
         app_cached_variables.checkin_sensor_info = new_sensor_info_string
@@ -246,21 +211,22 @@ def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin
     clean_last_checkin_date = get_sql_element(last_checkin_date)
     web_view_last_checkin_date = _get_converted_datetime(clean_last_checkin_date, hour_offset=checkin_hour_offset)
     web_view_last_checkin_date = web_view_last_checkin_date.strftime("%Y-%m-%d %H:%M:%S")
-    return "Sensor ID: " + sensor_id + \
-           "\nSoftware Version: " + get_sql_element(current_sensor_version) + \
-           "\n" + get_sql_element(last_installed_sensors) + \
-           "\nSensor Uptime in Minutes: " + get_sql_element(current_sensor_uptime) + \
-           "\nTotal Checkin Count: " + get_sql_element(checkin_count) + \
-           "\nLast Check-in DateTime: " + web_view_last_checkin_date + "\n\n"
+    return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-info-template.html",
+                           SensorID=sensor_id,
+                           LastCheckinDate=web_view_last_checkin_date,
+                           TotalCheckins=get_sql_element(checkin_count),
+                           SoftwareVersion=get_sql_element(current_sensor_version),
+                           SensorUptime=get_sql_element(current_sensor_uptime),
+                           InstalledSensors=get_sql_element(last_installed_sensors))
 
 
-@html_sensor_check_ins_routes.route("/ClearOldCheckinData")
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
 @auth.login_required
 def clear_check_ins_counts():
     for sensor_id in _get_check_in_sensor_ids():
         _clear_old_sensor_checkin_data(sensor_id)
     write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
-    return view_sensor_check_ins()
+    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
 
 
 def _clear_old_sensor_checkin_data(sensor_id):
@@ -365,7 +331,7 @@ def _delete_sensor_id(sensor_id):
     write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=database_location)
 
 
-def check_sensor_id_exists(sensor_id):
+def _check_sensor_id_exists(sensor_id):
     sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
     try:
         database_connection = sqlite3.connect(file_locations.sensor_checkin_database)
