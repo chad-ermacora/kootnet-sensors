@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sensor Checkin Search</title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+</head>
+
+<style>
+    #log-page-content {
+        text-align: left;
+        color: black;
+    }
+</style>
+
+<body style="text-align: center;">
+<h2><a style="color: red;" href="/atpro/sensor-checkin-search">Sensor Checkins Search</a></h2>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
+                <label style="color: red; font-size: medium; font-weight: bolder;">
+                    Sensor ID<br>
+                    <input style="width: 375px; text-align: center;" type="text" maxlength="64" name="sensor_id"
+                           placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Find Sensor</button>
+            </form>
+
+            {{ SearchSensorInfo | safe }}
+
+            <br>
+
+            <button type="button" class="pure-button"
+                    onclick="SearchCheckinDeletion('sensor-checkin-search-delete-sensor');" {{ SearchSensorDeleteDisabled }}>
+                Delete Sensor
+            </button>
+
+            &nbsp;&nbsp;
+
+            <button type="button" class="pure-button"
+                    onclick="SearchCheckinDeletion('sensor-checkin-clear-old-checkins');" {{ SearchSensorClearDisabled }}>
+                Remove Old Checkin Data
+            </button>
+        </div>
+    </div>
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item log-primary">
+                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                            Primary Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item log-sensors">
+                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                            Sensor Log
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <br><br>
+
+            <div id="log-page-content"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    function SearchCheckinDeletion(url_location) {
+        let r = confirm("Sensor deletions cannot be undone, are you sure?");
+        if (r === true) {
+            window.location = "/atpro/" + url_location
+        }
+    }
+
+    function SelectLogNav(nav_location) {
+        document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        $("#log-page-content").load("/atpro/sc-logs/" + nav_location);
+    }
+
+    {{ RunScript | safe }}
+</script>
+
+<script src="index.js"></script>
+<script src="/extras/jquery-3.4.1.min.js"></script>

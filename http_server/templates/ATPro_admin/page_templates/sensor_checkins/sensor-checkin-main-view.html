@@ -1,0 +1,66 @@
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2>Last {{ MaxSensorCount }} Sensor Check-ins</h2>
+
+            <h4>This will automatically refresh every 5 minutes</h4>
+
+            <button class="pure-button" onclick="window.open('/atpro/sensor-checkin-search','targetWindow',
+               'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=800,height=800'); return false;">
+                Open Sensor Search
+            </button>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <h2>Checkin Information</h2>
+            <p>Checkin Server: <span style="font-weight: bold;">{{ CheckinEnabledText | safe }}</span></p>
+            <p>Total Sensors in Database: {{ SensorsInDatabase }}</p>
+            <p>Current Checkin Database Size: {{ CheckinDBSize }} MB</p>
+            <p>Sensor Checkin Count in the past {{ ContactInPastDays }} Days: {{ TotalSensorCount }}</p>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <form class="pure-form" method="POST" action="/atpro/sensor-checkin-delete-old-sensors"
+                  onsubmit="return confirm('This cannot be undone, delete old Sensors from database?');">
+                <h2>Database Clean-up</h2>
+
+                <label>Clear Old Checkins<br>
+                    <button class="pure-button" type="button" onclick="ClearCheckins();">Clear Old Checkin Data</button>
+                </label>
+
+                <br><br>
+
+                <label>Delete Sensors Inactive for Days<br>
+                    <input style="width: 100px;" type="number" max="3650" step="0.1" name="delete_sensors_older_days"
+                           value="{{ DeleteSensorsOlderDays }}">
+                    &nbsp;&nbsp;
+                    <button class="pure-button" type="submit">Delete</button>
+                </label>
+            </form>
+        </div>
+    </div>
+
+    {{ CheckinSensorStatistics | safe }}
+</div>
+
+<script>
+    function ClearCheckins() {
+        let r = confirm("Clear all but last Checkin on each Sensor?");
+        if (r === true) {
+            window.location = "/atpro/sensor-checkin-clear-old-data"
+        }
+    }
+
+    function RefreshCheckins() {
+        SelectNav('sensor-checkin-view');
+    }
+
+    refresh_timer = setTimeout(() => {
+        clearTimeout(refresh_timer);
+        RefreshCheckins();
+        }, 300000);
+</script>
