@@ -32,8 +32,8 @@ from http_server import server_plotly_graph_variables
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.flask_blueprints.html_notes import add_note_to_database, update_note_in_database, get_db_note_dates, \
     get_db_note_user_dates, delete_db_note
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables, \
-    html_sensor_readings_row, get_ram_free, get_disk_free
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_sensor_readings_row, \
+    get_ram_free, get_disk_free
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
     get_message_page, get_text_check_enabled, get_uptime_str, get_file_creation_date
 
@@ -48,7 +48,6 @@ def html_atpro_index():
 
 @html_atpro_main_routes.route("/atpro/sensor-dashboard")
 def html_atpro_dashboard():
-    atpro_variables.init_tests()
     g_t_c_e = get_text_check_enabled
 
     cpu_temp = sensor_access.get_cpu_temperature()
