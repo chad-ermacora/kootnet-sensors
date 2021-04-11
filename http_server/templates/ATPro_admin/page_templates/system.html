@@ -1,3 +1,5 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
 <style>
     .system-text-input {
         text-align: center;
@@ -8,46 +10,30 @@
 <div class="row" style="font-weight: bolder;">
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-warning">
-            <h2>Information & Downloads</h2>
-            <div class="pure-menu pure-menu-horizontal">
-                <ul class="pure-menu-list">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item settings-main">
-                            <a href="#" class="pure-menu-link"
-                               onclick="SelectSystemNav('system/raw-configurations')">
-                                View Versions & Configurations
-                            </a>
-                        </li>
-                    </ul>
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                        <a href="#" class="pure-menu-link"
-                           onclick="SelectSystemNav('system-db-local')">
-                            Databases
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="SelectSystemNav('system-db-local')">
-                                    Information & Downloads
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="SelectSystemNav('system-db-management')">
-                                    Management
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="SelectSystemNav('system-db-uploads')">
-                                    Uploads
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
+            <form class="pure-form" method="POST" action="/atpro/update-login">
+                <h2>Change Login</h2>
 
+                <label>Username<br>
+                    <input type="text" class="system-text-input" id="login_username" name="login_username"
+                           minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
+                </label>
+
+                <br><br>
+
+                <label>Password<br>
+                    <input type="password" class="system-text-input" id="login_password" name="login_password"
+                           minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
             <h2>Kootnet Software Upgrades</h2>
             <div class="pure-menu pure-menu-horizontal">
                 <ul class="pure-menu-list">
@@ -168,27 +154,63 @@
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-warning">
-            <form class="pure-form" method="POST" action="/atpro/update-login">
-                <h2>Change Login</h2>
-
-                <label>Username<br>
-                    <input type="text" class="system-text-input" id="login_username" name="login_username"
-                           minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
-                </label>
-
-                <br><br>
-
-                <label>Password<br>
-                    <input type="password" class="system-text-input" id="login_password" name="login_password"
-                           minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
-                </label>
-
-                <br><br>
-
-                <button type="submit" class="pure-button">Update</button>
-            </form>
+            <div class="pure-menu pure-menu-horizontal">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item raw-configurations">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
+                            View Versions & Configurations
+                        </a>
+                    </li>
+                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                    system-db-local system-db-management system-db-uploads">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
+                            Databases
+                        </a>
+                        <ul class="pure-menu-children">
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
+                                    Information & Downloads
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-management')">
+                                    Management
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
+                                    Uploads
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                    system-networking system-wifi system-ssl ">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
+                            Networking
+                        </a>
+                        <ul class="pure-menu-children">
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
+                                    Wireless Host & IP
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-wifi')">
+                                    Wireless Connection
+                                </a>
+                            </li>
+                            <li class="pure-menu-item">
+                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
+                                    SSL
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
@@ -206,6 +228,16 @@
     }
 
     function SelectSystemNav(nav_location) {
-        $("#system-page-view").load("/atpro/" + nav_location);
+        document.getElementsByClassName("raw-configurations")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-db-local")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-networking")[0].classList.remove("pure-menu-selected");
+
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        if (nav_location==="raw-configurations") {
+            $("#system-page-view").load("/atpro/system/" + nav_location);
+        } else {
+            $("#system-page-view").load("/atpro/" + nav_location);
+        }
     }
 </script>

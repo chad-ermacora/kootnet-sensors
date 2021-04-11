@@ -141,7 +141,7 @@ def html_atpro_sensor_settings_database_information():
     for zip_name in app_cached_variables.zipped_db_backup_list:
         db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
     return render_template(
-        "ATPro_admin/page_templates/system-db-local.html",
+        "ATPro_admin/page_templates/system/system-db-local.html",
         SQLDatabaseLocation=file_locations.sensor_database,
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
         SQLDatabaseSize=sensor_access.get_file_size(),
@@ -195,7 +195,7 @@ def html_atpro_sensor_settings_database_management():
             return get_message_page("Database Management Error", str(error), page_url="sensor-settings")
 
     return render_template(
-        "ATPro_admin/page_templates/system-db-management.html",
+        "ATPro_admin/page_templates/system/system-db-management.html",
         HostName=app_cached_variables.hostname,
         SQLDatabaseLocation=file_locations.sensor_database,
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
@@ -316,7 +316,7 @@ def html_atpro_sensor_settings_database_uploads():
             logger.network_logger.info("Database Upload: " + return_msg + " - " + return_text2)
             return get_message_page(return_msg, return_text2, page_url="sensor-settings")
 
-    return render_template("ATPro_admin/page_templates/system-db-uploads.html")
+    return render_template("ATPro_admin/page_templates/system/system-db-uploads.html")
 
 
 def _get_drop_down_items(file_list):
@@ -413,7 +413,7 @@ def _zip_and_delete_database(database_location, db_save_name):
 @auth.login_required
 def atpro_raw_configurations_view():
     logger.network_logger.debug("** HTML Raw Configurations viewed by " + str(request.remote_addr))
-    return render_template("ATPro_admin/page_templates/system-raw-configurations.html")
+    return render_template("ATPro_admin/page_templates/system/system-raw-configurations.html")
 
 
 def _config_to_html_view(config_name, config_location, config_text_file, split_by_line=True):
@@ -430,7 +430,7 @@ def _config_to_html_view(config_name, config_location, config_text_file, split_b
                 logger.network_logger.warning(log_msg + str(error))
     else:
         return_html = config_text_file.replace("\n", "<br>")
-    return render_template("ATPro_admin/page_templates/system-raw-configurations-template.html",
+    return render_template("ATPro_admin/page_templates/system/system-raw-configurations-template.html",
                            ConfigName=config_name,
                            ConfigLocation=config_location,
                            Config=return_html)
