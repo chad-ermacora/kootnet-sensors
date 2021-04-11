@@ -11,7 +11,7 @@
         width: 500px;
     }
 
-    .button-green, .button-red, .button-orange, .button-blue {
+    .button-green, .button-red, .button-orange, .button-blue, .button-dark-blue {
         color: white;
         border-radius: 4px;
         text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
@@ -35,6 +35,10 @@
     .button-blue {
         background: rgb(66, 184, 221);
         /* this is a light blue */
+    }
+
+    .button-dark-blue {
+        background: #3333cc;
     }
 </style>
 
@@ -86,7 +90,7 @@
     </div>
 
     <div style="display: inline-block; padding-left: 65px;">
-        <button type="button" class="pure-button button-green" onclick="ButtonPress('save')">
+        <button type="button" class="pure-button button-dark-blue" onclick="ButtonPress('save')">
             Save Note
         </button>
     </div>
