@@ -95,6 +95,18 @@ def html_atpro_sensor_readings():
     return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_return_code)
 
 
+@html_atpro_main_routes.route("/atpro/sensor-latency")
+def html_atpro_sensors_latency():
+    sensors_latency = sensor_access.get_sensors_latency()
+    html_final_code = ""
+    for index, dic_readings in enumerate(sensors_latency.items()):
+        html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
+    html_return_code = html_sensor_readings_row.replace("<th>Sensor Reading</th>", "<th>Sensor Latency in Seconds</th>")
+    html_return_code = html_return_code.replace("{{ Readings }}", html_final_code)
+
+    return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_return_code)
+
+
 @html_atpro_main_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_notes():
