@@ -36,13 +36,19 @@ def get_html_atpro_index(run_script="SelectNav('sensor-dashboard');", main_page_
                            RunScript=run_script)
 
 
-def get_message_page(title, message="", page_url="sensor-dashboard", full_reload=True):
+def get_message_page(title, message="", page_url="sensor-dashboard", full_reload=True, skip_menu_select=False):
     """
     Possible page URL's include:
     sensor-dashboard, sensor-readings, sensor-notes, sensor-graphing, sensor-rm, sensor-settings, sensor-system
     """
+
+    skip_option = "false"
+    if skip_menu_select:
+        skip_option = "true"
+
     message_page = render_template("ATPro_admin/page_templates/message-return.html",
                                    NavLocation=page_url,
+                                   SkipMenuSelect=skip_option,
                                    TextTitle=title,
                                    TextMessage=message)
     if full_reload:
