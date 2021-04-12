@@ -1,0 +1,146 @@
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <form class="pure-form" method="POST" action="/atpro/system-ip">
+                <h3>Wireless IP Settings</h3>
+
+                <label>
+                    HostName<br>
+                    <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname" required
+                           placeholder="eg. KootenayLake09" minlength="2" maxlength="62" value="{{ IPHostname }}">
+                </label>
+
+                <br><br>
+
+                <label class="toggle-switch">
+                    <input type="checkbox" id="system-dhcp" class="toggle-switch-input" onclick="CheckedDHCP()"
+                           name="ip_dhcp" {{ CheckedDHCP }}>
+                    <label class="toggle-switch-label" for="system-dhcp"></label>
+                    DHCP
+                </label>
+
+                <br><br>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>IPv4 Address<br>
+                                <input style="width: 150px;" type="text" name="ip_address"
+                                       placeholder="eg. 192.168.10.11" minlength="7" value="{{ IPv4Address }}">
+                            </label>
+                        </div>
+
+                        <div style="display: table-cell;">
+                            <label>
+                                <a target="_blank" href="https://en.wikipedia.org/wiki/Subnetwork#Subnetting">
+                                    Subnet mask<br>
+                                </a>
+                                <input style="width: 75px;" type="text" name="ip_subnet" placeholder="eg. /24"
+                                       minlength="2" maxlength="3" value="{{ IPv4Subnet }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <label>Gateway<br>
+                    <input style="width: 150px;" type="text" name="ip_gateway" placeholder="eg. 192.168.10.1"
+                           minlength="7" maxlength="15" value="{{ IPGateway }}">
+                </label>
+
+                <br><br>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Primary DNS<br>
+                                <input style="width: 150px;" type="text" name="ip_dns1" placeholder="eg. 8.8.8.8"
+                                       minlength="7" maxlength="15" value="{{ IPDNS1 }}">
+                            </label>
+                        </div>
+
+                        &nbsp; &nbsp;
+
+                        <div style="display: table-cell;">
+                            <label>Secondary DNS<br>
+                                <input style="width: 150px;" type="text" name="ip_dns2" placeholder="eg. 8.8.4.4" minlength="7"
+                                       maxlength="15" value="{{ IPDNS2 }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="counter bg-warning">
+            <form class="pure-form" method="POST" action="/atpro/system-wifi">
+                <h3>Wireless Connection Settings</h3>
+
+                <label>
+                    <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">
+                        Two Character Country Code
+                    </a>
+
+                    <br><br>
+
+                    <input type="text" style="width: 50px;" maxlength="2" minlength="2"
+                           name="country_code" value="{{ WirelessCountryCode }}" required>
+                </label>
+
+                <br><br>
+
+                <label class="pure-radio">Secured (WEP/WPA/WPA2)
+                    <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
+                </label>
+
+                <label class="pure-radio">Open (None)
+                    <input type="radio" name="wifi_security1" value="wireless_none" {{ CheckedWiFiSecurityNone1 }}>
+                </label>
+
+                <br>
+
+                <label>Wireless Network Name (SSID)<br>
+                    <input style="width: 200px;" type="text" name="ssid1" maxlength="32"
+                           placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                </label>
+
+                <br><br>
+
+                <label>Wireless Key<br>
+                    <input style="width: 200px;" type="password" name="wifi_key1"
+                           placeholder="Leave blank to use previous Key" minlength="8" maxlength="63">
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function CheckedDHCP() {
+        if (document.getElementById('system-dhcp').checked) {
+            document.getElementsByName("ip_address")[0].disabled = true;
+            document.getElementsByName("ip_subnet")[0].disabled = true;
+            document.getElementsByName("ip_gateway")[0].disabled = true;
+            document.getElementsByName("ip_dns1")[0].disabled = true;
+            document.getElementsByName("ip_dns2")[0].disabled = true;
+        } else {
+            document.getElementsByName("ip_address")[0].disabled = false;
+            document.getElementsByName("ip_subnet")[0].disabled = false;
+            document.getElementsByName("ip_gateway")[0].disabled = false;
+            document.getElementsByName("ip_dns1")[0].disabled = false;
+            document.getElementsByName("ip_dns2")[0].disabled = false;
+        }
+    }
+    CheckedDHCP();
+</script>

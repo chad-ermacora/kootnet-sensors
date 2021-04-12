@@ -5,6 +5,10 @@
         text-align: center;
         width: 200px;
     }
+
+    .pure-menu-link, .pure-menu-link:visited {
+        color: black;
+    }
 </style>
 
 <div class="row" style="font-weight: bolder;">
@@ -158,11 +162,6 @@
         <div class="counter bg-warning">
             <div class="pure-menu pure-menu-horizontal">
                 <ul class="pure-menu-list">
-                    <li class="pure-menu-item raw-configurations">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
-                            View Versions & Configurations
-                        </a>
-                    </li>
                     <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                     system-db-local system-db-management system-db-uploads">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
@@ -186,28 +185,20 @@
                             </li>
                         </ul>
                     </li>
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
-                    system-networking system-wifi system-ssl ">
+                    <li class="pure-menu-item raw-configurations">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
+                            View Versions & Configurations
+                        </a>
+                    </li>
+                    <li class="pure-menu-item system-networking">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
                             Networking
                         </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
-                                    Wireless Host & IP
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-wifi')">
-                                    Wireless Connection
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
-                                    SSL
-                                </a>
-                            </li>
-                        </ul>
+                    </li>
+                    <li class="pure-menu-item system-ssl">
+                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
+                            SSL
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -231,6 +222,7 @@
         document.getElementsByClassName("raw-configurations")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-db-local")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-networking")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-ssl")[0].classList.remove("pure-menu-selected");
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
