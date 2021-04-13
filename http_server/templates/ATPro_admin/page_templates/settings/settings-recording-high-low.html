@@ -4,7 +4,7 @@
     }
 </style>
 
-<form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-hl">
+<form class="pure-form" method="POST" action="/atpro/settings-hl">
     <label class="toggle-switch">
         <input type="checkbox" id="enable-hl-toggle-switch" class="toggle-switch-input"
                name="checkbox_enable_high_low_trigger_recording" {{ CheckedEnableHLTRecording }}>
@@ -40,26 +40,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_cpu_temperature"
-                           value="{{ TriggerLowCPUTemperature }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_cpu_temperature"
+                                       value="{{ TriggerLowCPUTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_cpu_temperature"
-                           value="{{ TriggerHighCPUTemperature }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_cpu_temperature"
+                                       value="{{ TriggerHighCPUTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_cpu_temperature"
-                           value="{{ SecondsCPUTemperature }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_cpu_temperature"
+                                       value="{{ SecondsCPUTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -75,26 +90,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_env_temperature"
-                           value="{{ TriggerLowEnvTemperature }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_env_temperature"
+                                       value="{{ TriggerLowEnvTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_env_temperature"
-                           value="{{ TriggerHighEnvTemperature }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_env_temperature"
+                                       value="{{ TriggerHighEnvTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_env_temperature"
-                           value="{{ SecondsEnvTemperature }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_env_temperature"
+                                       value="{{ SecondsEnvTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -110,26 +140,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pressure"
-                           value="{{ TriggerLowPressure }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pressure"
+                                       value="{{ TriggerLowPressure }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pressure"
-                           value="{{ TriggerHighPressure }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pressure"
+                                       value="{{ TriggerHighPressure }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pressure"
-                           value="{{ SecondsPressure }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pressure"
+                                       value="{{ SecondsPressure }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -145,26 +190,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_altitude"
-                           value="{{ TriggerLowAltitude }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_altitude"
+                                       value="{{ TriggerLowAltitude }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_altitude"
-                           value="{{ TriggerHighAltitude }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_altitude"
+                                       value="{{ TriggerHighAltitude }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_altitude"
-                           value="{{ SecondsAltitude }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_altitude"
+                                       value="{{ SecondsAltitude }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -180,26 +240,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_humidity"
-                           value="{{ TriggerLowHumidity }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_humidity"
+                                       value="{{ TriggerLowHumidity }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_humidity"
-                           value="{{ TriggerHighHumidity }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_humidity"
+                                       value="{{ TriggerHighHumidity }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_humidity"
-                           value="{{ SecondsHumidity }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_humidity"
+                                       value="{{ SecondsHumidity }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -215,26 +290,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_distance"
-                           value="{{ TriggerLowDistance }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_distance"
+                                       value="{{ TriggerLowDistance }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_distance"
-                           value="{{ TriggerHighDistance }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_distance"
+                                       value="{{ TriggerHighDistance }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_distance"
-                           value="{{ SecondsDistance }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_distance"
+                                       value="{{ SecondsDistance }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -250,74 +340,119 @@
 
                 <br><br>
 
-                <label>
-                    Index Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_index"
-                           value="{{ TriggerLowGasIndex }}">
+                <label>Index Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_index"
+                                       value="{{ TriggerLowGasIndex }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Index High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_index"
-                           value="{{ TriggerHighGasIndex }}">
+                <label>Index High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_index"
+                                       value="{{ TriggerHighGasIndex }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Oxidising Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
-                           value="{{ TriggerLowGasOxidising }}">
+                <label>Oxidising Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_oxidising"
+                                       value="{{ TriggerLowGasOxidising }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Oxidising High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
-                           value="{{ TriggerHighGasOxidising }}">
+                <label>Oxidising High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_oxidising"
+                                       value="{{ TriggerHighGasOxidising }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Reducing Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_reducing"
-                           value="{{ TriggerLowGasReducing }}">
+                <label>Reducing Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_reducing"
+                                       value="{{ TriggerLowGasReducing }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Reducing High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_reducing"
-                           value="{{ TriggerHighGasReducing }}">
+                <label>Reducing High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_reducing"
+                                       value="{{ TriggerHighGasReducing }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    NH3 Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_nh3"
-                           value="{{ TriggerLowGasNH3 }}">
+                <label>NH3 Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_gas_nh3"
+                                       value="{{ TriggerLowGasNH3 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    NH3 High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_nh3"
-                           value="{{ TriggerHighGasNH3 }}">
+                <label>NH3 High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_gas_nh3"
+                                       value="{{ TriggerHighGasNH3 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gas"
-                           value="{{ SecondsGas }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gas"
+                                       value="{{ SecondsGas }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -333,74 +468,119 @@
 
                 <br><br>
 
-                <label>
-                    PM1 Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm1"
-                           value="{{ TriggerLowPM1 }}">
+                <label>PM1 Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm1"
+                                       value="{{ TriggerLowPM1 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM1 High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm1"
-                           value="{{ TriggerHighPM1 }}">
+                <label>PM1 High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm1"
+                                       value="{{ TriggerHighPM1 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM2.5 Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm2_5"
-                           value="{{ TriggerLowPM25 }}">
+                <label>PM2.5 Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm2_5"
+                                       value="{{ TriggerLowPM25 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM2.5 High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm2_5"
-                           value="{{ TriggerHighPM25 }}">
+                <label>PM2.5 High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm2_5"
+                                       value="{{ TriggerHighPM25 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM4 Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm4"
-                           value="{{ TriggerLowPM4 }}">
+                <label>PM4 Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm4"
+                                       value="{{ TriggerLowPM4 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM4 High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm4"
-                           value="{{ TriggerHighPM4 }}">
+                <label>PM4 High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm4"
+                                       value="{{ TriggerHighPM4 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM10 Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm10"
-                           value="{{ TriggerLowPM10 }}">
+                <label>PM10 Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_pm10"
+                                       value="{{ TriggerLowPM10 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM10 High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm10"
-                           value="{{ TriggerHighPM10 }}">
+                <label>PM10 High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_pm10"
+                                       value="{{ TriggerHighPM10 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pm"
-                           value="{{ SecondsPM }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_pm"
+                                       value="{{ SecondsPM }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -416,26 +596,41 @@
 
                 <br><br>
 
-                <label>
-                    Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_lumen"
-                           value="{{ TriggerLowLumen }}">
+                <label>Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_lumen"
+                                       value="{{ TriggerLowLumen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_lumen"
-                           value="{{ TriggerHighLumen }}">
+                <label>High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_lumen"
+                                       value="{{ TriggerHighLumen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_lumen"
-                           value="{{ SecondsLumen }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_lumen"
+                                       value="{{ SecondsLumen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -451,106 +646,171 @@
 
                 <br><br>
 
-                <label>
-                    Red Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_red"
-                           value="{{ TriggerLowRed }}">
+                <label>Red Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_red"
+                                       value="{{ TriggerLowRed }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Red High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_red"
-                           value="{{ TriggerHighRed }}">
+                <label>Red High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_red"
+                                       value="{{ TriggerHighRed }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Orange Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_orange"
-                           value="{{ TriggerLowOrange }}">
+                <label>Orange Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_orange"
+                                       value="{{ TriggerLowOrange }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Orange High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_orange"
-                           value="{{ TriggerHighOrange }}">
+                <label>Orange High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_orange"
+                                       value="{{ TriggerHighOrange }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Yellow Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_yellow"
-                           value="{{ TriggerLowYellow }}">
+                <label>Yellow Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_yellow"
+                                       value="{{ TriggerLowYellow }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Yellow High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_yellow"
-                           value="{{ TriggerHighYellow }}">
+                <label>Yellow High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_yellow"
+                                       value="{{ TriggerHighYellow }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Green Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_green"
-                           value="{{ TriggerLowGreen }}">
+                <label>Green Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_green"
+                                       value="{{ TriggerLowGreen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Green High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_green"
-                           value="{{ TriggerHighGreen }}">
+                <label>Green High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_green"
+                                       value="{{ TriggerHighGreen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Blue Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_blue"
-                           value="{{ TriggerLowBlue }}">
+                <label>Blue Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_blue"
+                                       value="{{ TriggerLowBlue }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Blue High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_blue"
-                           value="{{ TriggerHighBlue }}">
+                <label>Blue High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_blue"
+                                       value="{{ TriggerHighBlue }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Violet Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_violet"
-                           value="{{ TriggerLowViolet }}">
+                <label>Violet Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_violet"
+                                       value="{{ TriggerLowViolet }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Violet High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_violet"
-                           value="{{ TriggerHighViolet }}">
+                <label>Violet High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_violet"
+                                       value="{{ TriggerHighViolet }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_colour"
-                           value="{{ SecondsColour }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_colour"
+                                       value="{{ SecondsColour }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -566,42 +826,67 @@
 
                 <br><br>
 
-                <label>
-                    UVA Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
-                           value="{{ TriggerLowUltraVioletA }}">
+                <label>UVA Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_a"
+                                       value="{{ TriggerLowUltraVioletA }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    UVA High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
-                           value="{{ TriggerHighUltraVioletA }}">
+                <label>UVA High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_a"
+                                       value="{{ TriggerHighUltraVioletA }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    UVB Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
-                           value="{{ TriggerLowUltraVioletB }}">
+                <label>UVB Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_low_ultra_violet_b"
+                                       value="{{ TriggerLowUltraVioletB }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    UVB High Trigger<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
-                           value="{{ TriggerHighUltraVioletB }}">
+                <label>UVB High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="trigger_high_ultra_violet_b"
+                                       value="{{ TriggerHighUltraVioletB }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_ultra_violet"
-                           value="{{ SecondsUltraViolet }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_ultra_violet"
+                                       value="{{ SecondsUltraViolet }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -617,58 +902,93 @@
 
                 <br><br>
 
-                <label>
-                    X Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_x"
-                           value="{{ TriggerLowAccelerometerX }}">
+                <label>X Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_x"
+                                       value="{{ TriggerLowAccelerometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    X High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_x"
-                           value="{{ TriggerHighAccelerometerX }}">
+                <label>X High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_x"
+                                       value="{{ TriggerHighAccelerometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_y"
-                           value="{{ TriggerLowAccelerometerY }}">
+                <label>Y Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_y"
+                                       value="{{ TriggerLowAccelerometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_y"
-                           value="{{ TriggerHighAccelerometerY }}">
+                <label>Y High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_y"
+                                       value="{{ TriggerHighAccelerometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_z"
-                           value="{{ TriggerLowAccelerometerZ }}">
+                <label>Z Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_accelerometer_z"
+                                       value="{{ TriggerLowAccelerometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_z"
-                           value="{{ TriggerHighAccelerometerZ }}">
+                <label>Z High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_accelerometer_z"
+                                       value="{{ TriggerHighAccelerometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_accelerometer"
-                           value="{{ SecondsAccelerometer }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_accelerometer"
+                                       value="{{ SecondsAccelerometer }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -684,58 +1004,93 @@
 
                 <br><br>
 
-                <label>
-                    X Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_x"
-                           value="{{ TriggerLowMagnetometerX }}">
+                <label>X Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_x"
+                                       value="{{ TriggerLowMagnetometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    X High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_x"
-                           value="{{ TriggerHighMagnetometerX }}">
+                <label>X High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_x"
+                                       value="{{ TriggerHighMagnetometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_y"
-                           value="{{ TriggerLowMagnetometerY }}">
+                <label>Y Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_y"
+                                       value="{{ TriggerLowMagnetometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_y"
-                           value="{{ TriggerHighMagnetometerY }}">
+                <label>Y High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_y"
+                                       value="{{ TriggerHighMagnetometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_z"
-                           value="{{ TriggerLowMagnetometerZ }}">
+                <label>Z Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_magnetometer_z"
+                                       value="{{ TriggerLowMagnetometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_z"
-                           value="{{ TriggerHighMagnetometerZ }}">
+                <label>Z High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_magnetometer_z"
+                                       value="{{ TriggerHighMagnetometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_magnetometer"
-                           value="{{ SecondsMagnetometer }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_magnetometer"
+                                       value="{{ SecondsMagnetometer }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -751,58 +1106,93 @@
 
                 <br><br>
 
-                <label>
-                    X Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_x"
-                           value="{{ TriggerLowGyroscopeX }}">
+                <label>X Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_x"
+                                       value="{{ TriggerLowGyroscopeX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    X High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_x"
-                           value="{{ TriggerHighGyroscopeX }}">
+                <label>X High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_x"
+                                       value="{{ TriggerHighGyroscopeX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_y"
-                           value="{{ TriggerLowGyroscopeY }}">
+                <label>Y Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_y"
+                                       value="{{ TriggerLowGyroscopeY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_y"
-                           value="{{ TriggerHighGyroscopeY }}">
+                <label>Y High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_y"
+                                       value="{{ TriggerHighGyroscopeY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Low Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_z"
-                           value="{{ TriggerLowGyroscopeZ }}">
+                <label>Z Low Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_low_gyroscope_z"
+                                       value="{{ TriggerLowGyroscopeZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z High Trigger<br>
-                    <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_z"
-                           value="{{ TriggerHighGyroscopeZ }}">
+                <label>Z High Trigger<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" step="any" name="trigger_high_gyroscope_z"
+                                       value="{{ TriggerHighGyroscopeZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gyroscope"
-                           value="{{ SecondsGyroscope }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="variance-input-numbers" type="number" min=0 step="any" name="seconds_gyroscope"
+                                       value="{{ SecondsGyroscope }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>

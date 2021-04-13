@@ -6,7 +6,7 @@
 
                 <label>
                     Send Email as/from<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                    <input style="width: 350px;" type="text" maxlength="250"
                            name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
                 </label>
 
@@ -14,7 +14,7 @@
 
                 <label>
                     Server Address<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                    <input style="width: 350px;" type="text" maxlength="250"
                            name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
                 </label>
 
@@ -29,25 +29,41 @@
 
                 <br><br>
 
-                <label>
-                    SMTP Port Number<br><br>
-                    <input style="width: 125px;" type="number" name="server_smtp_port" required
-                           placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}">
+                <label>SMTP Port Number<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 125px;" type="number" name="server_smtp_port" required
+                                       placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
-                <label>
-                    Username<br>
-                    <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
-                           placeholder="someone" value="{{ ServerSMTPUser }}">
+                <label>Username<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
+                                       placeholder="someone" value="{{ ServerSMTPUser }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
-                <label>
-                    Password<br>
-                    <input style="width: 200px;" type="password" maxlength="250" name="server_smtp_password">
+                <label>Password<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="password" maxlength="250"
+                                       name="server_smtp_password">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
@@ -62,9 +78,8 @@
             <form class="pure-form" method="POST" action="/atpro/test-email">
                 <h3><strong>Test SMTP Server Settings</strong></h3>
 
-                <label>
-                    Send Email to<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                <label>Send Email to<br>
+                    <input style="width: 350px;" type="text" maxlength="250"
                                        name="test_email_address" placeholder="someone@somewhere.com">
                 </label>
 

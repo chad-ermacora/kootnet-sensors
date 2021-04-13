@@ -35,9 +35,17 @@
                 <br><br>
 
                 <label>Delete Sensors Inactive for Days<br>
-                    <input style="width: 100px;" type="number" max="3650" step="0.1" name="delete_sensors_older_days"
-                           value="{{ DeleteSensorsOlderDays }}">
-                    &nbsp;&nbsp;
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 100px;" type="number" max="3650" step="0.1" name="delete_sensors_older_days"
+                                       value="{{ DeleteSensorsOlderDays }}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
                     <button class="pure-button" type="submit">Delete</button>
                 </label>
             </form>

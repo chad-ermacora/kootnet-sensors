@@ -1,8 +1,11 @@
 <link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
 
 <style>
-    .system-text-input {
+    input {
         text-align: center;
+    }
+
+    .system-text-input {
         width: 200px;
     }
 
@@ -17,17 +20,29 @@
             <form class="pure-form" method="POST" action="/atpro/update-login">
                 <h2>Change Login</h2>
 
-                <label>Username<br>
-                    <input type="text" class="system-text-input" id="login_username" name="login_username"
-                           minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
-                </label>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Username<br>
+                                <input type="text" class="system-text-input" id="login_username" name="login_username"
+                                       minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                <br><br>
+                <br>
 
-                <label>Password<br>
-                    <input type="password" class="system-text-input" id="login_password" name="login_password"
-                           minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
-                </label>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Password<br>
+                                <input type="password" class="system-text-input" id="login_password" name="login_password"
+                                       minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
                 <br><br>
 
@@ -160,8 +175,8 @@
 
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-warning">
-            <div class="pure-menu pure-menu-horizontal">
-                <ul class="pure-menu-list">
+            <div class="pure-menu">
+                <ul class="pure-menu-list pure-menu-horizontal">
                     <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                     system-db-local system-db-management system-db-uploads">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
@@ -185,16 +200,28 @@
                             </li>
                         </ul>
                     </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
                     <li class="pure-menu-item raw-configurations">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
                             View Versions & Configurations
                         </a>
                     </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
                     <li class="pure-menu-item system-networking">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
                             Networking
                         </a>
                     </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
                     <li class="pure-menu-item system-ssl">
                         <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
                             SSL

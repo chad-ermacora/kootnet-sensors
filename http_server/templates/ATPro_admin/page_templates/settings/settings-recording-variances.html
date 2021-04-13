@@ -4,7 +4,7 @@
     }
 </style>
 
-<form style="text-align: center;" class="pure-form" method="POST" action="/atpro/settings-variances">
+<form class="pure-form" method="POST" action="/atpro/settings-variances">
     <label class="toggle-switch">
         <input type="checkbox" id="enable-variance-toggle-switch" class="toggle-switch-input"
                name="enable_trigger_recording" {{ CheckedTrigger }}>
@@ -47,18 +47,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_cpu_temperature"
-                           value="{{ TriggerCPUTemperature }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_cpu_temperature" value="{{ TriggerCPUTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_cpu_temperature"
-                           value="{{ SecondsCPUTemperature }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_cpu_temperature" value="{{ SecondsCPUTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -74,18 +84,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_env_temperature"
-                           value="{{ TriggerEnvTemperature }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_env_temperature" value="{{ TriggerEnvTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_env_temperature"
-                           value="{{ SecondsEnvTemperature }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_env_temperature" value="{{ SecondsEnvTemperature }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -101,18 +121,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_pressure"
-                           value="{{ TriggerPressure }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_pressure" value="{{ TriggerPressure }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_pressure"
-                           value="{{ SecondsPressure }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_pressure" value="{{ SecondsPressure }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -128,18 +158,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_altitude"
-                           value="{{ TriggerAltitude }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_altitude" value="{{ TriggerAltitude }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_altitude"
-                           value="{{ SecondsAltitude }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_altitude" value="{{ SecondsAltitude }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -155,18 +195,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_humidity"
-                           value="{{ TriggerHumidity }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_humidity" value="{{ TriggerHumidity }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_humidity"
-                           value="{{ SecondsHumidity }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_humidity" value="{{ SecondsHumidity }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -182,18 +232,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_distance"
-                           value="{{ TriggerDistance }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_distance" value="{{ TriggerDistance }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_distance"
-                           value="{{ SecondsDistance }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_distance" value="{{ SecondsDistance }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -209,42 +269,67 @@
 
                 <br><br>
 
-                <label>
-                    Index Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_gas_index"
-                           value="{{ TriggerGasIndex }}">
+                <label>Index Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_gas_index" value="{{ TriggerGasIndex }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Oxidising Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_gas_oxidising"
-                           value="{{ TriggerGasOxidising }}">
+                <label>Oxidising Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_gas_oxidising" value="{{ TriggerGasOxidising }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Reducing Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_gas_reducing"
-                           value="{{ TriggerGasReducing }}">
+                <label>Reducing Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_gas_reducing" value="{{ TriggerGasReducing }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    NH3 Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_gas_nh3"
-                           value="{{ TriggerGasNH3 }}">
+                <label>NH3 Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_gas_nh3" value="{{ TriggerGasNH3 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_gas"
-                           value="{{ SecondsGas }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_gas" value="{{ SecondsGas }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -260,42 +345,67 @@
 
                 <br><br>
 
-                <label>
-                    PM1 Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_pm1"
-                           value="{{ TriggerPM1 }}">
+                <label>PM1 Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_pm1" value="{{ TriggerPM1 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM2.5 Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_pm2_5"
-                           value="{{ TriggerPM25 }}">
+                <label>PM2.5 Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_pm2_5" value="{{ TriggerPM25 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM4 Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_pm4"
-                           value="{{ TriggerPM4 }}">
+                <label>PM4 Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_pm4" value="{{ TriggerPM4 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    PM10 Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_pm10"
-                           value="{{ TriggerPM10 }}">
+                <label>PM10 Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_pm10" value="{{ TriggerPM10 }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_pm"
-                           value="{{ SecondsPM }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_pm" value="{{ SecondsPM }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -311,18 +421,28 @@
 
                 <br><br>
 
-                <label>
-                    Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="trigger_lumen"
-                           value="{{ TriggerLumen }}">
+                <label>Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="trigger_lumen" value="{{ TriggerLumen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_lumen"
-                           value="{{ SecondsLumen }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_lumen" value="{{ SecondsLumen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -338,58 +458,93 @@
 
                 <br><br>
 
-                <label>
-                    Red Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="red"
-                           value="{{ TriggerRed }}">
+                <label>Red Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="red" value="{{ TriggerRed }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Orange Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="orange"
-                           value="{{ TriggerOrange }}">
+                <label>Orange Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="orange" value="{{ TriggerOrange }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Yellow Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="yellow"
-                           value="{{ TriggerYellow }}">
+                <label>Yellow Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="yellow" value="{{ TriggerYellow }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Green Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="green"
-                           value="{{ TriggerGreen }}">
+                <label>Green Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="green" value="{{ TriggerGreen }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Blue Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="blue"
-                           value="{{ TriggerBlue }}">
+                <label>Blue Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="blue" value="{{ TriggerBlue }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Violet Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="violet"
-                           value="{{ TriggerViolet }}">
+                <label>Violet Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="violet" value="{{ TriggerViolet }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_colour"
-                           value="{{ SecondsColour }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_colour" value="{{ SecondsColour }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -405,26 +560,41 @@
 
                 <br><br>
 
-                <label>
-                    UVA Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="ultra_violet_a"
-                           value="{{ TriggerUltraVioletA }}">
+                <label>UVA Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="ultra_violet_a" value="{{ TriggerUltraVioletA }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    UVB Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="ultra_violet_b"
-                           value="{{ TriggerUltraVioletB }}">
+                <label>UVB Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="ultra_violet_b" value="{{ TriggerUltraVioletB }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_ultra_violet"
-                           value="{{ SecondsUltraViolet }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_ultra_violet" value="{{ SecondsUltraViolet }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -440,34 +610,54 @@
 
                 <br><br>
 
-                <label>
-                    X Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="accelerometer_x"
-                           value="{{ TriggerAccelerometerX }}">
+                <label>X Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="accelerometer_x" value="{{ TriggerAccelerometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="accelerometer_y"
-                           value="{{ TriggerAccelerometerY }}">
+                <label>Y Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="accelerometer_y" value="{{ TriggerAccelerometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="accelerometer_z"
-                           value="{{ TriggerAccelerometerZ }}">
+                <label>Z Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="accelerometer_z" value="{{ TriggerAccelerometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_accelerometer"
-                           value="{{ SecondsAccelerometer }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_accelerometer" value="{{ SecondsAccelerometer }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -483,34 +673,54 @@
 
                 <br><br>
 
-                <label>
-                    X Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="magnetometer_x"
-                           value="{{ TriggerMagnetometerX }}">
+                <label>X Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="magnetometer_x" value="{{ TriggerMagnetometerX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="magnetometer_y"
-                           value="{{ TriggerMagnetometerY }}">
+                <label>Y Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="magnetometer_y" value="{{ TriggerMagnetometerY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="magnetometer_z"
-                           value="{{ TriggerMagnetometerZ }}">
+                <label>Z Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="magnetometer_z" value="{{ TriggerMagnetometerZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_magnetometer"
-                           value="{{ SecondsMagnetometer }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_magnetometer" value="{{ SecondsMagnetometer }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>
@@ -526,34 +736,54 @@
 
                 <br><br>
 
-                <label>
-                    X Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="gyroscope_x"
-                           value="{{ TriggerGyroscopeX }}">
+                <label>X Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="gyroscope_x" value="{{ TriggerGyroscopeX }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Y Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="gyroscope_y"
-                           value="{{ TriggerGyroscopeY }}">
+                <label>Y Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="gyroscope_y" value="{{ TriggerGyroscopeY }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Z Trigger variance<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="gyroscope_z"
-                           value="{{ TriggerGyroscopeZ }}">
+                <label>Z Trigger variance<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="gyroscope_z" value="{{ TriggerGyroscopeZ }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between readings<br>
-                    <input class="high-low-number" type="number" min=0 step="any" name="seconds_gyroscope"
-                           value="{{ SecondsGyroscope }}">
+                <label>Seconds between readings<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input class="high-low-number" type="number" min=0 step="any"
+                                       name="seconds_gyroscope" value="{{ SecondsGyroscope }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
             </div>
         </div>

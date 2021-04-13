@@ -18,7 +18,7 @@
 
     <label>
         Text Configuration<br>
-        <textarea name="new_config_str" id="new_config_str" style="min-width: 450px; min-height: 350px;"></textarea>
+        <textarea name="new_config_str" id="new_config_str" style="width: 550px; height: 450px;"></textarea>
     </label>
 
     <br><br>
@@ -59,7 +59,9 @@
         }  else if (selected_value === 'network') {
                 document.getElementById('new_config_str').value = network_config;
         }
+        if (screen.width < 500) {
+            document.getElementById('new_config_str').style.width = '350px';
+        }
     }
-
     ConfigChange();
 </script>

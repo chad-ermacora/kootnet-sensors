@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-warning">
-            <form class="mui-form" method="POST" action="/atpro/settings-mqtt-b">
+            <form class="pure-form" method="POST" action="/atpro/settings-mqtt-b">
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-broker-toggle-switch" class="toggle-switch-input"
                            name="enable_broker_server" {{ BrokerServerChecked }}>
@@ -13,7 +13,7 @@
 
                 <label>
                     <i>Leave Configuration Blank for a default open MQTT Broker</i><br><br>
-                    <textarea name="mosquitto_config" cols="50" rows="20">{{ BrokerMosquittoConfig }}</textarea>
+                    <textarea id="mosquitto_config" name="mosquitto_config" cols="50" rows="20">{{ BrokerMosquittoConfig }}</textarea>
                 </label>
 
                 <br><br>
@@ -23,3 +23,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    if (screen.width < 500) {
+            document.getElementById('mosquitto_config').style.width = '350px';
+        }
+</script>

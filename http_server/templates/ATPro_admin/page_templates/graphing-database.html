@@ -35,10 +35,15 @@
 
                 <br><br>
 
-                <label>
-                    Remote Sensor ID<br>
-                    <input style="width: 275px;" type="text" id="MQTTBaseTopicInput"
-                           maxlength="128" name="MQTTCustomBaseTopic" value="KS" disabled>
+                <label>Remote Sensor ID<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 275px;" type="text" id="MQTTBaseTopicInput"
+                                       maxlength="128" name="MQTTCustomBaseTopic" value="KS" disabled>
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br>
@@ -69,21 +74,27 @@
                             </label>
                         </div>
                     </div>
+                </div>
 
-                    <br><br>
+                <br><br>
 
+                <div style="display: table; margin-left: auto; margin-right: auto;">
                     <div style="display: table-row;">
                         <div style="display: table-cell;">
-                            <label>
-                                Max Plot Points<br>
+                            <label>Max Plot Points<br>
                                 <input style="width: 125px;" type="number" min="5" name="MaxSQLData" value="200000">
                             </label>
                         </div>
 
                         <div style="display: table-cell;">
-                            <label>
-                                Skip Data between plots (Interval Only)<br>
-                                <input style="width: 75px;" type="number" min="0" max="9999" name="SkipSQL" value="12">
+                            <label>Skip Data between plots (Interval Only)<br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input style="width: 75px;" type="number" min="0" max="9999" name="SkipSQL" value="12">
+                                        </div>
+                                    </div>
+                                </div>
                             </label>
                         </div>
                     </div>
@@ -92,22 +103,41 @@
                 <br><hr><br>
 
                 <label>Start DateTime DD/MM/YYYY hh:mm<br>
-                    <input type="datetime-local" name="graph_datetime_start" value="2019-07-01T00:00">
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input type="datetime-local" name="graph_datetime_start" value="2019-07-01T00:00">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
                 <label>End DateTime DD/MM/YYYY hh:mm<br>
-                    <input type="datetime-local" name="graph_datetime_end" value="2200-01-01T00:00">
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input type="datetime-local" name="graph_datetime_end" value="2200-01-01T00:00">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
-                <label>
-                    Hour Offset<br>
+
+                <label>Hour Offset<br>
                     (Database saves in UTC 0)<br>
-                    <input style="width: 75px;" type="number" min="-12" max="14" name="HourOffset" value="{{ UTCOffset }}">
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 75px;" type="number" min="-12" max="14" name="HourOffset" value="{{ UTCOffset }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
+
 
                 <br><hr><br>
 
@@ -246,20 +276,20 @@
             <p>To view generated graphs, click the links below.</p>
 
             <h3>
-                <u><a href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u>:
-                {{ IntervalPlotlyDate }}
+                <u><a href="/ViewIntervalPlotlyGraph" target="_blank">Interval Plotly Graph</a></u><br>
+                Created: {{ IntervalPlotlyDate }}
             </h3>
             <h3>
-                <u><a href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u>:
-                {{ TriggerPlotlyDate }}
+                <u><a href="/ViewTriggerPlotlyGraph" target="_blank">Trigger Plotly Graph</a></u><br>
+                Created: {{ TriggerPlotlyDate }}
             </h3>
             <h3>
-                <u><a href="/ViewMQTTPlotlyGraph" target="_blank">MQTT Plotly Graph</a></u>:
-                {{ MQTTPlotlyDate }}
+                <u><a href="/ViewMQTTPlotlyGraph" target="_blank">MQTT Plotly Graph</a></u><br>
+                Created: {{ MQTTPlotlyDate }}
             </h3>
             <h3>
-                <u><a href="/ViewCustomPlotlyGraph" target="_blank">Custom Database Plotly Graph</a></u>:
-                {{ CustomPlotlyDate }}
+                <u><a href="/ViewCustomPlotlyGraph" target="_blank">Custom Database Plotly Graph</a></u><br>
+                Created: {{ CustomPlotlyDate }}
             </h3>
         </div>
     </div>

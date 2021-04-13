@@ -34,24 +34,35 @@
 
                 <br><br>
 
-                <label>
-                    Broker Address or IP<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250" name="sub_broker_address"
-                           value="{{ MQTTBrokerAddress }}">
+                <label>Broker Address or IP<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 350px;" type="text" maxlength="250" name="sub_broker_address"
+                                       value="{{ MQTTBrokerAddress }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Broker Port #<br>
-                    <input style="width: 120px; text-align: center;" type="number" min="1" max="65535" name="sub_broker_port"
-                           value="{{ MQTTBrokerPort }}">
+                <label>Broker Port #<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 120px;" type="number" min="1" max="65535" name="sub_broker_port"
+                                       value="{{ MQTTBrokerPort }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
                 <label>
-                    <a target="_blank" href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
+                    <a style="color: white;" target="_blank"
+                       href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
                         Quality of Service Level
                     </a><br>
                     <select name="mqtt_qos_level">
@@ -72,17 +83,27 @@
 
                 <br><br>
 
-                <label>
-                    Username<br>
-                    <input style="width: 200px; text-align: center;" type="text" maxlength="250" name="broker_username"
-                           value="{{ MQTTSubscriberUsername }}">
+                <label>Username<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                                       value="{{ MQTTSubscriberUsername }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Password (Optional)<br>
-                    <input style="width: 200px; text-align: center;" type="text" maxlength="250" name="broker_password">
+                <label>Password (Optional)<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
@@ -99,7 +120,7 @@
                         MQTT Topics
                     </a>
                     <br><i>Add one or more Topics separated by a comma Eg. KS/Sensor1/Temp,KS/Sensor2/Temp</i><br><br>
-                    <textarea name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
+                    <textarea id="subscriber_topics" name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
                 </label>
 
                 <br><br>
@@ -109,3 +130,9 @@
         </div>
     </div>
 </form>
+
+<script>
+    if (screen.width < 500) {
+            document.getElementById('subscriber_topics').style.width = '350px';
+        }
+</script>

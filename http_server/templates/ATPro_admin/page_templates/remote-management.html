@@ -1,6 +1,10 @@
 <link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
 
 <style>
+    .pure-menu-link, .pure-menu-link:visited {
+        color: white;
+    }
+
     .remote-management-page-view {
         display: inline-block;
         vertical-align: top;
@@ -41,17 +45,17 @@
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
-                                <label>
-                                    Username<br>
+                                <label>Username<br>
                                     <input type="text" name="sensor_username" style="width: 200px;" placeholder="Eg. Jim">
                                 </label>
                             </div>
+                        </div>
 
-                            &nbsp;
+                        <br>
 
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-cell;">
-                                <label>
-                                    Password<br>
+                                <label>Password<br>
                                     <input type="password" name="sensor_password" style="width: 200px;" placeholder="Eg. SuperSecure">
                                 </label>
                             </div>
@@ -315,17 +319,25 @@
         <div class="col-6 col-m-12 col-sm-12">
             <div class="counter bg-primary">
                 <div class="pure-menu">
-                    <ul class="pure-menu-list pure-menu-horizontal pure-menu-scrollable">
+                    <ul class="pure-menu-list">
                         <li class="pure-menu-item rm-configurations">
                             <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-configurations')">
                                 Configurations
                             </a>
                         </li>
+                    </ul>
+                </div>
+                <div class="pure-menu">
+                    <ul class="pure-menu-list">
                         <li class="pure-menu-item rm-online-services">
                             <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-online-services')">
                                 3rd Party Online Services
                             </a>
                         </li>
+                    </ul>
+                </div>
+                <div class="pure-menu">
+                    <ul class="pure-menu-list">
                         <li class="pure-menu-item rm-system-commands">
                             <a href="#" class="pure-menu-link" onclick="SelectRMNav('rm-system-commands')">
                                 System Commands

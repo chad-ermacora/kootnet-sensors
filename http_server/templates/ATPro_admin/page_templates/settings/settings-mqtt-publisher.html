@@ -13,29 +13,44 @@
 
                 <br><br>
 
-                <label>
-                    Broker DNS Address or IP<br>
-                    <input style="width: 350px;" type="text" maxlength="250" name="publish_broker_address"
-                           value="{{ MQTTBrokerAddress }}">
+                <label>Broker DNS Address or IP<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 350px;" type="text" maxlength="250" name="publish_broker_address"
+                                       value="{{ MQTTBrokerAddress }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Broker Port #<br>
-                    <input style="width: 120px;" type="number" min="1" max="65535" name="publish_broker_port"
-                           value="{{ MQTTBrokerPort }}">
+                <label>Broker Port #<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 120px;" type="number" min="1" max="65535" name="publish_broker_port"
+                                       value="{{ MQTTBrokerPort }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Seconds between Publishing<br>
-                    <input style="width: 100px;" type="number" min="1" name="publish_seconds_wait"
-                           value="{{ MQTTPublishSecondsWait }}">
+                <label>Seconds between Publishing<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 100px;" type="number" min="1" name="publish_seconds_wait"
+                                       value="{{ MQTTPublishSecondsWait }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
                 <label>
                     <a style="color: white;" target="_blank"
@@ -49,7 +64,7 @@
                     </select>
                 </label>
 
-                <br><br>
+                <br>
 
                 <label class="toggle-switch">
                     <input type="checkbox" id="enable-mqtt-p-auth-toggle-switch" class="toggle-switch-input"
@@ -60,17 +75,27 @@
 
                 <br><br>
 
-                <label>
-                    Username<br>
-                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
-                           value="{{ MQTTPublisherUsername }}">
+                <label>Username<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                                       value="{{ MQTTPublisherUsername }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
-                <label>
-                    Password (Optional)<br>
-                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                <label>Password (Optional)<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><hr>
@@ -84,7 +109,6 @@
                 <br>
 
                 <div id="sensor-checkboxes">
-
                     <label class="toggle-switch">
                         <input type="checkbox" id="hostname-toggle" class="toggle-switch-input"
                                name="system_hostname" {{ CheckedSensorHostName }}>
@@ -231,9 +255,15 @@
             <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
                 <input type="text" name="ConfigSection" value="Advanced" hidden><br>
 
-                <label>
-                    MQTT Base Topic(s)<br>Ex. Sensor1 or Home/Sensor1<br>
-                    <input style="width: 275px;" type="text" name="topic_mqtt_base_topic" value="{{ MQTTBaseTopic }}">
+                <label>MQTT Base Topic(s)<br>Ex. Sensor1 or Home/Sensor1<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 275px;" type="text" name="topic_mqtt_base_topic"
+                                       value="{{ MQTTBaseTopic }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
@@ -271,7 +301,7 @@
                         <a style="color: white;" href="/MQTTPublisherVariables" target="_blank">
                             <i>Click Here for Sensor Variables</i>
                         </a><br>
-                        <textarea name="mqtt_custom_data" cols="55" rows="20">{{ MQTTCustomDataFormat }}</textarea>
+                        <textarea id="mqtt_custom_data" name="mqtt_custom_data" cols="55" rows="20">{{ MQTTCustomDataFormat }}</textarea>
                     </label>
 
                     <br><br>
@@ -289,298 +319,483 @@
                 </div>
 
                 <div class="row" id="float_boxes_topics">
-                    <label>
-                        Sensor Host Name<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_hostname"
-                               value="{{ MQTTSystemHostNameTopic }}">
+                    <label>Sensor Host Name<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_hostname"
+                                           value="{{ MQTTSystemHostNameTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Sensor Uptime<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_uptime"
-                               value="{{ MQTTUptimeTopic }}">
+                    <label>Sensor Uptime<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_uptime"
+                                           value="{{ MQTTUptimeTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                      &nbsp;
 
-                    <label>
-                        Sensor IP<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_ip"
-                               value="{{ MQTTIPTopic }}">
+                    <label>Sensor IP<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_ip"
+                                           value="{{ MQTTIPTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Sensor DateTime<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_datetime"
-                               value="{{ MQTTDateTimeTopic }}">
+                    <label>Sensor DateTime<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_datetime"
+                                           value="{{ MQTTDateTimeTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        CPU Temperature<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_cpu_temp"
-                               value="{{ MQTTCPUTempTopic }}">
+                    <label>CPU Temperature<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_cpu_temp"
+                                           value="{{ MQTTCPUTempTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                      &nbsp;
 
-                    <label>
-                        Environmental Temperature<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_env_temp"
-                               value="{{ MQTTEnvTempTopic }}">
+                    <label>Environmental Temperature<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_env_temp"
+                                           value="{{ MQTTEnvTempTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Pressure<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pressure"
-                               value="{{ MQTTPressureTopic }}">
+                    <label>Pressure<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pressure"
+                                           value="{{ MQTTPressureTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Altitude<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_altitude"
-                               value="{{ MQTTAltitudeTopic }}">
+                    <label>Altitude<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_altitude"
+                                           value="{{ MQTTAltitudeTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Humidity<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_humidity"
-                               value="{{ MQTTHumidityTopic }}">
+                    <label>Humidity<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_humidity"
+                                           value="{{ MQTTHumidityTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Dew Point<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_dew_point"
-                               value="{{ MQTTDewPointTopic }}">
+                    <label>Dew Point<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_dew_point"
+                                           value="{{ MQTTDewPointTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Distance<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_distance"
-                               value="{{ MQTTDistanceTopic }}">
+                    <label>Distance<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_distance"
+                                           value="{{ MQTTDistanceTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gas Resistance Index<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_resistance_index"
-                               value="{{ MQTTGASRestIndexTopic }}">
+                    <label>Gas Resistance Index<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_resistance_index"
+                                           value="{{ MQTTGASRestIndexTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gas Oxidising<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_oxidising"
-                               value="{{ MQTTGASOxidisingTopic }}">
+                    <label>Gas Oxidising<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_oxidising"
+                                           value="{{ MQTTGASOxidisingTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gas Reducing<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_reducing"
-                               value="{{ MQTTGASReducingTopic }}">
+                    <label>Gas Reducing<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_reducing"
+                                           value="{{ MQTTGASReducingTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gas NH3<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_nh3"
-                               value="{{ MQTTGASNH3Topic }}">
+                    <label>Gas NH3<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_nh3"
+                                           value="{{ MQTTGASNH3Topic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Particulate Matter 1<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_1"
-                               value="{{ MQTTPM1Topic }}">
+                    <label>Particulate Matter 1<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_1"
+                                           value="{{ MQTTPM1Topic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Particulate Matter 2.5<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_2_5"
-                               value="{{ MQTTPM2_5Topic }}">
+                    <label>Particulate Matter 2.5<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_2_5"
+                                           value="{{ MQTTPM2_5Topic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Particulate Matter 4<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_4"
-                               value="{{ MQTTPM4Topic }}">
+                    <label>Particulate Matter 4<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_4"
+                                           value="{{ MQTTPM4Topic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Particulate Matter 10<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_10"
-                               value="{{ MQTTPM10Topic }}">
+                    <label>Particulate Matter 10<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_10"
+                                           value="{{ MQTTPM10Topic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Lumen<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_lumen"
-                               value="{{ MQTTLumenTopic }}">
+                    <label>Lumen<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_lumen"
+                                           value="{{ MQTTLumenTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Red<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_red"
-                               value="{{ MQTTColourRedTopic }}">
+                    <label>Red<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_red"
+                                           value="{{ MQTTColourRedTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Orange<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_orange"
-                               value="{{ MQTTColourOrangeTopic }}">
+                    <label>Orange<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_orange"
+                                           value="{{ MQTTColourOrangeTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Yellow<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_yellow"
-                               value="{{ MQTTColourYellowTopic }}">
+                    <label>Yellow<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_yellow"
+                                           value="{{ MQTTColourYellowTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Green<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_green"
-                               value="{{ MQTTColourGreenTopic }}">
+                    <label>Green<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_green"
+                                           value="{{ MQTTColourGreenTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Blue<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_blue"
-                               value="{{ MQTTColourBlueTopic }}">
+                    <label>Blue<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_blue"
+                                           value="{{ MQTTColourBlueTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Violet<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_violet"
-                               value="{{ MQTTColourVioletTopic }}">
+                    <label>Violet<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_violet"
+                                           value="{{ MQTTColourVioletTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Ultra Violet A<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_a"
-                               value="{{ MQTTUVATopic }}">
+                    <label>Ultra Violet A<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_a"
+                                           value="{{ MQTTUVATopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Ultra Violet B<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_b"
-                               value="{{ MQTTUVBTopic }}">
+                    <label>Ultra Violet B<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_b"
+                                           value="{{ MQTTUVBTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Accelerometer X<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_x"
-                               value="{{ MQTTAccXTopic }}">
+                    <label>Accelerometer X<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_x"
+                                           value="{{ MQTTAccXTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Accelerometer Y<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_y"
-                               value="{{ MQTTAccYTopic }}">
+                    <label>Accelerometer Y<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_y"
+                                           value="{{ MQTTAccYTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Accelerometer Z<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_z"
-                               value="{{ MQTTAccZTopic }}">
+                    <label>Accelerometer Z<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_z"
+                                           value="{{ MQTTAccZTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Magnetometer X<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_x"
-                               value="{{ MQTTMagXTopic }}">
+                    <label>Magnetometer X<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_x"
+                                           value="{{ MQTTMagXTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Magnetometer Y<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_y"
-                               value="{{ MQTTMagYTopic }}">
+                    <label>Magnetometer Y<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_y"
+                                           value="{{ MQTTMagYTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Magnetometer Z<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_z"
-                               value="{{ MQTTMagZTopic }}">
+                    <label>Magnetometer Z<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_z"
+                                           value="{{ MQTTMagZTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gyroscope X<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_x"
-                               value="{{ MQTTGyroXTopic }}">
+                    <label>Gyroscope X<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_x"
+                                           value="{{ MQTTGyroXTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gyroscope Y<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_y"
-                               value="{{ MQTTGyroYTopic }}">
+                    <label>Gyroscope Y<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_y"
+                                           value="{{ MQTTGyroYTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
 
                     &nbsp;
 
-                    <label>
-                        Gyroscope Z<br>
-                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_z"
-                               value="{{ MQTTGyroZTopic }}">
+                    <label>Gyroscope Z<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_z"
+                                           value="{{ MQTTGyroZTopic }}">
+                                </div>
+                            </div>
+                        </div>
                     </label>
                 </div>
 
@@ -611,7 +826,11 @@
         } else if (document.getElementById("SendAsIndividual").checked) {
             document.getElementById("MQTTCustomData").style.display = "none";
             document.getElementById("ResetTopics").style.display = "inline-block";
-            document.getElementById("float_boxes_topics").style.display = "inline-flex";
+            if (screen.width < 500) {
+                document.getElementById("float_boxes_topics").style.display = "inline-block";
+            } else {
+                document.getElementById("float_boxes_topics").style.display = "inline-flex";
+            }
         } else if (document.getElementById("SendAsCustom").checked) {
             document.getElementById("ResetTopics").style.display = "none";
             document.getElementById("float_boxes_topics").style.display = "none";
@@ -619,4 +838,8 @@
         }
     }
     topics_hidden();
+
+    if (screen.width < 500) {
+            document.getElementById('mqtt_custom_data').style.width = '350px';
+        }
 </script>

@@ -23,16 +23,21 @@
                 <br><br>
 
                 <label>
-                    <input type="time" name="send_email_graph_at_time" required
-                           placeholder="24" min="1" value="{{ EmailGraphAtHourMin }}">
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input type="time" name="send_email_graph_at_time" placeholder="24" min="1"
+                                       value="{{ EmailGraphAtHourMin }}" required>
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
-                <label>
-                    Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
-                    <textarea style="width: 400px; height: 200px;"
-                              name="send_graphs_to_email_address">{{ EmailGraphsToCSVAddresses }}</textarea>
+                <label>Email Reports to<br>Use CSV Eg. email1@here.com,email2@there.com<br>
+                    <textarea id="email-addresses-textarea" name="send_graphs_to_email_address"
+                              style="width: 400px; height: 200px;">{{ EmailGraphsToCSVAddresses }}</textarea>
                 </label>
 
                 <br><br>
@@ -53,10 +58,15 @@
 
                 <br><br><br>
 
-                <label>
-                    Graph the past X hours<br><br>
-                    <input style="width: 100px;" type="number" name="graph_past_hours" required
-                           placeholder="24" min="1" value="{{ GraphsPastHours }}">
+                <label>Graph the past X hours<br><br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 100px;" type="number" name="graph_past_hours" placeholder="24" min="1"
+                                       value="{{ GraphsPastHours }}" required>
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
@@ -195,13 +205,18 @@
             <form class="pure-form" method="POST" action="/atpro/test-email">
                 <h3><strong>Test Graph Email</strong></h3>
 
-                <label>
-                    Email to<br>
-                    <input style="width: 350px; text-align: center;" type="text" maxlength="250"
+                <label>Email to<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 350px;" type="text" maxlength="250"
                                        name="test_email_address" placeholder="someone@somewhere.com">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
                 <button type="submit" class="pure-button" name="test_email_button" value="graphs">Send Email</button>
             </form>
@@ -217,4 +232,8 @@
             jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
         }
     });
+
+    if (screen.width < 500) {
+            document.getElementById('email-addresses-textarea').style.width = '350px';
+        }
 </script>

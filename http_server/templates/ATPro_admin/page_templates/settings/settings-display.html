@@ -1,10 +1,3 @@
-<style>
-    form {
-        text-align: center;
-        display: inline-block;
-    }
-</style>
-
 <form class="pure-form" method="POST" action="/atpro/settings-display">
     <label class="toggle-switch">
         <input type="checkbox" id="enable-display-toggle-switch" class="toggle-switch-input"
@@ -15,11 +8,15 @@
 
     <br><br>
 
-    <label>
-        Minutes between displaying sensor readings
-        <br><br>
-        <input style="width: 100px;" type="number" step="1" min="1" name="display_interval_delay_min"
-               value="{{ DisplayIntervalDelay }}">
+    <label>Minutes between displaying sensor readings<br>
+        <div style="display: table; margin-left: auto; margin-right: auto;">
+            <div style="display: table-row;">
+                <div style="display: table-cell;">
+                    <input style="width: 100px;" type="number" step="1" min="1" name="display_interval_delay_min"
+                           value="{{ DisplayIntervalDelay }}">
+                </div>
+            </div>
+        </div>
     </label>
 
     <br>

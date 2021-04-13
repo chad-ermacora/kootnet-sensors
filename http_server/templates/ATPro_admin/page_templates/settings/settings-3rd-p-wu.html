@@ -20,10 +20,15 @@
 
                 <br><br>
 
-                <label>
-                    Seconds between Updates<br>
-                    <input style="width: 100px;" type="number" min="1" name="weather_underground_interval"
-                           value="{{ WUIntervalSeconds }}">
+                <label>Seconds between Updates<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 100px;" type="number" min="1" name="weather_underground_interval"
+                                       value="{{ WUIntervalSeconds }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
@@ -37,18 +42,28 @@
 
                 <br><br>
 
-                <label>
-                    Station ID<br>
-                    <input style="width: 275px; text-align: center;" type="text" maxlength="15" name="station_id"
-                           value="{{ WUStationID }}">
+                <label>Station ID<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 275px;" type="text" maxlength="15"
+                                       name="station_id" value="{{ WUStationID }}">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>
 
-                <label>
-                    Station Key<br>
-                    <input style="width: 275px; text-align: center;" type="password" maxlength="15" name="station_key"
-                           placeholder="Leave blank to use previous Key">
+                <label>Station Key<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 275px;" type="password" maxlength="15"
+                                       name="station_key" placeholder="Leave blank to use previous Key">
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
                 <br><br>

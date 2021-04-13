@@ -2,15 +2,19 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-warning">
             <form class="pure-form" method="POST" action="/atpro/system-ip">
-                <h3>Wireless IP Settings</h3>
+                <h3>Wireless IP & Hostname Settings</h3>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>HostName<br>
+                                <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname" required
+                                       placeholder="eg. KootenayLake09" minlength="2" maxlength="62" value="{{ IPHostname }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                <label>
-                    HostName<br>
-                    <input style="width: 250px;" type="text" id="ip_hostname" name="ip_hostname" required
-                           placeholder="eg. KootenayLake09" minlength="2" maxlength="62" value="{{ IPHostname }}">
-                </label>
-
-                <br><br>
+                <br>
 
                 <label class="toggle-switch">
                     <input type="checkbox" id="system-dhcp" class="toggle-switch-input" onclick="CheckedDHCP()"
@@ -44,12 +48,18 @@
 
                 <br>
 
-                <label>Gateway<br>
-                    <input style="width: 150px;" type="text" name="ip_gateway" placeholder="eg. 192.168.10.1"
-                           minlength="7" maxlength="15" value="{{ IPGateway }}">
-                </label>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Gateway<br>
+                                <input style="width: 150px;" type="text" name="ip_gateway" placeholder="eg. 192.168.10.1"
+                                       minlength="7" maxlength="15" value="{{ IPGateway }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                <br><br>
+                <br>
 
                 <div style="display: table; margin-left: auto; margin-right: auto;">
                     <div style="display: table-row;">
@@ -90,11 +100,17 @@
 
                     <br><br>
 
-                    <input type="text" style="width: 50px;" maxlength="2" minlength="2"
-                           name="country_code" value="{{ WirelessCountryCode }}" required>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input type="text" style="width: 50px;" maxlength="2" minlength="2"
+                                       name="country_code" value="{{ WirelessCountryCode }}" required>
+                            </div>
+                        </div>
+                    </div>
                 </label>
 
-                <br><br>
+                <br>
 
                 <label class="pure-radio">Secured (WEP/WPA/WPA2)
                     <input type="radio" name="wifi_security1" value="wireless_wpa"  {{ CheckedWiFiSecurityWPA1 }}>
@@ -106,17 +122,29 @@
 
                 <br>
 
-                <label>Wireless Network Name (SSID)<br>
-                    <input style="width: 200px;" type="text" name="ssid1" maxlength="32"
-                           placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
-                </label>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Wireless Network Name (SSID)<br>
+                                <input style="width: 300px;" type="text" name="ssid1" maxlength="32"
+                                       placeholder="eg. MyWirelessNetwork" value="{{ SSID1 }}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-                <br><br>
+                <br>
 
-                <label>Wireless Key<br>
-                    <input style="width: 200px;" type="password" name="wifi_key1"
-                           placeholder="Leave blank to use previous Key" minlength="8" maxlength="63">
-                </label>
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Wireless Key<br>
+                                <input style="width: 300px;" type="password" name="wifi_key1"
+                                       placeholder="Leave blank to use previous Key" minlength="8" maxlength="63">
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
                 <br><br>
 
