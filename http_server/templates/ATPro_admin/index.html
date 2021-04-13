@@ -209,6 +209,25 @@
 
 <script>
     function SelectNav(nav_location, skip_menu_select=false) {
+        if (typeof refresh_timer !== 'undefined') {
+            clearTimeout(refresh_timer);
+        }
+
+        if (skip_menu_select === false) {
+            SelectActiveMainMenu(nav_location);
+        } else {
+            UnSelectAllMenus();
+        }
+
+        $("#main-page-view").load("/atpro/" + nav_location);
+    }
+
+    function SelectActiveMainMenu(nav_location) {
+        UnSelectAllMenus();
+        document.getElementById(nav_location).classList.add("active");
+    }
+
+    function UnSelectAllMenus() {
         document.getElementById("sensor-dashboard").classList.remove("active");
         document.getElementById("sensor-readings").classList.remove("active");
         document.getElementById("sensor-latency").classList.remove("active");
@@ -218,20 +237,6 @@
         document.getElementById("sensor-rm").classList.remove("active");
         document.getElementById("sensor-checkin-view").classList.remove("active");
         document.getElementById("sensor-settings").classList.remove("active");
-
-        if (typeof refresh_timer !== 'undefined') {
-            clearTimeout(refresh_timer);
-        }
-
-        if (skip_menu_select === false) {
-            SelectActiveMainMenu(nav_location);
-        }
-
-        $("#main-page-view").load("/atpro/" + nav_location);
-    }
-
-    function SelectActiveMainMenu(nav_location) {
-        document.getElementById(nav_location).classList.add("active");
     }
 
     {{ RunScript | safe }}
