@@ -310,7 +310,7 @@ def check_sensor_status_sensor_control(address_list):
             port = address_split[1]
         response_time = response["response_time"]
         background_colour = get_response_bg_colour(response_time)
-        sensor_url_link = "'https://" + new_address + ":" + port + "/SensorInformation'"
+        sensor_url_link = "'https://" + new_address + ":" + port + "/'"
 
         text_insert += "<tr><th width='160px'><span style='background-color: " + background_colour + ";'>" + \
                        response_time + " Seconds</span></th>\n<th width='250px'>" + response["sensor_hostname"] + \
