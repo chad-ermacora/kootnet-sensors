@@ -421,14 +421,14 @@ def get_response_bg_colour(response_time):
 
     try:
         delay_float = float(response_time)
-        background_colour = "green"
-        if 0.0 <= delay_float < 0.3:
+        background_colour = "darkgreen"
+        if 0.0 <= delay_float < 0.5:
             pass
-        elif 0.3 < delay_float < 0.5:
-            background_colour = "yellow"
-        elif 0.5 < delay_float < 1.0:
-            background_colour = "orange"
-        elif 1.0 < delay_float:
+        elif 0.5 < delay_float < 0.75:
+            background_colour = "#859B14"
+        elif 0.75 < delay_float < 1.5:
+            background_colour = "#8b4c00"
+        elif 1.5 < delay_float:
             background_colour = "red"
     except Exception as error:
         logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
