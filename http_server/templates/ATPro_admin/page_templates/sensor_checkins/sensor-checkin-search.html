@@ -12,13 +12,17 @@
 </head>
 
 <style>
+    body, input {
+        text-align: center;
+    }
+
     #log-page-content {
         text-align: left;
         color: black;
     }
 </style>
 
-<body style="text-align: center;">
+<body>
 <h2><a style="color: red;" href="/atpro/sensor-checkin-search">Sensor Checkins Search</a></h2>
 
 <div class="row">
@@ -27,7 +31,7 @@
             <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
                 <label style="color: red; font-size: medium; font-weight: bolder;">
                     Sensor ID<br>
-                    <input style="width: 375px; text-align: center;" type="text" maxlength="64" name="sensor_id"
+                    <input style="width: 375px;" type="text" maxlength="64" name="sensor_id"
                            placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
                 </label>
 
