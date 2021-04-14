@@ -46,6 +46,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
 
         self.mqtt_subscriber_qos = 0
 
+        self.mqtt_page_view_max_entries = 30
+
         self._update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
