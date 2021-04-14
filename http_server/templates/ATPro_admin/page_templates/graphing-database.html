@@ -1,3 +1,10 @@
+<style>
+    input, form {
+        text-align: center;
+        display: inline-block;
+    }
+</style>
+
 <div class="row">
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
@@ -39,7 +46,7 @@
                     <div style="display: table; margin-left: auto; margin-right: auto;">
                         <div style="display: table-row;">
                             <div style="display: table-cell;">
-                                <input style="width: 275px;" type="text" id="MQTTBaseTopicInput"
+                                <input style="width: 375px;" type="text" id="MQTTBaseTopicInput"
                                        maxlength="128" name="MQTTCustomBaseTopic" value="KS" disabled>
                             </div>
                         </div>
@@ -85,6 +92,8 @@
                                 <input style="width: 125px;" type="number" min="5" name="MaxSQLData" value="200000">
                             </label>
                         </div>
+
+                        &nbsp;&nbsp;&nbsp;
 
                         <div style="display: table-cell;">
                             <label>Skip Data between plots (Interval Only)<br>
@@ -346,6 +355,10 @@
 
     function RefreshPageTimed() {
         SelectNav("sensor-graphing-db");
+    }
+
+    if (screen.width < 500) {
+        document.getElementById('MQTTBaseTopicInput').style.width = '325px';
     }
 
     {{ RunScript | safe }}
