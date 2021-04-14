@@ -1,0 +1,23 @@
+<style>
+    .sensor-name {
+        font-size: large;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    p {
+        font-weight: bold;
+    }
+</style>
+
+<div class="col-6 col-m-12 col-sm-12">
+    <div class="counter bg-primary">
+        <h3>
+            <span class="sensor-name">Sensor: </span>{{ SensorID }}<br>
+            <span class="sensor-name">Last Contact: </span>{{ DateTimeContact }}
+        </h3>
+
+        <p>{{ MQTTData | safe }}</p>
+
+    </div>
+</div>
