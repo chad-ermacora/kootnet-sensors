@@ -24,8 +24,6 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, thread_function
 from operations_modules.app_validation_checks import email_is_valid
 from operations_modules.email_server import send_test_email, send_report_email, send_quick_graph_email
-from operations_modules.sqlite_database import get_sql_element, get_sqlite_tables_in_list, get_clean_sql_table_name, \
-    sql_execute_get_data
 from configuration_modules import app_config_access
 from sensor_recording_modules.triggers_auto_set import auto_set_triggers_wait_time
 from sensor_modules import sensor_access
@@ -714,10 +712,8 @@ def html_atpro_sensor_settings_mqtt_subscriber():
     csv_mqtt_topics = csv_mqtt_topics[:-1]
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-subscriber.html",
-        PageURL="/MQTTConfigurationsHTML",
         MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
         MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
-        MQTTSubDatabaseSize=sensor_access.get_file_size(file_locations.mqtt_subscriber_database),
         MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
         MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
         MQTTQoSLevel0=qos_level_0,
@@ -727,85 +723,6 @@ def html_atpro_sensor_settings_mqtt_subscriber():
         MQTTSubscriberUsername=app_config_access.mqtt_subscriber_config.broker_user,
         SubscriberTopics=csv_mqtt_topics
     )
-
-
-@html_atpro_settings_routes.route("/atpro/mqtt-subscriber-view-data-stream")
-@auth.login_required
-def html_atpro_mqtt_subscriber_data_stream_view():
-    enabled_text = "Disabled"
-    enabled_color = "red"
-    if app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber:
-        enabled_text = "Enabled"
-        enabled_color = "green"
-
-    mqtt_subscriber_log_content = logger.get_sensor_log(file_locations.mqtt_subscriber_log)
-    if mqtt_subscriber_log_content == "":
-        mqtt_subscriber_log_content = "No MQTT Subscriber Messages"
-    return render_template(
-        "ATPro_admin/page_templates/settings/settings-mqtt-subscriber-data-view.html",
-        MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
-        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
-        MQTTSubscriberEnabledText=enabled_text,
-        MQTTEnabledColor=enabled_color,
-        SubscriberTopicsContent=mqtt_subscriber_log_content
-    )
-
-
-@html_atpro_settings_routes.route("/atpro/mqtt-subscriber-clear-log")
-@auth.login_required
-def html_atpro_clear_mqtt_subscriber_log():
-    logger.network_logger.debug("** HTML Clear - MQTT Subscriber Log - Source: " + str(request.remote_addr))
-    logger.clear_mqtt_subscriber_log()
-    return html_atpro_mqtt_subscriber_data_stream_view()
-
-
-@html_atpro_settings_routes.route("/atpro/mqtt-subscriber-sensors-list")
-@auth.login_required
-def html_atpro_mqtt_subscriber_sensors_list():
-    mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
-    sensors_count = len(mqtt_subscriber_sensors)
-
-    sensors_html_list = []
-    for sensor_id in mqtt_subscriber_sensors:
-        sensor_id = get_sql_element(sensor_id)
-        sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
-
-    sensors_html_list.sort(key=lambda x: x[1], reverse=True)
-    html_sensor_table_code = ""
-    for sensor in sensors_html_list:
-        html_sensor_table_code += sensor[0]
-    return render_template("ATPro_admin/page_templates/settings/settings-mqtt-subscriber-sensors-list.html",
-                           SQLMQTTSensorsInDB=str(sensors_count),
-                           HTMLSensorsTableCode=html_sensor_table_code)
-
-
-def _get_sensor_html_table_code(sensor_id):
-    dv_v = app_cached_variables.database_variables
-    sensor_id = get_clean_sql_table_name(sensor_id)
-    html_sensor_code = """<tr>
-        <td>{{ SensorID }}</td>
-        <td>{{ SensorHostName }}</td>
-        <td>{{ IPAddress }}</td>
-        <td>{{ LastContact }}</td>
-    </tr>
-    """.replace("{{ SensorID }}", sensor_id)
-
-    columns_list = [dv_v.sensor_name, dv_v.ip, dv_v.all_tables_datetime]
-    replacement_variables = ["{{ SensorHostName }}", "{{ IPAddress }}", "{{ LastContact }}"]
-    sql_get_code = "SELECT {{ ColumnName }} FROM '" + sensor_id + "' WHERE {{ ColumnName }} != '' ORDER BY " \
-                          + app_cached_variables.database_variables.all_tables_datetime + " DESC LIMIT 1;"
-
-    results_list = []
-    for column, replacement_var in zip(columns_list, replacement_variables):
-        replacement_data = sql_execute_get_data(sql_get_code.replace("{{ ColumnName }}", column),
-                                                sql_database_location=file_locations.mqtt_subscriber_database)
-        replacement_data = get_sql_element(replacement_data)
-        results_list.append(replacement_data)
-        try:
-            html_sensor_code = html_sensor_code.replace(replacement_var, replacement_data)
-        except Exception as error:
-            logger.network_logger.warning("MQTT Subscriber Sensors List Creation: " + str(error))
-    return [html_sensor_code, results_list[-1]]
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-b", methods=["GET", "POST"])
