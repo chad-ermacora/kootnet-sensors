@@ -820,3 +820,19 @@ def html_atpro_set_wifi_config():
                       "Alphanumeric Characters, dashes, underscores and spaces."
             return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
     return get_message_page("Unable to Process WiFi Configuration", page_url="sensor-system", skip_menu_select=True)
+
+
+@html_atpro_system_routes.route("/atpro/system-change-login")
+def html_atpro_system_change_login():
+    return render_template("ATPro_admin/page_templates/system/system-change-login.html")
+
+
+@html_atpro_system_routes.route("/atpro/system-upgrades-power")
+def html_atpro_system_upgrades_power():
+    return render_template("ATPro_admin/page_templates/system/system-upgrades-power.html")
+
+
+@html_atpro_system_routes.route("/atpro/system-about")
+def html_atpro_system_about():
+    return render_template("ATPro_admin/page_templates/system/system-about.html",
+                           KootnetVersion=kootnet_version)

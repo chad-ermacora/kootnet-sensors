@@ -8,248 +8,109 @@
     .system-text-input {
         width: 200px;
     }
-
-    .pure-menu-link, .pure-menu-link:visited {
-        color: black;
-    }
 </style>
 
-<div class="row" style="font-weight: bolder;">
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <form class="pure-form" method="POST" action="/atpro/update-login">
-                <h2>Change Login</h2>
-
-                <div style="display: table; margin-left: auto; margin-right: auto;">
-                    <div style="display: table-row;">
-                        <div style="display: table-cell;">
-                            <label>Username<br>
-                                <input type="text" class="system-text-input" id="login_username" name="login_username"
-                                       minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <br>
-
-                <div style="display: table; margin-left: auto; margin-right: auto;">
-                    <div style="display: table-row;">
-                        <div style="display: table-cell;">
-                            <label>Password<br>
-                                <input type="password" class="system-text-input" id="login_password" name="login_password"
-                                       minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <br><br>
-
-                <button type="submit" class="pure-button">Update</button>
-            </form>
-        </div>
-    </div>
-
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <h2>Kootnet Software Upgrades</h2>
-            <div class="pure-menu pure-menu-horizontal">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                        <a style="cursor: default;" class="pure-menu-link">
-                            Upgrades
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="ConfirmFunction('Start Kootnet Sensors Standard Upgrade?','/system/upgrade-http-std');">
-                                    Standard Upgrade - HTTP
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev');">
-                                    Development Upgrade - HTTP
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a style="cursor: default;" class="pure-menu-link">
-                                    ------------
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean');">
-                                    Clean Standard Upgrade - HTTP
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean');">
-                                    Clean Development Upgrade - HTTP
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                        <a style="cursor: default;" class="pure-menu-link">
-                            Custom Upgrades
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                   onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std');">
-                                    Standard Upgrade - SMB
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev');">
-                                    Development Upgrade - SMB
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-            <h2>System Upgrades & Power</h2>
-            <div class="pure-menu pure-menu-horizontal">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                        <a style="cursor: default;" class="pure-menu-link">
-                            System Upgrades
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('OS Upgrade requires Internet access and may take some time, proceed?','/system/upgrade-os');">
-                                    Upgrade OS & Reboot
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules');">
-                                    Upgrade Python3 Modules & Restart Software
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                        <a style="cursor: default;" class="pure-menu-link">
-                            Power
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Restart Program?','/system/system-restart-program');">
-                                    Restart Program
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Restart System?','/system/system-restart');">
-                                    Restart System
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a style="cursor: default;" class="pure-menu-link">
-                                    ------------
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link"
-                                    onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown');">
-                                    Shutdown System
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <div class="pure-menu">
-                <ul class="pure-menu-list pure-menu-horizontal">
-                    <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
-                    system-db-local system-db-management system-db-uploads">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
-                            Databases
-                        </a>
-                        <ul class="pure-menu-children">
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
-                                    Information & Downloads
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-management')">
-                                    Management
-                                </a>
-                            </li>
-                            <li class="pure-menu-item">
-                                <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
-                                    Uploads
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item raw-configurations">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
-                            View Versions & Configurations
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item system-networking">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
-                            Networking
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item system-ssl">
-                        <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
-                            SSL
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+<div class="pure-menu">
+    <ul class="pure-menu-list pure-menu-horizontal">
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+        system-db-local system-db-management system-db-uploads">
+            <a style="cursor: default;" class="pure-menu-link">
+                Databases
+            </a>
+            <ul class="pure-menu-children">
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
+                        Information & Downloads
+                    </a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-management')">
+                        Management
+                    </a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
+                        Uploads
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
 </div>
 
-<br>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item raw-configurations">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('raw-configurations')">
+                View Versions & Configurations
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item system-networking">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-networking')">
+                Networking
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item system-ssl">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-ssl')">
+                SSL
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item system-change-login">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-change-login')">
+                Change Login
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item system-upgrades-power">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-upgrades-power')">
+                Upgrades & Power
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item system-about">
+            <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-about')">
+                About Software
+            </a>
+        </li>
+    </ul>
+</div>
+
+<br><hr><br>
 
 <div id="system-page-view"></div>
 
 <script>
-    function ConfirmFunction(msg, load_url) {
-        let r = confirm(msg);
-        if (r === true) {
-            $("#main-page-view").load("/atpro/" + load_url);
-        }
-    }
-
     function SelectSystemNav(nav_location) {
         document.getElementsByClassName("raw-configurations")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-db-local")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-networking")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-ssl")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-change-login")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-upgrades-power")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("system-about")[0].classList.remove("pure-menu-selected");
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
@@ -259,4 +120,5 @@
             $("#system-page-view").load("/atpro/" + nav_location);
         }
     }
+    SelectSystemNav("system-db-local");
 </script>

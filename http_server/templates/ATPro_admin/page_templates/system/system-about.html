@@ -1,0 +1,51 @@
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2>Kootnet Sensors</h2>
+            <p>Version: {{ KootnetVersion }}</p>
+
+            <h3>Project Homepage<br><a href="http://kootenay-networks.com/?page_id=170">
+                http://kootenay-networks.com/?page_id=170
+            </a></h3>
+            <h3>GitHub Repository<br><a href="https://github.com/chad-ermacora/sensor-rp">
+                https://github.com/chad-ermacora/sensor-rp
+            </a></h3>
+
+            <div style="display: table; margin-left: auto; margin-right: auto;">
+                <div style="display: table-row;">
+                    <div style="display: table-cell;">
+                        <label>License<br>
+                            <fieldset id="gpl-license" style="background-color: black; width: fit-content; height: fit-content;">
+                                KootNet Sensors is a collection of programs and scripts to deploy,<br>
+                                interact with, and collect readings from various Sensors.<br>
+                                Copyright (C) 2018 Chad Ermacora chad.ermacora@gmail.com<br><br>
+
+                                This program is free software: you can redistribute it and/or modify<br>
+                                it under the terms of the GNU General Public License as published by<br>
+                                the Free Software Foundation, either version 3 of the License, or<br>
+                                (at your option) any later version.<br><br>
+
+                                This program is distributed in the hope that it will be useful,<br>
+                                but WITHOUT ANY WARRANTY; without even the implied warranty of<br>
+                                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.<br>
+                                See the GNU General Public License for more details.<br><br>
+
+                                You should have received a copy of the GNU General Public License<br>
+                                along with this program. If not, see
+                                <a style="color: lightblue;" href="https://www.gnu.org/licenses/"
+                                   target="_blank">https://www.gnu.org/licenses/</a>.
+                            </fieldset>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (screen.width < 530) {
+        document.getElementById('gpl-license').style.width = '350px';
+        document.getElementById('gpl-license').style.height = '650px';
+    }
+</script>

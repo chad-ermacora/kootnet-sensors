@@ -1,0 +1,37 @@
+<div class="row" style="font-weight: bolder;">
+    <div class="col-4 col-m-6 col-sm-12">
+        <div class="counter bg-warning">
+            <form class="pure-form" method="POST" action="/atpro/update-login">
+                <h2>Change Login</h2>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Username<br>
+                                <input type="text" class="system-text-input" id="login_username" name="login_username"
+                                       minlength="4" maxlength="62" placeholder="eg. Sensor33" value="{{ LoginUserName }}" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div style="display: table; margin-left: auto; margin-right: auto;">
+                    <div style="display: table-row;">
+                        <div style="display: table-cell;">
+                            <label>Password<br>
+                                <input type="password" class="system-text-input" id="login_password" name="login_password"
+                                       minlength="4" maxlength="62" placeholder="eg. S3n50rP@s5" required>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
