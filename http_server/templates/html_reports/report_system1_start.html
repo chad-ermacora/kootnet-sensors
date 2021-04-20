@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sensors Configuration Report</title>
+    <title>Sensors System Report</title>
     <style>
         table {
             border: 3px solid white;
@@ -21,9 +21,7 @@
     </style>
 </head>
 <body>
-<h2><strong><a style="text-decoration: underline; color: red" href="/SensorControlManage">
-    Back to Sensor Control
-</a></strong></h2>
+<h2 style="text-decoration: underline; color: red;">Kootnet Sensors - System Report</h2>
 <h3><strong>
         <span style='color: #F4A460;'>Date Taken: {{ DateTime }}</span>
         <br>
@@ -32,20 +30,17 @@
 <table>
     <tr>
         <th><span style="background-color: #00ffff;">_Sensor Name_</span></th>
+        <th><span style="background-color: #00ffff;">_Sensor ID_</span></th>
         <th><span style="background-color: #00ffff;">_IP Address_</span></th>
         <th><span style="background-color: #00ffff;">_Sensor Response Time_</span></th>
         <th><span style="background-color: #00ffff;">_Sensor Date & Time_</span></th>
-        <th><span style="background-color: #00ffff;">_WiFi Network_</span></th>
-        <th><span style="background-color: #00ffff;">_Debug Logging_</span></th>
-        <th><span style="background-color: #00ffff;">_Sensor Checkin_</span></th>
-        <th><span style="background-color: #00ffff;">_Display_</span></th>
-        <th><span style="background-color: #00ffff;">_Interval Recording_</span></th>
-        <th><span style="background-color: #00ffff;">_Trigger Recording_<br>_Variance / High Low_</span></th>
-        <th><span style="background-color: #00ffff;">_Temperature Adjustments_<br>_Static Offset / Pi CF_</span></th>
-        <th><span style="background-color: #00ffff;">_Weather Underground_</span></th>
-        <th><span style="background-color: #00ffff;">_Luftdaten_</span></th>
-        <th><span style="background-color: #00ffff;">_Open Sense Map_</span></th>
-        <th style="text-align: left;"><span style="background-color: #00ffff;">_Installed Sensors_</span></th>
+        <th><span style="background-color: #00ffff;">_CPU Temp_</span></th>
+        <th><span style="background-color: #00ffff;">_RAM % Used_</span></th>
+        <th><span style="background-color: #00ffff;">_SQL DB Size / Free Disk Space_</span></th>
+        <th><span style="background-color: #00ffff;">_Program Version_</span></th>
+        <th><span style="background-color: #00ffff;">_Operating System_</span></th>
+        <th><span style="background-color: #00ffff;">_System UpTime_</span></th>
+        <th><span style="background-color: #00ffff;">_Last Updated_</span></th>
     </tr>
     <tr>
         <th style="color: grey;">-----</th>
@@ -60,7 +55,4 @@
         <th style="color: grey;">-----</th>
         <th style="color: grey;">-----</th>
         <th style="color: grey;">-----</th>
-        <th style="color: grey;">-----</th>
-        <th style="color: grey;">-----</th>
-        <th style="text-align: left; color: grey;">-----</th>
     </tr>
