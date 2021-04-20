@@ -473,3 +473,21 @@ def remove_line_from_text(text_var, line_numbers_list):
             setting_description = line_content.split("=")[1]
             return_config += "Removed_for_viewing = " + setting_description + "\n"
     return return_config
+
+
+def get_file_size(file_location, round_to=2, return_as_level=1):
+    """
+     Returns provided file size. By default returns main Database Size.
+     Set return_as_level to 0 for bytes, 1 for MB and 2 for GB.
+     Set round_to for remainder length (Default 2).
+    """
+    if os.path.isfile(file_location):
+        db_size = os.path.getsize(file_location)
+        if db_size != 0:
+            if return_as_level == 1:
+                db_size = db_size / 1024 / 1024
+            elif return_as_level == 2:
+                db_size = db_size / 1024 / 1024 / 1024
+            db_size = round(db_size, round_to)
+        return db_size
+    return "0.0"
