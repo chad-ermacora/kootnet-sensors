@@ -21,17 +21,16 @@ import re
 from datetime import datetime
 from flask import render_template
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_variables
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_notifications
 
 
 def get_html_atpro_index(run_script="SelectNav('sensor-dashboard');", main_page_view_content=""):
     return render_template("ATPro_admin/index.html",
                            SensorID=app_cached_variables.tmp_sensor_id,
-                           NotificationCount=str(atpro_variables.notification_count),
-                           NotificationsReplacement=atpro_variables.get_notifications_as_string(),
+                           NotificationCount=str(len(atpro_notifications.notifications_list)),
+                           NotificationsReplacement=atpro_notifications.get_notifications_as_string(),
                            OptionalHTML=main_page_view_content,
                            RunScript=run_script)
 

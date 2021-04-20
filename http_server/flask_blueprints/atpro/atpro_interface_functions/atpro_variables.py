@@ -16,32 +16,39 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from datetime import datetime
 import psutil
 from operations_modules import logger
 from operations_modules import file_locations
-from datetime import datetime, timedelta
 from operations_modules import app_cached_variables
 
 
-class CreateATProVariablesClass:
+class CreateATProMenuNotificationClass:
     def __init__(self):
-        self.notification_count = 0
         self.notifications_list = []
 
-    def init_tests(self):
-        self.add_notification_entry("Restart Required",
-                                    self.get_button_to_url_script("Restart Service", "/RestartServices"))
-        self.add_notification_entry("Reboot", self.get_button_to_url_script("Reboot", "/RebootSystem"))
-        self.add_notification_entry("Shutdown", self.get_button_to_url_script("Shutdown", "/ShutdownSystem"))
+        self.restart_service_enabled = 0
+        self.reboot_system_enabled = 0
 
     def get_notifications_as_string(self):
+        self.notifications_list = []
         return_notes = ""
+
+        if self.restart_service_enabled:
+            name = "Program Restart Required<br>Click Here to Restart now"
+            html_script = self.get_button_to_url_script("Restart Program", "/RestartServices")
+            self.add_notification_entry(name, html_script)
+        if self.reboot_system_enabled:
+            name = "System Reboot Required<br>Click Here to Reboot now"
+            html_script = self.get_button_to_url_script("Reboot System", "/RebootSystem")
+            self.add_notification_entry(name, html_script)
+
         for note in self.notifications_list:
             return_notes += str(note)
         return return_notes
 
     def add_notification_entry(self, notify_text, html_script):
-        function_name = "function" + str(app_cached_variables.notes_total_count + 1)
+        function_name = "function" + str(len(self.notifications_list) + 1)
 
         return_text = """
         <li class="dropdown-menu-item">
@@ -70,7 +77,6 @@ class CreateATProVariablesClass:
         return_text = return_text.replace("{{ Script }}", html_script)
 
         self.notifications_list.append(return_text)
-        self.notification_count = len(self.notifications_list)
 
     @staticmethod
     def get_button_to_url_script(button_text, html_link):
@@ -93,7 +99,7 @@ def get_ram_free():
     except Exception as error:
         logger.network_logger.error("Dashboard - Getting Free RAM: " + str(error))
         ram_available = "Error"
-    return str(ram_available) + " GB"
+    return ram_available
 
 
 def get_disk_free():
@@ -103,7 +109,7 @@ def get_disk_free():
     except Exception as error:
         logger.network_logger.error("Dashboard - Getting Free Disk Space: " + str(error))
         disk_available = "Error"
-    return str(disk_available) + " GB"
+    return disk_available
 
 
 html_sensor_readings_row = """
@@ -128,4 +134,4 @@ html_sensor_readings_row = """
 </div>
 """
 
-atpro_variables = CreateATProVariablesClass()
+atpro_notifications = CreateATProMenuNotificationClass()
