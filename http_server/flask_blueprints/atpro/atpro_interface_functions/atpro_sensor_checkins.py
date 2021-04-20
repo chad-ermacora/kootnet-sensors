@@ -23,6 +23,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import get_file_size
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
     get_sql_element
@@ -62,7 +63,7 @@ def html_atpro_sensor_checkin_main_view():
             sensor_statistics += _get_sensor_info_string(cleaned_id)
 
     if os.path.isfile(file_locations.sensor_checkin_database):
-        db_size_mb = round(os.path.getsize(file_locations.sensor_checkin_database) / 1000000, 3)
+        db_size_mb = get_file_size(file_locations.sensor_checkin_database, round_to=3)
     else:
         db_size_mb = 0.0
 

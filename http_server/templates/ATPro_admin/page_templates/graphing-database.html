@@ -28,7 +28,7 @@
 
                 <br><br>
 
-                <a href="/atpro/system-db-uploads">Click Here to Upload Databases</a>
+                <a href="#" onclick="SelectNav('system-db-uploads', skip_menu_select=true);">Click Here to Upload Databases</a>
 
                 <br><br>
 
@@ -313,11 +313,7 @@
     });
 
     jQuery('#MQTTDatabaseCheck').change(function () {
-        if (jQuery(this).prop('checked')) {
-            document.getElementById("MQTTBaseTopicInput").disabled = false;
-        } else {
-            document.getElementById("MQTTBaseTopicInput").disabled = true;
-        }
+        document.getElementById("MQTTBaseTopicInput").disabled = !jQuery(this).prop('checked');
     });
 
     function db_selection() {
@@ -343,8 +339,8 @@
     function CreatingGraph() {
         document.getElementById("blink_shadow").textContent = "Creating Graph - Please Wait";
         document.getElementById("create-graph-button").disabled = true;
-        var blinks = document.getElementById("blink_shadow");
-        var shadow_colour = "green";
+        const blinks = document.getElementById("blink_shadow");
+        let shadow_colour = "green";
         window.setTimeout(RefreshPageTimed, 10000);
         window.setInterval(function () {
             blinks.style.color = shadow_colour;

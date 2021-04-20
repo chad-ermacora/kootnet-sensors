@@ -35,6 +35,7 @@ from online_services_modules.luftdaten import start_luftdaten_server
 from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_notifications
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 email_config = app_config_access.email_config
@@ -88,7 +89,6 @@ def html_atpro_sensor_settings_installed_sensors():
 
     return render_template(
         "ATPro_admin/page_templates/settings/settings-installed-sensors.html",
-        PageURL="/MainConfigurationsHTML",
         GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
         KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
         RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),
@@ -169,7 +169,6 @@ def html_atpro_sensor_settings_checkin_server():
 
     return render_template(
         "ATPro_admin/page_templates/settings/settings-checkin-server.html",
-        PageURL="/CheckinServerConfigurationHTML",
         CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
         DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days
@@ -183,12 +182,11 @@ def html_atpro_sensor_settings_interval():
         app_config_access.interval_recording_config.update_with_html_request(request)
         app_config_access.interval_recording_config.save_config_to_file()
         app_cached_variables.restart_interval_recording_thread = True
-        return get_message_page("Interval Settings Saved", page_url="sensor-settings")
+        return get_message_page("Interval Settings Updated", page_url="sensor-settings")
 
     interval_config = app_config_access.interval_recording_config
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-interval.html",
-        PageURL="/MainConfigurationsHTML",
         CheckedInterval=get_html_checkbox_state(interval_config.enable_interval_recording),
         IntervalDelay=float(interval_config.sleep_duration_interval),
         CheckedSensorUptime=get_html_checkbox_state(interval_config.sensor_uptime_enabled),
@@ -216,9 +214,9 @@ def html_atpro_sensor_settings_high_low():
     if request.method == "POST":
         app_config_access.trigger_high_low.update_with_html_request(request)
         app_config_access.trigger_high_low.save_config_to_file()
-        app_cached_variables.html_service_restart = True
+        atpro_notifications.restart_service_enabled = 1
         return_msg = "Please Restart Program"
-        return get_message_page("Trigger High/Low Settings Saved", return_msg, page_url="sensor-settings")
+        return get_message_page("Trigger High/Low Settings Updated", return_msg, page_url="sensor-settings")
 
     high_low_settings = app_config_access.trigger_high_low
     recording_enabled = get_html_checkbox_state(high_low_settings.enable_high_low_trigger_recording)
@@ -344,13 +342,12 @@ def html_atpro_sensor_settings_variances():
     if request.method == "POST":
         app_config_access.trigger_variances.update_with_html_request(request)
         app_config_access.trigger_variances.save_config_to_file()
-        app_cached_variables.html_service_restart = True
-        return get_message_page("Trigger Variances Settings Saved",
+        atpro_notifications.restart_service_enabled = 1
+        return get_message_page("Trigger Variances Settings Updated",
                                 "Please Restart Program", page_url="sensor-settings")
     variances = app_config_access.trigger_variances
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-variances.html",
-        PageURL="/MainConfigurationsHTML",
         CheckedTrigger=get_html_checkbox_state(variances.enable_trigger_variance),
         CheckedCPUTemperature=get_html_checkbox_state(variances.cpu_temperature_enabled),
         TriggerCPUTemperature=variances.cpu_temperature_variance,
@@ -441,7 +438,7 @@ def html_atpro_sensor_settings_email_reports():
         email_config.update_configuration_settings_list()
         email_config.save_config_to_file()
         app_cached_variables.restart_report_email_thread = True
-        return get_message_page("Email Reports Settings Saved", page_url="sensor-settings")
+        return get_message_page("Email Reports Settings Updated", page_url="sensor-settings")
 
     report_send_selected_options = _get_send_option_selection(email_config.send_report_every)
     return render_template(
@@ -479,7 +476,7 @@ def html_atpro_sensor_settings_email_graphs():
         email_config.update_configuration_settings_list()
         email_config.save_config_to_file()
         app_cached_variables.restart_graph_email_thread = True
-        return get_message_page("Email Graph Settings Saved", page_url="sensor-settings")
+        return get_message_page("Email Graph Settings Updated", page_url="sensor-settings")
 
     quick_graph_checked = "checked"
     plotly_graph_checked = ""
@@ -524,7 +521,7 @@ def html_atpro_sensor_settings_email_smtp():
         email_config.update_with_html_request_server(request)
         email_config.update_configuration_settings_list()
         email_config.save_config_to_file()
-        return get_message_page("Email SMTP Settings Saved", page_url="sensor-settings")
+        return get_message_page("Email SMTP Settings Updated", page_url="sensor-settings")
 
     return render_template("ATPro_admin/page_templates/settings/settings-email-smtp.html",
                            ServerSendingEmail=email_config.server_sending_email,
@@ -562,7 +559,7 @@ def html_atpro_sensor_settings_mqtt_publisher():
         app_config_access.mqtt_publisher_config.update_with_html_request(request)
         app_config_access.mqtt_publisher_config.save_config_to_file()
         app_cached_variables.restart_mqtt_publisher_thread = True
-        return get_message_page("MQTT Publisher Settings Saved", page_url="sensor-settings")
+        return get_message_page("MQTT Publisher Settings Updated", page_url="sensor-settings")
 
     mqtt_publisher_qos = mqtt_publisher_config.mqtt_publisher_qos
     qos_level_0 = ""
@@ -683,14 +680,19 @@ def html_atpro_reset_mqtt_publisher_custom_format():
     return get_message_page("MQTT Publisher Custom Format Reset", page_url="sensor-settings")
 
 
+@html_atpro_settings_routes.route("/atpro/settings-mqtt-p-custom-help")
+def html_atpro_mqtt_publisher_custom_help():
+    return render_template("ATPro_admin/page_templates/settings/settings-mqtt-publisher-variable-help.html")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-s", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_settings_mqtt_subscriber():
     if request.method == "POST":
         app_config_access.mqtt_subscriber_config.update_with_html_request(request)
         app_config_access.mqtt_subscriber_config.save_config_to_file()
-        app_cached_variables.html_service_restart = True
-        return get_message_page("MQTT Subscriber Settings Saved", page_url="sensor-settings")
+        atpro_notifications.restart_service_enabled = 1
+        return get_message_page("MQTT Subscriber Settings Updated", page_url="sensor-settings")
 
     mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
     qos_level_0 = ""
@@ -741,13 +743,12 @@ def html_atpro_sensor_settings_mqtt_broker():
         else:
             return_text = "MQTT Broker Service Stopped"
             stop_mqtt_broker_server()
-        return get_message_page("MQTT Broker Settings Saved", return_text, page_url="sensor-settings")
+        return get_message_page("MQTT Broker Settings Updated", return_text, page_url="sensor-settings")
     mosquitto_configuration = ""
     if os.path.isfile(file_locations.mosquitto_configuration):
         mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-broker.html",
-        PageURL="/MQTTConfigurationsHTML",
         BrokerServerChecked=get_html_checkbox_state(check_mqtt_broker_server_running()),
         BrokerMosquittoConfig=mosquitto_configuration
     )
@@ -774,7 +775,7 @@ def html_atpro_sensor_settings_osm():
             if app_cached_variables.open_sense_map_thread is not None:
                 app_cached_variables.open_sense_map_thread.shutdown_thread = True
                 app_cached_variables.restart_open_sense_map_thread = True
-        return get_message_page("Open Sense Map Settings Saved", return_msg, page_url="sensor-settings")
+        return get_message_page("Open Sense Map Settings Updated", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-osm.html",
         CheckedOSMEnabled=get_html_checkbox_state(app_config_access.open_sense_map_config.open_sense_map_enabled),
@@ -846,7 +847,7 @@ def html_atpro_sensor_settings_wu():
             if app_cached_variables.weather_underground_thread is not None:
                 app_cached_variables.weather_underground_thread.shutdown_thread = True
                 app_cached_variables.restart_weather_underground_thread = True
-        return get_message_page("Weather Underground Settings Saved", return_msg, page_url="sensor-settings")
+        return get_message_page("Weather Underground Settings Updated", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-wu.html",
         CheckedWUEnabled=get_html_checkbox_state(weather_underground_config.weather_underground_enabled),
@@ -878,7 +879,7 @@ def html_atpro_sensor_settings_luftdaten():
             if app_cached_variables.luftdaten_thread is not None:
                 app_cached_variables.luftdaten_thread.shutdown_thread = True
                 app_cached_variables.restart_luftdaten_thread = True
-        return get_message_page("Luftdaten Settings Saved", return_msg, page_url="sensor-settings")
+        return get_message_page("Luftdaten Settings Updated", return_msg, page_url="sensor-settings")
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-luftdaten.html",
         CheckedLuftdatenEnabled=get_html_checkbox_state(app_config_access.luftdaten_config.luftdaten_enabled),

@@ -259,7 +259,7 @@ def _sensor_addresses_required_msg():
 
 
 def _thread_combo_report(ip_list):
-    generate_html_reports_combo(ip_list, skip_rewrite_link=True)
+    generate_html_reports_combo(ip_list)
 
 
 def _thread_system_report(ip_list):
@@ -323,7 +323,7 @@ def check_sensor_status_sensor_control(address_list):
 
 def get_remote_sensor_check_and_delay(address, data_queue, add_hostname=False, add_db_size=False, add_logs_size=False):
     """
-    Checks a remote sensor's response time and add's it to the data_queue
+    Checks a remote sensor's response time and adds it to the data_queue
     Optional: Include hostname, database size and zipped log size.
     """
     get_sensor_reading = get_http_sensor_reading
@@ -348,7 +348,6 @@ def get_remote_sensor_check_and_delay(address, data_queue, add_hostname=False, a
                     "response_time": str(task_end_time),
                     "sensor_hostname": str(sensor_hostname),
                     "download_size": str(download_size)})
-
 
 
 def downloads_direct_rsm(address_list, download_type="sensors_download_databases"):

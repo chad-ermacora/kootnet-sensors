@@ -425,8 +425,8 @@
     }
 
     function RunningRSM(blinking_text="Please Wait ...") {
-        var blinks = document.getElementById("blink_shadow");
-        var shadow_colour = "green";
+        const blinks = document.getElementById("blink_shadow");
+        let shadow_colour = "green";
         blinks.textContent = blinking_text;
         document.getElementById("run_action_button").disabled = true;
 
