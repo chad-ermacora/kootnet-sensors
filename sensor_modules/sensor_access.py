@@ -88,25 +88,11 @@ def get_uptime_minutes():
     return None
 
 
-def get_uptime_str():
-    """ Returns System UpTime as a human readable String. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_uptime_str()
-    return None
-
-
 def get_system_reboot_count():
     """ Returns system reboot count from the SQL Database. """
     if current_platform == "Linux":
         reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
         return reboot_count
-    return None
-
-
-def get_file_size(file_location=file_locations.sensor_database):
-    """ Returns provided file size in MB. By default returns main Database Size. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_file_size_in_mb(file_location=file_location)
     return None
 
 
@@ -158,9 +144,7 @@ def get_sensors_latency():
     sensor_latency_dic = {}
     for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
         latency = sensor_function(get_latency=True)
-        if latency is None:
-            sensor_latency_dic[sensor_name] = None
-        else:
+        if latency is not None:
             sensor_latency_dic[sensor_name] = round(latency, 6)
     return sensor_latency_dic
 
@@ -181,10 +165,13 @@ def _get_sensor_latency(sensor_function):
 def get_all_available_sensor_readings(skip_system_info=False):
     """ Returns ALL sensor readings in a dictionary. """
     utc_0_date_time_now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    env_temp_raw = get_environment_temperature(temperature_correction=False)[database_variables.env_temperature]
-    env_temp_corrected = get_environment_temperature()[database_variables.env_temperature]
+    env_temp_raw = get_environment_temperature(temperature_correction=False)
+    env_temp_corrected = get_environment_temperature()
+
     temp_correction = 0
     if env_temp_raw is not None and env_temp_corrected is not None:
+        env_temp_raw = env_temp_raw[database_variables.env_temperature]
+        env_temp_corrected = env_temp_corrected[database_variables.env_temperature]
         temp_correction = env_temp_corrected - env_temp_raw
 
     if skip_system_info:
@@ -592,12 +579,6 @@ def get_gyroscope_xyz(get_latency=False):
     return {database_variables.gyro_x: xyz[0],
             database_variables.gyro_y: xyz[1],
             database_variables.gyro_z: xyz[2]}
-
-
-# TODO: Send all sensors in JSON format
-def get_all_sensors_as_json():
-    """ Returns all sensor readings in JSON format. """
-    return "WIP"
 
 
 def display_message(text_msg, check_test=False):

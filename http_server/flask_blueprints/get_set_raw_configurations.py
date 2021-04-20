@@ -26,16 +26,16 @@ from sensor_modules import sensor_access
 
 #  Note: Remote Sensor Management uses it's own section for setting configs
 #  /http_server/flask_blueprints/sensor_control_files/sensor_control_config_sets.py
-html_get_config_routes = Blueprint("html_get_config_routes", __name__)
+html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
 
-@html_get_config_routes.route("/GetConfiguration")
+@html_get_set_config_routes.route("/GetConfiguration")
 def get_primary_configuration():
     logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
     return app_config_access.primary_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetPrimaryConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetPrimaryConfiguration", methods=["PUT"])
 @auth.login_required
 def set_primary_configuration():
     try:
@@ -54,13 +54,13 @@ def set_primary_configuration():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetInstalledSensors")
+@html_get_set_config_routes.route("/GetInstalledSensors")
 def get_installed_sensors():
     logger.network_logger.debug("* Installed Sensors Sent to " + str(request.remote_addr))
     return app_config_access.installed_sensors.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetInstalledSensors", methods=["PUT"])
+@html_get_set_config_routes.route("/SetInstalledSensors", methods=["PUT"])
 @auth.login_required
 def set_installed_sensors():
     try:
@@ -79,13 +79,13 @@ def set_installed_sensors():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetIntervalConfiguration")
+@html_get_set_config_routes.route("/GetIntervalConfiguration")
 def get_interval_config():
     logger.network_logger.debug("* Interval Configuration Sent to " + str(request.remote_addr))
     return app_config_access.interval_recording_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetIntervalConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetIntervalConfiguration", methods=["PUT"])
 @auth.login_required
 def set_interval_config():
     try:
@@ -104,13 +104,13 @@ def set_interval_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetHighLowTriggerConfiguration")
+@html_get_set_config_routes.route("/GetHighLowTriggerConfiguration")
 def get_high_low_trigger_config():
     logger.network_logger.debug("* High Low Trigger Configuration Sent to " + str(request.remote_addr))
     return app_config_access.trigger_high_low.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetHighLowTriggerConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetHighLowTriggerConfiguration", methods=["PUT"])
 @auth.login_required
 def set_high_low_trigger_config():
     try:
@@ -129,13 +129,13 @@ def set_high_low_trigger_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetVarianceConfiguration")
+@html_get_set_config_routes.route("/GetVarianceConfiguration")
 def get_variance_config():
     logger.network_logger.debug("* Variance Trigger Configuration Sent to " + str(request.remote_addr))
     return app_config_access.trigger_variances.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetVarianceConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetVarianceConfiguration", methods=["PUT"])
 @auth.login_required
 def set_variance_config():
     try:
@@ -154,13 +154,13 @@ def set_variance_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetDisplayConfiguration")
+@html_get_set_config_routes.route("/GetDisplayConfiguration")
 def get_display_config():
     logger.network_logger.debug("* Display Configuration Sent to " + str(request.remote_addr))
     return app_config_access.display_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetDisplayConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetDisplayConfiguration", methods=["PUT"])
 @auth.login_required
 def set_display_config():
     try:
@@ -178,14 +178,14 @@ def set_display_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetEmailConfiguration")
+@html_get_set_config_routes.route("/GetEmailConfiguration")
 @auth.login_required
 def get_email_config():
     logger.network_logger.debug("* Email Configuration Sent to " + str(request.remote_addr))
     return app_config_access.email_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetEmailConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetEmailConfiguration", methods=["PUT"])
 @auth.login_required
 def set_email_config():
     try:
@@ -203,88 +203,14 @@ def set_email_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetMQTTPublisherConfiguration")
-@auth.login_required
-def get_mqtt_publisher_config():
-    logger.network_logger.debug("* MQTT Publisher Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.mqtt_publisher_config.get_config_as_str()
-
-
-@html_get_config_routes.route("/SetMQTTPublisherConfiguration", methods=["PUT"])
-@auth.login_required
-def set_mqtt_publisher_config():
-    try:
-        if request.form.get("test_run"):
-            app_config_access.mqtt_publisher_config.load_from_file = False
-        else:
-            logger.network_logger.info("** MQTT Publisher Configuration Set by " + str(request.remote_addr))
-        app_config_access.mqtt_publisher_config.set_config_with_str(request.form.get("command_data"))
-        if request.form.get("test_run") is None:
-            app_config_access.mqtt_publisher_config.save_config_to_file()
-        return "OK"
-    except Exception as error:
-        log_msg = "Failed to set MQTT Publisher Configuration from " + str(request.remote_addr)
-        logger.network_logger.error(log_msg + " - " + str(error))
-    return "Failed"
-
-
-@html_get_config_routes.route("/GetMQTTSubscriberConfiguration")
-@auth.login_required
-def get_mqtt_subscriber_config():
-    logger.network_logger.debug("* MQTT Subscriber Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.mqtt_subscriber_config.get_config_as_str()
-
-
-@html_get_config_routes.route("/SetMQTTSubscriberConfiguration", methods=["PUT"])
-@auth.login_required
-def set_mqtt_subscriber_config():
-    try:
-        if request.form.get("test_run"):
-            app_config_access.mqtt_subscriber_config.load_from_file = False
-        else:
-            logger.network_logger.info("** MQTT Subscriber Configuration Set by " + str(request.remote_addr))
-        app_config_access.mqtt_subscriber_config.set_config_with_str(request.form.get("command_data"))
-        if request.form.get("test_run") is None:
-            app_config_access.mqtt_subscriber_config.save_config_to_file()
-        return "OK"
-    except Exception as error:
-        log_msg = "Failed to set MQTT Subscriber Configuration from " + str(request.remote_addr)
-        logger.network_logger.error(log_msg + " - " + str(error))
-    return "Failed"
-
-
-@html_get_config_routes.route("/GetSensorControlConfiguration")
-def get_sensor_control_config():
-    logger.network_logger.debug("* Sensor Control Configuration Sent to " + str(request.remote_addr))
-    return app_config_access.sensor_control_config.get_config_as_str()
-
-
-@html_get_config_routes.route("/SetSensorControlConfiguration", methods=["PUT"])
-@auth.login_required
-def set_sensor_control_config():
-    try:
-        if request.form.get("test_run"):
-            app_config_access.sensor_control_config.load_from_file = False
-        else:
-            logger.network_logger.debug("* Sensor Control Configuration Set by " + str(request.remote_addr))
-        app_config_access.sensor_control_config.set_config_with_str(request.form.get("command_data"))
-        if request.form.get("test_run") is None:
-            app_config_access.sensor_control_config.save_config_to_file()
-        return "OK"
-    except Exception as error:
-        log_msg = "Failed to set Sensor Control Configuration from " + str(request.remote_addr)
-        logger.network_logger.error(log_msg + " - " + str(error))
-    return "Failed"
-
-
-@html_get_config_routes.route("/GetWeatherUndergroundConfiguration")
+@html_get_set_config_routes.route("/GetWeatherUndergroundConfiguration")
 @auth.login_required
 def get_weather_underground_config():
     logger.network_logger.debug("* Weather Underground Configuration Sent to " + str(request.remote_addr))
     return app_config_access.weather_underground_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetWeatherUndergroundConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetWeatherUndergroundConfiguration", methods=["PUT"])
 @auth.login_required
 def set_weather_underground_config():
     try:
@@ -302,13 +228,13 @@ def set_weather_underground_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetOnlineServicesLuftdaten")
+@html_get_set_config_routes.route("/GetOnlineServicesLuftdaten")
 def get_luftdaten_config():
     logger.network_logger.debug("* Luftdaten Configuration Sent to " + str(request.remote_addr))
     return app_config_access.luftdaten_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetLuftdatenConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetLuftdatenConfiguration", methods=["PUT"])
 @auth.login_required
 def set_luftdaten_config():
     try:
@@ -326,14 +252,14 @@ def set_luftdaten_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetOnlineServicesOpenSenseMap")
+@html_get_set_config_routes.route("/GetOnlineServicesOpenSenseMap")
 @auth.login_required
 def get_open_sense_map_config():
     logger.network_logger.debug("* Open Sense Map Configuration Sent to " + str(request.remote_addr))
     return app_config_access.open_sense_map_config.get_config_as_str()
 
 
-@html_get_config_routes.route("/SetOpenSenseMapConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetOpenSenseMapConfiguration", methods=["PUT"])
 @auth.login_required
 def set_open_sense_map_config():
     try:
@@ -351,14 +277,14 @@ def set_open_sense_map_config():
     return "Failed"
 
 
-@html_get_config_routes.route("/GetWifiConfiguration")
+@html_get_set_config_routes.route("/GetWifiConfiguration")
 @auth.login_required
 def get_wifi_config():
     logger.network_logger.debug("* Wifi Sent to " + str(request.remote_addr))
     return send_file(file_locations.wifi_config_file)
 
 
-@html_get_config_routes.route("/SetWifiConfiguration", methods=["PUT"])
+@html_get_set_config_routes.route("/SetWifiConfiguration", methods=["PUT"])
 @auth.login_required
 def set_wifi_config():
     logger.network_logger.debug("* Wifi Set by " + str(request.remote_addr))

@@ -46,9 +46,6 @@ class CreateNetworkSetCommands:
     """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
 
     def __init__(self):
-        self.set_host_name = "SetHostName"
-        self.set_datetime = "SetDateTime"
-
         self.set_primary_configuration = "SetPrimaryConfiguration"
         self.set_installed_sensors = "SetInstalledSensors"
 
@@ -58,11 +55,7 @@ class CreateNetworkSetCommands:
 
         self.set_display_config = "SetDisplayConfiguration"
         self.set_email_configuration = "SetEmailConfiguration"
-        self.set_sensor_control_configuration = "SetSensorControlConfiguration"
         self.set_wifi_configuration = "SetWifiConfiguration"
-
-        self.set_mqtt_publisher_configuration = "SetMQTTPublisherConfiguration"
-        self.set_mqtt_subscriber_configuration = "SetMQTTSubscriberConfiguration"
 
         self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
         self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
@@ -88,19 +81,12 @@ class CreateNetworkGetCommands:
         self.variance_config_file = "GetVarianceConfiguration"
         self.display_configuration_file = "GetDisplayConfiguration"
         self.email_configuration_file = "GetEmailConfiguration"
-        self.mqtt_publisher_configuration_file = "GetMQTTPublisherConfiguration"
-        self.mqtt_subscriber_configuration_file = "GetMQTTSubscriberConfiguration"
-        self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
         self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
         self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
 
-        self.primary_log = "GetPrimaryLog"
-        self.network_log = "GetNetworkLog"
-        self.sensors_log = "GetSensorsLog"
         self.download_zipped_logs = "DownloadZippedLogs"
-        self.download_zipped_logs_size = "GetZippedLogsSize"
 
         self.download_zipped_everything = "DownloadZippedEverything"
 
@@ -126,10 +112,6 @@ class CreateNetworkGetCommands:
         self.accelerometer_xyz = "GetAccelerometerXYZ"
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
-
-        self.database_notes = "GetDatabaseNotes"
-        self.database_note_dates = "GetDatabaseNoteDates"
-        self.database_user_note_dates = "GetDatabaseNoteUserDates"
 
 
 class CreateDatabaseVariables:
@@ -422,11 +404,11 @@ default_report = """
     <head>
         <meta charset="UTF-8">
         <meta name="robots" content="noindex">
-        <title>Kootnet Sensor</title>
+        <title>Kootnet Sensors</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
     </head>
     <body style='background-color: black;'>
-        <h2><a style='text-decoration: underline; color: red;' href='/SensorControlManage';>Back to Sensor Control</a></h3>
+        <h2 style='text-decoration: underline; color: red;'>Report Not Found</h3>
         <p style='color: white;'>No report found, please generated the report first</p>
     </body>
 </html>

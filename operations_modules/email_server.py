@@ -108,17 +108,11 @@ def _set_graphs_to_include():
 
 
 def _update_quick_graph_for_email(quick_graph):
-    old_chart = """<script src="/Chart.min.js"></script>"""
+    old_chart = """<script src="/extras/Chart.bundle.min.js"></script>"""
     new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js" integrity="sha512-G8JE1Xbr0egZE5gNGyUm1fF764iHVfRXshIoUWCTPAbKkkItp/6qal5YAHXrxEu4HNfPTQs6HOu3D5vCGS1j3w==" crossorigin="anonymous"></script>"""
-    old_mui_min_css = """<link href="/mui.min.css" rel="stylesheet" type="text/css"/>"""
-    new_mui_min_css = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mui/3.7.1/css/mui.min.css" integrity="sha512-uclHupzhjfJ5Zbsweb6eEK3HyTUpSfiWq/+ORo20uQLZg3yI5Jg4iCZYOD5Q1Q5Ftm4FG9kCzwT82bVcNgFMRw==" crossorigin="anonymous" />"""
-    old_mui_colors_min_css = """<link href="/mui-colors.min.css" rel="stylesheet" type="text/css"/>"""
-    new_mui_colors_min_css = """<link href="//cdn.muicss.com/mui-0.10.3/extra/mui-colors.min.css" rel="stylesheet" type="text/css" />"""
 
     quick_graph = quick_graph.replace(">Refresh", " disabled>Refresh")
     quick_graph = quick_graph.replace(old_chart, new_chart)
-    quick_graph = quick_graph.replace(old_mui_min_css, new_mui_min_css)
-    quick_graph = quick_graph.replace(old_mui_colors_min_css, new_mui_colors_min_css)
     return quick_graph
 
 

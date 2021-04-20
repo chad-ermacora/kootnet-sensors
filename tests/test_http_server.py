@@ -68,18 +68,6 @@ class TestApp(unittest.TestCase):
                                                   remote_set.set_email_configuration,
                                                   config_name="Email"))
 
-    def test_mqtt_publisher_config(self):
-        self.assertTrue(self._config_test_changes(mqtt_publisher_config_test,
-                                                  remote_get.mqtt_publisher_configuration_file,
-                                                  remote_set.set_mqtt_publisher_configuration,
-                                                  config_name="MQTT Publisher"))
-
-    def test_mqtt_subscriber_config(self):
-        self.assertTrue(self._config_test_changes(mqtt_subscriber_config_test,
-                                                  remote_get.mqtt_subscriber_configuration_file,
-                                                  remote_set.set_mqtt_subscriber_configuration,
-                                                  config_name="MQTT Subscriber"))
-
     def test_weather_underground_config(self):
         self.assertTrue(self._config_test_changes(weather_underground_config_test,
                                                   remote_get.weather_underground_config_file,

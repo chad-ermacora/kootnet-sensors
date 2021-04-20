@@ -4,15 +4,15 @@
 	<title>Kootnet Sensors</title>
 
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
-	<link rel="icon" type="image/png" href="assets/AT-pro-logo.png"/>
+	<link rel="icon" type="image/png" href="/atpro/assets/AT-pro-logo.png"/>
 
 	<!-- Import lib -->
     <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
     <link rel="stylesheet" type="text/css" href="/extras/toggle-switch.css">
-	<link rel="stylesheet" type="text/css" href="fontawesome-free/css/all.min.css">
+	<link rel="stylesheet" type="text/css" href="/extras/fontawesome-free/css/all.min.css">
 	<!-- End import lib -->
 
-	<link rel="stylesheet" type="text/css" href="style.css">
+	<link rel="stylesheet" type="text/css" href="/atpro/style.css">
 </head>
 
 <style>
@@ -32,8 +32,8 @@
 				</a>
 			</li>
 			<li class="nav-item"><a href="/atpro/">
-				<img src="assets/AT-pro-black.png" alt="ATPro logo" class="logo logo-light">
-				<img src="assets/AT-pro-white.png" alt="ATPro logo" class="logo logo-dark">
+				<img src="/atpro/assets/AT-pro-black.png" alt="ATPro logo" class="logo logo-light">
+				<img src="/atpro/assets/AT-pro-white.png" alt="ATPro logo" class="logo logo-dark">
 			</a></li>
 		</ul>
 		<!-- end nav left -->
@@ -65,15 +65,13 @@
 						{{ NotificationsReplacement |safe }}
 					</div>
 					<div class="dropdown-menu-footer">
-						<span>
-							View all notifications
-						</span>
+						<span></span>
 					</div>
 				</ul>
 			</li>
 			<li class="nav-item avt-wrapper">
 				<div class="avt dropdown">
-					<img src="assets/AT-pro-logo.png" alt="User image" class="dropdown-toggle" data-toggle="user-menu">
+					<img src="/atpro/assets/AT-pro-logo.png" alt="User image" class="dropdown-toggle" data-toggle="user-menu">
 					<ul id="user-menu" class="dropdown-menu">
 						<li class="dropdown-menu-item">
 							<a href="/" class="dropdown-menu-link">
@@ -203,7 +201,7 @@
 				</a>
 			</li>
 			<li class="sidebar-nav-item">
-				<a id="sensor-help" href="/SensorUnitHelp.html" target="_blank" class="sidebar-nav-link">
+				<a id="sensor-help" href="/documentation/" target="_blank" class="sidebar-nav-link">
 					<div>
 						<i class="fas fa-question-circle"></i>
 					</div>
@@ -217,7 +215,7 @@
 	<div id="main-page-view" class="wrapper">{{ OptionalHTML | safe }}</div>
 	<!-- end main content -->
 	<!-- import script -->
-	<script src="index.js"></script>
+	<script src="/atpro/index.js"></script>
     <script src="/extras/jquery-3.4.1.min.js"></script>
 	<!-- end import script -->
 </body>

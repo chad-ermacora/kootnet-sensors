@@ -17,12 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
-from http_server.server_http_auth import auth
-from http_server.server_http_generic_functions import get_html_hidden_state
 from sensor_modules import sensor_access
 
 html_basic_routes = Blueprint("html_basic_routes", __name__)
@@ -56,21 +54,3 @@ def html_index():
                            LocalIP=app_cached_variables.ip,
                            DiskSpaceMessage=disk_message,
                            DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
-
-
-@html_basic_routes.route("/Quick")
-@html_basic_routes.route("/SystemCommands")
-@auth.login_required
-def html_system_management():
-    logger.network_logger.debug("** System Commands accessed from " + str(request.remote_addr))
-    return render_template("system_commands.html",
-                           PageURL="/SystemCommands",
-                           RestartServiceHidden=get_html_hidden_state(app_cached_variables.html_service_restart),
-                           RebootSensorHidden=get_html_hidden_state(app_cached_variables.html_sensor_reboot),
-                           LoginUserName=app_cached_variables.http_flask_user)
-
-
-@html_basic_routes.route("/SensorHelp")
-def view_help_file():
-    logger.network_logger.debug("* Sensor Help Viewed from " + str(request.remote_addr))
-    return render_template("sensor_help_page.html")

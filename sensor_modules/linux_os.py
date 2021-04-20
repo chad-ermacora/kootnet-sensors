@@ -8,7 +8,6 @@ Created on Sat Aug 25 08:53:56 2018
 
 @author: OO-Dragon
 """
-import os
 import socket
 import psutil
 from time import strftime
@@ -76,32 +75,6 @@ class CreateLinuxSystem:
             uptime_min = 0
         return uptime_min
 
-    def get_uptime_str(self):
-        """ Returns System UpTime as a human readable String. """
-        if current_platform == "Linux":
-            var_minutes = self.get_uptime_raw()
-            str_day_hour_min = ""
-            try:
-                uptime_days = int(float(var_minutes) // 1440)
-                uptime_hours = int((float(var_minutes) % 1440) // 60)
-                uptime_min = int(float(var_minutes) % 60)
-                if uptime_days:
-                    if uptime_days > 1:
-                        str_day_hour_min = str(uptime_days) + " Days, "
-                    else:
-                        str_day_hour_min = str(uptime_days) + " Day, "
-                if uptime_hours:
-                    if uptime_hours > 1:
-                        str_day_hour_min += str(uptime_hours) + " Hours & "
-                    else:
-                        str_day_hour_min += str(uptime_hours) + " Hour & "
-                str_day_hour_min += str(uptime_min) + " Min"
-
-            except Exception as error:
-                logger.sensors_logger.error("Linux System - Unable to convert DateTime to String: " + str(error))
-                str_day_hour_min = var_minutes
-            return str_day_hour_min
-
     @staticmethod
     def get_sys_datetime_str():
         """ Returns System DateTime in format YYYY-MM-DD HH:MM - timezone as a String. """
@@ -138,17 +111,6 @@ class CreateLinuxSystem:
             logger.sensors_logger.error("Linux System - Get Disk Usage % Error: " + str(error))
             return_disk_usage = "Error"
         return return_disk_usage
-
-    @staticmethod
-    def get_file_size_in_mb(file_location):
-        """ Returns Size of a file in MB as a Float. """
-        try:
-            # Num 1,000,000. Not using underscores to maintain compatibility with Python 3.5.x
-            db_size_mb = os.path.getsize(file_location) / 1000000
-        except Exception as error:
-            logger.sensors_logger.error("Linux System - Getting File Size Failed: " + str(error))
-            db_size_mb = 0.0
-        return round(db_size_mb, round_decimal_to)
 
     @staticmethod
     def get_db_notes_count():
