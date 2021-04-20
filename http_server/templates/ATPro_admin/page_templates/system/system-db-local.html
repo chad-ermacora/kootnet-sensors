@@ -1,6 +1,6 @@
 <div class="col-12 col-m-12 col-sm-12">
     <div class="counter bg-warning">
-        <form method="POST" action="/DatabaseBackupManagement" target="_blank">
+        <form method="POST" action="/atpro/system-db-management" target="_blank">
             <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
             <p>
                 Download SQLite3 Databases for offline access or backup purposes.<br>
@@ -34,8 +34,8 @@
             <p>{{ SQLDatabaseDateRange }}</p>
             <h3 style="display: inline-block;">Number of Notes: </h3> {{ NumberNotes }}
             <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabase">Database Zipped</a>
-            <a class="pure-button" href="/DownloadSQLDatabaseRAW">Database RAW</a>
+            <a class="pure-button" href="/DownloadSQLDatabase" target="_blank">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAW" target="_blank">Database RAW</a>
         </div>
     </div>
 
@@ -48,8 +48,8 @@
             <br>
             <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLMQTTSensorsInDB }}
             <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabaseMQTT">Database Zipped</a>
-            <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT">Database RAW</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseMQTT" target="_blank">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT" target="_blank">Database RAW</a>
         </div>
     </div>
 
@@ -62,8 +62,8 @@
             <br>
             <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLCheckinSensorsInDB }}
             <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabaseCheckin">Database Zipped</a>
-            <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin">Database RAW</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseCheckin" target="_blank">Database Zipped</a>
+            <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin" target="_blank">Database RAW</a>
         </div>
     </div>
 </div>
