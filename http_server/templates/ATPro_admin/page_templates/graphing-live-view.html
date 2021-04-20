@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Kootnet Sensor Live Graphs</title>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link rel="icon" type="image/png" href="/atpro/assets/AT-pro-logo.png"/>
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+</head>
+
+<body style="background: black;">
+<form style="text-align: center;" class="pure-form" method="POST" action="/LiveGraphView">
+    <br>
+    <h3 style="color: red;">Sensor: {{ SensorName }}</h3>
+    <h4 style="color: red;">Viewing up to {{ TotalSQLEntries }} data points per Sensor</h4>
+    <h4 style="color: red;">UTC Offset {{ UTCOffset }}</h4>
+
+    <label style="color: red; font-size: medium;">Hours Displayed<br><br>
+        <input style="width: 100px;" type="number" min="0.001" max="8760.0" step="any"
+               name="graph_hours" required value="{{ GraphPastHours }}" {{ HoursDisplayedDisabled }}>
+    </label>
+
+    <br><br>
+
+    <button type="submit" class="pure-button">Refresh</button>
+</form>
+{{ GraphHTMLCode |safe }}
+</body>
+</html>
+
+<script src="/extras/Chart.bundle.min.js"></script>
+<script>{{ GraphJSCode |safe }}</script>
