@@ -1,0 +1,136 @@
+<div class="col-6 col-m-12 col-sm-12">
+    <div class="counter bg-success">
+        <h3>
+            <span class="sensor-info sensor-info-names" style="color: black;">Sensor Name: </span>
+            {{ SensorName }}<br>
+
+            <span class="sensor-info" style="color: black;">IP Address: </span>
+            {{ IPAddress }}<br>
+
+            <span class="sensor-info" style="color: black;">Sensor Response Time: </span>
+            <span style="color: {{ ResponseBackground }};">{{ SensorResponseTime }}</span> Seconds<br><br>
+
+            <span class="sensor-info" style="color: black;">Login Check: </span>
+            {{ LoginCheck }}<br>
+        </h3>
+
+        <div class="row">
+            <div class="col-12 col-m-12 col-sm-12">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Installed Sensors</span><br>
+                        {{ InstalledSensors }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Debug Logging</span><br>
+                        {{ DebugLogging }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                    <div class="counter bg-primary">
+                        <p>
+                            <span class='sensor-info'>Sensor Checkin</span><br>
+                            {{ SensorCheckin }}
+                        </p>
+                    </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Display</span><br>
+                        {{ Display }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>WiFi Network</span><br>
+                        {{ WifiNetwork }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Interval Recording</span><br>
+                        {{ IntervalRecording }} / {{ IntervalSeconds }} Sec
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>High/Low Trigger Recording</span><br>
+                        {{ HighLowRecording }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Variance Trigger Recording</span><br>
+                        {{ VarianceRecording }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Temperature Offset Adjustments</span><br>
+                        {{ TemperatureOffset }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>RPi Temperature Correction Factor</span><br>
+                        {{ TemperatureCorrectionFactor }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Weather Underground</span><br>
+                        {{ WeatherUnderground }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Luftdaten</span><br>
+                        {{ Luftdaten }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Open Sense Map</span><br>
+                        {{ OpenSenseMap }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="col-6 col-m-12 col-sm-12">
+    <div class="counter bg-success">
+        <h3>
+            <span class="sensor-info sensor-info-names" style="color: black;">Sensor Name: </span>
+            {{ SensorName }}<br>
+
+            <span class="sensor-info" style="color: black;">IP Address: </span>
+            {{ IPAddress }}<br>
+
+            <span class="sensor-info" style="color: black;">Sensor Response Time: </span>
+            <span style="color: {{ ResponseBackground }};">{{ SensorResponseTime }}</span> Seconds<br>
+        </h3>
+
+        <div class="row">
+            {{ SensorInfoBoxes }}
+        </div>
+    </div>
+</div>

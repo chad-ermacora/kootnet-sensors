@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sensors Combo Report</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <style>
+        {{ ReportCSSStyles }}
+
+        {{ PureCSS }}
+
+        {{ PureCSSHorizontalMenu }}
+    </style>
+</head>
+<body>
+
+<div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item" id="system-tab-b">
+                <a href="#" class="pure-menu-link" onclick="ChangeReport('system-tab')">
+                    Systems Report
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item" id="configuration-tab-b">
+                <a href="#" class="pure-menu-link" onclick="ChangeReport('configuration-tab')">
+                    Configuration Report
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item" id="sensor-readings-tab-b">
+                <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-readings-tab')">
+                    Sensor Readings Report
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item" id="sensor-latency-tab-b">
+                <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-latency-tab')">
+                    Sensor Latency Report
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div id="system-tab">{{ FullSystemReport }}</div>
+<div id="configuration-tab">{{ FullConfigurationReport }}</div>
+<div id="sensor-readings-tab">{{ FullReadingsReport }}</div>
+<div id="sensor-latency-tab">{{ FullLatencyReport }}</div>
+</body>
+</html>
+
+<script>
+    function ChangeReport(report_location) {
+        document.getElementById("system-tab").style.display = "none";
+        document.getElementById("configuration-tab").style.display = "none";
+        document.getElementById("sensor-readings-tab").style.display = "none";
+        document.getElementById("sensor-latency-tab").style.display = "none";
+
+        document.getElementById("system-tab-b").classList.remove("pure-menu-selected");
+        document.getElementById("configuration-tab-b").classList.remove("pure-menu-selected");
+        document.getElementById("sensor-readings-tab-b").classList.remove("pure-menu-selected");
+        document.getElementById("sensor-latency-tab-b").classList.remove("pure-menu-selected");
+
+        document.getElementById(report_location + "-b").classList.add("pure-menu-selected");
+
+        document.getElementById(report_location).style.display = "block";
+    }
+    ChangeReport('system-tab');
+</script>

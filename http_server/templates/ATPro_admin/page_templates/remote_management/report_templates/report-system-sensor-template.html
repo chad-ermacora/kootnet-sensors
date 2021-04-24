@@ -1,0 +1,98 @@
+<div class="col-6 col-m-12 col-sm-12">
+    <div class="counter bg-success">
+        <h3>
+            <span class="sensor-info sensor-info-names" style="color: black;">Sensor Name: </span>
+            {{ SensorName }}<br>
+
+            <span class="sensor-info" style="color: black;">IP Address: </span>
+            {{ IPAddress }}<br>
+
+            <span class="sensor-info" style="color: black;">Sensor Response Time: </span>
+            <span style="color: {{ ResponseBackground }};">{{ SensorResponseTime }}</span> Seconds<br><br>
+
+            <span class="sensor-info" style="color: black;">Login Check: </span>
+            {{ LoginCheck }}<br>
+        </h3>
+
+        <div class="row">
+            <div class="col-12 col-m-12 col-sm-12">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Sensor ID</span><br>
+                        {{ SensorID }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Program Version</span><br>
+                        {{ ProgramVersion }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Last Updated</span><br>
+                        {{ LastUpdated }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Sensor Date & Time</span><br>
+                        {{ SensorDateTime }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>System UpTime</span><br>
+                        {{ SystemUpTime }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Operating System</span><br>
+                        {{ OSVersion }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>CPU Temp</span><br>
+                        {{ CPUTemp }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p><span class='sensor-info'>RAM % Used</span><br>
+                        {{ RAMUsed }} % of {{ TotalRAM }} {{ TotalRAMSizeType }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p><span class='sensor-info'>SQL DB Size / Free Disk Space</span><br>
+                        {{ SQLDBSize }} MB / {{ FreeDiskSpace }} GB
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
