@@ -104,19 +104,26 @@ http_ssl_key = http_ssl_folder + "/kootnet_default.key"
 http_ssl_csr = http_ssl_folder + "/kootnet_default.csr"
 http_ssl_crt = http_ssl_folder + "/kootnet_default.crt"
 
-html_combo_report = program_root_dir + "/http_server/templates/html_reports/report_3_combo.html"
+html_report_css = program_root_dir + "/http_server/templates/ATPro_admin/style.css"
+html_report_js = program_root_dir + "/http_server/templates/ATPro_admin/index.js"
+html_report_pure_css = program_root_dir + "/http_server/extras/pure-min.css"
+html_pure_css_menu = program_root_dir + "/http_server/templates/ATPro_admin/pure-horizontal-menu.css"
 
-html_report_system1_start = program_root_dir + "/http_server/templates/html_reports/report_system1_start.html"
-html_report_system2_sensor = program_root_dir + "/http_server/templates/html_reports/report_system2_sensor.html"
-html_report_system3_end = program_root_dir + "/http_server/templates/html_reports/report_system3_end.html"
+atpro_reports_folder = program_root_dir + \
+                       "/http_server/templates/ATPro_admin/page_templates/remote_management/report_templates/"
 
-html_report_config1_start = program_root_dir + "/http_server/templates/html_reports/report_config1_start.html"
-html_report_config2_sensor = program_root_dir + "/http_server/templates/html_reports/report_config2_sensor.html"
-html_report_config3_end = program_root_dir + "/http_server/templates/html_reports/report_config3_end.html"
+html_report_all_start = atpro_reports_folder + "report-all-start.html"
+html_report_all_end = atpro_reports_folder + "report-all-end.html"
+html_combo_report = atpro_reports_folder + "report-combo.html"
 
-html_report_sensors_test1_start = program_root_dir + "/http_server/templates/html_reports/report_sensors_test1_start.html"
-html_report_sensors_test2_sensor = program_root_dir + "/http_server/templates/html_reports/report_sensors_test2_sensor.html"
-html_report_sensors_test3_end = program_root_dir + "/http_server/templates/html_reports/report_sensors_test3_end.html"
+html_report_system = atpro_reports_folder + "report-system.html"
+html_report_system_sensor_template = atpro_reports_folder + "report-system-sensor-template.html"
 
-html_report_sensors_latency1_start = program_root_dir + "/http_server/templates/html_reports/report_sensors_latency1_start.html"
-html_report_sensors_latency2_sensor = program_root_dir + "/http_server/templates/html_reports/report_sensors_test2_sensor.html"
+html_report_config = atpro_reports_folder + "report-configurations.html"
+html_report_config_sensor_template = atpro_reports_folder + "report-configurations-sensor-template.html"
+
+html_report_sensor_readings = atpro_reports_folder + "report-readings.html"
+html_report_sensor_readings_template = atpro_reports_folder + "report-readings-sensor-template.html"
+
+html_report_sensor_latency = atpro_reports_folder + "report-latency.html"
+html_report_sensor_latency_template = atpro_reports_folder + "report-latency-sensor-template.html"
