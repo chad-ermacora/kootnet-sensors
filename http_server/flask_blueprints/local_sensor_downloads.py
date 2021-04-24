@@ -23,12 +23,13 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from http_server import server_http_generic_functions
+from http_server.server_http_auth import auth
 
 html_local_download_routes = Blueprint("html_local_download_routes", __name__)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabase")
+@auth.login_required
 def download_sensors_sql_database_zipped():
     logger.network_logger.debug("* Download Zipped Main SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -45,10 +46,11 @@ def download_sensors_sql_database_zipped():
     except Exception as error:
         log_msg = "* Unable to Send Main Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseRAW")
+@auth.login_required
 def download_sensors_sql_database_raw():
     logger.network_logger.debug("* Download RAW Main SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -57,10 +59,11 @@ def download_sensors_sql_database_raw():
     except Exception as error:
         log_msg = "* Unable to Send Main Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseMQTT")
+@auth.login_required
 def download_mqtt_sql_database_zipped():
     logger.network_logger.debug("* Download Zipped MQTT SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -77,10 +80,11 @@ def download_mqtt_sql_database_zipped():
     except Exception as error:
         log_msg = "* Unable to Send MQTT Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseRAWMQTT")
+@auth.login_required
 def download_mqtt_sql_database_raw():
     logger.network_logger.debug("* Download RAW MQTT SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -89,10 +93,11 @@ def download_mqtt_sql_database_raw():
     except Exception as error:
         log_msg = "* Unable to Send MQTT Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseCheckin")
+@auth.login_required
 def download_checkin_sql_database_zipped():
     logger.network_logger.debug("* Download Zipped Checkin SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -109,10 +114,11 @@ def download_checkin_sql_database_zipped():
     except Exception as error:
         log_msg = "* Unable to Send Checkin Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 @html_local_download_routes.route("/DownloadSQLDatabaseRAWCheckin")
+@auth.login_required
 def download_checkin_sql_database_raw():
     logger.network_logger.debug("* Download RAW Checkin SQL Database Accessed by " + str(request.remote_addr))
     try:
@@ -121,7 +127,7 @@ def download_checkin_sql_database_raw():
     except Exception as error:
         log_msg = "* Unable to Send Checkin Database to "
         logger.primary_logger.error(log_msg + str(request.remote_addr) + ": " + str(error))
-        return server_http_generic_functions.message_and_return("Error sending Database - " + str(error))
+        return "Error sending Database - " + str(error)
 
 
 def _add_host_and_ip_to_filename(filename, file_extension):
@@ -131,6 +137,7 @@ def _add_host_and_ip_to_filename(filename, file_extension):
 
 
 @html_local_download_routes.route("/DownloadZippedEverything")
+@auth.login_required
 def download_zipped_everything():
     logger.network_logger.debug("* Download Zip of Everything Accessed by " + str(request.remote_addr))
     zip_name = "Everything_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
@@ -149,4 +156,11 @@ def download_zipped_everything():
         return send_file(return_zip_file, attachment_filename=zip_name, as_attachment=True)
     except Exception as error:
         logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
-        return server_http_generic_functions.message_and_return("Unable to zip logs for Download", url="/GetLogsHTML")
+        return "Unable to zip logs for Download"
+
+
+@html_local_download_routes.route("/GetSQLDBSize")
+def get_main_sql_db_size():
+    """ Returns main sensor database size in MB """
+    logger.network_logger.debug("* Sensor's Database Size sent to " + str(request.remote_addr))
+    return str(app_generic_functions.get_file_size(file_locations.sensor_database))
