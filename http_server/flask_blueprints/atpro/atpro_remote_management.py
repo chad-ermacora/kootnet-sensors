@@ -24,6 +24,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
     get_list_of_filenames_in_dir
+from operations_modules.app_validation_checks import url_is_valid
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
@@ -176,40 +177,41 @@ def html_atpro_rm_system_commands():
 
 @html_atpro_remote_management_routes.route('/atpro/rm-report/<path:filename>')
 def html_atpro_get_remote_management_reports(filename):
-    print(str(filename))
-    if filename == "combination":
-        return app_cached_variables.html_combo_report
-    if filename == "system":
-        return app_cached_variables.html_system_report
-    if filename == "configuration":
-        return app_cached_variables.html_config_report
-    if filename == "readings":
-        return app_cached_variables.html_readings_report
-    if filename == "latency":
-        return app_cached_variables.html_latency_report
+    if url_is_valid(filename):
+        if filename == "combination":
+            return app_cached_variables.html_combo_report
+        if filename == "system":
+            return app_cached_variables.html_system_report
+        if filename == "configuration":
+            return app_cached_variables.html_config_report
+        if filename == "readings":
+            return app_cached_variables.html_readings_report
+        if filename == "latency":
+            return app_cached_variables.html_latency_report
+    return ""
 
 
 @html_atpro_remote_management_routes.route('/atpro/rm/functions/<path:filename>')
 def html_atpro_remote_management_functions(filename):
-    print(str(filename))
-    if filename == "rm-upgrade-http":
-        return run_system_command(network_system_commands.upgrade_http)
-    elif filename == "rm-upgrade-smb":
-        return run_system_command(network_system_commands.upgrade_smb)
-    elif filename == "rm-upgrade-dev-http":
-        return run_system_command(network_system_commands.upgrade_http_dev)
-    elif filename == "rm-upgrade-dev-smb":
-        return run_system_command(network_system_commands.upgrade_smb_dev)
-    elif filename == "rm-upgrade-clean-http":
-        return run_system_command(network_system_commands.upgrade_http_clean)
-    elif filename == "rm-upgrade-system-os":
-        return run_system_command(network_system_commands.upgrade_system_os)
-    elif filename == "rm-upgrade-pip-modules":
-        return run_system_command(network_system_commands.upgrade_pip_modules)
-    elif filename == "rm-power-restart-program":
-        return run_system_command(network_system_commands.restart_services)
-    elif filename == "rm-power-reboot-system":
-        return run_system_command(network_system_commands.restart_system)
+    if url_is_valid(filename):
+        if filename == "rm-upgrade-http":
+            return run_system_command(network_system_commands.upgrade_http)
+        elif filename == "rm-upgrade-smb":
+            return run_system_command(network_system_commands.upgrade_smb)
+        elif filename == "rm-upgrade-dev-http":
+            return run_system_command(network_system_commands.upgrade_http_dev)
+        elif filename == "rm-upgrade-dev-smb":
+            return run_system_command(network_system_commands.upgrade_smb_dev)
+        elif filename == "rm-upgrade-clean-http":
+            return run_system_command(network_system_commands.upgrade_http_clean)
+        elif filename == "rm-upgrade-system-os":
+            return run_system_command(network_system_commands.upgrade_system_os)
+        elif filename == "rm-upgrade-pip-modules":
+            return run_system_command(network_system_commands.upgrade_pip_modules)
+        elif filename == "rm-power-restart-program":
+            return run_system_command(network_system_commands.restart_services)
+        elif filename == "rm-power-reboot-system":
+            return run_system_command(network_system_commands.restart_system)
     return get_message_page("Invalid Remote Sensor Management Command", page_url="sensor-rm", full_reload=False)
 
 
