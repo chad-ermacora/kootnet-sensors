@@ -2,9 +2,9 @@
 Name=Web Portal - Kootnet Sensors
 Comment=Web interface for configuring & using Kootnet Sensor
 Type=Application
-Icon=/opt/kootnet-sensors/extras/icon.ico
+Icon=/opt/kootnet-sensors/http_server/templates/ATPro_admin/assets/AT-pro-logo.png
 TryExec=/usr/bin/x-www-browser
-Exec=x-www-browser https://localhost:10065/SensorInformation
+Exec=x-www-browser https://localhost:10065/
 Terminal=false
 Categories=Utility;Science;
 StartupNotify=true
