@@ -21,7 +21,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
 from operations_modules.app_generic_functions import thread_function, get_file_content, remove_line_from_text, \
-    get_list_of_filenames_in_dir, zip_files, write_file_to_disk
+    get_list_of_filenames_in_dir, zip_files, write_file_to_disk, get_file_size
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     validate_sqlite_database, check_mqtt_subscriber_database_structure, check_main_database_structure, \
     check_checkin_database_structure
@@ -29,6 +29,7 @@ from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_notifications
 
 try:
     from plotly import __version__ as plotly_version
@@ -142,7 +143,6 @@ def _get_log_view_message(log_name, log_lines_length):
 
 
 @html_atpro_system_routes.route("/atpro/system-db-local")
-@auth.login_required
 def html_atpro_sensor_settings_database_information():
     custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
     db_backup_dropdown_selection = ""
@@ -152,13 +152,13 @@ def html_atpro_sensor_settings_database_information():
         "ATPro_admin/page_templates/system/system-db-local.html",
         SQLDatabaseLocation=file_locations.sensor_database,
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_file_size(),
+        SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         NumberNotes=sensor_access.get_db_notes_count(),
         SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
-        SQLMQTTDatabaseSize=sensor_access.get_file_size(file_location=file_locations.mqtt_subscriber_database),
+        SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
         SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
         SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
-        SQLCheckinDatabaseSize=sensor_access.get_file_size(file_location=file_locations.sensor_checkin_database),
+        SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
         SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
         BackupDBOptionNames=db_backup_dropdown_selection
     )
@@ -171,7 +171,12 @@ def html_atpro_sensor_settings_database_management():
         upload_db_folder = uploaded_databases_folder + "/"
         try:
             db_full_path = upload_db_folder + str(request.form.get("db_selected"))
-            if str(request.form.get("db_management")) == "rename_db":
+            if str(request.form.get("db_backups")) == "download_backup_db":
+                backup_db_folder = file_locations.database_backup_folder + "/"
+                db_selected_name = str(request.form.get("DatabaseBackupSelection"))
+                db_full_path = backup_db_folder + db_selected_name
+                return send_file(db_full_path, as_attachment=True, attachment_filename=db_selected_name)
+            elif str(request.form.get("db_management")) == "rename_db":
                 old_name = db_full_path.split("/")[-1]
                 new_name = get_clean_db_name(str(request.form.get("rename_db")))
                 new_db_full_path = upload_db_folder + new_name
@@ -179,7 +184,7 @@ def html_atpro_sensor_settings_database_management():
                 uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
                 app_cached_variables.uploaded_databases_list = uploaded_db_filenames
                 msg = "Database renamed from " + old_name + " to " + new_name
-                return get_message_page("Database Renamed", msg, page_url="sensor-settings")
+                return get_message_page("Database Renamed", msg, page_url="sensor-system", skip_menu_select=True)
             elif str(request.form.get("db_management")) == "shrink_db":
                 selected_database = str(request.form.get("SQLDatabaseSelection"))
                 return _vacuum_database(selected_database)
@@ -188,32 +193,32 @@ def html_atpro_sensor_settings_database_management():
                 uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
                 app_cached_variables.uploaded_databases_list = uploaded_db_filenames
                 msg = str(request.form.get("db_selected")) + " Database has been deleted"
-                return get_message_page("Database Deleted", msg, page_url="sensor-settings")
+                return get_message_page("Database Deleted", msg, page_url="sensor-system", skip_menu_select=True)
             elif str(request.form.get("db_management")) == "delete_backup_db":
                 db_full_path = file_locations.database_backup_folder + "/" + str(request.form.get("db_selected"))
                 os.remove(db_full_path)
                 backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
                 app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
                 msg = str(request.form.get("db_selected")) + " Database backup has been deleted"
-                return get_message_page("Database Backup Deleted", msg, page_url="sensor-settings")
-            return get_html_atpro_index(run_script="SelectNav('sensor-settings');")
+                return get_message_page("Database Backup Deleted", msg, page_url="sensor-system", skip_menu_select=True)
+            return get_html_atpro_index(run_script="SelectNav('sensor-system');")
         except Exception as error:
             return_text2 = "HTML Database Management Error: " + str(error)
             logger.network_logger.error(return_text2)
-            return get_message_page("Database Management Error", str(error), page_url="sensor-settings")
+            return get_message_page("Database Management Error", str(error), page_url="sensor-system", skip_menu_select=True)
 
     return render_template(
         "ATPro_admin/page_templates/system/system-db-management.html",
         HostName=app_cached_variables.hostname,
         SQLDatabaseLocation=file_locations.sensor_database,
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=sensor_access.get_file_size(),
+        SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         NumberNotes=sensor_access.get_db_notes_count(),
         SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
-        SQLMQTTDatabaseSize=sensor_access.get_file_size(file_location=file_locations.mqtt_subscriber_database),
+        SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
         SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
         SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
-        SQLCheckinDatabaseSize=sensor_access.get_file_size(file_location=file_locations.sensor_checkin_database),
+        SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
         SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
         UploadedDBOptionNames=_get_drop_down_items(app_cached_variables.uploaded_databases_list),
         BackupDBOptionNames=_get_drop_down_items(app_cached_variables.zipped_db_backup_list)
@@ -259,7 +264,7 @@ def html_atpro_sensor_settings_database_uploads():
                     return_msg = "Database Upload Failed"
                     db_check_msg = str(error)
             logger.network_logger.info("Database Custom Upload: " + db_check_msg)
-            return get_message_page(return_msg, db_check_msg, page_url="sensor-settings")
+            return get_message_page(return_msg, db_check_msg, page_url="sensor-system", skip_menu_select=True)
         elif button_pressed == "replace":
             selected_database = str(request.form.get("DatabaseReplacementSelection"))
 
@@ -322,7 +327,7 @@ def html_atpro_sensor_settings_database_uploads():
                 return_msg = "Database Error"
                 return_text2 = "No File Uploaded"
             logger.network_logger.info("Database Upload: " + return_msg + " - " + return_text2)
-            return get_message_page(return_msg, return_text2, page_url="sensor-settings")
+            return get_message_page(return_msg, return_text2, page_url="sensor-system", skip_menu_select=True)
 
     return render_template("ATPro_admin/page_templates/system/system-db-uploads.html")
 
@@ -347,9 +352,9 @@ def _vacuum_database(selected_database):
     if os.path.isfile(db_location):
         write_to_sql_database("VACUUM;", None, sql_database_location=db_location)
         msg = selected_database + " Database has been Shrunk"
-        return get_message_page("Database Vacuum Successful", msg, page_url="sensor-settings")
+        return get_message_page("Database Vacuum Successful", msg, page_url="sensor-system", skip_menu_select=True)
     msg = selected_database + " Database not found"
-    return get_message_page("Database Vacuum Failed", msg, page_url="sensor-settings")
+    return get_message_page("Database Vacuum Failed", msg, page_url="sensor-system", skip_menu_select=True)
 
 
 def _unzip_databases(zip_location, new_db_name, overwrite=False, backup_file_name="_Main_Database",
@@ -391,11 +396,11 @@ def _unzip_databases(zip_location, new_db_name, overwrite=False, backup_file_nam
                         os.remove(save_sqlite_to_file)
                         log_msg = "Upload Database - Invalid Database found in Zip: "
                         logger.network_logger.warning(log_msg + db_name_in_zip)
-                    backup_db_zip_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
-                    app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
                     new_db_name = get_clean_db_name(new_db_name)
     if os.path.isfile(zip_location):
         os.remove(zip_location)
+    backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.uploaded_databases_folder)
+    app_cached_variables.uploaded_databases_list = backup_db_zip_filenames
     return return_database_locations_list
 
 
@@ -408,12 +413,14 @@ def _zip_and_delete_database(database_location, db_save_name):
     try:
         zip_content = get_file_content(database_location, open_type="rb")
         zip_files([sql_filename], [zip_content], save_type="save_to_disk", file_location=zip_full_path)
+        os.remove(database_location)
         backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
         app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
-        os.remove(database_location)
         return True
     except Exception as error:
         print(str(error))
+    backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.database_backup_folder)
+    app_cached_variables.zipped_db_backup_list = backup_db_zip_filenames
     return False
 
 
@@ -533,7 +540,6 @@ def atpro_raw_config_urls(url_path):
 @html_atpro_system_routes.route('/atpro/system/<path:url_path>')
 @auth.login_required
 def atpro_upgrade_urls(url_path):
-    print(str(url_path))
     title = "Error!"
     message = "An Error occurred"
     system_command = "exit"
@@ -593,11 +599,7 @@ def atpro_upgrade_urls(url_path):
         message = "Python3 Module Upgrades Started. This may take awhile ..."
         thread_function(_upgrade_py3_modules)
 
-    msg_page = render_template("ATPro_admin/page_templates/message-return.html",
-                               NavLocation="sensor-dashboard",
-                               TextTitle=title,
-                               TextMessage=message)
-
+    msg_page = get_message_page(title, message, full_reload=False)
     thread_function(os.system, args=system_command)
     return msg_page
 
@@ -786,7 +788,7 @@ def html_atpro_set_ipv4_config():
         title_message = "IPv4 Configuration Updated"
         message = "You must reboot for all settings to take effect."
         app_cached_variables_update.update_cached_variables()
-        app_cached_variables.html_sensor_reboot = True
+        atpro_notifications.reboot_system_enabled = 1
         return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
     else:
         title_message = "Unable to Process IPv4 Configuration"
@@ -811,7 +813,7 @@ def html_atpro_set_wifi_config():
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
-                app_cached_variables.html_sensor_reboot = True
+                atpro_notifications.reboot_system_enabled = 1
                 return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
         else:
             logger.network_logger.debug("HTML WiFi Configuration Update Failed")
