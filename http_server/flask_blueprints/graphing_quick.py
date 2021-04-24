@@ -24,7 +24,7 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, adjust_datetime
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
-from http_server.flask_blueprints.graphing import html_graphing
+from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index
 
 html_quick_graphing_routes = Blueprint("html_quick_graphing_routes", __name__)
 db_v = app_cached_variables.database_variables
@@ -90,7 +90,7 @@ def html_live_graphing():
             app_cached_variables.quick_graph_mag = 1
         if request.form.get("gyroscope") is not None:
             app_cached_variables.quick_graph_gyro = 1
-        return html_graphing()
+        return get_html_atpro_index(run_script="SelectNav('sensor-graphing-live');")
     return get_html_live_graphing_page()
 
 
@@ -206,7 +206,7 @@ def get_html_live_graphing_page(email_graph=False):
         for replace_name, content in zip(replacement_text, new_values):
             quick_graph = quick_graph.replace(replace_name, str(content))
         return quick_graph
-    return render_template("graphing_quick.html",
+    return render_template("ATPro_admin/page_templates/graphing-live-view.html",
                            SensorName=app_cached_variables.hostname,
                            TotalSQLEntries=total_data_points,
                            UTCOffset=utc0_hour_offset,
