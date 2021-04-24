@@ -1,15 +1,21 @@
-<div class="row">
+<style>
+    .info-box-data {
+        color: blue;
+        font-weight: bold;
+    }
+</style>
 
+<div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <h2><a style="color: white;" class="mqtt-header" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
+            <h2><a style="color: white;" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
                 Last {{ MQTTShowing }} MQTT Subscriber Messages
             </a></h2>
 
             <h4>This will automatically refresh every 30 seconds</h4>
 
             <button class="pure-button" type="button"
-                    onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank');">
+                    onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
                 View MQTT Subscriber Sensors List
             </button>
         </div>
@@ -19,29 +25,25 @@
         <div class="counter bg-warning">
             <h2>MQTT Subscriber Information</h2>
             <h3>
-                <span style="color: blue; font-weight: bold;">MQTT Status</span>
-                <span style="color: {{ MQTTEnabledColor }};">
-                    {{ MQTTSubscriberEnabledText }}
-                </span>
-            </h3>
-            <h3>
-                <span style="color: blue; font-weight: bold;">MQTT SQL Recording Status</span>
-                <span style="color: {{ MQTTSQLEnabledColor }};">
-                    {{ MQTTSQLSubscriberEnabledText }}
-                </span>
-            </h3>
+                <span class="info-box-data">MQTT Subscriber Status: </span>
+                <span style="color: {{ MQTTEnabledColor }};">{{ MQTTSubscriberEnabledText }}</span>
 
-            <h3>
-                <span style="color: blue; font-weight: bold;">MQTT Data from Subscribed Topics on Broker</span>
-                {{ MQTTSubscriberServerAddress }}
-            </h3>
-            <h3>
-                <span style="color: blue; font-weight: bold;">MQTT Subscriber Database Size</span>
-                {{ MQTTSubDatabaseSize }} MB
-            </h3>
-            <h3>
-                <span style="color: blue; font-weight: bold;">Sensors in MQTT Subscriber Database</span>
-                {{ SQLMQTTSensorsInDB }}
+                <br>
+
+                <span class="info-box-data">Recording Status: </span>
+                <span style="color: {{ MQTTSQLEnabledColor }};">{{ MQTTSQLSubscriberEnabledText }}</span>
+
+                <br>
+
+                <span class="info-box-data">Broker Address: </span>{{ MQTTSubscriberServerAddress }}
+
+                <br>
+
+                <span class="info-box-data">Database Size: </span>{{ MQTTSubDatabaseSize }} MB
+
+                <br>
+
+                <span class="info-box-data">Sensors in Database: </span>{{ SQLMQTTSensorsInDB }}
             </h3>
         </div>
     </div>
