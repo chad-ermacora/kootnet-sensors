@@ -1,7 +1,16 @@
+<style>
+    .info-box-data {
+        color: blue;
+        font-weight: bold;
+    }
+</style>
+
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-success">
-            <h2>Last {{ MaxSensorCount }} Sensor Check-ins</h2>
+            <h2><a style="color: white;" href="#" onclick="SelectNav('sensor-checkin-view')">
+                Last {{ MaxSensorCount }} Sensor Check-ins
+            </a></h2>
 
             <h4>This will automatically refresh every 5 minutes</h4>
 
@@ -15,10 +24,15 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-warning">
             <h2>Checkin Information</h2>
-            <p>Checkin Server: <span style="font-weight: bold;">{{ CheckinEnabledText | safe }}</span></p>
-            <p>Total Sensors in Database: {{ SensorsInDatabase }}</p>
-            <p>Current Checkin Database Size: {{ CheckinDBSize }} MB</p>
-            <p>Sensor Checkin Count in the past {{ ContactInPastDays }} Days: {{ TotalSensorCount }}</p>
+
+            <h3>
+                <span class="info-box-data">Checkin Server: </span>{{ CheckinEnabledText | safe }}<br>
+                <span class="info-box-data">Total Sensors in Database: </span>{{ SensorsInDatabase }}<br>
+                <span class="info-box-data">Current Checkin Database Size: </span>{{ CheckinDBSize }} MB<br><br>
+                <span style="color: black;">
+                    Sensor Checkin Count in the past {{ ContactInPastDays }} Days: {{ TotalSensorCount }}
+                </span>
+            </h3>
         </div>
     </div>
 
