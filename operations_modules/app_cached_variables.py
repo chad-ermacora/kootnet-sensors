@@ -69,6 +69,20 @@ class CreateNetworkGetCommands:
         self.check_online_status = "CheckOnlineStatus"
         self.check_portal_login = "TestLogin"
 
+        self.sensor_name = "GetHostName"
+        self.sensor_id = "GetSensorID"
+
+        self.os_version = "GetOSVersion"
+        self.program_version = "GetSensorVersion"
+        self.program_last_updated = "GetProgramLastUpdated"
+
+        self.system_uptime = "GetSystemUptime"
+        self.system_date_time = "GetSystemDateTime"
+        self.system_ram_used = "GetRAMUsed"
+        self.system_ram_total = "GetRAMTotal"
+        self.system_ram_size_type = "GetRAMTotalSizeType"
+        self.system_disk_space_free = "GetUsedDiskSpace"
+
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"
@@ -92,10 +106,6 @@ class CreateNetworkGetCommands:
 
         self.sensor_readings = "GetIntervalSensorReadings"
         self.sensors_latency = "GetSensorsLatency"
-
-        self.sensor_name = "GetHostName"
-        self.system_uptime = "GetSystemUptime"
-        self.system_date_time = "GetSystemDateTime"
 
         self.cpu_temp = "GetCPUTemperature"
         self.environmental_temp = "GetEnvTemperature"
