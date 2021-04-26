@@ -231,11 +231,15 @@ def _mqtt_sub_entry_to_html(sub_entry):
                     if index == "DateTime":
                         pass
                     else:
-                        sensor_data += "<span class='sensor-name'>" + index + ":</span> " + str(data) + "<br>"
+                        sensor_data += "<div class='col-6 col-m-6 col-sm-6'><div class='counter bg-primary'>"
+                        sensor_data += "<span class='sensor-info'>" + index + "</span><br>" + str(data) + "<br>"
+                        sensor_data += "</div></div>"
             else:
                 sensor_id = "NA"
                 sensor_time = "NA"
-                sensor_data = str(sub_entry)
+                sensor_data = "<div class='col-6 col-m-6 col-sm-6'><div class='counter bg-primary'>"
+                sensor_data += str(sub_entry)
+                sensor_data += "</div></div>"
     except Exception as error:
         logger.network_logger.debug("** HTML MQTT Subscriber convert for view: " + str(error))
         sensor_id = "NA"
