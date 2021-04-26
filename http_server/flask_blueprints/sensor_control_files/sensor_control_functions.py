@@ -25,6 +25,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
+from http_server.flask_blueprints.html_functional import auth_error_msg
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_report_css, \
     html_report_js, html_report_combo, html_report_end
@@ -77,6 +78,11 @@ def create_all_databases_zipped(ip_list):
         sensors_database = []
         for sensor_data in data_list:
             db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
+            try:
+                if sensor_data[2].decode("utf-8") == auth_error_msg:
+                    db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
+            except Exception as error:
+                print(str(error))
             database_names.append(db_name)
             sensors_database.append(sensor_data[2])
 
@@ -109,15 +115,20 @@ def create_multiple_sensor_logs_zipped(ip_list):
         _queue_name_and_file_list(ip_list, data_queue, command=network_commands.download_zipped_logs)
 
         data_list = get_data_queue_items(data_queue)
-        database_names = []
-        sensors_database = []
+        zip_names = []
+        logs_zipped = []
         for sensor_data in data_list:
-            db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
-            database_names.append(db_name)
-            sensors_database.append(sensor_data[2])
+            zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
+            try:
+                if sensor_data[2].decode("utf-8") == auth_error_msg:
+                    zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
+            except Exception as error:
+                print(str(error))
+            zip_names.append(zip_name)
+            logs_zipped.append(sensor_data[2])
 
         app_generic_functions.clear_zip_names()
-        app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(database_names, sensors_database)
+        app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(zip_names, logs_zipped)
         app_cached_variables.sc_logs_zip_name = "Multiple_Logs_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Logs Zip Generation Error: " + str(error))
@@ -207,6 +218,12 @@ def create_the_big_zip(ip_list):
 
             for sensor in ip_name_and_data:
                 current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".zip"
+                try:
+                    if sensor[2].decode("utf-8") == auth_error_msg:
+                        current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".txt"
+                except Exception as error:
+                    print(str(error))
+
                 return_names.append(current_file_name)
                 return_files.append(sensor[2])
 

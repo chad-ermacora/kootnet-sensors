@@ -24,12 +24,12 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_validation_checks import url_is_valid
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page
 
 html_functional_routes = Blueprint("html_functional_routes", __name__)
 
 html_extras_dir = file_locations.program_root_dir + "/http_server/extras"
 documentation_root_dir = file_locations.program_root_dir + "/extras/documentation"
+auth_error_msg = "Unauthorized Access - Incorrect username or Password"
 
 
 @html_functional_routes.route("/documentation/")
@@ -92,5 +92,4 @@ def verify_password(username, password):
 
 @auth.error_handler
 def auth_error():
-    msg = "Incorrect Username or Password."
-    return get_message_page("Unauthorized Access", message=msg)
+    return auth_error_msg
