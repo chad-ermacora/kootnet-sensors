@@ -62,6 +62,8 @@ def html_atpro_sensor_checkin_main_view():
         if count < app_config_access.checkin_config.main_page_max_sensors:
             sensor_statistics += _get_sensor_info_string(cleaned_id)
 
+    past_checkin_percent = round(((sensor_contact_count / int(get_sql_element(sensor_count))) * 100), 2)
+
     if os.path.isfile(file_locations.sensor_checkin_database):
         db_size_mb = get_file_size(file_locations.sensor_checkin_database, round_to=3)
     else:
@@ -75,7 +77,8 @@ def html_atpro_sensor_checkin_main_view():
                            SensorsInDatabase=get_sql_element(sensor_count),
                            CheckinDBSize=db_size_mb,
                            ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-                           TotalSensorCount=sensor_contact_count,
+                           TotalSensorsContactDays=sensor_contact_count,
+                           PercentOfTotalDays=past_checkin_percent,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
                            CheckinEnabledText=enabled_text,
                            CheckinSensorStatistics=sensor_statistics)

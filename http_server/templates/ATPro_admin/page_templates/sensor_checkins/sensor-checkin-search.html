@@ -41,7 +41,7 @@
             <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
                 <label style="color: red; font-size: medium; font-weight: bolder;">
                     Sensor ID<br>
-                    <input style="width: 375px;" type="text" maxlength="64" name="sensor_id"
+                    <input style="width: 375px;" type="text" maxlength="64" name="sensor_id" id="sensor_id"
                            placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
                 </label>
 
@@ -115,6 +115,12 @@
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
         $("#log-page-content").load("/atpro/sc-logs/" + nav_location);
+    }
+
+    if (screen.width < 500) {
+        document.getElementById('sensor_id').style.fontSize = 'medium';
+        document.getElementById('sensor_id').style.width = '325px';
+        document.getElementsByClassName('sensor-id')[0].style.fontSize = '15px';
     }
 
     {{ RunScript | safe }}
