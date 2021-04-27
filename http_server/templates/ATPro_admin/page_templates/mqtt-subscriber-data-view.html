@@ -85,4 +85,11 @@
         clearTimeout(refresh_timer);
         RefreshPageTimed();
     }, 30000);
+
+    if (screen.width < 500) {
+        let sensor_id = document.getElementsByClassName("sensor-id");
+        for (let i = 0; i < sensor_id.length; i++) {
+            document.getElementsByClassName('sensor-id')[i].style.fontSize = 'medium';
+        }
+    }
 </script>
