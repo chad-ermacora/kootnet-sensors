@@ -64,8 +64,11 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
         sql_column_data = sqlite_database.fetchall()
         database_connection.close()
     except Exception as error:
-        logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
-        sql_column_data = []
+        if str(error)[:13] == "no such table":
+            logger.primary_logger.debug("SQL Table name was not found in the Database: " + str(error))
+        else:
+            logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
+        return []
     return sql_column_data
 
 
