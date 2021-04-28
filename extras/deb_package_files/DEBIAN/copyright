@@ -1,6 +1,5 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: https://github.com/chad-ermacora/sensor-rp
-Comment: I used some icons with GPL3 license I should credit to creator as well as mui min & jquery and a font. 
 
 Files: *
 Copyright: 2019 Chad Ermacora <chad.e@linux.com>
