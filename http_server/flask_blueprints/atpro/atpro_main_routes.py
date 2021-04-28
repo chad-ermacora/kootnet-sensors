@@ -63,8 +63,8 @@ def html_atpro_dashboard():
         StdVersion=app_cached_variables.standard_version_available,
         DevVersion=app_cached_variables.developmental_version_available,
         LastUpdated=app_cached_variables.program_last_updated,
-        DateTime=strftime("%Y-%m-%d<br>%H:%M:%S<br>%Z"),
-        DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d<br>%H:%M:%S"),
+        DateTime=strftime("%Y-%m-%d %H:%M:%S %Z"),
+        DateTimeUTC=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
         HostName=app_cached_variables.hostname,
         LocalIP=app_cached_variables.ip,
         OperatingSystem=app_cached_variables.operating_system_name,
@@ -94,9 +94,10 @@ def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
     html_final_code = ""
     for index, dic_readings in enumerate(all_readings.items()):
-        html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
-    html_return_code = html_sensor_readings_row.replace("{{ Readings }}", html_final_code)
-    return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_return_code)
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
+        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]))
+        html_final_code += new_reading + "\n"
+    return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_final_code)
 
 
 @html_atpro_main_routes.route("/atpro/sensor-latency")
@@ -104,11 +105,10 @@ def html_atpro_sensors_latency():
     sensors_latency = sensor_access.get_sensors_latency()
     html_final_code = ""
     for index, dic_readings in enumerate(sensors_latency.items()):
-        html_final_code += "<tr>\n<td>" + dic_readings[0] + "</td>\n<td>" + str(dic_readings[1]) + "</td>\n</tr>\n"
-    html_return_code = html_sensor_readings_row.replace("<th>Sensor Reading</th>", "<th>Sensor Latency in Seconds</th>")
-    html_return_code = html_return_code.replace("{{ Readings }}", html_final_code)
-
-    return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_return_code)
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
+        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]))
+        html_final_code += new_reading + "\n"
+    return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_final_code)
 
 
 @html_atpro_main_routes.route("/atpro/sensor-notes", methods=["GET", "POST"])

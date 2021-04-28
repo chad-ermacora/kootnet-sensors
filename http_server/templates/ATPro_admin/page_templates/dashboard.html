@@ -2,16 +2,19 @@
     th {
         color: red;
     }
+
     td {
+        font-weight: bolder;
         text-align: center;
     }
+
     .readings-header {
         text-align: center;
     }
 </style>
 
 <div class="row">
-    <div class="col-12 col-m-12 col-sm-12">
+    <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
@@ -20,9 +23,6 @@
                             <th><div class="readings-header">Running<br>Version</div></th>
                             <th><div class="readings-header">Current<br>Release</div></th>
                             <th><div class="readings-header">Development<br>Release</div></th>
-                            <th><div class="readings-header">Last<br>Updated</div></th>
-                            <th><div class="readings-header">DateTime<br>UTC 0</div></th>
-                            <th><div class="readings-header">DateTime<br>Sensor's Timezone</div></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -30,55 +30,107 @@
                             <td>{{ KootnetVersion }}</td>
                             <td>{{ StdVersion }}</td>
                             <td>{{ DevVersion }}</td>
-                            <td>{{ LastUpdated }}</td>
-                            <td>{{ DateTimeUTC | safe }}</td>
-                            <td>{{ DateTime | safe }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Operating<br>System</div></th>
+                            <th><div class="readings-header">HostName</div></th>
+                            <th><div class="readings-header">IP<br>Address</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ OperatingSystem }}</td>
+                            <td>{{ HostName }}</td>
+                            <td>{{ LocalIP }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Debug<br>Logging</div></th>
+                            <th><div class="readings-header">System<br>Uptime</div></th>
+                            <th><div class="readings-header">System<br>Reboots</div></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ DebugLogging }}</td>
+                            <td>{{ SensorUptime | safe }}</td>
+                            <td>{{ SensorReboots }}</td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">System<br>Temperature</div></th>
+                            <th><div class="readings-header">Available<br>RAM</div></th>
+                            <th><div class="readings-header">Available<br>Drive Space</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ CPUTemperature }} °C</td>
+                            <td>{{ RAMUsage }}</td>
+                            <td>{{ DiskUsage }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">HostName</div></th>
-                            <th><div class="readings-header">IP<br>Address</div></th>
-                            <th><div class="readings-header">Operating<br>System</div></th>
-                            <th><div class="readings-header">System<br>Uptime</div></th>
-                            <th><div class="readings-header">System<br>Reboots</div></th>
-                            <th><div class="readings-header">Available<br>RAM</div></th>
-                            <th><div class="readings-header">Available<br>Drive Space</div></th>
-                            <th><div class="readings-header">System<br>Temperature</div></th>
-                            <th><div class="readings-header">Debug<br>Logging</div></th>
+                            <th><div class="readings-header">DateTime Sensor's Timezone</div></th>
+                            <th><div class="readings-header">DateTime UTC 0</div></th>
+                            <th><div class="readings-header">Last Updated</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ HostName }}</td>
-                            <td>{{ LocalIP }}</td>
-                            <td>{{ OperatingSystem }}</td>
-                            <td>{{ SensorUptime | safe }}</td>
-                            <td>{{ SensorReboots }}</td>
-                            <td>{{ RAMUsage }}</td>
-                            <td>{{ DiskUsage }}</td>
-                            <td>{{ CPUTemperature }} °C</td>
-                            <td>{{ DebugLogging }}</td>
+                            <td>{{ DateTime }}</td>
+                            <td>{{ DateTimeUTC }}</td>
+                            <td>{{ LastUpdated }}</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
@@ -97,9 +149,7 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
@@ -122,6 +172,7 @@
             </div>
         </div>
     </div>
+
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
@@ -144,9 +195,7 @@
             </div>
         </div>
     </div>
-</div>
 
-<div class="row">
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">

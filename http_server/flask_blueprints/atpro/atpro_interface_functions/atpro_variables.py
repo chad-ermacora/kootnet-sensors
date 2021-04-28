@@ -114,23 +114,10 @@ def get_disk_free():
 
 
 html_sensor_readings_row = """
-<div class="row">
-    <div class="col-6 col-m-8 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Sensor Name</th>
-                            <th>Sensor Reading</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{ Readings }}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="col-3 col-m-6 col-sm-12">
+    <div class="counter bg-primary">
+        <span class='sensor-info'>{{ SensorName }}</span><br>
+        <span class='reading-value'>{{ SensorReading }}</span>
     </div>
 </div>
 """

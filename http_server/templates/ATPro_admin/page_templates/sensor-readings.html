@@ -1,13 +1,24 @@
 <style>
-    th {
-        color: red;
-        font-size: large;
-        font-weight: bolder;
-    }
-    td {
+    .reading-value {
         font-size: medium;
         font-weight: bold;
     }
 </style>
 
-{{ HTMLReplacementCode | safe }}
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2>Sensor Readings</h2>
+        </div>
+    </div>
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    {{ HTMLReplacementCode | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
