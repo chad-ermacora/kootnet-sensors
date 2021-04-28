@@ -19,6 +19,16 @@
     input, form {
         text-align: center;
     }
+
+    .sensor-info {
+        font-size: large;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    .sensor-info-names {
+        font-size: x-large;
+    }
 </style>
 
 <body class="overlay-scrollbar">
@@ -62,7 +72,7 @@
 						</span>
 					</div>
 					<div class="dropdown-menu-content overlay-scrollbar scrollbar-hover">
-						{{ NotificationsReplacement |safe }}
+						{{ NotificationsReplacement | safe }}
 					</div>
 					<div class="dropdown-menu-footer">
 						<span></span>

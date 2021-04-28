@@ -198,7 +198,7 @@ def get_html_live_graphing_page(email_graph=False):
         quick_graph = get_file_content(file_locations.program_root_dir + "/http_server/templates/graphing_quick.html")
 
         replacement_text = ["{{ SensorName }}", "{{ TotalSQLEntries }}", "{{ UTCOffset }}", "{{ GraphPastHours }}",
-                            "{{ HoursDisplayedDisabled }}", "{{ GraphJSCode |safe }}", "{{ GraphHTMLCode |safe }}"]
+                            "{{ HoursDisplayedDisabled }}", "{{ GraphJSCode | safe }}", "{{ GraphHTMLCode | safe }}"]
 
         new_values = [app_cached_variables.hostname, total_data_points, utc0_hour_offset,
                       graph_past_hours, "disabled", graph_javascript_code, html_code]
