@@ -111,6 +111,7 @@ def view_search_sensor_check_ins():
     old_text = "col-6 col-m-12 col-sm-12"
     new_text = "col-12 col-m-12 col-sm-12"
     sensor_search_info = app_cached_variables.checkin_sensor_info.replace(old_text, new_text)
+    sensor_search_info = sensor_search_info.replace(' class="counter bg-success"', "")
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-search.html",
                            SearchSensorInfo=sensor_search_info,
                            SearchSensorDeleteDisabled=buttons_state,
