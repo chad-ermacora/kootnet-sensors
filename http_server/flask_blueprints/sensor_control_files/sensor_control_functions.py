@@ -28,7 +28,7 @@ from configuration_modules import app_config_access
 from http_server.flask_blueprints.html_functional import auth_error_msg
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_report_css, \
-    html_report_js, html_report_combo, html_report_end
+    html_report_combo, html_report_end
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 
@@ -191,7 +191,6 @@ def generate_html_reports_combo(ip_list):
 
 def _remove_css_js(html_report):
     html_report = html_report.replace(html_report_css, "")
-    html_report = html_report.replace(html_report_js, "")
     html_report = html_report.replace("body.classList.remove(themeLight)", "")
     html_report = html_report.replace("body.classList.add(themeDark)", "")
     return html_report
