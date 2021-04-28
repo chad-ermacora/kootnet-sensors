@@ -288,7 +288,12 @@
                 <br><br>
 
                 <div id="MQTTCustomData">
-                    <br>
+                    <span style="font-size: x-large;">MQTT Custom Format</span><br><br>
+
+                    <a style="color: blue;" href="/atpro/settings-mqtt-p-custom-help" target="_blank">
+                        <i>Click Here for Sensor Variables</i>
+                    </a><br><br>
+
                     <button type="button" class="pure-button"
                             onclick="window.location.href = '/atpro/settings-mqtt-p-reset-custom-format';">
                         Reset Custom Format
@@ -297,10 +302,6 @@
                     <br><br>
 
                     <label>
-                        MQTT Custom Format<br>
-                        <a style="color: white;" href="/atpro/settings-mqtt-p-custom-help" target="_blank">
-                            <i>Click Here for Sensor Variables</i>
-                        </a><br>
                         <textarea id="mqtt_custom_data" name="mqtt_custom_data" cols="55" rows="20">{{ MQTTCustomDataFormat }}</textarea>
                     </label>
 
@@ -308,7 +309,7 @@
                 </div>
 
                 <div id="ResetTopics">
-                    <h2><u>Per Sensor Topics</u></h2>
+                    <span style="font-size: x-large;">Per Sensor Topics</span><br><br>
 
                     <button type="button" class="pure-button"
                         onclick="window.location.href = '/atpro/settings-mqtt-p-reset-topics';">

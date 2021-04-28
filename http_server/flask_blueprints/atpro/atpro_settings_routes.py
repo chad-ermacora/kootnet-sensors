@@ -682,7 +682,45 @@ def html_atpro_reset_mqtt_publisher_custom_format():
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-p-custom-help")
 def html_atpro_mqtt_publisher_custom_help():
-    return render_template("ATPro_admin/page_templates/settings/settings-mqtt-publisher-variable-help.html")
+    mqtt_pub_custom_vars = app_config_access.mqtt_publisher_config.get_mqtt_replacements_dictionary()
+    return render_template("ATPro_admin/page_templates/settings/settings-mqtt-publisher-variable-help.html",
+                           SystemHostname=mqtt_pub_custom_vars[db_v.sensor_name],
+                           SystemIP=mqtt_pub_custom_vars[db_v.ip],
+                           SystemUptime=mqtt_pub_custom_vars[db_v.sensor_uptime],
+                           SystemDateTime=mqtt_pub_custom_vars[db_v.all_tables_datetime],
+                           SystemTemperature=mqtt_pub_custom_vars[db_v.system_temperature],
+                           EnvTemperature=mqtt_pub_custom_vars[db_v.env_temperature],
+                           Pressure=mqtt_pub_custom_vars[db_v.pressure],
+                           Altitude=mqtt_pub_custom_vars[db_v.altitude],
+                           Humidity=mqtt_pub_custom_vars[db_v.humidity],
+                           Distance=mqtt_pub_custom_vars[db_v.distance],
+                           Lumen=mqtt_pub_custom_vars[db_v.lumen],
+                           Red=mqtt_pub_custom_vars[db_v.red],
+                           Orange=mqtt_pub_custom_vars[db_v.orange],
+                           Yellow=mqtt_pub_custom_vars[db_v.yellow],
+                           Green=mqtt_pub_custom_vars[db_v.green],
+                           Blue=mqtt_pub_custom_vars[db_v.blue],
+                           Violet=mqtt_pub_custom_vars[db_v.violet],
+                           UVIndex=mqtt_pub_custom_vars[db_v.ultra_violet_index],
+                           UVA=mqtt_pub_custom_vars[db_v.ultra_violet_a],
+                           UVB=mqtt_pub_custom_vars[db_v.ultra_violet_b],
+                           GASRI=mqtt_pub_custom_vars[db_v.gas_resistance_index],
+                           GASOxidising=mqtt_pub_custom_vars[db_v.gas_oxidising],
+                           GASReducing=mqtt_pub_custom_vars[db_v.gas_reducing],
+                           GASNH3=mqtt_pub_custom_vars[db_v.gas_nh3],
+                           PM1=mqtt_pub_custom_vars[db_v.particulate_matter_1],
+                           PM2_5=mqtt_pub_custom_vars[db_v.particulate_matter_2_5],
+                           PM4=mqtt_pub_custom_vars[db_v.particulate_matter_4],
+                           PM10=mqtt_pub_custom_vars[db_v.particulate_matter_10],
+                           AccelerometerX=mqtt_pub_custom_vars[db_v.acc_x],
+                           AccelerometerY=mqtt_pub_custom_vars[db_v.acc_y],
+                           AccelerometerZ=mqtt_pub_custom_vars[db_v.acc_z],
+                           MagnetometerX=mqtt_pub_custom_vars[db_v.mag_x],
+                           MagnetometerY=mqtt_pub_custom_vars[db_v.mag_y],
+                           MagnetometerZ=mqtt_pub_custom_vars[db_v.mag_z],
+                           GyroscopeX=mqtt_pub_custom_vars[db_v.gyro_x],
+                           GyroscopeY=mqtt_pub_custom_vars[db_v.gyro_y],
+                           GyroscopeZ=mqtt_pub_custom_vars[db_v.gyro_z])
 
 
 @html_atpro_settings_routes.route("/atpro/settings-mqtt-s", methods=["GET", "POST"])
