@@ -111,6 +111,9 @@ def _start_plotly_graph(graph_data, db_location):
         elif var_column == sql_column_names.humidity:
             graph_data.sql_humidity = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_humidity_date_time = sql_column_date_time
+        elif var_column == sql_column_names.dew_point:
+            graph_data.sql_dew_point = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_dew_point_date_time = sql_column_date_time
         elif var_column == sql_column_names.distance:
             graph_data.sql_distance = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_distance_date_time = sql_column_date_time
@@ -226,7 +229,8 @@ def _plotly_graph(graph_data):
         except Exception as error:
             logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))
     else:
-        logger.primary_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        msg = "Plotly Graph Creation - Failed: No SQL data found in the database within the selected time frame"
+        logger.primary_logger.info(msg)
 
 
 def check_form_columns(form_request):

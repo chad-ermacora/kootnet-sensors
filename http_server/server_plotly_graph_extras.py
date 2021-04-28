@@ -86,6 +86,11 @@ def add_plots(graph_data):
         put_sensor_trace(graph_data, scatter_data, "Humidity", graph_data.sql_humidity_date_time,
                          graph_data.sql_humidity, "% Relative Humidity")
 
+    if len(graph_data.sql_dew_point) > 2:
+        name_and_subplot = "Dew Point in °C (Celsius)"
+        put_sensor_trace(graph_data, scatter_data, "Dew Point", graph_data.sql_dew_point_date_time,
+                         graph_data.sql_dew_point, name_and_subplot)
+
     if len(graph_data.sql_distance) > 2:
         name_and_subplot = "Distance in Meters?"
         put_sensor_trace(graph_data, scatter_data, "Distance", graph_data.sql_distance_date_time,
