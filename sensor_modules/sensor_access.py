@@ -172,7 +172,7 @@ def get_all_available_sensor_readings(skip_system_info=False):
     if env_temp_raw is not None and env_temp_corrected is not None:
         env_temp_raw = env_temp_raw[database_variables.env_temperature]
         env_temp_corrected = env_temp_corrected[database_variables.env_temperature]
-        temp_correction = env_temp_corrected - env_temp_raw
+        temp_correction = round((env_temp_corrected - env_temp_raw), 5)
 
     if skip_system_info:
         return_dictionary = {}

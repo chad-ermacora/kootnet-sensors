@@ -101,7 +101,7 @@ def get_interval_sensor_readings():
             return_dictionary.update(reading)
             reading2 = sa.get_environment_temperature(temperature_correction=False)
             reading = reading[database_variables.env_temperature] - reading2[database_variables.env_temperature]
-            return_dictionary.update({database_variables.env_temperature_offset: reading})
+            return_dictionary.update({database_variables.env_temperature_offset: round(reading, 5)})
     if interval_recording_config.pressure_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_pressure, return_dictionary)
     if interval_recording_config.altitude_enabled:
