@@ -1,3 +1,15 @@
+<style>
+    .db-header-items-name {
+        color: black;
+        font-weight: bolder;
+    }
+
+    .db-header-items-data {
+        color: white;
+        font-weight: bold;
+    }
+</style>
+
 <div class="col-12 col-m-12 col-sm-12">
     <div class="counter bg-warning">
         <form method="POST" action="/atpro/system-db-management" target="_blank">
@@ -25,14 +37,36 @@
 </div>
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-primary">
+        <div class="counter bg-success">
             <h2><i class="fas fa-database"></i> Main Database</h2>
-            <h3>Location</h3>
-            <p>{{ SQLDatabaseLocation }}</p>
-            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLDatabaseSize }} MB
-            <h3>Date Range</h3>
-            <p>{{ SQLDatabaseDateRange }}</p>
-            <h3 style="display: inline-block;">Number of Notes: </h3> {{ NumberNotes }}
+
+            <h3 class="db-header-items-name">
+                DB Name: <span class="db-header-items-data">{{ SQLDatabaseName }}</span>
+            </h3>
+            <h3 class="db-header-items-name">
+                Location: <span class="db-header-items-data">{{ SQLDatabaseLocation }}</span>
+            </h3>
+
+            <div class="row">
+                <div class="col-6 col-m-12 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Date Range</span><br>{{ SQLDatabaseDateRange }}
+                    </div>
+                </div>
+
+                <div class="col-3 col-m-6 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Size on Disk</span><br>{{ SQLDatabaseSize }} MB
+                    </div>
+                </div>
+
+                <div class="col-3 col-m-6 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Number of Notes</span><br>{{ NumberNotes }}
+                    </div>
+                </div>
+            </div>
+
             <h3>Downloads</h3>
             <a class="pure-button" href="/DownloadSQLDatabase" target="_blank">Database Zipped</a>
             <a class="pure-button" href="/DownloadSQLDatabaseRAW" target="_blank">Database RAW</a>
@@ -42,11 +76,28 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
             <h2><i class="fas fa-database"></i> MQTT Subscriber Database</h2>
-            <h3>Location</h3>
-            <p>{{ SQLMQTTDatabaseLocation }}</p>
-            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLMQTTDatabaseSize }} MB
-            <br>
-            <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLMQTTSensorsInDB }}
+
+            <h3 class="db-header-items-name">
+                DB Name: <span class="db-header-items-data">{{ SQLMQTTDatabaseName }}</span>
+            </h3>
+            <h3 class="db-header-items-name">
+                Location: <span class="db-header-items-data">{{ SQLMQTTDatabaseLocation }}</span>
+            </h3>
+
+            <div class="row">
+                <div class="col-6 col-m-12 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Size on Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
+                    </div>
+                </div>
+
+                <div class="col-6 col-m-12 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLMQTTSensorsInDB }}
+                    </div>
+                </div>
+            </div>
+
             <h3>Downloads</h3>
             <a class="pure-button" href="/DownloadSQLDatabaseMQTT" target="_blank">Database Zipped</a>
             <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT" target="_blank">Database RAW</a>
@@ -56,11 +107,28 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="counter bg-success">
             <h2><i class="fas fa-database"></i> Checkin Server Database</h2>
-            <h3>Location</h3>
-            <p>{{ SQLCheckinDatabaseLocation }}</p>
-            <h3 style="display: inline-block;">Size on Disk: </h3> {{ SQLCheckinDatabaseSize }} MB
-            <br>
-            <h3 style="display: inline-block;">Number of Sensors in DB: </h3> {{ SQLCheckinSensorsInDB }}
+
+            <h3 class="db-header-items-name">
+                DB Name: <span class="db-header-items-data">{{ SQLCheckinDatabaseName }}</span>
+            </h3>
+            <h3 class="db-header-items-name">
+                Location: <span class="db-header-items-data">{{ SQLCheckinDatabaseLocation }}</span>
+            </h3>
+
+            <div class="row">
+                <div class="col-6 col-m-12 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Size on Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
+                    </div>
+                </div>
+
+                <div class="col-6 col-m-12 col-sm-12">
+                    <div class="counter bg-primary">
+                        <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLCheckinSensorsInDB }}
+                    </div>
+                </div>
+            </div>
+
             <h3>Downloads</h3>
             <a class="pure-button" href="/DownloadSQLDatabaseCheckin" target="_blank">Database Zipped</a>
             <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin" target="_blank">Database RAW</a>

@@ -150,18 +150,28 @@ def html_atpro_sensor_settings_database_information():
         db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
     return render_template(
         "ATPro_admin/page_templates/system/system-db-local.html",
-        SQLDatabaseLocation=file_locations.sensor_database,
+        SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
+        SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         NumberNotes=sensor_access.get_db_notes_count(),
-        SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
+        SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
+        SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
         SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
-        SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
+        SQLCheckinDatabaseLocation=_remove_filename_from_location(file_locations.sensor_checkin_database),
+        SQLCheckinDatabaseName=file_locations.sensor_checkin_database.split("/")[-1],
         SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
         SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
         BackupDBOptionNames=db_backup_dropdown_selection
     )
+
+
+def _remove_filename_from_location(file_location):
+    location = ""
+    for section in file_location.split("/")[:-1]:
+        location += section + "/"
+    return location
 
 
 @html_atpro_system_routes.route("/atpro/system-db-management", methods=["GET", "POST"])
@@ -209,17 +219,6 @@ def html_atpro_sensor_settings_database_management():
 
     return render_template(
         "ATPro_admin/page_templates/system/system-db-management.html",
-        HostName=app_cached_variables.hostname,
-        SQLDatabaseLocation=file_locations.sensor_database,
-        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
-        SQLDatabaseSize=get_file_size(file_locations.sensor_database),
-        NumberNotes=sensor_access.get_db_notes_count(),
-        SQLMQTTDatabaseLocation=file_locations.mqtt_subscriber_database,
-        SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
-        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
-        SQLCheckinDatabaseLocation=file_locations.sensor_checkin_database,
-        SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
-        SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
         UploadedDBOptionNames=_get_drop_down_items(app_cached_variables.uploaded_databases_list),
         BackupDBOptionNames=_get_drop_down_items(app_cached_variables.zipped_db_backup_list)
     )
@@ -328,7 +327,6 @@ def html_atpro_sensor_settings_database_uploads():
                 return_text2 = "No File Uploaded"
             logger.network_logger.info("Database Upload: " + return_msg + " - " + return_text2)
             return get_message_page(return_msg, return_text2, page_url="sensor-system", skip_menu_select=True)
-
     return render_template("ATPro_admin/page_templates/system/system-db-uploads.html")
 
 

@@ -3,6 +3,10 @@
     display: inline-block;
 }
 
+.pure-menu-children {
+    background-color: var(--main-bg-color);
+}
+
 .pure-menu-link, .pure-menu-link:visited {
     font-weight: bolder;
     color: var(--main-color);
