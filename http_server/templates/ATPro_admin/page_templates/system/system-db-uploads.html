@@ -52,17 +52,15 @@
             <form class="pure-form" method="post" enctype="multipart/form-data" action="/atpro/system-db-uploads">
                 <h2><i class="fas fa-upload"></i> Replace a Local Database</h2>
 
-                <label for="database_replacement">Choose a Database:</label>
-
-                <br>
-
-                <select name="DatabaseReplacementSelection" id="database_replacement">
-                    <optgroup label="Local Databases">
-                        <option value="MainDatabase">Main</option>
-                        <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
-                        <option value="CheckinDatabase">Sensor Checkins</option>
-                    </optgroup>
-                </select>
+                <label for="database_replacement">Choose a Database:<br>
+                    <select name="DatabaseReplacementSelection" id="database_replacement">
+                        <optgroup label="Local Databases">
+                            <option value="MainDatabase">Main</option>
+                            <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                            <option value="CheckinDatabase">Sensor Checkins</option>
+                        </optgroup>
+                    </select>
+                </label>
 
                 <br><br>
 

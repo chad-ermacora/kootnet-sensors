@@ -19,13 +19,13 @@
                 You can view and edit databases by using
                 <a href="https://sqlitebrowser.org/" target="_blank">DB Browser for SQLite</a>
             </p>
-            <label for="databases_backup_selection">Choose a Database Backup:</label>
-            <br>
-            <select name="DatabaseBackupSelection" id="databases_backup_selection">
-                <optgroup label="Backed-Up Local Databases">
-                    {{ BackupDBOptionNames | safe }}
-                </optgroup>
-            </select>
+            <label for="databases_backup_selection">Choose a Database Backup:<br>
+                <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                    <optgroup label="Backed-Up Local Databases">
+                        {{ BackupDBOptionNames | safe }}
+                    </optgroup>
+                </select>
+            </label>
 
             <br><br>
 
