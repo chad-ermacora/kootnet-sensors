@@ -29,6 +29,7 @@ from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
+from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_notifications
 
 try:
@@ -590,42 +591,16 @@ def atpro_upgrade_urls(url_path):
         logger.network_logger.info("** System OS Upgrade - SMB Initiated by " + str(request.remote_addr))
         title = "Upgrade Started"
         message = "Sensor's operating system upgrade started. This may take awhile ..."
-        thread_function(_upgrade_linux_os)
+        upgrade_linux_os()
     elif str(url_path) == "upgrade-py3-modules":
         logger.network_logger.info("** Python3 Module Upgrades Initiated by " + str(request.remote_addr))
         title = "Upgrades Started"
         message = "Python3 Module Upgrades Started. This may take awhile ..."
-        thread_function(_upgrade_py3_modules)
+        upgrade_python_pip_modules()
 
     msg_page = get_message_page(title, message, full_reload=False)
     thread_function(os.system, args=system_command)
     return msg_page
-
-
-def _upgrade_linux_os():
-    """ Runs a bash command to upgrade the Linux System with apt-get. """
-    try:
-        os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-        logger.primary_logger.info("Rebooting System")
-        os.system(app_cached_variables.bash_commands["RebootSystem"])
-    except Exception as error:
-        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
-
-
-def _upgrade_py3_modules():
-    if app_cached_variables.sensor_ready_for_upgrade:
-        app_cached_variables.sensor_ready_for_upgrade = False
-        with open(file_locations.program_root_dir + "/requirements.txt") as file:
-            requirements_text = file.readlines()
-            for line in requirements_text:
-                if line[0] != "#":
-                    command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
-                    os.system(command)
-            logger.primary_logger.info("Python3 Module Upgrades Complete")
-            os.system(app_cached_variables.bash_commands["RestartService"])
-    else:
-        logger.network_logger.warning("* Upgrades Already Running")
 
 
 @html_atpro_system_routes.route("/atpro/update-login", methods=["POST"])

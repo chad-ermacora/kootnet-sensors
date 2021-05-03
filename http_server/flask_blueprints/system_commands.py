@@ -24,6 +24,7 @@ from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import software_version
 from configuration_modules.app_config_access import primary_config
+from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, get_uptime_str
 from sensor_modules import sensor_access
@@ -221,8 +222,7 @@ def system_shutdown():
 def upgrade_system_os():
     logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
     if app_cached_variables.sensor_ready_for_upgrade:
-        app_cached_variables.sensor_ready_for_upgrade = False
-        app_generic_functions.thread_function(_upgrade_linux_os)
+        upgrade_linux_os()
     else:
         logger.network_logger.warning("* Upgrades Already Running")
     msg = "Upgrading the Operating System requires Internet & may take up to an hour or more.<br>"
@@ -230,39 +230,16 @@ def upgrade_system_os():
     return get_message_page("Upgrading Operating System", message=msg, page_url="sensor-dashboard")
 
 
-def _upgrade_linux_os():
-    """ Runs a bash command to upgrade the Linux System with apt-get. """
-    try:
-        os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
-        logger.primary_logger.warning("Linux OS Upgrade Done")
-        logger.primary_logger.info("Rebooting System")
-        os.system(app_cached_variables.bash_commands["RebootSystem"])
-    except Exception as error:
-        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
-
-
 @html_system_commands_routes.route("/UpdatePipModules")
 @auth.login_required
 def upgrade_pip_modules():
     logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
     if app_cached_variables.sensor_ready_for_upgrade:
-        app_cached_variables.sensor_ready_for_upgrade = False
-        with open(file_locations.program_root_dir + "/requirements.txt") as file:
-            requirements_text = file.readlines()
-            app_generic_functions.thread_function(_pip_upgrades, args=requirements_text)
+        upgrade_python_pip_modules()
     else:
         logger.network_logger.warning("* Upgrades Already Running")
     msg = "Python Modules for Kootnet Sensors are being upgraded. Once complete, the program will be restarted."
     return get_message_page("Upgrading Python Modules", message=msg, page_url="sensor-dashboard")
-
-
-def _pip_upgrades(requirements_text):
-    for line in requirements_text:
-        if line[0] != "#":
-            command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
-            os.system(command)
-    logger.primary_logger.info("Python3 Module Upgrades Complete")
-    os.system(app_cached_variables.bash_commands["RestartService"])
 
 
 @html_system_commands_routes.route("/CreateNewSelfSignedSSL")
