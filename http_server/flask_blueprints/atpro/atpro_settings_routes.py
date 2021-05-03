@@ -55,7 +55,8 @@ def html_atpro_sensor_settings_main():
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
         app_cached_variables.restart_sensor_checkin_thread = True
-        return get_message_page("Main Settings Updated", page_url="sensor-settings")
+        msg = "If you changed the Web Portal HTTPS Port Number, you will need to restart the program"
+        return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
     sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
@@ -124,8 +125,7 @@ def html_atpro_sensor_settings_display():
         app_config_access.display_config.update_with_html_request(request)
         app_config_access.display_config.save_config_to_file()
         app_cached_variables.restart_mini_display_thread = True
-        return_msg = "Restarting Display Service"
-        return get_message_page("Display Settings Updated", return_msg, page_url="sensor-settings")
+        return get_message_page("Display Settings Updated", page_url="sensor-settings")
 
     display_numerical_checked = ""
     display_graph_checked = ""
@@ -343,8 +343,8 @@ def html_atpro_sensor_settings_variances():
         app_config_access.trigger_variances.update_with_html_request(request)
         app_config_access.trigger_variances.save_config_to_file()
         atpro_notifications.restart_service_enabled = 1
-        return get_message_page("Trigger Variances Settings Updated",
-                                "Please Restart Program", page_url="sensor-settings")
+        msg = "Please Restart Program"
+        return get_message_page("Trigger Variances Settings Updated", msg, page_url="sensor-settings")
     variances = app_config_access.trigger_variances
     return render_template(
         "ATPro_admin/page_templates/settings/settings-recording-variances.html",
@@ -541,16 +541,18 @@ def html_atpro_send_reports_email():
     logger.network_logger.debug("** HTML Reports Email Sent - Source: " + str(request.remote_addr))
     button_pressed = request.form.get("test_email_button")
     email_address = request.form.get("test_email_address")
+
+    msg = "Please check the Network logs for Errors"
     if email_is_valid(email_address):
         if button_pressed == "reports":
             thread_function(send_report_email, args=email_address)
-            return get_message_page("Reports email is being sent", page_url="sensor-settings")
+            return get_message_page("Reports email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "graphs":
             thread_function(send_quick_graph_email, args=email_address)
-            return get_message_page("Graph email is being sent", page_url="sensor-settings")
+            return get_message_page("Graph email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "settings":
             thread_function(send_test_email, args=email_address)
-            return get_message_page("Test email is being sent", page_url="sensor-settings")
+            return get_message_page("Test email is being sent", msg, page_url="sensor-settings")
     return get_message_page("Please Specify a valid email address to send to", page_url="sensor-settings")
 
 
