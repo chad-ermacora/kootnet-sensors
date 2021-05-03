@@ -30,9 +30,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from operations_modules import file_locations
 
-if not os.path.exists(os.path.dirname(file_locations.log_directory)):
-    os.makedirs(os.path.dirname(file_locations.log_directory))
-
 max_log_lines_return = 150
 
 

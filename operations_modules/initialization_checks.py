@@ -35,7 +35,6 @@ def run_program_start_checks():
     Sets file permissions, checks the database and generates the HTTPS certificates if not present.
     """
     logger.primary_logger.info(" -- Pre-Start Initializations Started")
-    _check_directories()
     _check_ssl_files()
     _check_sensor_id()
     _set_file_permissions()
@@ -53,26 +52,6 @@ def run_program_start_checks():
         run_database_integrity_check(file_locations.mqtt_subscriber_database)
     thread_function(check_main_database_structure)
     logger.primary_logger.info(" -- Pre-Start Initializations Complete")
-
-
-def _check_directories():
-    create_directories = [file_locations.sensor_data_dir, file_locations.sensor_config_dir,
-                          file_locations.custom_ip_lists_folder, file_locations.uploaded_databases_folder,
-                          file_locations.sensor_data_dir + "/logs", file_locations.database_backup_folder,
-                          file_locations.sensor_data_dir + "/scripts"]
-
-    if os.geteuid() == 0:
-        current_directory = ""
-        for found_dir in file_locations.mosquitto_configuration.split("/")[1:-1]:
-            current_directory += "/" + str(found_dir)
-            create_directories.append(current_directory)
-
-    for directory in create_directories:
-        if not os.path.isdir(directory):
-            try:
-                os.mkdir(directory)
-            except Exception as error:
-                logger.primary_logger.warning(" -- Make Directory Error: " + str(error))
 
 
 def _check_sensor_id():

@@ -21,6 +21,27 @@
 import os
 from getpass import getuser
 
+
+def _check_directories():
+    create_directories = [sensor_data_dir, sensor_config_dir,
+                          custom_ip_lists_folder, uploaded_databases_folder,
+                          sensor_data_dir + "/logs", database_backup_folder,
+                          sensor_data_dir + "/scripts"]
+
+    if os.geteuid() == 0:
+        current_directory = ""
+        for found_dir in mosquitto_configuration.split("/")[1:-1]:
+            current_directory += "/" + str(found_dir)
+            create_directories.append(current_directory)
+
+    for directory in create_directories:
+        if not os.path.isdir(directory):
+            try:
+                os.mkdir(directory)
+            except Exception as dir_error:
+                print(" -- Make Directory Error: " + str(dir_error))
+
+
 # Holds the location of required files such as configurations and extra resources
 # Locations change to the user's home directory + /kootnet_data if not run with root
 program_root_dir = ""
@@ -127,3 +148,6 @@ html_report_sensor_readings_template = atpro_reports_folder + "report-readings-s
 
 html_report_sensor_latency = atpro_reports_folder + "report-latency.html"
 html_report_sensor_latency_template = atpro_reports_folder + "report-latency-sensor-template.html"
+
+
+_check_directories()
