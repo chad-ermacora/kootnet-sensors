@@ -55,11 +55,15 @@ def run_configuration_upgrade_checks():
                 no_changes = False
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
-            elif previous_version.feature_version == 32:
-                if previous_version.minor_version < 48:
-                    generic_upgrade_functions.reset_mqtt_publisher_config()
-                    generic_upgrade_functions.reset_sensor_control_config()
+            elif previous_version.feature_version == 33:
+                if previous_version.minor_version < 61:
+                    config_class = generic_upgrade_functions.CreateEmailConfiguration
+                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
                     no_changes = False
+            elif previous_version.feature_version == 32:
+                generic_upgrade_functions.reset_mqtt_publisher_config()
+                generic_upgrade_functions.reset_sensor_control_config()
+                no_changes = False
             elif previous_version.feature_version == 31:
                 no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
@@ -71,7 +75,7 @@ def run_configuration_upgrade_checks():
                                   generic_upgrade_functions.CreateIntervalRecordingConfiguration,
                                   generic_upgrade_functions.CreateMQTTSubscriberConfiguration]
                 for config_class in config_classes:
-                    generic_upgrade_functions.load_and_save_config_no_logging(config_class)
+                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 30:
                 no_changes = False
                 upgrade_beta_30_x_to_31()
@@ -91,5 +95,6 @@ def run_configuration_upgrade_checks():
 
     if no_changes:
         logger.primary_logger.info(" - No configuration changes detected")
+    generic_upgrade_functions.load_and_save_all_configs_silently()
     software_version.write_program_version_to_file()
     software_version.old_version = software_version.version

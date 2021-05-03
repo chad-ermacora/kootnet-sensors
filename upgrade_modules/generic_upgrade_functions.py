@@ -166,14 +166,25 @@ def reset_all_configurations(log_reset=True):
     reset_checkin_config(log_reset=log_reset)
 
 
-def load_and_save_config_no_logging(configuration_creation_class):
+def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True):
     """ Creates configuration class, loads the config and saves it without logging. """
     new_config_instance = configuration_creation_class(load_from_file=False)
     try:
         old_config_text = get_file_content(new_config_instance.config_file_location)
         new_config_instance.set_config_with_str(old_config_text)
         new_config_instance.save_config_to_file()
-        logger.primary_logger.info(" ** Configuration " + new_config_instance.config_file_location + " Upgraded")
+        if upgrade_msg:
+            logger.primary_logger.info(" ** Configuration " + new_config_instance.config_file_location + " Upgraded")
     except Exception as error:
         log_msg = " ***** Configuration " + new_config_instance.config_file_location
         logger.primary_logger.error(log_msg + " Upgrade Failed: " + str(error))
+
+
+def load_and_save_all_configs_silently():
+    ccl = [CreatePrimaryConfiguration, CreateInstalledSensorsConfiguration, CreateIntervalRecordingConfiguration,
+           CreateTriggerHighLowConfiguration, CreateTriggerVariancesConfiguration, CreateDisplayConfiguration,
+           CreateEmailConfiguration, CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration,
+           CreateMQTTSubscriberConfiguration, CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration,
+           CreateOpenSenseMapConfiguration, CreateSensorControlConfiguration, CreateCheckinConfiguration]
+    for config in ccl:
+        upgrade_config_load_and_save(config, upgrade_msg=False)
