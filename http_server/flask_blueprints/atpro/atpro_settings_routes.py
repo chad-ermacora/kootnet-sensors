@@ -522,11 +522,15 @@ def html_atpro_sensor_settings_email_smtp():
         email_config.update_configuration_settings_list()
         email_config.save_config_to_file()
         return get_message_page("Email SMTP Settings Updated", page_url="sensor-settings")
-
+    checked_cs_none = ""
+    if not email_config.server_smtp_tls_enabled and not email_config.server_smtp_ssl_enabled:
+        checked_cs_none = get_html_selected_state(True)
     return render_template("ATPro_admin/page_templates/settings/settings-email-smtp.html",
                            ServerSendingEmail=email_config.server_sending_email,
                            ServerSMTPAddress=email_config.server_smtp_address,
-                           CheckedEmailSSL=get_html_checkbox_state(email_config.server_smtp_ssl_enabled),
+                           CheckedCS_None=checked_cs_none,
+                           CheckedCS_SSL=get_html_selected_state(email_config.server_smtp_ssl_enabled),
+                           CheckedCS_TLS=get_html_selected_state(email_config.server_smtp_tls_enabled),
                            ServerSMTPPort=email_config.server_smtp_port,
                            ServerSMTPUser=email_config.server_smtp_user)
 

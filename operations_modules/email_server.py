@@ -135,22 +135,25 @@ def send_email(receiver_email, message):
 
     try:
         if app_config_access.email_config.server_smtp_ssl_enabled:
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-                server.login(login, password)
-                server.sendmail(sender_email, receiver_email, message.as_string())
+            smtp_connection = smtplib.SMTP_SSL(smtp_server, port)
+        elif app_config_access.email_config.server_smtp_tls_enabled:
+            smtp_connection = smtplib.SMTP(smtp_server, port)
+            smtp_connection.starttls()
         else:
-            with smtplib.SMTP(smtp_server, port) as server:
-                server.login(login, password)
-                server.sendmail(sender_email, receiver_email, message.as_string())
+            smtp_connection = smtplib.SMTP(smtp_server, port)
+        smtp_connection.ehlo()
+        smtp_connection.login(login, password)
+        smtp_connection.sendmail(sender_email, receiver_email, message.as_string())
+        smtp_connection.close()
+        logger.network_logger.debug("Email Sent OK")
     except (gaierror, ConnectionRefusedError):
         logger.network_logger.error("Failed to connect to the server. Bad connection settings?")
     except smtplib.SMTPServerDisconnected:
         logger.network_logger.error("Failed to connect to the server. Wrong user/password?")
     except smtplib.SMTPException as error:
         logger.network_logger.error("SMTP error occurred: " + str(error))
-    else:
-        logger.network_logger.debug("Email Sent OK")
+    except Exception as error:
+        logger.network_logger.error("SMTP Unknown error: " + str(error))
 
 
 def _get_default_email_body_text(attachment_name):

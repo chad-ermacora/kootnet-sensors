@@ -28,9 +28,9 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 32
+        self.valid_setting_count = 33
         self.config_settings_names = [
-            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS",
+            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL",
             "SMTP server port #", "SMTP user name", "SMTP password", "Enable Reports email server",
             "Send Report every (daily, weekly, monthly, yearly)", "Send Report to CSV emails",
             "Enable Graph email server", "Sending Graph every (daily, weekly, monthly, yearly)", "Graph the past hours",
@@ -38,7 +38,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
             "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
             "Graph ultra violet", "Graph accelerometer", "Graph magnetometer", "Graph gyroscope",
-            "Email Report at time of day", "Email Graph at time of day", "Dew point"
+            "Email Report at time of day", "Email Graph at time of day", "Dew point", "Enable SMTP TLS"
         ]
 
         # If set to 1+, emails are sent on program start for Graphs and Reports (They must be enabled)
@@ -47,7 +47,8 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.server_sending_email = ""
         self.server_smtp_address = ""
         self.server_smtp_ssl_enabled = 0
-        self.server_smtp_port = 587
+        self.server_smtp_tls_enabled = 0
+        self.server_smtp_port = 25
         self.server_smtp_user = ""
         self.server_smtp_password = ""
 
@@ -197,8 +198,13 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.server_smtp_address = html_request.form.get("server_smtp_address")
 
         self.server_smtp_ssl_enabled = 0
-        if html_request.form.get("email_ssl") is not None:
-            self.server_smtp_ssl_enabled = 1
+        self.server_smtp_tls_enabled = 0
+        email_security = html_request.form.get("email_security")
+        if email_security is not None:
+            if email_security == "email_security_ssl":
+                self.server_smtp_ssl_enabled = 1
+            elif email_security == "email_security_tls":
+                self.server_smtp_tls_enabled = 1
 
         if html_request.form.get("server_smtp_port") is not None:
             self.server_smtp_port = int(html_request.form.get("server_smtp_port"))
@@ -220,7 +226,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
             str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
             str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.email_reports_time_of_day),
-            str(self.email_graph_time_of_day), str(self.dew_point)
+            str(self.email_graph_time_of_day), str(self.dew_point), str(self.server_smtp_tls_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -261,6 +267,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.email_reports_time_of_day = self.config_settings[29].strip()
             self.email_graph_time_of_day = self.config_settings[30].strip()
             self.dew_point = int(self.config_settings[31].strip())
+            self.server_smtp_tls_enabled = int(self.config_settings[32].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Email Config: " + str(error))
