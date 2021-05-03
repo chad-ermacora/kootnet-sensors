@@ -18,12 +18,15 @@
 """
 import os
 import logging
-import requests
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from upgrade_modules.generic_upgrade_functions import reset_all_configurations
-from http_server import server_http_auth
+try:
+    import requests
+    from http_server import server_http_auth
+except Exception as error:
+    logger.primary_logger.error("CLI Edit Configurations - Import Error: " + str(error))
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("CLI Edit Configurations Starting")
