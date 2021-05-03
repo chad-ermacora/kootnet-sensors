@@ -85,10 +85,13 @@ def _get_old_version():
 
 def write_program_version_to_file():
     """ Writes the current program version to previous program version file. """
+    if not path.isfile(file_locations.old_version_file):
+        logger.primary_logger.warning(" -- Software Previous Version File Missing")
+
     with open(file_locations.old_version_file, 'w') as current_version_file:
         current_version_file.write(version)
 
 
 # Current Version of the program
-version = "Beta.33.53"
+version = "Beta.33.60"
 old_version = _get_old_version()
