@@ -62,7 +62,14 @@ def html_atpro_sensor_checkin_main_view():
         if count < app_config_access.checkin_config.main_page_max_sensors:
             sensor_statistics += _get_sensor_info_string(cleaned_id)
 
-    past_checkin_percent = round(((sensor_contact_count / int(get_sql_element(sensor_count))) * 100), 2)
+    try:
+        past_checkin_percent = round(((sensor_contact_count / int(get_sql_element(sensor_count))) * 100), 2)
+    except ZeroDivisionError:
+        logger.primary_logger.debug("No Sensors found for Sensor Checkin View")
+        past_checkin_percent = 0.0
+    except Exception as error:
+        logger.primary_logger.warning("Unknown Sensor Checkin View Error: " + str(error))
+        past_checkin_percent = 0.0
 
     if os.path.isfile(file_locations.sensor_checkin_database):
         db_size_mb = get_file_size(file_locations.sensor_checkin_database, round_to=3)
