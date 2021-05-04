@@ -34,7 +34,7 @@ from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
-from sensor_modules.sensor_access import get_system_datetime
+from sensor_modules.sensor_access import get_system_datetime, get_reading_unit
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_report_start, \
     html_report_end, html_report_system, html_report_system_sensor_template, html_report_config, \
     html_report_config_sensor_template, html_report_sensors_readings, html_report_sensor_readings_template, \
@@ -205,8 +205,8 @@ class CreateReplacementVariables:
                 if sensor_type != "SensorName" and sensor_type != "IP":
                     return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
                                        "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
-                                       "</span><br>" + \
-                                       str(sensor_reading) + "</p></div></div>\n"
+                                       "</span><br>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + \
+                                       "</p></div></div>\n"
 
             return [[return_readings, "{{ SensorInfoBoxes }}"]]
         except Exception as error:

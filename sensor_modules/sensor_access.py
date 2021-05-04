@@ -30,6 +30,7 @@ from configuration_modules import app_config_access
 from sensor_modules import sensors_initialization
 
 sensors_direct = sensors_initialization.CreateSensorAccess(first_start=True)
+db_v = database_variables
 
 
 def get_operating_system_name():
@@ -579,6 +580,42 @@ def get_gyroscope_xyz(get_latency=False):
     return {database_variables.gyro_x: xyz[0],
             database_variables.gyro_y: xyz[1],
             database_variables.gyro_z: xyz[2]}
+
+
+def get_reading_unit(reading_type):
+    if reading_type == db_v.env_temperature or reading_type == db_v.system_temperature or \
+            reading_type == db_v.dew_point or reading_type == db_v.env_temperature_offset:
+        return "°C"
+    elif reading_type == db_v.pressure:
+        return "hPa"
+    elif reading_type == db_v.altitude:
+        return "Meters"
+    elif reading_type == db_v.humidity:
+        return "%RH"
+    elif reading_type == db_v.distance:
+        return "?"
+    elif reading_type == db_v.gas_resistance_index or reading_type == db_v.gas_oxidising or \
+            reading_type == db_v.gas_reducing or reading_type == db_v.gas_nh3:
+        return "kΩ"
+    elif reading_type == db_v.particulate_matter_1 or reading_type == db_v.particulate_matter_2_5 or \
+            reading_type == db_v.particulate_matter_4 or reading_type == db_v.particulate_matter_10:
+        return "µg/m³"
+    elif reading_type == db_v.lumen or reading_type == db_v.red or reading_type == db_v.orange or \
+            reading_type == db_v.yellow or reading_type == db_v.green or reading_type == db_v.blue or \
+            reading_type == db_v.violet or reading_type == db_v.ultra_violet_a or \
+            reading_type == db_v.ultra_violet_b or reading_type == db_v.ultra_violet_index:
+        return "lm"
+    elif reading_type == db_v.acc_x or reading_type == db_v.acc_y or reading_type == db_v.acc_z:
+        return "g"
+    elif reading_type == db_v.mag_x or reading_type == db_v.mag_y or reading_type == db_v.mag_z:
+        return "μT"
+    elif reading_type == db_v.gyro_x or reading_type == db_v.gyro_y or reading_type == db_v.gyro_z:
+        return "°/s"
+    elif reading_type == db_v.sensor_uptime:
+        return "Minutes"
+    elif reading_type == db_v.all_tables_datetime or reading_type == db_v.sensor_name or reading_type == db_v.ip:
+        return ""
+    return "???"
 
 
 def display_message(text_msg, check_test=False):

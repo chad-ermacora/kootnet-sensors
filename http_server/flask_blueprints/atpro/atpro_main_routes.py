@@ -94,8 +94,9 @@ def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
     html_final_code = ""
     for index, dic_readings in enumerate(all_readings.items()):
+        reading_unit = " " + sensor_access.get_reading_unit(dic_readings[0])
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
-        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]))
+        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]) + reading_unit)
         html_final_code += new_reading + "\n"
     return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_final_code)
 
@@ -228,12 +229,14 @@ def _mqtt_sub_entry_to_html(sub_entry):
             if type(entry_dic) is dict:
                 sensor_data = ""
                 for index, data in entry_dic.items():
+                    unit_measurement_type = " " + sensor_access.get_reading_unit(index)
                     if index == "DateTime":
                         pass
                     else:
+                        index = index.replace("_", " ")
                         sensor_data += "<div class='col-6 col-m-6 col-sm-6'><div class='counter bg-primary'>"
-                        sensor_data += "<span class='sensor-info'>" + index + "</span><br>" + str(data) + "<br>"
-                        sensor_data += "</div></div>"
+                        sensor_data += "<span class='sensor-info'>" + index + "</span><br>"
+                        sensor_data += str(data) + unit_measurement_type + "<br></div></div>"
             else:
                 sensor_id = "NA"
                 sensor_time = "NA"
