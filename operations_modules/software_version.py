@@ -34,14 +34,13 @@ class CreateRefinedVersion:
         self.load_from_string(version_text)
 
     def load_from_string(self, version_text):
-        try:
-            version_split = str(version_text).strip().split(".")
-            if len(version_split) == 3:
-                self.major_version = self._convert_to_int(version_split[0])
-                self.feature_version = self._convert_to_int(version_split[1])
-                self.minor_version = self._convert_to_int(version_split[2])
-        except Exception as error:
-            print("version load error: " + str(error))
+        version_split = str(version_text).strip().split(".")
+        if len(version_split) == 3:
+            self.major_version = self._convert_to_int(version_split[0])
+            self.feature_version = self._convert_to_int(version_split[1])
+            self.minor_version = self._convert_to_int(version_split[2])
+        else:
+            logger.primary_logger.debug("Software Version - Invalid version text")
 
     def get_version_string(self):
         return str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
@@ -51,7 +50,7 @@ class CreateRefinedVersion:
         try:
             return int(text_number)
         except Exception as error:
-            print("Refined Version Conversion Error: " + str(error))
+            logger.primary_logger.debug("Software Version - Refined Conversion Error: " + str(error))
             return 0
 
 
