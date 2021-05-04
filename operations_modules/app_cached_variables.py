@@ -296,6 +296,7 @@ zipped_db_backup_list = []
 # Is filled with Currently available online Stable / Developmental versions
 standard_version_available = "Retrieving ..."
 developmental_version_available = "Retrieving ..."
+software_update_available = False
 
 # Static variables
 command_data_separator = "[new_data_section]"

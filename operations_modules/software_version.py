@@ -36,17 +36,25 @@ class CreateRefinedVersion:
 
     def load_from_string(self, version_text):
         try:
-            version_split = str(version_text).split(".")
-            if len(version_split) > 2:
-                self.major_version = version_split[0]
-                self.feature_version = int(version_split[1])
-                self.minor_version = int(version_split[2])
+            version_split = str(version_text).strip().split(".")
+            if len(version_split) == 3:
+                self.major_version = self._convert_to_int(version_split[0])
+                self.feature_version = self._convert_to_int(version_split[1])
+                self.minor_version = self._convert_to_int(version_split[2])
                 self.bad_version_load = False
         except Exception as error:
             print("version load error: " + str(error))
 
     def get_version_string(self):
         return str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
+
+    @staticmethod
+    def _convert_to_int(text_number):
+        try:
+            return int(text_number)
+        except Exception as error:
+            print("Refined Version Conversion Error: " + str(error))
+            return 0
 
 
 def start_new_version_check_server():
@@ -57,6 +65,7 @@ def _check_for_new_version():
     logger.primary_logger.debug(" -- Software Version Check Server Started")
     standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
     developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
+    current_ver = CreateRefinedVersion(version)
 
     sleep(10)
     while True:
@@ -65,6 +74,17 @@ def _check_for_new_version():
             app_cached_variables.standard_version_available = request_data.content.decode("utf-8").strip()
             request_data = requests.get(developmental_url, allow_redirects=False)
             app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
+
+            latest_std_ver = CreateRefinedVersion(app_cached_variables.standard_version_available)
+
+            if latest_std_ver.major_version > current_ver.major_version:
+                app_cached_variables.software_update_available = True
+            elif latest_std_ver.major_version == current_ver.major_version:
+                if latest_std_ver.feature_version > current_ver.feature_version:
+                    app_cached_variables.software_update_available = True
+                elif latest_std_ver.feature_version == current_ver.feature_version:
+                    if latest_std_ver.minor_version > current_ver.minor_version:
+                        app_cached_variables.software_update_available = True
         except Exception as error:
             logger.primary_logger.debug("Available Update Check Failed: " + str(error))
             app_cached_variables.standard_version_available = "Retrieval Failed"
@@ -93,5 +113,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.33.60"
+version = "Beta.33.67"
 old_version = _get_old_version()
