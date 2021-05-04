@@ -4,7 +4,7 @@ INSTALL_DIR="/opt/kootnet-sensors"
 PYTHON_MODULES_DIR=${INSTALL_DIR}/extras/python_modules
 CONFIG_DIR="/etc/kootnet"
 if [[ ! -f ${CONFIG_DIR}/installed_version.txt ]]; then
-  echo 'New_Install.99.999' >${CONFIG_DIR}/installed_version.txt
+  echo '999.99.999' >${CONFIG_DIR}/installed_version.txt
   date -u >${CONFIG_DIR}/installed_datetime.txt
 fi
 if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then

@@ -28,7 +28,6 @@ from operations_modules.app_generic_functions import thread_function
 class CreateRefinedVersion:
     """ Takes the provided program version as text and creates a data class object. """
     def __init__(self, version_text=""):
-        self.bad_version_load = True
         self.major_version = 0
         self.feature_version = 0
         self.minor_version = 0
@@ -41,7 +40,6 @@ class CreateRefinedVersion:
                 self.major_version = self._convert_to_int(version_split[0])
                 self.feature_version = self._convert_to_int(version_split[1])
                 self.minor_version = self._convert_to_int(version_split[2])
-                self.bad_version_load = False
         except Exception as error:
             print("version load error: " + str(error))
 
@@ -100,14 +98,11 @@ def _get_old_version():
             return old_version_content.strip()
     else:
         write_program_version_to_file()
-        return "Unknown.0.0"
+        return "0.0.0"
 
 
 def write_program_version_to_file():
     """ Writes the current program version to previous program version file. """
-    if not path.isfile(file_locations.old_version_file):
-        logger.primary_logger.warning(" -- Software Previous Version File Missing")
-
     with open(file_locations.old_version_file, 'w') as current_version_file:
         current_version_file.write(version)
 
