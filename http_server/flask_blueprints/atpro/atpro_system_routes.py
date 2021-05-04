@@ -545,12 +545,12 @@ def atpro_upgrade_urls(url_path):
     if str(url_path) == "system-restart-program":
         logger.network_logger.info("** Program Restart Initiated by " + str(request.remote_addr))
         title = "Restarting Program"
-        message = "The web interface may be temporarily unavailable"
+        message = "The web interface will be temporarily unavailable"
         system_command = app_cached_variables.bash_commands["RestartService"]
     elif str(url_path) == "system-restart":
         logger.network_logger.info("** System Restart Initiated by " + str(request.remote_addr))
         title = "Restarting System"
-        message = "The web interface may be temporarily unavailable"
+        message = "The web interface will be temporarily unavailable"
         system_command = app_cached_variables.bash_commands["RebootSystem"]
     elif str(url_path) == "system-shutdown":
         logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
