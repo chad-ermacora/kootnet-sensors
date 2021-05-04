@@ -64,7 +64,8 @@
 			<li class="nav-item dropdown">
 				<a class="nav-link">
 					<i class="fas fa-bell dropdown-toggle" data-toggle="notification-menu"></i>
-					<span class="navbar-badge">{{ NotificationCount }}</span>
+					<span style="background-color: red; display: none;" id="notification-count" class="navbar-badge">
+                    </span>
 				</a>
 				<ul id="notification-menu" class="dropdown-menu notification-menu">
 					<div class="dropdown-menu-header">
@@ -72,9 +73,8 @@
 							Notifications
 						</span>
 					</div>
-					<div class="dropdown-menu-content overlay-scrollbar scrollbar-hover">
-						{{ NotificationsReplacement | safe }}
-					</div>
+					<div id="notification-content" class="dropdown-menu-content overlay-scrollbar scrollbar-hover">
+                    </div>
 					<div class="dropdown-menu-footer">
 						<span></span>
 					</div>
@@ -274,5 +274,42 @@
         document.getElementById("sensor-settings").classList.remove("active");
     }
 
+    function CheckNotificationsAsync() {
+        let notification_count_xmlHttp = new XMLHttpRequest();
+        notification_count_xmlHttp.onreadystatechange = function() {
+            if (notification_count_xmlHttp.readyState === 4 && notification_count_xmlHttp.status === 200)
+                if (notification_count_xmlHttp.responseText === "0") {
+                    document.getElementById("notification-count").style.display = "none";
+                } else {
+                    document.getElementById("notification-count").style.display = "inline-block";
+                    document.getElementById("notification-count").innerText = notification_count_xmlHttp.responseText;
+                }
+        }
+
+        let notification_msgs_xmlHttp = new XMLHttpRequest();
+        notification_msgs_xmlHttp.onreadystatechange = function() {
+            if (notification_msgs_xmlHttp.readyState === 4 && notification_msgs_xmlHttp.status === 200)
+                if (notification_msgs_xmlHttp.responseText !== "") {
+                    document.getElementById("notification-content").innerHTML = notification_msgs_xmlHttp.responseText;
+                } else {
+                    document.getElementById("notification-content").innerHTML = "";
+                }
+        }
+
+        notification_count_xmlHttp.open("GET", "/atpro/get-notification-count", true); // true for asynchronous
+        notification_msgs_xmlHttp.open("GET", "/atpro/get-notification-messages", true); // true for asynchronous
+        notification_count_xmlHttp.send(null);
+        notification_msgs_xmlHttp.send(null);
+    }
+
     {{ RunScript | safe }}
+</script>
+
+<script>
+    function NotificationConfirmAction(prompt_text, command_url) {
+        let r = confirm(prompt_text);
+            if (r === true) {
+                window.location = command_url
+            }
+    }
 </script>

@@ -214,7 +214,7 @@ def html_atpro_sensor_settings_high_low():
     if request.method == "POST":
         app_config_access.trigger_high_low.update_with_html_request(request)
         app_config_access.trigger_high_low.save_config_to_file()
-        atpro_notifications.restart_service_enabled = 1
+        atpro_notifications.manage_service_restart()
         return_msg = "Please Restart Program"
         return get_message_page("Trigger High/Low Settings Updated", return_msg, page_url="sensor-settings")
 
@@ -342,7 +342,7 @@ def html_atpro_sensor_settings_variances():
     if request.method == "POST":
         app_config_access.trigger_variances.update_with_html_request(request)
         app_config_access.trigger_variances.save_config_to_file()
-        atpro_notifications.restart_service_enabled = 1
+        atpro_notifications.manage_service_restart()
         msg = "Please Restart Program"
         return get_message_page("Trigger Variances Settings Updated", msg, page_url="sensor-settings")
     variances = app_config_access.trigger_variances
@@ -735,7 +735,7 @@ def html_atpro_sensor_settings_mqtt_subscriber():
     if request.method == "POST":
         app_config_access.mqtt_subscriber_config.update_with_html_request(request)
         app_config_access.mqtt_subscriber_config.save_config_to_file()
-        atpro_notifications.restart_service_enabled = 1
+        atpro_notifications.manage_service_restart()
         return get_message_page("MQTT Subscriber Settings Updated", page_url="sensor-settings")
 
     mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos

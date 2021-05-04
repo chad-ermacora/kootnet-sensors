@@ -761,7 +761,7 @@ def html_atpro_set_ipv4_config():
         title_message = "IPv4 Configuration Updated"
         message = "You must reboot for all settings to take effect."
         app_cached_variables_update.update_cached_variables()
-        atpro_notifications.reboot_system_enabled = 1
+        atpro_notifications.manage_system_reboot()
         return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
     else:
         title_message = "Unable to Process IPv4 Configuration"
@@ -786,7 +786,7 @@ def html_atpro_set_wifi_config():
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
-                atpro_notifications.reboot_system_enabled = 1
+                atpro_notifications.manage_system_reboot()
                 return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
         else:
             logger.network_logger.debug("HTML WiFi Configuration Update Failed")

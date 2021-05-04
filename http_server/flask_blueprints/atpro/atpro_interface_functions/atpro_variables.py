@@ -20,6 +20,7 @@ from datetime import datetime
 import psutil
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
 from operations_modules import software_version
 from operations_modules.app_generic_functions import get_file_content
 
@@ -29,7 +30,33 @@ class CreateATProMenuNotificationClass:
         self.notifications_list = []
 
         self.restart_service_enabled = 0
+        self.restart_service_datetime = ""
+
         self.reboot_system_enabled = 0
+        self.reboot_system_datetime = ""
+
+        self.upgrade_program_available = 0
+        self.upgrade_program_available_datetime = ""
+
+    def get_notification_count(self):
+        self.get_notifications_as_string()
+
+        count = 0
+        for enabled_msg in [self.restart_service_enabled, self.reboot_system_enabled,
+                            app_cached_variables.software_update_available]:
+            if enabled_msg:
+                count += 1
+        return count
+
+    def manage_service_restart(self):
+        if not self.restart_service_enabled:
+            self.restart_service_enabled = 1
+            self.restart_service_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+
+    def manage_system_reboot(self):
+        if not self.reboot_system_enabled:
+            self.reboot_system_enabled = 1
+            self.reboot_system_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
 
     def get_notifications_as_string(self):
         self.notifications_list = []
@@ -37,23 +64,39 @@ class CreateATProMenuNotificationClass:
 
         if self.restart_service_enabled:
             name = "Program Restart Required<br>Click Here to Restart now"
-            html_script = self.get_button_to_url_script("Restart Program", "/RestartServices")
-            self.add_notification_entry(name, html_script)
+            self.add_notification_entry(name, "Restart Program", "/RestartServices", self.restart_service_datetime)
+
         if self.reboot_system_enabled:
             name = "System Reboot Required<br>Click Here to Reboot now"
-            html_script = self.get_button_to_url_script("Reboot System", "/RebootSystem")
-            self.add_notification_entry(name, html_script)
+            self.add_notification_entry(name, "Reboot System", "/RebootSystem", self.reboot_system_datetime)
 
+        if app_cached_variables.software_update_available:
+            current_ver = software_version.CreateRefinedVersion(software_version.version)
+            latest_std_ver = software_version.CreateRefinedVersion(app_cached_variables.standard_version_available)
+
+            new_and_current_versions = "<br>Current: " + current_ver.get_version_string() + \
+                                       " -> New: " + latest_std_ver.get_version_string() + "<br>"
+            upgrade_url = "/UpgradeOnline"
+            current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+            if latest_std_ver.major_version > current_ver.major_version:
+                name = "Major Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
+                self.add_notification_entry(name, "Upgrade Program?", upgrade_url, current_datetime)
+            elif latest_std_ver.major_version == current_ver.major_version:
+                if latest_std_ver.feature_version > current_ver.feature_version:
+                    name = "Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
+                    self.add_notification_entry(name, "Upgrade Program?", upgrade_url, current_datetime)
+                elif latest_std_ver.feature_version == current_ver.feature_version:
+                    if latest_std_ver.minor_version > current_ver.minor_version:
+                        name = "Minor Update Available" + new_and_current_versions + "Click Here to update now"
+                        self.add_notification_entry(name, "Update Program?", upgrade_url, current_datetime)
         for note in self.notifications_list:
             return_notes += str(note)
         return return_notes
 
-    def add_notification_entry(self, notify_text, html_script):
-        function_name = "function" + str(len(self.notifications_list) + 1)
-
+    def add_notification_entry(self, notify_text, msg_prompt, msg_url, datetime_entry):
         return_text = """
         <li class="dropdown-menu-item">
-            <a onclick="{{ FunctionName }}()" class="dropdown-menu-link">
+            <a onclick="NotificationConfirmAction('{{ MessagePrompt }}', '{{ URL }}')" class="dropdown-menu-link">
                 <div>
                     <i class="fas fa-gift"></i>
                 </div>
@@ -65,32 +108,15 @@ class CreateATProMenuNotificationClass:
                     </span>
                 </span>
             </a>
-            <script>
-                {{ Script }}
-            </script>
         </li>
+        <br>
         """
         return_text = return_text.replace("{{ NotificationText }}", notify_text)
-        return_text = return_text.replace("{{ DateTime }}", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"))
-        return_text = return_text.replace("{{ FunctionName }}", function_name)
-
-        html_script = html_script.replace("{{ FunctionName }}", function_name)
-        return_text = return_text.replace("{{ Script }}", html_script)
+        return_text = return_text.replace("{{ DateTime }}", datetime_entry)
+        return_text = return_text.replace("{{ MessagePrompt }}", msg_prompt)
+        return_text = return_text.replace("{{ URL }}", msg_url)
 
         self.notifications_list.append(return_text)
-
-    @staticmethod
-    def get_button_to_url_script(button_text, html_link):
-        html_return_script = """
-        function {{ FunctionName }}() {
-            let r = confirm("{{ ButtonText }}");
-            if (r === true) {
-                window.location = "{{ HTMLLink }}"
-            }
-        }"""
-        html_return_script = html_return_script.replace("{{ ButtonText }}", button_text)
-        html_return_script = html_return_script.replace("{{ HTMLLink }}", html_link)
-        return html_return_script
 
 
 def get_ram_free():

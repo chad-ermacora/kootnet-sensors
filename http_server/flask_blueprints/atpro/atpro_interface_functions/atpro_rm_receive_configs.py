@@ -78,7 +78,7 @@ def remote_management_receive_configuration(request):
             new_config.update_configuration_settings_list()
             new_config.save_config_to_file()
             app_config_access.trigger_variances = new_config
-            atpro_notifications.restart_service_enabled = 1
+            atpro_notifications.manage_service_restart()
             logger.network_logger.info("Applied Trigger Variance SQL Recording configuration push successfully")
         else:
             logger.network_logger.error(initial_error_msg + "'Trigger Variance SQL Recording'" + end_error_msg)
@@ -89,7 +89,7 @@ def remote_management_receive_configuration(request):
             new_config.update_configuration_settings_list()
             new_config.save_config_to_file()
             app_config_access.trigger_high_low = new_config
-            atpro_notifications.restart_service_enabled = 1
+            atpro_notifications.manage_service_restart()
             logger.network_logger.info("Applied Trigger High/Low SQL Recording configuration push successfully")
         else:
             logger.network_logger.error(initial_error_msg + "'Trigger High/Low SQL Recording'" + end_error_msg)
@@ -170,13 +170,13 @@ def remote_management_receive_configuration(request):
     elif config_type == "wifi":
         if app_config_access.running_with_root:
             write_file_to_disk(file_locations.wifi_config_file, new_config_str.strip())
-            atpro_notifications.restart_service_enabled = 1
+            atpro_notifications.manage_service_restart()
         else:
             logger.primary_logger.warning("Wifi set skipped, not running with root")
     elif config_type == "network":
         if app_config_access.running_with_root:
             write_file_to_disk(file_locations.dhcpcd_config_file, new_config_str.strip())
-            atpro_notifications.restart_service_enabled = 1
+            atpro_notifications.manage_service_restart()
         else:
             logger.primary_logger.warning("Network set skipped, not running with root")
     return "Received"

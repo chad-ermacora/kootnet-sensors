@@ -30,7 +30,7 @@ from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_sensor_readings_row, \
-    get_ram_free, get_disk_free
+    get_ram_free, get_disk_free, atpro_notifications
 from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
     get_message_page, get_text_check_enabled, get_uptime_str
 from sensor_modules.sensor_access import add_note_to_database, update_note_in_database, delete_db_note, \
@@ -40,9 +40,14 @@ html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 db_v = app_cached_variables.database_variables
 
 
-@html_atpro_main_routes.route("/test12")
-def html_atpro_test_report_sys():
-    return render_template("ATPro_admin/page_templates/remote_management/report_templates/report-system.html")
+@html_atpro_main_routes.route("/atpro/get-notification-count")
+def html_atpro_get_notification_count():
+    return str(atpro_notifications.get_notification_count())
+
+
+@html_atpro_main_routes.route("/atpro/get-notification-messages")
+def html_atpro_get_notification_messages():
+    return atpro_notifications.get_notifications_as_string()
 
 
 @html_atpro_main_routes.route("/atpro/")
