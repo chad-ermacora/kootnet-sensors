@@ -24,8 +24,6 @@ from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from sensor_modules import sensor_access
 
-#  Note: Remote Sensor Management uses it's own section for setting configs
-#  /http_server/flask_blueprints/sensor_control_files/sensor_control_config_sets.py
 html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
 
