@@ -30,7 +30,7 @@ try:
     from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
     from http_server.flask_blueprints.atpro.atpro_settings_routes import html_atpro_settings_routes
     from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
-    from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
+    from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
     from http_server.flask_blueprints.atpro.atpro_remote_management import html_atpro_remote_management_routes
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
@@ -41,7 +41,7 @@ try:
     from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
     from http_server.flask_blueprints.logs import html_logs_routes
 
-    from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_graphing import html_atpro_graphing_routes
+    from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
     from http_server.flask_blueprints.graphing_quick import html_quick_graphing_routes
 
     from flask import Flask

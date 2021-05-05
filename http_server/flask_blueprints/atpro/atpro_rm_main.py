@@ -31,7 +31,7 @@ from http_server.flask_blueprints.sensor_control_files.sensor_control_functions 
     create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
     create_the_big_zip, put_all_reports_zipped_to_cache, generate_html_reports_combo, get_sum_db_sizes
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()

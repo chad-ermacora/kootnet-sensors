@@ -28,7 +28,7 @@ from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
     get_sql_element
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 
 html_atpro_sensor_check_ins_routes = Blueprint("html_atpro_sensor_check_ins_routes", __name__)
 

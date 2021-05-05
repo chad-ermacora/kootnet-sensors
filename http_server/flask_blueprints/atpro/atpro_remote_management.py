@@ -37,11 +37,11 @@ from configuration_modules.config_sensor_control import CreateIPList
 
 from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_clean_ip_list_name
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_rm_receive_configs import \
+from http_server.flask_blueprints.atpro.atpro_rm_receive_configs import \
     remote_management_receive_configuration
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_rm_main import \
+from http_server.flask_blueprints.atpro.atpro_rm_main import \
     remote_management_main_post, get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()

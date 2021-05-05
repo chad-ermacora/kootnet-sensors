@@ -26,7 +26,7 @@ from operations_modules import software_version
 from configuration_modules.app_config_access import primary_config
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, get_uptime_str
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_uptime_str
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)

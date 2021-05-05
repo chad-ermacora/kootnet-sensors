@@ -29,9 +29,9 @@ from operations_modules.sqlite_database import get_sql_element, get_sqlite_table
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_sensor_readings_row, \
+from http_server.flask_blueprints.atpro.atpro_variables import html_sensor_readings_row, \
     get_ram_free, get_disk_free, atpro_notifications
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_text_check_enabled, get_uptime_str
 from sensor_modules.sensor_access import add_note_to_database, update_note_in_database, delete_db_note, \
     get_db_note_dates, get_db_note_user_dates

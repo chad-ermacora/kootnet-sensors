@@ -24,7 +24,7 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, adjust_datetime
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 
 html_quick_graphing_routes = Blueprint("html_quick_graphing_routes", __name__)
 db_v = app_cached_variables.database_variables

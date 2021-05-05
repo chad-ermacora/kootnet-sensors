@@ -26,7 +26,7 @@ from configuration_modules import app_config_access
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 from http_server.server_http_generic_functions import get_html_checkbox_state
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_html_atpro_index, \
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_file_creation_date
 from http_server.server_http_auth import auth
 

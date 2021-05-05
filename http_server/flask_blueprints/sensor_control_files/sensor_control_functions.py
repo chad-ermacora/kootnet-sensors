@@ -27,7 +27,7 @@ from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.html_functional import auth_error_msg
 from http_server.flask_blueprints.sensor_control_files.reports import generate_sensor_control_report
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_report_css, \
+from http_server.flask_blueprints.atpro.atpro_variables import html_report_css, \
     html_report_combo, html_report_end, html_report_js
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()

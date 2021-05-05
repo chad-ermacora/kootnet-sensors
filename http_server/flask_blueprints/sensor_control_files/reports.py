@@ -35,7 +35,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from sensor_modules.sensor_access import get_system_datetime, get_reading_unit
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import html_report_start, \
+from http_server.flask_blueprints.atpro.atpro_variables import html_report_start, \
     html_report_end, html_report_system, html_report_system_sensor_template, html_report_config, \
     html_report_config_sensor_template, html_report_sensors_readings, html_report_sensor_readings_template, \
     html_report_latency, html_report_latency_sensor_template

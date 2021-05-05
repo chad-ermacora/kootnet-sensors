@@ -30,7 +30,7 @@ from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_variables import atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
 
 try:
     from plotly import __version__ as plotly_version
@@ -62,7 +62,7 @@ from werkzeug.security import generate_password_hash
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from http_server.server_http_auth import auth, save_http_auth_to_file
-from http_server.flask_blueprints.atpro.atpro_interface_functions.atpro_generic import get_message_page, \
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, \
     get_clean_db_name, get_html_atpro_index
 from sensor_modules import sensor_access
 
