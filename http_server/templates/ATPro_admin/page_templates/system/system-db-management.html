@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
+        <div class="counter bg-warning" id="db-info-resize">
             <form class="pure-form" method="POST" action="/atpro/system-db-management">
                 <h2><i class="fas fa-file-archive"></i> Database Backups</h2>
                 <label for="db_backup_selection">Choose a Database:<br>
@@ -103,3 +103,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    if (screen.width < 610) {
+            document.getElementById('db-info-resize').style.width = 'fit-content';
+        }
+</script>

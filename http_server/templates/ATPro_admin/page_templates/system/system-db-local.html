@@ -11,7 +11,7 @@
 </style>
 
 <div class="col-12 col-m-12 col-sm-12">
-    <div class="counter bg-warning">
+    <div class="counter bg-warning" id="db-info-resize">
         <form method="POST" action="/atpro/system-db-management" target="_blank">
             <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
             <p>
@@ -35,6 +35,7 @@
         </form>
     </div>
 </div>
+
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
         <div class="counter bg-success">
@@ -48,19 +49,19 @@
             </h3>
 
             <div class="row">
-                <div class="col-6 col-m-12 col-sm-12">
+                <div class="col-12 col-m-12 col-sm-12">
                     <div class="counter bg-primary">
                         <span class="sensor-info">Date Range</span><br>{{ SQLDatabaseDateRange }}
                     </div>
                 </div>
 
-                <div class="col-3 col-m-6 col-sm-12">
+                <div class="col-6 col-m-6 col-sm-12">
                     <div class="counter bg-primary">
                         <span class="sensor-info">Size on Disk</span><br>{{ SQLDatabaseSize }} MB
                     </div>
                 </div>
 
-                <div class="col-3 col-m-6 col-sm-12">
+                <div class="col-6 col-m-6 col-sm-12">
                     <div class="counter bg-primary">
                         <span class="sensor-info">Number of Notes</span><br>{{ NumberNotes }}
                     </div>
@@ -135,3 +136,9 @@
         </div>
     </div>
 </div>
+
+<script>
+    if (screen.width < 610) {
+            document.getElementById('db-info-resize').style.width = 'fit-content';
+        }
+</script>
