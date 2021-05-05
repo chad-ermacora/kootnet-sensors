@@ -195,7 +195,9 @@ def get_html_live_graphing_page(email_graph=False):
         except Exception as error:
             logger.network_logger.warning("Live Graph - Error Adding Graph: " + str(error))
     if email_graph:
-        quick_graph = get_file_content(file_locations.program_root_dir + "/http_server/templates/graphing_quick.html")
+        qg_location = file_locations.program_root_dir + \
+                      "/http_server/templates/ATPro_admin/page_templates/graphing-live-view.html"
+        quick_graph = get_file_content(qg_location)
 
         replacement_text = ["{{ SensorName }}", "{{ TotalSQLEntries }}", "{{ UTCOffset }}", "{{ GraphPastHours }}",
                             "{{ HoursDisplayedDisabled }}", "{{ GraphJSCode | safe }}", "{{ GraphHTMLCode | safe }}"]
