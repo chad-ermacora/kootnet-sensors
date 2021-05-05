@@ -20,7 +20,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from time import sleep
 import smtplib
-import ssl
 from email import utils, encoders
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
@@ -32,7 +31,7 @@ from operations_modules import software_version
 from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread
 from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import generate_html_reports_combo
+from http_server.flask_blueprints.atpro.remote_management.remote_management_functions import generate_html_reports_combo
 from http_server.flask_blueprints.graphing_quick import get_html_live_graphing_page
 
 email_config = app_config_access.email_config

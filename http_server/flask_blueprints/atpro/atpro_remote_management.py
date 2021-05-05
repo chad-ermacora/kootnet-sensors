@@ -35,7 +35,7 @@ from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_sensor_control import CreateIPList
 
-from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import CreateSensorHTTPCommand
+from http_server.flask_blueprints.atpro.remote_management.remote_management_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_clean_ip_list_name
