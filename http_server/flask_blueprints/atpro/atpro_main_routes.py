@@ -112,7 +112,7 @@ def html_atpro_sensors_latency():
     html_final_code = ""
     for index, dic_readings in enumerate(sensors_latency.items()):
         new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
-        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]))
+        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]) + " Seconds")
         html_final_code += new_reading + "\n"
     return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_final_code)
 

@@ -203,10 +203,15 @@ class CreateReplacementVariables:
             return_readings = ""
             for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
                 if sensor_type != "SensorName" and sensor_type != "IP":
-                    return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
-                                       "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
-                                       "</span><br>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + \
-                                       "</p></div></div>\n"
+                    if report_type == "sensors_test":
+                        return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
+                                           "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
+                                           "</span><br>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + \
+                                           "</p></div></div>\n"
+                    else:
+                        return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
+                                           "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
+                                           "</span><br>" + str(sensor_reading) + " Seconds</p></div></div>\n"
 
             return [[return_readings, "{{ SensorInfoBoxes }}"]]
         except Exception as error:
