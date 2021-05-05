@@ -145,7 +145,7 @@ def send_email(receiver_email, message):
         smtp_connection.login(login, password)
         smtp_connection.sendmail(sender_email, receiver_email, message.as_string())
         smtp_connection.close()
-        logger.network_logger.debug("Email Sent OK")
+        logger.network_logger.info("Email Sent OK")
     except (gaierror, ConnectionRefusedError):
         logger.network_logger.error("Failed to connect to the server. Bad connection settings?")
     except smtplib.SMTPServerDisconnected:

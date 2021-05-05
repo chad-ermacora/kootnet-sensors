@@ -542,7 +542,7 @@ def html_atpro_send_reports_email():
     button_pressed = request.form.get("test_email_button")
     email_address = request.form.get("test_email_address")
 
-    msg = "Please check the Network logs for Errors"
+    msg = "Check the Network logs for more information"
     if email_is_valid(email_address):
         if button_pressed == "reports":
             thread_function(send_report_email, args=email_address)
