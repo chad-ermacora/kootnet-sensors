@@ -31,7 +31,7 @@ try:
     from http_server.flask_blueprints.atpro.atpro_settings_routes import html_atpro_settings_routes
     from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
     from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
-    from http_server.flask_blueprints.atpro.atpro_remote_management import html_atpro_remote_management_routes
+    from http_server.flask_blueprints.atpro.remote_management.atpro_rm_routes import html_atpro_remote_management_routes
     from http_server.flask_blueprints.html_functional import html_functional_routes
     from http_server.flask_blueprints.basic_html_pages import html_basic_routes
     from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
@@ -46,14 +46,14 @@ try:
 
     from flask import Flask
     from flask_compress import Compress
-    from gevent.pywsgi import WSGIServer
+    from gevent import pywsgi, hub
 
     https_import_errors = False
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
     html_atpro_main_routes, html_atpro_settings_routes, html_database_routes = None, None, None
     html_atpro_system_routes, html_atpro_remote_management_routes, html_atpro_sensor_check_ins_routes = None, None, None
-    server_http_auth, html_functional_routes, Flask, Compress, WSGIServer = None, None, None, None, None
+    server_http_auth, html_functional_routes, Flask, Compress, pywsgi, hub = None, None, None, None, None, None
     html_basic_routes, html_sensor_check_ins_routes, html_quick_graphing_routes = None, None, None
     html_system_commands_routes, html_get_set_config_routes, html_atpro_graphing_routes = None, None, None
     html_local_download_routes, html_logs_routes, html_sensor_readings_routes = None, None, None
@@ -87,11 +87,16 @@ class CreateSensorHTTP:
         update_cached_variables()
 
         try:
+            hub.Hub.NOT_ERROR = (Exception,)
+        except Exception as error:
+            logger.primary_logger.warning("Error lowering HTTP Server Logging: " + str(error))
+
+        try:
             flask_http_ip = app_config_access.primary_config.flask_http_ip
             flask_port_number = app_config_access.primary_config.web_portal_port
-            http_server = WSGIServer((flask_http_ip, flask_port_number), app,
-                                     keyfile=file_locations.http_ssl_key,
-                                     certfile=file_locations.http_ssl_crt)
+            http_server = pywsgi.WSGIServer((flask_http_ip, flask_port_number), app,
+                                            keyfile=file_locations.http_ssl_key,
+                                            certfile=file_locations.http_ssl_crt)
             logger.primary_logger.info(" -- HTTPS Server Started on port " + str(flask_port_number))
             http_server.serve_forever()
         except Exception as error:
