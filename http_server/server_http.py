@@ -22,41 +22,37 @@ from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import update_cached_variables
 from configuration_modules import app_config_access
+from http_server import server_http_auth
+from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
+from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
+from http_server.flask_blueprints.atpro.remote_management.rm_routes import html_atpro_remote_management_routes
+from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
+from http_server.flask_blueprints.atpro.settings.settings_main import html_atpro_settings_routes
+from http_server.flask_blueprints.atpro.settings.sql_recording import html_atpro_settings_sql_recording_routes
+from http_server.flask_blueprints.atpro.settings.mqtt import html_atpro_settings_mqtt_routes
+from http_server.flask_blueprints.atpro.settings.email import html_atpro_settings_email_routes
+from http_server.flask_blueprints.atpro.settings.online_3rd_party_services import html_atpro_settings_3rd_party_routes
+from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
+from http_server.flask_blueprints.html_functional import html_functional_routes
+from http_server.flask_blueprints.basic_html_pages import html_basic_routes
+from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
+from http_server.flask_blueprints.graphing_quick import html_quick_graphing_routes
+from http_server.flask_blueprints.sensor_checkin_server import html_sensor_check_ins_routes
+from http_server.flask_blueprints.system_commands import html_system_commands_routes
+from http_server.flask_blueprints.get_set_raw_configurations import html_get_set_config_routes
+from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
+from http_server.flask_blueprints.logs import html_logs_routes
 
 https_import_error_msg = ""
 https_import_errors = True
 try:
-    from http_server import server_http_auth
-    from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
-    from http_server.flask_blueprints.atpro.atpro_settings_routes import html_atpro_settings_routes
-    from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
-    from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
-    from http_server.flask_blueprints.atpro.remote_management.atpro_rm_routes import html_atpro_remote_management_routes
-    from http_server.flask_blueprints.html_functional import html_functional_routes
-    from http_server.flask_blueprints.basic_html_pages import html_basic_routes
-    from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
-    from http_server.flask_blueprints.sensor_checkin_server import html_sensor_check_ins_routes
-    from http_server.flask_blueprints.system_commands import html_system_commands_routes
-    from http_server.flask_blueprints.get_set_raw_configurations import html_get_set_config_routes
-    from http_server.flask_blueprints.local_sensor_downloads import html_local_download_routes
-    from http_server.flask_blueprints.logs import html_logs_routes
-
-    from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
-    from http_server.flask_blueprints.graphing_quick import html_quick_graphing_routes
-
     from flask import Flask
     from flask_compress import Compress
     from gevent import pywsgi, hub
-
     https_import_errors = False
 except ImportError as https_import_error_msg_raw:
     https_import_error_msg = str(https_import_error_msg_raw)
-    html_atpro_main_routes, html_atpro_settings_routes, html_database_routes = None, None, None
-    html_atpro_system_routes, html_atpro_remote_management_routes, html_atpro_sensor_check_ins_routes = None, None, None
-    server_http_auth, html_functional_routes, Flask, Compress, pywsgi, hub = None, None, None, None, None, None
-    html_basic_routes, html_sensor_check_ins_routes, html_quick_graphing_routes = None, None, None
-    html_system_commands_routes, html_get_set_config_routes, html_atpro_graphing_routes = None, None, None
-    html_local_download_routes, html_logs_routes, html_sensor_readings_routes = None, None, None
+    Flask, Compress, pywsgi, hub = None, None, None, None
 
 
 class CreateSensorHTTP:
@@ -69,6 +65,10 @@ class CreateSensorHTTP:
 
         app.register_blueprint(html_atpro_main_routes)
         app.register_blueprint(html_atpro_settings_routes)
+        app.register_blueprint(html_atpro_settings_sql_recording_routes)
+        app.register_blueprint(html_atpro_settings_mqtt_routes)
+        app.register_blueprint(html_atpro_settings_email_routes)
+        app.register_blueprint(html_atpro_settings_3rd_party_routes)
         app.register_blueprint(html_atpro_system_routes)
         app.register_blueprint(html_atpro_sensor_check_ins_routes)
         app.register_blueprint(html_atpro_remote_management_routes)
