@@ -31,7 +31,6 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_inde
     get_message_page, get_text_check_enabled, get_uptime_str
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
-db_v = app_cached_variables.database_variables
 
 
 @html_atpro_main_routes.route("/atpro/")
