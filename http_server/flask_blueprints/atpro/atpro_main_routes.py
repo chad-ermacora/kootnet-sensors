@@ -26,6 +26,7 @@ from operations_modules.app_generic_functions import get_file_size
 from operations_modules.software_version import version
 from operations_modules.sqlite_database import get_sql_element, get_sqlite_tables_in_list, get_clean_sql_table_name, \
     sql_execute_get_data
+from operations_modules.software_version import version as kootnet_version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
@@ -326,3 +327,8 @@ def html_atpro_sensor_help():
 @html_atpro_main_routes.route("/atpro/logout")
 def html_atpro_logout():
     return get_message_page("Logged Out", "You have been logged out"), 401
+
+
+@html_atpro_main_routes.route("/atpro/system-about")
+def html_atpro_about():
+    return render_template("ATPro_admin/page_templates/system/system-about.html", KootnetVersion=kootnet_version)

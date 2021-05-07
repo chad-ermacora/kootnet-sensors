@@ -11,7 +11,7 @@ Created on Sat Aug 25 08:53:56 2018
 import socket
 import psutil
 from time import strftime
-from operations_modules.app_cached_variables import database_variables, current_platform
+from operations_modules.app_cached_variables import database_variables
 from operations_modules import logger
 from operations_modules import app_generic_functions
 from operations_modules import sqlite_database

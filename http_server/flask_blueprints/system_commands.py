@@ -30,20 +30,7 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, g
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
-sensor_network_commands = app_cached_variables.CreateNetworkGetCommands()
 upgrade_msg = " Upgrade Starting, this may take a few minutes ..."
-
-
-@html_system_commands_routes.route("/CheckOnlineStatus")
-def check_online():
-    logger.network_logger.debug("Sensor Status Checked by " + str(request.remote_addr))
-    return "OK"
-
-
-@html_system_commands_routes.route("/TestLogin")
-@auth.login_required
-def test_login():
-    return "OK"
 
 
 @html_system_commands_routes.route("/GetSensorID")

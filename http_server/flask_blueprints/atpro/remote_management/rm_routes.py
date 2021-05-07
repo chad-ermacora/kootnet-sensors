@@ -39,7 +39,7 @@ from http_server.flask_blueprints.atpro.remote_management.rm_functions import Cr
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_clean_ip_list_name
-from http_server.flask_blueprints.atpro.remote_management.receive_configs import \
+from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs import \
     remote_management_receive_configuration
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
     remote_management_main_post, get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down

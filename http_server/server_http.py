@@ -28,11 +28,18 @@ from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphin
 from http_server.flask_blueprints.atpro.remote_management.rm_routes import html_atpro_remote_management_routes
 from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
 from http_server.flask_blueprints.atpro.settings.settings_main import html_atpro_settings_routes
-from http_server.flask_blueprints.atpro.settings.sql_recording import html_atpro_settings_sql_recording_routes
-from http_server.flask_blueprints.atpro.settings.mqtt import html_atpro_settings_mqtt_routes
-from http_server.flask_blueprints.atpro.settings.email import html_atpro_settings_email_routes
-from http_server.flask_blueprints.atpro.settings.online_3rd_party_services import html_atpro_settings_3rd_party_routes
-from http_server.flask_blueprints.atpro.atpro_system_routes import html_atpro_system_routes
+from http_server.flask_blueprints.atpro.settings.settings_sql_recording import html_atpro_settings_sql_recording_routes
+from http_server.flask_blueprints.atpro.settings.settings_mqtt import html_atpro_settings_mqtt_routes
+from http_server.flask_blueprints.atpro.settings.settings_email import html_atpro_settings_email_routes
+from http_server.flask_blueprints.atpro.settings.settings_3rd_party_services import html_atpro_settings_3rd_party_routes
+from http_server.flask_blueprints.atpro.system.system_main import html_atpro_system_routes
+
+from http_server.flask_blueprints.atpro.system.system_raw_configs import html_atpro_system_raw_configs_routes
+from http_server.flask_blueprints.atpro.system.system_sql_database import html_atpro_system_sql_db_routes
+from http_server.flask_blueprints.atpro.system.system_networking import html_atpro_system_networking_routes
+from http_server.flask_blueprints.atpro.system.system_logs import html_atpro_system_logs_routes
+from http_server.flask_blueprints.atpro.system.system_commands import html_atpro_system_commands_routes
+
 from http_server.flask_blueprints.html_functional import html_functional_routes
 from http_server.flask_blueprints.basic_html_pages import html_basic_routes
 from http_server.flask_blueprints.text_sensor_readings import html_sensor_readings_routes
@@ -70,19 +77,23 @@ class CreateSensorHTTP:
         app.register_blueprint(html_atpro_settings_email_routes)
         app.register_blueprint(html_atpro_settings_3rd_party_routes)
         app.register_blueprint(html_atpro_system_routes)
+        app.register_blueprint(html_atpro_system_raw_configs_routes)
+        app.register_blueprint(html_atpro_system_sql_db_routes)
+        app.register_blueprint(html_atpro_system_networking_routes)
+        app.register_blueprint(html_atpro_system_commands_routes)
+        app.register_blueprint(html_atpro_system_logs_routes)
         app.register_blueprint(html_atpro_sensor_check_ins_routes)
         app.register_blueprint(html_atpro_remote_management_routes)
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_basic_routes)
         app.register_blueprint(html_sensor_readings_routes)
+        app.register_blueprint(html_quick_graphing_routes)
+        app.register_blueprint(html_atpro_graphing_routes)
         app.register_blueprint(html_sensor_check_ins_routes)
         app.register_blueprint(html_system_commands_routes)
         app.register_blueprint(html_get_set_config_routes)
         app.register_blueprint(html_local_download_routes)
         app.register_blueprint(html_logs_routes)
-
-        app.register_blueprint(html_quick_graphing_routes)
-        app.register_blueprint(html_atpro_graphing_routes)
 
         update_cached_variables()
 
