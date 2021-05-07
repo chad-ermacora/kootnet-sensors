@@ -25,6 +25,7 @@ from operations_modules.app_generic_functions import thread_function
 from configuration_modules import app_config_access
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
+from http_server.flask_blueprints.graphing_quick import html_live_graphing
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_file_creation_date
@@ -111,6 +112,12 @@ def html_atpro_sensor_graphing_live():
         CheckedMagnetometer=get_html_checkbox_state(app_cached_variables.quick_graph_mag),
         CheckedGyroscope=get_html_checkbox_state(app_cached_variables.quick_graph_gyro)
     )
+
+
+@html_atpro_graphing_routes.route("/LiveGraphView", methods=["GET", "POST"])
+def html_atpro_live_graphing():
+    logger.network_logger.debug("* Live Graphs viewed by " + str(request.remote_addr))
+    return html_live_graphing(request)
 
 
 @html_atpro_graphing_routes.route("/atpro/sensor-graphing-db")

@@ -23,15 +23,15 @@ from operations_modules.app_generic_functions import zip_files
 from flask import Blueprint, render_template, request, send_file
 from http_server.server_http_auth import auth
 
-html_atpro_system_logs_routes = Blueprint("html_atpro_system_logs_routes", __name__)
+html_atpro_logs_routes = Blueprint("html_atpro_logs_routes", __name__)
 
 
-@html_atpro_system_logs_routes.route("/atpro/sensor-logs")
+@html_atpro_logs_routes.route("/atpro/sensor-logs")
 def html_atpro_sensor_logs():
     return render_template("ATPro_admin/page_templates/sensor-logs.html")
 
 
-@html_atpro_system_logs_routes.route('/atpro/logs/<path:url_path>')
+@html_atpro_logs_routes.route('/atpro/logs/<path:url_path>')
 @auth.login_required
 def atpro_get_log(url_path):
     if url_path == "log-download-all-zipped":
@@ -63,7 +63,7 @@ def atpro_get_log(url_path):
         return _get_log_view_message("Sensors Log", sensors_log_lines)
 
 
-@html_atpro_system_logs_routes.route('/atpro/delete-log/<path:url_path>')
+@html_atpro_logs_routes.route('/atpro/delete-log/<path:url_path>')
 @auth.login_required
 def atpro_delete_log(url_path):
     return_message = "Invalid Path"

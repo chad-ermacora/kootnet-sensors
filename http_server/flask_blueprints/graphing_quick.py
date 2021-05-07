@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-from flask import render_template, Blueprint, request
+from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -26,12 +26,10 @@ from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 
-html_quick_graphing_routes = Blueprint("html_quick_graphing_routes", __name__)
 db_v = app_cached_variables.database_variables
 
 
-@html_quick_graphing_routes.route("/LiveGraphView", methods=["GET", "POST"])
-def html_live_graphing():
+def html_live_graphing(request):
     logger.network_logger.debug("* Live Graphs viewed by " + str(request.remote_addr))
     if request.method == "POST":
         if request.form.get("graph_hours") is not None:
