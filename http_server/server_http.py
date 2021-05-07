@@ -105,6 +105,7 @@ class CreateSensorHTTP:
         update_cached_variables()
 
         try:
+            # Removes excessive "SSL Error" messages to console when using a self signed certificate
             hub.Hub.NOT_ERROR = (Exception,)
         except Exception as error:
             logger.primary_logger.warning("Error lowering HTTP Server Logging: " + str(error))
