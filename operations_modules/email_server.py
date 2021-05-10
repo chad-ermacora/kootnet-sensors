@@ -107,8 +107,8 @@ def _set_graphs_to_include():
 
 
 def _update_quick_graph_for_email(quick_graph):
-    old_chart = """<script src="/extras/Chart.bundle.min.js"></script>"""
-    new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js" integrity="sha512-G8JE1Xbr0egZE5gNGyUm1fF764iHVfRXshIoUWCTPAbKkkItp/6qal5YAHXrxEu4HNfPTQs6HOu3D5vCGS1j3w==" crossorigin="anonymous"></script>"""
+    old_chart = """<script src="/extras/chart.min.js"></script>"""
+    new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>"""
 
     quick_graph = quick_graph.replace(">Refresh", " disabled>Refresh")
     quick_graph = quick_graph.replace(old_chart, new_chart)

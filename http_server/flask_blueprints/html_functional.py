@@ -32,6 +32,29 @@ documentation_root_dir = file_locations.program_root_dir + "/extras/documentatio
 auth_error_msg = "Unauthorized Access - Incorrect username or Password"
 
 
+@html_functional_routes.route("/robots.txt")
+def no_robots():
+    return "User-agent: *\nDisallow: /"
+
+
+@html_functional_routes.route("/favicon.ico")
+def fav_icon():
+    return send_file(file_locations.program_root_dir + "/http_server/templates/ATPro_admin/assets/AT-pro-logo.png")
+
+
+@html_functional_routes.route("/CheckOnlineStatus")
+def check_online():
+    logger.network_logger.debug("Sensor Status Checked by " + str(request.remote_addr))
+    return "OK"
+
+
+@html_functional_routes.route("/TestLogin")
+@auth.login_required
+def test_login():
+    logger.network_logger.debug("Sensor Login Test Successful from " + str(request.remote_addr))
+    return "OK"
+
+
 @html_functional_routes.route("/documentation/")
 def sensor_unit_help():
     return send_file(documentation_root_dir + "/index.html")
