@@ -83,6 +83,4 @@ class CreateAS7262:
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
-        return [self.red_650, round_decimal_to, self.orange_600, round_decimal_to,
-                self.yellow_570, round_decimal_to, self.green_550, round_decimal_to,
-                self.blue_500, round_decimal_to, self.violet_450, round_decimal_to]
+        return [self.red_650, self.orange_600, self.yellow_570, self.green_550, self.blue_500, self.violet_450]
