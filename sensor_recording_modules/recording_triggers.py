@@ -86,8 +86,8 @@ class StartTriggerVariance:
         sql_data_list = [datetime_stamp]
         if installed_sensors.linux_system:
             sql_query += "DateTime,SensorName,IP," + sql_column_name + ") VALUES ("
-            sql_data_list.append(sensor_access.get_hostname())
-            sql_data_list.append(sensor_access.get_ip())
+            sql_data_list.append(app_cached_variables.hostname)
+            sql_data_list.append(app_cached_variables.ip)
         else:
             sql_query += "DateTime," + sql_column_name + ") VALUES ("
 

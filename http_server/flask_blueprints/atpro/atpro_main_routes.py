@@ -25,8 +25,7 @@ from operations_modules.software_version import version
 from operations_modules.software_version import version as kootnet_version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
-from http_server.flask_blueprints.atpro.atpro_variables import html_sensor_readings_row, \
-    get_ram_free, get_disk_free, atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_variables import html_sensor_readings_row, atpro_notifications
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_text_check_enabled, get_uptime_str
 
@@ -60,12 +59,15 @@ def html_atpro_dashboard():
         CPUTemperature=str(cpu_temp),
         SensorUptime=get_uptime_str(),
         SensorReboots=app_cached_variables.reboot_count,
-        RAMUsage=str(get_ram_free()) + " GB",
-        DiskUsage=str(get_disk_free()) + " GB",
+        RAMUsage=str(sensor_access.get_ram_space(return_type=1)) + " GB",
+        RAMTotal=str(app_cached_variables.total_ram_memory) + " GB",
+        DiskUsage=str(sensor_access.get_disk_space(return_type=1)) + " GB",
+        DiskTotal=str(app_cached_variables.total_disk_space) + " GB",
         InstalledSensors=app_config_access.installed_sensors.get_installed_names_str(),
         IntervalRecording=app_cached_variables.interval_recording_thread.current_state,
         TriggerHighLowRecording=g_t_c_e(app_config_access.trigger_high_low.enable_high_low_trigger_recording),
         TriggerVarianceRecording=g_t_c_e(app_config_access.trigger_variances.enable_trigger_variance),
+        MQTTBroker=app_cached_variables.mqtt_broker_dummy_thread.current_state,
         MQTTPublishing=app_cached_variables.mqtt_publisher_thread.current_state,
         MQTTSubscriber=app_cached_variables.mqtt_subscriber_thread.current_state,
         MQTTSubscriberRecording=g_t_c_e(app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording),

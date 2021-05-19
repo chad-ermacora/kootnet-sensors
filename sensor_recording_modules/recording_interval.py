@@ -86,8 +86,8 @@ def get_interval_sensor_readings():
     sa = sensor_access
     utc_0_date_time_now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     return_dictionary = {database_variables.all_tables_datetime: utc_0_date_time_now,
-                         database_variables.sensor_name: str(sa.get_hostname()),
-                         database_variables.ip: str(sa.get_ip())}
+                         database_variables.sensor_name: app_cached_variables.hostname,
+                         database_variables.ip: app_cached_variables.ip}
 
     if interval_recording_config.sensor_uptime_enabled:
         reading = sa.get_uptime_minutes()

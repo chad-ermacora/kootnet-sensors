@@ -16,13 +16,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import requests
+
 from os import path
-from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function
 
 
 class CreateRefinedVersion:
@@ -54,41 +51,6 @@ class CreateRefinedVersion:
             return 0
 
 
-def start_new_version_check_server():
-    thread_function(_check_for_new_version)
-
-
-def _check_for_new_version():
-    logger.primary_logger.debug(" -- Software Version Check Server Started")
-    standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
-    developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
-    current_ver = CreateRefinedVersion(version)
-
-    sleep(10)
-    while True:
-        try:
-            request_data = requests.get(standard_url, allow_redirects=False)
-            app_cached_variables.standard_version_available = request_data.content.decode("utf-8").strip()
-            request_data = requests.get(developmental_url, allow_redirects=False)
-            app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
-
-            latest_std_ver = CreateRefinedVersion(app_cached_variables.standard_version_available)
-
-            if latest_std_ver.major_version > current_ver.major_version:
-                app_cached_variables.software_update_available = True
-            elif latest_std_ver.major_version == current_ver.major_version:
-                if latest_std_ver.feature_version > current_ver.feature_version:
-                    app_cached_variables.software_update_available = True
-                elif latest_std_ver.feature_version == current_ver.feature_version:
-                    if latest_std_ver.minor_version > current_ver.minor_version:
-                        app_cached_variables.software_update_available = True
-        except Exception as error:
-            logger.primary_logger.debug("Available Update Check Failed: " + str(error))
-            app_cached_variables.standard_version_available = "Retrieval Failed"
-            app_cached_variables.developmental_version_available = "Retrieval Failed"
-        sleep(18000)
-
-
 def _get_old_version():
     """ Loads the previously written program version and returns it as a string. """
     if path.isfile(file_locations.old_version_file):
@@ -107,5 +69,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.33.71"
+version = "Beta.33.74"
 old_version = _get_old_version()

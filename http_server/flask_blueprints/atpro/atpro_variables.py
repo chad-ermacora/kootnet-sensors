@@ -17,8 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
-import psutil
-from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import software_version
@@ -117,26 +115,6 @@ class CreateATProMenuNotificationClass:
         return_text = return_text.replace("{{ URL }}", msg_url)
 
         self.notifications_list.append(return_text)
-
-
-def get_ram_free():
-    try:
-        ram_available = psutil.virtual_memory().available
-        ram_available = round((ram_available / 1024 / 1024 / 1024), 2)
-    except Exception as error:
-        logger.network_logger.error("Dashboard - Getting Free RAM: " + str(error))
-        ram_available = "Error"
-    return ram_available
-
-
-def get_disk_free():
-    try:
-        disk_available = psutil.disk_usage(file_locations.sensor_data_dir).free
-        disk_available = round((disk_available / 1024 / 1024 / 1024), 2)
-    except Exception as error:
-        logger.network_logger.error("Dashboard - Getting Free Disk Space: " + str(error))
-        disk_available = "Error"
-    return disk_available
 
 
 html_sensor_readings_row = """

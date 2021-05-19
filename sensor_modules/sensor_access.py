@@ -18,115 +18,98 @@
 """
 import os
 import math
+import psutil
 import time
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
-from operations_modules.app_cached_variables import command_data_separator, database_variables, \
+from operations_modules.app_generic_functions import thread_function
+from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables import command_data_separator, database_variables as db_v, \
     current_platform, bash_commands
 from operations_modules import sqlite_database
 from configuration_modules import app_config_access
 from sensor_modules import sensors_initialization
 
 sensors_direct = sensors_initialization.CreateSensorAccess(first_start=True)
-db_v = database_variables
 
 
-def get_operating_system_name():
-    """ Returns sensors Operating System Name and version. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_os_name_version()
-    return None
+def get_disk_space(return_type=0):
+    """
+    return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used
+    Default option = 0, all returns are in GB(s)
+    """
+    disk_space = None
+    try:
+        if return_type == 0:
+            disk_space = psutil.disk_usage(file_locations.sensor_data_dir).free
+        elif return_type == 1:
+            disk_space = psutil.disk_usage(file_locations.sensor_data_dir).used
+        elif return_type == 2:
+            disk_space = app_cached_variables.total_disk_space
+        elif return_type == 3:
+            disk_space = psutil.disk_usage(file_locations.sensor_data_dir).percent
+
+        if disk_space is not None:
+            disk_space = round((disk_space / 1024 / 1024 / 1024), 2)
+    except Exception as error:
+        logger.primary_logger.warning("Get Disk Space: " + str(error))
+    return disk_space
 
 
-def get_hostname():
-    """ Returns sensors hostname. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_hostname()
-    return None
+def get_ram_space(return_type=0):
+    """
+    return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used
+    Default option = 0, all returns are in GB(s)
+    """
+    ram_space = None
+    try:
+        if return_type == 0:
+            ram_space = psutil.virtual_memory().free
+        elif return_type == 1:
+            ram_space = psutil.virtual_memory().available
+        elif return_type == 2:
+            ram_space = app_cached_variables.total_ram_memory
+        elif return_type == 3:
+            ram_space = psutil.virtual_memory().percent
 
-
-def get_ip():
-    """ Returns sensor IP Address as a String. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_ip()
-    return None
-
-
-def get_disk_usage_gb():
-    """ Returns sensor root disk usage as GB's. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_disk_usage_gb()
-    return None
-
-
-def get_disk_usage_percent():
-    """ Returns sensor root disk usage as a %. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_disk_usage_percent()
-    return None
-
-
-def get_memory_usage_percent():
-    """ Returns sensor RAM usage as a %. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_memory_usage_percent()
-    return None
+        if ram_space is not None:
+            ram_space = round((ram_space / 1024 / 1024 / 1024), 3)
+    except Exception as error:
+        logger.primary_logger.warning("Get RAM Space: " + str(error))
+    return ram_space
 
 
 def get_system_datetime():
-    """ Returns System DateTime in format YYYY-MM-DD HH:MM as a String. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_sys_datetime_str()
-    return None
+    """ Returns System DateTime in format YYYY-MM-DD HH:MM - timezone as a String. """
+    return time.strftime("%Y-%m-%d %H:%M - %Z")
 
 
 def get_uptime_minutes():
     """ Returns System UpTime in Minutes as an Integer. """
     if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_uptime_raw()
-    return None
-
-
-def get_system_reboot_count():
-    """ Returns system reboot count from the SQL Database. """
-    if current_platform == "Linux":
-        reboot_count = sensors_direct.operating_system_a.get_sensor_reboot_count()
-        return reboot_count
-    return None
-
-
-def get_db_notes_count():
-    """ Returns Number of Notes in the SQL Database. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_db_notes_count()
+        try:
+            with open('/proc/uptime', 'r') as f:
+                uptime_seconds = float(f.readline().split()[0])
+            return int(uptime_seconds / 60)
+        except Exception as error:
+            logger.sensors_logger.warning("Get Sensor Up Time - Failed: " + str(error))
     return None
 
 
 def get_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    if current_platform == "Linux":
-        return sensors_direct.operating_system_a.get_db_first_last_date()
-    return None
+    sql_query = "SELECT Min(" + str(db_v.all_tables_datetime) + ") AS First, Max(" + \
+                str(db_v.all_tables_datetime) + ") AS Last FROM " + str(db_v.table_interval)
 
-
-def get_last_updated():
-    """ Returns when the sensor programs were last updated and how in a String. """
-    last_updated = ""
-    if not os.path.isfile(file_locations.program_last_updated):
-        logger.sensors_logger.debug("Previous version file not found - Creating version file")
-        last_updated_text = "No Update Detected"
-        write_file_to_disk(file_locations.program_last_updated, last_updated_text)
-        return last_updated_text
-    last_updated_file = get_file_content(file_locations.program_last_updated)
+    textbox_db_dates = "DataBase Error"
     try:
-        last_updated_lines = last_updated_file.split("\n")
-        for line in last_updated_lines:
-            last_updated += str(line)
+        db_datetime_column = sqlite_database.sql_execute_get_data(sql_query)
+        for item in db_datetime_column:
+            textbox_db_dates = item[0] + " < -- > " + item[1]
     except Exception as error:
-        logger.sensors_logger.warning("Invalid Kootnet Sensor's Last Updated File: " + str(error))
-    return last_updated.strip()
+        logger.sensors_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))
+    return textbox_db_dates
 
 
 def get_sensors_latency():
@@ -171,18 +154,18 @@ def get_all_available_sensor_readings(skip_system_info=False):
 
     temp_correction = 0
     if env_temp_raw is not None and env_temp_corrected is not None:
-        env_temp_raw = env_temp_raw[database_variables.env_temperature]
-        env_temp_corrected = env_temp_corrected[database_variables.env_temperature]
+        env_temp_raw = env_temp_raw[db_v.env_temperature]
+        env_temp_corrected = env_temp_corrected[db_v.env_temperature]
         temp_correction = round((env_temp_corrected - env_temp_raw), 5)
 
     if skip_system_info:
         return_dictionary = {}
     else:
-        return_dictionary = {database_variables.all_tables_datetime: utc_0_date_time_now,
-                             database_variables.sensor_name: str(get_hostname()),
-                             database_variables.ip: str(get_ip()),
-                             database_variables.sensor_uptime: get_uptime_minutes(),
-                             database_variables.env_temperature_offset: temp_correction}
+        return_dictionary = {db_v.all_tables_datetime: utc_0_date_time_now,
+                             db_v.sensor_name: app_cached_variables.hostname,
+                             db_v.ip: app_cached_variables.ip,
+                             db_v.sensor_uptime: get_uptime_minutes(),
+                             db_v.env_temperature_offset: temp_correction}
 
     functions_list = [get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude, get_humidity,
                       get_dew_point, get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
@@ -208,7 +191,7 @@ def get_cpu_temperature(get_latency=False):
         temperature = sensors_direct.dummy_sensors.cpu_temperature()
     else:
         return None
-    return {database_variables.system_temperature: temperature}
+    return {db_v.system_temperature: temperature}
 
 
 def get_environment_temperature(temperature_correction=True, get_latency=False):
@@ -240,7 +223,7 @@ def get_environment_temperature(temperature_correction=True, get_latency=False):
 
     if temperature_correction:
         temperature = _apply_environment_temperature_correction(temperature)
-    return {database_variables.env_temperature: temperature}
+    return {db_v.env_temperature: temperature}
 
 
 def _apply_environment_temperature_correction(temperature):
@@ -259,7 +242,7 @@ def _apply_environment_temperature_correction(temperature):
     temperature_comp_factor = app_config_access.primary_config.temperature_comp_factor
     if enable_temperature_comp_factor and cpu_temp is not None and temperature_comp_factor != 0:
         try:
-            cpu_temp = cpu_temp[database_variables.system_temperature]
+            cpu_temp = cpu_temp[db_v.system_temperature]
             new_temp = round(new_temp - ((cpu_temp - new_temp) * temperature_comp_factor), 6)
         except Exception as error:
             logger.sensors_logger.warning("Invalid Environment Temperature Factor")
@@ -289,7 +272,7 @@ def get_pressure(get_latency=False):
         pressure = sensors_direct.dummy_sensors.pressure()
     else:
         return None
-    return {database_variables.pressure: pressure}
+    return {db_v.pressure: pressure}
 
 
 def get_altitude(qnh=1013.25, get_latency=False):
@@ -303,14 +286,14 @@ def get_altitude(qnh=1013.25, get_latency=False):
         return None
 
     try:
-        temperature = temperature[database_variables.env_temperature]
-        pressure = pressure[database_variables.pressure]
+        temperature = temperature[db_v.env_temperature]
+        pressure = pressure[db_v.pressure]
         var_altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
     except Exception as error:
         var_altitude = 0.0
         logger.sensors_logger.error("Altitude Calculation using Temperature & Pressure Failed: " + str(error))
 
-    return {database_variables.altitude: round(var_altitude, round_decimal_to)}
+    return {db_v.altitude: round(var_altitude, round_decimal_to)}
 
 
 def get_humidity(get_latency=False):
@@ -331,7 +314,7 @@ def get_humidity(get_latency=False):
         humidity = sensors_direct.dummy_sensors.humidity()
     else:
         return None
-    return {database_variables.humidity: humidity}
+    return {db_v.humidity: humidity}
 
 
 def get_dew_point(get_latency=False):
@@ -347,14 +330,14 @@ def get_dew_point(get_latency=False):
         return None
 
     try:
-        env_temp = env_temp[database_variables.env_temperature]
-        humidity = humidity[database_variables.humidity]
+        env_temp = env_temp[db_v.env_temperature]
+        humidity = humidity[db_v.humidity]
         alpha = ((variable_a * env_temp) / (variable_b + env_temp)) + math.log(humidity / 100.0)
         dew_point = (variable_b * alpha) / (variable_a - alpha)
     except Exception as error:
         logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
         dew_point = 0.0
-    return {database_variables.dew_point: round(dew_point, 5)}
+    return {db_v.dew_point: round(dew_point, 5)}
 
 
 def get_distance(get_latency=False):
@@ -373,7 +356,7 @@ def get_distance(get_latency=False):
         distance = sensors_direct.dummy_sensors.distance()
     else:
         return None
-    return {database_variables.distance: distance}
+    return {db_v.distance: distance}
 
 
 def get_gas(get_latency=False):
@@ -383,27 +366,27 @@ def get_gas(get_latency=False):
         if get_latency:
             return sensors_direct.pimoroni_bme680_a.sensor_latency
         gas_reading = sensors_direct.pimoroni_bme680_a.gas_resistance_index()
-        gas_dic.update({database_variables.gas_resistance_index: gas_reading})
+        gas_dic.update({db_v.gas_resistance_index: gas_reading})
     elif app_config_access.installed_sensors.pimoroni_sgp30:
         # TODO: Add e-co2 this sensor can do into program (In DB?)
         if get_latency:
             return sensors_direct.pimoroni_sgp30_a.sensor_latency
         gas_reading = sensors_direct.pimoroni_sgp30_a.gas_resistance_index()
-        gas_dic.update({database_variables.gas_resistance_index: gas_reading})
+        gas_dic.update({db_v.gas_resistance_index: gas_reading})
     elif get_latency:
         return _get_sensor_latency(get_gas)
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         gas_readings = sensors_direct.pimoroni_enviroplus_a.gas_data()
-        gas_dic.update({database_variables.gas_oxidising: gas_readings[0],
-                        database_variables.gas_reducing: gas_readings[1],
-                        database_variables.gas_nh3: gas_readings[2]})
+        gas_dic.update({db_v.gas_oxidising: gas_readings[0],
+                        db_v.gas_reducing: gas_readings[1],
+                        db_v.gas_nh3: gas_readings[2]})
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         gas_readings = [sensors_direct.dummy_sensors.gas_resistance_index()]
         gas_readings += sensors_direct.dummy_sensors.gas_data()
-        gas_dic.update({database_variables.gas_resistance_index: gas_readings[0],
-                        database_variables.gas_oxidising: gas_readings[1],
-                        database_variables.gas_reducing: gas_readings[2],
-                        database_variables.gas_nh3: gas_readings[3]})
+        gas_dic.update({db_v.gas_resistance_index: gas_readings[0],
+                        db_v.gas_oxidising: gas_readings[1],
+                        db_v.gas_reducing: gas_readings[2],
+                        db_v.gas_nh3: gas_readings[3]})
     else:
         return None
     return gas_dic
@@ -416,25 +399,25 @@ def get_particulate_matter(get_latency=False):
         if get_latency:
             return sensors_direct.pimoroni_pms5003_a.sensor_latency
         pm_readings = sensors_direct.pimoroni_pms5003_a.particulate_matter_data()
-        pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
-                       database_variables.particulate_matter_2_5: pm_readings[1],
-                       database_variables.particulate_matter_10: pm_readings[2]})
+        pm_dic.update({db_v.particulate_matter_1: pm_readings[0],
+                       db_v.particulate_matter_2_5: pm_readings[1],
+                       db_v.particulate_matter_10: pm_readings[2]})
     elif app_config_access.installed_sensors.sensirion_sps30:
         if get_latency:
             return sensors_direct.sensirion_sps30_a.sensor_latency
         pm_readings = sensors_direct.sensirion_sps30_a.particulate_matter_data()
-        pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
-                       database_variables.particulate_matter_2_5: pm_readings[1],
-                       database_variables.particulate_matter_4: pm_readings[2],
-                       database_variables.particulate_matter_10: pm_readings[3]})
+        pm_dic.update({db_v.particulate_matter_1: pm_readings[0],
+                       db_v.particulate_matter_2_5: pm_readings[1],
+                       db_v.particulate_matter_4: pm_readings[2],
+                       db_v.particulate_matter_10: pm_readings[3]})
     elif get_latency:
         return _get_sensor_latency(get_particulate_matter)
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         pm_readings = sensors_direct.dummy_sensors.particulate_matter_data()
-        pm_dic.update({database_variables.particulate_matter_1: pm_readings[0],
-                       database_variables.particulate_matter_2_5: pm_readings[1],
-                       database_variables.particulate_matter_4: pm_readings[2],
-                       database_variables.particulate_matter_10: pm_readings[3]})
+        pm_dic.update({db_v.particulate_matter_1: pm_readings[0],
+                       db_v.particulate_matter_2_5: pm_readings[1],
+                       db_v.particulate_matter_4: pm_readings[2],
+                       db_v.particulate_matter_10: pm_readings[3]})
     else:
         return None
     return pm_dic
@@ -458,7 +441,7 @@ def get_lumen(get_latency=False):
         lumen = sensors_direct.dummy_sensors.lumen()
     else:
         return None
-    return {database_variables.lumen: lumen}
+    return {db_v.lumen: lumen}
 
 
 def get_ems_colors(get_latency=False):
@@ -468,32 +451,32 @@ def get_ems_colors(get_latency=False):
         if get_latency:
             return sensors_direct.pimoroni_as7262_a.sensor_latency
         colours = sensors_direct.pimoroni_as7262_a.spectral_six_channel()
-        colors_dic.update({database_variables.red: colours[0],
-                           database_variables.orange: colours[1],
-                           database_variables.yellow: colours[2],
-                           database_variables.green: colours[3],
-                           database_variables.blue: colours[4],
-                           database_variables.violet: colours[5]})
+        colors_dic.update({db_v.red: colours[0],
+                           db_v.orange: colours[1],
+                           db_v.yellow: colours[2],
+                           db_v.green: colours[3],
+                           db_v.blue: colours[4],
+                           db_v.violet: colours[5]})
     elif get_latency:
         return _get_sensor_latency(get_ems_colors)
     elif app_config_access.installed_sensors.pimoroni_enviro:
         colours = sensors_direct.pimoroni_enviro_a.ems()
-        colors_dic.update({database_variables.red: colours[0],
-                           database_variables.green: colours[1],
-                           database_variables.blue: colours[2]})
+        colors_dic.update({db_v.red: colours[0],
+                           db_v.green: colours[1],
+                           db_v.blue: colours[2]})
     elif app_config_access.installed_sensors.pimoroni_bh1745:
         colours = sensors_direct.pimoroni_bh1745_a.ems()
-        colors_dic.update({database_variables.red: colours[0],
-                           database_variables.green: colours[1],
-                           database_variables.blue: colours[2]})
+        colors_dic.update({db_v.red: colours[0],
+                           db_v.green: colours[1],
+                           db_v.blue: colours[2]})
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         colours = sensors_direct.dummy_sensors.spectral_six_channel()
-        colors_dic.update({database_variables.red: colours[0],
-                           database_variables.orange: colours[1],
-                           database_variables.yellow: colours[2],
-                           database_variables.green: colours[3],
-                           database_variables.blue: colours[4],
-                           database_variables.violet: colours[5]})
+        colors_dic.update({db_v.red: colours[0],
+                           db_v.orange: colours[1],
+                           db_v.yellow: colours[2],
+                           db_v.green: colours[3],
+                           db_v.blue: colours[4],
+                           db_v.violet: colours[5]})
     else:
         return None
     return colors_dic
@@ -507,15 +490,15 @@ def get_ultra_violet(get_latency=False):
     if app_config_access.installed_sensors.pimoroni_veml6075:
         uv_index = sensors_direct.pimoroni_veml6075_a.ultra_violet_index()
         uv_reading = sensors_direct.pimoroni_veml6075_a.ultra_violet()
-        uv_dic.update({database_variables.ultra_violet_index: uv_index,
-                       database_variables.ultra_violet_a: uv_reading[0],
-                       database_variables.ultra_violet_b: uv_reading[1]})
+        uv_dic.update({db_v.ultra_violet_index: uv_index,
+                       db_v.ultra_violet_a: uv_reading[0],
+                       db_v.ultra_violet_b: uv_reading[1]})
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         uv_index = sensors_direct.dummy_sensors.ultra_violet_index()
         uv_reading = sensors_direct.dummy_sensors.ultra_violet()
-        uv_dic.update({database_variables.ultra_violet_index: uv_index,
-                       database_variables.ultra_violet_a: uv_reading[0],
-                       database_variables.ultra_violet_b: uv_reading[1]})
+        uv_dic.update({db_v.ultra_violet_index: uv_index,
+                       db_v.ultra_violet_a: uv_reading[0],
+                       db_v.ultra_violet_b: uv_reading[1]})
     else:
         return None
     return uv_dic
@@ -539,9 +522,9 @@ def get_accelerometer_xyz(get_latency=False):
         xyz = sensors_direct.dummy_sensors.accelerometer_xyz()
     else:
         return None
-    return {database_variables.acc_x: xyz[0],
-            database_variables.acc_y: xyz[1],
-            database_variables.acc_z: xyz[2]}
+    return {db_v.acc_x: xyz[0],
+            db_v.acc_y: xyz[1],
+            db_v.acc_z: xyz[2]}
 
 
 def get_magnetometer_xyz(get_latency=False):
@@ -560,9 +543,9 @@ def get_magnetometer_xyz(get_latency=False):
         xyz = sensors_direct.dummy_sensors.magnetometer_xyz()
     else:
         return None
-    return {database_variables.mag_x: xyz[0],
-            database_variables.mag_y: xyz[1],
-            database_variables.mag_z: xyz[2]}
+    return {db_v.mag_x: xyz[0],
+            db_v.mag_y: xyz[1],
+            db_v.mag_z: xyz[2]}
 
 
 def get_gyroscope_xyz(get_latency=False):
@@ -577,9 +560,9 @@ def get_gyroscope_xyz(get_latency=False):
         xyz = sensors_direct.dummy_sensors.gyroscope_xyz()
     else:
         return None
-    return {database_variables.gyro_x: xyz[0],
-            database_variables.gyro_y: xyz[1],
-            database_variables.gyro_z: xyz[2]}
+    return {db_v.gyro_x: xyz[0],
+            db_v.gyro_y: xyz[1],
+            db_v.gyro_z: xyz[2]}
 
 
 def get_reading_unit(reading_type):
@@ -671,24 +654,24 @@ def restart_services(sleep_before_restart=1):
 
 def get_db_notes():
     """ Returns a comma separated string of Notes from the SQL Database. """
-    sql_query = "SELECT " + database_variables.other_table_column_notes + \
-                " FROM " + database_variables.table_other
+    sql_query = "SELECT " + db_v.other_table_column_notes + \
+                " FROM " + db_v.table_other
     sql_db_notes = sqlite_database.sql_execute_get_data(sql_query)
     return _create_str_from_list(sql_db_notes)
 
 
 def get_db_note_dates():
     """ Returns a comma separated string of Note Dates from the SQL Database. """
-    sql_query_notes = "SELECT " + database_variables.all_tables_datetime + \
-                      " FROM " + database_variables.table_other
+    sql_query_notes = "SELECT " + db_v.all_tables_datetime + \
+                      " FROM " + db_v.table_other
     sql_note_dates = sqlite_database.sql_execute_get_data(sql_query_notes)
     return _create_str_from_list(sql_note_dates)
 
 
 def get_db_note_user_dates():
     """ Returns a comma separated string of User Note Dates from the SQL Database. """
-    sql_query_user_datetime = "SELECT " + database_variables.other_table_column_user_date_time + \
-                              " FROM " + database_variables.table_other
+    sql_query_user_datetime = "SELECT " + db_v.other_table_column_user_date_time + \
+                              " FROM " + db_v.table_other
     sql_data_user_datetime = sqlite_database.sql_execute_get_data(sql_query_user_datetime)
     return _create_str_from_list(sql_data_user_datetime)
 
@@ -723,9 +706,9 @@ def add_note_to_database(datetime_note):
         note = user_date_and_note[1]
 
         sql_execute = "INSERT OR IGNORE INTO OtherData (" + \
-                      database_variables.all_tables_datetime + "," + \
-                      database_variables.other_table_column_user_date_time + "," + \
-                      database_variables.other_table_column_notes + ")" + \
+                      db_v.all_tables_datetime + "," + \
+                      db_v.other_table_column_user_date_time + "," + \
+                      db_v.other_table_column_notes + ")" + \
                       " VALUES (?,?,?);"
 
         data_entries = [current_datetime, custom_datetime, note]
@@ -753,8 +736,8 @@ def update_note_in_database(datetime_note):
 
 def delete_db_note(note_datetime):
     """ Deletes a Note from the SQL Database based on it's DateTime entry. """
-    sql_query = "DELETE FROM " + str(database_variables.table_other) + \
-                " WHERE " + str(database_variables.all_tables_datetime) + \
+    sql_query = "DELETE FROM " + str(db_v.table_other) + \
+                " WHERE " + str(db_v.all_tables_datetime) + \
                 " = ?;"
     sql_data = [note_datetime]
     sqlite_database.write_to_sql_database(sql_query, sql_data)

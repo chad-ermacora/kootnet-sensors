@@ -60,7 +60,7 @@ def get_system_uptime():
 @html_system_commands_routes.route("/GetOSVersion")
 def get_operating_system_version():
     logger.network_logger.debug("* Sensor's Operating System Version sent to " + str(request.remote_addr))
-    return str(sensor_access.get_operating_system_name())
+    return app_cached_variables.operating_system_name
 
 
 @html_system_commands_routes.route("/GetSensorVersion")
@@ -72,7 +72,7 @@ def get_sensor_program_version():
 @html_system_commands_routes.route("/GetRAMUsed")
 def get_ram_usage_percent():
     logger.network_logger.debug("* Sensor's RAM % used sent to " + str(request.remote_addr))
-    return str(sensor_access.get_memory_usage_percent())
+    return str(sensor_access.get_ram_space(return_type=3))
 
 
 @html_system_commands_routes.route("/GetRAMTotal")
@@ -84,19 +84,19 @@ def get_ram_total():
 @html_system_commands_routes.route("/GetRAMTotalSizeType")
 def get_ram_total_size_type():
     logger.network_logger.debug("* Sensor's Total RAM amount size type sent to " + str(request.remote_addr))
-    return app_cached_variables.total_ram_memory_size_type
+    return "GB"
 
 
 @html_system_commands_routes.route("/GetUsedDiskSpace")
-def get_disk_usage_percent():
+def get_disk_usage_gb():
     logger.network_logger.debug("* Sensor's Used Disk Space as GBs sent to " + str(request.remote_addr))
-    return str(sensor_access.get_disk_usage_gb())
+    return str(sensor_access.get_disk_space(return_type=1))
 
 
 @html_system_commands_routes.route("/GetProgramLastUpdated")
 def get_sensor_program_last_updated():
     logger.network_logger.debug("* Sensor's Program Last Updated sent to " + str(request.remote_addr))
-    return sensor_access.get_last_updated()
+    return app_cached_variables.program_last_updated
 
 
 @html_system_commands_routes.route("/UpgradeOnline")

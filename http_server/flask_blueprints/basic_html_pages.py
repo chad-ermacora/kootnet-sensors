@@ -32,7 +32,7 @@ html_basic_routes = Blueprint("html_basic_routes", __name__)
 def html_index():
     disk_message = "<b style='color: green;'>Okay</b>"
 
-    disk_percent_used = sensor_access.get_disk_usage_percent()
+    disk_percent_used = sensor_access.get_disk_space(return_type=3)
     if disk_percent_used is not None:
         try:
             disk_percent_used = float(disk_percent_used)

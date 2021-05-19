@@ -128,14 +128,14 @@ def get_publish_messages():
             publish_msgs = _add_sensor_to_publish_msgs(sensor_function, publish_msgs, optional_topic=add_topic)
 
         if app_config_access.mqtt_publisher_config.sensor_host_name:
-            sensor_function = sensor_access.get_hostname
+            sensor_function = _get_hostname
             add_topic = app_config_access.mqtt_publisher_config.sensor_host_name_topic
             if selected_mqtt_send_format == mqtt_send_format_custom_string:
                 add_topic = database_variables.sensor_name
             publish_msgs = _add_sensor_to_publish_msgs(sensor_function, publish_msgs, optional_topic=add_topic)
 
         if app_config_access.mqtt_publisher_config.sensor_ip:
-            sensor_function = sensor_access.get_ip
+            sensor_function = _get_ip
             add_topic = app_config_access.mqtt_publisher_config.sensor_ip_topic
             if selected_mqtt_send_format == mqtt_send_format_custom_string:
                 add_topic = database_variables.ip
@@ -269,3 +269,11 @@ def _get_database_variable_to_mqtt_publisher_topic():
         database_variables.gyro_y: mqtt_publisher_config.gyroscope_y_topic,
         database_variables.gyro_z: mqtt_publisher_config.gyroscope_z_topic,
     }
+
+
+def _get_ip():
+    return app_cached_variables.ip
+
+
+def _get_hostname():
+    return app_cached_variables.hostname

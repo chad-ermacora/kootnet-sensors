@@ -49,7 +49,7 @@ def html_atpro_sensor_settings_database_information():
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
-        NumberNotes=sensor_access.get_db_notes_count(),
+        NumberNotes=app_cached_variables.notes_total_count,
         SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
         SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),

@@ -20,7 +20,6 @@ from os import geteuid
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
-from sensor_modules import linux_os as _linux_os
 from sensor_modules import kootnet_dummy_sensors as _kootnet_dummy_sensors
 from sensor_modules import raspberry_pi_system as _raspberry_pi_system
 from sensor_modules.pimoroni import pimoroni_enviroplus as _pimoroni_enviroplus
@@ -53,7 +52,6 @@ class CreateSensorAccess:
         if first_start:
             logger.primary_logger.info(" -- Initializing Sensors")
             self._set_dummy_sensors()
-            self.operating_system_a = _linux_os.CreateLinuxSystem()
         else:
             logger.primary_logger.info(" -- Re-initializing Sensors")
             app_cached_variables.restart_interval_recording_thread = True
