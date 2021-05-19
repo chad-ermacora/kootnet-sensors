@@ -14,22 +14,20 @@
 </style>
 
 <div class="row">
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-5 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">Running<br>Version</div></th>
-                            <th><div class="readings-header">Current<br>Release</div></th>
-                            <th><div class="readings-header">Development<br>Release</div></th>
+                            <th><div class="readings-header">Host Name</div></th>
+                            <th><div class="readings-header">IP Address</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ KootnetVersion }}</td>
-                            <td>{{ StdVersion }}</td>
-                            <td>{{ DevVersion }}</td>
+                            <td>{{ HostName }}</td>
+                            <td>{{ LocalIP }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -37,22 +35,22 @@
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-7 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">Operating<br>System</div></th>
-                            <th><div class="readings-header">Host<br>Name</div></th>
-                            <th><div class="readings-header">IP<br>Address</div></th>
+                            <th><div class="readings-header">Running Version</div></th>
+                            <th><div class="readings-header">Current Release</div></th>
+                            <th><div class="readings-header">Development Release</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ OperatingSystem }}</td>
-                            <td>{{ HostName }}</td>
-                            <td>{{ LocalIP }}</td>
+                            <td>{{ KootnetVersion }}</td>
+                            <td>{{ StdVersion }}</td>
+                            <td>{{ DevVersion }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -92,15 +90,15 @@
                     <thead>
                         <tr>
                             <th><div class="readings-header">System<br>Temperature</div></th>
-                            <th><div class="readings-header">Available<br>RAM</div></th>
-                            <th><div class="readings-header">Available<br>Drive Space</div></th>
+                            <th><div class="readings-header">RAM<br>Used/Total</div></th>
+                            <th><div class="readings-header">Storage<br>Used/Total</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>{{ CPUTemperature }} °C</td>
-                            <td>{{ RAMUsage }}</td>
-                            <td>{{ DiskUsage }}</td>
+                            <td>{{ RAMUsage }} of {{ RAMTotal }}</td>
+                            <td>{{ DiskUsage }} of {{ DiskTotal }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -108,7 +106,45 @@
         </div>
     </div>
 
-    <div class="col-12 col-m-12 col-sm-12">
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Operating System</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ OperatingSystem }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Installed Sensors</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ InstalledSensors }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8 col-m-8 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
@@ -131,18 +167,20 @@
         </div>
     </div>
 
-    <div class="col-12 col-m-12 col-sm-12">
+    <div class="col-4 col-m-4 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">Installed Sensors</div></th>
+                            <th><div class="readings-header">Sensor Checkins</div></th>
+                            <th><div class="readings-header">Checkin Server</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>{{ InstalledSensors }}</td>
+                            <td>{{ SensorCheckins }}</td>
+                            <td>{{ CheckinServer }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -156,9 +194,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">Interval<br>Recording</div></th>
-                            <th><div class="readings-header">High/Low<br>Recording</div></th>
-                            <th><div class="readings-header">Variance<br>Recording</div></th>
+                            <th><div class="readings-header">Interval Recording</div></th>
+                            <th><div class="readings-header">High/Low Recording</div></th>
+                            <th><div class="readings-header">Variance Recording</div></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -179,49 +217,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><div class="readings-header">MQTT<br>Publisher</div></th>
-                            <th><div class="readings-header">MQTT<br>Subscriber</div></th>
-                            <th><div class="readings-header">MQTT<br>Subscriber Recording</div></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ MQTTPublishing }}</td>
-                            <td>{{ MQTTSubscriber }}</td>
-                            <td>{{ MQTTSubscriberRecording }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><div class="readings-header">Sensor Checkins</div></th>
-                            <th><div class="readings-header">Checkin Server</div></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ SensorCheckins }}</td>
-                            <td>{{ CheckinServer }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <table>
-                    <thead>
-                        <tr>
                             <th><div class="readings-header">Open Sense Map</div></th>
                             <th><div class="readings-header">Weather Underground</div></th>
                             <th><div class="readings-header">Luftdaten</div></th>
@@ -232,6 +227,48 @@
                             <td>{{ OpenSenseMapService }}</td>
                             <td>{{ WeatherUndergroundService }}</td>
                             <td>{{ LuftdatenService }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">MQTT Broker (Mosquitto)</div></th>
+                            <th><div class="readings-header">MQTT Publisher</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ MQTTBroker }}</td>
+                            <td>{{ MQTTPublishing }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">MQTT Subscriber</div></th>
+                            <th><div class="readings-header">MQTT Subscriber Recording</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ MQTTSubscriber }}</td>
+                            <td>{{ MQTTSubscriberRecording }}</td>
                         </tr>
                     </tbody>
                 </table>
