@@ -34,6 +34,29 @@ from sensor_modules import sensors_initialization
 sensors_direct = sensors_initialization.CreateSensorAccess(first_start=True)
 
 
+def get_ram_space(return_type=0):
+    """
+    return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used
+    Default option = 0, all returns are in GB(s)
+    """
+    ram_space = None
+    try:
+        if return_type == 0:
+            ram_space = psutil.virtual_memory().free
+        elif return_type == 1:
+            ram_space = psutil.virtual_memory().used
+        elif return_type == 2:
+            ram_space = app_cached_variables.total_ram_memory
+        elif return_type == 3:
+            ram_space = psutil.virtual_memory().percent
+
+        if ram_space is not None:
+            ram_space = round((ram_space / 1024 / 1024 / 1024), 3)
+    except Exception as error:
+        logger.primary_logger.warning("Get RAM Space: " + str(error))
+    return ram_space
+
+
 def get_disk_space(return_type=0):
     """
     return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used
@@ -55,29 +78,6 @@ def get_disk_space(return_type=0):
     except Exception as error:
         logger.primary_logger.warning("Get Disk Space: " + str(error))
     return disk_space
-
-
-def get_ram_space(return_type=0):
-    """
-    return_type options: 0 = Free Space, 1 = Used Space, 2 = Total Space, 3 = Percent Space Used
-    Default option = 0, all returns are in GB(s)
-    """
-    ram_space = None
-    try:
-        if return_type == 0:
-            ram_space = psutil.virtual_memory().free
-        elif return_type == 1:
-            ram_space = psutil.virtual_memory().available
-        elif return_type == 2:
-            ram_space = app_cached_variables.total_ram_memory
-        elif return_type == 3:
-            ram_space = psutil.virtual_memory().percent
-
-        if ram_space is not None:
-            ram_space = round((ram_space / 1024 / 1024 / 1024), 3)
-    except Exception as error:
-        logger.primary_logger.warning("Get RAM Space: " + str(error))
-    return ram_space
 
 
 def get_system_datetime():
