@@ -49,6 +49,7 @@ def restart_mqtt_broker_server():
         if check_mqtt_broker_server_running():
             logger.primary_logger.info("Restarting MQTT Broker Mosquitto")
             os.system(terminal_restart_mosquitto)
+            app_cached_variables.mqtt_broker_dummy_thread.current_state = "Running"
         else:
             start_mqtt_broker_server()
     else:
@@ -61,6 +62,7 @@ def stop_mqtt_broker_server():
         if check_mqtt_broker_server_running():
             logger.primary_logger.info("Stopping MQTT Broker Mosquitto")
             os.system(terminal_disable_stop_mosquitto)
+            app_cached_variables.mqtt_broker_dummy_thread.current_state = "Stopped"
         else:
             logger.primary_logger.debug("MQTT Broker Mosquitto already Stopped")
     else:
@@ -70,6 +72,7 @@ def stop_mqtt_broker_server():
 def start_mqtt_broker_server():
     """ Starts MQTT Broker server Mosquitto's service. """
     if app_config_access.mqtt_broker_config.enable_mqtt_broker:
+        app_cached_variables.mqtt_broker_dummy_thread.current_state = "Running"
         if check_mqtt_broker_server_running():
             logger.primary_logger.info(" -- Mosquitto Server already running")
         else:
@@ -79,7 +82,9 @@ def start_mqtt_broker_server():
                     logger.primary_logger.info(" -- Starting Mosquitto Server")
                 else:
                     logger.primary_logger.warning("MQTT Mosquitto Broker not installed")
+                    app_cached_variables.mqtt_broker_dummy_thread.current_state = "Installing"
                     os.system(terminal_install_mqtt_mosquitto)
+                    app_cached_variables.mqtt_broker_dummy_thread.current_state = "Running"
                     if not os.path.isfile(file_locations.mosquitto_configuration):
                         write_file_to_disk(file_locations.mosquitto_configuration, "")
                     if os.path.isfile("/usr/sbin/mosquitto") or os.path.isfile("/usr/bin/mosquitto"):
@@ -88,7 +93,9 @@ def start_mqtt_broker_server():
                         logger.primary_logger.info(" -- Starting Mosquitto Server")
                     else:
                         logger.primary_logger.error("MQTT Mosquitto did not install - Unable to start MQTT Broker")
+                        app_cached_variables.mqtt_broker_dummy_thread.current_state = "Error"
             else:
                 logger.primary_logger.warning("Unable to Start MQTT Broker Mosquitto, root required")
+                app_cached_variables.mqtt_broker_dummy_thread.current_state = "NA"
     else:
         logger.primary_logger.debug("MQTT Broker Disabled in Configuration")

@@ -252,9 +252,6 @@ class CreateEmptyThreadClass:
     def __init__(self):
         self.current_state = "Disabled"
 
-    def set_current_state_manually(self, new_state_text):
-        self.current_state = new_state_text
-
 
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
