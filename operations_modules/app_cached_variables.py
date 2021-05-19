@@ -252,6 +252,9 @@ class CreateEmptyThreadClass:
     def __init__(self):
         self.current_state = "Disabled"
 
+    def set_current_state_manually(self, new_state_text):
+        self.current_state = new_state_text
+
 
 # Dictionary of Terminal commands
 bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sensors_e-ink.sh",
@@ -283,7 +286,7 @@ operating_system_name = ""
 program_last_updated = ""
 reboot_count = ""
 total_ram_memory = 0.0
-total_ram_memory_size_type = " MB"
+total_disk_space = 0.0
 tmp_sensor_id = ""
 database_variables = CreateDatabaseVariables()
 
@@ -337,6 +340,7 @@ report_email_thread = CreateEmptyThreadClass()
 graph_email_thread = CreateEmptyThreadClass()
 mini_display_thread = CreateEmptyThreadClass()
 interactive_sensor_thread = CreateEmptyThreadClass()
+mqtt_broker_dummy_thread = CreateEmptyThreadClass()
 mqtt_publisher_thread = CreateEmptyThreadClass()
 mqtt_subscriber_thread = CreateEmptyThreadClass()
 weather_underground_thread = CreateEmptyThreadClass()
