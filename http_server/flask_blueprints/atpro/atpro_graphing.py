@@ -25,7 +25,7 @@ from operations_modules.app_generic_functions import thread_function
 from configuration_modules import app_config_access
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
-from http_server.flask_blueprints.graphing_quick import html_live_graphing
+from http_server.flask_blueprints.graphing_quick import get_html_live_graphing_page
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_file_creation_date
@@ -117,7 +117,65 @@ def html_atpro_sensor_graphing_live():
 @html_atpro_graphing_routes.route("/LiveGraphView", methods=["GET", "POST"])
 def html_atpro_live_graphing():
     logger.network_logger.debug("* Live Graphs viewed by " + str(request.remote_addr))
-    return html_live_graphing(request)
+    if request.method == "POST":
+        if request.form.get("graph_hours") is not None:
+            app_cached_variables.quick_graph_hours = float(request.form.get("graph_hours"))
+            return get_html_live_graphing_page()
+        app_cached_variables.quick_graph_uptime = 0
+        app_cached_variables.quick_graph_cpu_temp = 0
+        app_cached_variables.quick_graph_env_temp = 0
+        app_cached_variables.quick_graph_pressure = 0
+        app_cached_variables.quick_graph_altitude = 0
+        app_cached_variables.quick_graph_humidity = 0
+        app_cached_variables.quick_graph_dew_point = 0
+        app_cached_variables.quick_graph_distance = 0
+        app_cached_variables.quick_graph_gas = 0
+        app_cached_variables.quick_graph_particulate_matter = 0
+        app_cached_variables.quick_graph_lumen = 0
+        app_cached_variables.quick_graph_colours = 0
+        app_cached_variables.quick_graph_ultra_violet = 0
+        app_cached_variables.quick_graph_acc = 0
+        app_cached_variables.quick_graph_mag = 0
+        app_cached_variables.quick_graph_gyro = 0
+
+        if request.form.get("SkipSQL") is not None:
+            app_cached_variables.quick_graph_skip_sql_entries = int(request.form.get("SkipSQL"))
+        if request.form.get("MaxSQLData") is not None:
+            app_cached_variables.quick_graph_max_sql_entries = int(request.form.get("MaxSQLData"))
+        if request.form.get("sensor_uptime") is not None:
+            app_cached_variables.quick_graph_uptime = 1
+        if request.form.get("cpu_temperature") is not None:
+            app_cached_variables.quick_graph_cpu_temp = 1
+        if request.form.get("env_temperature") is not None:
+            app_cached_variables.quick_graph_env_temp = 1
+        if request.form.get("pressure") is not None:
+            app_cached_variables.quick_graph_pressure = 1
+        if request.form.get("altitude") is not None:
+            app_cached_variables.quick_graph_altitude = 1
+        if request.form.get("humidity") is not None:
+            app_cached_variables.quick_graph_humidity = 1
+        if request.form.get("dew_point") is not None:
+            app_cached_variables.quick_graph_dew_point = 1
+        if request.form.get("distance") is not None:
+            app_cached_variables.quick_graph_distance = 1
+        if request.form.get("gas") is not None:
+            app_cached_variables.quick_graph_gas = 1
+        if request.form.get("particulate_matter") is not None:
+            app_cached_variables.quick_graph_particulate_matter = 1
+        if request.form.get("lumen") is not None:
+            app_cached_variables.quick_graph_lumen = 1
+        if request.form.get("colour") is not None:
+            app_cached_variables.quick_graph_colours = 1
+        if request.form.get("ultra_violet") is not None:
+            app_cached_variables.quick_graph_ultra_violet = 1
+        if request.form.get("accelerometer") is not None:
+            app_cached_variables.quick_graph_acc = 1
+        if request.form.get("magnetometer") is not None:
+            app_cached_variables.quick_graph_mag = 1
+        if request.form.get("gyroscope") is not None:
+            app_cached_variables.quick_graph_gyro = 1
+        return get_html_atpro_index(run_script="SelectNav('sensor-graphing-live');")
+    return get_html_live_graphing_page()
 
 
 @html_atpro_graphing_routes.route("/atpro/sensor-graphing-db")
