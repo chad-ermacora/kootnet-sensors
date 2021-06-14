@@ -18,10 +18,9 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import zip_files
-from flask import Blueprint, render_template, request, send_file
+from flask import Blueprint, render_template, request
 from http_server.server_http_auth import auth
+from http_server.flask_blueprints.local_sensor_downloads import download_zipped_logs
 
 html_atpro_logs_routes = Blueprint("html_atpro_logs_routes", __name__)
 
@@ -35,17 +34,7 @@ def html_atpro_sensor_logs():
 @auth.login_required
 def atpro_get_log(url_path):
     if url_path == "log-download-all-zipped":
-        zip_name = "Logs_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
-        return_zip_file = zip_files(
-            ["log_primary.txt", "log_network.txt", "log_sensors.txt"],
-            [logger.get_sensor_log(file_locations.primary_log, max_lines=0),
-             logger.get_sensor_log(file_locations.network_log, max_lines=0),
-             logger.get_sensor_log(file_locations.sensors_log, max_lines=0)]
-        )
-        if type(return_zip_file) is str:
-            return return_zip_file
-        else:
-            return send_file(return_zip_file, as_attachment=True, attachment_filename=zip_name)
+        return download_zipped_logs()
     elif url_path == "log-primary":
         return logger.get_sensor_log(file_locations.primary_log)
     elif url_path == "log-primary-header":

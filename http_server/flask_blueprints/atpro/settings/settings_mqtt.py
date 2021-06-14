@@ -260,7 +260,7 @@ def html_atpro_sensor_settings_mqtt_broker():
                 return_text = "MQTT Broker Service Re-Started"
                 restart_mqtt_broker_server()
             else:
-                return_text = "MQTT Broker Service Started"
+                return_text = "MQTT Broker Service Starting"
                 start_mqtt_broker_server()
         else:
             return_text = "MQTT Broker Service Stopped"

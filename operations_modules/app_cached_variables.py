@@ -397,7 +397,12 @@ html_sensor_reboot = False
 # Set to False when stating a upgrade, returns to True after program restarts
 sensor_ready_for_upgrade = True
 
-# Variables to make sure Sensor Control is only creating a single copy at any given time
+# Variables to make sure the same zip is not being generated multiple times at the same time
+creating_zip_main_db = False
+creating_zip_checkin_db = False
+creating_zip_mqtt_sub_db = False
+
+# Variables to make sure Remote Management is only creating a single copy at any given time
 creating_the_reports_zip = False
 creating_the_big_zip = False
 creating_databases_zip = False

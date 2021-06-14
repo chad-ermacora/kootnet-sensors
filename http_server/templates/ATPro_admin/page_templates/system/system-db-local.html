@@ -8,7 +8,16 @@
         color: white;
         font-weight: bold;
     }
+
+    .blink_shadow {
+        font-weight: bolder;
+        font-size: large;
+    }
 </style>
+
+<form method="POST" id="download-form" action="/DatabaseDownloads">
+    <input type="text" id="button-function" name="button-function" value="download" hidden>
+</form>
 
 <div class="col-12 col-m-12 col-sm-12">
     <div class="counter bg-warning" id="db-info-resize">
@@ -68,9 +77,28 @@
                 </div>
             </div>
 
-            <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabase" target="_blank">Database Zipped</a>
+            <h2>Downloads</h2>
+            <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+            <h3 class="db-header-items-name">
+                Zip Created: <span class="db-header-items-data">{{ ZipMainDBCreated }} UTC{{ HourOffset }}</span>
+                <br>
+                Zip Size: <span class="db-header-items-data">{{ ZipMainDBFileSize }} MB</span>
+            </h3>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('create-main-db-zip', target_window='_parent')">
+                Generate New Zip
+            </button>
+
+            <br><br>
+
             <a class="pure-button" href="/DownloadSQLDatabaseRAW" target="_blank">Database RAW</a>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('download-main-db-zip')">
+                Download Zip
+            </button>
         </div>
     </div>
 
@@ -99,9 +127,28 @@
                 </div>
             </div>
 
-            <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabaseMQTT" target="_blank">Database Zipped</a>
+            <h2>Downloads</h2>
+            <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+            <h3 class="db-header-items-name">
+                Zip Created: <span class="db-header-items-data">{{ ZipMQTTDBCreated }} UTC{{ HourOffset }}</span>
+                <br>
+                Zip Size: <span class="db-header-items-data">{{ ZipMQTTDBFileSize }} MB</span>
+            </h3>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('create-mqtt-sub-db-zip', target_window='_parent')">
+                Generate New Zip
+            </button>
+
+            <br><br>
+
             <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT" target="_blank">Database RAW</a>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('download-mqtt-sub-db-zip')">
+                Download Zip
+            </button>
         </div>
     </div>
 
@@ -130,15 +177,58 @@
                 </div>
             </div>
 
-            <h3>Downloads</h3>
-            <a class="pure-button" href="/DownloadSQLDatabaseCheckin" target="_blank">Database Zipped</a>
+            <h2>Downloads</h2>
+            <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+            <h3 class="db-header-items-name">
+                Zip Created: <span class="db-header-items-data">{{ ZipCheckinDBCreated }} UTC{{ HourOffset }}</span>
+                <br>
+                Zip Size: <span class="db-header-items-data">{{ ZipCheckinDBFileSize }} MB</span>
+            </h3>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('create-checkin-db-zip', target_window='_parent')">
+                Generate New Zip
+            </button>
+
+            <br><br>
+
             <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin" target="_blank">Database RAW</a>
+
+            <button type="button" class="pure-button generating-zip"
+                    onclick="SQLDownloadsButton('download-checkin-db-zip')">
+                Download Zip
+            </button>
         </div>
     </div>
 </div>
 
 <script>
+    function SQLDownloadsButton(new_button_function, target_window='_blank') {
+        document.getElementById("button-function").value = new_button_function;
+        document.getElementById("download-form").target = target_window;
+        document.getElementById("download-form").submit();
+    }
+
+    function CreatingDownload() {
+        document.querySelectorAll('.generating-zip').forEach(e => e.disabled = true);
+        document.querySelectorAll('.blink_shadow').forEach(e => e.hidden = false);
+
+        let shadow_colour = "green";
+        window.setTimeout(RefreshPageTimed, 5000);
+        window.setInterval(function () {
+            shadow_colour = (shadow_colour === "green") ? "red" : "green";
+            document.querySelectorAll('.blink_shadow').forEach(e => e.style.color = shadow_colour);
+        }, 1000);
+    }
+
+    function RefreshPageTimed() {
+        SelectNav('sensor-system', skip_menu_select=true);
+    }
+
     if (screen.width < 610) {
             document.getElementById('db-info-resize').style.width = 'fit-content';
         }
+
+    {{ RunScript | safe }}
 </script>

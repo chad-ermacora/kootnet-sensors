@@ -19,12 +19,14 @@
 import os
 import zipfile
 from datetime import datetime
+from threading import Thread
 from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 from operations_modules.app_generic_functions import get_file_content, get_list_of_filenames_in_dir, zip_files, \
-    get_file_size
+    get_file_size, adjust_datetime
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     validate_sqlite_database, check_mqtt_subscriber_database_structure, check_main_database_structure, \
     check_checkin_database_structure
@@ -38,28 +40,53 @@ sqlite_valid_extensions_list = ["sqlite", "sqlite3", "db", "dbf", "sql"]
 
 
 @html_atpro_system_sql_db_routes.route("/atpro/system-db-local")
-def html_atpro_sensor_settings_database_information():
+def html_atpro_settings_db_information():
     custom_db_option_html_text = "<option value='{{ DBNameChangeMe }}'>{{ DBNameChangeMe }}</option>"
     db_backup_dropdown_selection = ""
     for zip_name in app_cached_variables.zipped_db_backup_list:
         db_backup_dropdown_selection += custom_db_option_html_text.replace("{{ DBNameChangeMe }}", zip_name) + "\n"
+
+    run_script = ""
+    for check in [app_cached_variables.creating_zip_main_db,
+                  app_cached_variables.creating_zip_mqtt_sub_db,
+                  app_cached_variables.creating_zip_checkin_db]:
+        if check:
+            run_script = "CreatingDownload();"
     return render_template(
         "ATPro_admin/page_templates/system/system-db-local.html",
+        HourOffset=app_config_access.primary_config.utc0_hour_offset,
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
         SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
+        ZipMainDBCreated=_get_file_creation_date(file_locations.database_zipped),
+        ZipMainDBFileSize=get_file_size(file_locations.database_zipped),
         NumberNotes=app_cached_variables.notes_total_count,
         SQLMQTTDatabaseLocation=_remove_filename_from_location(file_locations.mqtt_subscriber_database),
         SQLMQTTDatabaseName=file_locations.mqtt_subscriber_database.split("/")[-1],
         SQLMQTTDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
+        ZipMQTTDBCreated=_get_file_creation_date(file_locations.mqtt_database_zipped),
+        ZipMQTTDBFileSize=get_file_size(file_locations.mqtt_database_zipped),
         SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
         SQLCheckinDatabaseLocation=_remove_filename_from_location(file_locations.sensor_checkin_database),
         SQLCheckinDatabaseName=file_locations.sensor_checkin_database.split("/")[-1],
         SQLCheckinDatabaseSize=get_file_size(file_locations.sensor_checkin_database),
+        ZipCheckinDBCreated=_get_file_creation_date(file_locations.checkin_database_zipped),
+        ZipCheckinDBFileSize=get_file_size(file_locations.checkin_database_zipped),
         SQLCheckinSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.sensor_checkin_database))),
-        BackupDBOptionNames=db_backup_dropdown_selection
+        BackupDBOptionNames=db_backup_dropdown_selection,
+        RunScript=run_script
     )
+
+
+def _get_file_creation_date(file_location):
+    file_creation_date = "File Not Found"
+    if os.path.isfile(file_location):
+        utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+        file_creation_date = os.path.getmtime(file_location)
+        file_creation_date = datetime.utcfromtimestamp(file_creation_date).strftime("%Y-%m-%d %H:%M:%S")
+        file_creation_date = adjust_datetime(file_creation_date, hour_offset=utc0_hour_offset)
+    return file_creation_date
 
 
 def _remove_filename_from_location(file_location):
@@ -110,7 +137,8 @@ def html_atpro_sensor_settings_database_management():
         except Exception as error:
             return_text2 = "HTML Database Management Error: " + str(error)
             logger.network_logger.error(return_text2)
-            return get_message_page("Database Management Error", str(error), page_url="sensor-system", skip_menu_select=True)
+            msg_name = "Database Management Error"
+            return get_message_page(msg_name, str(error), page_url="sensor-system", skip_menu_select=True)
 
     return render_template(
         "ATPro_admin/page_templates/system/system-db-management.html",
@@ -119,55 +147,35 @@ def html_atpro_sensor_settings_database_management():
     )
 
 
+# TODO: Make zip_location different for each database type? or disable buttons while thread running
 @html_atpro_system_sql_db_routes.route("/atpro/system-db-uploads", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_settings_database_uploads():
+    zip_location = uploaded_databases_folder + "/temp_zip.zip"
     if request.method == "POST":
         button_pressed = str(request.form.get("db_upload_button"))
+        if os.path.isfile(zip_location):
+            os.remove(zip_location)
         if button_pressed == "upload":
-            return_msg = "Database(s) Uploaded"
-            db_check_msg = "Database(s) Uploaded, Saved and Checked Okay"
-
-            new_db_name = get_clean_db_name(str(request.form.get("UploadDatabaseName")).strip())
-            zip_location = uploaded_databases_folder + "/temp_zip.zip"
-            save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
-
             uploaded_file = request.files["command_data"]
-
-            upload_file_name = uploaded_file.filename
             if uploaded_file is not None:
-                try:
-                    if upload_file_name.split(".")[-1] == "zip":
-                        if os.path.isfile(zip_location):
-                            os.remove(zip_location)
-                        uploaded_file.save(zip_location)
-                        database_locations_list = _unzip_databases(zip_location, new_db_name)
-                        if len(database_locations_list) == 0:
-                            return_msg = "Database Upload Error"
-                            db_check_msg = "No Valid Database Found in Zip"
-                    else:
-                        uploaded_file.save(save_sqlite_to_file)
-                        if validate_sqlite_database(save_sqlite_to_file):
-                            uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
-                            app_cached_variables.uploaded_databases_list = uploaded_db_filenames
-                        else:
-                            os.remove(save_sqlite_to_file)
-                            return_msg = "Database Upload Error"
-                            db_check_msg = "Invalid SQLite3 Database File"
-                except Exception as error:
-                    return_msg = "Database Upload Failed"
-                    db_check_msg = str(error)
-            logger.network_logger.info("Database Custom Upload: " + db_check_msg)
-            return get_message_page(return_msg, db_check_msg, page_url="sensor-system", skip_menu_select=True)
+                upload_file_name = uploaded_file.filename
+                new_db_name = get_clean_db_name(str(request.form.get("UploadDatabaseName")).strip())
+                if upload_file_name.split(".")[-1] == "zip":
+                    uploaded_file.save(zip_location)
+                    system_thread = Thread(target=_db_upload_zip_worker, args=(zip_location, new_db_name))
+                    system_thread.daemon = True
+                    system_thread.start()
+                else:
+                    save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
+                    uploaded_file.save(save_sqlite_to_file)
+                    system_thread = Thread(target=_db_upload_raw_worker, args=save_sqlite_to_file)
+                    system_thread.daemon = True
+                    system_thread.start()
         elif button_pressed == "replace":
             selected_database = str(request.form.get("DatabaseReplacementSelection"))
-
-            return_msg = "Database Replaced"
-            return_text2 = selected_database + " replaced Okay. The previous database was archived."
-
-            zip_location = file_locations.uploaded_databases_folder + "/temp_zip.zip"
+            uploaded_file = request.files["command_data"]
             temp_db_location = file_locations.sensor_data_dir + "/upload_test.sqlite"
-
             save_db_to = temp_db_location + ".invalid"
             backup_file_name = "_Invalid"
             database_structure_check = check_main_database_structure
@@ -185,44 +193,72 @@ def html_atpro_sensor_settings_database_uploads():
                 save_db_to = file_locations.sensor_checkin_database
                 database_structure_check = check_checkin_database_structure
 
-            uploaded_file = request.files["command_data"]
             if uploaded_file is not None:
                 if uploaded_file.filename.split(".")[-1] == "zip":
-                    if os.path.isfile(zip_location):
-                        os.remove(zip_location)
                     uploaded_file.save(zip_location)
-                    s_db_name = save_db_to.split("/")[-1]
-                    sensor_data_dir = file_locations.sensor_data_dir
-                    database_locations_list = _unzip_databases(zip_location, s_db_name,
-                                                               overwrite=True,
-                                                               extract_folder=sensor_data_dir,
-                                                               backup_file_name=backup_file_name)
-                    if len(database_locations_list) == 0:
-                        return_msg = "Database Error"
-                        return_text2 = "No Valid SQLite3 Database Found in Zip"
-                    else:
-                        database_structure_check()
+                    system_thread = Thread(target=_db_replacement_zip_worker,
+                                           args=(save_db_to, zip_location, backup_file_name, database_structure_check))
+                    system_thread.daemon = True
+                    system_thread.start()
                 else:
                     uploaded_filename_extension = uploaded_file.filename.split(".")[-1]
-                    for sql_valid_extension in sqlite_valid_extensions_list:
-                        if uploaded_filename_extension == sql_valid_extension:
-                            uploaded_file.save(temp_db_location)
-                            if validate_sqlite_database(temp_db_location, check_for_table=table_check):
-                                if _zip_and_delete_database(save_db_to, backup_file_name):
-                                    os.rename(temp_db_location, save_db_to)
-                                    database_structure_check()
-                                else:
-                                    return_msg = "Database Backup Failed"
-                                    return_text2 = "Database Replacement Cancelled"
-                            else:
-                                return_msg = "Database Error"
-                                return_text2 = "Invalid SQLite3 Database"
+                    if uploaded_filename_extension in sqlite_valid_extensions_list:
+                        uploaded_file.save(temp_db_location)
+                        system_thread = Thread(target=_db_replacement_raw_worker,
+                                               args=(temp_db_location, table_check, save_db_to,
+                                                     backup_file_name, database_structure_check))
+                        system_thread.daemon = True
+                        system_thread.start()
             else:
-                return_msg = "Database Error"
-                return_text2 = "No File Uploaded"
-            logger.network_logger.info("Database Upload: " + return_msg + " - " + return_text2)
-            return get_message_page(return_msg, return_text2, page_url="sensor-system", skip_menu_select=True)
+                logger.network_logger.error("Database Upload: No File Uploaded")
+        return_msg = "Database(s) Uploaded"
+        db_check_msg = "Check logs for more details"
+        return get_message_page(return_msg, db_check_msg, page_url="sensor-system", skip_menu_select=True)
     return render_template("ATPro_admin/page_templates/system/system-db-uploads.html")
+
+
+def _db_upload_zip_worker(zip_location, new_db_name):
+    database_locations_list = _unzip_databases(zip_location, new_db_name)
+    if len(database_locations_list) == 0:
+        logger.network_logger.error("Database Upload: No Valid Database Found in Zip")
+    else:
+        logger.network_logger.info("Database Upload " + new_db_name + " Okay")
+
+
+def _db_upload_raw_worker(save_sqlite_to_file):
+    if validate_sqlite_database(save_sqlite_to_file):
+        uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
+        app_cached_variables.uploaded_databases_list = uploaded_db_filenames
+        logger.network_logger.info("Database Upload " + save_sqlite_to_file + " Okay")
+    else:
+        os.remove(save_sqlite_to_file)
+        logger.network_logger.error("Database Upload: Invalid SQLite3 Database File")
+
+
+def _db_replacement_zip_worker(save_db_to, zip_location, backup_file_name, database_structure_check):
+    s_db_name = save_db_to.split("/")[-1]
+    sensor_data_dir = file_locations.sensor_data_dir
+    database_locations_list = _unzip_databases(zip_location, s_db_name,
+                                               overwrite=True,
+                                               extract_folder=sensor_data_dir,
+                                               backup_file_name=backup_file_name)
+    if len(database_locations_list) == 0:
+        logger.network_logger.error("Database Upload: No Valid Database Found in Zip")
+    else:
+        database_structure_check()
+        logger.network_logger.info("Database Replacement " + save_db_to + " Complete")
+
+
+def _db_replacement_raw_worker(temp_db_location, table_check, save_db_to, backup_file_name, database_structure_check):
+    if validate_sqlite_database(temp_db_location, check_for_table=table_check):
+        if _zip_and_delete_database(save_db_to, backup_file_name):
+            os.rename(temp_db_location, save_db_to)
+            database_structure_check()
+            logger.network_logger.info("Database Replacement " + save_db_to + " Complete")
+        else:
+            logger.network_logger.error("Database Backup Failed: Database Replacement Cancelled")
+    else:
+        logger.network_logger.error("Database Upload: Invalid SQLite3 Database")
 
 
 def _get_drop_down_items(file_list):
@@ -265,31 +301,30 @@ def _unzip_databases(zip_location, new_db_name, overwrite=False, backup_file_nam
     with zipfile.ZipFile(zip_location, "r") as temp_zip:
         zip_file_infos = temp_zip.infolist()
         for zip_info in zip_file_infos:
-            for sql_valid_extension in sqlite_valid_extensions_list:
-                if zip_info.filename.split(".")[-1] == sql_valid_extension:
-                    db_name_in_zip = zip_info.filename
-                    if overwrite and os.path.isfile(save_sqlite_to_file):
-                        zip_info.filename = "upload_test.sqlite"
-                        tmp_database_full_path = extract_folder + "/" + zip_info.filename
-                        if os.path.isfile(tmp_database_full_path):
-                            os.remove(tmp_database_full_path)
-                        temp_zip.extract(zip_info, path=extract_folder)
-                        if validate_sqlite_database(tmp_database_full_path):
-                            _zip_and_delete_database(save_sqlite_to_file, backup_file_name)
-                            os.rename(tmp_database_full_path, save_sqlite_to_file)
-                        else:
-                            return []
+            if zip_info.filename.split(".")[-1] in sqlite_valid_extensions_list:
+                db_name_in_zip = zip_info.filename
+                if overwrite and os.path.isfile(save_sqlite_to_file):
+                    zip_info.filename = "upload_test.sqlite"
+                    tmp_database_full_path = extract_folder + "/" + zip_info.filename
+                    if os.path.isfile(tmp_database_full_path):
+                        os.remove(tmp_database_full_path)
+                    temp_zip.extract(zip_info, path=extract_folder)
+                    if validate_sqlite_database(tmp_database_full_path):
+                        _zip_and_delete_database(save_sqlite_to_file, backup_file_name)
+                        os.rename(tmp_database_full_path, save_sqlite_to_file)
                     else:
-                        zip_info.filename = new_db_name
-                        temp_zip.extract(zip_info, path=extract_folder)
+                        return []
+                else:
+                    zip_info.filename = new_db_name
+                    temp_zip.extract(zip_info, path=extract_folder)
 
-                    if validate_sqlite_database(save_sqlite_to_file):
-                        return_database_locations_list.append(zip_info.filename)
-                    else:
-                        os.remove(save_sqlite_to_file)
-                        log_msg = "Upload Database - Invalid Database found in Zip: "
-                        logger.network_logger.warning(log_msg + db_name_in_zip)
-                    new_db_name = get_clean_db_name(new_db_name)
+                if validate_sqlite_database(save_sqlite_to_file):
+                    return_database_locations_list.append(zip_info.filename)
+                else:
+                    os.remove(save_sqlite_to_file)
+                    log_msg = "Upload Database - Invalid Database found in Zip: "
+                    logger.network_logger.warning(log_msg + db_name_in_zip)
+                new_db_name = get_clean_db_name(new_db_name)
     if os.path.isfile(zip_location):
         os.remove(zip_location)
     backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.uploaded_databases_folder)
