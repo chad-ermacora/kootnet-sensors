@@ -22,7 +22,8 @@ from configuration_modules import app_config_access
 
 round_decimal_to = 5
 # Update readings in seconds
-sleep_between_readings_seconds = 1
+sleep_between_readings_seconds = 0.25
+use_as7262_led = 0  # 0=Disabled, 1=Enabled
 
 
 class CreateAS7262:
@@ -45,7 +46,7 @@ class CreateAS7262:
             self.as7262_access.set_gain(64)
             self.as7262_access.set_integration_time(17.857)
             self.as7262_access.set_measurement_mode(2)
-            self.as7262_access.set_illumination_led(0)
+            self.as7262_access.set_illumination_led(use_as7262_led)
 
             self.thread_readings_updater = Thread(target=self._readings_updater)
             self.thread_readings_updater.daemon = True
