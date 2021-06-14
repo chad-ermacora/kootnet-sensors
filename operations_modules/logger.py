@@ -76,16 +76,19 @@ def get_number_of_log_entries(log_file):
 
 def get_sensor_log(log_file, max_lines=max_log_lines_return):
     """ Opens provided log file location and returns its content. """
-    with open(log_file, "r") as log_content:
-        log_lines = log_content.readlines()
-        if max_lines:
-            log_lines = log_lines[-max_lines:]
-        log_lines.reverse()
+    try:
+        with open(log_file, "r") as log_content:
+            log_lines = log_content.readlines()
+            if max_lines:
+                log_lines = log_lines[-max_lines:]
+            log_lines.reverse()
 
-        return_log = ""
-        for log in log_lines:
-            return_log += log
-        return return_log
+            return_log = ""
+            for log in log_lines:
+                return_log += log
+            return return_log
+    except FileNotFoundError:
+        return "Log not found: " + log_file
 
 
 def clear_primary_log():
