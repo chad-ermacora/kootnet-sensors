@@ -181,8 +181,8 @@ def _update_search_sensor_check_ins(sensor_id):
 
 
 def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checkin_database):
-    app_cached_variables.checkin_search_primary_log = ""
-    app_cached_variables.checkin_search_sensors_log = ""
+    app_cached_variables.checkin_search_primary_log = "No Logs Found"
+    app_cached_variables.checkin_search_sensors_log = "No Logs Found"
 
     get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + sensor_id + \
                           "' WHERE " + db_sensor_check_in_primary_log + " != '' ORDER BY " \
@@ -194,11 +194,14 @@ def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checki
                           + db_all_tables_datetime + " DESC LIMIT 1;"
     sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
     try:
-        app_cached_variables.checkin_search_primary_log = str(primary_logs[0][0])
-        app_cached_variables.checkin_search_sensors_log = str(sensors_logs[0][0])
+        if len(primary_logs) > 0:
+            app_cached_variables.checkin_search_primary_log = str(primary_logs[0][0])
+        if len(sensors_logs) > 0:
+            app_cached_variables.checkin_search_sensors_log = str(sensors_logs[0][0])
     except Exception as error:
-        log_msg = "Sensor Checkin Search - Unable to get/set logs: "
-        logger.network_logger.warning(log_msg + str(error))
+        logger.network_logger.warning("Sensor Checkin Search - Unexpected error getting logs: " + str(error))
+        app_cached_variables.checkin_search_primary_log = str(primary_logs)
+        app_cached_variables.checkin_search_sensors_log = str(sensors_logs)
 
 
 def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin_database):
