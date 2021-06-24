@@ -239,7 +239,6 @@ lookupTable2 = [4096000000, 2048000000, 1024000000, 512000000,
 
 def bytes_to_word(msb, lsb, bits=16, signed=False):
     """Convert a most and least significant byte into a word."""
-    # TODO: Reimpliment with struct
     word = (msb << 8) | lsb
     if signed:
         word = twos_comp(word, bits)
@@ -248,7 +247,6 @@ def bytes_to_word(msb, lsb, bits=16, signed=False):
 
 def twos_comp(val, bits=16):
     """Convert two bytes into a two's compliment signed word."""
-    # TODO: Reimpliment with struct
     if val & (1 << (bits - 1)) != 0:
         val = val - (1 << bits)
     return val
