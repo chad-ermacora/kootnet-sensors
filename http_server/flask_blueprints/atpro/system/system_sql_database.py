@@ -18,6 +18,7 @@
 """
 import os
 import zipfile
+from random import randint
 from datetime import datetime
 from threading import Thread
 from flask import Blueprint, render_template, request, send_file
@@ -147,15 +148,14 @@ def html_atpro_sensor_settings_database_management():
     )
 
 
-# TODO: Make zip_location different for each database type? or disable buttons while thread running
 @html_atpro_system_sql_db_routes.route("/atpro/system-db-uploads", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_settings_database_uploads():
-    zip_location = uploaded_databases_folder + "/temp_zip.zip"
     if request.method == "POST":
-        button_pressed = str(request.form.get("db_upload_button"))
+        zip_location = uploaded_databases_folder + "/temp_zip" + str(randint(100, 999)) + ".zip"
         if os.path.isfile(zip_location):
             os.remove(zip_location)
+        button_pressed = str(request.form.get("db_upload_button"))
         if button_pressed == "upload":
             uploaded_file = request.files["command_data"]
             if uploaded_file is not None:
