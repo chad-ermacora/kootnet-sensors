@@ -45,11 +45,12 @@ class CreateBME280:
         self.sensor_in_use = True
         try:
             temp_var = self.bme280.get_temperature()
+            temp_var = round(temp_var, round_decimal_to)
         except Exception as error:
             temp_var = 0.0
             logger.sensors_logger.error("Pimoroni BME280 Temperature - Failed: " + str(error))
         self.sensor_in_use = False
-        return round(temp_var, round_decimal_to)
+        return temp_var
 
     def pressure(self):
         """ Returns Pressure as a Integer. """
@@ -58,11 +59,12 @@ class CreateBME280:
         self.sensor_in_use = True
         try:
             pressure_hpa = self.bme280.get_pressure()
+            pressure_hpa = int(pressure_hpa)
         except Exception as error:
-            pressure_hpa = 0.0
+            pressure_hpa = 0
             logger.sensors_logger.error("Pimoroni BME280 Pressure - Failed: " + str(error))
         self.sensor_in_use = False
-        return int(pressure_hpa)
+        return pressure_hpa
 
     def humidity(self):
         """ Returns Humidity as a Float. """
@@ -71,8 +73,9 @@ class CreateBME280:
         self.sensor_in_use = True
         try:
             humidity = self.bme280.get_humidity()
+            humidity = round(float(humidity), round_decimal_to)
         except Exception as error:
             humidity = 0.0
             logger.sensors_logger.error("Pimoroni BME280 Humidity - Failed: " + str(error))
         self.sensor_in_use = False
-        return float(humidity)
+        return humidity
