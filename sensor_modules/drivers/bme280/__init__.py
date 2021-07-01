@@ -1,233 +1,279 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-"""
-Full credit to https://github.com/IDCFChannel/bme280-meshblu-py (or who ever
-originally wrote bme280_sample.py)
-"""
-
-__author__ = 'Kieran Brownlees'
-__email__ = 'kieran@mootium.co'
-__version__ = '0.1.0'
+"""BME280 Driver."""
+from ..i2cdevice import Device, Register, BitField, _int_to_bytes
+from ..i2cdevice.adapter import LookupAdapter, Adapter
+import struct
+import time
 
 
-import argparse
-from collections import namedtuple
+__version__ = '0.1.1'
 
-from . import bme280_i2c
-
-setup_run = False
-
-calibration_h = []
-calibration_p = []
-calibration_t = []
-
-t_fine = 0.0
-
-Data = namedtuple('Data', ['humidity', 'pressure', 'temperature'])
+CHIP_ID = 0x60
+I2C_ADDRESS_GND = 0x76
+I2C_ADDRESS_VCC = 0x77
 
 
-def reset_calibration():
-    global calibration_h, calibration_p, calibration_t, t_fine
-    calibration_h = []
-    calibration_p = []
-    calibration_t = []
-    t_fine = 0.0
+class S8Adapter(Adapter):
+    """Convert unsigned 8bit integer to signed."""
+
+    def _decode(self, value):
+        if value & (1 << 7):
+            value -= 1 << 8
+        return value
 
 
-def populate_calibration_data():
-    raw_data = []
+class S16Adapter(Adapter):
+    """Convert unsigned 16bit integer to signed."""
 
-    for i in range(0x88, 0x88 + 24):
-        raw_data.append(bme280_i2c.read_byte_data(i))
-    raw_data.append(bme280_i2c.read_byte_data(0xA1))
-    for i in range(0xE1, 0xE1 + 7):
-        raw_data.append(bme280_i2c.read_byte_data(i))
-
-    calibration_t.append((raw_data[1] << 8) | raw_data[0])
-    calibration_t.append((raw_data[3] << 8) | raw_data[2])
-    calibration_t.append((raw_data[5] << 8) | raw_data[4])
-    calibration_p.append((raw_data[7] << 8) | raw_data[6])
-    calibration_p.append((raw_data[9] << 8) | raw_data[8])
-    calibration_p.append((raw_data[11] << 8) | raw_data[10])
-    calibration_p.append((raw_data[13] << 8) | raw_data[12])
-    calibration_p.append((raw_data[15] << 8) | raw_data[14])
-    calibration_p.append((raw_data[17] << 8) | raw_data[16])
-    calibration_p.append((raw_data[19] << 8) | raw_data[18])
-    calibration_p.append((raw_data[21] << 8) | raw_data[20])
-    calibration_p.append((raw_data[23] << 8) | raw_data[22])
-    calibration_h.append(raw_data[24])
-    calibration_h.append((raw_data[26] << 8) | raw_data[25])
-    calibration_h.append(raw_data[27])
-    calibration_h.append((raw_data[28] << 4) | (0x0F & raw_data[29]))
-    calibration_h.append((raw_data[30] << 4) | ((raw_data[29] >> 4) & 0x0F))
-    calibration_h.append(raw_data[31])
-
-    for i in range(1, 2):
-        if calibration_t[i] & 0x8000:
-            calibration_t[i] = (-calibration_t[i] ^ 0xFFFF) + 1
-
-    for i in range(1, 8):
-        if calibration_p[i] & 0x8000:
-            calibration_p[i] = (-calibration_p[i] ^ 0xFFFF) + 1
-
-    for i in range(0, 6):
-        if calibration_h[i] & 0x8000:
-            calibration_h[i] = (-calibration_h[i] ^ 0xFFFF) + 1
+    def _decode(self, value):
+        return struct.unpack('<h', _int_to_bytes(value, 2))[0]
 
 
-def read_adc():
-    data = []
-    for i in range(0xF7, 0xF7 + 8):
-        data.append(bme280_i2c.read_byte_data(i))
-    pres_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
-    temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
-    hum_raw = (data[6] << 8) | data[7]
+class U16Adapter(Adapter):
+    """Convert from bytes to an unsigned 16bit integer."""
 
-    return Data(hum_raw, pres_raw, temp_raw)
+    def _decode(self, value):
+        return struct.unpack('<H', _int_to_bytes(value, 2))[0]
 
 
-def read_all():
-    data = read_adc()
-    return Data(
-        read_humidity(data),
-        read_pressure(data),
-        read_temperature(data)
-    )
+class H5Adapter(S16Adapter):
+    def _decode(self, value):
+        b = _int_to_bytes(value, 2)
+        r = ((b[0] >> 4) & 0x0F) | (b[1] << 4)
+        if r & (1 << 11):
+            r = r - 1 << 12
+        return r
 
 
-def read_humidity(data=None):
-    if data is None:
-        data = read_adc()
-
-    # We need a temperature reading to calculate humidity
-    read_temperature(data)
-    return compensate_humidity(data.humidity)
-
-
-def read_pressure(data=None):
-    if data is None:
-        data = read_adc()
-
-    # We need a temperature reading to calculate pressure
-    read_temperature(data)
-    return compensate_pressure(data.pressure)
+class H4Adapter(S16Adapter):
+    def _decode(self, value):
+        b = _int_to_bytes(value, 2)
+        r = (b[0] << 4) | (b[1] & 0x0F)
+        if r & (1 << 11):
+            r = r - 1 << 12
+        return r
 
 
-def read_temperature(data=None):
-    if data is None:
-        data = read_adc()
+class BME280Calibration():
+    def __init__(self):
+        self.dig_t1 = 0
+        self.dig_t2 = 0
+        self.dig_t3 = 0
 
-    return compensate_temperature(data.temperature)
+        self.dig_p1 = 0
+        self.dig_p2 = 0
+        self.dig_p3 = 0
+        self.dig_p4 = 0
+        self.dig_p5 = 0
+        self.dig_p6 = 0
+        self.dig_p7 = 0
+        self.dig_p8 = 0
+        self.dig_p9 = 0
 
+        self.dig_h1 = 0.0
+        self.dig_h2 = 0.0
+        self.dig_h3 = 0.0
+        self.dig_h4 = 0.0
+        self.dig_h5 = 0.0
+        self.dig_h6 = 0.0
 
-def compensate_pressure(adc_p):
-    v1 = (t_fine / 2.0) - 64000.0
-    v2 = (((v1 / 4.0) * (v1 / 4.0)) / 2048) * calibration_p[5]
-    v2 += ((v1 * calibration_p[4]) * 2.0)
-    v2 = (v2 / 4.0) + (calibration_p[3] * 65536.0)
-    v1 = (((calibration_p[2] * (((v1 / 4.0) * (v1 / 4.0)) / 8192)) / 8) + ((calibration_p[1] * v1) / 2.0)) / 262144
-    v1 = ((32768 + v1) * calibration_p[0]) / 32768
+        self.temperature_fine = 0
 
-    if v1 == 0:
-        return 0
+    def set_from_namedtuple(self, value):
+        # Iterate through a tuple supplied by i2cdevice
+        # and copy its values into the class attributes
+        for key in self.__dict__.keys():
+            try:
+                setattr(self, key, getattr(value, key))
+            except AttributeError:
+                pass
 
-    pressure = ((1048576 - adc_p) - (v2 / 4096)) * 3125
-    if pressure < 0x80000000:
-        pressure = (pressure * 2.0) / v1
-    else:
-        pressure = (pressure / v1) * 2
+    def compensate_temperature(self, raw_temperature):
+        var1 = (raw_temperature / 16384.0 - self.dig_t1 / 1024.0) * self.dig_t2
+        var2 = raw_temperature / 131072.0 - self.dig_t1 / 8192.0
+        var2 = var2 * var2 * self.dig_t3
+        self.temperature_fine = (var1 + var2)
+        return self.temperature_fine / 5120.0
 
-    v1 = (calibration_p[8] * (((pressure / 8.0) * (pressure / 8.0)) / 8192.0)) / 4096
-    v2 = ((pressure / 4.0) * calibration_p[7]) / 8192.0
-    pressure += ((v1 + v2 + calibration_p[6]) / 16.0)
+    def compensate_pressure(self, raw_pressure):
+        var1 = self.temperature_fine / 2.0 - 64000.0
+        var2 = var1 * var1 * self.dig_p6 / 32768.0
+        var2 = var2 + var1 * self.dig_p5 * 2
+        var2 = var2 / 4.0 + self.dig_p4 * 65536.0
+        var1 = (self.dig_p3 * var1 * var1 / 524288.0 + self.dig_p2 * var1) / 524288.0
+        var1 = (1.0 + var1 / 32768.0) * self.dig_p1
+        pressure = 1048576.0 - raw_pressure
+        pressure = (pressure - var2 / 4096.0) * 6250.0 / var1
+        var1 = self.dig_p9 * pressure * pressure / 2147483648.0
+        var2 = pressure * self.dig_p8 / 32768.0
+        return pressure + (var1 + var2 + self.dig_p7) / 16.0
 
-    return pressure / 100
+    def compensate_humidity(self, raw_humidity):
+        var1 = self.temperature_fine - 76800.0
+        var2 = self.dig_h4 * 64.0 + (self.dig_h5 / 16384.0) * var1
+        var3 = raw_humidity - var2
+        var4 = self.dig_h2 / 65536.0
+        var5 = 1.0 + (self.dig_h3 / 67108864.0) * var1
+        var6 = 1.0 + (self.dig_h6 / 67108864.0) * var1 * var5
+        var6 = var3 * var4 * (var5 * var6)
 
-
-def compensate_temperature(adc_t):
-    global t_fine
-    v1 = (adc_t / 16384.0 - calibration_t[0] / 1024.0) * calibration_t[1]
-    v2 = (adc_t / 131072.0 - calibration_t[0] / 8192.0) * (adc_t / 131072.0 - calibration_t[0] / 8192.0) * calibration_t[2]
-    t_fine = v1 + v2
-    temperature = t_fine / 5120.0
-    return temperature
-
-
-def compensate_humidity(adc_h):
-    var_h = t_fine - 76800.0
-    if var_h == 0:
-        return 0
-
-    var_h = (adc_h - (calibration_h[3] * 64.0 + calibration_h[4] / 16384.0 * var_h)) * (
-        calibration_h[1] / 65536.0 * (1.0 + calibration_h[5] / 67108864.0 * var_h * (
-            1.0 + calibration_h[2] / 67108864.0 * var_h)))
-    var_h *= (1.0 - calibration_h[0] * var_h / 524288.0)
-
-    if var_h > 100.0:
-        var_h = 100.0
-    elif var_h < 0.0:
-        var_h = 0.0
-
-    return var_h
-
-
-def setup():
-    global setup_run
-    if setup_run:
-        return
-
-    osrs_t = 1  # Temperature oversampling x 1
-    osrs_p = 1  # Pressure oversampling x 1
-    osrs_h = 1  # Humidity oversampling x 1
-    mode = 3  # Normal mode
-    t_sb = 5  # Tstandby 1000ms
-    filter = 0  # Filter off
-    spi3w_en = 0  # 3-wire SPI Disable
-
-    ctrl_meas_reg = (osrs_t << 5) | (osrs_p << 2) | mode
-    config_reg = (t_sb << 5) | (filter << 2) | spi3w_en
-    ctrl_hum_reg = osrs_h
-
-    bme280_i2c.write_byte_data(0xF2, ctrl_hum_reg)
-    bme280_i2c.write_byte_data(0xF4, ctrl_meas_reg)
-    bme280_i2c.write_byte_data(0xF5, config_reg)
-
-    populate_calibration_data()
-
-    setup_run = True
+        humidity = var6 * (1.0 - self.dig_h1 * var6 / 524288.0)
+        return max(0.0, min(100.0, humidity))
 
 
-def main():
-    parser = argparse.ArgumentParser()
+class BME280:
+    def __init__(self, i2c_addr=I2C_ADDRESS_GND, i2c_dev=None):
+        self.calibration = BME280Calibration()
+        self._is_setup = False
+        self._i2c_addr = i2c_addr
+        self._i2c_dev = i2c_dev
+        self._bme280 = Device([I2C_ADDRESS_GND, I2C_ADDRESS_VCC], i2c_dev=self._i2c_dev, bit_width=8, registers=(
+            Register('CHIP_ID', 0xD0, fields=(
+                BitField('id', 0xFF),
+            )),
+            Register('RESET', 0xE0, fields=(
+                BitField('reset', 0xFF),
+            )),
+            Register('STATUS', 0xF3, fields=(
+                BitField('measuring', 0b00001000),  # 1 when conversion is running
+                BitField('im_update', 0b00000001),  # 1 when NVM data is being copied
+            )),
+            Register('CTRL_MEAS', 0xF4, fields=(
+                BitField('osrs_t', 0b11100000,   # Temperature oversampling
+                         adapter=LookupAdapter({
+                             1: 0b001,
+                             2: 0b010,
+                             4: 0b011,
+                             8: 0b100,
+                             16: 0b101
+                         })),
+                BitField('osrs_p', 0b00011100,   # Pressure oversampling
+                         adapter=LookupAdapter({
+                             1: 0b001,
+                             2: 0b010,
+                             4: 0b011,
+                             8: 0b100,
+                             16: 0b101})),
+                BitField('mode', 0b00000011,     # Power mode
+                         adapter=LookupAdapter({
+                             'sleep': 0b00,
+                             'forced': 0b10,
+                             'normal': 0b11})),
+            )),
+            Register('CTRL_HUM', 0xF2, fields=(
+                BitField('osrs_h', 0b00000111,   # Humidity oversampling
+                         adapter=LookupAdapter({
+                             1: 0b001,
+                             2: 0b010,
+                             4: 0b011,
+                             8: 0b100,
+                             16: 0b101})),
+            )),
+            Register('CONFIG', 0xF5, fields=(
+                BitField('t_sb', 0b11100000,     # Temp standby duration in normal mode
+                         adapter=LookupAdapter({
+                             0.5: 0b000,
+                             62.5: 0b001,
+                             125: 0b010,
+                             250: 0b011,
+                             500: 0b100,
+                             1000: 0b101,
+                             10: 0b110,
+                             20: 0b111})),
+                BitField('filter', 0b00011100),                   # Controls the time constant of the IIR filter
+                BitField('spi3w_en', 0b0000001, read_only=True),  # Enable 3-wire SPI interface when set to 1. IE: Don't set this bit!
+            )),
+            Register('DATA', 0xF7, fields=(
+                BitField('humidity', 0x000000000000FFFF),
+                BitField('temperature', 0x000000FFFFF00000),
+                BitField('pressure', 0xFFFFF00000000000)
+            ), bit_width=8 * 8),
+            Register('CALIBRATION', 0x88, fields=(
+                BitField('dig_t1', 0xFFFF << 16 * 12, adapter=U16Adapter()),  # 0x88 0x89
+                BitField('dig_t2', 0xFFFF << 16 * 11, adapter=S16Adapter()),  # 0x8A 0x8B
+                BitField('dig_t3', 0xFFFF << 16 * 10, adapter=S16Adapter()),  # 0x8C 0x8D
+                BitField('dig_p1', 0xFFFF << 16 * 9, adapter=U16Adapter()),   # 0x8E 0x8F
+                BitField('dig_p2', 0xFFFF << 16 * 8, adapter=S16Adapter()),   # 0x90 0x91
+                BitField('dig_p3', 0xFFFF << 16 * 7, adapter=S16Adapter()),   # 0x92 0x93
+                BitField('dig_p4', 0xFFFF << 16 * 6, adapter=S16Adapter()),   # 0x94 0x95
+                BitField('dig_p5', 0xFFFF << 16 * 5, adapter=S16Adapter()),   # 0x96 0x97
+                BitField('dig_p6', 0xFFFF << 16 * 4, adapter=S16Adapter()),   # 0x98 0x99
+                BitField('dig_p7', 0xFFFF << 16 * 3, adapter=S16Adapter()),   # 0x9A 0x9B
+                BitField('dig_p8', 0xFFFF << 16 * 2, adapter=S16Adapter()),   # 0x9C 0x9D
+                BitField('dig_p9', 0xFFFF << 16 * 1, adapter=S16Adapter()),   # 0x9E 0x9F
+                BitField('dig_h1', 0x00FF),                                   # 0xA1 uint8
+            ), bit_width=26 * 8),
+            Register('CALIBRATION2', 0xE1, fields=(
+                BitField('dig_h2', 0xFFFF0000000000, adapter=S16Adapter()),   # 0xE1 0xE2
+                BitField('dig_h3', 0x0000FF00000000),                         # 0xE3 uint8
+                BitField('dig_h4', 0x000000FFFF0000, adapter=H4Adapter()),    # 0xE4 0xE5[3:0]
+                BitField('dig_h5', 0x00000000FFFF00, adapter=H5Adapter()),    # 0xE5[7:4] 0xE6
+                BitField('dig_h6', 0x000000000000FF, adapter=S8Adapter())     # 0xE7 int8
+            ), bit_width=7 * 8)
+        ))
 
-    parser.add_argument('--pressure', action='store_true', default=False)
-    parser.add_argument('--humidity', action='store_true', default=False)
-    parser.add_argument('--temperature', action='store_true', default=False)
+    def setup(self, mode='normal', temperature_oversampling=16, pressure_oversampling=16, humidity_oversampling=16, temperature_standby=500):
+        if self._is_setup:
+            return
+        self._is_setup = True
 
-    parser.add_argument('--i2c-address', default='0x76')
-    parser.add_argument('--i2c-bus', default='1')
-    args = parser.parse_args()
+        self._bme280.select_address(self._i2c_addr)
+        self._mode = mode
 
-    if args.i2c_address:
-        bme280_i2c.set_default_i2c_address(int(args.i2c_address, 0))
-    if args.i2c_bus:
-        bme280_i2c.set_default_bus(int(args.i2c_bus))
+        if mode == "forced":
+            mode = "sleep"
 
-    setup()
-    data_all = read_all()
+        try:
+            chip = self._bme280.get('CHIP_ID')
+            if chip.id != CHIP_ID:
+                raise RuntimeError("Unable to find bme280 on 0x{:02x}, CHIP_ID returned {:02x}".format(self._i2c_addr, chip.id))
+        except IOError:
+            raise RuntimeError("Unable to find bme280 on 0x{:02x}, IOError".format(self._i2c_addr))
 
-    if args.pressure:
-        print("%7.2f hPa" % data_all.pressure)
-    if args.humidity:
-        print("%7.2f %%" % data_all.humidity)
-    if args.temperature:
-        print("%7.2f C" % data_all.temperature)
+        self._bme280.set('RESET', reset=0xB6)
+        time.sleep(0.1)
 
-    if not args.pressure and not args.humidity and not args.temperature:
-        print("%7.2f hPa" % data_all.pressure)
-        print("%7.2f %%" % data_all.humidity)
-        print("%7.2f C" % data_all.temperature)
+        self._bme280.set('CTRL_HUM', osrs_h=humidity_oversampling)
 
+        self._bme280.set('CTRL_MEAS',
+                         mode=mode,
+                         osrs_t=temperature_oversampling,
+                         osrs_p=pressure_oversampling)
 
-if __name__ == '__main__':
-    main()
+        self._bme280.set('CONFIG',
+                         t_sb=temperature_standby,
+                         filter=2)
+
+        self.calibration.set_from_namedtuple(self._bme280.get('CALIBRATION'))
+        self.calibration.set_from_namedtuple(self._bme280.get('CALIBRATION2'))
+
+    def update_sensor(self):
+        self.setup()
+
+        if self._mode == "forced":
+            self._bme280.set('CTRL_MEAS', mode="forced")
+            while self._bme280.get('STATUS').measuring:
+                time.sleep(0.001)
+
+        raw = self._bme280.get('DATA')
+
+        self.temperature = self.calibration.compensate_temperature(raw.temperature)
+        self.pressure = self.calibration.compensate_pressure(raw.pressure) / 100.0
+        self.humidity = self.calibration.compensate_humidity(raw.humidity)
+
+    def get_temperature(self):
+        self.update_sensor()
+        return self.temperature
+
+    def get_pressure(self):
+        self.update_sensor()
+        return self.pressure
+
+    def get_humidity(self):
+        self.update_sensor()
+        return self.humidity
+
+    def get_altitude(self, qnh=1013.25):
+        self.update_sensor()
+        pressure = self.get_pressure()
+        altitude = 44330.0 * (1.0 - pow(pressure / qnh, (1.0 / 5.255)))
+        return altitude
