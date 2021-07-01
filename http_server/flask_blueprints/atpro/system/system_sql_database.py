@@ -140,7 +140,6 @@ def html_atpro_sensor_settings_database_management():
             logger.network_logger.error(return_text2)
             msg_name = "Database Management Error"
             return get_message_page(msg_name, str(error), page_url="sensor-system", skip_menu_select=True)
-
     return render_template(
         "ATPro_admin/page_templates/system/system-db-management.html",
         UploadedDBOptionNames=_get_drop_down_items(app_cached_variables.uploaded_databases_list),
