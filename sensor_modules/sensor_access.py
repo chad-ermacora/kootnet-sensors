@@ -210,6 +210,8 @@ def get_environment_temperature(temperature_correction=True, get_latency=False):
         temperature = sensors_direct.pimoroni_enviroplus_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_mcp9600:
         temperature = sensors_direct.pimoroni_mcp9600_a.temperature()
+    elif app_config_access.installed_sensors.pimoroni_bme280:
+        temperature = sensors_direct.pimoroni_bme280_a.temperature()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         temperature = sensors_direct.pimoroni_bmp280_a.temperature()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
@@ -264,6 +266,8 @@ def get_pressure(get_latency=False):
         pressure = sensors_direct.pimoroni_enviro2_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:
         pressure = sensors_direct.pimoroni_enviroplus_a.pressure()
+    elif app_config_access.installed_sensors.pimoroni_bme280:
+        pressure = sensors_direct.pimoroni_bme280_a.pressure()
     elif app_config_access.installed_sensors.pimoroni_bmp280:
         pressure = sensors_direct.pimoroni_bmp280_a.pressure()
     elif app_config_access.installed_sensors.raspberry_pi_sense_hat:
@@ -304,6 +308,8 @@ def get_humidity(get_latency=False):
         humidity = sensors_direct.pimoroni_bme680_a.humidity()
     elif get_latency:
         return _get_sensor_latency(get_humidity)
+    elif app_config_access.installed_sensors.pimoroni_bme280:
+        humidity = sensors_direct.pimoroni_bme280_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_enviro2:
         humidity = sensors_direct.pimoroni_enviro2_a.humidity()
     elif app_config_access.installed_sensors.pimoroni_enviroplus:

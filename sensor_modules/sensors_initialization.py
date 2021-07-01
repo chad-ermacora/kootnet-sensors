@@ -35,6 +35,7 @@ from sensor_modules.pimoroni import pimoroni_icm20948 as _pimoroni_icm20948
 from sensor_modules.pimoroni import pimoroni_0_96_spi_colour_lcd as _pimoroni_0_96_spi_colour_lcd
 from sensor_modules.pimoroni import pimoroni_11x7_led_matrix as _pimoroni_11x7_led_matrix
 from sensor_modules.pimoroni import pimoroni_bme680 as _pimoroni_bme680
+from sensor_modules.pimoroni import pimoroni_bme280 as _pimoroni_bme280
 from sensor_modules.pimoroni import pimoroni_mcp9600 as _pimoroni_mcp9600
 from sensor_modules.pimoroni import pimoroni_as7262 as _pimoroni_as7262
 from sensor_modules.pimoroni import pimoroni_sgp30 as _pimoroni_sgp30
@@ -44,6 +45,7 @@ from sensor_modules import raspberry_pi_sensehat as _raspberry_pi_sense_hat
 from sensor_modules import sensirion_sps30 as _sensirion_sps30
 from sensor_modules import maxim_dallas_1_wire_multi as _maxim_dallas_1_wire_multi
 from sensor_modules.no_sensors_dummy_sensors import CreateNoSensorsDummySensor
+from sensor_modules.sensor_compatibility_checks import check_installed_sensors_compatibility
 
 
 class CreateSensorAccess:
@@ -54,13 +56,9 @@ class CreateSensorAccess:
             self._set_dummy_sensors()
         else:
             logger.primary_logger.info(" -- Re-initializing Sensors")
-            app_cached_variables.restart_interval_recording_thread = True
-            app_cached_variables.restart_mini_display_thread = True
-            app_cached_variables.restart_mqtt_publisher_thread = True
-            app_cached_variables.restart_weather_underground_thread = True
-            app_cached_variables.restart_luftdaten_thread = True
-            app_cached_variables.restart_open_sense_map_thread = True
+
         if geteuid() == 0:
+            check_installed_sensors_compatibility()
             installed_sensors = app_config_access.installed_sensors
             # Raspberry Pi System is created first to enable I2C, SPI & Wifi
             # This is to ensure they are enabled for the other hardware Sensors
@@ -77,16 +75,11 @@ class CreateSensorAccess:
                 self.pimoroni_as7262_a = _pimoroni_as7262.CreateAS7262()
                 self.pimoroni_as7262_a.initialized_sensor = True
             if installed_sensors.pimoroni_bme680 and not self.pimoroni_bme680_a.initialized_sensor:
-                if installed_sensors.pimoroni_bmp280:
-                    message = "Pimoroni BME680 cannot be installed if the BMP280 is installed. " + \
-                              "Skipping BME680 & BMP280 - Please Remove the BMP280 OR the BME680 " + \
-                              "physically and from the Installed Sensors configuration"
-                    logger.sensors_logger.warning(message)
-                    installed_sensors.pimoroni_bme680 = 0
-                    installed_sensors.pimoroni_bmp280 = 0
-                else:
-                    self.pimoroni_bme680_a = _pimoroni_bme680.CreateBME680()
-                    self.pimoroni_bme680_a.initialized_sensor = True
+                self.pimoroni_bme680_a = _pimoroni_bme680.CreateBME680()
+                self.pimoroni_bme680_a.initialized_sensor = True
+            if installed_sensors.pimoroni_bme280 and not self.pimoroni_bme280_a.initialized_sensor:
+                self.pimoroni_bme280_a = _pimoroni_bme280.CreateBME280()
+                self.pimoroni_bme280_a.initialized_sensor = True
             if installed_sensors.pimoroni_mcp9600 and not self.pimoroni_mcp9600_a.initialized_sensor:
                 self.pimoroni_mcp9600_a = _pimoroni_mcp9600.CreateMCP9600()
                 self.pimoroni_mcp9600_a.initialized_sensor = True
@@ -141,6 +134,15 @@ class CreateSensorAccess:
             if installed_sensors.w1_therm_sensor and not self.w1_therm_sensor_a.initialized_sensor:
                 self.w1_therm_sensor_a = _maxim_dallas_1_wire_multi.CreateW1ThermSenor()
                 self.w1_therm_sensor_a.initialized_sensor = True
+
+            if not first_start:
+                app_cached_variables.restart_interval_recording_thread = True
+                app_cached_variables.restart_all_trigger_threads = True
+                app_cached_variables.restart_mini_display_thread = True
+                app_cached_variables.restart_mqtt_publisher_thread = True
+                app_cached_variables.restart_weather_underground_thread = True
+                app_cached_variables.restart_luftdaten_thread = True
+                app_cached_variables.restart_open_sense_map_thread = True
         else:
             logger.sensors_logger.info(" -- Hardware Based Sensor Initializations Skipped - root required")
 
@@ -156,6 +158,7 @@ class CreateSensorAccess:
         self.pimoroni_bh1745_a = CreateNoSensorsDummySensor()
         self.pimoroni_as7262_a = CreateNoSensorsDummySensor()
         self.pimoroni_bme680_a = CreateNoSensorsDummySensor()
+        self.pimoroni_bme280_a = CreateNoSensorsDummySensor()
         self.pimoroni_mcp9600_a = CreateNoSensorsDummySensor()
         self.pimoroni_bmp280_a = CreateNoSensorsDummySensor()
         self.pimoroni_enviro_a = CreateNoSensorsDummySensor()
