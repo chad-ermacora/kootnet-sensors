@@ -1,6 +1,6 @@
 import time
-from i2cdevice import Device, Register, BitField
-from i2cdevice.adapter import Adapter, LookupAdapter
+from ..i2cdevice import Device, Register, BitField
+from ..i2cdevice.adapter import Adapter, LookupAdapter
 
 
 __version__ = '0.0.2'
