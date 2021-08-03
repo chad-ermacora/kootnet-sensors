@@ -59,9 +59,9 @@ class CreateBME280:
         self.sensor_in_use = True
         try:
             pressure_hpa = self.bme280.get_pressure()
-            pressure_hpa = int(pressure_hpa)
+            pressure_hpa = round(float(pressure_hpa), round_decimal_to)
         except Exception as error:
-            pressure_hpa = 0
+            pressure_hpa = 0.0
             logger.sensors_logger.error("Pimoroni BME280 Pressure - Failed: " + str(error))
         self.sensor_in_use = False
         return pressure_hpa
