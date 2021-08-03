@@ -15,22 +15,50 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+    Sensor Port list - I2C Ports
+
+    0x10 = VEML6075
+    0x19 = MICS6814,
+    0x23 = LTR-559,
+    0x26 = MSA301,
+    0x29 = VL53L1X,
+    0x38/0x39 = bh1745,
+    0x3C/0x3D = 1.12" Mono OLED (128x128 - white/black),
+    0x48/0x49 = ADS1015 ADC,
+    0x49 = AS7262,
+    0x58 = SGP30,
+    0x66/0x67 = MCP9600,
+    0x68/0x69 = ICM20948,
+    0x75/0x77 = Pimoroni 11x7 LED Matrix,
+    0x76/0x77 = BME680/688, BME280, BMP280
+    0x1D/0x1E = LSM303D,
+
 """
 from operations_modules import logger
 from configuration_modules import app_config_access
 
-installed_sensors = app_config_access.installed_sensors
-
 
 def check_installed_sensors_compatibility():
-    if installed_sensors.pimoroni_bme680:
-        installed_sensors.pimoroni_bme280 = 0
-        installed_sensors.pimoroni_bmp280 = 0
-    elif installed_sensors.pimoroni_bme280:
-        installed_sensors.pimoroni_bmp280 = 0
+    if app_config_access.installed_sensors.pimoroni_bme680:
+        if app_config_access.installed_sensors.pimoroni_bme280:
+            log_incompatible_sensor("BME680/688", "BME280")
+            app_config_access.installed_sensors.pimoroni_bme280 = 0
+        if app_config_access.installed_sensors.pimoroni_bmp280:
+            log_incompatible_sensor("BME680/688", "BMP280")
+            app_config_access.installed_sensors.pimoroni_bmp280 = 0
+        if app_config_access.installed_sensors.pimoroni_matrix_11x7:
+            logger.sensors_logger.warning("11x7 Matrix display MAY share a port with BME280/BME680/BME688/BMP280")
+    elif app_config_access.installed_sensors.pimoroni_bme280:
+        if app_config_access.installed_sensors.pimoroni_bmp280:
+            log_incompatible_sensor("BME280", "BMP280")
+            app_config_access.installed_sensors.pimoroni_bmp280 = 0
+        if app_config_access.installed_sensors.pimoroni_matrix_11x7:
+            logger.sensors_logger.warning("11x7 Matrix display MAY share a port with BME280/BME680/BME688/BMP280")
 
-    # ToDo: Add log entry with incompatible sensors and action taken
-    if False:
-        logger.sensors_logger.warning("Some sensor(s) are trying to use the same port, sensor(s) disabled")
-        installed_sensors.update_configuration_settings_list()
-        installed_sensors.save_config_to_file()
+
+def log_incompatible_sensor(left_enabled_sensor_name, disabled_sensor_name):
+    log_msg = left_enabled_sensor_name + " and " + disabled_sensor_name + " share the same port - " \
+              + disabled_sensor_name + " has been disabled"
+    logger.sensors_logger.warning(log_msg)
