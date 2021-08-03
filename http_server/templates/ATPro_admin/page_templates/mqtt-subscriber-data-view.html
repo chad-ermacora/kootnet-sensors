@@ -12,7 +12,7 @@
                 Last {{ MQTTShowing }} MQTT Subscriber Messages
             </a></h2>
 
-            <h4>This will automatically refresh every 30 seconds</h4>
+            <h4>This will automatically refresh every 5 minutes</h4>
 
             <button class="pure-button" type="button"
                     onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
@@ -74,7 +74,7 @@
     refresh_timer = setTimeout(() => {
         clearTimeout(refresh_timer);
         RefreshPageTimed();
-    }, 30000);
+    }, 300000);
 
     if (screen.width < 500) {
         let sensor_id = document.getElementsByClassName("sensor-id");
