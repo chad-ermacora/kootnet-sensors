@@ -118,7 +118,7 @@ class CreateATProMenuNotificationClass:
 
 
 html_sensor_readings_row = """
-    <div class='col-2 col-m-4 col-sm-6'>
+    <div class='col-3 col-m-6 col-sm-12'>
         <div class="card">
             <div class="card-content">
                 <div class="readings-header">{{ SensorName }}</div>

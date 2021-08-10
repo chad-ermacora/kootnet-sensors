@@ -1,77 +1,85 @@
 <div class="col-12 col-m-12 col-sm-12">
-    <div class="counter bg-danger">
-        <h2 style="color: black;"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
-        <p style="color: black;">When replacing primary databases,
-            existing readings in the current database will no longer be accessible.<br>
-        </p>
+    <div class="card">
+        <div class="card-content">
+            <h2 style="color: red;"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
+            <p>When replacing primary databases,
+                existing readings in the current database will no longer be accessible.<br>
+            </p>
+        </div>
     </div>
 </div>
 
 <div class="col-12 col-m-12 col-sm-12">
-    <div class="counter bg-primary">
-        <h2><i class="fas fa-exclamation-circle"></i> Information</h2>
-        <p>
-            Upload a zip file containing one or more SQLite3 databases or Upload a single raw SQLite3 database.<br>
-            When replacing a Local Database, a backup is created and accessible under 'Information & Downloads'.
-        </p>
+    <div class="card">
+        <div class="card-content">
+            <h2><i class="fas fa-exclamation-circle"></i> Information</h2>
+            <p>
+                Upload a zip file containing one or more SQLite3 databases or Upload a single raw SQLite3 database.<br>
+                When replacing a Local Database, a backup is created and accessible under 'Information & Downloads'.
+            </p>
+        </div>
     </div>
 </div>
 
 <div class="row">
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <form class="pure-form" method="POST" enctype="multipart/form-data" action="/atpro/system-db-uploads">
-                <h2><i class="fas fa-upload"></i> Upload Custom Database</h2>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" enctype="multipart/form-data" action="/atpro/system-db-uploads">
+                    <h2><i class="fas fa-upload"></i> Upload Custom Database</h2>
 
-                <div style="display: table; margin-left: auto; margin-right: auto;">
-                    <div style="display: table-row;">
-                        <div style="display: table-cell;">
-                            <label>Database Name<br>
-                                <input style="width: 250px;" type="text" maxlength="64"
-                                       name="UploadDatabaseName" value="ChangeMe">
-                            </label>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>Database Name<br>
+                                    <input style="width: 250px;" type="text" maxlength="64"
+                                           name="UploadDatabaseName" value="ChangeMe">
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <br>
+                    <br>
 
-                <input type="file" name="command_data" accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
+                    <input type="file" name="command_data" accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button" name="db_upload_button" value="upload">
-                    Upload
-                </button>
-            </form>
+                    <button type="submit" class="pure-button" name="db_upload_button" value="upload">
+                        Upload
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <form class="pure-form" method="post" enctype="multipart/form-data" action="/atpro/system-db-uploads">
-                <h2><i class="fas fa-upload"></i> Replace a Local Database</h2>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="post" enctype="multipart/form-data" action="/atpro/system-db-uploads">
+                    <h2><i class="fas fa-upload"></i> Replace a Local Database</h2>
 
-                <label for="database_replacement">Choose a Database:<br>
-                    <select name="DatabaseReplacementSelection" id="database_replacement">
-                        <optgroup label="Local Databases">
-                            <option value="MainDatabase">Main</option>
-                            <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
-                            <option value="CheckinDatabase">Sensor Checkins</option>
-                        </optgroup>
-                    </select>
-                </label>
+                    <label for="database_replacement">Choose a Database:<br>
+                        <select name="DatabaseReplacementSelection" id="database_replacement">
+                            <optgroup label="Local Databases">
+                                <option value="MainDatabase">Main</option>
+                                <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                                <option value="CheckinDatabase">Sensor Checkins</option>
+                            </optgroup>
+                        </select>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <input type="file" name="command_data" accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
+                    <input type="file" name="command_data" accept=".dbf,.db,.sql,.sqlite,.sqlite3,.zip" required>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button" name="db_upload_button" value="replace">
-                    Replace Database
-                </button>
-            </form>
+                    <button type="submit" class="pure-button" name="db_upload_button" value="replace">
+                        Replace Database
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
