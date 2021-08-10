@@ -118,12 +118,14 @@ class CreateATProMenuNotificationClass:
 
 
 html_sensor_readings_row = """
-<div class="col-3 col-m-6 col-sm-12">
-    <div class="counter bg-primary">
-        <span class='sensor-info'>{{ SensorName }}</span><br>
-        <span class='reading-value'>{{ SensorReading }}</span>
+    <div class='col-2 col-m-4 col-sm-6'>
+        <div class="card">
+            <div class="card-content">
+                <div class="readings-header">{{ SensorName }}</div>
+                <div class="readings">{{ SensorReading }}</div>
+            </div>
+        </div>
     </div>
-</div>
 """
 
 # Save disk read time when upgrade in progress

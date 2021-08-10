@@ -7,52 +7,58 @@
 
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <h2><a style="color: white;" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
-                Last {{ MQTTShowing }} MQTT Subscriber Messages
-            </a></h2>
+        <div class="card">
+            <div class="card-content">
+                <h2><a style="color: var(--main-color);" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
+                    Last {{ MQTTShowing }} MQTT Subscriber Messages
+                </a></h2>
 
-            <h4>This will automatically refresh every 5 minutes</h4>
+                <h4>This will automatically refresh every 5 minutes</h4>
 
-            <button class="pure-button" type="button"
-                    onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
-                View MQTT Subscriber Sensors List
-            </button>
+                <button class="pure-button" type="button"
+                        onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
+                    View MQTT Subscriber Sensors List
+                </button>
+            </div>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <h2>MQTT Subscriber Information</h2>
-            <h3>
-                <span class="info-box-data">MQTT Subscriber Status: </span>
-                <span style="color: {{ MQTTEnabledColor }};">{{ MQTTSubscriberEnabledText }}</span>
+        <div class="card">
+            <div class="card-content">
+                <h2>MQTT Subscriber Information</h2>
+                <h3>
+                    <span>MQTT Subscriber Status: </span>
+                    <span style="color: {{ MQTTEnabledColor }};">{{ MQTTSubscriberEnabledText }}</span>
 
-                <br>
+                    <br>
 
-                <span class="info-box-data">Recording Status: </span>
-                <span style="color: {{ MQTTSQLEnabledColor }};">{{ MQTTSQLSubscriberEnabledText }}</span>
+                    <span>Recording Status: </span>
+                    <span style="color: {{ MQTTSQLEnabledColor }};">{{ MQTTSQLSubscriberEnabledText }}</span>
 
-                <br>
+                    <br>
 
-                <span class="info-box-data">Broker Address: </span>{{ MQTTSubscriberServerAddress }}
+                    <span>Broker Address: </span>{{ MQTTSubscriberServerAddress }}
 
-                <br>
+                    <br>
 
-                <span class="info-box-data">Database Size: </span>{{ MQTTSubDatabaseSize }} MB
+                    <span>Database Size: </span>{{ MQTTSubDatabaseSize }} MB
 
-                <br>
+                    <br>
 
-                <span class="info-box-data">Sensors in Database: </span>{{ SQLMQTTSensorsInDB }}
-            </h3>
+                    <span>Sensors in Database: </span>{{ SQLMQTTSensorsInDB }}
+                </h3>
+            </div>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <h2>MQTT Log Clean-up</h2>
-            <h3>Showing up to {{ MQTTShowing }} log entries out of a total of {{ MQTTTotoalEntries }}</h3>
-            <button class="pure-button" onclick="ClearMQTTSubLogs()">Clear Log</button>
+        <div class="card">
+            <div class="card-content">
+                <h2>MQTT Log Clean-up</h2>
+                <h3>Showing up to {{ MQTTShowing }} log entries out of a total of {{ MQTTTotoalEntries }}</h3>
+                <button class="pure-button" onclick="ClearMQTTSubLogs()">Clear Log</button>
+            </div>
         </div>
     </div>
 </div>

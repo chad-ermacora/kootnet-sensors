@@ -1,117 +1,121 @@
 <form class="pure-form" method="POST" action="/atpro/settings-mqtt-s">
     <div class="row">
         <div class="col-6 col-m-12 col-sm-12">
-            <div class="counter bg-primary">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-mqtt-s-toggle-switch" class="toggle-switch-input"
-                           name="enable_mqtt_subscriber" {{ MQTTSubscriberChecked }}>
-                    <label class="toggle-switch-label" for="enable-mqtt-s-toggle-switch"></label>
-                    Enable MQTT Subscriber
-                </label>
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-s-toggle-switch" class="toggle-switch-input"
+                               name="enable_mqtt_subscriber" {{ MQTTSubscriberChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-s-toggle-switch"></label>
+                        Enable MQTT Subscriber
+                    </label>
 
-                <br>
+                    <br>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-mqtt-s-rec-toggle-switch" class="toggle-switch-input"
-                           name="enable_mqtt_sql_recording" {{ MQTTSQLRecordingChecked }}>
-                    <label class="toggle-switch-label" for="enable-mqtt-s-rec-toggle-switch"></label>
-                    Save Readings to SQL Database
-                </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-s-rec-toggle-switch" class="toggle-switch-input"
+                               name="enable_mqtt_sql_recording" {{ MQTTSQLRecordingChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-s-rec-toggle-switch"></label>
+                        Save Readings to SQL Database
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Broker Address or IP<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 350px;" type="text" maxlength="250" name="sub_broker_address"
-                                       value="{{ MQTTBrokerAddress }}">
+                    <label>Broker Address or IP<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 350px;" type="text" maxlength="250" name="sub_broker_address"
+                                           value="{{ MQTTBrokerAddress }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br>
+                    <br>
 
-                <label>Broker Port #<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 120px;" type="number" min="1" max="65535" name="sub_broker_port"
-                                       value="{{ MQTTBrokerPort }}">
+                    <label>Broker Port #<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 120px;" type="number" min="1" max="65535" name="sub_broker_port"
+                                           value="{{ MQTTBrokerPort }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br>
+                    <br>
 
-                <label>
-                    <a style="color: white;" target="_blank"
-                       href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
-                        Quality of Service Level
-                    </a><br>
-                    <select name="mqtt_qos_level">
-                        <option value=0 {{ MQTTQoSLevel0 }}>Level 0</option>
-                        <option value=1 {{ MQTTQoSLevel1 }}>Level 1</option>
-                        <option value=2 {{ MQTTQoSLevel2 }}>Level 2</option>
-                    </select>
-                </label>
+                    <label>
+                        <a style="color: white;" target="_blank"
+                           href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
+                            Quality of Service Level
+                        </a><br>
+                        <select name="mqtt_qos_level">
+                            <option value=0 {{ MQTTQoSLevel0 }}>Level 0</option>
+                            <option value=1 {{ MQTTQoSLevel1 }}>Level 1</option>
+                            <option value=2 {{ MQTTQoSLevel2 }}>Level 2</option>
+                        </select>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-mqtt-s-auth-toggle-switch" class="toggle-switch-input"
-                           name="enable_broker_auth" {{ MQTTSubscriberAuthChecked }}>
-                    <label class="toggle-switch-label" for="enable-mqtt-s-auth-toggle-switch"></label>
-                    Enable MQTT Authentication
-                </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-s-auth-toggle-switch" class="toggle-switch-input"
+                               name="enable_broker_auth" {{ MQTTSubscriberAuthChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-s-auth-toggle-switch"></label>
+                        Enable MQTT Authentication
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Username<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
-                                       value="{{ MQTTSubscriberUsername }}">
+                    <label>Username<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                                           value="{{ MQTTSubscriberUsername }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br>
+                    <br>
 
-                <label>Password (Optional)<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                    <label>Password (Optional)<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
+                    <button type="submit" class="pure-button">Update</button>
+                </div>
             </div>
         </div>
 
         <div class="col-6 col-m-12 col-sm-12">
-            <div class="counter bg-success">
-                <label>
-                    <a target="_blank"
-                       href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
-                        MQTT Topics
-                    </a>
-                    <br><i>Add one or more Topics separated by a comma Eg. KS/Sensor1/Temp,KS/Sensor2/Temp</i><br><br>
-                    <textarea id="subscriber_topics" name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
-                </label>
+            <div class="card">
+                <div class="card-content">
+                    <label>
+                        <a target="_blank"
+                           href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
+                            MQTT Topics
+                        </a>
+                        <br><i>Add one or more Topics separated by a comma Eg. KS/Sensor1/Temp,KS/Sensor2/Temp</i><br><br>
+                        <textarea id="subscriber_topics" name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
+                    <button type="submit" class="pure-button">Update</button>
+                </div>
             </div>
         </div>
     </div>

@@ -1,26 +1,26 @@
 <style>
-    .reading-value {
-        font-size: medium;
-        font-weight: bold;
+    .readings {
+        font-weight: bolder;
+        text-align: center;
+    }
+
+    .readings-header {
+        color: red;
+        font-weight: bolder;
+        text-align: center;
     }
 </style>
 
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <h2>Sensor Latency in Seconds</h2>
-        </div>
-    </div>
-
-    <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <div class="row">
-                    {{ HTMLReplacementCode | safe }}
-                </div>
+                <h2 style="text-align: center;">Sensor Latency in Seconds</h2>
             </div>
         </div>
     </div>
+
+    {{ HTMLReplacementCode | safe }}
 </div>
 
 <script>

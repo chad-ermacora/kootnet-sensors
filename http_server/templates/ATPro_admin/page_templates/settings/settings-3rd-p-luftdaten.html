@@ -1,38 +1,40 @@
 <div class="col-12 col-m-12 col-sm-12">
-    <div class="counter bg-primary">
-        <form class="pure-form" method="POST" action="/atpro/settings-luftdaten">
-            <label class="toggle-switch">
-                <input type="checkbox" id="enable-luftdaten-toggle-switch" class="toggle-switch-input"
-                       name="enable_luftdaten" {{ CheckedLuftdatenEnabled }}>
-                <label class="toggle-switch-label" for="enable-luftdaten-toggle-switch"></label>
-                Enable Luftdaten
-            </label>
+    <div class="card">
+        <div class="card-content">
+            <form class="pure-form" method="POST" action="/atpro/settings-luftdaten">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-luftdaten-toggle-switch" class="toggle-switch-input"
+                           name="enable_luftdaten" {{ CheckedLuftdatenEnabled }}>
+                    <label class="toggle-switch-label" for="enable-luftdaten-toggle-switch"></label>
+                    Enable Luftdaten
+                </label>
 
-            <br><br>
+                <br><br>
 
-            <label>
-                Sensor ID<br>
-                <input style="width: 250px;" type="text" maxlength="100" name="station_id"
-                       value="{{ LuftdatenStationID }}" disabled>
-            </label>
+                <label>
+                    Sensor ID<br>
+                    <input style="width: 250px;" type="text" maxlength="100" name="station_id"
+                           value="{{ LuftdatenStationID }}" disabled>
+                </label>
 
-            <br><br>
+                <br><br>
 
-            <label>
-                Seconds between Updates<br>
-                <div style="display: table; margin-left: auto; margin-right: auto;">
-                    <div style="display: table-row;">
-                        <div style="display: table-cell;">
-                            <input style="width: 100px;" type="number" min="1"
-                                   name="station_interval" value="{{ LuftdatenIntervalSeconds }}">
+                <label>
+                    Seconds between Updates<br>
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <input style="width: 100px;" type="number" min="1"
+                                       name="station_interval" value="{{ LuftdatenIntervalSeconds }}">
+                            </div>
                         </div>
                     </div>
-                </div>
-            </label>
+                </label>
 
-            <br><br>
+                <br><br>
 
-            <button type="submit" class="pure-button">Update</button>
-        </form>
+                <button type="submit" class="pure-button">Update</button>
+            </form>
+        </div>
     </div>
 </div>

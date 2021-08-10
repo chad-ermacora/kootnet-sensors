@@ -1,75 +1,77 @@
 <div class="row">
     <div class="col-8 col-m-12 col-sm-12">
-        <div class="counter bg-primary">
-            <form class="pure-form" method="POST" action="/atpro/settings-wu">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="wu_enabled" class="toggle-switch-input"
-                           name="enable_weather_underground" {{ CheckedWUEnabled }}>
-                    <label class="toggle-switch-label" for="wu_enabled"></label>
-                    Enable Weather UnderGround
-                </label>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-wu">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="wu_enabled" class="toggle-switch-input"
+                               name="enable_weather_underground" {{ CheckedWUEnabled }}>
+                        <label class="toggle-switch-label" for="wu_enabled"></label>
+                        Enable Weather UnderGround
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" id="wu_rapid_fire_enabled" class="toggle-switch-input"
-                           name="enable_wu_rapid_fire" {{ CheckedWURapidFire }}>
-                    <label class="toggle-switch-label" for="wu_rapid_fire_enabled"></label>
-                    Enable RapidFire Updates (Updating every 2-10 seconds)
-                </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="wu_rapid_fire_enabled" class="toggle-switch-input"
+                               name="enable_wu_rapid_fire" {{ CheckedWURapidFire }}>
+                        <label class="toggle-switch-label" for="wu_rapid_fire_enabled"></label>
+                        Enable RapidFire Updates (Updating every 2-10 seconds)
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Seconds between Updates<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 100px;" type="number" min="1" name="weather_underground_interval"
-                                       value="{{ WUIntervalSeconds }}">
+                    <label>Seconds between Updates<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="1" name="weather_underground_interval"
+                                           value="{{ WUIntervalSeconds }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-wu-outdoor-toggle-switch" class="toggle-switch-input"
-                           name="weather_underground_outdoor" {{ CheckedWUOutdoor }}>
-                    <label class="toggle-switch-label" for="enable-wu-outdoor-toggle-switch"></label>
-                    Outdoor Sensor
-                </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-wu-outdoor-toggle-switch" class="toggle-switch-input"
+                               name="weather_underground_outdoor" {{ CheckedWUOutdoor }}>
+                        <label class="toggle-switch-label" for="enable-wu-outdoor-toggle-switch"></label>
+                        Outdoor Sensor
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Station ID<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 275px;" type="text" maxlength="15"
-                                       name="station_id" value="{{ WUStationID }}">
+                    <label>Station ID<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 275px;" type="text" maxlength="15"
+                                           name="station_id" value="{{ WUStationID }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Station Key<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 275px;" type="password" maxlength="15"
-                                       name="station_key" placeholder="Leave blank to use previous Key">
+                    <label>Station Key<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 275px;" type="password" maxlength="15"
+                                           name="station_key" placeholder="Leave blank to use previous Key">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
-            </form>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

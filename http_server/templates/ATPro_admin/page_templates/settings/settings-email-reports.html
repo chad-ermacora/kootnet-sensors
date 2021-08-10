@@ -1,73 +1,77 @@
 <div class="row">
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <form class="pure-form" method="POST" action="/atpro/settings-email-reports">
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-report-toggle-switch" class="toggle-switch-input"
-                           name="email_combo_report" {{ CheckedEmailComboReport }}>
-                    <label class="toggle-switch-label" for="enable-report-toggle-switch"></label>
-                    Enable Combo Report Emails
-                </label>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-email-reports">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-report-toggle-switch" class="toggle-switch-input"
+                               name="email_combo_report" {{ CheckedEmailComboReport }}>
+                        <label class="toggle-switch-label" for="enable-report-toggle-switch"></label>
+                        Enable Combo Report Emails
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Send Email<br>
-                    <select name="email_reports_send_interval">
-                        <option value="daily" {{ EmailReportsSelectedDaily }}>Daily</option>
-                        <option value="weekly" {{ EmailReportsSelectedWeekly }}>Weekly</option>
-                        <option value="monthly" {{ EmailReportsSelectedMonthly }}>Monthly</option>
-                        <option value="yearly" {{ EmailReportsSelectedYearly }}>Yearly</option>
-                    </select>
-                </label>
+                    <label>Send Email<br>
+                        <select name="email_reports_send_interval">
+                            <option value="daily" {{ EmailReportsSelectedDaily }}>Daily</option>
+                            <option value="weekly" {{ EmailReportsSelectedWeekly }}>Weekly</option>
+                            <option value="monthly" {{ EmailReportsSelectedMonthly }}>Monthly</option>
+                            <option value="yearly" {{ EmailReportsSelectedYearly }}>Yearly</option>
+                        </select>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input type="time" name="send_email_report_at_time" placeholder="24" min="1"
-                                       value="{{ EmailReportAtHourMin }}" required>
+                    <label>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="time" name="send_email_report_at_time" placeholder="24" min="1"
+                                           value="{{ EmailReportAtHourMin }}" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br>
+                    <br>
 
-                <label>
-                    Email Reports to - Use comma separated values Eg. email1@here.com,email2@there.com<br>
-                    <textarea id="email-addresses-textarea" name="send_reports_to_email_address"
-                              style="width: 400px; height: 200px;">{{ EmailReportsToCSVAddresses }}</textarea>
-                </label>
+                    <label>
+                        Email Reports to - Use comma separated values Eg. email1@here.com,email2@there.com<br>
+                        <textarea id="email-addresses-textarea" name="send_reports_to_email_address"
+                                  style="width: 400px; height: 200px;">{{ EmailReportsToCSVAddresses }}</textarea>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
-            </form>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <form class="pure-form" method="POST" action="/atpro/test-email">
-                <h3><strong>Test Reports Email</strong></h3>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/test-email">
+                    <h3><strong>Test Reports Email</strong></h3>
 
-                <label>Email to<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 350px;" type="email" maxlength="250"
-                                       name="test_email_address" placeholder="someone@somewhere.com">
+                    <label>Email to<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 350px;" type="email" maxlength="250"
+                                           name="test_email_address" placeholder="someone@somewhere.com">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br>
+                    <br>
 
-                <button type="submit" class="pure-button" name="test_email_button" value="reports">Send Email</button>
-            </form>
+                    <button type="submit" class="pure-button" name="test_email_button" value="reports">Send Email</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

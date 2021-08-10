@@ -1,93 +1,97 @@
 <div class="row">
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <form class="pure-form" method="POST" action="/atpro/settings-email-settings">
-                <h3><strong>SMTP Server Settings</strong></h3>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-email-settings">
+                    <h3><strong>SMTP Server Settings</strong></h3>
 
-                <label>
-                    Send Email as/from<br>
-                    <input style="width: 350px;" type="email" maxlength="250"
-                           name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
-                </label>
+                    <label>
+                        Send Email as/from<br>
+                        <input style="width: 350px;" type="email" maxlength="250"
+                               name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>
-                    Server Address<br>
-                    <input style="width: 350px;" type="text" maxlength="250"
-                           name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
-                </label>
+                    <label>
+                        Server Address<br>
+                        <input style="width: 350px;" type="text" maxlength="250"
+                               name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Connection Security<br>
-                    <select id="email_security" name="email_security" onchange="EmailSecuritySelection()">
-                        <option value="email_security_none" {{ CheckedCS_None }}>None</option>
-                        <option value="email_security_ssl" {{ CheckedCS_SSL }}>Enable SSL</option>
-                        <option value="email_security_tls" {{ CheckedCS_TLS }}>Enable TLS</option>
-                    </select>
-                </label>
+                    <label>Connection Security<br>
+                        <select id="email_security" name="email_security" onchange="EmailSecuritySelection()">
+                            <option value="email_security_none" {{ CheckedCS_None }}>None</option>
+                            <option value="email_security_ssl" {{ CheckedCS_SSL }}>Enable SSL</option>
+                            <option value="email_security_tls" {{ CheckedCS_TLS }}>Enable TLS</option>
+                        </select>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>SMTP Port Number<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 125px;" type="number" id="smtp_port" name="server_smtp_port"
-                                       placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}" required>
+                    <label>SMTP Port Number<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 125px;" type="number" id="smtp_port" name="server_smtp_port"
+                                           placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}" required>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Username<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
-                                       placeholder="someone" value="{{ ServerSMTPUser }}">
+                    <label>Username<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
+                                           placeholder="someone" value="{{ ServerSMTPUser }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>Password<br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 200px;" type="password" maxlength="250"
-                                       name="server_smtp_password">
+                    <label>Password<br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="password" maxlength="250"
+                                           name="server_smtp_password">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
-            </form>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
         </div>
     </div>
 
     <div class="col-6 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <form class="pure-form" method="POST" action="/atpro/test-email">
-                <h3><strong>Test SMTP Server Settings</strong></h3>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/test-email">
+                    <h3><strong>Test SMTP Server Settings</strong></h3>
 
-                <label>Send Email to<br>
-                    <input style="width: 350px;" type="email" maxlength="250"
-                                       name="test_email_address" placeholder="someone@somewhere.com">
-                </label>
+                    <label>Send Email to<br>
+                        <input style="width: 350px;" type="email" maxlength="250"
+                                           name="test_email_address" placeholder="someone@somewhere.com">
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button" name="test_email_button" value="settings">Send Email</button>
-            </form>
+                    <button type="submit" class="pure-button" name="test_email_button" value="settings">Send Email</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
