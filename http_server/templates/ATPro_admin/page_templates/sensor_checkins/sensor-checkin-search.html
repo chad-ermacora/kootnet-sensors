@@ -18,18 +18,15 @@
 
     #log-page-content {
         text-align: left;
-        color: black;
     }
 
     .sensor-info {
         font-size: large;
         font-weight: bolder;
-        color: orange;
     }
 
     .sensor-info-names {
         font-size: x-large;
-        color: black;
     }
 </style>
 
@@ -38,63 +35,67 @@
 
 <div class="row">
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-success">
-            <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
-                <label style="color: red; font-size: medium; font-weight: bolder;">
-                    Sensor ID<br>
-                    <input style="width: 375px;" type="text" maxlength="64" name="sensor_id" id="sensor_id"
-                           placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
-                </label>
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/sensor-checkin-id-search">
+                    <label style="color: red; font-size: medium; font-weight: bolder;">
+                        Sensor ID<br>
+                        <input style="width: 375px;" type="text" maxlength="64" name="sensor_id" id="sensor_id"
+                               placeholder="Eg. KSNLs6RDX4Xvthru6WjjJpDkxdoTR9RUNh" required>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Find Sensor</button>
-            </form>
+                    <button type="submit" class="pure-button">Find Sensor</button>
+                </form>
 
-            <row>
-                {{ SearchSensorInfo | safe }}
-            </row>
+                <row>
+                    {{ SearchSensorInfo | safe }}
+                </row>
 
-            <br>
+                <br>
 
-            <button type="button" class="pure-button"
-                    onclick="SearchCheckinDeletion('sensor-checkin-search-delete-sensor')" {{ SearchSensorDeleteDisabled }}>
-                Delete Sensor
-            </button>
+                <button type="button" class="pure-button"
+                        onclick="SearchCheckinDeletion('sensor-checkin-search-delete-sensor')" {{ SearchSensorDeleteDisabled }}>
+                    Delete Sensor
+                </button>
 
-            &nbsp;&nbsp;
+                &nbsp;&nbsp;
 
-            <button type="button" class="pure-button"
-                    onclick="SearchCheckinDeletion('sensor-checkin-clear-old-checkins')" {{ SearchSensorClearDisabled }}>
-                Remove Old Checkin Data
-            </button>
+                <button type="button" class="pure-button"
+                        onclick="SearchCheckinDeletion('sensor-checkin-clear-old-checkins')" {{ SearchSensorClearDisabled }}>
+                    Remove Old Checkin Data
+                </button>
+            </div>
         </div>
     </div>
 
     <div class="col-12 col-m-12 col-sm-12">
-        <div class="counter bg-warning">
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item log-primary">
-                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
-                            Primary Log
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="pure-menu">
-                <ul class="pure-menu-list">
-                    <li class="pure-menu-item log-sensors">
-                        <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
-                            Sensor Log
-                        </a>
-                    </li>
-                </ul>
-            </div>
+        <div class="card">
+            <div class="card-content">
+                <div class="pure-menu">
+                    <ul class="pure-menu-list">
+                        <li class="pure-menu-item log-primary">
+                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                                Primary Log
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="pure-menu">
+                    <ul class="pure-menu-list">
+                        <li class="pure-menu-item log-sensors">
+                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                                Sensor Log
+                            </a>
+                        </li>
+                    </ul>
+                </div>
 
-            <br><br>
+                <br><br>
 
-            <div id="log-page-content"></div>
+                <div id="log-page-content"></div>
+            </div>
         </div>
     </div>
 </div>
