@@ -138,6 +138,7 @@ class CreateDatabaseVariables:
         self.sensor_check_in_version = "KootnetVersion"
         self.sensor_check_in_installed_sensors = "InstalledSensors"
         self.sensor_check_in_primary_log = "PrimaryLog"
+        self.sensor_check_in_network_log = "NetworkLog"
         self.sensor_check_in_sensors_log = "SensorsLog"
 
         self.trigger_state = "TriggerState"
