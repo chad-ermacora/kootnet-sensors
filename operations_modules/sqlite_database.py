@@ -66,6 +66,8 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
     except Exception as error:
         if str(error)[:13] == "no such table":
             logger.primary_logger.debug("SQL Table name was not found in the Database: " + str(error))
+        elif str(error)[:14] == "no such column":
+            logger.primary_logger.debug("SQL Column name was not found in the Database: " + str(error))
         else:
             logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
         return []
