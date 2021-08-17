@@ -21,8 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_size, adjust_datetime
-from operations_modules.sqlite_database import get_sql_element, get_sqlite_tables_in_list, get_clean_sql_table_name, \
-    get_one_db_entry
+from operations_modules.sqlite_database import get_sqlite_tables_in_list, get_clean_sql_table_name, get_one_db_entry
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
@@ -127,7 +126,6 @@ def html_atpro_mqtt_subscriber_sensors_list():
 
     sensors_html_list = []
     for sensor_id in mqtt_subscriber_sensors:
-        sensor_id = get_sql_element(sensor_id)
         sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
 
     sensors_html_list.sort(key=lambda x: x[1], reverse=True)
@@ -143,9 +141,9 @@ def html_atpro_mqtt_subscriber_sensors_list():
 
 def _get_sensor_html_table_code(sensor_id):
     sensor_id = get_clean_sql_table_name(sensor_id)
-    sensor_name = get_one_db_entry(sensor_id, db_v.sensor_name, database=db_loc)
-    sensor_ip = get_one_db_entry(sensor_id, db_v.ip, database=db_loc)
-    last_contact = adjust_datetime(get_one_db_entry(sensor_id, db_v.all_tables_datetime, database=db_loc),
+    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
+    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
+    last_contact = adjust_datetime(get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime),
                                    app_config_access.primary_config.utc0_hour_offset)
     html_code = render_template("ATPro_admin/page_templates/mqtt-subscriber-table-entry-template.html",
                                 SensorID=sensor_id,
@@ -153,3 +151,7 @@ def _get_sensor_html_table_code(sensor_id):
                                 IPAddress=sensor_ip,
                                 LastContact=last_contact)
     return [html_code, last_contact]
+
+
+def get_one_db_entry_wrapper(table_name, column_name, order="DESC"):
+    return get_one_db_entry(table_name=table_name, column_name=column_name, order=order, database=db_loc)
