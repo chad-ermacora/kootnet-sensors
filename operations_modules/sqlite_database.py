@@ -244,7 +244,10 @@ def get_sqlite_tables_in_list(database_location):
     """ Returns a list of SQLite3 database table names. """
     get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
     sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
-    return sqlite_tables_list
+    final_list = []
+    for entry in sqlite_tables_list:
+        final_list.append(get_sql_element(entry))
+    return final_list
 
 
 def get_one_db_entry(table_name, column_name, order="DESC", database=file_locations.sensor_database):
