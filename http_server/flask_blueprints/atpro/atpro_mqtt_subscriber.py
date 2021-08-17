@@ -20,7 +20,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size
+from operations_modules.app_generic_functions import get_file_size, adjust_datetime
 from operations_modules.sqlite_database import get_sql_element, get_sqlite_tables_in_list, get_clean_sql_table_name, \
     get_one_db_entry
 from configuration_modules import app_config_access
@@ -136,6 +136,7 @@ def html_atpro_mqtt_subscriber_sensors_list():
         html_sensor_table_code += sensor[0]
     return render_template(
         "ATPro_admin/page_templates/mqtt-subscriber-sensors-list.html",
+        DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
         SQLMQTTSensorsInDB=str(sensors_count),
         HTMLSensorsTableCode=html_sensor_table_code)
 
@@ -144,7 +145,8 @@ def _get_sensor_html_table_code(sensor_id):
     sensor_id = get_clean_sql_table_name(sensor_id)
     sensor_name = get_one_db_entry(sensor_id, db_v.sensor_name, database=db_loc)
     sensor_ip = get_one_db_entry(sensor_id, db_v.ip, database=db_loc)
-    last_contact = get_one_db_entry(sensor_id, db_v.all_tables_datetime, database=db_loc)
+    last_contact = adjust_datetime(get_one_db_entry(sensor_id, db_v.all_tables_datetime, database=db_loc),
+                                   app_config_access.primary_config.utc0_hour_offset)
     html_code = render_template("ATPro_admin/page_templates/mqtt-subscriber-table-entry-template.html",
                                 SensorID=sensor_id,
                                 SensorHostName=sensor_name,
