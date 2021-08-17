@@ -247,6 +247,17 @@ def get_sqlite_tables_in_list(database_location):
     return sqlite_tables_list
 
 
+def get_one_db_entry(table_name, column_name, order="DESC", database=file_locations.sensor_database):
+    """
+    Returns the last entry from the provided column in the provided table. Skips blank and null entries.
+
+    Default Options: order="DESC", database=file_locations.sensor_database.
+    """
+    sql_query = "SELECT " + column_name + " FROM '" + table_name + "' WHERE " \
+                + column_name + " != '' ORDER BY " + database_variables.all_tables_datetime + " " + order + " LIMIT 1;"
+    return get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database))
+
+
 def get_sql_element(sql_data):
     try:
         for entry1 in sql_data:
