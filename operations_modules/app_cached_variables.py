@@ -328,6 +328,7 @@ checkin_search_sensor_id = ""
 checkin_search_sensor_installed_sensors = ""
 checkin_sensor_info = ""
 checkin_search_primary_log = ""
+checkin_search_network_log = ""
 checkin_search_sensors_log = ""
 
 # Running "Service" Threads
