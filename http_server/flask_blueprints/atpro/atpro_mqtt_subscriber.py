@@ -22,13 +22,15 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_size
 from operations_modules.sqlite_database import get_sql_element, get_sqlite_tables_in_list, get_clean_sql_table_name, \
-    sql_execute_get_data
+    get_one_db_entry
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 
 html_atpro_mqtt_subscriber_routes = Blueprint("html_atpro_mqtt_subscriber_routes", __name__)
+db_loc = file_locations.mqtt_subscriber_database
+db_v = app_cached_variables.database_variables
 
 
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-view-data-stream")
@@ -139,29 +141,13 @@ def html_atpro_mqtt_subscriber_sensors_list():
 
 
 def _get_sensor_html_table_code(sensor_id):
-    dv_v = app_cached_variables.database_variables
     sensor_id = get_clean_sql_table_name(sensor_id)
-    html_sensor_code = """<tr>
-        <td>{{ SensorID }}</td>
-        <td>{{ SensorHostName }}</td>
-        <td>{{ IPAddress }}</td>
-        <td>{{ LastContact }}</td>
-    </tr>
-    """.replace("{{ SensorID }}", sensor_id)
-
-    columns_list = [dv_v.sensor_name, dv_v.ip, dv_v.all_tables_datetime]
-    replacement_variables = ["{{ SensorHostName }}", "{{ IPAddress }}", "{{ LastContact }}"]
-    sql_get_code = "SELECT {{ ColumnName }} FROM '" + sensor_id + "' WHERE {{ ColumnName }} != '' ORDER BY " \
-                          + app_cached_variables.database_variables.all_tables_datetime + " DESC LIMIT 1;"
-
-    results_list = []
-    for column, replacement_var in zip(columns_list, replacement_variables):
-        replacement_data = sql_execute_get_data(sql_get_code.replace("{{ ColumnName }}", column),
-                                                sql_database_location=file_locations.mqtt_subscriber_database)
-        replacement_data = get_sql_element(replacement_data)
-        results_list.append(replacement_data)
-        try:
-            html_sensor_code = html_sensor_code.replace(replacement_var, replacement_data)
-        except Exception as error:
-            logger.network_logger.warning("MQTT Subscriber Sensors List Creation: " + str(error))
-    return [html_sensor_code, results_list[-1]]
+    sensor_name = get_one_db_entry(sensor_id, db_v.sensor_name, database=db_loc)
+    sensor_ip = get_one_db_entry(sensor_id, db_v.ip, database=db_loc)
+    last_contact = get_one_db_entry(sensor_id, db_v.all_tables_datetime, database=db_loc)
+    html_code = render_template("ATPro_admin/page_templates/mqtt-subscriber-table-entry-template.html",
+                                SensorID=sensor_id,
+                                SensorHostName=sensor_name,
+                                IPAddress=sensor_ip,
+                                LastContact=last_contact)
+    return [html_code, last_contact]
