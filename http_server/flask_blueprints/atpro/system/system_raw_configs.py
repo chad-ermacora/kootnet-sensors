@@ -99,7 +99,7 @@ def atpro_raw_config_urls(url_path):
         config_content = get_file_content(file_locations.installed_sensors_config)
         return _config_to_html_view(config_name, file_locations.installed_sensors_config, config_content)
     elif url_path == "config-cs":
-        config_name = "Checkin Server"
+        config_name = "Sensor Checkins"
         config_content = get_file_content(file_locations.checkin_configuration)
         return _config_to_html_view(config_name, file_locations.checkin_configuration, config_content)
     elif url_path == "config-display":

@@ -1,38 +1,169 @@
-<form class="pure-form" method="POST" action="/atpro/settings-cs">
-    <label class="toggle-switch">
-        <input type="checkbox" id="enable-check-serv-toggle-switch" class="toggle-switch-input"
-               name="enable_checkin" {{ CheckedEnableCheckin }}>
-        <label class="toggle-switch-label" for="enable-check-serv-toggle-switch"></label>
-        Enable Sensor CheckIns Server
-    </label>
+<div class='row'>
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-cs-adv">
+                    <h2><u><strong>Sensor Checkins</strong></u></h2>
 
-    <br><br>
+                    <div style="display: inline-block;">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="checkin-toggle-switch" class="toggle-switch-input"
+                                   name="enable_checkin" {{ CheckedSensorCheckIns }}>
+                            <label class="toggle-switch-label" for="checkin-toggle-switch"></label>
+                            Enable Sensor Checkin
+                        </label>
+                    </div>
 
-    <label>Show Sensor count for sensors that have Checked in the past X days<br><br>
-        <div style="display: table; margin-left: auto; margin-right: auto;">
-            <div style="display: table-row;">
-                <div style="display: table-cell;">
-                    <input style="width: 100px;" type="number" max="3650" step="0.1"
-                           name="contact_in_past_days" value="{{ ContactInPastDays }}">
-                </div>
+                    <br><br>
+
+                    <div>
+                        <label>Hours between Checkins<br><br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="number" style="width: 100px;" name="checkin_hours" required
+                                               placeholder="24" min="0.01" step="0.01" max="8760" value="{{ CheckinHours }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <br>
+
+                    <div>
+                        <label>Checkin Server Address & Port<br>
+                            Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="text" style="width: 450px;" maxlength="250" id="checkin_address" name="checkin_address"
+                                               placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <br><hr>
+
+                    <h2>Include in Sensor Checkins</h2>
+
+                    <label># of lines per log<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 100px;" type="number" max="500" step="1" name="max_lines_per_log"
+                                               value="{{ MaxLinesPerLog }}">
+                                    </div>
+                                </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sn-toggle-switch" class="toggle-switch-input"
+                               name="sensor_name" {{ SensorName }}>
+                        <label class="toggle-switch-label" for="sn-toggle-switch"></label>
+                        Sensor Name
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="ip-toggle-switch" class="toggle-switch-input"
+                               name="ip_address" {{ IPAddress }}>
+                        <label class="toggle-switch-label" for="ip-toggle-switch"></label>
+                        IP Address
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pv-toggle-switch" class="toggle-switch-input"
+                               name="program_version" {{ ProgramVersion }}>
+                        <label class="toggle-switch-label" for="pv-toggle-switch"></label>
+                        Program Version
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sut-toggle-switch" class="toggle-switch-input"
+                               name="sensor_uptime" {{ SensorUptime }}>
+                        <label class="toggle-switch-label" for="sut-toggle-switch"></label>
+                        Sensor Uptime
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="s-temp-toggle-switch" class="toggle-switch-input"
+                               name="system_temperature" {{ SystemTemperature }}>
+                        <label class="toggle-switch-label" for="s-temp-toggle-switch"></label>
+                        System Temperature
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="is-toggle-switch" class="toggle-switch-input"
+                               name="installed_sensors" {{ InstalledSensors }}>
+                        <label class="toggle-switch-label" for="is-toggle-switch"></label>
+                        Installed Sensors
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pl-toggle-switch" class="toggle-switch-input"
+                               name="primary_log" {{ PrimaryLog }}>
+                        <label class="toggle-switch-label" for="pl-toggle-switch"></label>
+                        Primary Log
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="nl-toggle-switch" class="toggle-switch-input"
+                               name="network_log" {{ NetworkLog }}>
+                        <label class="toggle-switch-label" for="nl-toggle-switch"></label>
+                        Network Log
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sl-toggle-switch" class="toggle-switch-input"
+                               name="sensors_log" {{ SensorsLog }}>
+                        <label class="toggle-switch-label" for="sl-toggle-switch"></label>
+                        Sensors Log
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
             </div>
         </div>
-    </label>
+    </div>
 
-    <br><br>
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-cs">
+                    <h2><u><strong>Sensor Checkin Server</strong></u></h2>
 
-    <label>Default "Delete Sensor's with Check ins older then X days" setting<br><br>
-        <div style="display: table; margin-left: auto; margin-right: auto;">
-            <div style="display: table-row;">
-                <div style="display: table-cell;">
-                    <input style="width: 100px;" type="number" max="3650" step="0.1"
-                           name="delete_sensors_older_days" value="{{ DeleteSensorsOlderDays }}">
-                </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-check-serv-toggle-switch" class="toggle-switch-input"
+                               name="enable_checkin" {{ CheckedEnableCheckin }}>
+                        <label class="toggle-switch-label" for="enable-check-serv-toggle-switch"></label>
+                        Enable Sensor CheckIns Server
+                    </label>
+
+                    <h2><strong>Sensor Checkin View Options</strong></h2>
+
+                    <label>Include the past days in Sensor Count<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="1" max="3650" step="0.1"
+                                           name="contact_in_past_days" value="{{ ContactInPastDays }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
             </div>
         </div>
-    </label>
-
-    <br><br><br>
-
-    <button type="submit" class="pure-button">Update</button>
-</form>
+    </div>
+</div>

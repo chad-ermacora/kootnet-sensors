@@ -44,7 +44,6 @@ def html_atpro_sensor_settings_main():
         return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-    sensor_check_ins = get_html_checkbox_state(app_config_access.primary_config.enable_checkin)
     custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
     custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
     return render_template(
@@ -52,9 +51,6 @@ def html_atpro_sensor_settings_main():
         IPWebPort=app_config_access.primary_config.web_portal_port,
         CheckedDebug=debug_logging,
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
-        CheckedSensorCheckIns=sensor_check_ins,
-        CheckinHours=app_config_access.primary_config.checkin_wait_in_hours,
-        CheckinAddress=app_config_access.primary_config.checkin_url,
         CheckedCustomTempOffset=custom_temp_offset,
         temperature_offset=float(app_config_access.primary_config.temperature_offset),
         CheckedCustomTempComp=custom_temp_comp,
@@ -151,11 +147,39 @@ def html_atpro_sensor_settings_checkin_server():
     if request.method == "POST":
         app_config_access.checkin_config.update_with_html_request(request)
         app_config_access.checkin_config.save_config_to_file()
-        return get_message_page("Checkin Server Settings Updated", page_url="sensor-settings")
+        return get_message_page("Sensor Checkin Settings Updated", page_url="sensor-settings")
+    return _get_checkin_settings_page_render()
 
+
+@html_atpro_settings_routes.route("/atpro/settings-cs-adv", methods=["POST"])
+@auth.login_required
+def html_atpro_sensor_settings_checkin_adv():
+    if request.method == "POST":
+        app_config_access.checkin_config.update_with_html_request_advanced_checkin(request)
+        app_config_access.checkin_config.save_config_to_file()
+        app_cached_variables.restart_sensor_checkin_thread = True
+        return get_message_page("Advanced Checkin Settings Updated", page_url="sensor-settings")
+    return _get_checkin_settings_page_render()
+
+
+def _get_checkin_settings_page_render():
+    sensor_check_ins = get_html_checkbox_state(app_config_access.checkin_config.enable_checkin)
     return render_template(
         "ATPro_admin/page_templates/settings/settings-checkin-server.html",
+        CheckedSensorCheckIns=sensor_check_ins,
+        CheckinHours=app_config_access.checkin_config.checkin_wait_in_hours,
+        CheckinAddress=app_config_access.checkin_config.checkin_url,
         CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-        DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days
+        DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
+        MaxLinesPerLog=app_config_access.checkin_config.max_log_lines_to_send,
+        SensorName=get_html_checkbox_state(app_config_access.checkin_config.send_sensor_name),
+        IPAddress=get_html_checkbox_state(app_config_access.checkin_config.send_ip),
+        ProgramVersion=get_html_checkbox_state(app_config_access.checkin_config.send_program_version),
+        SensorUptime=get_html_checkbox_state(app_config_access.checkin_config.send_system_uptime),
+        SystemTemperature=get_html_checkbox_state(app_config_access.checkin_config.send_system_temperature),
+        InstalledSensors=get_html_checkbox_state(app_config_access.checkin_config.send_installed_sensors),
+        PrimaryLog=get_html_checkbox_state(app_config_access.checkin_config.send_primary_log),
+        NetworkLog=get_html_checkbox_state(app_config_access.checkin_config.send_network_log),
+        SensorsLog=get_html_checkbox_state(app_config_access.checkin_config.send_sensors_log)
     )

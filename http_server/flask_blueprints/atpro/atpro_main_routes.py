@@ -71,7 +71,7 @@ def html_atpro_dashboard():
         MQTTPublishing=app_cached_variables.mqtt_publisher_thread.current_state,
         MQTTSubscriber=app_cached_variables.mqtt_subscriber_thread.current_state,
         MQTTSubscriberRecording=g_t_c_e(app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording),
-        SensorCheckins=g_t_c_e(app_config_access.primary_config.enable_checkin),
+        SensorCheckins=g_t_c_e(app_config_access.checkin_config.enable_checkin),
         CheckinServer=g_t_c_e(app_config_access.checkin_config.enable_checkin_recording),
         OpenSenseMapService=app_cached_variables.open_sense_map_thread.current_state,
         WeatherUndergroundService=app_cached_variables.weather_underground_thread.current_state,
