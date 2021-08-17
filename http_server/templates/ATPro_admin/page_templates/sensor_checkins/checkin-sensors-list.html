@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Checkins Sensor List</title>
+    <meta charset="UTF-8">
+
+    <link rel="icon" type="image/png" href="/atpro/assets/AT-pro-logo.png"/>
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+</head>
+
+<style>
+    body {
+        background: black;
+        text-align: center;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    table td {
+        border-top: 1px solid;
+        padding: 15px;
+        text-align: center;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    table th {
+        border-top: 1px solid;
+        border-bottom: 1px solid;
+        padding: 15px 12px;
+        text-align: center;
+        color: darkblue;
+    }
+</style>
+
+<body>
+<h2><strong><u><a style="color: red;" href="/atpro/checkin-sensors-list">
+    Sensor Checkins Sensors List
+</a></u></strong></h2>
+
+<p style="color: red; font-size: large;">Total Sensors in Checkin Database: {{ SQLSensorsInDB }}</p>
+
+<br>
+
+<table class="pure-table">
+    <thead>
+    <tr>
+        <th>Sensor ID</th>
+        <th>Sensor Host Name</th>
+        <th>IP Address</th>
+        <th>Software Version</th>
+        <th>First Contact - UTC{{ DateTimeOffset }}</th>
+        <th>Last Contact - UTC{{ DateTimeOffset }}</th>
+    </tr>
+    </thead>
+    <tbody>
+        {{ HTMLSensorsTableCode | safe }}
+    </tbody>
+</table>
+</body>
+</html>

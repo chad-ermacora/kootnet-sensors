@@ -23,30 +23,25 @@ from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size
+from operations_modules.app_generic_functions import get_file_size, adjust_datetime
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data, write_to_sql_database, get_clean_sql_table_name, \
-    get_sql_element
+    get_sql_element, get_sqlite_tables_in_list, get_one_db_entry
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
+from http_server.flask_blueprints.sensor_checkin_server import check_sensor_checkin_columns
 
 html_atpro_sensor_check_ins_routes = Blueprint("html_atpro_sensor_check_ins_routes", __name__)
-
-db_all_tables_datetime = app_cached_variables.database_variables.all_tables_datetime
-db_sensor_check_in_version = app_cached_variables.database_variables.sensor_check_in_version
-db_sensor_check_in_installed_sensors = app_cached_variables.database_variables.sensor_check_in_installed_sensors
-db_sensor_check_in_primary_log = app_cached_variables.database_variables.sensor_check_in_primary_log
-db_sensor_check_in_sensors_log = app_cached_variables.database_variables.sensor_check_in_sensors_log
-db_sensor_uptime = app_cached_variables.database_variables.sensor_uptime
+db_loc = file_locations.sensor_checkin_database
+db_v = app_cached_variables.database_variables
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-view")
 @auth.login_required
 def html_atpro_sensor_checkin_main_view():
-    db_location = file_locations.sensor_checkin_database
     get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
                                    "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
-    sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_location)
+    sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_loc)
     sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
 
     sensor_statistics = ""
@@ -71,8 +66,8 @@ def html_atpro_sensor_checkin_main_view():
         logger.primary_logger.warning("Unknown Sensor Checkin View Error: " + str(error))
         past_checkin_percent = 0.0
 
-    if os.path.isfile(file_locations.sensor_checkin_database):
-        db_size_mb = get_file_size(file_locations.sensor_checkin_database, round_to=3)
+    if os.path.isfile(db_loc):
+        db_size_mb = get_file_size(db_loc, round_to=3)
     else:
         db_size_mb = 0.0
 
@@ -98,15 +93,54 @@ def delete_sensors_older_then():
         app_config_access.checkin_config.update_with_html_request(request, skip_all_but_delete_setting=True)
         delete_sensors_older_days = app_config_access.checkin_config.delete_sensors_older_days
         datetime_sensor_ids_list = _get_sensor_id_and_last_checkin_date_as_list()
-        current_date_time = datetime.utcnow()
+        current_date_time = datetime.utcnow() + timedelta(hours=app_config_access.primary_config.utc0_hour_offset)
         for date_and_sensor_id in datetime_sensor_ids_list:
             clean_last_checkin_date = date_and_sensor_id[1]
             if (current_date_time - clean_last_checkin_date).days >= delete_sensors_older_days:
                 _delete_sensor_id(date_and_sensor_id[0])
-        write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
+        write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
     except Exception as error:
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
     return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
+
+
+@html_atpro_sensor_check_ins_routes.route("/atpro/checkin-sensors-list")
+@auth.login_required
+def html_atpro_checkin_sensors_list():
+    checkin_sensors = get_sqlite_tables_in_list(db_loc)
+    sensors_count = len(checkin_sensors)
+
+    sensors_html_list = []
+    for sensor_id in checkin_sensors:
+        sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
+
+    sensors_html_list.sort(key=lambda x: x[1], reverse=True)
+    html_sensor_table_code = ""
+    for sensor in sensors_html_list:
+        html_sensor_table_code += sensor[0]
+    return render_template(
+        "ATPro_admin/page_templates/sensor_checkins/checkin-sensors-list.html",
+        DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
+        SQLSensorsInDB=str(sensors_count),
+        HTMLSensorsTableCode=html_sensor_table_code)
+
+
+def _get_sensor_html_table_code(sensor_id):
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
+    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
+    sw_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
+    first_contact = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime, order="ASC")
+    raw_datetime = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+    last_contact = adjust_datetime(raw_datetime, utc0_hour_offset)
+    html_code = render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-table-entry-template.html",
+                                SensorID=sensor_id,
+                                SensorHostName=sensor_name,
+                                IPAddress=sensor_ip,
+                                SoftwareVersion=sw_version,
+                                FirstContact=first_contact,
+                                LastContact=last_contact)
+    return [html_code, last_contact]
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-search")
@@ -131,6 +165,12 @@ def get_sensor_checkin_log_primary():
     return app_cached_variables.checkin_search_primary_log.replace("\n", "<br>")
 
 
+@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-network")
+@auth.login_required
+def get_sensor_checkin_log_network():
+    return app_cached_variables.checkin_search_network_log.replace("\n", "<br>")
+
+
 @html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-sensors")
 @auth.login_required
 def get_sensor_checkin_log_sensors():
@@ -149,10 +189,9 @@ def search_sensor_clear_old_check_ins():
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-search-delete-sensor")
 @auth.login_required
 def search_sensor_delete_senor_id():
-    db_location = file_locations.sensor_checkin_database
     sensor_id = app_cached_variables.checkin_search_sensor_id
     if sensor_id != "":
-        write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_location)
+        write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_loc)
         _update_search_sensor_check_ins(sensor_id)
     return view_search_sensor_check_ins()
 
@@ -180,163 +219,103 @@ def _update_search_sensor_check_ins(sensor_id):
         app_cached_variables.checkin_search_sensors_log = ""
 
 
-def _search_checkin_get_logs(sensor_id, db_location=file_locations.sensor_checkin_database):
+def _search_checkin_get_logs(sensor_id):
     app_cached_variables.checkin_search_primary_log = "No Logs Found"
+    app_cached_variables.checkin_search_network_log = "No Logs Found"
     app_cached_variables.checkin_search_sensors_log = "No Logs Found"
 
-    get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + sensor_id + \
-                          "' WHERE " + db_sensor_check_in_primary_log + " != '' ORDER BY " \
-                          + db_all_tables_datetime + " DESC LIMIT 1;"
-    primary_logs = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
+    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
+    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
+    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
 
-    get_sensors_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + sensor_id + \
-                          "' WHERE " + db_sensor_check_in_sensors_log + " != '' ORDER BY " \
-                          + db_all_tables_datetime + " DESC LIMIT 1;"
-    sensors_logs = sql_execute_get_data(get_sensors_log_sql, sql_database_location=db_location)
-    try:
-        if len(primary_logs) > 0:
-            app_cached_variables.checkin_search_primary_log = str(primary_logs[0][0])
-        if len(sensors_logs) > 0:
-            app_cached_variables.checkin_search_sensors_log = str(sensors_logs[0][0])
-    except Exception as error:
-        logger.network_logger.warning("Sensor Checkin Search - Unexpected error getting logs: " + str(error))
+    if len(primary_logs) > 0:
         app_cached_variables.checkin_search_primary_log = str(primary_logs)
+    if len(network_logs) > 0:
+        app_cached_variables.checkin_search_network_log = str(network_logs)
+    if len(sensors_logs) > 0:
         app_cached_variables.checkin_search_sensors_log = str(sensors_logs)
 
 
-def _get_sensor_info_string(sensor_id, db_location=file_locations.sensor_checkin_database):
-    get_sensor_checkin_count_per_id_sql = "SELECT count('" + db_all_tables_datetime + "') FROM '" + sensor_id + "';"
-    checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_location)
+def _get_sensor_info_string(sensor_id):
+    get_sensor_checkin_count_per_id_sql = "SELECT count('" + db_v.all_tables_datetime + "') FROM '" + sensor_id + "';"
+    checkin_count = sql_execute_get_data(get_sensor_checkin_count_per_id_sql, sql_database_location=db_loc)
 
-    get_current_version_sql = "SELECT " + db_sensor_check_in_version + " FROM '" + sensor_id + \
-                              "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-    current_sensor_version = sql_execute_get_data(get_current_version_sql, sql_database_location=db_location)
-
-    get_installed_sensors_sql = "SELECT " + db_sensor_check_in_installed_sensors + " FROM '" + sensor_id + \
-                                "' WHERE " + db_sensor_check_in_installed_sensors + " != '' ORDER BY " \
-                                + db_all_tables_datetime + " DESC LIMIT 1;"
-    last_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
-
-    get_current_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + sensor_id + \
-                             "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-    current_sensor_uptime = sql_execute_get_data(get_current_uptime_sql, sql_database_location=db_location)
-
-    get_last_sensor_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
-                                       "'ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-    last_checkin_date = sql_execute_get_data(get_last_sensor_checkin_date_sql, sql_database_location=db_location)
-
-    checkin_hour_offset = app_config_access.primary_config.utc0_hour_offset
-    clean_last_checkin_date = get_sql_element(last_checkin_date)
-    web_view_last_checkin_date = _get_converted_datetime(clean_last_checkin_date, hour_offset=checkin_hour_offset)
-    web_view_last_checkin_date = web_view_last_checkin_date.strftime("%Y-%m-%d %H:%M:%S")
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    db_datetime_entry = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+    adjusted_datetime = adjust_datetime(db_datetime_entry, utc0_hour_offset)
+    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-info-template.html",
                            SensorID=sensor_id,
-                           LastCheckinDate=web_view_last_checkin_date,
+                           SensorName=get_one_db_entry_wrapper(sensor_id, db_v.sensor_name),
+                           SensorIP=get_one_db_entry_wrapper(sensor_id, db_v.ip),
+                           LastCheckinDate=adjusted_datetime,
                            TotalCheckins=get_sql_element(checkin_count),
-                           SoftwareVersion=get_sql_element(current_sensor_version),
-                           SensorUptime=get_sql_element(current_sensor_uptime),
-                           InstalledSensors=get_sql_element(last_installed_sensors))
+                           SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version),
+                           SensorUptime=get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime),
+                           InstalledSensors=installed_sensors)
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
 @auth.login_required
 def clear_check_ins_counts():
-    for sensor_id in _get_check_in_sensor_ids():
+    for sensor_id in get_sqlite_tables_in_list(db_loc):
         _clear_old_sensor_checkin_data(sensor_id)
-    write_to_sql_database("VACUUM;", None, sql_database_location=file_locations.sensor_checkin_database)
+    write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
     return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
 
 
 def _clear_old_sensor_checkin_data(sensor_id):
-    db_location = file_locations.sensor_checkin_database
+    last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
+    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
+    program_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
+    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
+    sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
+
+    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
+    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
+    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
 
     try:
-        get_last_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
-                                    "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
+        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
 
-        get_version_sql = "SELECT " + db_sensor_check_in_version + " FROM '" + sensor_id + \
-                          "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        sensor_version = sql_execute_get_data(get_version_sql, sql_database_location=db_location)
-
-        get_installed_sensors_sql = "SELECT " + db_sensor_check_in_installed_sensors + " FROM '" + sensor_id + \
-                                    "' WHERE " + db_sensor_check_in_installed_sensors + \
-                                    " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        sensor_installed_sensors = sql_execute_get_data(get_installed_sensors_sql, sql_database_location=db_location)
-
-        get_uptime_sql = "SELECT " + db_sensor_uptime + " FROM '" + sensor_id + \
-                         "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        sensor_uptime = sql_execute_get_data(get_uptime_sql, sql_database_location=db_location)
-
-        get_primary_log_sql = "SELECT " + db_sensor_check_in_primary_log + " FROM '" + sensor_id + \
-                              "' WHERE " + db_sensor_check_in_primary_log + \
-                              " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        sensor_primary_log = sql_execute_get_data(get_primary_log_sql, sql_database_location=db_location)
-
-        get_sensor_log_sql = "SELECT " + db_sensor_check_in_sensors_log + " FROM '" + sensor_id + \
-                             "' WHERE " + db_sensor_check_in_sensors_log + \
-                             " != '' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        sensor_sensor_log = sql_execute_get_data(get_sensor_log_sql, sql_database_location=db_location)
-
-        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_location)
-
+        check_sensor_checkin_columns(sensor_id)
         sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
-                        db_all_tables_datetime + "," + \
-                        db_sensor_check_in_version + "," + \
-                        db_sensor_check_in_installed_sensors + "," + \
-                        db_sensor_uptime + "," + \
-                        db_sensor_check_in_primary_log + "," + \
-                        db_sensor_check_in_sensors_log + ")" + \
-                        " VALUES (?,?,?,?,?,?);"
+                        db_v.all_tables_datetime + "," + \
+                        db_v.sensor_name + "," + \
+                        db_v.ip + "," + \
+                        db_v.sensor_check_in_version + "," + \
+                        db_v.sensor_check_in_installed_sensors + "," + \
+                        db_v.sensor_uptime + "," + \
+                        db_v.sensor_check_in_primary_log + "," + \
+                        db_v.sensor_check_in_network_log + "," + \
+                        db_v.sensor_check_in_sensors_log + ")" + \
+                        " VALUES (?,?,?,?,?,?,?,?,?);"
 
-        sql_data = [get_sql_element(raw_last_checkin_date), get_sql_element(sensor_version),
-                    get_sql_element(sensor_installed_sensors), get_sql_element(sensor_uptime),
-                    get_sql_element(sensor_primary_log), get_sql_element(sensor_sensor_log)]
-        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_location)
+        sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
+                    sensor_uptime, primary_logs, network_logs, sensors_logs]
+        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_loc)
     except Exception as error:
         logger.network_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
 
 
-def _get_check_in_sensor_ids():
-    """
-    Returns a list of Sensor ID's from the Check-In database.
-    If include_last_datetime=True, returns a list of [datetime, sensor_id]
-    """
-    db_location = file_locations.sensor_checkin_database
-    try:
-        get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
-        sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=db_location)
-
-        cleaned_sensor_list = []
-        for sensor in sensor_ids:
-            cleaned_sensor_list.append(str(sensor[0]))
-        return cleaned_sensor_list
-    except Exception as error:
-        logger.network_logger.error("Unable to retrieve Check-In Sensor IDs: " + str(error))
-    return []
-
-
 def _get_sensor_id_and_last_checkin_date_as_list(sort_by_date_time=True):
-    db_location = file_locations.sensor_checkin_database
-    sensor_id_list = _get_check_in_sensor_ids()
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    sensor_id_list = get_sqlite_tables_in_list(db_loc)
 
     return_sensor_ids_list = []
     for sensor_id in sensor_id_list:
-        get_last_checkin_date_sql = "SELECT " + db_all_tables_datetime + " FROM '" + sensor_id + \
-                                    "' ORDER BY " + db_all_tables_datetime + " DESC LIMIT 1;"
-        raw_last_checkin_date = sql_execute_get_data(get_last_checkin_date_sql, sql_database_location=db_location)
-        clean_last_checkin_date = get_sql_element(raw_last_checkin_date)
-        return_sensor_ids_list.append([sensor_id, _get_converted_datetime(clean_last_checkin_date)])
+        last_checkin_datetime = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+        last_checkin_datetime = _get_converted_datetime(adjust_datetime(last_checkin_datetime, utc0_hour_offset))
+        return_sensor_ids_list.append([sensor_id, last_checkin_datetime])
     if sort_by_date_time:
         return_sensor_ids_list.sort(key=lambda x: x[1], reverse=True)
     return return_sensor_ids_list
 
 
-def _get_converted_datetime(date_time_string, date_format="%Y-%m-%d %H:%M:%S", hour_offset=None):
+def _get_converted_datetime(date_time_string, date_format="%Y-%m-%d %H:%M:%S"):
     try:
         date_time_object = datetime.strptime(date_time_string[:19], date_format)
-        if hour_offset is not None:
-            date_time_object = date_time_object + timedelta(hours=hour_offset)
         return date_time_object
     except Exception as error:
         logger.network_logger.debug("Checkins View - Unable to convert Date & Time from string: " + str(error))
@@ -345,14 +324,13 @@ def _get_converted_datetime(date_time_string, date_format="%Y-%m-%d %H:%M:%S", h
 
 def _delete_sensor_id(sensor_id):
     """ Deletes provided Text Sensor ID from the Check-In database """
-    database_location = file_locations.sensor_checkin_database
-    write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=database_location)
+    write_to_sql_database("DROP TABLE '" + sensor_id + "';", None, sql_database_location=db_loc)
 
 
 def _check_sensor_id_exists(sensor_id):
     sql_query = "SELECT count(name) FROM sqlite_master WHERE type='table' AND name='" + sensor_id + "'"
     try:
-        database_connection = sqlite3.connect(file_locations.sensor_checkin_database)
+        database_connection = sqlite3.connect(db_loc)
         sqlite_database = database_connection.cursor()
         sqlite_database.execute(sql_query)
         if sqlite_database.fetchone()[0]:
@@ -363,3 +341,7 @@ def _check_sensor_id_exists(sensor_id):
             return False
     except Exception as error:
         logger.primary_logger.error("Unable to access CheckIns Database: " + str(error))
+
+
+def get_one_db_entry_wrapper(table_name, column_name, order="DESC"):
+    return get_one_db_entry(table_name=table_name, column_name=column_name, order=order, database=db_loc)

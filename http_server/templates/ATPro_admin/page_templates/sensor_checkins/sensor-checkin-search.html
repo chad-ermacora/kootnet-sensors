@@ -84,6 +84,15 @@
                 </div>
                 <div class="pure-menu">
                     <ul class="pure-menu-list">
+                        <li class="pure-menu-item log-network">
+                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                                Network Log
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="pure-menu">
+                    <ul class="pure-menu-list">
                         <li class="pure-menu-item log-sensors">
                             <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
                                 Sensor Log
@@ -112,6 +121,7 @@
 
     function SelectLogNav(nav_location) {
         document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-network")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
