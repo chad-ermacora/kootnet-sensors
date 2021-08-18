@@ -21,6 +21,7 @@ from operations_modules import software_version
 from upgrade_modules import generic_upgrade_functions
 from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
 from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31
+from upgrade_modules.old_configuration_conversions.beta_33_x_to_33_96 import upgrade_beta_33_x_to_33_96
 
 
 def run_configuration_upgrade_checks():
@@ -57,14 +58,18 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 33:
+                if previous_version.minor_version < 96:
+                    no_changes = False
+                    upgrade_beta_33_x_to_33_96()
                 if previous_version.minor_version < 61:
+                    no_changes = False
                     config_class = generic_upgrade_functions.CreateEmailConfiguration
                     generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-                    no_changes = False
             elif previous_version.feature_version == 32:
+                no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
                 generic_upgrade_functions.reset_sensor_control_config()
-                no_changes = False
+                upgrade_beta_33_x_to_33_96()
             elif previous_version.feature_version == 31:
                 no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
@@ -77,6 +82,7 @@ def run_configuration_upgrade_checks():
                                   generic_upgrade_functions.CreateMQTTSubscriberConfiguration]
                 for config_class in config_classes:
                     generic_upgrade_functions.upgrade_config_load_and_save(config_class)
+                upgrade_beta_33_x_to_33_96()
             elif previous_version.feature_version == 30:
                 no_changes = False
                 upgrade_beta_30_x_to_31()
