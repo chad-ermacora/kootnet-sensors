@@ -575,6 +575,8 @@ def get_reading_unit(reading_type):
     if reading_type == db_v.env_temperature or reading_type == db_v.system_temperature or \
             reading_type == db_v.dew_point or reading_type == db_v.env_temperature_offset:
         return "°C"
+    elif reading_type == "Seconds":
+        return "Sec"
     elif reading_type == db_v.pressure:
         return "hPa"
     elif reading_type == db_v.altitude:
