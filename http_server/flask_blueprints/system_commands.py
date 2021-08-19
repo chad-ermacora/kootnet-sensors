@@ -75,6 +75,12 @@ def get_ram_usage_percent():
     return str(sensor_access.get_ram_space(return_type=3))
 
 
+@html_system_commands_routes.route("/GetRAMFree")
+def get_ram_free():
+    logger.network_logger.debug("* Sensor's Free RAM sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ram_space(return_type=0))
+
+
 @html_system_commands_routes.route("/GetRAMTotal")
 def get_ram_total():
     logger.network_logger.debug("* Sensor's Total RAM amount sent to " + str(request.remote_addr))
@@ -91,6 +97,12 @@ def get_ram_total_size_type():
 def get_disk_usage_gb():
     logger.network_logger.debug("* Sensor's Used Disk Space as GBs sent to " + str(request.remote_addr))
     return str(sensor_access.get_disk_space(return_type=1))
+
+
+@html_system_commands_routes.route("/GetFreeDiskSpace")
+def get_disk_free_gb():
+    logger.network_logger.debug("* Sensor's Free Disk Space as GBs sent to " + str(request.remote_addr))
+    return str(sensor_access.get_disk_space(return_type=0))
 
 
 @html_system_commands_routes.route("/GetProgramLastUpdated")

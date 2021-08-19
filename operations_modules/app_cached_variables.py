@@ -79,9 +79,10 @@ class CreateNetworkGetCommands:
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
         self.system_ram_used = "GetRAMUsed"
+        self.system_ram_free = "GetRAMFree"
         self.system_ram_total = "GetRAMTotal"
         self.system_ram_size_type = "GetRAMTotalSizeType"
-        self.system_disk_space_free = "GetUsedDiskSpace"
+        self.system_disk_space_free = "GetFreeDiskSpace"
 
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
