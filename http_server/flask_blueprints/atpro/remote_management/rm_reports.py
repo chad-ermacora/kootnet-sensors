@@ -60,11 +60,21 @@ class CreateReplacementVariables:
         system_date_time = sensor_get_commands.system_date_time
         system_uptime = sensor_get_commands.system_uptime
         sensor_sql_database_size = sensor_get_commands.sensor_sql_database_size
-        cpu_temp = sensor_get_commands.cpu_temp
-        system_ram_used = sensor_get_commands.system_ram_used
-        system_ram_total = sensor_get_commands.system_ram_total
-        system_ram_size_type = sensor_get_commands.system_ram_size_type
+        cpu_temp = get_http_sensor_reading(ip_address, command=sensor_get_commands.cpu_temp)
+        system_ram_free = sensor_get_commands.system_ram_free
         system_disk_space_free = sensor_get_commands.system_disk_space_free
+
+        cpu_temp_background = "darkgreen"
+        try:
+            cpu_temp_int = float(cpu_temp)
+
+            if cpu_temp_int > 70:
+                cpu_temp_background = "#8b4c00"
+            if cpu_temp_int > 80:
+                cpu_temp_background = "red"
+        except Exception as error:
+            logger.network_logger.debug("Error: CPU background for System Report - " + str(error))
+            cpu_temp_background = "purple"
 
         return [[get_http_sensor_reading(ip_address, command=sensor_id), "{{ SensorID }}"],
                 [get_http_sensor_reading(ip_address, command=os_version), "{{ OSVersion }}"],
@@ -73,14 +83,14 @@ class CreateReplacementVariables:
                 [get_http_sensor_reading(ip_address, command=system_date_time), "{{ SensorDateTime }}"],
                 [get_http_sensor_reading(ip_address, command=system_uptime), "{{ SystemUpTime }}"],
                 [get_http_sensor_reading(ip_address, command=sensor_sql_database_size), "{{ SQLDBSize }}"],
-                [get_http_sensor_reading(ip_address, command=cpu_temp), "{{ CPUTemp }}"],
-                [get_http_sensor_reading(ip_address, command=system_ram_used), "{{ RAMUsed }}"],
-                [get_http_sensor_reading(ip_address, command=system_ram_total), "{{ TotalRAM }}"],
-                [get_http_sensor_reading(ip_address, command=system_ram_size_type), "{{ TotalRAMSizeType }}"],
+                [cpu_temp, "{{ CPUTemp }}"], [cpu_temp_background, "{{ CPUResponseBackground }}"],
+                [get_http_sensor_reading(ip_address, command=system_ram_free), "{{ FreeRAM }}"],
                 [get_http_sensor_reading(ip_address, command=system_disk_space_free), "{{ FreeDiskSpace }}"]]
 
     def report_config(self, ip_address):
         try:
+            sensor_id = get_http_sensor_reading(ip_address, command=sensor_get_commands.sensor_id)
+
             get_config_command = sensor_get_commands.sensor_configuration_file
             get_interval_config_command = sensor_get_commands.interval_configuration_file
             get_high_low_config_command = sensor_get_commands.high_low_trigger_configuration_file
@@ -156,7 +166,11 @@ class CreateReplacementVariables:
             installed_sensors_config.config_settings_names[2] = rpi_model_name
 
             text_debug = self.get_enabled_disabled_text(sensors_config.enable_debug_logging)
-            text_checkin = self.get_enabled_disabled_text(sensors_config.enable_checkin)
+
+            # Todo: Get checkin working through checkin config
+            # text_checkin = self.get_enabled_disabled_text(sensors_config.enable_checkin)
+            text_checkin = "Temp-NA"
+
             text_display = self.get_enabled_disabled_text(display_config.enable_display)
             text_interval_recording = self.get_enabled_disabled_text(interval_config.enable_interval_recording)
             text_interval_seconds = str(interval_config.sleep_duration_interval)
@@ -166,7 +180,8 @@ class CreateReplacementVariables:
             text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp)
             text_rpi_tcf = self.get_enabled_disabled_text(sensors_config.enable_temperature_comp_factor)
 
-            value_replace = [[str(sensor_date_time), "{{ SensorDateTime }}"],
+            value_replace = [[sensor_id, "{{ SensorID }}"],
+                             [str(sensor_date_time), "{{ SensorDateTime }}"],
                              [text_debug, "{{ DebugLogging }}"],
                              [text_checkin, "{{ SensorCheckin }}"],
                              [text_display, "{{ Display }}"],
@@ -200,20 +215,19 @@ class CreateReplacementVariables:
             sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
             sensor_readings = sensor_readings_raw.split(app_cached_variables.command_data_separator)[1].split(",")
 
-            return_readings = ""
+            return_labels = "<thead><tr>"
+            return_readings = "<tbody><tr>"
             for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
                 if sensor_type != "SensorName" and sensor_type != "IP":
-                    if report_type == "sensors_test":
-                        return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
-                                           "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
-                                           "</span><br>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + \
-                                           "</p></div></div>\n"
-                    else:
-                        return_readings += '<div class="col-4 col-m-4 col-sm-4"><div class="counter bg-primary">' + \
-                                           "<p><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
-                                           "</span><br>" + str(sensor_reading) + " Seconds</p></div></div>\n"
+                    return_labels += "<td><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
+                                       "</span></td>"
+                    if report_type != "sensors_test":
+                        sensor_type = "Seconds"
+                    return_readings += "<td>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + "</td>"
 
-            return [[return_readings, "{{ SensorInfoBoxes }}"]]
+            return_html = return_labels + "</tr></thead>\n\n" + return_readings + "</tr></tbody>"
+            sensor_id = get_http_sensor_reading(ip_address, command=sensor_get_commands.sensor_id)
+            return [[sensor_id, "{{ SensorID }}"], [return_html, "{{ SensorInfoBoxes }}"]]
         except Exception as error:
             log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Sensors Test Report Failed: " + str(error)
             logger.network_logger.warning(log_msg)

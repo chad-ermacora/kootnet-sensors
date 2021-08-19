@@ -1,18 +1,31 @@
-<div class="col-6 col-m-12 col-sm-12">
-    <div class="counter bg-success">
-        <h3>
-            <span class="sensor-info sensor-info-names">Sensor Name: </span>
-            {{ SensorName }}<br>
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content">
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size: x-large;"><span class="sensor-info">Sensor ID</span>:
+                            <b style="color: green;">{{ SensorID }}</b>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
 
-            <span class="sensor-info" style="color: black;">IP Address: </span>
-            {{ IPAddress }}<br>
+            <table>
+                <thead>
+                    <tr>
+                        <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
+                        <td><span class="sensor-info">IP Address</span>: {{ IPAddress }}</td>
+                        <td style="color: var(--second-color); background-color: {{ ResponseBackground }};">
+                            Sensor Response Time: {{ SensorResponseTime }} Sec
+                        </td>
+                    </tr>
+                </thead>
+            </table>
 
-            <span class="sensor-info" style="color: black;">Sensor Response Time: </span>
-            <span style="color: {{ ResponseBackground }};">{{ SensorResponseTime }}</span> Seconds<br>
-        </h3>
-
-        <div class="row">
-            {{ SensorInfoBoxes }}
+            <table>
+                {{ SensorInfoBoxes }}
+            </table>
         </div>
     </div>
 </div>
