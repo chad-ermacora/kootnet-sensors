@@ -18,13 +18,15 @@
 """
 import os
 from threading import Thread
+from datetime import datetime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
-    get_list_of_filenames_in_dir
+    get_list_of_filenames_in_dir, get_file_size
 from operations_modules.app_validation_checks import url_is_valid
+from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
@@ -34,7 +36,9 @@ from configuration_modules.config_trigger_high_low import CreateTriggerHighLowCo
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_sensor_control import CreateIPList
-
+from sensor_modules.sensor_access import get_cpu_temperature, get_uptime_minutes, get_ram_space, get_disk_space, \
+    get_reading_unit, get_sensors_latency
+from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from http_server.flask_blueprints.atpro.remote_management.rm_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
@@ -44,6 +48,8 @@ from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs imp
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
     remote_management_main_post, get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
 
+base_rm_template_loc = "ATPro_admin/page_templates/remote_management/report_templates/"
+db_v = app_cached_variables.database_variables
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
 
@@ -73,6 +79,172 @@ def html_atpro_sensor_remote_management():
     if request.method == "POST":
         return remote_management_main_post(request)
     return get_atpro_sensor_remote_management_page()
+
+
+@html_atpro_remote_management_routes.route("/atpro/rm-get-system-entry")
+def get_system_report_entry():
+    try:
+        cpu_temp = get_cpu_temperature()
+        if cpu_temp is not None:
+            cpu_temp = str(get_cpu_temperature()[db_v.system_temperature])
+        else:
+            cpu_temp = "0.0"
+        ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
+        return render_template(base_rm_template_loc + "report-system-sensor-template.html",
+                               SensorID=app_config_access.primary_config.sensor_id,
+                               SensorName=app_cached_variables.hostname,
+                               IPAddressAndPort=ip_and_port,
+                               LoginCheck="{{ LoginCheck }}",
+                               CPUTemp=cpu_temp,
+                               CPUResponseBackground=_get_cpu_background_colour(cpu_temp),
+                               SensorResponseTime="{{ SensorResponseTime }}",
+                               ResponseBackground="{{ ResponseBackground }}",
+                               OSVersion=app_cached_variables.operating_system_name,
+                               SensorDateTime=datetime.utcnow().strftime("%Y-%m-%d %H:%M - UTC 0"),
+                               SystemUpTime=get_uptime_minutes(),
+                               ProgramVersion=version,
+                               LastUpdated=app_cached_variables.program_last_updated,
+                               FreeRAM=get_ram_space(),
+                               FreeDiskSpace=get_disk_space(),
+                               MainDBSize=get_file_size(file_locations.sensor_database),
+                               MQTTSubDBSize=get_file_size(file_locations.mqtt_subscriber_database),
+                               CheckinDBSize=get_file_size(file_locations.sensor_checkin_database))
+    except Exception as error:
+        logger.network_logger.error("System Report - " + str(error))
+        return "System Report - " + str(error)
+
+
+def _get_cpu_background_colour(cpu_temp):
+    cpu_temp_background = "darkgreen"
+    try:
+        cpu_temp_int = float(cpu_temp)
+        if cpu_temp_int == 0.0:
+            cpu_temp_background = "purple"
+        if cpu_temp_int > 80:
+            cpu_temp_background = "red"
+        elif cpu_temp_int > 70:
+            cpu_temp_background = "#8b4c00"
+    except Exception as error:
+        logger.network_logger.debug("Error: CPU background for System Report - " + str(error))
+        cpu_temp_background = "purple"
+    return cpu_temp_background
+
+
+@html_atpro_remote_management_routes.route("/atpro/rm-get-config-entry")
+def get_config_report_entry():
+    aca = app_config_access
+
+    debug_logging = _get_enabled_disabled_text(aca.primary_config.enable_debug_logging)
+    sensor_checkin = _get_enabled_disabled_text(aca.checkin_config.enable_checkin)
+    sensor_checkin_server = _get_enabled_disabled_text(aca.checkin_config.enable_checkin_recording)
+    display = _get_enabled_disabled_text(aca.display_config.enable_display)
+    email_reports = _get_enabled_disabled_text(aca.email_config.enable_combo_report_emails)
+    email_graphs = _get_enabled_disabled_text(aca.email_config.enable_graph_emails)
+    interval_recording = _get_enabled_disabled_text(aca.interval_recording_config.enable_interval_recording)
+    high_low_recording = _get_enabled_disabled_text(aca.trigger_high_low.enable_high_low_trigger_recording)
+    variance_recording = _get_enabled_disabled_text(aca.trigger_variances.enable_trigger_variance)
+    temp_offset = _get_enabled_disabled_text(aca.primary_config.enable_custom_temp)
+    temp_comp_factor = _get_enabled_disabled_text(aca.primary_config.enable_temperature_comp_factor)
+    mqtt_broker = _get_enabled_disabled_text(aca.mqtt_broker_config.enable_mqtt_broker)
+    mqtt_subscriber = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_subscriber)
+    mqtt_sub_rec = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_sql_recording)
+    mqtt_publisher = _get_enabled_disabled_text(aca.mqtt_publisher_config.enable_mqtt_publisher)
+    wu_enabled = _get_enabled_disabled_text(aca.weather_underground_config.weather_underground_enabled)
+    luftdaten_enabled = _get_enabled_disabled_text(aca.luftdaten_config.luftdaten_enabled)
+    open_sense_map_enabled = _get_enabled_disabled_text(aca.open_sense_map_config.open_sense_map_enabled)
+    ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
+    return render_template(base_rm_template_loc + "report-configurations-sensor-template.html",
+                           SensorID=aca.primary_config.sensor_id,
+                           InstalledSensors=aca.installed_sensors.get_installed_names_str(),
+                           SensorName=app_cached_variables.hostname,
+                           IPAddress=app_cached_variables.ip,
+                           IPAddressAndPort=ip_and_port,
+                           LoginCheck="{{ LoginCheck }}",
+                           SensorResponseTime="{{ SensorResponseTime }}",
+                           ResponseBackground="{{ ResponseBackground }}",
+                           DebugLogging=debug_logging,
+                           SensorCheckin=sensor_checkin,
+                           SensorCheckinServer=sensor_checkin_server,
+                           Display=display,
+                           WifiNetwork=app_cached_variables.wifi_ssid,
+                           EmailReports=email_reports,
+                           EmailGraphs=email_graphs,
+                           IntervalRecording=interval_recording,
+                           IntervalSeconds=aca.interval_recording_config.sleep_duration_interval,
+                           HighLowRecording=high_low_recording,
+                           VarianceRecording=variance_recording,
+                           TemperatureOffset=temp_offset,
+                           TOValue=str(app_config_access.primary_config.temperature_offset),
+                           TemperatureCorrectionFactor=temp_comp_factor,
+                           TCFValue=str(app_config_access.primary_config.temperature_comp_factor),
+                           MQTTBroker=mqtt_broker,
+                           MQTTSubscriber=mqtt_subscriber,
+                           MQTTSubscriberRecording=mqtt_sub_rec,
+                           MQTTPublisher=mqtt_publisher,
+                           WeatherUnderground=wu_enabled,
+                           Luftdaten=luftdaten_enabled,
+                           OpenSenseMap=open_sense_map_enabled)
+
+
+def _get_enabled_disabled_text(setting):
+    if setting:
+        return "Enabled"
+    return "Disabled"
+
+
+@html_atpro_remote_management_routes.route("/atpro/rm-get-readings-entry")
+def get_readings_report_entry():
+    sensor_readings = get_interval_sensor_readings()
+    readings_name = []
+    readings_data = []
+    for index, reading in sensor_readings.items():
+        readings_name.append(index)
+        readings_data.append(reading)
+    ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
+    return render_template(base_rm_template_loc + "report-readings-latency-sensor-template.html",
+                           SensorID=app_config_access.primary_config.sensor_id,
+                           SensorName=app_cached_variables.hostname,
+                           IPAddress=app_cached_variables.ip,
+                           IPAddressAndPort=ip_and_port,
+                           SensorResponseTime="{{ SensorResponseTime }}",
+                           ResponseBackground="{{ ResponseBackground }}",
+                           SensorInfoBoxes=_convert_lists_to_html_thread(readings_name, readings_data))
+
+
+@html_atpro_remote_management_routes.route("/atpro/rm-get-latency-entry")
+def get_latency_report_entry():
+    latency_dic = get_sensors_latency()
+    sensor_names = []
+    sensor_latency = []
+    for name, entry in latency_dic.items():
+        if entry is not None:
+            sensor_names.append(name)
+            sensor_latency.append(entry)
+    ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
+    return render_template(base_rm_template_loc + "report-readings-latency-sensor-template.html",
+                           SensorID=app_config_access.primary_config.sensor_id,
+                           SensorName=app_cached_variables.hostname,
+                           IPAddress=app_cached_variables.ip,
+                           IPAddressAndPort=ip_and_port,
+                           SensorResponseTime="{{ SensorResponseTime }}",
+                           ResponseBackground="{{ ResponseBackground }}",
+                           SensorInfoBoxes=_convert_lists_to_html_thread(sensor_names, sensor_latency, latency=True))
+
+
+def _convert_lists_to_html_thread(list_names, list_data, latency=False):
+    return_labels = "<thead><tr>"
+    return_readings = "<tbody><tr>"
+    for sensor_type, sensor_reading in zip(list_names, list_data):
+        sensor_type = str(sensor_type)
+        sensor_reading = str(sensor_reading)
+        if sensor_type != "SensorName" and sensor_type != "IP":
+            if latency:
+                reading_unit = "Sec"
+            else:
+                reading_unit = get_reading_unit(sensor_type)
+            return_labels += "<td><span class='sensor-info'>" + sensor_type.replace("_", " ") + "</span></td>"
+            return_readings += "<td>" + sensor_reading + " " + reading_unit + "</td>"
+    return return_labels + "</tr></thead>\n\n" + return_readings + "</tr></tbody>"
 
 
 @html_atpro_remote_management_routes.route("/atpro/rm-ip-list-management", methods=["GET", "POST"])

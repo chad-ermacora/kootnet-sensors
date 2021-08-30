@@ -21,303 +21,137 @@ from threading import Thread
 from queue import Queue
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from configuration_modules import app_config_access
-from operations_modules import network_wifi
+from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
-    check_for_port_in_address, get_ip_and_port_split
-from configuration_modules.config_primary import CreatePrimaryConfiguration
-from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
-from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
-from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
-from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
-from configuration_modules.config_display import CreateDisplayConfiguration
-from configuration_modules.config_weather_underground import CreateWeatherUndergroundConfiguration
-from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
-from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
-from sensor_modules.sensor_access import get_system_datetime, get_reading_unit
-from http_server.flask_blueprints.atpro.atpro_variables import html_report_start, \
-    html_report_end, html_report_system, html_report_system_sensor_template, html_report_config, \
-    html_report_config_sensor_template, html_report_sensors_readings, html_report_sensor_readings_template, \
-    html_report_latency, html_report_latency_sensor_template
-
-running_with_root = app_cached_variables.running_with_root
+    check_for_port_in_address, get_ip_and_port_split, thread_function, get_file_content
+from sensor_modules.sensor_access import get_system_datetime
+from http_server.flask_blueprints.html_functional import auth_error_msg
+from operations_modules import software_version
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
 
-html_address_list = ["senor_ip_1", "senor_ip_2", "senor_ip_3", "senor_ip_4", "senor_ip_5",
-                     "senor_ip_6", "senor_ip_7", "senor_ip_8", "senor_ip_9", "senor_ip_10",
-                     "senor_ip_11", "senor_ip_12", "senor_ip_13", "senor_ip_14", "senor_ip_15",
-                     "senor_ip_16", "senor_ip_17", "senor_ip_18", "senor_ip_19", "senor_ip_20"]
+# Save disk read time when upgrade in progress
+if software_version.old_version == software_version.version:
+    html_pure_css = get_file_content(file_locations.html_report_pure_css).strip()
+    html_pure_css_menu = get_file_content(file_locations.html_pure_css_menu).strip()
+    html_report_css = get_file_content(file_locations.html_report_css).strip()
+    html_report_js = get_file_content(file_locations.html_report_js).strip()
+
+    html_report_combo = get_file_content(file_locations.html_combo_report).strip()
+    html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
+    html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
+    html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
+
+    html_report_start = get_file_content(file_locations.html_report_all_start).strip()
+    html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
+    html_report_end = get_file_content(file_locations.html_report_all_end).strip()
+    html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
+
+    html_report_template = get_file_content(file_locations.html_report_template).strip()
+    report_sensor_error_template = get_file_content(file_locations.html_report_sensor_error_template).strip()
 
 
-class CreateReplacementVariables:
-
-    @staticmethod
-    def report_system(ip_address):
-        sensor_id = sensor_get_commands.sensor_id
-        os_version = sensor_get_commands.os_version
-        program_version = sensor_get_commands.program_version
-        program_last_updated = sensor_get_commands.program_last_updated
-        system_date_time = sensor_get_commands.system_date_time
-        system_uptime = sensor_get_commands.system_uptime
-        sensor_sql_database_size = sensor_get_commands.sensor_sql_database_size
-        cpu_temp = get_http_sensor_reading(ip_address, command=sensor_get_commands.cpu_temp)
-        system_ram_free = sensor_get_commands.system_ram_free
-        system_disk_space_free = sensor_get_commands.system_disk_space_free
-
-        cpu_temp_background = "darkgreen"
-        try:
-            cpu_temp_int = float(cpu_temp)
-
-            if cpu_temp_int > 70:
-                cpu_temp_background = "#8b4c00"
-            if cpu_temp_int > 80:
-                cpu_temp_background = "red"
-        except Exception as error:
-            logger.network_logger.debug("Error: CPU background for System Report - " + str(error))
-            cpu_temp_background = "purple"
-
-        return [[get_http_sensor_reading(ip_address, command=sensor_id), "{{ SensorID }}"],
-                [get_http_sensor_reading(ip_address, command=os_version), "{{ OSVersion }}"],
-                [get_http_sensor_reading(ip_address, command=program_version), "{{ ProgramVersion }}"],
-                [get_http_sensor_reading(ip_address, command=program_last_updated), "{{ LastUpdated }}"],
-                [get_http_sensor_reading(ip_address, command=system_date_time), "{{ SensorDateTime }}"],
-                [get_http_sensor_reading(ip_address, command=system_uptime), "{{ SystemUpTime }}"],
-                [get_http_sensor_reading(ip_address, command=sensor_sql_database_size), "{{ SQLDBSize }}"],
-                [cpu_temp, "{{ CPUTemp }}"], [cpu_temp_background, "{{ CPUResponseBackground }}"],
-                [get_http_sensor_reading(ip_address, command=system_ram_free), "{{ FreeRAM }}"],
-                [get_http_sensor_reading(ip_address, command=system_disk_space_free), "{{ FreeDiskSpace }}"]]
-
-    def report_config(self, ip_address):
-        try:
-            sensor_id = get_http_sensor_reading(ip_address, command=sensor_get_commands.sensor_id)
-
-            get_config_command = sensor_get_commands.sensor_configuration_file
-            get_interval_config_command = sensor_get_commands.interval_configuration_file
-            get_high_low_config_command = sensor_get_commands.high_low_trigger_configuration_file
-            get_variance_config_command = sensor_get_commands.variance_config_file
-            get_display_config = sensor_get_commands.display_configuration_file
-            command_installed_sensors = sensor_get_commands.installed_sensors_file
-            command_config_os_wu = sensor_get_commands.weather_underground_config_file
-            command_config_os_luftdaten = sensor_get_commands.luftdaten_config_file
-            command_config_os_osm = sensor_get_commands.open_sense_map_config_file
-
-            wifi_ssid = "N/A"
-            weather_underground_enabled = "N/A"
-            open_sense_map_enabled = "N/A"
-            if get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login) == "OK":
-                wifi_config_file = sensor_get_commands.wifi_config_file
-                wifi_config_raw = get_http_sensor_reading(ip_address, command=wifi_config_file)
-                weather_underground_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_wu)
-                open_sense_map_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_osm)
-
-                wifi_config_lines = wifi_config_raw.strip().split("\n")
-                if len(wifi_config_lines) > 2 and wifi_config_lines[1][0] != "<":
-                    wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
-
-                wu_config = CreateWeatherUndergroundConfiguration(load_from_file=False)
-                wu_config.config_file_location = "Sensor Control's Weather Underground Config from " + ip_address
-                wu_config.set_config_with_str(weather_underground_config_raw)
-                weather_underground_enabled = self.get_enabled_disabled_text(wu_config.weather_underground_enabled)
-
-                osm_config = CreateOpenSenseMapConfiguration(load_from_file=False)
-                osm_config.config_file_location = "Sensor Control's Open Sense Map Config from " + ip_address
-                osm_config.set_config_with_str(open_sense_map_config_raw)
-                open_sense_map_enabled = self.get_enabled_disabled_text(osm_config.open_sense_map_enabled)
-
-            sensor_date_time = get_http_sensor_reading(ip_address, command=sensor_get_commands.system_date_time)
-
-            sensor_config_raw = get_http_sensor_reading(ip_address, command=get_config_command)
-            sensors_config = CreatePrimaryConfiguration(load_from_file=False)
-            sensors_config.set_config_with_str(sensor_config_raw)
-
-            display_config_raw = get_http_sensor_reading(ip_address, command=get_display_config)
-            display_config = CreateDisplayConfiguration(load_from_file=False)
-            display_config.set_config_with_str(display_config_raw)
-
-            installed_sensors_raw = get_http_sensor_reading(ip_address, command=command_installed_sensors)
-            installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False)
-            installed_sensors_config.set_config_with_str(installed_sensors_raw)
-
-            interval_config_raw = get_http_sensor_reading(ip_address, command=get_interval_config_command)
-            interval_config = CreateIntervalRecordingConfiguration(load_from_file=False)
-            interval_config.set_config_with_str(interval_config_raw)
-
-            high_low_trigger_config_raw = get_http_sensor_reading(ip_address, command=get_high_low_config_command)
-            high_low_trigger_config = CreateTriggerHighLowConfiguration(load_from_file=False)
-            high_low_trigger_config.set_config_with_str(high_low_trigger_config_raw)
-
-            variance_trigger_config_raw = get_http_sensor_reading(ip_address, command=get_variance_config_command)
-            variance_trigger_config = CreateTriggerVariancesConfiguration(load_from_file=False)
-            variance_trigger_config.set_config_with_str(variance_trigger_config_raw)
-
-            luftdaten_config_raw = get_http_sensor_reading(ip_address, command=command_config_os_luftdaten)
-            luftdaten_config = CreateLuftdatenConfiguration(load_from_file=False)
-            luftdaten_config.set_config_with_str(luftdaten_config_raw)
-
-            luftdaten_config.config_file_location = "Sensor Control's Luftdaten Config from " + ip_address
-            luftdaten_enabled = self.get_enabled_disabled_text(luftdaten_config.luftdaten_enabled)
-
-            try:
-                installed_sensors_lines = installed_sensors_raw.strip().split("\n")
-                rpi_model_name = installed_sensors_lines[3].split("=")[1].strip()
-            except Exception as error:
-                logger.network_logger.debug("Failed Getting Raspberry Pi Model: " + str(error))
-                rpi_model_name = "Raspberry Pi"
-            installed_sensors_config.config_settings_names[2] = rpi_model_name
-
-            text_debug = self.get_enabled_disabled_text(sensors_config.enable_debug_logging)
-
-            # Todo: Get checkin working through checkin config
-            # text_checkin = self.get_enabled_disabled_text(sensors_config.enable_checkin)
-            text_checkin = "Temp-NA"
-
-            text_display = self.get_enabled_disabled_text(display_config.enable_display)
-            text_interval_recording = self.get_enabled_disabled_text(interval_config.enable_interval_recording)
-            text_interval_seconds = str(interval_config.sleep_duration_interval)
-            enable_high_low_recording = high_low_trigger_config.enable_high_low_trigger_recording
-            text_trigger_high_low_recording = self.get_enabled_disabled_text(enable_high_low_recording)
-            text_variance_recording = self.get_enabled_disabled_text(variance_trigger_config.enable_trigger_variance)
-            text_custom_temperature = self.get_enabled_disabled_text(sensors_config.enable_custom_temp)
-            text_rpi_tcf = self.get_enabled_disabled_text(sensors_config.enable_temperature_comp_factor)
-
-            value_replace = [[sensor_id, "{{ SensorID }}"],
-                             [str(sensor_date_time), "{{ SensorDateTime }}"],
-                             [text_debug, "{{ DebugLogging }}"],
-                             [text_checkin, "{{ SensorCheckin }}"],
-                             [text_display, "{{ Display }}"],
-                             [text_interval_recording, "{{ IntervalRecording }}"],
-                             [text_interval_seconds, "{{ IntervalSeconds }}"],
-                             [text_trigger_high_low_recording, "{{ HighLowRecording }}"],
-                             [text_variance_recording, "{{ VarianceRecording }}"],
-                             [text_custom_temperature, "{{ TemperatureOffset }}"],
-                             [text_rpi_tcf, "{{ TemperatureCorrectionFactor }}"],
-                             [wifi_ssid, "{{ WifiNetwork }}"],
-                             [weather_underground_enabled, "{{ WeatherUnderground }}"],
-                             [luftdaten_enabled, "{{ Luftdaten }}"],
-                             [open_sense_map_enabled, "{{ OpenSenseMap }}"],
-                             [installed_sensors_config.get_installed_names_str(skip_root_check=True),
-                              "{{ InstalledSensors }}"]]
-            return value_replace
-        except Exception as error:
-            log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Config Report Failed: " + str(error)
-            logger.network_logger.warning(log_msg)
-            return []
-
-    @staticmethod
-    def report_sensors_choice(ip_address, report_type="sensors_test"):
-        try:
-            if report_type == "sensors_test":
-                get_sensors_readings_command = sensor_get_commands.sensor_readings
-            else:
-                get_sensors_readings_command = sensor_get_commands.sensors_latency
-            sensor_readings_raw = get_http_sensor_reading(ip_address, command=get_sensors_readings_command, timeout=20)
-            sensor_readings_raw = sensor_readings_raw.strip()
-            sensor_types = sensor_readings_raw.split(app_cached_variables.command_data_separator)[0].split(",")
-            sensor_readings = sensor_readings_raw.split(app_cached_variables.command_data_separator)[1].split(",")
-
-            return_labels = "<thead><tr>"
-            return_readings = "<tbody><tr>"
-            for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
-                if sensor_type != "SensorName" and sensor_type != "IP":
-                    return_labels += "<td><span class='sensor-info'>" + str(sensor_type).replace("_", " ") + \
-                                       "</span></td>"
-                    if report_type != "sensors_test":
-                        sensor_type = "Seconds"
-                    return_readings += "<td>" + str(sensor_reading) + " " + get_reading_unit(sensor_type) + "</td>"
-
-            return_html = return_labels + "</tr></thead>\n\n" + return_readings + "</tr></tbody>"
-            sensor_id = get_http_sensor_reading(ip_address, command=sensor_get_commands.sensor_id)
-            return [[sensor_id, "{{ SensorID }}"], [return_html, "{{ SensorInfoBoxes }}"]]
-        except Exception as error:
-            log_msg = "Sensor Control - Get Remote Sensor " + ip_address + " Sensors Test Report Failed: " + str(error)
-            logger.network_logger.warning(log_msg)
-            return []
-
-    @staticmethod
-    def get_enabled_disabled_text(setting):
-        try:
-            if int(setting):
-                return "Enabled"
-            return "Disabled"
-        except Exception as error:
-            logger.network_logger.debug("Unable to translate setting for Report: " + str(setting) + " - " + str(error))
-            return ""
-
-
-def get_online_report(ip_address, data_queue, report_type="systems_report"):
-    report_type_config = app_config_access.sensor_control_config.radio_report_config
-    report_type_test_sensors = app_config_access.sensor_control_config.radio_report_test_sensors
-    report_type_latency_sensors = app_config_access.sensor_control_config.radio_report_sensors_latency
-
-    if report_type == report_type_config:
-        sensor_report = html_report_config_sensor_template
-        command_and_replacements = CreateReplacementVariables().report_config(ip_address)
-    elif report_type == report_type_test_sensors:
-        sensor_report = html_report_sensor_readings_template
-        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address)
-    elif report_type == report_type_latency_sensors:
-        sensor_report = html_report_latency_sensor_template
-        command_and_replacements = CreateReplacementVariables().report_sensors_choice(ip_address, report_type="Latency")
-    else:
-        sensor_report = html_report_system_sensor_template
-        command_and_replacements = CreateReplacementVariables().report_system(ip_address)
-
+def generate_html_reports_combo(ip_list):
+    """
+    Returns a combination of all reports in HTML format.
+    Reports are downloaded from the provided list of remote sensors (IP or DNS addresses)
+    """
     try:
-        if check_for_port_in_address(ip_address):
-            address_split = get_ip_and_port_split(ip_address)
-            address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
-        else:
-            address_and_port = ip_address.strip() + ":10065"
-        address_and_port = "<a style='color: #7f3299;' href='https://" + address_and_port + "' target='_blank'>" + \
-                           address_and_port + "</a>"
-        sensor_report = sensor_report.replace("{{ IPAddress }}", address_and_port)
-        task_start_time = time.time()
-        sensor_check = get_http_sensor_reading(ip_address)
-        task_end_time = str(round(time.time() - task_start_time, 3))
-        if sensor_check == "OK":
-            sensor_login_check = get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login)
-            if sensor_login_check != "OK":
-                sensor_login_check = "Login Failed"
-            sensor_name = get_http_sensor_reading(ip_address, command=sensor_get_commands.sensor_name)
-            sensor_report = sensor_report.replace("{{ SensorName }}", sensor_name)
-            sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_response_bg_colour(task_end_time))
-            sensor_report = sensor_report.replace("{{ LoginCheck }}", sensor_login_check)
-            for command_and_replacement in command_and_replacements:
-                sensor_report = sensor_report.replace(command_and_replacement[1], command_and_replacement[0])
-            sensor_report = sensor_report.replace("{{ SensorResponseTime }}", task_end_time)
-            data_queue.put([sensor_name, sensor_report])
+        threads = []
+        for function in [generate_system_report, generate_config_report,
+                         generate_readings_report, generate_latency_report]:
+            threads.append(Thread(target=function, args=[ip_list, False]))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        html_system_report = _remove_css_js(app_cached_variables.html_system_report)
+        html_config_report = _remove_css_js(app_cached_variables.html_config_report)
+        html_readings_report = _remove_css_js(app_cached_variables.html_readings_report)
+        html_latency_report = _remove_css_js(app_cached_variables.html_latency_report)
+
+        html_final_combo_return = html_report_combo
+
+        html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", html_config_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", html_readings_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullLatencyReport }}", html_latency_report)
+        html_final_combo_return += "\n" + html_report_end
     except Exception as error:
-        log_msg = "Remote Sensor " + ip_address + " Failed providing " + str(report_type) + " Data: " + str(error)
-        logger.network_logger.warning(log_msg)
-        data_queue.put([ip_address, "Failed"])
+        logger.primary_logger.error("Sensor Control - Unable to Generate Combo Report: " + str(error))
+        html_final_combo_return = "Generation Error: " + str(error)
+    app_cached_variables.html_combo_report = html_final_combo_return
 
 
-def generate_sensor_control_report(address_list, report_type="systems_report"):
-    """
-    Returns a HTML report based on report_type and sensor addresses provided (IP or DNS addresses as a list).
-    Default: systems_report
-    """
-    new_report = html_report_system
-    if report_type == app_config_access.sensor_control_config.radio_report_system:
-        app_cached_variables.creating_system_report = True
-    if report_type == app_config_access.sensor_control_config.radio_report_config:
-        app_cached_variables.creating_config_report = True
-        new_report = html_report_config
-    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
-        app_cached_variables.creating_readings_report = True
-        new_report = html_report_sensors_readings
-    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
-        app_cached_variables.creating_latency_report = True
-        new_report = html_report_latency
-    new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
+def _remove_css_js(html_report):
+    html_report = html_report.replace(html_report_css, "")
+    html_report = html_report.replace(html_report_js, "")
+    return html_report
 
-    new_report = html_report_start + "\n" + new_report
 
+def generate_system_report(ip_list, threaded=True):
+    if threaded:
+        thread_function(_thread_system_report, args=ip_list)
+    else:
+        _thread_system_report(ip_list)
+
+
+def _thread_system_report(ip_list):
+    app_cached_variables.creating_system_report = True
+    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_system_report, "System")
+    app_cached_variables.html_system_report = new_report
+    app_cached_variables.creating_system_report = False
+
+
+def generate_config_report(ip_list, threaded=True):
+    if threaded:
+        thread_function(_thread_config_report, args=ip_list)
+    else:
+        _thread_config_report(ip_list)
+
+
+def _thread_config_report(ip_list):
+    app_cached_variables.creating_config_report = True
+    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_config_report, "Configurations")
+    app_cached_variables.html_config_report = new_report
+    app_cached_variables.creating_config_report = False
+
+
+def generate_readings_report(ip_list, threaded=True):
+    if threaded:
+        thread_function(_thread_readings_report, args=ip_list)
+    else:
+        _thread_readings_report(ip_list)
+
+
+def _thread_readings_report(ip_list):
+    app_cached_variables.creating_readings_report = True
+    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_readings_report, "Readings")
+    app_cached_variables.html_readings_report = new_report
+    app_cached_variables.creating_readings_report = False
+
+
+def generate_latency_report(ip_list, threaded=True):
+    if threaded:
+        thread_function(_thread_latency_report, args=ip_list)
+    else:
+        _thread_latency_report(ip_list)
+
+
+def _thread_latency_report(ip_list):
+    app_cached_variables.creating_latency_report = True
+    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_latency_report, "Latency")
+    app_cached_variables.html_latency_report = new_report
+    app_cached_variables.creating_latency_report = False
+
+
+def create_sensor_report(address_list, sensor_report_url, html_report_heading):
     data_queue = Queue()
     sensor_reports = []
     threads = []
+
     for address in address_list:
-        threads.append(Thread(target=get_online_report, args=[address, data_queue, report_type]))
+        threads.append(Thread(target=_get_remote_management_report, args=[address, sensor_report_url, data_queue]))
     for thread in threads:
         thread.start()
     for thread in threads:
@@ -332,18 +166,51 @@ def generate_sensor_control_report(address_list, report_type="systems_report"):
     final_report_replacement = ""
     for report in sensor_reports:
         final_report_replacement += str(report[1]) + "\n"
+    new_report = html_report_start + html_report_template + html_report_end
+    new_report = new_report.replace("{{ ReportHeading }}", html_report_heading)
+    new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
     new_report = new_report.replace("{{ SensorInfoBoxes }}", final_report_replacement)
-    new_report = new_report + "\n" + html_report_end
+    return new_report
 
-    if report_type == app_config_access.sensor_control_config.radio_report_config:
-        app_cached_variables.html_config_report = new_report
-        app_cached_variables.creating_config_report = False
-    elif report_type == app_config_access.sensor_control_config.radio_report_test_sensors:
-        app_cached_variables.html_readings_report = new_report
-        app_cached_variables.creating_readings_report = False
-    elif report_type == app_config_access.sensor_control_config.radio_report_sensors_latency:
-        app_cached_variables.html_latency_report = new_report
-        app_cached_variables.creating_latency_report = False
+
+def _get_remote_management_report(ip_address, sensor_report_url, data_queue, login_required=False):
+    sensor_check = _get_sensor_response_time(ip_address)
+    if sensor_check:
+        login_check = get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login)
+        if login_check == "OK" or not login_required:
+            if login_check == "OK":
+                pass
+            elif login_check == auth_error_msg:
+                login_check = "Incorrect Username or Password"
+            else:
+                login_check = "Unknown Error"
+            sensor_report = get_http_sensor_reading(ip_address, command=sensor_report_url)
+            sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_response_bg_colour(sensor_check))
+            sensor_report = sensor_report.replace("{{ LoginCheck }}", login_check)
+            sensor_report = sensor_report.replace("{{ SensorResponseTime }}", sensor_check)
+        else:
+            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
+            sensor_report = sensor_report.replace("{{ SensorAddressAndPort }}", _get_address_and_port_html(ip_address))
     else:
-        app_cached_variables.html_system_report = new_report
-        app_cached_variables.creating_system_report = False
+        logger.network_logger.debug("Remote Sensor " + ip_address + " Offline")
+        sensor_check = "99.99"
+        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
+        sensor_report = sensor_report.replace("{{ SensorAddressAndPort }}", _get_address_and_port_html(ip_address))
+    data_queue.put([sensor_check, sensor_report])
+
+
+def _get_sensor_response_time(ip_address):
+    start_time = time.time()
+    sensor_check = get_http_sensor_reading(ip_address)
+    if sensor_check == "OK":
+        return str(round(time.time() - start_time, 3))
+    return False
+
+
+def _get_address_and_port_html(ip_address):
+    if check_for_port_in_address(ip_address):
+        address_split = get_ip_and_port_split(ip_address)
+        address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
+    else:
+        address_and_port = ip_address.strip() + ":10065"
+    return address_and_port

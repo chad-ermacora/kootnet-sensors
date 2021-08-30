@@ -24,15 +24,14 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_http_sensor_reading, \
-    clear_zip_names, save_to_memory_ok, get_response_bg_colour, get_ip_and_port_split, \
-    check_for_port_in_address, start_and_wait_threads
+    clear_zip_names, save_to_memory_ok, get_response_bg_colour, get_ip_and_port_split, start_and_wait_threads, \
+    check_for_port_in_address
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.atpro.remote_management.rm_functions import \
-    create_all_databases_zipped, create_multiple_sensor_logs_zipped, \
-    create_the_big_zip, put_all_reports_zipped_to_cache, generate_html_reports_combo, get_sum_db_sizes
-from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_sensor_control_report
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page
+from http_server.flask_blueprints.atpro.remote_management.rm_functions import create_all_databases_zipped, \
+    create_multiple_sensor_logs_zipped, create_the_big_zip, put_all_reports_zipped_to_cache, get_sum_db_sizes
+from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_system_report, \
+    generate_config_report, generate_readings_report, generate_latency_report, generate_html_reports_combo
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_message_page
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
@@ -125,61 +124,62 @@ def remote_management_main_post(request):
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")
         app_config_access.sensor_control_config.update_with_html_request(request)
-        ip_list = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
+        ip_list_raw = app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()
 
-        if len(ip_list) > 0:
+        if len(ip_list_raw) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
-                return check_sensor_status_sensor_control(ip_list)
+                return check_sensor_status_sensor_control(ip_list_raw)
         else:
             return _sensor_addresses_required_msg()
 
-        if len(ip_list) > 0:
-            ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-            if len(ip_list) < 1:
-                msg_1 = "All sensors appear to be Offline"
-                return get_message_page(msg_1, page_url="sensor-rm")
+        if len(ip_list_raw) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_report_combo:
-                thread_function(_thread_combo_report, ip_list)
+                thread_function(_thread_combo_report, args=ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_report_system:
-                thread_function(_thread_system_report, ip_list)
+                generate_system_report(ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_report_config:
-                thread_function(_thread_config_report, ip_list)
+                generate_config_report(ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_report_test_sensors:
-                thread_function(_thread_readings_report, ip_list)
+                generate_readings_report(ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_report_sensors_latency:
-                thread_function(_thread_latency_report, ip_list)
+                generate_latency_report(ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_download_reports:
                 app_cached_variables.creating_the_reports_zip = True
                 logger.network_logger.info("Sensor Control - Reports Zip Generation Started")
                 clear_zip_names()
-                thread_function(put_all_reports_zipped_to_cache, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_download_databases:
-                download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    return downloads_direct_rsm(ip_list, download_type=download_sql_databases)
-                else:
-                    app_cached_variables.creating_databases_zip = True
-                    logger.network_logger.info("Sensor Control - Databases Zip Generation Started")
-                    thread_function(create_all_databases_zipped, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_download_logs:
-                clear_zip_names()
-                if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
-                    download_logs = app_config_access.sensor_control_config.radio_download_logs
-                    return downloads_direct_rsm(ip_list, download_type=download_logs)
-                elif sc_download_type == app_config_access.sensor_control_config.radio_send_type_relayed:
-                    app_cached_variables.creating_logs_zip = True
-                    logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Started")
-                    thread_function(create_multiple_sensor_logs_zipped, args=ip_list)
-            elif sc_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
-                logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
-                databases_size = get_sum_db_sizes(ip_list)
-                if save_to_memory_ok(databases_size):
+                thread_function(put_all_reports_zipped_to_cache, args=ip_list_raw)
+            else:
+                ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+                if len(ip_list) < 1:
+                    msg_1 = "All sensors appear to be Offline"
+                    return get_message_page(msg_1, page_url="sensor-rm")
+                elif sc_action == app_config_access.sensor_control_config.radio_download_databases:
+                    download_sql_databases = app_config_access.sensor_control_config.radio_download_databases
+                    if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
+                        return downloads_direct_rsm(ip_list, download_type=download_sql_databases)
+                    else:
+                        app_cached_variables.creating_databases_zip = True
+                        logger.network_logger.info("Sensor Control - Databases Zip Generation Started")
+                        thread_function(create_all_databases_zipped, args=ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_download_logs:
                     clear_zip_names()
-                    app_cached_variables.sc_big_zip_in_memory = True
-                else:
-                    app_cached_variables.sc_big_zip_in_memory = False
-                app_cached_variables.creating_the_big_zip = True
-                thread_function(create_the_big_zip, args=ip_list)
+                    if sc_download_type == app_config_access.sensor_control_config.radio_send_type_direct:
+                        download_logs = app_config_access.sensor_control_config.radio_download_logs
+                        return downloads_direct_rsm(ip_list, download_type=download_logs)
+                    elif sc_download_type == app_config_access.sensor_control_config.radio_send_type_relayed:
+                        app_cached_variables.creating_logs_zip = True
+                        logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Started")
+                        thread_function(create_multiple_sensor_logs_zipped, args=ip_list)
+                elif sc_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
+                    logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
+                    databases_size = get_sum_db_sizes(ip_list)
+                    if save_to_memory_ok(databases_size):
+                        clear_zip_names()
+                        app_cached_variables.sc_big_zip_in_memory = True
+                    else:
+                        app_cached_variables.sc_big_zip_in_memory = False
+                    app_cached_variables.creating_the_big_zip = True
+                    thread_function(create_the_big_zip, args=ip_list)
         else:
             return _sensor_addresses_required_msg()
     elif run_command == "DownloadRSMReportsZip":
@@ -260,26 +260,6 @@ def _sensor_addresses_required_msg():
 
 def _thread_combo_report(ip_list):
     generate_html_reports_combo(ip_list)
-
-
-def _thread_system_report(ip_list):
-    system_report = app_config_access.sensor_control_config.radio_report_system
-    generate_sensor_control_report(ip_list, report_type=system_report)
-
-
-def _thread_config_report(ip_list):
-    config_report = app_config_access.sensor_control_config.radio_report_config
-    generate_sensor_control_report(ip_list, report_type=config_report)
-
-
-def _thread_readings_report(ip_list):
-    sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-    generate_sensor_control_report(ip_list, report_type=sensors_report)
-
-
-def _thread_latency_report(ip_list):
-    latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
-    generate_sensor_control_report(ip_list, report_type=latency_report)
 
 
 def check_sensor_status_sensor_control(address_list):
