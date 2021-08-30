@@ -17,10 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime
-from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules.app_generic_functions import get_file_content
 
 
 class CreateATProMenuNotificationClass:
@@ -127,34 +125,5 @@ html_sensor_readings_row = """
         </div>
     </div>
 """
-
-# Save disk read time when upgrade in progress
-if software_version.old_version == software_version.version:
-    html_pure_css = get_file_content(file_locations.html_report_pure_css).strip()
-    html_pure_css_menu = get_file_content(file_locations.html_pure_css_menu).strip()
-    html_report_css = get_file_content(file_locations.html_report_css).strip()
-    html_report_js = get_file_content(file_locations.html_report_js).strip()
-
-    html_report_combo = get_file_content(file_locations.html_combo_report).strip()
-    html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
-
-    html_report_start = get_file_content(file_locations.html_report_all_start).strip()
-    html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_end = get_file_content(file_locations.html_report_all_end).strip()
-    html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
-
-    html_report_system = get_file_content(file_locations.html_report_system).strip()
-    html_report_system_sensor_template = get_file_content(file_locations.html_report_system_sensor_template).strip()
-
-    html_report_config = get_file_content(file_locations.html_report_config).strip()
-    html_report_config_sensor_template = get_file_content(file_locations.html_report_config_sensor_template).strip()
-
-    html_report_sensors_readings = get_file_content(file_locations.html_report_sensor_readings).strip()
-    html_report_sensor_readings_template = get_file_content(file_locations.html_report_sensor_readings_template).strip()
-
-    html_report_latency = get_file_content(file_locations.html_report_sensor_latency).strip()
-    html_report_latency_sensor_template = get_file_content(file_locations.html_report_sensor_latency_template).strip()
 
 atpro_notifications = CreateATProMenuNotificationClass()
