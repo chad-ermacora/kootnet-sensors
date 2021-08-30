@@ -76,6 +76,11 @@ class CreateNetworkGetCommands:
         self.program_version = "GetSensorVersion"
         self.program_last_updated = "GetProgramLastUpdated"
 
+        self.rm_system_report = "/atpro/rm-get-system-entry"
+        self.rm_config_report = "/atpro/rm-get-config-entry"
+        self.rm_readings_report = "/atpro/rm-get-readings-entry"
+        self.rm_latency_report = "/atpro/rm-get-latency-entry"
+
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
         self.system_ram_used = "GetRAMUsed"
