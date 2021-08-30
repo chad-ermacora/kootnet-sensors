@@ -23,7 +23,11 @@
                 <thead>
                     <tr>
                         <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
-                        <td><span class="sensor-info">IP Address</span>: {{ IPAddress }}</td>
+                        <td><span class="sensor-info">IP Address</span>:
+                            <a style='color: #7f3299;' href='https://{{ IPAddressAndPort }}' target='_blank'>
+                                {{ IPAddress }}
+                            </a>
+                        </td>
                         <td><span class="sensor-info">Login Check</span>: {{ LoginCheck }}</td>
                         <td style="color: var(--second-color); background-color: {{ ResponseBackground }};">
                             Sensor Response Time: {{ SensorResponseTime }} Sec
@@ -37,13 +41,32 @@
                     <tr>
                         <td class="sensor-info">Debug Logging</td>
                         <td class="sensor-info">Sensor Checkin</td>
+                        <td class="sensor-info">Sensor Checkin Server</td>
                         <td class="sensor-info">Display</td>
                         <td class="sensor-info">WiFi Network</td>
-                        <td class="sensor-info">Interval Recording</td>
+                        <td class="sensor-info">Temperature Offset Adjustments / Value</td>
+                        <td class="sensor-info">RPi Temperature Correction Factor / Value</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>{{ DebugLogging }}</td>
+                        <td>{{ SensorCheckin }}</td>
+                        <td>{{ SensorCheckinServer }}</td>
+                        <td>{{ Display }}</td>
+                        <td>{{ WifiNetwork }}</td>
+                        <td>{{ TemperatureOffset }} / {{ TOValue }}</td>
+                        <td>{{ TemperatureCorrectionFactor }} / {{ TCFValue }}</td>
+                    </tr>
+                </tbody>
+
+                <thead>
+                    <tr>
+                        <td class="sensor-info">Email Report / Graph</td>
+                        <td class="sensor-info">Interval Recording / Interval</td>
                         <td class="sensor-info">High/Low Trigger Recording</td>
                         <td class="sensor-info">Variance Trigger Recording</td>
-                        <td class="sensor-info">Temperature Offset Adjustments</td>
-                        <td class="sensor-info">RPi Temperature Correction Factor</td>
                         <td class="sensor-info">Weather Underground</td>
                         <td class="sensor-info">Luftdaten</td>
                         <td class="sensor-info">Open Sense Map</td>
@@ -52,19 +75,33 @@
 
                 <tbody>
                     <tr>
-                        <td>{{ DebugLogging }}</td>
-                        <td>{{ SensorCheckin }}</td>
-                        <td>{{ Display }}</td>
-                        <td>{{ WifiNetwork }}</td>
-                        <td>{{ IntervalRecording }} / {{ IntervalSeconds }} Sec</td>
+                        <td>{{ EmailReports }} / {{ EmailGraphs }}</td>
+                        <td>{{ IntervalRecording }} / {{ IntervalSeconds }}</td>
                         <td>{{ HighLowRecording }}</td>
                         <td>{{ VarianceRecording }}</td>
-                        <td>{{ TemperatureOffset }}</td>
-                        <td>{{ TemperatureCorrectionFactor }}</td>
                         <td>{{ WeatherUnderground }}</td>
                         <td>{{ Luftdaten }}</td>
                         <td>{{ OpenSenseMap }}</td>
                     </tr>
+                </tbody>
+
+                <thead>
+                    <tr>
+                        <td class="sensor-info">MQTT Broker</td>
+                        <td class="sensor-info">MQTT Subscriber</td>
+                        <td class="sensor-info">MQTT Subscriber Recording</td>
+                        <td class="sensor-info">MQTT Publisher</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>{{ MQTTBroker }}</td>
+                        <td>{{ MQTTSubscriber }}</td>
+                        <td>{{ MQTTSubscriberRecording }}</td>
+                        <td>{{ MQTTPublisher }}</td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>

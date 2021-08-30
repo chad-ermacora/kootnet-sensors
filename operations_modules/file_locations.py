@@ -137,17 +137,11 @@ html_report_all_start = atpro_reports_folder + "report-all-start.html"
 html_report_all_end = atpro_reports_folder + "report-all-end.html"
 html_combo_report = atpro_reports_folder + "report-combo.html"
 
-html_report_system = atpro_reports_folder + "report-system.html"
+html_report_template = atpro_reports_folder + "report-template.html"
+
+html_report_sensor_error_template = atpro_reports_folder + "report-sensor-error-template.html"
 html_report_system_sensor_template = atpro_reports_folder + "report-system-sensor-template.html"
-
-html_report_config = atpro_reports_folder + "report-configurations.html"
 html_report_config_sensor_template = atpro_reports_folder + "report-configurations-sensor-template.html"
-
-html_report_sensor_readings = atpro_reports_folder + "report-readings.html"
-html_report_sensor_readings_template = atpro_reports_folder + "report-readings-sensor-template.html"
-
-html_report_sensor_latency = atpro_reports_folder + "report-latency.html"
-html_report_sensor_latency_template = atpro_reports_folder + "report-latency-sensor-template.html"
-
+html_report_sensor_readings_latency_template = atpro_reports_folder + "report-readings-latency-sensor-template.html"
 
 _check_directories()
