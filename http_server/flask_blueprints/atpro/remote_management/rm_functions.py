@@ -24,11 +24,8 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_generic_functions
-from configuration_modules import app_config_access
 from http_server.flask_blueprints.html_functional import auth_error_msg
-from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_sensor_control_report
-from http_server.flask_blueprints.atpro.atpro_variables import html_report_css, \
-    html_report_combo, html_report_end, html_report_js
+from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 
@@ -153,46 +150,6 @@ def put_all_reports_zipped_to_cache(ip_list):
         logger.network_logger.error("Sensor Control - Reports Zip Generation Error: " + str(error))
     app_cached_variables.creating_the_reports_zip = False
     logger.network_logger.info("Sensor Control - Reports Zip Generation Complete")
-
-
-def generate_html_reports_combo(ip_list):
-    """
-    Returns a combination of all reports in HTML format.
-    Reports are downloaded from the provided list of remote sensors (IP or DNS addresses)
-    """
-    try:
-        system_report = app_config_access.sensor_control_config.radio_report_system
-        config_report = app_config_access.sensor_control_config.radio_report_config
-        sensors_report = app_config_access.sensor_control_config.radio_report_test_sensors
-        latency_report = app_config_access.sensor_control_config.radio_report_sensors_latency
-
-        generate_sensor_control_report(ip_list, report_type=system_report)
-        generate_sensor_control_report(ip_list, report_type=config_report)
-        generate_sensor_control_report(ip_list, report_type=sensors_report)
-        generate_sensor_control_report(ip_list, report_type=latency_report)
-
-        html_system_report = _remove_css_js(app_cached_variables.html_system_report)
-        html_config_report = _remove_css_js(app_cached_variables.html_config_report)
-        html_readings_report = _remove_css_js(app_cached_variables.html_readings_report)
-        html_latency_report = _remove_css_js(app_cached_variables.html_latency_report)
-
-        html_final_combo_return = html_report_combo
-
-        html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", html_config_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", html_readings_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullLatencyReport }}", html_latency_report)
-        html_final_combo_return += "\n" + html_report_end
-    except Exception as error:
-        logger.primary_logger.error("Sensor Control - Unable to Generate Reports for Download: " + str(error))
-        html_final_combo_return = "Error"
-    app_cached_variables.html_combo_report = html_final_combo_return
-
-
-def _remove_css_js(html_report):
-    html_report = html_report.replace(html_report_css, "")
-    html_report = html_report.replace(html_report_js, "")
-    return html_report
 
 
 def create_the_big_zip(ip_list):
