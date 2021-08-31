@@ -129,11 +129,7 @@ def remote_management_main_post(request):
         if len(ip_list_raw) > 0:
             if sc_action == app_config_access.sensor_control_config.radio_check_status:
                 return check_sensor_status_sensor_control(ip_list_raw)
-        else:
-            return _sensor_addresses_required_msg()
-
-        if len(ip_list_raw) > 0:
-            if sc_action == app_config_access.sensor_control_config.radio_report_combo:
+            elif sc_action == app_config_access.sensor_control_config.radio_report_combo:
                 thread_function(_thread_combo_report, args=ip_list_raw)
             elif sc_action == app_config_access.sensor_control_config.radio_report_system:
                 generate_system_report(ip_list_raw)
