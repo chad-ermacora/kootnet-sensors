@@ -94,6 +94,7 @@ def get_system_report_entry():
                                SensorID=app_config_access.primary_config.sensor_id,
                                SensorName=app_cached_variables.hostname,
                                IPAddressAndPort=ip_and_port,
+                               RSMAddressAndPort="{{ RSMAddressAndPort }}",
                                LoginCheck="{{ LoginCheck }}",
                                CPUTemp=cpu_temp,
                                CPUResponseBackground=_get_cpu_background_colour(cpu_temp),
@@ -159,6 +160,7 @@ def get_config_report_entry():
                            SensorName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            IPAddressAndPort=ip_and_port,
+                           RSMAddressAndPort="{{ RSMAddressAndPort }}",
                            LoginCheck="{{ LoginCheck }}",
                            SensorResponseTime="{{ SensorResponseTime }}",
                            ResponseBackground="{{ ResponseBackground }}",
@@ -206,6 +208,7 @@ def get_readings_report_entry():
                            SensorName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            IPAddressAndPort=ip_and_port,
+                           RSMAddressAndPort="{{ RSMAddressAndPort }}",
                            SensorResponseTime="{{ SensorResponseTime }}",
                            ResponseBackground="{{ ResponseBackground }}",
                            SensorInfoBoxes=_convert_lists_to_html_thread(readings_name, readings_data))
@@ -226,6 +229,7 @@ def get_latency_report_entry():
                            SensorName=app_cached_variables.hostname,
                            IPAddress=app_cached_variables.ip,
                            IPAddressAndPort=ip_and_port,
+                           RSMAddressAndPort="{{ RSMAddressAndPort }}",
                            SensorResponseTime="{{ SensorResponseTime }}",
                            ResponseBackground="{{ ResponseBackground }}",
                            SensorInfoBoxes=_convert_lists_to_html_thread(sensor_names, sensor_latency, latency=True))

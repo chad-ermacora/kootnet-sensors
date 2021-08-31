@@ -175,6 +175,10 @@ def create_sensor_report(address_list, sensor_report_url, html_report_heading):
 
 def _get_remote_management_report(ip_address, sensor_report_url, data_queue, login_required=False):
     sensor_check = _get_sensor_response_time(ip_address)
+    rsm_address_port = ip_address.strip()
+    if len(ip_address.split(":")) == 1:
+        rsm_address_port = ip_address.strip() + ":10065"
+
     if sensor_check:
         login_check = get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login)
         if login_check == "OK" or not login_required:
@@ -190,12 +194,11 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", sensor_check)
         else:
             sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
-            sensor_report = sensor_report.replace("{{ SensorAddressAndPort }}", _get_address_and_port_html(ip_address))
     else:
         logger.network_logger.debug("Remote Sensor " + ip_address + " Offline")
         sensor_check = "99.99"
         sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
-        sensor_report = sensor_report.replace("{{ SensorAddressAndPort }}", _get_address_and_port_html(ip_address))
+    sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
     data_queue.put([sensor_check, sensor_report])
 
 
