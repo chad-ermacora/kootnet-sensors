@@ -292,9 +292,9 @@ def check_sensor_status_sensor_control(address_list):
         background_colour = get_response_bg_colour(response_time)
         sensor_url_link = "'https://" + new_address + ":" + port + "/'"
 
-        text_insert += "<tr><th width='160px'><span style='background-color: " + background_colour + ";'>" + \
-                       response_time + " Seconds</span></th>\n<th width='250px'>" + response["sensor_hostname"] + \
-                       "</th>\n<th><a target='_blank' href=" + sensor_url_link + ">" + \
+        text_insert += "<tr><th width='160px'><span style='color: white; background-color: " + background_colour + \
+                       ";'>" + response_time + " Seconds</span></th>\n<th width='250px'>" + \
+                       response["sensor_hostname"] + "</th>\n<th><a target='_blank' href=" + sensor_url_link + ">" + \
                        response["address"] + "</a></th></tr>\n"
     status_page = render_template("ATPro_admin/page_templates/remote_management/online-status-check.html",
                                   SensorResponse=text_insert.strip())
