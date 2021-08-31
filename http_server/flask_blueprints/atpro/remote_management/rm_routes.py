@@ -36,13 +36,13 @@ from configuration_modules.config_trigger_high_low import CreateTriggerHighLowCo
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_sensor_control import CreateIPList
-from sensor_modules.sensor_access import get_cpu_temperature, get_uptime_minutes, get_ram_space, get_disk_space, \
+from sensor_modules.sensor_access import get_cpu_temperature, get_ram_space, get_disk_space, \
     get_reading_unit, get_sensors_latency
 from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from http_server.flask_blueprints.atpro.remote_management.rm_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_clean_ip_list_name
+    get_message_page, get_clean_ip_list_name, get_uptime_str
 from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs import \
     remote_management_receive_configuration
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
@@ -101,7 +101,7 @@ def get_system_report_entry():
                                ResponseBackground="{{ ResponseBackground }}",
                                OSVersion=app_cached_variables.operating_system_name,
                                SensorDateTime=datetime.utcnow().strftime("%Y-%m-%d %H:%M - UTC 0"),
-                               SystemUpTime=get_uptime_minutes(),
+                               SystemUpTime=get_uptime_str(),
                                ProgramVersion=version,
                                LastUpdated=app_cached_variables.program_last_updated,
                                FreeRAM=get_ram_space(),

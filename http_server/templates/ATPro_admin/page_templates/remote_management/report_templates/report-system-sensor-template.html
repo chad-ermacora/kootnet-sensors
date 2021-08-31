@@ -51,7 +51,7 @@
                     <tr>
                         <td>{{ OSVersion }}</td>
                         <td>{{ SensorDateTime }}</td>
-                        <td>{{ SystemUpTime }}</td>
+                        <td>{{ SystemUpTime | safe }}</td>
                         <td>{{ ProgramVersion }}</td>
                         <td>{{ LastUpdated }}</td>
                         <td>{{ FreeRAM }} GB</td>
