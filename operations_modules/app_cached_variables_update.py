@@ -96,7 +96,7 @@ def update_cached_variables():
     _update_cached_note_variables()
     _update_cached_ip()
     _update_cached_hostname()
-    _check_for_new_version()
+    check_for_new_version()
 
 
 def start_cached_variables_refresh():
@@ -112,7 +112,7 @@ def _cached_variables_refresh():
     while True:
         _update_cached_ip()
         _update_cached_hostname()
-        _check_for_new_version()
+        check_for_new_version()
         sleep(3600)
 
 
@@ -182,7 +182,7 @@ def _update_cached_sensor_reboot_count():
     app_cached_variables.reboot_count = reboot_count
 
 
-def _check_for_new_version():
+def check_for_new_version():
     logger.primary_logger.debug(" -- Checking for new Kootnet Sensors Versions")
     standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
     developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
