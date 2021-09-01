@@ -18,6 +18,7 @@
 """
 from flask import Blueprint, render_template, request
 from werkzeug.security import generate_password_hash
+from configuration_modules.app_config_access import primary_config
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
@@ -47,3 +48,19 @@ def html_atpro_system_change_login():
             msg2 = "Username and Password must be 4 to 62 characters long and cannot be blank"
         return get_message_page(msg1, msg2)
     return render_template("ATPro_admin/page_templates/system/system-change-login.html")
+
+
+@html_atpro_system_routes.route("/atpro/system-auto-upgrades", methods=["POST"])
+@auth.login_required
+def html_atpro_system_auto_upgrades_settings_main():
+    primary_config.update_with_html_request_auto_upgrades(request)
+    primary_config.save_config_to_file()
+    app_cached_variables.restart_automatic_upgrades_thread = True
+    msg = "Restarting Automatic Upgrade Server - The next update check is in " + \
+          str(primary_config.automatic_upgrade_delay_hours) + " hours"
+    if not primary_config.enable_automatic_upgrades_major \
+            and not primary_config.enable_automatic_upgrades_minor \
+            and not primary_config.enable_automatic_upgrades_developmental:
+        msg = "No further Automatic Upgrade Checks will be made"
+    return get_message_page("Automatic Upgrade Settings Updated", message=msg,
+                            page_url="sensor-system", skip_menu_select=True)

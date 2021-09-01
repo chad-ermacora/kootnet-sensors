@@ -39,6 +39,7 @@ from sensor_recording_modules.recording_interval import start_interval_recording
 from sensor_recording_modules.recording_high_low_triggers import start_trigger_high_low_recording_server
 from sensor_recording_modules.recording_triggers import start_trigger_variance_recording_server
 from operations_modules.software_checkin import start_sensor_checkins
+from operations_modules.software_automatic_upgrades import start_automatic_upgrades_server
 from operations_modules.server_hardware_interactive import start_hardware_interactive_server
 from operations_modules.server_display import start_display_server
 from operations_modules.email_server import start_report_email_server
@@ -146,6 +147,12 @@ try:
     start_graph_email_server()
 except Exception as error:
     logger.primary_logger.critical("Graph Email Server Error: " + str(error))
+
+try:
+    # Start Automatic Upgrades Server
+    start_automatic_upgrades_server()
+except Exception as error:
+    logger.primary_logger.critical("Automatic Upgrades Server Error: " + str(error))
 
 try:
     # Updates cached variables that may change like IP and hostname every hour

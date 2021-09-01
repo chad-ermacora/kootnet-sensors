@@ -58,6 +58,10 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 33:
+                if previous_version.minor_version < 145:
+                    no_changes = False
+                    config_class = generic_upgrade_functions.CreatePrimaryConfiguration
+                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
                 if previous_version.minor_version < 96:
                     no_changes = False
                     upgrade_beta_33_x_to_33_96()

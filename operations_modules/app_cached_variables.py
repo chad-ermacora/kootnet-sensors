@@ -301,8 +301,8 @@ uploaded_databases_list = []
 zipped_db_backup_list = []
 
 # Is filled with Currently available online Stable / Developmental versions
-standard_version_available = "Retrieving ..."
-developmental_version_available = "Retrieving ..."
+standard_version_available = "Retrieving"
+developmental_version_available = "Retrieving"
 software_update_available = False
 
 # Static variables
@@ -340,6 +340,7 @@ checkin_search_sensors_log = ""
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
 sensor_checkin_thread = CreateEmptyThreadClass()
+automatic_upgrades_thread = CreateEmptyThreadClass()
 interval_recording_thread = CreateEmptyThreadClass()
 report_email_thread = CreateEmptyThreadClass()
 graph_email_thread = CreateEmptyThreadClass()
@@ -387,6 +388,7 @@ trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
 restart_sensor_checkin_thread = False
+restart_automatic_upgrades_thread = False
 restart_interval_recording_thread = False
 restart_all_trigger_threads = False
 restart_report_email_thread = False
