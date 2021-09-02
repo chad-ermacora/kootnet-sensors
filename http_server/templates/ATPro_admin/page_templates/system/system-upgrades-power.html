@@ -1,132 +1,100 @@
 <div class="row" style="font-weight: bolder;">
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-8 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content" style="min-height: 375px;">
-                <h2>Kootnet Software Upgrades</h2>
-                <div class="pure-menu pure-menu-horizontal">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                            <a style="cursor: default;" class="pure-menu-link system-dropdown">
-                                Upgrades
-                            </a>
-                            <ul class="pure-menu-children">
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                       onclick="ConfirmFunction('Start Kootnet Sensors Standard Upgrade?','/system/upgrade-http-std')">
-                                        Standard Upgrade - HTTP
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                       onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
-                                        Development Upgrade - HTTP
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a style="cursor: default;" class="pure-menu-link">
-                                        ------------
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean')">
-                                        Clean Standard Upgrade - HTTP
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean')">
-                                        Clean Development Upgrade - HTTP
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                <h1><i class="far fa-arrow-alt-circle-up"></i> Kootnet Sensors Upgrades</h1>
+                <p>
+                    Looking to update to the latest stable release?<br>Use "Standard Upgrade - HTTP"<br><br>
+                </p>
+                <button type="button" class="pure-button" style="background-color: darkgreen;"
+                        onclick="ConfirmFunction('Start Kootnet Sensors Standard Upgrade?','/system/upgrade-http-std')">
+                    <b>Standard Upgrade - HTTP</b>
+                </button>
 
-                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                            <a style="cursor: default;" class="pure-menu-link system-dropdown">
-                                Custom Upgrades
-                            </a>
-                            <ul class="pure-menu-children">
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                       onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std')">
-                                        Standard Upgrade - SMB
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev')">
-                                        Development Upgrade - SMB
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                <br><br>
 
-                <h2>System Upgrades & Power</h2>
-                <div class="pure-menu pure-menu-horizontal">
-                    <ul class="pure-menu-list">
-                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                            <a style="cursor: default;" class="pure-menu-link system-dropdown">
-                                System Upgrades
-                            </a>
-                            <ul class="pure-menu-children">
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('OS Upgrade requires Internet access and may take some time, proceed?','/system/upgrade-os')">
-                                        Upgrade OS & Reboot
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules')">
-                                        Upgrade Python3 Modules & Restart Software
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                <button type="button" class="pure-button" style="background-color: yellow;"
+                        onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean')">
+                    <b>Clean Standard Upgrade - HTTP</b>
+                </button>
 
-                        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
-                            <a style="cursor: default;" class="pure-menu-link system-dropdown">
-                                Power
-                            </a>
-                            <ul class="pure-menu-children">
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Restart Program?','/system/system-restart-program')">
-                                        Restart Program
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Restart System?','/system/system-restart')">
-                                        Restart System
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a style="cursor: default;" class="pure-menu-link">
-                                        ------------
-                                    </a>
-                                </li>
-                                <li class="pure-menu-item">
-                                    <a href="#" class="pure-menu-link"
-                                        onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown')">
-                                        Shutdown System
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
+                <br><br><hr><br>
+
+                <p>
+                    Want to see whats coming?<br>Don't mind losing settings and or functionality?<br>
+                    Try "Developmental Upgrade - HTTP"
+                </p>
+
+                <button type="button" class="pure-button" style="background-color: red;"
+                        onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
+                    <b>Developmental Upgrade - HTTP</b>
+                </button>
+
+                <br><br>
+
+                <button type="button" class="pure-button" style="background-color: darkred;"
+                        onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean')">
+                    <b>Clean Development Upgrade - HTTP</b>
+                </button>
+
+                <br><br><hr><br>
+
+                <p>
+                    This requires custom configuration changes in<br>
+                    /home/kootnet_data/scripts/update_kootnet-sensors_smb.sh<br>
+                    On EVERY sensor that you want to use this with
+                </p>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std')">
+                    <b>Standard Upgrade - SMB</b>
+                </button>
+
+                <br><br>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev')">
+                    <b>Development Upgrade - SMB</b>
+                </button>
             </div>
         </div>
     </div>
 
-    <div class="col-6 col-m-12 col-sm-12">
+    <div class="col-4 col-m-12 col-sm-12">
         <div class="card">
-            <div class="card-content">
+            <div class="card-content" style="min-height: 375px;">
+                <h2>Other Updates</h2>
 
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Internet Required! Kootnet Sensors will restart when done. Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules')">
+                    Update Python3 Modules
+                </button>
+
+                <br><br>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Internet Required! OS Upgrade may take some time, proceed?','/system/upgrade-os')">
+                    Update OS
+                </button>
+
+                <br><br><hr>
+
+                <h2>Power Commands</h2>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Restart Program?','/system/system-restart-program')">
+                    Restart Program
+                </button>
+                <br><br><br>
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Restart System?','/system/system-restart')">
+                    Restart System
+                </button>
+                <br><br>
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown')">
+                    Shutdown System
+                </button>
             </div>
         </div>
     </div>
