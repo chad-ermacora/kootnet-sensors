@@ -79,3 +79,18 @@ def _thread_start_automatic_upgrades_server():
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
         logger.primary_logger.debug("Automatic Upgrade Check Finished")
+
+
+def get_automatic_upgrade_enabled_text():
+    return_text = "Disabled"
+    if app_config_access.primary_config.enable_automatic_upgrades_developmental:
+        return_text = "Enabled Developmental"
+    else:
+        if app_config_access.primary_config.enable_automatic_upgrades_major \
+                and app_config_access.primary_config.enable_automatic_upgrades_minor:
+            return_text = "Enabled Stable Major & Minor"
+        elif app_config_access.primary_config.enable_automatic_upgrades_major:
+            return_text = "Enabled Stable Major"
+        elif app_config_access.primary_config.enable_automatic_upgrades_minor:
+            return_text = "Enabled Stable Minor"
+    return return_text

@@ -40,6 +40,7 @@ def html_atpro_sensor_settings_main():
         app_config_access.primary_config.update_with_html_request(request)
         app_config_access.primary_config.save_config_to_file()
         app_cached_variables.restart_sensor_checkin_thread = True
+        app_cached_variables.restart_automatic_upgrades_thread = True
         msg = "If you changed the Web Portal HTTPS Port Number, you will need to restart the program"
         return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
 

@@ -69,6 +69,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
 
         self.enable_debug_logging = 0
+        self.enable_automatic_upgrades_major = 0
+        self.enable_automatic_upgrades_minor = 0
+        self.enable_automatic_upgrades_developmental = 0
         self.enable_custom_temp = 0
         self.enable_temperature_comp_factor = 0
 
@@ -80,28 +83,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("program_hour_offset") is not None:
             self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
-
-        if html_request.form.get("enable_custom_temp_offset") is not None:
-            new_temp = float(html_request.form.get("custom_temperature_offset"))
-            self.enable_custom_temp = 1
-            self.temperature_offset = new_temp
-
-        if html_request.form.get("enable_custom_temp_comp") is not None:
-            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
-            self.enable_temperature_comp_factor = 1
-            self.temperature_comp_factor = new_temp_comp
-
-        if html_request.form.get("ip_web_port") is not None:
-            self.web_portal_port = int(html_request.form.get("ip_web_port"))
-        self.update_configuration_settings_list()
-
-    def update_with_html_request_auto_upgrades(self, html_request):
-        """ Updates the Automatic Software Upgrades settings based on provided HTML configuration data. """
-        logger.network_logger.debug("Starting HTML Automatic Software Upgrades Configuration Update Check")
-
-        self.enable_automatic_upgrades_major = 0
-        self.enable_automatic_upgrades_minor = 0
-        self.enable_automatic_upgrades_developmental = 0
 
         if html_request.form.get("auto_upgrade_delay_hours") is not None:
             try:
@@ -119,6 +100,19 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_automatic_upgrades_minor = 1
         if html_request.form.get("enable_dev_auto_upgrades") is not None:
             self.enable_automatic_upgrades_developmental = 1
+
+        if html_request.form.get("enable_custom_temp_offset") is not None:
+            new_temp = float(html_request.form.get("custom_temperature_offset"))
+            self.enable_custom_temp = 1
+            self.temperature_offset = new_temp
+
+        if html_request.form.get("enable_custom_temp_comp") is not None:
+            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
+            self.enable_temperature_comp_factor = 1
+            self.temperature_comp_factor = new_temp_comp
+
+        if html_request.form.get("ip_web_port") is not None:
+            self.web_portal_port = int(html_request.form.get("ip_web_port"))
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):

@@ -27,6 +27,7 @@ from operations_modules.app_generic_functions import get_http_sensor_reading, se
     get_list_of_filenames_in_dir, get_file_size
 from operations_modules.app_validation_checks import url_is_valid
 from operations_modules.software_version import version
+from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
@@ -104,6 +105,7 @@ def get_system_report_entry():
                                SensorDateTime=datetime.utcnow().strftime("%Y-%m-%d %H:%M - UTC 0"),
                                SystemUpTime=get_uptime_str(),
                                ProgramVersion=version,
+                               AutomaticUpgrades=get_automatic_upgrade_enabled_text(),
                                LastUpdated=app_cached_variables.program_last_updated,
                                FreeRAM=get_ram_space(),
                                FreeDiskSpace=get_disk_space(),

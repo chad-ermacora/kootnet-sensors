@@ -23,6 +23,7 @@ from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
 from operations_modules.software_version import version as kootnet_version
+from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.flask_blueprints.atpro.atpro_variables import html_sensor_readings_row, atpro_notifications
@@ -46,6 +47,7 @@ def html_atpro_dashboard():
         cpu_temp = round(cpu_temp[app_cached_variables.database_variables.system_temperature], 3)
     return render_template(
         "ATPro_admin/page_templates/dashboard.html",
+        AutoUpgrades=get_automatic_upgrade_enabled_text(),
         KootnetVersion=version,
         StdVersion=app_cached_variables.standard_version_available,
         DevVersion=app_cached_variables.developmental_version_available,
