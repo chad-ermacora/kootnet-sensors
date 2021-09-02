@@ -20,26 +20,17 @@ import os
 from flask import Blueprint, request, render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from configuration_modules import app_config_access
 from operations_modules.app_generic_functions import thread_function
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from http_server.server_http_generic_functions import get_html_checkbox_state
 
 html_atpro_system_commands_routes = Blueprint("html_atpro_system_commands_routes", __name__)
 
 
 @html_atpro_system_commands_routes.route("/atpro/system-upgrades-power")
 def html_atpro_system_upgrades_power():
-    enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_major)
-    enable_minor_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_minor)
-    enable_dev_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_developmental)
-    return render_template("ATPro_admin/page_templates/system/system-upgrades-power.html",
-                           AutoUpDelayHours=str(app_config_access.primary_config.automatic_upgrade_delay_hours),
-                           EnableStableMajorAutoUpgrades=enable_major_upgrades,
-                           EnableStableMinorAutoUpgrades=enable_minor_upgrades,
-                           EnableDevAutoUpgrades=enable_dev_upgrades)
+    return render_template("ATPro_admin/page_templates/system/system-upgrades-power.html")
 
 
 @html_atpro_system_commands_routes.route('/atpro/system/<path:url_path>')
