@@ -9,11 +9,15 @@
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2><a style="color: var(--main-color);" href="#" onclick="SelectNav('sensor-checkin-view')">
-                    Last {{ MaxSensorCount }} Sensor Check-ins
+                <h2><a style="color: var(--main-color); text-decoration-line: none;"
+                       href="#" onclick="SelectNav('sensor-checkin-view')">
+                    <i class="fas fa-satellite-dish"></i> Sensor Check-ins
                 </a></h2>
 
-                <h4>This will automatically refresh every 5 minutes</h4>
+                <h4>
+                    Up to {{ MaxSensorCount }} of the last Sensor Check-ins are shown<br><br>
+                    This will automatically refresh every 5 minutes
+                </h4>
 
                 <button class="pure-button" type="button"
                         onclick="window.open('/atpro/checkin-sensors-list', '_blank')">

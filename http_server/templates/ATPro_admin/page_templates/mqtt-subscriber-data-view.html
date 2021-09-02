@@ -9,11 +9,15 @@
     <div class="col-12 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2><a style="color: var(--main-color);" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
-                    Last {{ MQTTShowing }} MQTT Subscriber Messages
+                <h2><a style="color: var(--main-color); text-decoration-line: none;"
+                       href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
+                    <i class="fas fa-broadcast-tower"></i> MQTT Subscriber
                 </a></h2>
 
-                <h4>This will automatically refresh every 5 minutes</h4>
+                <h4>
+                    Up to {{ MQTTShowing }} of the last MQTT Subscriber Messages are shown<br><br>
+                    This will automatically refresh every 5 minutes
+                </h4>
 
                 <button class="pure-button" type="button"
                         onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
