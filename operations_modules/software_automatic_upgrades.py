@@ -59,22 +59,30 @@ def _thread_start_automatic_upgrades_server():
                 http_dev_version = CreateRefinedVersion(app_cached_variables.developmental_version_available)
                 http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
 
+                current_version = running_version.get_version_string()
+                new_version_msg = "New Version Detected - New: {{ NewVersion }} Current: " + current_version + " - "
                 if app_config_access.primary_config.enable_automatic_upgrades_developmental:
                     if http_dev_version.major_version > running_version.major_version or \
                             http_dev_version.minor_version > running_version.minor_version:
-                        logger.primary_logger.info("Starting Automatic Developmental Upgrade")
+                        new_version = http_dev_version.get_version_string()
+                        new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
+                        logger.primary_logger.info(new_version_msg + "Starting Automatic Developmental Upgrade")
                         thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
 
                 elif app_config_access.primary_config.enable_automatic_upgrades_major:
                     if http_std_version.major_version > running_version.major_version:
-                        logger.primary_logger.info("Starting Automatic Major Upgrade")
+                        new_version = http_std_version.get_version_string()
+                        new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
+                        logger.primary_logger.info(new_version_msg + "Starting Automatic Major Upgrade")
                         thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
 
                 if app_config_access.primary_config.enable_automatic_upgrades_minor and not \
                         app_config_access.primary_config.enable_automatic_upgrades_developmental:
                     if http_std_version.major_version == running_version.major_version and \
                             http_std_version.minor_version > running_version.minor_version:
-                        logger.primary_logger.info("Starting Automatic Minor Upgrade")
+                        new_version = http_std_version.get_version_string()
+                        new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
+                        logger.primary_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
                         thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
