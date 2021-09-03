@@ -60,7 +60,7 @@ def _thread_start_automatic_upgrades_server():
                 http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
 
                 current_version = running_version.get_version_string()
-                new_version_msg = "New Version Detected - New: {{ NewVersion }} Current: " + current_version + " - "
+                new_version_msg = " -- New Version Detected - New: {{ NewVersion }} Current: " + current_version + " - "
                 if app_config_access.primary_config.enable_automatic_upgrades_developmental:
                     if http_dev_version.major_version > running_version.major_version or \
                             http_dev_version.minor_version > running_version.minor_version:
