@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="col-7 col-m-12 col-sm-12">
+    <div class="col-3 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
                 <table>
@@ -43,14 +43,31 @@
                         <tr>
                             <th><div class="readings-header">Automatic Upgrades</div></th>
                             <th><div class="readings-header">Running Version</div></th>
-                            <th><div class="readings-header">Current Release</div></th>
-                            <th><div class="readings-header">Development Release</div></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td>{{ AutoUpgrades }}</td>
                             <td>{{ KootnetVersion }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Current Release</div></th>
+                            <th><div class="readings-header">Development Release</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
                             <td>{{ StdVersion }}</td>
                             <td>{{ DevVersion }}</td>
                         </tr>
