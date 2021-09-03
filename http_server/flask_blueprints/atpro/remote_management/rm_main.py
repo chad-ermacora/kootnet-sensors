@@ -35,35 +35,20 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_inde
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
+acv = app_cached_variables
 
 
 def get_atpro_sensor_remote_management_page():
-    download_big_zip = "disabled"
-    if not app_cached_variables.creating_the_big_zip and app_cached_variables.sc_big_zip_name != "":
-        download_big_zip = ""
-
-    download_reports_zip = "disabled"
-    if not app_cached_variables.creating_the_reports_zip and app_cached_variables.sc_reports_zip_name != "":
-        download_reports_zip = ""
-
-    download_databases_zip = "disabled"
-    if not app_cached_variables.creating_databases_zip and app_cached_variables.sc_databases_zip_name != "":
-        download_databases_zip = ""
-
-    download_logs_zip = "disabled"
-    if not app_cached_variables.creating_logs_zip and app_cached_variables.sc_logs_zip_name != "":
-        download_logs_zip = ""
-
     run_script = _get_rm_running_msg()
     if run_script != "":
         run_script = "RunningRSM(blinking_text='" + run_script + "');"
     return render_template(
         "ATPro_admin/page_templates/remote-management.html",
         RunningRSMScript=run_script,
-        DownloadReportsZipDisabled=download_reports_zip,
-        DownloadDatabasesDisabled=download_databases_zip,
-        DownloadLogsDisabled=download_logs_zip,
-        DownloadBigZipDisabled=download_big_zip,
+        DownloadReportsZipDisabled=_get_html_button_state(acv.creating_the_reports_zip, acv.sc_reports_zip_name),
+        DownloadDatabasesDisabled=_get_html_button_state(acv.creating_databases_zip, acv.sc_databases_zip_name),
+        DownloadLogsDisabled=_get_html_button_state(acv.creating_logs_zip, acv.sc_logs_zip_name),
+        DownloadBigZipDisabled=_get_html_button_state(acv.creating_the_big_zip, acv.sc_big_zip_name),
         IPListsOptionNames=get_rm_ip_lists_drop_down(),
         SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
         SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
@@ -86,6 +71,13 @@ def get_atpro_sensor_remote_management_page():
         SensorIP19=app_config_access.sensor_control_config.sensor_ip_dns19,
         SensorIP20=app_config_access.sensor_control_config.sensor_ip_dns20
     )
+
+
+def _get_html_button_state(setting1, setting2):
+    return_text = "disabled"
+    if not setting1 and setting2 != "":
+        return_text = ""
+    return return_text
 
 
 def _get_rm_running_msg():
