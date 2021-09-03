@@ -1,68 +1,76 @@
-<div class="row" style="font-weight: bolder;">
+<div class="row">
     <div class="col-8 col-m-12 col-sm-12">
         <div class="card">
-            <div class="card-content" style="min-height: 375px;">
+            <div class="card-content">
                 <h1><i class="far fa-arrow-alt-circle-up"></i> Kootnet Sensors Upgrades</h1>
                 <p>
                     Looking to update to the latest stable release?<br>Use "Standard Upgrade - HTTP"<br><br>
                 </p>
-                <button type="button" class="pure-button" style="background-color: darkgreen;"
+                <button type="button" class="pure-button" style="color: lightblue; background-color: darkgreen;"
                         onclick="ConfirmFunction('Start Kootnet Sensors Standard Upgrade?','/system/upgrade-http-std')">
                     <b>Standard Upgrade - HTTP</b>
                 </button>
 
-                <br><br>
+                <br><br><br>
 
-                <button type="button" class="pure-button" style="background-color: yellow;"
-                        onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean')">
-                    <b>Clean Standard Upgrade - HTTP</b>
+                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                    Show Advanced Upgrade Options
                 </button>
 
-                <br><br><hr><br>
+                <br><br><br>
 
-                <p>
-                    Want to see whats coming?<br>Don't mind losing settings and or functionality?<br>
-                    Try "Developmental Upgrade - HTTP"
-                </p>
+                <div id="adv-upgrade-content">
+                    <button type="button" class="pure-button" style="background-color: yellow;"
+                            onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean')">
+                        <b>Clean Standard Upgrade - HTTP</b>
+                    </button>
 
-                <button type="button" class="pure-button" style="background-color: red;"
-                        onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
-                    <b>Developmental Upgrade - HTTP</b>
-                </button>
+                    <br><br>
 
-                <br><br>
+                    <p>
+                        Want to see whats coming?<br>Don't mind losing settings and or functionality?<br>
+                        Try "Developmental Upgrade - HTTP"
+                    </p>
 
-                <button type="button" class="pure-button" style="background-color: darkred;"
-                        onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean')">
-                    <b>Clean Development Upgrade - HTTP</b>
-                </button>
+                    <button type="button" class="pure-button" style="color: white; background-color: red;"
+                            onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
+                        <b>Developmental Upgrade - HTTP</b>
+                    </button>
 
-                <br><br><hr><br>
+                    <br><br>
 
-                <p>
-                    This requires custom configuration changes in<br>
-                    /home/kootnet_data/scripts/update_kootnet-sensors_smb.sh<br>
-                    On EVERY sensor that you want to use this with
-                </p>
+                    <button type="button" class="pure-button" style="color: white; background-color: darkred;"
+                            onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean')">
+                        <b>Clean Development Upgrade - HTTP</b>
+                    </button>
 
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std')">
-                    <b>Standard Upgrade - SMB</b>
-                </button>
+                    <br><br><hr><br>
 
-                <br><br>
+                    <p>
+                        This requires custom configuration changes in<br>
+                        /home/kootnet_data/scripts/update_kootnet-sensors_smb.sh<br>
+                        On EVERY sensor that you want to use this with
+                    </p>
 
-                <button type="button" class="pure-button"
-                        onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev')">
-                    <b>Development Upgrade - SMB</b>
-                </button>
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std')">
+                        <b>Standard Upgrade - SMB</b>
+                    </button>
+
+                    <br><br>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev')">
+                        <b>Development Upgrade - SMB</b>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="col-4 col-m-12 col-sm-12">
         <div class="card">
-            <div class="card-content" style="min-height: 375px;">
+            <div class="card-content">
                 <h2>Other Updates</h2>
 
                 <button type="button" class="pure-button"
@@ -107,4 +115,15 @@
             $("#main-page-view").load("/atpro" + load_url);
         }
     }
+
+    function ShowHideAdvUpgrades() {
+        if (document.getElementById("adv-upgrade-content").style.display === "none") {
+            document.getElementById("adv-upgrade-content").style.display = "inline-block";
+            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Upgrade Options";
+        } else {
+            document.getElementById("adv-upgrade-content").style.display = "none";
+            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Upgrade Options";
+        }
+    }
+    ShowHideAdvUpgrades()
 </script>
