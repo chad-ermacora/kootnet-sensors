@@ -372,7 +372,7 @@ body {
 }
 
 /* Remove Sensor ID in order to see top right menu items */
-@media only screen and (max-width: 675px) {
+@media only screen and (max-width: 725px) {
 	.navbar-page-header {
 		display: none;
 	}
