@@ -258,6 +258,7 @@
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
                     <input type="text" name="ConfigSection" value="Advanced" hidden><br>
+                    <h2><i class="fas fa-cog"></i> MQTT Topic Configurations</h2>
 
                     <label>MQTT Base Topic(s)<br>Ex. Sensor1 or Home/Sensor1<br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
@@ -272,7 +273,7 @@
 
                     <br><br>
 
-                    <h2>Send MQTT using</h2>
+                    <h3><i class="fas fa-box"></i> MQTT Delivery Format</h3>
                     <label for="SendAsKootnet">
                         <input type="radio" id="SendAsKootnet" name="mqtt_send_type" onchange="topics_hidden()"
                                value="KootnetSensors" {{ SASKSChecked }} />

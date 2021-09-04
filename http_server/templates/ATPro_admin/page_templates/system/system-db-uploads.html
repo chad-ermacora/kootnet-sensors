@@ -1,21 +1,15 @@
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
         <div class="card-content">
-            <h2 style="color: red;"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
-            <p>When replacing primary databases,
-                existing readings in the current database will no longer be accessible.<br>
-            </p>
-        </div>
-    </div>
-</div>
-
-<div class="col-12 col-m-12 col-sm-12">
-    <div class="card">
-        <div class="card-content">
             <h2><i class="fas fa-exclamation-circle"></i> Information</h2>
             <p>
                 Upload a zip file containing one or more SQLite3 databases or Upload a single raw SQLite3 database.<br>
                 When replacing a Local Database, a backup is created and accessible under 'Information & Downloads'.
+            </p>
+
+            <h2 style="color: red;"><i class="fas fa-exclamation-triangle"></i> Warning</h2>
+            <p>When replacing primary databases,
+                existing readings in the current database will no longer be accessible.<br>
             </p>
         </div>
     </div>
@@ -46,7 +40,7 @@
                     <br><br>
 
                     <button type="submit" class="pure-button" name="db_upload_button" value="upload">
-                        Upload
+                        <i class="fas fa-upload"></i> Upload Database
                     </button>
                 </form>
             </div>
@@ -76,7 +70,7 @@
                     <br><br>
 
                     <button type="submit" class="pure-button" name="db_upload_button" value="replace">
-                        Replace Database
+                        <i class="fas fa-copy"></i> Replace Database
                     </button>
                 </form>
             </div>

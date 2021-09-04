@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-content" id="db-info-resize">
                 <form class="pure-form" method="POST" action="/atpro/system-db-management">
-                    <h2><i class="fas fa-file-archive"></i> Database Backups</h2>
+                    <h2><i class="fas fa-file-archive"></i> Delete Database Backup</h2>
                     <label for="db_backup_selection">Choose a Database:<br>
                         <select name="db_selected" id="db_backup_selection">
                             <optgroup label="Main Backed-Up Databases">
@@ -16,7 +16,7 @@
 
                     <button type="submit" class="pure-button" value="delete_backup_db" name="db_management"
                             onclick="return confirm('Are you sure you want to delete the Database backup?')">
-                        Delete Backup
+                        <i class="fas fa-trash-alt"></i> Delete Backup
                     </button>
                 </form>
             </div>
@@ -51,7 +51,9 @@
 
                     <br>
 
-                    <button type="submit" class="pure-button" name="db_management" value="rename_db">Rename</button>
+                    <button type="submit" class="pure-button" name="db_management" value="rename_db">
+                        <i class="fas fa-edit"></i> Rename Database
+                    </button>
                 </form>
             </div>
         </div>
@@ -74,7 +76,7 @@
 
                     <button type="submit" class="pure-button" value="delete_db" name="db_management"
                     onclick="return confirm('Are you sure you want to delete the Database?')">
-                        Delete Database
+                        <i class="fas fa-trash-alt"></i> Delete Database
                     </button>
                 </form>
             </div>
@@ -104,7 +106,7 @@
                     <button type="submit" class="pure-button" value="shrink_db" name="db_management"
                             onclick="return confirm('Database Vacuum may take some time ' +
                              'depending on the size of the Database, Continue?')">
-                        Shrink Database
+                        <i class="fas fa-play"></i> Shrink Database
                     </button>
                 </form>
             </div>

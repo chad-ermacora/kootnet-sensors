@@ -37,7 +37,7 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2>Checkin Information</h2>
+                <h2><i class="fas fa-info-circle"></i> Checkin Information</h2>
 
                 <h3>
                     <span>Checkin Server: </span>{{ CheckinEnabledText | safe }}<br>
@@ -66,7 +66,7 @@
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/sensor-checkin-delete-old-sensors"
                       onsubmit="return confirm('This cannot be undone, delete old Sensors from database?');">
-                    <h2>Database Clean-up</h2>
+                    <h2><i class="far fa-trash-alt"></i> Database Clean-up</h2>
 
                     <label>Clear Old Checkins<br>
                         <button class="pure-button" type="button" onclick="ClearCheckins();">Clear Old Checkin Data</button>

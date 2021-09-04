@@ -30,7 +30,7 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2>MQTT Subscriber Information</h2>
+                <h2><i class="fas fa-info-circle"></i> MQTT Subscriber Information</h2>
                 <h3>
                     <span>MQTT Subscriber Status: </span>
                     <span style="color: {{ MQTTEnabledColor }};">{{ MQTTSubscriberEnabledText }}</span>
@@ -59,7 +59,7 @@
     <div class="col-6 col-m-12 col-sm-12">
         <div class="card">
             <div class="card-content">
-                <h2>MQTT Log Clean-up</h2>
+                <h2><i class="far fa-trash-alt"></i> MQTT Log Clean-up</h2>
                 <h3>Showing up to {{ MQTTShowing }} log entries out of a total of {{ MQTTTotoalEntries }}</h3>
                 <button class="pure-button" onclick="ClearMQTTSubLogs()">Clear Log</button>
             </div>
