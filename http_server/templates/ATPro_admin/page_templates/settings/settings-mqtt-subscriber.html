@@ -50,10 +50,11 @@
                     <br>
 
                     <label>
-                        <a style="color: white;" target="_blank"
+                        <a target="_blank"
                            href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
                             Quality of Service Level
-                        </a><br>
+                        </a>
+                        <br>
                         <select name="mqtt_qos_level">
                             <option value=0 {{ MQTTQoSLevel0 }}>Level 0</option>
                             <option value=1 {{ MQTTQoSLevel1 }}>Level 1</option>
@@ -109,7 +110,10 @@
 
                     <label>
                         <i>Add one or more
-                        <a target="_blank" href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">Topics</a>
+                        <a style="text-decoration-line: none;" target="_blank"
+                           href="https://docs.solace.com/Open-APIs-Protocols/MQTT/MQTT-Topics.htm">
+                            Topics
+                        </a>
                         separated by a comma Eg. KS/Sensor1/Temp,KS/Sensor2/Temp</i><br><br>
                         <textarea id="subscriber_topics" name="subscriber_topics" cols="50" rows="20">{{ SubscriberTopics }}</textarea>
                     </label>
