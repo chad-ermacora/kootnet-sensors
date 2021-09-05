@@ -217,23 +217,9 @@ def html_atpro_sensor_settings_mqtt_subscriber():
         return get_message_page("MQTT Subscriber Settings Updated", page_url="sensor-settings")
 
     mqtt_qos = app_config_access.mqtt_subscriber_config.mqtt_subscriber_qos
-    qos_level_0 = ""
-    qos_level_1 = ""
-    qos_level_2 = ""
-    if mqtt_qos == 0:
-        qos_level_0 = get_html_selected_state(True)
-    elif mqtt_qos == 1:
-        qos_level_1 = get_html_selected_state(True)
-    elif mqtt_qos == 2:
-        qos_level_2 = get_html_selected_state(True)
-
     enable_mqtt_subscriber = app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber
     enable_mqtt_sql_recording = app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording
     enable_broker_auth = app_config_access.mqtt_subscriber_config.enable_broker_auth
-    csv_mqtt_topics = ""
-    for topic in app_config_access.mqtt_subscriber_config.subscribed_topics_list:
-        csv_mqtt_topics += topic + ","
-    csv_mqtt_topics = csv_mqtt_topics[:-1]
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-subscriber.html",
         MaxSensorPosts=app_config_access.mqtt_subscriber_config.mqtt_page_view_max_entries,
@@ -241,13 +227,29 @@ def html_atpro_sensor_settings_mqtt_subscriber():
         MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
         MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,
         MQTTBrokerPort=str(app_config_access.mqtt_subscriber_config.broker_server_port),
-        MQTTQoSLevel0=qos_level_0,
-        MQTTQoSLevel1=qos_level_1,
-        MQTTQoSLevel2=qos_level_2,
+        MQTTQoSLevel0=get_html_selected_state(_check_if_equal(mqtt_qos, 0)),
+        MQTTQoSLevel1=get_html_selected_state(_check_if_equal(mqtt_qos, 1)),
+        MQTTQoSLevel2=get_html_selected_state(_check_if_equal(mqtt_qos, 2)),
         MQTTSubscriberAuthChecked=get_html_checkbox_state(enable_broker_auth),
         MQTTSubscriberUsername=app_config_access.mqtt_subscriber_config.broker_user,
-        SubscriberTopics=csv_mqtt_topics
+        SubscriberTopics=_get_csv_matt_topics()
     )
+
+
+def _check_if_equal(variable1, variable2):
+    if variable1 == variable2:
+        return True
+    return False
+
+
+def _get_csv_matt_topics():
+    csv_mqtt_topics = "#"
+    if len(app_config_access.mqtt_subscriber_config.subscribed_topics_list) > 0:
+        csv_mqtt_topics = ""
+        for topic in app_config_access.mqtt_subscriber_config.subscribed_topics_list:
+            csv_mqtt_topics += topic + ","
+        csv_mqtt_topics = csv_mqtt_topics[:-1]
+    return csv_mqtt_topics
 
 
 @html_atpro_settings_mqtt_routes.route("/atpro/settings-mqtt-b", methods=["GET", "POST"])
