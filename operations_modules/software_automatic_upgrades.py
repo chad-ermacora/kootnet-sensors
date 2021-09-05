@@ -45,7 +45,10 @@ def _thread_start_automatic_upgrades_server():
         sleep(5)
     app_cached_variables.automatic_upgrades_thread.current_state = "Running"
     app_cached_variables.restart_automatic_upgrades_thread = False
+
     running_version = CreateRefinedVersion(version)
+    current_version = running_version.get_version_string()
+    version_template_msg = " -- New Version Detected - New: {{ NewVersion }} Current: " + current_version + " - "
 
     while not app_cached_variables.restart_automatic_upgrades_thread:
         sleep_total = 0
@@ -59,34 +62,51 @@ def _thread_start_automatic_upgrades_server():
                 http_dev_version = CreateRefinedVersion(app_cached_variables.developmental_version_available)
                 http_std_version = CreateRefinedVersion(app_cached_variables.standard_version_available)
 
-                current_version = running_version.get_version_string()
-                new_version_msg = " -- New Version Detected - New: {{ NewVersion }} Current: " + current_version + " - "
+                new_version_msg = version_template_msg
                 if app_config_access.primary_config.enable_automatic_upgrades_developmental:
-                    if http_dev_version.major_version > running_version.major_version or \
-                            http_dev_version.minor_version > running_version.minor_version:
+                    if http_dev_version.major_version != running_version.major_version:
+                        _major_upgrade_msg_and_sleep()
+                    else:
                         new_version = http_dev_version.get_version_string()
                         new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                        logger.primary_logger.info(new_version_msg + "Starting Automatic Developmental Upgrade")
-                        thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
-
-                elif app_config_access.primary_config.enable_automatic_upgrades_major:
-                    if http_std_version.major_version > running_version.major_version:
-                        new_version = http_std_version.get_version_string()
-                        new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                        logger.primary_logger.info(new_version_msg + "Starting Automatic Major Upgrade")
-                        thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
-
-                if app_config_access.primary_config.enable_automatic_upgrades_minor and not \
-                        app_config_access.primary_config.enable_automatic_upgrades_developmental:
-                    if http_std_version.major_version == running_version.major_version and \
-                            http_std_version.minor_version > running_version.minor_version:
-                        new_version = http_std_version.get_version_string()
-                        new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                        logger.primary_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
-                        thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
+                        if http_dev_version.feature_version > running_version.feature_version:
+                            msg2 = "Starting Automatic Developmental Feature Upgrade"
+                            logger.primary_logger.info(new_version_msg + msg2)
+                            thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
+                        elif http_dev_version.feature_version == running_version.feature_version:
+                            if http_dev_version.minor_version > running_version.minor_version:
+                                msg2 = "Starting Automatic Developmental Minor Upgrade"
+                                logger.primary_logger.info(new_version_msg + msg2)
+                                thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
+                else:
+                    new_version = http_std_version.get_version_string()
+                    new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
+                    if app_config_access.primary_config.enable_automatic_upgrades_major:
+                        if http_std_version.major_version != running_version.major_version:
+                            _major_upgrade_msg_and_sleep()
+                        else:
+                            if http_std_version.feature_version > running_version.feature_version:
+                                logger.primary_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
+                                thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
+                    if app_config_access.primary_config.enable_automatic_upgrades_minor:
+                        if http_std_version.major_version != running_version.major_version:
+                            _major_upgrade_msg_and_sleep()
+                        else:
+                            if http_std_version.feature_version == running_version.feature_version:
+                                if http_std_version.minor_version > running_version.minor_version:
+                                    logger.primary_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
+                                    thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
         logger.primary_logger.debug("Automatic Upgrade Check Finished")
+
+
+def _major_upgrade_msg_and_sleep():
+    log_msg = "Automatic Upgrades between Major releases is currently not supported "
+    logger.primary_logger.info(log_msg + "due to possible breaks in compatibility")
+    logger.primary_logger.info("No further Automatic Upgrade Checks will be made until settings are changed")
+    while not app_cached_variables.restart_automatic_upgrades_thread:
+        sleep(15)
 
 
 def get_automatic_upgrade_enabled_text():
