@@ -11,53 +11,78 @@
         {{ PureCSS }}
 
         {{ PureCSSHorizontalMenu }}
+
+        .report-page-padding {
+            padding-top: 55px;
+        }
+
+        @media only screen and (max-width: 500px) {
+            .report-page-padding {
+                padding-top: 110px;
+            }
+        }
     </style>
 </head>
+
 <body>
-
-<div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item" id="system-tab-b">
-                <a href="#" class="pure-menu-link" onclick="ChangeReport('system-tab')">
-                    Systems Report
-                </a>
-            </li>
+	<!-- navbar -->
+    <div class="navbar">
+        <!-- nav left -->
+        <!-- end nav left -->
+        <!-- Page Header -->
+        <div class="navbar-page-header" style="display: block;">
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item" id="system-tab-b">
+                        <a href="#" class="pure-menu-link" onclick="ChangeReport('system-tab')">
+                            Systems
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item" id="configuration-tab-b">
+                        <a href="#" class="pure-menu-link" onclick="ChangeReport('configuration-tab')">
+                            Configuration
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item" id="sensor-readings-tab-b">
+                        <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-readings-tab')">
+                            Readings
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="pure-menu">
+                <ul class="pure-menu-list">
+                    <li class="pure-menu-item" id="sensor-latency-tab-b">
+                        <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-latency-tab')">
+                            Latency
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+		<!-- end Page Header -->
+		<!-- nav right -->
+        <ul class="navbar-nav nav-right">
+            <li class="nav-item mode">
+				<a class="nav-link" href="#" onclick="window.scrollTo(0, 0);">Top</a>
+			</li>
+			<li class="nav-item mode">
+				<a class="nav-link" href="#" onclick="switchTheme()">Theme</a>
+			</li>
         </ul>
     </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item" id="configuration-tab-b">
-                <a href="#" class="pure-menu-link" onclick="ChangeReport('configuration-tab')">
-                    Configuration Report
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item" id="sensor-readings-tab-b">
-                <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-readings-tab')">
-                    Sensor Readings Report
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item" id="sensor-latency-tab-b">
-                <a href="#" class="pure-menu-link" onclick="ChangeReport('sensor-latency-tab')">
-                    Sensor Latency Report
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
-
-<div id="system-tab">{{ FullSystemReport }}</div>
-<div id="configuration-tab">{{ FullConfigurationReport }}</div>
-<div id="sensor-readings-tab">{{ FullReadingsReport }}</div>
-<div id="sensor-latency-tab">{{ FullLatencyReport }}</div>
+    <div class="report-page-padding" id="system-tab">{{ FullSystemReport }}</div>
+    <div class="report-page-padding" id="configuration-tab">{{ FullConfigurationReport }}</div>
+    <div class="report-page-padding" id="sensor-readings-tab">{{ FullReadingsReport }}</div>
+    <div class="report-page-padding" id="sensor-latency-tab">{{ FullLatencyReport }}</div>
 </body>
 </html>
 
