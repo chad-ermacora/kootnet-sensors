@@ -95,10 +95,13 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("mqtt_qos_level") is not None:
             self.mqtt_subscriber_qos = int(html_request.form.get("mqtt_qos_level"))
         if html_request.form.get("subscriber_topics") is not None:
-            topics_text_list = str(html_request.form.get("subscriber_topics")).split(",")
-            self.subscribed_topics_list = []
-            for topic in topics_text_list:
-                self.subscribed_topics_list.append(topic.strip())
+            self.subscribed_topics_list = ["#"]
+            topics_text_list = str(html_request.form.get("subscriber_topics")).strip()
+            if topics_text_list != "":
+                self.subscribed_topics_list = []
+                topics_text_list = topics_text_list.split(",")
+                for topic in topics_text_list:
+                    self.subscribed_topics_list.append(topic.strip())
         self._update_configuration_settings_list()
         self.load_from_file = True
 
