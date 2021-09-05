@@ -46,17 +46,18 @@
                 </h3>
 
                 <div class="progress-wrapper">
-                    <p>
+                    <p><b>
                         Sensor Checkins from the past {{ ContactInPastDays }} Days
                         <span class="float-right">{{ PercentOfTotalDays }}%</span>
-                    </p>
+                    </b></p>
                     <div class="progress" style="height: 30px;">
                         <div class="bg-success" style="color: var(--second-color); width: {{ PercentOfTotalDays }}%;
-                                font-size: large; padding-top: 4px;">
+                                font-size: large; padding-top: 4px;"><b>
                             {{ TotalSensorsContactDays }}/{{ SensorsInDatabase }}
-                        </div>
+                        </b></div>
                     </div>
                 </div>
+                <br><br><br><br>
             </div>
         </div>
     </div>
@@ -68,13 +69,15 @@
                       onsubmit="return confirm('This cannot be undone, delete old Sensors from database?');">
                     <h2><i class="far fa-trash-alt"></i> Database Clean-up</h2>
 
-                    <label>Clear Old Checkins<br>
-                        <button class="pure-button" type="button" onclick="ClearCheckins();">Clear Old Checkin Data</button>
+                    <label><b>Clear ALL but the last checkin for all sensors</b><br><br>
+                        <button class="pure-button" type="button" onclick="ClearCheckins();">
+                            Clear Old Checkin Data
+                        </button>
                     </label>
 
-                    <br><br>
+                    <br><br><br>
 
-                    <label>Delete Sensors Inactive for Days<br>
+                    <label><b>Delete Sensors Inactive for Days</b><br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
