@@ -183,9 +183,9 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
         login_check = get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login)
         if login_check == "OK" or not login_required:
             if login_check == "OK":
-                pass
+                login_check = "Login OK"
             elif login_check == auth_error_msg:
-                login_check = "Incorrect Username or Password"
+                login_check = "Login Failed"
             else:
                 login_check = "Unknown Error"
             sensor_report = get_http_sensor_reading(ip_address, command=sensor_report_url)
