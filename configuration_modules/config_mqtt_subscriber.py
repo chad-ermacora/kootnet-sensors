@@ -27,11 +27,12 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_subscriber_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Subscriber Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 9
+        self.valid_setting_count = 10
         self.config_settings_names = [
             "Enable MQTT Subscriber", "Broker Server Address", "Broker Port #", "Enable Authentication",
             "User Name (Optional)", "Password (Optional)", "MQTT Quality of Service Level (0-2)",
-            "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#", "Enable MQTT write to SQL DB"
+            "Topics as CSV Eg. KS/Sensor32/EnvironmentTemperature,KS/Sensor12/#", "Enable MQTT write to SQL DB",
+            "Maximum Sensor posts to show on the main MQTT Subscriber page"
         ]
 
         self.enable_mqtt_subscriber = 0
@@ -64,6 +65,9 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         self.enable_mqtt_subscriber = 0
         self.enable_mqtt_sql_recording = 0
         self.enable_broker_auth = 0
+
+        if html_request.form.get("max_sensor_posts") is not None:
+            self.mqtt_page_view_max_entries = int(html_request.form.get("max_sensor_posts"))
 
         if html_request.form.get("enable_mqtt_subscriber") is not None:
             self.enable_mqtt_subscriber = 1
@@ -108,7 +112,8 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
         self.config_settings = [
             str(self.enable_mqtt_subscriber), str(self.broker_address), str(self.broker_server_port),
             str(self.enable_broker_auth), str(self.broker_user), str(self.broker_password),
-            str(self.mqtt_subscriber_qos), topics_text, str(self.enable_mqtt_sql_recording)
+            str(self.mqtt_subscriber_qos), topics_text, str(self.enable_mqtt_sql_recording),
+            str(self.mqtt_page_view_max_entries)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -126,6 +131,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
                 if topic.strip() != "":
                     self.subscribed_topics_list.append(topic.strip())
             self.enable_mqtt_sql_recording = int(self.config_settings[8])
+            self.mqtt_page_view_max_entries = int(self.config_settings[9].strip())
         except Exception as error:
             logger.primary_logger.debug("MQTT Subscriber Config: " + str(error))
             self._update_configuration_settings_list()

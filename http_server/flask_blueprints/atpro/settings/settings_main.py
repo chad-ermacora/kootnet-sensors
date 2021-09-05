@@ -179,6 +179,7 @@ def _get_checkin_settings_page_render():
         CheckinAddress=app_config_access.checkin_config.checkin_url,
         CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
+        MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,
         DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
         MaxLinesPerLog=app_config_access.checkin_config.max_log_lines_to_send,
         SensorName=get_html_checkbox_state(app_config_access.checkin_config.send_sensor_name),

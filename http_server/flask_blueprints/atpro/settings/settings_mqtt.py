@@ -236,6 +236,7 @@ def html_atpro_sensor_settings_mqtt_subscriber():
     csv_mqtt_topics = csv_mqtt_topics[:-1]
     return render_template(
         "ATPro_admin/page_templates/settings/settings-mqtt-subscriber.html",
+        MaxSensorPosts=app_config_access.mqtt_subscriber_config.mqtt_page_view_max_entries,
         MQTTSubscriberChecked=get_html_checkbox_state(enable_mqtt_subscriber),
         MQTTSQLRecordingChecked=get_html_checkbox_state(enable_mqtt_sql_recording),
         MQTTBrokerAddress=app_config_access.mqtt_subscriber_config.broker_address,

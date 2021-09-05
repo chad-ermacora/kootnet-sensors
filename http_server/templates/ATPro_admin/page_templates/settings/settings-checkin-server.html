@@ -147,13 +147,32 @@
                     </label>
 
                     <h2><strong>Sensor Checkin View Options</strong></h2>
-
-                    <label>Include the past days in Sensor Count<br><br>
+                    <p>
+                        Past days used in counting how many Sensors have checked-in
+                    </p>
+                    <label>Past days<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
                                     <input style="width: 100px;" type="number" min="1" max="3650" step="0.1"
                                            name="contact_in_past_days" value="{{ ContactInPastDays }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <p>
+                        Set the Maximum number of Sensor Checkins you want to see on the main Sensor Checkins page
+                    </p>
+
+                    <label>Max Sensors<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="0" max="240" step="1"
+                                           name="number_of_sensors_to_show" value="{{ MaxSensorCount }}">
                                 </div>
                             </div>
                         </div>
