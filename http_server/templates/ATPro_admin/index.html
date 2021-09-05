@@ -67,9 +67,9 @@
 		<!-- end Page Header -->
 		<!-- nav right -->
 		<ul class="navbar-nav nav-right">
-            <li class="nav-item">
+            <li class="nav-item mode">
 				<a class="nav-link" href="#" onclick="window.scrollTo(0, 0);">
-					Top <i class="fas fa-angle-double-up"></i>
+					<i class="fas fa-angle-double-up"></i>
 				</a>
 			</li>
 			<li class="nav-item mode">
@@ -78,7 +78,7 @@
 					<i class="fas fa-sun light-icon"></i>
 				</a>
 			</li>
-			<li class="nav-item dropdown">
+			<li class="nav-item dropdown mode">
 				<a class="nav-link">
 					<i class="fas fa-bell dropdown-toggle" data-toggle="notification-menu"></i>
 					<span style="background-color: red; display: none;" id="notification-count" class="navbar-badge">
@@ -153,7 +153,7 @@
 	<!-- end navbar -->
 	<!-- sidebar -->
 	<div class="sidebar">
-		<ul class="sidebar-nav">
+		<ul style="overflow-y: auto; overflow-x: hidden; padding-bottom: 125px;" class="sidebar-nav">
 			<li class="sidebar-nav-item">
 				<a id="sensor-dashboard" href="#" onclick="SelectNav('sensor-dashboard')" class="sidebar-nav-link active">
 					<div>
