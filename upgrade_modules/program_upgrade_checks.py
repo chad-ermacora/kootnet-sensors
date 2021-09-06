@@ -62,21 +62,21 @@ def run_configuration_upgrade_checks():
                     pass
             elif previous_version.feature_version == 33:
                 if previous_version.minor_version < 145:
+                    if previous_version.minor_version < 96:
+                        if previous_version.minor_version < 61:
+                            config_class = generic_upgrade_functions.CreateEmailConfiguration
+                            generic_upgrade_functions.upgrade_config_load_and_save(config_class)
+                        upgrade_beta_33_x_to_33_96()
                     no_changes = False
                     config_class = generic_upgrade_functions.CreatePrimaryConfiguration
-                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-                if previous_version.minor_version < 96:
-                    no_changes = False
-                    upgrade_beta_33_x_to_33_96()
-                if previous_version.minor_version < 61:
-                    no_changes = False
-                    config_class = generic_upgrade_functions.CreateEmailConfiguration
                     generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 32:
                 no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
                 generic_upgrade_functions.reset_sensor_control_config()
                 upgrade_beta_33_x_to_33_96()
+                config_class = generic_upgrade_functions.CreateEmailConfiguration
+                generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 31:
                 no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
