@@ -119,14 +119,14 @@
                     <br><br>
 
                     <label class="toggle-switch">
-                        <input type="checkbox" id="sau-major-toggle-switch" class="toggle-switch-input"
-                               name="enable_stable_major_auto_upgrades" {{ EnableStableMajorAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="sau-major-toggle-switch"></label>
-                        Enable Stable Major Version Upgrades
+                        <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
+                               name="enable_stable_feature_auto_upgrades" {{ EnableStableFeatureAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
+                        Enable Stable Feature Version Upgrades
                     </label>
                     <br>
                     <span><i>
-                        Updates may break functionality between Major releases<br>
+                        Updates may break functionality between Feature releases<br>
                         <span style="color: orange;">* It is Recommended to Check Logs Periodically *</span>
                     </i></span>
 
@@ -140,7 +140,7 @@
                     </label>
                     <br>
                     <span><i>
-                        Only Minor updates are applied to the running major version
+                        Only Minor updates are applied to the running feature version
                     </i></span>
 
                     <br><br>

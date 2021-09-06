@@ -32,7 +32,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_settings_names = [
             "HTTPS port number (Default is 10065)", "Enable debug logging", "Enable temperature offset",
             "Temperature offset", "Enable temperature compensation factor", "Temperature compensation factor",
-            "DateTime offset in hours (Program uses UTC 0)", "Enable Automatic Major version upgrades",
+            "DateTime offset in hours (Program uses UTC 0)", "Enable Automatic Feature version upgrades",
             "Enable Automatic Minor version upgrades", "Enable Automatic Developmental version upgrades",
             "Delay in Hours between Automatic Upgrade Checks"
         ]
@@ -50,7 +50,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.flask_http_ip = ""
         self.web_portal_port = 10065
 
-        self.enable_automatic_upgrades_major = 0
+        self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 0
         self.enable_automatic_upgrades_developmental = 0
         self.automatic_upgrade_delay_hours = 6
@@ -69,7 +69,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
 
         self.enable_debug_logging = 0
-        self.enable_automatic_upgrades_major = 0
+        self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 0
         self.enable_automatic_upgrades_developmental = 0
         self.enable_custom_temp = 0
@@ -94,8 +94,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
                 new_hours = 6
             self.automatic_upgrade_delay_hours = new_hours
 
-        if html_request.form.get("enable_stable_major_auto_upgrades") is not None:
-            self.enable_automatic_upgrades_major = 1
+        if html_request.form.get("enable_stable_feature_auto_upgrades") is not None:
+            self.enable_automatic_upgrades_feature = 1
         if html_request.form.get("enable_stable_minor_auto_upgrades") is not None:
             self.enable_automatic_upgrades_minor = 1
         if html_request.form.get("enable_dev_auto_upgrades") is not None:
@@ -121,7 +121,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.config_settings = [
             str(self.web_portal_port), str(self.enable_debug_logging), str(self.enable_custom_temp),
             str(self.temperature_offset), str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor),
-            str(self.utc0_hour_offset), str(self.enable_automatic_upgrades_major),
+            str(self.utc0_hour_offset), str(self.enable_automatic_upgrades_feature),
             str(self.enable_automatic_upgrades_minor), str(self.enable_automatic_upgrades_developmental),
             str(self.automatic_upgrade_delay_hours)
         ]
@@ -135,7 +135,7 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             self.enable_temperature_comp_factor = int(self.config_settings[4])
             self.temperature_comp_factor = float(self.config_settings[5])
             self.utc0_hour_offset = float(self.config_settings[6].strip())
-            self.enable_automatic_upgrades_major = int(self.config_settings[7])
+            self.enable_automatic_upgrades_feature = int(self.config_settings[7])
             self.enable_automatic_upgrades_minor = int(self.config_settings[8])
             self.enable_automatic_upgrades_developmental = int(self.config_settings[9])
             self.automatic_upgrade_delay_hours = float(self.config_settings[10])

@@ -30,7 +30,7 @@ def start_automatic_upgrades_server():
     text_name = "Automatic Upgrades Server"
     function = _thread_start_automatic_upgrades_server
     app_cached_variables.automatic_upgrades_thread = CreateMonitoredThread(function, thread_name=text_name)
-    if not app_config_access.primary_config.enable_automatic_upgrades_major and \
+    if not app_config_access.primary_config.enable_automatic_upgrades_feature and \
             not app_config_access.primary_config.enable_automatic_upgrades_minor and \
             not app_config_access.primary_config.enable_automatic_upgrades_developmental:
         logger.primary_logger.debug("Automatic Upgrades Disabled in Configuration")
@@ -39,7 +39,7 @@ def start_automatic_upgrades_server():
 
 def _thread_start_automatic_upgrades_server():
     app_cached_variables.automatic_upgrades_thread.current_state = "Disabled"
-    while not app_config_access.primary_config.enable_automatic_upgrades_major \
+    while not app_config_access.primary_config.enable_automatic_upgrades_feature \
             and not app_config_access.primary_config.enable_automatic_upgrades_minor \
             and not app_config_access.primary_config.enable_automatic_upgrades_developmental:
         sleep(5)
@@ -81,7 +81,7 @@ def _thread_start_automatic_upgrades_server():
                 else:
                     new_version = http_std_version.get_version_string()
                     new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
-                    if app_config_access.primary_config.enable_automatic_upgrades_major:
+                    if app_config_access.primary_config.enable_automatic_upgrades_feature:
                         if http_std_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
                         else:
@@ -114,11 +114,11 @@ def get_automatic_upgrade_enabled_text():
     if app_config_access.primary_config.enable_automatic_upgrades_developmental:
         return_text = "Enabled Developmental"
     else:
-        if app_config_access.primary_config.enable_automatic_upgrades_major \
+        if app_config_access.primary_config.enable_automatic_upgrades_feature \
                 and app_config_access.primary_config.enable_automatic_upgrades_minor:
-            return_text = "Enabled Stable Major & Minor"
-        elif app_config_access.primary_config.enable_automatic_upgrades_major:
-            return_text = "Enabled Stable Major"
+            return_text = "Enabled Stable Feature & Minor"
+        elif app_config_access.primary_config.enable_automatic_upgrades_feature:
+            return_text = "Enabled Stable Feature"
         elif app_config_access.primary_config.enable_automatic_upgrades_minor:
             return_text = "Enabled Stable Minor"
     return return_text

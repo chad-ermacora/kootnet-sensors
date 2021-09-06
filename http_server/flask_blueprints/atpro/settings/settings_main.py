@@ -47,7 +47,7 @@ def html_atpro_sensor_settings_main():
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
     custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
     custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
-    enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_major)
+    enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)
     enable_minor_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_minor)
     enable_dev_up = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_developmental)
     return render_template(
@@ -56,7 +56,7 @@ def html_atpro_sensor_settings_main():
         CheckedDebug=debug_logging,
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
         AutoUpDelayHours=str(app_config_access.primary_config.automatic_upgrade_delay_hours),
-        EnableStableMajorAutoUpgrades=enable_major_upgrades,
+        EnableStableFeatureAutoUpgrades=enable_major_upgrades,
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
         CheckedCustomTempOffset=custom_temp_offset,
