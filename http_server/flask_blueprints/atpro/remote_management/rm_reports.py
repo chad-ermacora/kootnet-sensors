@@ -27,6 +27,7 @@ from operations_modules.app_generic_functions import get_response_bg_colour, get
 from sensor_modules.sensor_access import get_system_datetime
 from http_server.flask_blueprints.html_functional import auth_error_msg
 from operations_modules import software_version
+
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
 
 # Save disk read time when upgrade in progress
@@ -165,7 +166,18 @@ def create_sensor_report(address_list, sensor_report_url, html_report_heading):
 
     final_report_replacement = ""
     for report in sensor_reports:
-        final_report_replacement += str(report[1]) + "\n"
+        html_report = str(report[1])
+        rsm_address_port = str(report[2])
+        if html_report == auth_error_msg:
+            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
+            sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
+            final_report_replacement += sensor_report + "\n"
+        elif '<div class="col-12 col-m-12 col-sm-12">' in html_report:
+            final_report_replacement += html_report + "\n"
+        else:
+            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Unknown Error")
+            sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
+            final_report_replacement += sensor_report + "\n"
     new_report = html_report_start + html_report_template + html_report_end
     new_report = new_report.replace("{{ ReportHeading }}", html_report_heading)
     new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
@@ -197,9 +209,9 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
     else:
         logger.network_logger.debug("Remote Sensor " + ip_address + " Offline")
         sensor_check = "99.99"
-        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
+        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline or Incompatible Device")
     sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
-    data_queue.put([sensor_check, sensor_report])
+    data_queue.put([sensor_check, sensor_report, rsm_address_port])
 
 
 def _get_sensor_response_time(ip_address):
