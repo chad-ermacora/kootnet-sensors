@@ -134,6 +134,7 @@ def _get_cpu_background_colour(cpu_temp):
 
 
 @html_atpro_remote_management_routes.route("/atpro/rm-get-config-entry")
+@auth.login_required
 def get_config_report_entry():
     aca = app_config_access
 
