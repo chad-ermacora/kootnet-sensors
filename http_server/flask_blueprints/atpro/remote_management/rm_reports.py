@@ -209,7 +209,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
     else:
         logger.network_logger.debug("Remote Sensor " + ip_address + " Offline")
         sensor_check = "99.99"
-        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline or Incompatible Device")
+        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
     sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
     data_queue.put([sensor_check, sensor_report, rsm_address_port])
 

@@ -19,11 +19,7 @@
                 <thead>
                     <tr>
                         <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
-                        <td><span class="sensor-info">IP Address & HTTPS Port</span>:
-                            <a style='color: #7f3299;' href='https://{{ IPAddressAndPort }}' target='_blank'>
-                                {{ IPAddressAndPort }}
-                            </a>
-                        </td>
+                        <td><span class="sensor-info">Program Version</span>: {{ ProgramVersion }}</td>
                         <td><span class="sensor-info">Login Check</span>: {{ LoginCheck }}</td>
                         <td style="color: var(--second-color); background-color: {{ CPUResponseBackground }};">
                             CPU Temp: {{ CPUTemp }}°C
@@ -41,7 +37,6 @@
                         <td class="sensor-info">Operating System</td>
                         <td class="sensor-info">Sensor Date & Time</td>
                         <td class="sensor-info">System UpTime</td>
-                        <td class="sensor-info">Program Version</td>
                         <td class="sensor-info">Automatic Upgrades</td>
                         <td class="sensor-info">Last Updated</td>
                         <td class="sensor-info">Free RAM</td>
@@ -57,7 +52,6 @@
                         <td>{{ OSVersion }}</td>
                         <td>{{ SensorDateTime }}</td>
                         <td>{{ SystemUpTime | safe }}</td>
-                        <td>{{ ProgramVersion }}</td>
                         <td>{{ AutomaticUpgrades }}</td>
                         <td>{{ LastUpdated }}</td>
                         <td>{{ FreeRAM }} GB</td>

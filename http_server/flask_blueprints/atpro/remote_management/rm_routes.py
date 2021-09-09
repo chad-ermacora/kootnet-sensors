@@ -90,11 +90,9 @@ def get_system_report_entry():
             cpu_temp = str(get_cpu_temperature()[db_v.system_temperature])
         else:
             cpu_temp = "0.0"
-        ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
         return render_template(base_rm_template_loc + "report-system-sensor-template.html",
                                SensorID=app_config_access.primary_config.sensor_id,
                                SensorName=app_cached_variables.hostname,
-                               IPAddressAndPort=ip_and_port,
                                RSMAddressAndPort="{{ RSMAddressAndPort }}",
                                LoginCheck="{{ LoginCheck }}",
                                CPUTemp=cpu_temp,
@@ -161,7 +159,6 @@ def get_config_report_entry():
                            SensorID=aca.primary_config.sensor_id,
                            InstalledSensors=aca.installed_sensors.get_installed_names_str(),
                            SensorName=app_cached_variables.hostname,
-                           IPAddress=app_cached_variables.ip,
                            IPAddressAndPort=ip_and_port,
                            RSMAddressAndPort="{{ RSMAddressAndPort }}",
                            LoginCheck="{{ LoginCheck }}",
@@ -203,15 +200,14 @@ def get_readings_report_entry():
     readings_name = []
     readings_data = []
     for index, reading in sensor_readings.items():
-        readings_name.append(index)
-        readings_data.append(reading)
-    ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
+        if index != db_v.all_tables_datetime:
+            readings_name.append(index)
+            readings_data.append(reading)
     return render_template(base_rm_template_loc + "report-readings-latency-sensor-template.html",
                            SensorID=app_config_access.primary_config.sensor_id,
                            SensorName=app_cached_variables.hostname,
-                           IPAddress=app_cached_variables.ip,
-                           IPAddressAndPort=ip_and_port,
                            RSMAddressAndPort="{{ RSMAddressAndPort }}",
+                           SensorDateTime=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S - UTC 0"),
                            SensorResponseTime="{{ SensorResponseTime }}",
                            ResponseBackground="{{ ResponseBackground }}",
                            SensorInfoBoxes=_convert_lists_to_html_thread(readings_name, readings_data))
@@ -226,13 +222,11 @@ def get_latency_report_entry():
         if entry is not None:
             sensor_names.append(name)
             sensor_latency.append(entry)
-    ip_and_port = app_cached_variables.ip + ":" + str(app_config_access.primary_config.web_portal_port)
     return render_template(base_rm_template_loc + "report-readings-latency-sensor-template.html",
                            SensorID=app_config_access.primary_config.sensor_id,
                            SensorName=app_cached_variables.hostname,
-                           IPAddress=app_cached_variables.ip,
-                           IPAddressAndPort=ip_and_port,
                            RSMAddressAndPort="{{ RSMAddressAndPort }}",
+                           SensorDateTime=datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S - UTC 0"),
                            SensorResponseTime="{{ SensorResponseTime }}",
                            ResponseBackground="{{ ResponseBackground }}",
                            SensorInfoBoxes=_convert_lists_to_html_thread(sensor_names, sensor_latency, latency=True))
