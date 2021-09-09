@@ -386,6 +386,11 @@ def get_gas(get_latency=False):
         gas_dic.update({db_v.gas_oxidising: gas_readings[0],
                         db_v.gas_reducing: gas_readings[1],
                         db_v.gas_nh3: gas_readings[2]})
+    elif app_config_access.installed_sensors.pimoroni_mics6814:
+        gas_readings = sensors_direct.pimoroni_mics6814_a.gas_data()
+        gas_dic.update({db_v.gas_oxidising: gas_readings[0],
+                        db_v.gas_reducing: gas_readings[1],
+                        db_v.gas_nh3: gas_readings[2]})
     elif app_config_access.installed_sensors.kootnet_dummy_sensor:
         gas_readings = [sensors_direct.dummy_sensors.gas_resistance_index()]
         gas_readings += sensors_direct.dummy_sensors.gas_data()
