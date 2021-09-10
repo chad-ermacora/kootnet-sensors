@@ -21,14 +21,16 @@ Created on Thur Sept 9 13:23:56 2021
 @author: OO-Dragon
 """
 import os
+import time
 import datetime
-from time import sleep
+import socket
+import struct
 from threading import Thread
 from operations_modules import logger
 from configuration_modules import app_config_access
 
 date_format = "%Y-%m-%d %H:%M:%S"
-sleep_duration_between_datetime_checks = 129600  # Default is 129600 (1.5 Days)
+sleep_duration_between_datetime_checks = 18000  # Default is 18000 (5 Hours)
 
 
 class CreateRV3028:
@@ -39,35 +41,62 @@ class CreateRV3028:
             rv3028_import = __import__("sensor_modules.drivers.rv3028", fromlist=["RV3028"])
             self.real_time_clock = rv3028_import.RV3028()
             self.real_time_clock.set_battery_switchover('level_switching_mode')
+
             rtc_raw_datetime = self.get_time_from_rtc()
+            logger.sensors_logger.info("Pimoroni RV3028 Currently Saved RTC Time: " + rtc_raw_datetime)
 
             self.thread_date_time_updater = Thread(target=self._rtc_check_thread)
             self.thread_date_time_updater.daemon = True
             self.thread_date_time_updater.start()
 
-            logger.sensors_logger.debug("Pimoroni RV3028 Initialization - OK - " + rtc_raw_datetime)
+            logger.sensors_logger.debug("Pimoroni RV3028 Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni RV3028 Initialization - Failed: " + str(error))
             app_config_access.installed_sensors.pimoroni_rv3028 = 0
             app_config_access.installed_sensors.update_configuration_settings_list()
 
     def _rtc_check_thread(self):
-        sleep(60)  # Give some time for a possible NTP update after system boot
+        time.sleep(30)
         while True:
+            # If NTP available (Internet access), use it first
+            self._verify_with_ntp()
             try:
                 rtc_raw_datetime = self.get_time_from_rtc()
                 current_system_datetime = datetime.datetime.now()
                 current_rtc_datetime = datetime.datetime.strptime(rtc_raw_datetime, date_format)
-
                 time_difference = (current_system_datetime - current_rtc_datetime).total_seconds()
-                if time_difference > 10.0:
+
+                logger.sensors_logger.debug("System Date & Time: " + current_system_datetime.strftime(date_format))
+                logger.sensors_logger.debug("Pimoroni RV3028 DateTime: " + current_rtc_datetime.strftime(date_format))
+                log_msg = "Pimoroni RV3028 - System/RTC time off by " + str(time_difference) + " seconds"
+                logger.sensors_logger.debug(log_msg)
+
+                if time_difference > 60.0:
                     self.update_rtc_time()
-                elif time_difference < 1.0:
+                elif time_difference < -60.0:
                     self.update_system_time()
                 logger.sensors_logger.debug("Pimoroni RV3028 Date & Time Check Finished")
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni RV3028 Date & Time Check - Failed: " + str(error))
-            sleep(sleep_duration_between_datetime_checks)
+            time.sleep(sleep_duration_between_datetime_checks)
+
+    def _verify_with_ntp(self):
+        try:
+            ntp_time = self.request_time_from_ntp()
+            current_system_datetime = datetime.datetime.now()
+            if ntp_time is None:
+                logger.sensors_logger.debug("Pimoroni RV3028 - NTP Access Unavailable (No Internet?)")
+            else:
+                ntp_time = datetime.datetime.fromtimestamp(ntp_time)
+                ntp_time_difference = (current_system_datetime - ntp_time).total_seconds()
+                log_msg = "Pimoroni RV3028 - System/NTP time off by " + str(ntp_time_difference) + " seconds"
+                logger.sensors_logger.debug(log_msg)
+                if ntp_time_difference > 60.0 or ntp_time_difference < -60.0:
+                    logger.sensors_logger.debug("Pimoroni RV3028 - Setting to NTP: " + ntp_time.strftime(date_format))
+                    self.update_rtc_time(ntp_time)
+                    self.update_system_time()
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni RV3028 - NTP Verify: " + str(error))
 
     def update_rtc_time(self, date_and_time=datetime.datetime.now()):
         """
@@ -120,3 +149,19 @@ class CreateRV3028:
             logger.sensors_logger.debug("Pimoroni RV3028 - Update System's Date & Time to RTC's OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni RV3028 - Update System's Date & Time to RTC's Failed: " + str(error))
+
+    @staticmethod
+    def request_time_from_ntp(addr='pool.ntp.org', reference_time=2208988800):
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            data = b'\x1b' + 47 * b'\0'
+            client.sendto(data, (addr, 123))
+            data, address = client.recvfrom(1024)
+            t = reference_time
+            if data:
+                t = struct.unpack('!12I', data)[10]
+                t -= reference_time
+            return t
+        except Exception as error:
+            logger.sensors_logger.debug("Pimoroni RV3028 - NTP Check Failed: " + str(error))
+        return None
