@@ -42,6 +42,7 @@ from sensor_modules.pimoroni import pimoroni_sgp30 as _pimoroni_sgp30
 from sensor_modules.pimoroni import pimoroni_veml6075 as _pimoroni_veml6075
 from sensor_modules.pimoroni import pimoroni_mics6814 as _pimoroni_mics6814
 from sensor_modules.pimoroni import pimoroni_ltr_559 as _pimoroni_ltr_559
+from sensor_modules.pimoroni import pimoroni_rv3028 as _pimoroni_rv3028
 from sensor_modules import raspberry_pi_sensehat as _raspberry_pi_sense_hat
 from sensor_modules import sensirion_sps30 as _sensirion_sps30
 from sensor_modules import maxim_dallas_1_wire_multi as _maxim_dallas_1_wire_multi
@@ -123,6 +124,9 @@ class CreateSensorAccess:
             if installed_sensors.pimoroni_mics6814 and not self.pimoroni_mics6814_a.initialized_sensor:
                 self.pimoroni_mics6814_a = _pimoroni_mics6814.CreateMICS6814()
                 self.pimoroni_mics6814_a.initialized_sensor = True
+            if installed_sensors.pimoroni_rv3028 and not self.pimoroni_rv3028_a.initialized_sensor:
+                self.pimoroni_rv3028_a = _pimoroni_rv3028.CreateRV3028()
+                self.pimoroni_rv3028_a.initialized_sensor = True
             if installed_sensors.pimoroni_matrix_11x7 and not self.pimoroni_matrix_11x7_a.initialized_sensor:
                 self.pimoroni_matrix_11x7_a = _pimoroni_11x7_led_matrix.CreateMatrix11x7()
                 self.pimoroni_matrix_11x7_a.initialized_sensor = True
@@ -177,6 +181,7 @@ class CreateSensorAccess:
         self.pimoroni_vl53l1x_a = CreateNoSensorsDummySensor()
         self.pimoroni_veml6075_a = CreateNoSensorsDummySensor()
         self.pimoroni_mics6814_a = CreateNoSensorsDummySensor()
+        self.pimoroni_rv3028_a = CreateNoSensorsDummySensor()
         self.pimoroni_matrix_11x7_a = CreateNoSensorsDummySensor()
         self.pimoroni_st7735_a = CreateNoSensorsDummySensor()
         self.pimoroni_mono_oled_luma_a = CreateNoSensorsDummySensor()
