@@ -255,6 +255,29 @@ class CreateDatabaseVariables:
         return other_sql_columns
 
 
+class CreateLatencyVariables:
+    def __init__(self):
+        self.cpu_temperature = "cpu_temperature"
+        self.environment_temperature = "environment_temperature"
+        self.pressure = "pressure"
+        self.altitude = "altitude"
+        self.humidity = "humidity"
+        self.distance = "distance"
+        self.gas = "gas"
+        self.particulate_matter = "particulate_matter"
+        self.lumen = "lumen"
+        self.colours = "colours"
+        self.ultra_violet = "ultra_violet"
+        self.accelerometer_xyz = "accelerometer_xyz"
+        self.magnetometer_xyz = "magnetometer_xyz"
+        self.gyroscope_xyz = "gyroscope_xyz"
+
+    def get_all_latency_as_list(self):
+        return [self.cpu_temperature, self.environment_temperature, self.pressure, self.altitude,
+                self.humidity, self.distance, self.gas, self.particulate_matter, self.lumen,
+                self.colours, self.ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz]
+
+
 class CreateEmptyThreadClass:
     def __init__(self):
         self.current_state = "Disabled"
@@ -293,6 +316,7 @@ total_ram_memory = 0.0
 total_disk_space = 0.0
 tmp_sensor_id = ""
 database_variables = CreateDatabaseVariables()
+latency_variables = CreateLatencyVariables()
 
 # Names of all the uploaded databases for graphing (Only names, no directory path)
 uploaded_databases_list = []

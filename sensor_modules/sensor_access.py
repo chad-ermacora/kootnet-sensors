@@ -26,7 +26,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables import command_data_separator, database_variables as db_v, \
-    current_platform, bash_commands
+    current_platform, bash_commands, latency_variables
 from operations_modules import sqlite_database
 from configuration_modules import app_config_access
 from sensor_modules import sensors_initialization
@@ -119,11 +119,7 @@ def get_sensors_latency():
         get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
         get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz
     ]
-    sensor_names_list = [
-        "cpu_temperature", "environment_temperature", "pressure", "altitude", "humidity",
-        "distance", "gas", "particulate_matter", "lumen", "colours", "ultra_violet",
-        "accelerometer_xyz", "magnetometer_xyz", "gyroscope_xyz"
-    ]
+    sensor_names_list = latency_variables.get_all_latency_as_list()
 
     sensor_latency_dic = {}
     for sensor_function, sensor_name in zip(sensor_function_list, sensor_names_list):
