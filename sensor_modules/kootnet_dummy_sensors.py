@@ -7,6 +7,7 @@ Created on Mon May 4 09:34:56 2020
 @author: OO-Dragon
 """
 import time
+import datetime
 import random
 from operations_modules import logger
 
@@ -185,7 +186,7 @@ class CreateDummySensors:
         time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
 
-        timestamp = "234:323:???"
+        timestamp = datetime.datetime.utcnow().strftime("%H:%M:%S")
         latitude = self._get_random_float(min_number=-89, max_number=89)
         longitude = self._get_random_float(min_number=-179, max_number=179)
         altitude = self._get_random_float(min_number=0, max_number=2100)
