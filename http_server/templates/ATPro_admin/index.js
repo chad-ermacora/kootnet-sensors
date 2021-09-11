@@ -35,7 +35,7 @@ loadTheme()
 
 function loadTheme() {
 	var theme = getCookie(themeCookieName)
-	body.classList.add(theme === "" ? themeLight : theme)
+	body.classList.add(theme === "" ? themeDark : theme)
 }
 
 function switchTheme() {
