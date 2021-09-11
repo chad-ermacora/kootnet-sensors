@@ -205,6 +205,19 @@ class CreateDatabaseVariables:
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
 
+        self.gps_all_dic = "All_GPS_As_Dictionary"
+        self.latitude = "Latitude"
+        self.longitude = "Longitude"
+        self.gps_timestamp = "GPS_Timestamp"
+        self.gps_num_satellites = "GPS_Number_Of_Satellites"
+        self.gps_quality = "GPS_Quality"
+        self.gps_mode_fix_type = "GPS_Mode_Fix_Type"
+        self.gps_speed_over_ground = "GPS_Speed_Over_Ground"
+
+        self.gps_pdop = "GPS_PDOP"
+        self.gps_hdop = "GPS_HDOP"
+        self.gps_vdop = "GPS_VDOP"
+
     def get_sensor_columns_list(self):
         """ Returns SQL Table columns used for Interval recording as a list. """
         sensor_sql_columns = [self.all_tables_datetime,

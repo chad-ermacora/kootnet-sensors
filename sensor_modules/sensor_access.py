@@ -279,21 +279,24 @@ def get_altitude(qnh=1013.25, get_latency=False):
     """ Returns sensors altitude in a dictionary. """
     if get_latency:
         return _get_sensor_latency(get_altitude)
-    round_decimal_to = 5
-    temperature = get_environment_temperature()
-    pressure = get_pressure()
-    if pressure is None or temperature is None:
-        return None
 
-    try:
-        temperature = temperature[db_v.env_temperature]
-        pressure = pressure[db_v.pressure]
-        var_altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
-    except Exception as error:
-        var_altitude = 0.0
-        logger.sensors_logger.error("Altitude Calculation using Temperature & Pressure Failed: " + str(error))
-
-    return {db_v.altitude: round(var_altitude, round_decimal_to)}
+    if app_config_access.installed_sensors.pimoroni_pa1010d:
+        var_altitude = sensors_direct.pimoroni_pa1010d_a.get_altitude()
+        if var_altitude is None:
+            var_altitude = 0.0
+    else:
+        temperature = get_environment_temperature()
+        pressure = get_pressure()
+        if pressure is None or temperature is None:
+            return None
+        try:
+            temperature = temperature[db_v.env_temperature]
+            pressure = pressure[db_v.pressure]
+            var_altitude = ((pow((qnh / pressure), (1.0 / 5.257)) - 1) * (temperature + 273.15)) / 0.0065
+        except Exception as error:
+            var_altitude = 0.0
+            logger.sensors_logger.error("Altitude Calculation using Temperature & Pressure Failed: " + str(error))
+    return {db_v.altitude: round(var_altitude, 5)}
 
 
 def get_humidity(get_latency=False):
@@ -570,6 +573,31 @@ def get_gyroscope_xyz(get_latency=False):
     return {db_v.gyro_x: xyz[0],
             db_v.gyro_y: xyz[1],
             db_v.gyro_z: xyz[2]}
+
+
+def get_gps_data(get_latency=False):
+    """
+     Returns GPS Data in a dictionary.
+
+     latitude, longitude, altitude, timestamp, number of satellites,
+     gps quality, mode fix type, speed over ground, pdop, hdop, vdop
+    """
+    if app_config_access.installed_sensors.pimoroni_pa1010d:
+        if get_latency:
+            return sensors_direct.pimoroni_pa1010d_a.sensor_latency
+        gps_data = sensors_direct.pimoroni_pa1010d_a.get_all_gps_data()
+        return {db_v.latitude: gps_data[0],
+                db_v.longitude: gps_data[1],
+                db_v.altitude: gps_data[2],
+                db_v.gps_timestamp: gps_data[3],
+                db_v.gps_num_satellites: gps_data[4],
+                db_v.gps_quality: gps_data[5],
+                db_v.gps_mode_fix_type: gps_data[6],
+                db_v.gps_speed_over_ground: gps_data[7],
+                db_v.gps_pdop: gps_data[8],
+                db_v.gps_hdop: gps_data[9],
+                db_v.gps_vdop: gps_data[10]}
+    return None
 
 
 def get_reading_unit(reading_type):
