@@ -42,31 +42,12 @@ def fav_icon():
     return send_file(file_locations.program_root_dir + "/http_server/templates/ATPro_admin/assets/AT-pro-logo.png")
 
 
-@html_functional_routes.route("/CheckOnlineStatus")
-def check_online():
-    logger.network_logger.debug("Sensor Status Checked by " + str(request.remote_addr))
-    return "OK"
-
-
-@html_functional_routes.route("/TestLogin")
-@auth.login_required
-def test_login():
-    logger.network_logger.debug("Sensor Login Test Successful from " + str(request.remote_addr))
-    return "OK"
-
-
+# Start -- HTML assets for 'ATPro admin' interface
 @html_functional_routes.route("/documentation/")
 def sensor_unit_help():
     return send_file(documentation_root_dir + "/index.html")
 
 
-# Help file requirements
-@html_functional_routes.route("/KootnetSensorHardware.jpg")
-def kootnet_sensor_hardware_picture():
-    return send_file(file_locations.program_root_dir + "/extras/SensorHardware.jpg")
-
-
-# New way to get HTTP extras sent for most above things (Does not work for current interface)
 @html_functional_routes.route('/extras/<path:filename>')
 def html_extras_folder_static_files(filename):
     if url_is_valid(filename):
@@ -91,7 +72,6 @@ def html_documentation_js_folder_static_files(filename):
     return ""
 
 
-# Start -- HTML JS/assets/fonts/css for 'ATPro admin' interface
 @html_functional_routes.route('/atpro/<path:filename>')
 def atpro_root_static_files(filename):
     if url_is_valid(filename):
@@ -99,6 +79,19 @@ def atpro_root_static_files(filename):
         return send_from_directory(atpro_folder, filename)
     return ""
 # End -- HTML assets for 'ATPro admin' interface
+
+
+@html_functional_routes.route("/CheckOnlineStatus")
+def check_online():
+    logger.network_logger.debug("Sensor Status Checked by " + str(request.remote_addr))
+    return "OK"
+
+
+@html_functional_routes.route("/TestLogin")
+@auth.login_required
+def test_login():
+    logger.network_logger.debug("Sensor Login Test Successful from " + str(request.remote_addr))
+    return "OK"
 
 
 @auth.verify_password
