@@ -137,7 +137,7 @@ class PA1010D():
 
             # Time, position and fix
             if type(result) == pynmea2.GGA:
-                if result.gps_quality is None:
+                if result.gps_qual is None:
                     self.num_sats = 0
                     self.gps_qual = 0
                 else:
@@ -145,8 +145,8 @@ class PA1010D():
                     self.latitude = result.latitude
                     self.longitude = result.longitude
                     self.altitude = result.altitude
-                    self.num_sats = result.number_of_connected_satellites
-                    self.gps_qual = result.gps_quality
+                    self.num_sats = result.num_sats
+                    self.gps_qual = result.gps_qual
                 if wait_for == "GGA":
                     return True
 

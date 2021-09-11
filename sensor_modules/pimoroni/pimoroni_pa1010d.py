@@ -91,8 +91,8 @@ class CreatePA1010D:
                     self.latitude = self.pa1010d_gps.latitude
                     self.longitude = self.pa1010d_gps.longitude
                     self.altitude = self.pa1010d_gps.altitude
-                    self.number_of_connected_satellites = self.pa1010d_gps.number_of_connected_satellites
-                    self.gps_quality = self.pa1010d_gps.gps_quality
+                    self.number_of_connected_satellites = self.pa1010d_gps.num_sats
+                    self.gps_quality = self.pa1010d_gps.gps_qual
 
                     self.pdop = self.pa1010d_gps.pdop
                     self.hdop = self.pa1010d_gps.hdop
@@ -108,9 +108,12 @@ class CreatePA1010D:
                                   " Number of Sats: " + str(self.number_of_connected_satellites) + \
                                   " GPS Quality: " + str(self.gps_quality) + \
                                   " Speed Over Ground: " + str(self.speed_over_ground) + \
-                                  " Mode Fix Type: " + str(self.mode_fix_type)
-                    logger.sensors_logger.info(gps_log_str)
-                    logger.sensors_logger.info("DOPs: " + str(self.pdop) + " " + str(self.hdop) + " " + str(self.vdop))
+                                  " Mode Fix Type: " + str(self.mode_fix_type) + \
+                                  " PDOP: " + str(self.pdop) + \
+                                  " HDOP: " + str(self.hdop) + \
+                                  " VDOP: " + str(self.vdop)
+
+                    logger.sensors_logger.debug(gps_log_str)
                     logger.sensors_logger.debug("Pimoroni PA1010D GPS Update Finished")
                 else:
                     time.sleep(10)
