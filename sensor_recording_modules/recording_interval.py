@@ -128,6 +128,15 @@ def get_interval_sensor_readings():
         return_dictionary = _update_dic_with_sensor_reading(sa.get_magnetometer_xyz, return_dictionary)
     if interval_recording_config.gyroscope_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_gyroscope_xyz, return_dictionary)
+    if interval_recording_config.gps_enabled:
+        try:
+            gps_readings = sa.get_gps_data()
+            if gps_readings is not None:
+                for name, reading in gps_readings.items():
+                    if reading is not None:
+                        return_dictionary.update({name: reading})
+        except Exception as error:
+            logger.primary_logger.warning("Interval Recording - GPS: " + str(error))
     return return_dictionary
 
 

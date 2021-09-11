@@ -57,7 +57,8 @@ def html_atpro_sensor_settings_interval():
         CheckedPM=get_html_checkbox_state(interval_config.particulate_matter_enabled),
         CheckedAccelerometer=get_html_checkbox_state(interval_config.accelerometer_enabled),
         CheckedMagnetometer=get_html_checkbox_state(interval_config.magnetometer_enabled),
-        CheckedGyroscope=get_html_checkbox_state(interval_config.gyroscope_enabled)
+        CheckedGyroscope=get_html_checkbox_state(interval_config.gyroscope_enabled),
+        CheckedGPS=get_html_checkbox_state(interval_config.gps_enabled)
     )
 
 

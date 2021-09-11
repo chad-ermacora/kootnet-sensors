@@ -165,7 +165,7 @@ def get_all_available_sensor_readings(skip_system_info=False):
 
     functions_list = [get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude, get_humidity,
                       get_dew_point, get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors,
-                      get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz]
+                      get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz, get_gps_data]
 
     for function in functions_list:
         try:
@@ -586,18 +586,23 @@ def get_gps_data(get_latency=False):
         if get_latency:
             return sensors_direct.pimoroni_pa1010d_a.sensor_latency
         gps_data = sensors_direct.pimoroni_pa1010d_a.get_all_gps_data()
-        return {db_v.latitude: gps_data[0],
-                db_v.longitude: gps_data[1],
-                db_v.altitude: gps_data[2],
-                db_v.gps_timestamp: gps_data[3],
-                db_v.gps_num_satellites: gps_data[4],
-                db_v.gps_quality: gps_data[5],
-                db_v.gps_mode_fix_type: gps_data[6],
-                db_v.gps_speed_over_ground: gps_data[7],
-                db_v.gps_pdop: gps_data[8],
-                db_v.gps_hdop: gps_data[9],
-                db_v.gps_vdop: gps_data[10]}
-    return None
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        if get_latency:
+            return 0.0
+        gps_data = sensors_direct.dummy_sensors.get_all_gps_data()
+    else:
+        return None
+    return {db_v.latitude: gps_data[0],
+            db_v.longitude: gps_data[1],
+            db_v.altitude: gps_data[2],
+            db_v.gps_timestamp: gps_data[3],
+            db_v.gps_num_satellites: gps_data[4],
+            db_v.gps_quality: gps_data[5],
+            db_v.gps_mode_fix_type: gps_data[6],
+            db_v.gps_speed_over_ground: gps_data[7],
+            db_v.gps_pdop: gps_data[8],
+            db_v.gps_hdop: gps_data[9],
+            db_v.gps_vdop: gps_data[10]}
 
 
 def get_reading_unit(reading_type):
@@ -633,7 +638,11 @@ def get_reading_unit(reading_type):
         return "°/s"
     elif reading_type == db_v.sensor_uptime:
         return "Minutes"
-    elif reading_type == db_v.all_tables_datetime or reading_type == db_v.sensor_name or reading_type == db_v.ip:
+    elif reading_type == db_v.all_tables_datetime or reading_type == db_v.sensor_name or reading_type == db_v.ip or \
+            reading_type == db_v.latitude or reading_type == db_v.longitude or reading_type == db_v.gps_timestamp or \
+            reading_type == db_v.gps_num_satellites or reading_type == db_v.gps_quality or \
+            reading_type == db_v.gps_mode_fix_type or reading_type == db_v.gps_speed_over_ground or \
+            reading_type == db_v.gps_pdop or reading_type == db_v.gps_hdop or reading_type == db_v.gps_vdop:
         return ""
     return "???"
 

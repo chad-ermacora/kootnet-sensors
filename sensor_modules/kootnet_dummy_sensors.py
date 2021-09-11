@@ -178,6 +178,30 @@ class CreateDummySensors:
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=0, max_number=135)
 
+    def get_all_gps_data(self):
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
+        self.sensor_in_use = False
+
+        timestamp = "234:323:???"
+        latitude = self._get_random_float(min_number=-89, max_number=89)
+        longitude = self._get_random_float(min_number=-179, max_number=179)
+        altitude = self._get_random_float(min_number=0, max_number=2100)
+        number_of_connected_satellites = self._get_random_int(min_number=0, max_number=32)
+        gps_quality = self._get_random_int()
+
+        pdop = self._get_random_float(min_number=0, max_number=50)
+        hdop = self._get_random_float(min_number=0, max_number=50)
+        vdop = self._get_random_float(min_number=0, max_number=50)
+
+        speed_over_ground = self._get_random_float(min_number=0, max_number=22)
+        mode_fix_type = self._get_random_int(min_number=1, max_number=3)
+
+        return [latitude, longitude, altitude, timestamp, number_of_connected_satellites,
+                gps_quality, mode_fix_type, speed_over_ground, pdop, hdop, vdop]
+
     @staticmethod
     def _get_random_float(min_number=1, max_number=100):
         whole_numbers = random.randint(min_number, max_number)

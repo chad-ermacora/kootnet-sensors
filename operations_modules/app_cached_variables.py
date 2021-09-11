@@ -258,7 +258,17 @@ class CreateDatabaseVariables:
                               self.mag_z,
                               self.gyro_x,
                               self.gyro_y,
-                              self.gyro_z]
+                              self.gyro_z,
+                              self.latitude,
+                              self.longitude,
+                              self.gps_timestamp,
+                              self.gps_num_satellites,
+                              self.gps_quality,
+                              self.gps_mode_fix_type,
+                              self.gps_speed_over_ground,
+                              self.gps_pdop,
+                              self.gps_hdop,
+                              self.gps_vdop]
         return sensor_sql_columns
 
     def get_other_columns_list(self):
