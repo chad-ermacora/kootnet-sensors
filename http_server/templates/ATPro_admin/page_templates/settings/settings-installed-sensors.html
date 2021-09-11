@@ -1,6 +1,12 @@
 <form class="pure-form" method="POST" action="/atpro/settings-is">
     <h2><i class="fas fa-microchip"></i> Installed Sensors</h2>
 
+    <h4><a style="color: var(--second-color)" href="/supported-sensors-info" target="_blank">
+        Click here for supported sensor & their abilities
+    </a></h4>
+
+    <br>
+
     <h3><u><strong><a style="color: var(--main-color)" href="https://www.raspberrypi.org/products/" target="_blank">
         Raspberry Pi Sensors
     </a></strong></u><br></h3>
@@ -81,10 +87,24 @@
     </label>
 
     <label class="toggle-switch">
+        <input type="checkbox" id="sgp30-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_sgp30" {{ PimoroniSGP30 }}>
+        <label class="toggle-switch-label" for="sgp30-toggle-switch"></label>
+        SGP30
+    </label>
+
+    <label class="toggle-switch">
         <input type="checkbox" id="pms5003-toggle-switch" class="toggle-switch-input"
                name="pimoroni_pms5003" {{ PimoroniPMS5003 }}>
         <label class="toggle-switch-label" for="pms5003-toggle-switch"></label>
         PMS5003
+    </label>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="msa301-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_msa301" {{ PimoroniMSA301 }}>
+        <label class="toggle-switch-label" for="msa301-toggle-switch"></label>
+        MSA301
     </label>
 
     <label class="toggle-switch">
@@ -143,27 +163,20 @@
         1.12'' Mono OLED (128x128, white/black)
     </label>
 
-    <h4><u>Un-Tested Sensors</u></h4>
+    <label class="toggle-switch">
+        <input type="checkbox" id="rv3028-toggle-switch" class="toggle-switch-input"
+               name="pimoroni_rv3028" {{ PimoroniRV3028 }}>
+        <label class="toggle-switch-label" for="rv3028-toggle-switch"></label>
+        RV3028
+    </label>
+
+    <h4><u>Un-Tested Pimoroni Sensors</u></h4>
 
     <label class="toggle-switch">
         <input type="checkbox" id="mcp9600-toggle-switch" class="toggle-switch-input"
                name="pimoroni_mcp9600" {{ PimoroniMCP9600 }}>
         <label class="toggle-switch-label" for="mcp9600-toggle-switch"></label>
-        Pimoroni MCP9600
-    </label>
-
-    <label class="toggle-switch">
-        <input type="checkbox" id="sgp30-toggle-switch" class="toggle-switch-input"
-               name="pimoroni_sgp30" {{ PimoroniSGP30 }}>
-        <label class="toggle-switch-label" for="sgp30-toggle-switch"></label>
-        Pimoroni SGP30
-    </label>
-
-    <label class="toggle-switch">
-        <input type="checkbox" id="msa301-toggle-switch" class="toggle-switch-input"
-               name="pimoroni_msa301" {{ PimoroniMSA301 }}>
-        <label class="toggle-switch-label" for="msa301-toggle-switch"></label>
-        Pimoroni MSA301
+        MCP9600
     </label>
 
     <label class="toggle-switch">
@@ -171,13 +184,6 @@
                name="pimoroni_mics6814" {{ PimoroniMICS6814 }}>
         <label class="toggle-switch-label" for="mics6814-toggle-switch"></label>
         MICS6814
-    </label>
-
-    <label class="toggle-switch">
-        <input type="checkbox" id="rv3028-toggle-switch" class="toggle-switch-input"
-               name="pimoroni_rv3028" {{ PimoroniRV3028 }}>
-        <label class="toggle-switch-label" for="rv3028-toggle-switch"></label>
-        RV3028
     </label>
 
     <hr>
@@ -197,6 +203,8 @@
         <label class="toggle-switch-label" for="kootnet-dummy-toggle-switch"></label>
         Kootnet Dummy Sensors
     </label>
+
+    <br><br>
 
     <label class="toggle-switch">
         <input type="checkbox" id="sen-sps30-toggle-switch" class="toggle-switch-input"
