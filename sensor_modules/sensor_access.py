@@ -638,11 +638,15 @@ def get_reading_unit(reading_type):
         return "°/s"
     elif reading_type == db_v.sensor_uptime:
         return "Minutes"
-    elif reading_type == db_v.all_tables_datetime or reading_type == db_v.sensor_name or reading_type == db_v.ip or \
-            reading_type == db_v.latitude or reading_type == db_v.longitude or reading_type == db_v.gps_timestamp or \
+    elif reading_type == db_v.gps_speed_over_ground:
+        return "km/hr?"
+    elif reading_type == db_v.gps_timestamp:
+        return "UTC0"
+    elif reading_type == db_v.all_tables_datetime or reading_type == db_v.sensor_name or \
+            reading_type == db_v.ip or reading_type == db_v.latitude or reading_type == db_v.longitude or \
             reading_type == db_v.gps_num_satellites or reading_type == db_v.gps_quality or \
-            reading_type == db_v.gps_mode_fix_type or reading_type == db_v.gps_speed_over_ground or \
-            reading_type == db_v.gps_pdop or reading_type == db_v.gps_hdop or reading_type == db_v.gps_vdop:
+            reading_type == db_v.gps_mode_fix_type or reading_type == db_v.gps_pdop or \
+            reading_type == db_v.gps_hdop or reading_type == db_v.gps_vdop:
         return ""
     return "???"
 
