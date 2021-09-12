@@ -95,6 +95,7 @@ def html_atpro_sensor_settings_installed_sensors():
         PimoroniPMS5003=get_html_checkbox_state(installed_sensors.pimoroni_pms5003),
         PimoroniMICS6814=get_html_checkbox_state(installed_sensors.pimoroni_mics6814),
         PimoroniRV3028=get_html_checkbox_state(installed_sensors.pimoroni_rv3028),
+        PimoroniPA1010D=get_html_checkbox_state(installed_sensors.pimoroni_pa1010d),
         PimoroniSGP30=get_html_checkbox_state(installed_sensors.pimoroni_sgp30),
         PimoroniMSA301=get_html_checkbox_state(installed_sensors.pimoroni_msa301),
         PimoroniLSM303D=get_html_checkbox_state(installed_sensors.pimoroni_lsm303d),
