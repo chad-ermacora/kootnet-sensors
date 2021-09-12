@@ -133,7 +133,7 @@ def get_interval_sensor_readings():
             gps_readings = sa.get_gps_data()
             if gps_readings is not None:
                 for name, reading in gps_readings.items():
-                    if reading is not None:
+                    if reading is not None and reading != "":
                         return_dictionary.update({name: reading})
         except Exception as error:
             logger.primary_logger.warning("Interval Recording - GPS: " + str(error))
