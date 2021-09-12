@@ -134,9 +134,9 @@ set_logging_level()
 
 # Add a new line to each log file on start. Makes it easier to find logs for a particular boot up session.
 for file_loc in [file_locations.primary_log, file_locations.network_log, file_locations.sensors_log]:
-    with open(file_loc, "r") as log_file:
-        log_content = log_file.readlines()
+    with open(file_loc, "r") as current_log_file:
+        current_log_content = current_log_file.readlines()
         # Only add new line if there isn't one already there
-        if log_content[-1] != "\n":
+        if current_log_content[-1] != "\n":
             with open(file_loc, "a") as log_file2:
                 log_file2.write("\n")
