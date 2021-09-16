@@ -97,7 +97,9 @@ def _get_ip_address():
 
 def _get_sensor_uptime():
     if app_config_access.checkin_config.send_system_uptime:
-        return sensor_access.get_uptime_minutes()
+        uptime_var = sensor_access.get_uptime_minutes()
+        if uptime_var is not None:
+            return uptime_var[app_cached_variables.database_variables.sensor_uptime]
     return ""
 
 

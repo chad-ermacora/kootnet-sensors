@@ -92,7 +92,8 @@ def get_interval_sensor_readings():
     if interval_recording_config.sensor_uptime_enabled:
         reading = sa.get_uptime_minutes()
         if reading is not None:
-            return_dictionary.update({database_variables.sensor_uptime: str(reading)})
+            reading = str(reading[database_variables.sensor_uptime])
+            return_dictionary.update({database_variables.sensor_uptime: reading})
     if interval_recording_config.cpu_temperature_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_cpu_temperature, return_dictionary)
     if interval_recording_config.env_temperature_enabled:
