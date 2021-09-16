@@ -31,7 +31,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.mqtt_publisher_config, load_from_file=load_from_file)
         self.config_file_header = "Configure MQTT Publish Settings here. Enable = 1 & Disable = 0"
-        self.valid_setting_count = 69
+        self.valid_setting_count = 73
         self.config_settings_names = [
             "Enable MQTT Publisher", "Broker Server Address", "Broker Port #", "Enable Authentication",
             "User Name (Optional)", "Password (Optional)", "Seconds Between Reading Posts",
@@ -50,7 +50,7 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             "Ultra Violet A Topic", "Ultra Violet B Topic", "Accelerometer X Topic", "Accelerometer Y Topic",
             "Accelerometer Z Topic", "Magnetometer X Topic", "Magnetometer Y Topic", "Magnetometer Z Topic",
             "Gyroscope X Topic", "Gyroscope Y Topic", "Gyroscope Z Topic", "Custom MQTT Send String", "Dew point",
-            "Dew Point Topic"
+            "Dew Point Topic", "GPS Latitude", "GPS Latitude Topic", "GPS Longitude", "GPS Longitude Topic"
         ]
 
         self.enable_mqtt_publisher = 0
@@ -76,6 +76,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
         self.sensor_host_name = 0
         self.sensor_ip = 0
+        self.gps_latitude = 0
+        self.gps_longitude = 0
         self.sensor_uptime = 0
         self.sensor_date_time = 0
         self.system_temperature = 0
@@ -121,6 +123,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
 
         self.sensor_host_name_topic = database_variables.sensor_name
         self.sensor_ip_topic = database_variables.ip
+        self.gps_latitude_topic = database_variables.latitude
+        self.gps_longitude_topic = database_variables.longitude
         self.sensor_uptime_topic = database_variables.sensor_uptime
         self.sensor_date_time_topic = database_variables.all_tables_datetime
         self.system_temperature_topic = database_variables.system_temperature
@@ -214,6 +218,9 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                 self.sensor_uptime = 1
             if html_request.form.get("sensor_ip") is not None:
                 self.sensor_ip = 1
+            if html_request.form.get("sensor_gps") is not None:
+                self.gps_latitude = 1
+                self.gps_longitude = 1
             if html_request.form.get("sensor_datetime") is not None:
                 self.sensor_date_time = 1
             if html_request.form.get("cpu_temperature") is not None:
@@ -267,6 +274,10 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
                     self.sensor_host_name_topic = html_request.form.get("topic_mqtt_system_hostname")
                 if html_request.form.get("topic_mqtt_system_ip").strip() != "":
                     self.sensor_ip_topic = html_request.form.get("topic_mqtt_system_ip")
+                if html_request.form.get("topic_mqtt_gps_lat").strip() != "":
+                    self.gps_latitude_topic = html_request.form.get("topic_mqtt_gps_lat")
+                if html_request.form.get("topic_mqtt_gps_long").strip() != "":
+                    self.gps_longitude_topic = html_request.form.get("topic_mqtt_gps_long")
                 if html_request.form.get("topic_mqtt_system_uptime").strip() != "":
                     self.sensor_uptime_topic = html_request.form.get("topic_mqtt_system_uptime")
                 if html_request.form.get("topic_mqtt_system_datetime").strip() != "":
@@ -386,6 +397,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.gyroscope_x_topic = database_variables.gyro_x
         self.gyroscope_y_topic = database_variables.gyro_y
         self.gyroscope_z_topic = database_variables.gyro_z
+        self.gps_latitude_topic = database_variables.latitude
+        self.gps_longitude_topic = database_variables.longitude
 
     def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
@@ -411,7 +424,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             str(self.accelerometer_x_topic), str(self.accelerometer_y_topic), str(self.accelerometer_z_topic),
             str(self.magnetometer_x_topic), str(self.magnetometer_y_topic), str(self.magnetometer_z_topic),
             str(self.gyroscope_x_topic), str(self.gyroscope_y_topic), str(self.gyroscope_z_topic),
-            str(self.mqtt_custom_data_string), str(self.dew_point), str(self.dew_point_topic)
+            str(self.mqtt_custom_data_string), str(self.dew_point), str(self.dew_point_topic), str(self.gps_latitude),
+            str(self.gps_latitude_topic), str(self.gps_longitude), str(self.gps_longitude_topic)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -489,6 +503,11 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
             self.dew_point = int(self.config_settings[67].strip())
             self.dew_point_topic = self.config_settings[68].strip()
 
+            self.gps_latitude = int(self.config_settings[69].strip())
+            self.gps_latitude_topic = self.config_settings[70].strip()
+            self.gps_longitude = int(self.config_settings[71].strip())
+            self.gps_longitude_topic = self.config_settings[72].strip()
+
             if self.selected_mqtt_send_format == self.mqtt_send_format_kootnet:
                 self.reset_publisher_topics()
         except Exception as error:
@@ -503,6 +522,8 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         mqtt_pub_replacement_dic = {
             database_variables.sensor_name: "{{ SystemHostName }}",
             database_variables.ip: "{{ SystemIPAddress }}",
+            database_variables.latitude: "{{ Latitude }}",
+            database_variables.longitude: "{{ Longitude }}",
             database_variables.sensor_uptime: "{{ SystemUpTimeMin }}",
             database_variables.all_tables_datetime: "{{ SystemDateTime }}",
             database_variables.system_temperature: "{{ SystemCPUTemp }}",
@@ -594,3 +615,5 @@ class CreateMQTTPublisherConfiguration(CreateGeneralConfiguration):
         self.gyroscope_x = 0
         self.gyroscope_y = 0
         self.gyroscope_z = 0
+        self.gps_latitude = 0
+        self.gps_longitude = 0

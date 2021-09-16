@@ -133,6 +133,13 @@
                         </label>
 
                         <label class="toggle-switch">
+                            <input type="checkbox" id="gps-toggle" class="toggle-switch-input"
+                                   name="sensor_gps" {{ CheckedGPS }}>
+                            <label class="toggle-switch-label" for="gps-toggle"></label>
+                            GPS Coordinates
+                        </label>
+
+                        <label class="toggle-switch">
                             <input type="checkbox" id="datetime-toggle" class="toggle-switch-input"
                                    name="sensor_datetime" {{ CheckedSensorDateTime }}>
                             <label class="toggle-switch-label" for="datetime-toggle"></label>
@@ -357,6 +364,32 @@
                                     <div style="display: table-cell;">
                                         <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_ip"
                                                value="{{ MQTTIPTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>GPS Latitude<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gps_lat"
+                                               value="{{ MQTTLatitudeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>GPS Longitude<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gps_long"
+                                               value="{{ MQTTLongitudeTopic }}">
                                     </div>
                                 </div>
                             </div>
