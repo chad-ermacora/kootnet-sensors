@@ -115,7 +115,6 @@ def _publish_mqtt_message():
                 sensor_data = sensor_function()
                 if sensor_data is not None:
                     for db_variable_name, reading in sensor_data.items():
-                        print("here: " + db_variable_name)
                         if selected_mqtt_send_format == mqtt_send_format_kootnet:
                             pub_msgs[db_variable_name] = reading
                         elif selected_mqtt_send_format == mqtt_send_format_individual_topics:
