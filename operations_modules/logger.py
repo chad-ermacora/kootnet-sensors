@@ -137,6 +137,7 @@ for file_loc in [file_locations.primary_log, file_locations.network_log, file_lo
     with open(file_loc, "r") as current_log_file:
         current_log_content = current_log_file.readlines()
         # Only add new line if there isn't one already there
-        if current_log_content[-1] != "\n":
-            with open(file_loc, "a") as log_file2:
-                log_file2.write("\n")
+        if len(current_log_content) > 0:
+            if current_log_content[-1] != "\n":
+                with open(file_loc, "a") as log_file2:
+                    log_file2.write("\n")
