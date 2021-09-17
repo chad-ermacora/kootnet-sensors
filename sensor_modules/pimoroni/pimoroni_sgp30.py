@@ -53,6 +53,8 @@ class CreateSGP30:
         thread_measurement_updater.start()
         logger.sensors_logger.debug("Pimoroni SGP30 readings updater started")
 
+        # Wait for thread_measurement_updater to get started (prevents error in logs)
+        time.sleep(5)
         while True:
             try:
                 start_time = time.time()
