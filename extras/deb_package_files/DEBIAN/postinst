@@ -13,9 +13,9 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
   OS=$(awk '/^ID=/' /etc/os-release | sed 's/ID=//')
   if [ "${OS}" == "raspbian" ]; then
     # The following if statement checks for a whl file in the python modules folder
-    # If it doesn't find it, it means a 'online' installer or upgrade is running
-    # If it's an 'online' installer or upgrade, it just installs using python requirements files
-    if [[ ! -f ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl ]]; then
+    # If found, it installs the local python modules, if not, it means a 'online' installer or upgrade is running
+    # If it's an 'online' installer or upgrade, it just installs using python requirements files later on
+    if [[ -f ${PYTHON_MODULES_DIR}/spidev-3.5-cp37-cp37m-linux_armv6l.whl ]]; then
       PI_MODEL=$(head -n 1 /proc/device-tree/model | cut -c1-14)
       if [ "${PI_MODEL}" == "Raspberry Pi Z" ] || [ "${PI_MODEL}" == "Raspberry Pi 1" ]; then
         ${PYTHON_VENV_DIR}/bin/pip3 install ${PYTHON_MODULES_DIR}/MarkupSafe-1.1.1-cp37-cp37m-linux_armv6l.whl \
