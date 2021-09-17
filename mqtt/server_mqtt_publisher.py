@@ -118,10 +118,10 @@ def _publish_mqtt_message():
                         if selected_mqtt_send_format == mqtt_send_format_kootnet:
                             pub_msgs[db_variable_name] = reading
                         elif selected_mqtt_send_format == mqtt_send_format_individual_topics:
-                            add_topic = mqtt_base_topic + db_vars_to_mqtt_pub[db_variable_name]
+                            add_topic = mqtt_base_topic + str(db_vars_to_mqtt_pub[db_variable_name])
                             pub_msgs.append({"topic": add_topic, "payload": str(reading), "qos": mqtt_publisher_qos})
                         elif selected_mqtt_send_format == mqtt_send_format_custom_string:
-                            pub_msgs = pub_msgs.replace(sensor_replacement_dic[db_variable_name], str(reading))
+                            pub_msgs = pub_msgs.replace(str(sensor_replacement_dic[db_variable_name]), str(reading))
         _send_mqtt_pub_message(pub_msgs)
     except Exception as error:
         log_msg = "MQTT Publisher - Adding Sensor to Publish Msg Failed: "
@@ -219,14 +219,14 @@ def _get_hostname():
 
 
 def _get_gps_latitude():
-    gps_data = sensor_access.get_gps_data()[db_v.latitude]
+    gps_data = sensor_access.get_gps_data()
     if gps_data is not None:
-        return {db_v.latitude: gps_data}
+        return {db_v.latitude: gps_data[db_v.latitude]}
     return None
 
 
 def _get_gps_longitude():
-    gps_data = sensor_access.get_gps_data()[db_v.longitude]
+    gps_data = sensor_access.get_gps_data()
     if gps_data is not None:
-        return {db_v.longitude: gps_data}
+        return {db_v.longitude: gps_data[db_v.longitude]}
     return None
