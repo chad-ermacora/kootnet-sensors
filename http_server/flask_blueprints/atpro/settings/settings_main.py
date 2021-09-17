@@ -111,6 +111,11 @@ def html_atpro_sensor_settings_installed_sensors():
     )
 
 
+@html_atpro_settings_routes.route("/atpro/supported-sensors-info")
+def html_atpro_sensor_settings_hw_sensor_info():
+    return render_template("ATPro_admin/page_templates/settings/settings-hw-sensor-information.html")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-display", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_settings_display():
