@@ -159,6 +159,7 @@ def get_config_report_entry():
                            SensorID=aca.primary_config.sensor_id,
                            InstalledSensors=aca.installed_sensors.get_installed_names_str(),
                            SensorName=app_cached_variables.hostname,
+                           ProgramVersion=version,
                            IPAddressAndPort=ip_and_port,
                            RSMAddressAndPort="{{ RSMAddressAndPort }}",
                            LoginCheck="{{ LoginCheck }}",
