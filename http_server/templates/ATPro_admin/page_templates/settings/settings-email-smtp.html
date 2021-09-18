@@ -6,7 +6,7 @@
                     <h2><i class="far fa-envelope"></i> SMTP Server Settings</h2>
 
                     <label>
-                        Send Email as/from<br>
+                        Send Email as/from<br><br>
                         <input style="width: 350px;" type="email" maxlength="250"
                                name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
                     </label>
@@ -14,14 +14,14 @@
                     <br><br>
 
                     <label>
-                        Server Address<br>
+                        Server Address<br><br>
                         <input style="width: 350px;" type="text" maxlength="250"
                                name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
                     </label>
 
                     <br><br>
 
-                    <label>Connection Security<br>
+                    <label>Connection Security<br><br>
                         <select id="email_security" name="email_security" onchange="EmailSecuritySelection()">
                             <option value="email_security_none" {{ CheckedCS_None }}>None</option>
                             <option value="email_security_ssl" {{ CheckedCS_SSL }}>Enable SSL</option>
@@ -31,7 +31,7 @@
 
                     <br><br>
 
-                    <label>SMTP Port Number<br>
+                    <label>SMTP Port Number<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
@@ -44,7 +44,7 @@
 
                     <br><br>
 
-                    <label>Username<br>
+                    <label>Username<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
@@ -57,7 +57,7 @@
 
                     <br><br>
 
-                    <label>Password<br>
+                    <label>Password<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
@@ -82,7 +82,7 @@
                 <form class="pure-form" method="POST" action="/atpro/test-email">
                     <h3><strong><i class="fas fa-paper-plane"></i> Test SMTP Server Settings</strong></h3>
 
-                    <label>Send Email to<br>
+                    <label>Send Email to<br><br>
                         <input style="width: 350px;" type="email" maxlength="250"
                                            name="test_email_address" placeholder="someone@somewhere.com">
                     </label>

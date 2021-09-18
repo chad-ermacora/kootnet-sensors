@@ -14,7 +14,7 @@
 
                     <br><br>
 
-                    <label>Send Email<br>
+                    <label>Send Email<br><br>
                         <select name="email_reports_send_interval">
                             <option value="daily" {{ EmailReportsSelectedDaily }}>Daily</option>
                             <option value="weekly" {{ EmailReportsSelectedWeekly }}>Weekly</option>
@@ -39,7 +39,7 @@
                     <br>
 
                     <label>
-                        Email Reports to - Use comma separated values Eg. email1@here.com,email2@there.com<br>
+                        Email Reports to - Use comma separated values Eg. email1@here.com,email2@there.com<br><br>
                         <textarea id="email-addresses-textarea" name="send_reports_to_email_address"
                                   style="width: 400px; height: 200px;">{{ EmailReportsToCSVAddresses }}</textarea>
                     </label>
@@ -58,7 +58,7 @@
                 <form class="pure-form" method="POST" action="/atpro/test-email">
                     <h3><strong><i class="fas fa-paper-plane"></i> Test Reports Email</strong></h3>
 
-                    <label>Email to<br>
+                    <label>Email to<br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
