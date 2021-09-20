@@ -30,6 +30,27 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_inde
 html_local_download_routes = Blueprint("html_local_download_routes", __name__)
 
 
+@html_local_download_routes.route("/DownloadALLSQLDatabases")
+@auth.login_required
+def download_all_sql_databases_zipped():
+    logger.network_logger.debug("* Download Zip of All Databases Accessed by " + str(request.remote_addr))
+    zip_name = _get_net_and_host_name_str("All_Databases", ".zip")
+
+    try:
+        return_names = [app_cached_variables.hostname + "_Main_Database.sqlite",
+                        app_cached_variables.hostname + "_Checkin_Database.sqlite",
+                        app_cached_variables.hostname + "_MQTT_Sub_Database.sqlite"]
+        return_files = [get_file_content(file_locations.sensor_database, open_type="rb"),
+                        get_file_content(file_locations.sensor_checkin_database, open_type="rb"),
+                        get_file_content(file_locations.mqtt_subscriber_database, open_type="rb")]
+        return_zip = zip_files(return_names, return_files)
+        return send_file(return_zip, attachment_filename=zip_name, as_attachment=True)
+    except Exception as error:
+        logger.primary_logger.error("* Download All Databases Zip: " + str(error))
+        return_zip = "Error Creating Zip on " + app_cached_variables.ip + " - " + app_cached_variables.hostname
+        return send_file(return_zip + " - " + str(error), attachment_filename=zip_name + ".txt", as_attachment=True)
+
+
 @html_local_download_routes.route("/DownloadSQLDatabase")
 @auth.login_required
 def download_sensors_sql_database_zipped():
@@ -207,11 +228,10 @@ def _zip_db(zip_location, sql_filename, zip_content):
 @auth.login_required
 def download_zipped_everything():
     logger.network_logger.debug("* Download Zip of Everything Accessed by " + str(request.remote_addr))
-    zip_name = "Everything_" + app_cached_variables.ip.split(".")[-1] + app_cached_variables.hostname + ".zip"
+    zip_name = _get_net_and_host_name_str("Everything", ".zip")
+
     try:
         zipped_logs = _get_zipped_logs()
-        if zipped_logs is None:
-            zipped_logs = "Unable to Zip Logs"
         return_names = [app_cached_variables.hostname + "_Main_Database.sqlite",
                         app_cached_variables.hostname + "_Checkin_Database.sqlite",
                         app_cached_variables.hostname + "_MQTT_Sub_Database.sqlite",
@@ -219,13 +239,12 @@ def download_zipped_everything():
         return_files = [get_file_content(file_locations.sensor_database, open_type="rb"),
                         get_file_content(file_locations.sensor_checkin_database, open_type="rb"),
                         get_file_content(file_locations.mqtt_subscriber_database, open_type="rb"),
-                        zipped_logs]
-
-        return_zip_file = zip_files(return_names, return_files)
-        return send_file(return_zip_file, attachment_filename=zip_name, as_attachment=True)
+                        zipped_logs.read()]
+        return send_file(zip_files(return_names, return_files), attachment_filename=zip_name, as_attachment=True)
     except Exception as error:
-        logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
-        return "Unable to zip logs for Download"
+        logger.primary_logger.error("* Download Everything Zip: " + str(error))
+        return_zip = "Error Creating Zip on " + app_cached_variables.ip + " - " + app_cached_variables.hostname
+        return send_file(return_zip + " - " + str(error), attachment_filename=zip_name + ".txt", as_attachment=True)
 
 
 @html_local_download_routes.route("/GetSQLDBSize")
@@ -249,9 +268,9 @@ def _get_zipped_logs():
         return_names = [app_cached_variables.hostname + "_" + os.path.basename(file_locations.primary_log),
                         app_cached_variables.hostname + "_" + os.path.basename(file_locations.network_log),
                         app_cached_variables.hostname + "_" + os.path.basename(file_locations.sensors_log)]
-        return_files = [get_file_content(file_locations.primary_log),
-                        get_file_content(file_locations.network_log),
-                        get_file_content(file_locations.sensors_log)]
+        return_files = [get_file_content(file_locations.primary_log, open_type="rb"),
+                        get_file_content(file_locations.network_log, open_type="rb"),
+                        get_file_content(file_locations.sensors_log, open_type="rb")]
         return zip_files(return_names, return_files)
     except Exception as error:
         logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
@@ -267,3 +286,11 @@ def download_zipped_logs():
     if return_zip_file is not None:
         return send_file(return_zip_file, as_attachment=True, attachment_filename=zip_name)
     return "None"
+
+
+def _get_net_and_host_name_str(beginning, end_extension):
+    if len(app_cached_variables.ip.split(".")) > 1:
+        return_name = beginning + "_" + app_cached_variables.ip.split(".")[-1]
+        return_name += "_" + app_cached_variables.hostname + "_" + end_extension
+        return return_name
+    return beginning + "_" + "NA_" + app_cached_variables.hostname + "_" + end_extension
