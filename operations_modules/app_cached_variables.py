@@ -89,6 +89,7 @@ class CreateNetworkGetCommands:
         self.system_ram_size_type = "GetRAMTotalSizeType"
         self.system_disk_space_free = "GetFreeDiskSpace"
 
+        self.sensor_sql_all_databases_zip = "DownloadALLSQLDatabases"
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"

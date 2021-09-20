@@ -28,6 +28,7 @@ from http_server.flask_blueprints.html_functional import auth_error_msg
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
+data_queue = Queue()
 
 
 class CreateSensorHTTPCommand:
@@ -65,12 +66,10 @@ def create_all_databases_zipped(ip_list):
     Downloads remote sensor databases from provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
-    data_queue = Queue()
-
     try:
-        _queue_name_and_file_list(ip_list, data_queue, command=network_commands.sensor_sql_database)
+        _queue_name_and_file_list(ip_list, command=network_commands.sensor_sql_all_databases_zip)
 
-        data_list = get_data_queue_items(data_queue)
+        data_list = get_data_queue_items()
         database_names = []
         sensors_database = []
         for sensor_data in data_list:
@@ -107,11 +106,10 @@ def create_multiple_sensor_logs_zipped(ip_list):
     Downloads remote sensor logs from provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
-    data_queue = Queue()
     try:
-        _queue_name_and_file_list(ip_list, data_queue, command=network_commands.download_zipped_logs)
+        _queue_name_and_file_list(ip_list, command=network_commands.download_zipped_logs)
 
-        data_list = get_data_queue_items(data_queue)
+        data_list = get_data_queue_items()
         zip_names = []
         logs_zipped = []
         for sensor_data in data_list:
@@ -157,8 +155,6 @@ def create_the_big_zip(ip_list):
     Downloads everything from sensors based on provided IP or DNS addresses (as a list)
     then creates a single zip file for download off the local web portal.
     """
-    data_queue = Queue()
-
     new_name = "TheBigZip_" + app_cached_variables.hostname + "_" + str(time.time())[:-8] + ".zip"
     app_cached_variables.sc_big_zip_name = new_name
 
@@ -168,8 +164,8 @@ def create_the_big_zip(ip_list):
             generate_html_reports_combo(ip_list)
             return_files = [app_cached_variables.html_combo_report]
 
-            _queue_name_and_file_list(ip_list, data_queue, network_commands.download_zipped_everything)
-            ip_name_and_data = get_data_queue_items(data_queue)
+            _queue_name_and_file_list(ip_list, network_commands.download_zipped_everything)
+            ip_name_and_data = get_data_queue_items()
 
             for sensor in ip_name_and_data:
                 current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".zip"
@@ -197,14 +193,17 @@ def create_the_big_zip(ip_list):
             app_cached_variables.sc_big_zip_name = ""
 
 
-def _queue_name_and_file_list(ip_list, data_queue, command):
-    threads = []
+def _queue_name_and_file_list(ip_list, command):
+    threads_list = []
     for address in ip_list:
-        threads.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, data_queue, command]))
-    app_generic_functions.start_and_wait_threads(threads)
+        threads_list.append(Thread(target=_worker_queue_list_ip_name_file, args=[address, command]))
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
 
 
-def _worker_queue_list_ip_name_file(address, data_queue, command):
+def _worker_queue_list_ip_name_file(address, command):
     try:
         sensor_name = app_generic_functions.get_http_sensor_reading(address, command="GetHostName")
         sensor_data = app_generic_functions.get_http_sensor_file(address, command)
@@ -215,13 +214,11 @@ def _worker_queue_list_ip_name_file(address, data_queue, command):
 
 def get_sum_db_sizes(ip_list):
     """ Gets the size of remote sensors zipped database based on provided IP or DNS addresses (as a list) """
-    data_queue = Queue()
-
     databases_size = 0.0
     try:
         threads = []
         for address in ip_list:
-            threads.append(Thread(target=_worker_get_db_size, args=[address, data_queue]))
+            threads.append(Thread(target=_worker_get_db_size, args=[address]))
         app_generic_functions.start_and_wait_threads(threads)
 
         while not data_queue.empty():
@@ -234,7 +231,7 @@ def get_sum_db_sizes(ip_list):
     return databases_size
 
 
-def _worker_get_db_size(address, data_queue):
+def _worker_get_db_size(address):
     get_http_sensor_reading = app_generic_functions.get_http_sensor_reading
     get_database_size_command = network_commands.sensor_sql_database_size
     try:
@@ -257,7 +254,7 @@ def _worker_get_db_size(address, data_queue):
         logger.network_logger.error(log_msg)
 
 
-def get_data_queue_items(data_queue):
+def get_data_queue_items():
     """ Returns a list of items from a data_queue. """
     que_data = []
     while not data_queue.empty():
