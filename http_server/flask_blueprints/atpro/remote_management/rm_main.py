@@ -326,14 +326,14 @@ def downloads_direct_rsm(address_list, download_type="sensors_download_databases
     """
     data_queue = Queue()
 
-    download_command = network_commands.sensor_sql_database
-    download_type_message = "the SQLite3 Database Zipped"
+    download_command = network_commands.sensor_sql_all_databases_zip
+    download_type_message = "the SQLite3 Databases Zipped"
     add_zipped_database_size = True
     add_zipped_logs_size = False
     size_type = "MB"
-    column_download_message = "Uncompressed DB Size"
+    column_download_message = "Uncompressed Main DB Size"
     extra_message = "Due to the CPU demands of zipping on the fly, raw Database size is shown here.<br>" + \
-                    "Actual download size will be much smaller."
+                    "Actual download size will be much smaller. MQTT / Checkin Database Size not shown."
     if download_type == app_config_access.sensor_control_config.radio_download_logs:
         extra_message = ""
         column_download_message = "Zipped Logs Size"
