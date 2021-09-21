@@ -67,9 +67,10 @@ def run_configuration_upgrade_checks():
                             config_class = generic_upgrade_functions.CreateEmailConfiguration
                             generic_upgrade_functions.upgrade_config_load_and_save(config_class)
                         upgrade_beta_33_x_to_33_96()
+                    else:
+                        config_class = generic_upgrade_functions.CreatePrimaryConfiguration
+                        generic_upgrade_functions.upgrade_config_load_and_save(config_class)
                     no_changes = False
-                    config_class = generic_upgrade_functions.CreatePrimaryConfiguration
-                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 32:
                 no_changes = False
                 generic_upgrade_functions.reset_mqtt_publisher_config()
