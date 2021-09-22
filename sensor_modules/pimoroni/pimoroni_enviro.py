@@ -30,7 +30,7 @@ class CreateEnviro:
         try:
             enviro_from_list = ["weather", "light", "motion"]
             self.enviro_import = __import__("sensor_modules.drivers.envirophat", fromlist=enviro_from_list)
-            self.enviro_import.weather.temperature()
+            self.enviro_import.weather.get_temperature()
             logger.sensors_logger.debug("Pimoroni Enviro pHAT Initialization - OK")
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Initialization - Failed: " + str(error))
@@ -43,7 +43,7 @@ class CreateEnviro:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
         try:
-            env_temp = float(self.enviro_import.weather.temperature())
+            env_temp = float(self.enviro_import.weather.get_temperature())
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Temperature - Failed: " + str(error))
             env_temp = 0.0
@@ -56,12 +56,25 @@ class CreateEnviro:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
         try:
-            pressure_hpa = self.enviro_import.weather.pressure(unit="hPa")
+            pressure_hpa = self.enviro_import.weather.get_pressure()
         except Exception as error:
             logger.sensors_logger.error("Pimoroni Enviro pHAT Pressure - Failed: " + str(error))
             pressure_hpa = 0
         self.sensor_in_use = False
         return int(pressure_hpa)
+
+    def altitude(self):
+        """ Returns altitude as a float """
+        while self.sensor_in_use:
+            time.sleep(pause_sensor_during_access_sec)
+        self.sensor_in_use = True
+        try:
+            altitude = float(self.enviro_import.weather.get_altitude())
+        except Exception as error:
+            logger.sensors_logger.error("Pimoroni Enviro pHAT Altitude - Failed: " + str(error))
+            altitude = 0.0
+        self.sensor_in_use = False
+        return round(altitude, round_decimal_to)
 
     def lumen(self):
         """ Returns Lumen as a Integer in lm. """

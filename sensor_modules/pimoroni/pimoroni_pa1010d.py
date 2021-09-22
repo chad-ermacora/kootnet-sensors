@@ -125,7 +125,7 @@ class CreatePA1010D:
         """ Returns latitude & longitude coordinates (floats) in a list """
         return [self.latitude, self.longitude]
 
-    def get_altitude(self):
+    def altitude(self):
         """ Returns altitude as a float """
         return self.altitude
 

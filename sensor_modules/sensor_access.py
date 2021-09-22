@@ -281,9 +281,13 @@ def get_altitude(qnh=1013.25, get_latency=False):
         return _get_sensor_latency(get_altitude)
 
     if app_config_access.installed_sensors.pimoroni_pa1010d:
-        var_altitude = sensors_direct.pimoroni_pa1010d_a.get_altitude()
+        var_altitude = sensors_direct.pimoroni_pa1010d_a.altitude()
         if var_altitude is None:
             var_altitude = 0.0
+    elif app_config_access.installed_sensors.pimoroni_bmp280:
+        var_altitude = sensors_direct.pimoroni_bmp280_a.altitude()
+    elif app_config_access.installed_sensors.pimoroni_enviro:
+        var_altitude = sensors_direct.pimoroni_enviro_a.altitude()
     else:
         temperature = get_environment_temperature()
         pressure = get_pressure()
