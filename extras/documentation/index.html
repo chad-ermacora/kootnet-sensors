@@ -76,7 +76,14 @@
                                     <li><a href="#line3_6">Graphing</a></li>
                                 </ul>
 							</li>
-
+                            <li><a href="#line6">Remote Management</a>
+								<ul class="nav">
+                                    <li><a href="#line6_1">IP List & Login</a></li>
+                                    <li><a href="#line6_2">Checks & Downloads</a></li>
+                                    <li><a href="#line6_3">Push Configurations</a></li>
+                                    <li><a href="#line6_4">Push System Commands</a></li>
+                                </ul>
+							</li>
 							<li><a href="#line4">Settings</a>
 								<ul class="nav">
                                     <li><a href="#line4_1">Main / Primary</a></li>
@@ -100,14 +107,6 @@
                                     <li><a href="#line5_5">Change Login</a></li>
                                     <li><a href="#line5_6">Upgrades & Power</a></li>
                                     <li><a href="#line5_7">Logs</a></li>
-                                </ul>
-							</li>
-                            <li><a href="#line6">Remote Management</a>
-								<ul class="nav">
-                                    <li><a href="#line6_1">IP List & Login</a></li>
-                                    <li><a href="#line6_2">Checks & Downloads</a></li>
-                                    <li><a href="#line6_3">Push Configurations</a></li>
-                                    <li><a href="#line6_4">Push System Commands</a></li>
                                 </ul>
 							</li>
                             <li><a href="#line7">Troubleshooting</a>
@@ -418,6 +417,97 @@
                             <strong>Add Plot Data after skipping</strong>: This skips the set amount of data points then adds one<br>
                             Example. Skip 12, add one, skip 12, add one, etc, etc<br>
                             <strong>Hour Offset</strong>: Add the set amount of hours to the recorded UTC0 DateTime before plotting<br>
+                        </p>
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line6" class="section">
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Remote Management <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line6_1"><u>Sensors List & Login</u></h4>
+
+                        <p>
+                            Populate the Sensors list with sensor addresses you wish to interact with using the Remote
+                            Management page. The Username and Password are optional and not required for many
+                            of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
+                            "System Commands", you will need to enter a valid Username and Password for the remote
+                            sensors. <br><br>
+                            Multiple lists of IP's can be created, managed and swapped to for easier management of
+                            multiple sites or additional sensors.<br><br>
+
+                            <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
+                            such as sensor21.mysensors.org.</i><br>
+                            <strong>Note</strong>: <i>If your sensor uses a different port other then the default
+                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088.</i><br>
+                        </p>
+
+                        <h4 id="line6_2"><u>Sensor Checks & Downloads</u></h4>
+
+                        <p>Checks and Downloads are for gathering information about the remote sensor(s).</p>
+
+                        <p><b><u>View</u></b></p>
+                        <p>
+                            <strong>Online Status</strong>: Checks and lists the status of all sensors under
+                            the Sensors list
+                        </p>
+
+                        <p><b><u>Generate Reports</u></b></p>
+                        <p>
+                            Reports are HTML files that contain sensor information. A line is created for each sensor
+                            in the Sensors List.<br><br>
+
+                            <strong>Combination</strong>: Creates all reports, then combines them into a single report<br>
+                            <strong>System</strong>: Creates a report containing system related information<br>
+                            <strong>Configurations</strong>: Creates a report containing some of the more common
+                            configuration settings (Login Required)<br>
+                            <strong>Readings</strong>: Lists all available sensor readings for each Kootnet Sensor<br>
+                            <strong>Latencies</strong>: Lists all available sensor latencies for each Kootnet Sensor<br>
+                        </p>
+
+                        <p><b><u>Generate Zip File</u></b></p>
+                        <p>
+                            Each option here creates a zip file containing one or more items. For "Sensor Databases"
+                            and "Logs" you have the option of doing a direct download, which sends the corresponding
+                            zip file from each sensor directly. If you choose this option, you'll need to allow
+                            pop-ups in your browser.<br><br>
+
+                            The "Relayed Download" option allows that sensor to download other sensors data to itself,
+                            which allows you to access all the sensors data from that single sensor. This can be useful
+                            when you have a site with multiple sensors.<br><br>
+
+                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them.</i><br>
+                            <strong>Note</strong>: <i>In order for direct downloads to work, you must be on the
+                            same network as the corresponding sensors you are downloading from.</i><br><br>
+
+                            <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
+                            a combination report as well as zip files of each sensors Main database and logs<br>
+                            <strong>Combination Report</strong>: Creates a zip on the local sensor containing
+                            a combination report<br>
+                            <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
+                            all the sensor's databases<br>
+                            <strong>Logs</strong>: Creates a zip on the local sensor containing all the sensor's Logs<br>
+                        </p>
+
+                        <h4 id="line6_3"><u>Push Sensor Configurations</u></h4>
+                        <p>
+                            Sensor configurations can be pushed to one or more remote sensors. Raw text configurations
+                            are used here (except for 3rd Party Services). Using the text version of the configurations
+                            allows for easy backup + copy paste operations. When you select a configuration, it
+                            automatically populates with a default configuration.<br><br>
+
+                            <strong>Note</strong>: <i>For maximum compatibility, be sure to have the same Kootnet Sensors
+                            version on both the pushing sensor and receiving sensors.</i><br>
+                        </p>
+
+                        <h4 id="line6_4"><u>Push System Commands</u></h4>
+                        <p>
+                            Use the various drop down menu's to initiate upgrades or sensor restarts.
                         </p>
                     </section>
                     <!-- end section -->
@@ -811,97 +901,6 @@
                             <strong>Primary log</strong>: General program operations<br>
                             <strong>Network log</strong>: Network operations<br>
                             <strong>Sensors log</strong>: Hardware sensor operations<br>
-                        </p>
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line6" class="section">
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Remote Management <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                        <h4 id="line6_1"><u>Sensors List & Login</u></h4>
-
-                        <p>
-                            Populate the Sensors list with sensor addresses you wish to interact with using the Remote
-                            Management page. The Username and Password are optional and not required for many
-                            of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
-                            "System Commands", you will need to enter a valid Username and Password for the remote
-                            sensors. <br><br>
-                            Multiple lists of IP's can be created, managed and swapped to for easier management of
-                            multiple sites or additional sensors.<br><br>
-
-                            <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
-                            such as sensor21.mysensors.org.</i><br>
-                            <strong>Note</strong>: <i>If your sensor uses a different port other then the default
-                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088.</i><br>
-                        </p>
-
-                        <h4 id="line6_2"><u>Sensor Checks & Downloads</u></h4>
-
-                        <p>Checks and Downloads are for gathering information about the remote sensor(s).</p>
-
-                        <p><b><u>View</u></b></p>
-                        <p>
-                            <strong>Online Status</strong>: Checks and lists the status of all sensors under
-                            the Sensors list
-                        </p>
-
-                        <p><b><u>Generate Reports</u></b></p>
-                        <p>
-                            Reports are HTML files that contain sensor information. A line is created for each sensor
-                            in the Sensors List.<br><br>
-
-                            <strong>Combination</strong>: Creates all reports, then combines them into a single report<br>
-                            <strong>System</strong>: Creates a report containing system related information<br>
-                            <strong>Configurations</strong>: Creates a report containing some of the more common
-                            configuration settings (Login Required)<br>
-                            <strong>Readings</strong>: Lists all available sensor readings for each Kootnet Sensor<br>
-                            <strong>Latencies</strong>: Lists all available sensor latencies for each Kootnet Sensor<br>
-                        </p>
-
-                        <p><b><u>Generate Zip File</u></b></p>
-                        <p>
-                            Each option here creates a zip file containing one or more items. For "Sensor Databases"
-                            and "Logs" you have the option of doing a direct download, which sends the corresponding
-                            zip file from each sensor directly. If you choose this option, you'll need to allow
-                            pop-ups in your browser.<br><br>
-
-                            The "Relayed Download" option allows that sensor to download other sensors data to itself,
-                            which allows you to access all the sensors data from that single sensor. This can be useful
-                            when you have a site with multiple sensors.<br><br>
-
-                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them.</i><br>
-                            <strong>Note</strong>: <i>In order for direct downloads to work, you must be on the
-                            same network as the corresponding sensors you are downloading from.</i><br><br>
-
-                            <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
-                            a combination report as well as zip files of each sensors Main database and logs<br>
-                            <strong>Combination Report</strong>: Creates a zip on the local sensor containing
-                            a combination report<br>
-                            <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
-                            all the sensor's databases<br>
-                            <strong>Logs</strong>: Creates a zip on the local sensor containing all the sensor's Logs<br>
-                        </p>
-
-                        <h4 id="line6_3"><u>Push Sensor Configurations</u></h4>
-                        <p>
-                            Sensor configurations can be pushed to one or more remote sensors. Raw text configurations
-                            are used here (except for 3rd Party Services). Using the text version of the configurations
-                            allows for easy backup + copy paste operations. When you select a configuration, it
-                            automatically populates with a default configuration.<br><br>
-
-                            <strong>Note</strong>: <i>For maximum compatibility, be sure to have the same Kootnet Sensors
-                            version on both the pushing sensor and receiving sensors.</i><br>
-                        </p>
-
-                        <h4 id="line6_4"><u>Push System Commands</u></h4>
-                        <p>
-                            Use the various drop down menu's to initiate upgrades or sensor restarts.
                         </p>
                     </section>
                     <!-- end section -->
