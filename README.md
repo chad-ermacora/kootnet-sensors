@@ -1,6 +1,6 @@
 # Kootnet Sensors - RPi Sensor Recording Software
-This program is used to record sensor readings on a Raspberry Pi to an SQLite3 database.  
-Add one or more of the 21+ supported sensors to record and view readings of your choice.  
+This program is used to record sensor readings on a Raspberry Pi to an SQLite3 database or transfer sensor data to 
+another sensor or service using MQTT. Add one or more of the 21+ supported sensors.  
 
 Sensor types include heat, pressure, altitude, humidity, distance, gas, particulate matter 1/2.5/4/10, light, 
 color, ultra-violet, acceleration, electromagnetic fields, angular velocity (gyroscope) & GPS coordinates.
