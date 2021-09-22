@@ -169,48 +169,6 @@
                             <!-- end col -->
                         </div>
                         <!-- end row -->
-                        <h4><strong>Supported Hardware for Sensor Recording</strong></h4>
-                        <p>
-                            <a href="https://www.raspberrypi.org/products/" target="_blank"><strong><u>Raspberry Pi</u></strong></a><br>
-                            <i><strong>System Boards</strong></i>: Zero W, 3x, 4x and probably other RPi's but they are untested<br>
-                            <i><strong>Combo Sensors</strong></i>: Sense HAT
-                        </p>
-
-                        <p>
-                            <a href="https://shop.pimoroni.com/" target="_blank"><strong><u>Pimoroni</u></strong></a><br>
-
-                            Although I test using Pimoroni sensors, other branded sensors using
-                            the same chip will most likely work, for example, the Adafruit BME680 & BME688 should work
-                            the same as the Pimoroni BME680/688.<br><br>
-
-                            <i><strong>Displays</strong></i>: 11x7 LED Matrix, 1.12" Mono OLED (128x128, white/black),
-                            0.96" SPI Colour LCD (160x80)<br>
-
-                            <i><strong>Temperature</strong></i>: *MCP9600<br>
-                            <i><strong>Color/Light</strong></i>: AS7262, BH1745, VEML6075<br>
-                            <i><strong>Combo Sensors</strong></i>: Enviro, Enviro+, EnviroPHAT, BME680, BME280, BMP280, LTR-559<br>
-                            <i><strong>Volatile Organic Compounds</strong></i>: SGP30<br>
-                            <i><strong>Particulate Matter</strong></i>: PMS5003<br>
-                            <i><strong>Distance</strong></i>: VL53L1X<br>
-                            <i><strong>Accelerometer & or Magnetometer & or Gyroscope</strong></i>: ICM20948, LSM303D, MSA301<br>
-                            <i><strong>GPS</strong></i>: PA1010D<br>
-                            <i><strong>Real Time Clock</strong></i>: RV3028
-                        </p>
-
-                        <p>
-                            <a href="https://www.maximintegrated.com/" target="_blank"><strong><u>Maxim/Dallas</u></strong></a><br>
-                            <i><strong>Temperature</strong></i>: *DS1822, *DS18S20, *DS18B20, *DS1825, *DS28EA00, *MAX31850K
-                        </p>
-
-                        <p>
-                            <a href="https://www.sensirion.com/en/environmental-sensors/" target="_blank">
-                                <strong><u>Sensirion</u></strong>
-                            </a><br>
-
-                            <i><strong>Particulate Matter</strong></i>: SPS30
-                        </p>
-
-                        <p><strong>Note</strong>: <i>Sensor names starting with a * are untested.</i></p>
                     </section>
                     <!-- end section -->
 
@@ -232,7 +190,11 @@
                         can take up to 30 minutes.</i><br>
 
                         <strong>Note : </strong><i>You must use the 32bit Raspbian/Raspberry Pi OS for proper Hardware
-                        Sensor functionality.</i><br><br>
+                        Sensor functionality.</i>
+
+                        <h4><a href="/atpro/supported-sensors-info" target="_blank">
+                            Click here for a list of supported sensors and their abilities
+                        </a></h4>
 
                         <h4 id="line2_1">Installation using a GUI Desktop</h4>
                         <p>
@@ -486,7 +448,7 @@
                             same network as the corresponding sensors you are downloading from.</i><br><br>
 
                             <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
-                            a combination report as well as zip files of each sensors Main database and logs<br>
+                            a combination report as well as zip files of each sensors databases and logs<br>
                             <strong>Combination Report</strong>: Creates a zip on the local sensor containing
                             a combination report<br>
                             <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
@@ -507,7 +469,7 @@
 
                         <h4 id="line6_4"><u>Push System Commands</u></h4>
                         <p>
-                            Use the various drop down menu's to initiate upgrades or sensor restarts.
+                            Use the various buttons to initiate upgrades, restarts and reboots.
                         </p>
                     </section>
                     <!-- end section -->
@@ -880,7 +842,9 @@
 
                         <h4 id="line5_5"><u>Change Login</u></h4>
                         <p>
-                            Change the username & password for logging into the Web Portal.
+                            Change the username & password for logging into the Web Portal. If you do not know the
+                            current username and password, you can reset them using the
+                            <a href="#line7_1">Terminal Configuration Tool</a>.
                         </p>
 
                         <h4 id="line5_6"><u>Upgrades & Power</u></h4>
