@@ -23,10 +23,11 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, thread_function
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
+from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
-from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
 from configuration_modules.config_mqtt_publisher import CreateMQTTPublisherConfiguration
@@ -35,7 +36,6 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
-from configuration_modules.config_check_ins import CreateCheckinConfiguration
 
 
 def successful_upgrade_message(config_name="Generic"):
@@ -54,6 +54,20 @@ def reset_installed_sensors(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_display_config(log_reset=True):
+    """ Writes a default Display configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Display Configuration Reset ****")
+    CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_checkin_config(log_reset=True):
+    """ Writes a default Checkin configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Checkin Configuration Reset ****")
+    CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_interval_recording_config(log_reset=True):
@@ -75,13 +89,6 @@ def reset_trigger_variance_config(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
     CreateTriggerVariancesConfiguration(load_from_file=False).save_config_to_file()
-
-
-def reset_display_config(log_reset=True):
-    """ Writes a default Display configuration file. """
-    if log_reset:
-        logger.primary_logger.warning(" **** Display Configuration Reset ****")
-    CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_email_config(log_reset=True):
@@ -140,13 +147,6 @@ def reset_sensor_control_config(log_reset=True):
     CreateSensorControlConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_checkin_config(log_reset=True):
-    """ Writes a default Checkin configuration file. """
-    if log_reset:
-        logger.primary_logger.warning(" **** Checkin Configuration Reset ****")
-    CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
-
-
 def reset_all_configurations(log_reset=True):
     """
     Resets all configuration files to Default settings.
@@ -154,10 +154,11 @@ def reset_all_configurations(log_reset=True):
     """
     reset_primary_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
+    reset_display_config(log_reset=log_reset)
+    reset_checkin_config(log_reset=log_reset)
     reset_interval_recording_config(log_reset=log_reset)
     reset_trigger_high_low_config(log_reset=log_reset)
     reset_trigger_variance_config(log_reset=log_reset)
-    reset_display_config(log_reset=log_reset)
     reset_email_config(log_reset=log_reset)
     reset_mqtt_broker_config(log_reset=log_reset)
     reset_mqtt_publisher_config(log_reset=log_reset)
@@ -166,7 +167,6 @@ def reset_all_configurations(log_reset=True):
     reset_luftdaten_config(log_reset=log_reset)
     reset_open_sense_map_config(log_reset=log_reset)
     reset_sensor_control_config(log_reset=log_reset)
-    reset_checkin_config(log_reset=log_reset)
 
 
 def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True):
