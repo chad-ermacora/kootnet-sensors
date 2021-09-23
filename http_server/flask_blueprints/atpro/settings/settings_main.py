@@ -23,14 +23,6 @@ from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from http_server.flask_blueprints.atpro.settings.settings_sql_recording import html_atpro_sensor_settings_interval, \
-    html_atpro_sensor_settings_high_low, html_atpro_sensor_settings_variances
-from http_server.flask_blueprints.atpro.settings.settings_email import html_atpro_sensor_settings_email_reports, \
-    html_atpro_sensor_settings_email_graphs, html_atpro_sensor_settings_email_smtp
-from http_server.flask_blueprints.atpro.settings.settings_mqtt import html_atpro_sensor_settings_mqtt_publisher, \
-    html_atpro_sensor_settings_mqtt_subscriber, html_atpro_sensor_settings_mqtt_broker
-from http_server.flask_blueprints.atpro.settings.settings_3rd_party_services import html_atpro_sensor_settings_osm, \
-    html_atpro_sensor_settings_wu, html_atpro_sensor_settings_luftdaten
 
 html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 
@@ -38,24 +30,7 @@ html_atpro_settings_routes = Blueprint("html_atpro_settings_routes", __name__)
 @html_atpro_settings_routes.route("/atpro/sensor-settings")
 @auth.login_required
 def html_atpro_sensor_settings(run_script="SelectSettingsNav('settings-main');"):
-    return render_template("ATPro_admin/page_templates/settings.html",
-                           RunScript=run_script,
-                           MainSettings=html_atpro_sensor_settings_main(),
-                           InstalledSensorsSettings=html_atpro_sensor_settings_installed_sensors(),
-                           DisplaySettings=html_atpro_sensor_settings_display(),
-                           CheckinsSettings=html_atpro_sensor_settings_checkin_server(),
-                           IntervalSettings=html_atpro_sensor_settings_interval(),
-                           HighLowSettings=html_atpro_sensor_settings_high_low(),
-                           VariancesSettings=html_atpro_sensor_settings_variances(),
-                           EmailReportsSettings=html_atpro_sensor_settings_email_reports(),
-                           EmailGraphSettings=html_atpro_sensor_settings_email_graphs(),
-                           EmailServerSettings=html_atpro_sensor_settings_email_smtp(),
-                           MQTTPubSettings=html_atpro_sensor_settings_mqtt_publisher(),
-                           MQTTSubSettings=html_atpro_sensor_settings_mqtt_subscriber(),
-                           MQTTBrokerSettings=html_atpro_sensor_settings_mqtt_broker(),
-                           OSMSettings=html_atpro_sensor_settings_osm(),
-                           WUSettings=html_atpro_sensor_settings_wu(),
-                           LuftdatenSettings=html_atpro_sensor_settings_luftdaten())
+    return render_template("ATPro_admin/page_templates/settings.html", RunScript=run_script)
 
 
 @html_atpro_settings_routes.route("/atpro/settings-main", methods=["GET", "POST"])
