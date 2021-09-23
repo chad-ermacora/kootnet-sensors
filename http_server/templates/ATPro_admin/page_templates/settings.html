@@ -179,7 +179,69 @@
 
 <hr><br>
 
-<div class="settings-page-view" id="settings-page-view"></div>
+<div id="settings-main">
+    {{ MainSettings | safe }}
+</div>
+
+<div id="settings-is">
+    {{ InstalledSensorsSettings | safe }}
+</div>
+
+<div id="settings-display">
+    {{ DisplaySettings | safe }}
+</div>
+
+<div id="settings-cs">
+    {{ CheckinsSettings | safe }}
+</div>
+
+<div id="settings-interval">
+    {{ IntervalSettings | safe }}
+</div>
+
+<div id="settings-hl">
+    {{ HighLowSettings | safe }}
+</div>
+
+<div id="settings-variances">
+    {{ VariancesSettings | safe }}
+</div>
+
+<div id="settings-email-reports">
+    {{ EmailReportsSettings | safe }}
+</div>
+
+<div id="settings-email-graphs">
+    {{ EmailGraphSettings | safe }}
+</div>
+
+<div id="settings-email-settings">
+    {{ EmailServerSettings | safe }}
+</div>
+
+<div id="settings-mqtt-p">
+    {{ MQTTPubSettings | safe }}
+</div>
+
+<div id="settings-mqtt-s">
+    {{ MQTTSubSettings | safe }}
+</div>
+
+<div id="settings-mqtt-b">
+    {{ MQTTBrokerSettings | safe }}
+</div>
+
+<div id="settings-osm">
+    {{ OSMSettings | safe }}
+</div>
+
+<div id="settings-wu">
+    {{ WUSettings | safe }}
+</div>
+
+<div id="settings-luftdaten">
+    {{ LuftdatenSettings | safe }}
+</div>
 
 <script>
     function SelectSettingsNav(nav_location) {
@@ -191,10 +253,25 @@
         document.getElementsByClassName("settings-cs")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-mqtt-p")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-osm")[0].classList.remove("pure-menu-selected");
-
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        $("#settings-page-view").load("/atpro/" + nav_location);
+        document.getElementById("settings-main").hidden = true;
+        document.getElementById("settings-is").hidden = true;
+        document.getElementById("settings-display").hidden = true;
+        document.getElementById("settings-cs").hidden = true;
+        document.getElementById("settings-interval").hidden = true;
+        document.getElementById("settings-hl").hidden = true;
+        document.getElementById("settings-variances").hidden = true;
+        document.getElementById("settings-email-reports").hidden = true;
+        document.getElementById("settings-email-graphs").hidden = true;
+        document.getElementById("settings-email-settings").hidden = true;
+        document.getElementById("settings-mqtt-p").hidden = true;
+        document.getElementById("settings-mqtt-s").hidden = true;
+        document.getElementById("settings-mqtt-b").hidden = true;
+        document.getElementById("settings-osm").hidden = true;
+        document.getElementById("settings-wu").hidden = true;
+        document.getElementById("settings-luftdaten").hidden = true;
+        document.getElementById(nav_location).hidden = false;
     }
 
     {{ RunScript | safe }}
