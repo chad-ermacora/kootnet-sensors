@@ -11,6 +11,15 @@
 
 <div class="pure-menu">
     <ul class="pure-menu-list">
+        <li class="pure-menu-item log-refresh">
+            <a href="#" class="pure-menu-link" onclick="SelectNav('sensor-logs', skip_menu_select=true)">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
         <li class="pure-menu-item log-primary">
             <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
                 <i class="fas fa-clipboard-list"></i> Primary Log
@@ -75,24 +84,32 @@
 
 <br><hr><br>
 
-<h2 id="log-header"></h2>
+<div id="log-primary">
+    {{ PrimaryLogs | safe }}
+</div>
 
-<h3 id="log-deleted-message"></h3>
+<div id="log-network">
+    {{ NetworkLogs | safe }}
+</div>
+
+<div id="log-sensors">
+    {{ SensorsLogs | safe }}
+</div>
 
 <br>
-
-<div class="log-page-view" id="log-page-view"></div>
 
 <script>
     function SelectLogNav(nav_location) {
         document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-refresh")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("log-network")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
-
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        $("#log-header").load("/atpro/logs/" + nav_location + "-header");
-        $("#log-page-view").load("/atpro/logs/" + nav_location);
+        document.getElementById("log-primary").hidden = true;
+        document.getElementById("log-network").hidden = true;
+        document.getElementById("log-sensors").hidden = true;
+        document.getElementById(nav_location).hidden = false;
     }
 
     function DownloadLogsZipped() {
@@ -105,8 +122,7 @@
     function DeleteLog(log_name) {
         let r = confirm("Are you sure you want to delete the " + log_name + " log?");
         if (r === true) {
-            $("#log-deleted-message").load("/atpro/delete-log/" + log_name);
-            SelectLogNav("log-" + log_name);
+            window.location.href = "/atpro/delete-log/" + log_name;
         }
     }
 
