@@ -21,13 +21,20 @@ from werkzeug.security import generate_password_hash
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth, save_http_auth_to_file
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
+from http_server.flask_blueprints.atpro.system.system_sql_database import html_atpro_sensor_settings_database_uploads
+from http_server.flask_blueprints.atpro.system.system_networking import html_atpro_system_ssl
+from http_server.flask_blueprints.atpro.system.system_commands import html_atpro_system_upgrades_power
 
 html_atpro_system_routes = Blueprint("html_atpro_system_routes", __name__)
 
 
 @html_atpro_system_routes.route("/atpro/sensor-system")
 def html_atpro_sensor_settings_system():
-    return render_template("ATPro_admin/page_templates/system.html")
+    return render_template("ATPro_admin/page_templates/system.html",
+                           SystemDBUploads=html_atpro_sensor_settings_database_uploads(),
+                           SystemSSL=html_atpro_system_ssl(),
+                           SystemChangeLogin=html_atpro_system_change_login(),
+                           SystemUpgradesPower=html_atpro_system_upgrades_power())
 
 
 @html_atpro_system_routes.route("/atpro/system-change-login", methods=["GET", "POST"])
