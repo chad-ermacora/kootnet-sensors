@@ -27,6 +27,7 @@ html_atpro_logs_routes = Blueprint("html_atpro_logs_routes", __name__)
 
 
 @html_atpro_logs_routes.route("/atpro/sensor-logs")
+@auth.login_required
 def html_atpro_sensor_logs():
     return render_template("ATPro_admin/page_templates/sensor-logs.html",
                            PrimaryLogs=_get_log_view_message("Primary Log", file_locations.primary_log),
