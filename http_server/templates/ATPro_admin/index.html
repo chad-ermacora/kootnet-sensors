@@ -259,7 +259,12 @@
 </html>
 
 <script>
+    const html_loading = '<div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card">' +
+        '<div class="card-content"><h1><i class="fas fa-hourglass-half"></i> Loading ...</h1></div></div></div>'
+
     function SelectNav(nav_location, skip_menu_select=false) {
+        document.getElementById("main-page-view").innerHTML = html_loading;
+
         if (typeof refresh_timer !== 'undefined') {
             clearTimeout(refresh_timer);
         }

@@ -167,6 +167,8 @@
 
 <script>
     function SelectRAWConfigNav(nav_location) {
+        document.getElementById("raw-config-page-view").innerHTML = html_loading;
+
         document.getElementsByClassName("config-software-ver")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-main")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-is")[0].classList.remove("pure-menu-selected");

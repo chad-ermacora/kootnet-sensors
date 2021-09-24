@@ -15,8 +15,8 @@
             </a>
             <ul class="pure-menu-children">
                 <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
-                        Uploads
+                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
+                        Information & Downloads
                     </a>
                 </li>
                 <li class="pure-menu-item">
@@ -25,8 +25,8 @@
                     </a>
                 </li>
                 <li class="pure-menu-item">
-                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-local')">
-                        Information & Downloads
+                    <a href="#" class="pure-menu-link" onclick="SelectSystemNav('system-db-uploads')">
+                        Uploads
                     </a>
                 </li>
             </ul>
@@ -86,32 +86,16 @@
 
 <br><hr><br>
 
-<div id="system-db-uploads">
-    {{ SystemDBUploads | safe }}
-</div>
-
-<div id="system-db-management"></div>
-
-<div id="system-db-local"></div>
-
-<div id="raw-configurations"></div>
-
-<div id="system-networking"></div>
-
-<div id="system-ssl">
-    {{ SystemSSL | safe }}
-</div>
-
-<div id="system-change-login">
-    {{ SystemChangeLogin | safe }}
-</div>
-
-<div id="system-upgrades-power">
-    {{ SystemUpgradesPower | safe }}
+<div id="system-page-view">
+    <div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content"><h1>
+        <i class="fas fa-hourglass-half"></i> Loading ...
+    </h1></div></div></div>
 </div>
 
 <script>
     function SelectSystemNav(nav_location) {
+        document.getElementById("system-page-view").innerHTML = html_loading;
+
         document.getElementsByClassName("raw-configurations")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-db-local")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("system-networking")[0].classList.remove("pure-menu-selected");
@@ -120,29 +104,12 @@
         document.getElementsByClassName("system-upgrades-power")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        document.getElementById("system-db-uploads").hidden = true;
-        document.getElementById("system-db-management").hidden = true;
-        document.getElementById("system-db-local").hidden = true;
-        document.getElementById("raw-configurations").hidden = true;
-        document.getElementById("system-networking").hidden = true;
-        document.getElementById("system-ssl").hidden = true;
-        document.getElementById("system-change-login").hidden = true;
-        document.getElementById("system-upgrades-power").hidden = true;
-        document.getElementById(nav_location).hidden = false;
-
         if (nav_location==="raw-configurations") {
-            $("#raw-configurations").load("/atpro/system/" + nav_location);
-        } else if (nav_location==="system-db-local") {
-            $("#system-db-local").load("/atpro/" + nav_location);
-        } else if (nav_location==="system-db-management") {
-            $("#system-db-management").load("/atpro/" + nav_location);
-        } else if (nav_location==="system-networking") {
-            $("#system-networking").load("/atpro/" + nav_location);
+            $("#system-page-view").load("/atpro/system/" + nav_location);
+        } else {
+            $("#system-page-view").load("/atpro/" + nav_location);
         }
     }
-    SelectSystemNav("system-db-uploads");
-</script>
-
-<script>
     CheckNotificationsAsync();
+    SelectSystemNav("system-db-local");
 </script>

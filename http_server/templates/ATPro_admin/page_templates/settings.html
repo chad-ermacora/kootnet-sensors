@@ -179,10 +179,16 @@
 
 <hr><br>
 
-<div class="settings-page-view" id="settings-page-view"></div>
+<div class="settings-page-view" id="settings-page-view">
+    <div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content"><h1>
+        <i class="fas fa-hourglass-half"></i> Loading ...
+    </h1></div></div></div>
+</div>
 
 <script>
     function SelectSettingsNav(nav_location) {
+        document.getElementById("settings-page-view").innerHTML = html_loading;
+
         document.getElementsByClassName("settings-main")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-is")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-interval")[0].classList.remove("pure-menu-selected");
@@ -191,7 +197,6 @@
         document.getElementsByClassName("settings-cs")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-mqtt-p")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-osm")[0].classList.remove("pure-menu-selected");
-
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
         $("#settings-page-view").load("/atpro/" + nav_location);
