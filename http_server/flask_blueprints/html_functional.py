@@ -102,7 +102,7 @@ def verify_password(username, password):
         return True
     logger.network_logger.debug("* Login to Web Portal Failed from " + str(request.remote_addr))
     # Sleep on failure to help prevent brute force attempts
-    sleep(1)
+    sleep(0.5)
     return False
 
 
