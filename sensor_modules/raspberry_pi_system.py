@@ -51,6 +51,6 @@ class CreateRPSystem:
         try:
             os.system("raspi-config nonint do_i2c 0")
             os.system("raspi-config nonint do_spi 0")
-            os.system("rfkill unblock wifi")
+            os.system("rfkill unblock 0")
         except Exception as error:
             logger.sensors_logger.error("Error enabling Raspberry Pi I2C, SPI & Wifi: " + str(error))
