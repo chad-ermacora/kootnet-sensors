@@ -48,7 +48,8 @@ def html_atpro_system_networking():
         dhcpcd_lines = get_file_content(file_locations.dhcpcd_config_file).split("\n")
         if network_ip.check_for_dhcp(dhcpcd_lines):
             dhcp_checkbox = "checked"
-    if app_cached_variables.wifi_security_type == "" or app_cached_variables.wifi_security_type == "WPA-PSK":
+
+    if app_cached_variables.wifi_security_type == network_wifi.wifi_type_secured:
         wifi_security_type_wpa1 = "checked"
     else:
         wifi_security_type_none1 = "checked"
@@ -199,7 +200,7 @@ def html_atpro_set_wifi_config():
         if app_validation_checks.wireless_ssid_is_valid(request.form.get("ssid1")):
             new_wireless_config = network_wifi.html_request_to_config_wifi(request)
             if new_wireless_config is not "":
-                write_file_to_disk(file_locations.wifi_config_file, new_wireless_config)
+                set_wpa_supplicant(new_wireless_config)
                 title_message = "WiFi Configuration Updated"
                 message = "You must reboot the sensor to take effect."
                 app_cached_variables_update.update_cached_variables()
@@ -212,3 +213,11 @@ def html_atpro_set_wifi_config():
                       "Alphanumeric Characters, dashes, underscores and spaces."
             return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
     return get_message_page("Unable to Process WiFi Configuration", page_url="sensor-system", skip_menu_select=True)
+
+
+def set_wpa_supplicant(wpa_supplicant):
+    try:
+        write_file_to_disk(file_locations.wifi_config_file, wpa_supplicant)
+        os.system("chmod 700 " + file_locations.wifi_config_file)
+    except Exception as error:
+        logger.network_logger.error("Write wpa_supplicant: " + str(error))
