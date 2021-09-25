@@ -156,25 +156,10 @@ def view_search_sensor_check_ins():
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-search.html",
                            SearchSensorInfo=sensor_search_info,
                            SearchSensorDeleteDisabled=buttons_state,
-                           SearchSensorClearDisabled=buttons_state)
-
-
-@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-primary")
-@auth.login_required
-def get_sensor_checkin_log_primary():
-    return app_cached_variables.checkin_search_primary_log.replace("\n", "<br>")
-
-
-@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-network")
-@auth.login_required
-def get_sensor_checkin_log_network():
-    return app_cached_variables.checkin_search_network_log.replace("\n", "<br>")
-
-
-@html_atpro_sensor_check_ins_routes.route("/atpro/sc-logs/log-sensors")
-@auth.login_required
-def get_sensor_checkin_log_sensors():
-    return app_cached_variables.checkin_search_sensors_log.replace("\n", "<br>")
+                           SearchSensorClearDisabled=buttons_state,
+                           PrimaryLogs=app_cached_variables.checkin_search_primary_log.replace("\n", "<br>"),
+                           NetworkLogs=app_cached_variables.checkin_search_network_log.replace("\n", "<br>"),
+                           SensorsLogs=app_cached_variables.checkin_search_sensors_log.replace("\n", "<br>"))
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-checkins")
@@ -216,13 +201,14 @@ def _update_search_sensor_check_ins(sensor_id):
         app_cached_variables.checkin_sensor_info = "Sensor ID Not Found\n\n"
         app_cached_variables.checkin_search_sensor_installed_sensors = ""
         app_cached_variables.checkin_search_primary_log = ""
+        app_cached_variables.checkin_search_network_log = ""
         app_cached_variables.checkin_search_sensors_log = ""
 
 
 def _search_checkin_get_logs(sensor_id):
-    app_cached_variables.checkin_search_primary_log = "No Logs Found"
-    app_cached_variables.checkin_search_network_log = "No Logs Found"
-    app_cached_variables.checkin_search_sensors_log = "No Logs Found"
+    app_cached_variables.checkin_search_primary_log = "Log Not Found"
+    app_cached_variables.checkin_search_network_log = "Log Not Found"
+    app_cached_variables.checkin_search_sensors_log = "Log Not Found"
 
     primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
     network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)

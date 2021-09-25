@@ -16,17 +16,8 @@
         text-align: center;
     }
 
-    #log-page-content {
+    .log-page-content {
         text-align: left;
-    }
-
-    .sensor-info {
-        font-size: large;
-        font-weight: bolder;
-    }
-
-    .sensor-info-names {
-        font-size: x-large;
     }
 </style>
 
@@ -76,7 +67,7 @@
                 <div class="pure-menu">
                     <ul class="pure-menu-list">
                         <li class="pure-menu-item log-primary">
-                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
                                 Primary Log
                             </a>
                         </li>
@@ -85,7 +76,7 @@
                 <div class="pure-menu">
                     <ul class="pure-menu-list">
                         <li class="pure-menu-item log-network">
-                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-network')">
                                 Network Log
                             </a>
                         </li>
@@ -94,7 +85,7 @@
                 <div class="pure-menu">
                     <ul class="pure-menu-list">
                         <li class="pure-menu-item log-sensors">
-                            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                            <a href="#/" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
                                 Sensor Log
                             </a>
                         </li>
@@ -103,7 +94,17 @@
 
                 <br><br>
 
-                <div id="log-page-content"></div>
+                <div class="log-page-content" id="log-primary">
+                    {{ PrimaryLogs | safe }}
+                </div>
+
+                <div class="log-page-content" id="log-network">
+                    {{ NetworkLogs | safe }}
+                </div>
+
+                <div class="log-page-content" id="log-sensors">
+                    {{ SensorsLogs | safe }}
+                </div>
             </div>
         </div>
     </div>
@@ -123,10 +124,12 @@
         document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("log-network")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
-
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        $("#log-page-content").load("/atpro/sc-logs/" + nav_location);
+        document.getElementById("log-primary").hidden = true;
+        document.getElementById("log-network").hidden = true;
+        document.getElementById("log-sensors").hidden = true;
+        document.getElementById(nav_location).hidden = false;
     }
 
     if (screen.width < 500) {
@@ -134,9 +137,7 @@
         document.getElementById('sensor_id').style.width = '325px';
         document.getElementsByClassName('sensor-id')[0].style.fontSize = '15px';
     }
-
-    {{ RunScript | safe }}
+    SelectLogNav("log-primary");
 </script>
 
 <script src="/atpro/index.js"></script>
-<script src="/extras/jquery-3.6.0.min.js"></script>
