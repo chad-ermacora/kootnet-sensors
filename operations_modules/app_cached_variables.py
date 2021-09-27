@@ -111,6 +111,7 @@ class CreateNetworkGetCommands:
 
         self.download_zipped_everything = "DownloadZippedEverything"
 
+        # TODO: Update wording to all sensors? or add an all sensors?
         self.sensor_readings = "GetIntervalSensorReadings"
         self.sensors_latency = "GetSensorsLatency"
 
@@ -281,25 +282,27 @@ class CreateDatabaseVariables:
 
 class CreateLatencyVariables:
     def __init__(self):
-        self.cpu_temperature = "cpu_temperature"
-        self.environment_temperature = "environment_temperature"
-        self.pressure = "pressure"
-        self.altitude = "altitude"
-        self.humidity = "humidity"
-        self.distance = "distance"
-        self.gas = "gas"
-        self.particulate_matter = "particulate_matter"
-        self.lumen = "lumen"
-        self.colours = "colours"
-        self.ultra_violet = "ultra_violet"
-        self.accelerometer_xyz = "accelerometer_xyz"
-        self.magnetometer_xyz = "magnetometer_xyz"
-        self.gyroscope_xyz = "gyroscope_xyz"
+        self.cpu_temperature = "CPU Temperature"
+        self.environment_temperature = "Environmental Temperature"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "GAS"
+        self.particulate_matter = "Particulate Matter"
+        self.lumen = "Lumen"
+        self.colours = "Colours"
+        self.ultra_violet = "Ultra Violet"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+        self.gps = "GPS"
 
     def get_all_latency_as_list(self):
         return [self.cpu_temperature, self.environment_temperature, self.pressure, self.altitude,
                 self.humidity, self.distance, self.gas, self.particulate_matter, self.lumen,
-                self.colours, self.ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz]
+                self.colours, self.ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz,
+                self.gps]
 
 
 class CreateEmptyThreadClass:
