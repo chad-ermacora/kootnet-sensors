@@ -33,7 +33,7 @@ from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from sensor_modules import sensor_access
+from sensor_modules.system_access import restart_services
 
 html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_routes", __name__)
 
@@ -79,7 +79,7 @@ def html_atpro_system_ssl():
 def html_atpro_create_new_self_signed_ssl():
     message2 = "Once complete, the sensor programs will be restarted. This may take a few minutes ..."
     os.system("rm -f -r " + file_locations.http_ssl_folder)
-    thread_function(sensor_access.restart_services)
+    restart_services()
     return get_message_page("Creating new Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
 
 

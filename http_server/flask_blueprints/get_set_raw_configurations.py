@@ -22,6 +22,7 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
+from sensor_modules.system_access import restart_services
 from sensor_modules import sensor_access
 
 html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
@@ -44,7 +45,7 @@ def set_primary_configuration():
         app_config_access.primary_config.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
             app_config_access.primary_config.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            restart_services()
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Primary Configuration from " + str(request.remote_addr)
@@ -69,7 +70,7 @@ def set_installed_sensors():
         app_config_access.installed_sensors.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
             app_config_access.installed_sensors.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            restart_services()
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Installed Sensors from " + str(request.remote_addr)
@@ -94,7 +95,7 @@ def set_interval_config():
         app_config_access.interval_recording_config.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
             app_config_access.interval_recording_config.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            restart_services()
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Interval from " + str(request.remote_addr)
@@ -119,7 +120,7 @@ def set_high_low_trigger_config():
         app_config_access.trigger_high_low.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
             app_config_access.trigger_high_low.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            restart_services()
         return "OK"
     except Exception as error:
         log_msg = "Failed to set High/Low Trigger from " + str(request.remote_addr)
@@ -144,7 +145,7 @@ def set_variance_config():
         app_config_access.trigger_variances.set_config_with_str(request.form.get("command_data"))
         if request.form.get("test_run") is None:
             app_config_access.trigger_variances.save_config_to_file()
-            app_generic_functions.thread_function(sensor_access.restart_services)
+            restart_services()
         return "OK"
     except Exception as error:
         log_msg = "Failed to set Trigger Variances from " + str(request.remote_addr)

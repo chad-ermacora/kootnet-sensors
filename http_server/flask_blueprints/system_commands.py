@@ -27,6 +27,7 @@ from configuration_modules.app_config_access import primary_config
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_uptime_str
+from sensor_modules import system_access
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
@@ -48,7 +49,7 @@ def get_hostname():
 @html_system_commands_routes.route("/GetSystemDateTime")
 def get_system_date_time():
     logger.network_logger.debug("* Sensor's Date & Time sent to " + str(request.remote_addr))
-    return str(sensor_access.get_system_datetime())
+    return str(system_access.get_system_datetime())
 
 
 @html_system_commands_routes.route("/GetSystemUptime")
@@ -72,13 +73,13 @@ def get_sensor_program_version():
 @html_system_commands_routes.route("/GetRAMUsed")
 def get_ram_usage_percent():
     logger.network_logger.debug("* Sensor's RAM % used sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ram_space(return_type=3))
+    return str(system_access.get_ram_space(return_type=3))
 
 
 @html_system_commands_routes.route("/GetRAMFree")
 def get_ram_free():
     logger.network_logger.debug("* Sensor's Free RAM sent to " + str(request.remote_addr))
-    return str(sensor_access.get_ram_space(return_type=0))
+    return str(system_access.get_ram_space(return_type=0))
 
 
 @html_system_commands_routes.route("/GetRAMTotal")
@@ -96,13 +97,13 @@ def get_ram_total_size_type():
 @html_system_commands_routes.route("/GetUsedDiskSpace")
 def get_disk_usage_gb():
     logger.network_logger.debug("* Sensor's Used Disk Space as GBs sent to " + str(request.remote_addr))
-    return str(sensor_access.get_disk_space(return_type=1))
+    return str(system_access.get_disk_space(return_type=1))
 
 
 @html_system_commands_routes.route("/GetFreeDiskSpace")
 def get_disk_free_gb():
     logger.network_logger.debug("* Sensor's Free Disk Space as GBs sent to " + str(request.remote_addr))
-    return str(sensor_access.get_disk_space(return_type=0))
+    return str(system_access.get_disk_space(return_type=0))
 
 
 @html_system_commands_routes.route("/GetProgramLastUpdated")
@@ -195,7 +196,7 @@ def upgrade_smb_dev():
 @auth.login_required
 def services_restart():
     logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(sensor_access.restart_services)
+    system_access.restart_services()
     return get_message_page("Restarting Program", page_url="sensor-dashboard")
 
 
@@ -246,7 +247,7 @@ def upgrade_pip_modules():
 def create_new_self_signed_ssl():
     logger.network_logger.info("** Create New Self-Signed SSL Initiated by " + str(request.remote_addr))
     os.system("rm -f -r " + file_locations.http_ssl_folder)
-    app_generic_functions.thread_function(sensor_access.restart_services)
+    system_access.restart_services()
     msg = "You may have to clear your browser cache to re-gain access. The program is now restarting."
     return get_message_page("New SSL Key Created", message=msg, page_url="sensor-dashboard")
 
