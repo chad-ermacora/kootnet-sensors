@@ -63,98 +63,101 @@ class CreateSensorAccess:
         if geteuid() == 0:
             check_installed_sensors_compatibility()
             installed_sensors = app_config_access.installed_sensors
-            # Raspberry Pi System is created first to enable I2C, SPI & Wifi
-            # This is to ensure they are enabled for the other hardware Sensors
-            if installed_sensors.raspberry_pi and not self.raspberry_pi_a.initialized_sensor:
-                self.raspberry_pi_a = _raspberry_pi_system.CreateRPSystem()
-                self.raspberry_pi_a.initialized_sensor = True
-            if installed_sensors.raspberry_pi_sense_hat and not self.rp_sense_hat_a.initialized_sensor:
-                self.rp_sense_hat_a = _raspberry_pi_sense_hat.CreateRPSenseHAT()
-                self.rp_sense_hat_a.initialized_sensor = True
-            if installed_sensors.pimoroni_bh1745 and not self.pimoroni_bh1745_a.initialized_sensor:
-                self.pimoroni_bh1745_a = _pimoroni_bh1745.CreateBH1745()
-                self.pimoroni_bh1745_a.initialized_sensor = True
-            if installed_sensors.pimoroni_as7262 and not self.pimoroni_as7262_a.initialized_sensor:
-                self.pimoroni_as7262_a = _pimoroni_as7262.CreateAS7262()
-                self.pimoroni_as7262_a.initialized_sensor = True
-            if installed_sensors.pimoroni_bme680 and not self.pimoroni_bme680_a.initialized_sensor:
-                self.pimoroni_bme680_a = _pimoroni_bme680.CreateBME680()
-                self.pimoroni_bme680_a.initialized_sensor = True
-            if installed_sensors.pimoroni_bme280 and not self.pimoroni_bme280_a.initialized_sensor:
-                self.pimoroni_bme280_a = _pimoroni_bme280.CreateBME280()
-                self.pimoroni_bme280_a.initialized_sensor = True
-            if installed_sensors.pimoroni_mcp9600 and not self.pimoroni_mcp9600_a.initialized_sensor:
-                self.pimoroni_mcp9600_a = _pimoroni_mcp9600.CreateMCP9600()
-                self.pimoroni_mcp9600_a.initialized_sensor = True
-            if installed_sensors.pimoroni_bmp280 and not self.pimoroni_bmp280_a.initialized_sensor:
-                self.pimoroni_bmp280_a = _pimoroni_bmp280.CreateBMP280()
-                self.pimoroni_bmp280_a.initialized_sensor = True
-            if installed_sensors.pimoroni_enviro and not self.pimoroni_enviro_a.initialized_sensor:
-                self.pimoroni_enviro_a = _pimoroni_enviro.CreateEnviro()
-                self.pimoroni_enviro_a.initialized_sensor = True
-            if installed_sensors.pimoroni_enviro2 and not self.pimoroni_enviro2_a.initialized_sensor:
-                self.pimoroni_enviro2_a = _pimoroni_enviroplus.CreateEnviroPlus(enviro_hw_ver_2_w_screen=True)
-                self.pimoroni_enviro2_a.initialized_sensor = True
-            if installed_sensors.pimoroni_enviroplus and not self.pimoroni_enviroplus_a.initialized_sensor:
-                self.pimoroni_enviroplus_a = _pimoroni_enviroplus.CreateEnviroPlus()
-                self.pimoroni_enviroplus_a.initialized_sensor = True
-            if installed_sensors.pimoroni_pms5003 and not self.pimoroni_pms5003_a.initialized_sensor:
-                self.pimoroni_pms5003_a = _pimoroni_pms5003.CreatePimoroniPMS5003()
-                self.pimoroni_pms5003_a.initialized_sensor = True
-            if installed_sensors.pimoroni_sgp30 and not self.pimoroni_sgp30_a.initialized_sensor:
-                self.pimoroni_sgp30_a = _pimoroni_sgp30.CreateSGP30()
-                self.pimoroni_sgp30_a.initialized_sensor = True
-            if installed_sensors.pimoroni_msa301 and not self.pimoroni_msa301_a.initialized_sensor:
-                self.pimoroni_msa301_a = _pimoroni_msa301.CreateMSA301()
-                self.pimoroni_msa301_a.initialized_sensor = True
-            if installed_sensors.pimoroni_lsm303d and not self.pimoroni_lsm303d_a.initialized_sensor:
-                self.pimoroni_lsm303d_a = _pimoroni_lsm303d.CreateLSM303D()
-                self.pimoroni_lsm303d_a.initialized_sensor = True
-            if installed_sensors.pimoroni_icm20948 and not self.pimoroni_icm20948_a.initialized_sensor:
-                self.pimoroni_icm20948_a = _pimoroni_icm20948.CreateICM20948()
-                self.pimoroni_icm20948_a.initialized_sensor = True
-            if installed_sensors.pimoroni_ltr_559 and not self.pimoroni_ltr_559_a.initialized_sensor:
-                self.pimoroni_ltr_559_a = _pimoroni_ltr_559.CreateLTR559()
-                self.pimoroni_ltr_559_a.initialized_sensor = True
-            if installed_sensors.pimoroni_vl53l1x and not self.pimoroni_vl53l1x_a.initialized_sensor:
-                self.pimoroni_vl53l1x_a = _pimoroni_vl53l1x.CreateVL53L1X()
-                self.pimoroni_vl53l1x_a.initialized_sensor = True
-            if installed_sensors.pimoroni_veml6075 and not self.pimoroni_veml6075_a.initialized_sensor:
-                self.pimoroni_veml6075_a = _pimoroni_veml6075.CreateVEML6075()
-                self.pimoroni_veml6075_a.initialized_sensor = True
-            if installed_sensors.pimoroni_mics6814 and not self.pimoroni_mics6814_a.initialized_sensor:
-                self.pimoroni_mics6814_a = _pimoroni_mics6814.CreateMICS6814()
-                self.pimoroni_mics6814_a.initialized_sensor = True
-            if installed_sensors.pimoroni_rv3028 and not self.pimoroni_rv3028_a.initialized_sensor:
-                self.pimoroni_rv3028_a = _pimoroni_rv3028.CreateRV3028()
-                self.pimoroni_rv3028_a.initialized_sensor = True
-            if installed_sensors.pimoroni_pa1010d and not self.pimoroni_pa1010d_a.initialized_sensor:
-                self.pimoroni_pa1010d_a = _pimoroni_pa1010d.CreatePA1010D()
-                self.pimoroni_pa1010d_a.initialized_sensor = True
-            if installed_sensors.pimoroni_matrix_11x7 and not self.pimoroni_matrix_11x7_a.initialized_sensor:
-                self.pimoroni_matrix_11x7_a = _pimoroni_11x7_led_matrix.CreateMatrix11x7()
-                self.pimoroni_matrix_11x7_a.initialized_sensor = True
-            if installed_sensors.pimoroni_st7735 and not self.pimoroni_st7735_a.initialized_sensor:
-                self.pimoroni_st7735_a = _pimoroni_0_96_spi_colour_lcd.CreateST7735()
-                self.pimoroni_st7735_a.initialized_sensor = True
-            if installed_sensors.pimoroni_mono_oled_luma and not self.pimoroni_mono_oled_luma_a.initialized_sensor:
-                self.pimoroni_mono_oled_luma_a = _pimoroni_1_12_mono_oled.CreateLumaOLED()
-                self.pimoroni_mono_oled_luma_a.initialized_sensor = True
-            if installed_sensors.sensirion_sps30 and not self.sensirion_sps30_a.initialized_sensor:
-                self.sensirion_sps30_a = _sensirion_sps30.CreateSPS30()
-                self.sensirion_sps30_a.initialized_sensor = True
-            if installed_sensors.w1_therm_sensor and not self.w1_therm_sensor_a.initialized_sensor:
-                self.w1_therm_sensor_a = _maxim_dallas_1_wire_multi.CreateW1ThermSenor()
-                self.w1_therm_sensor_a.initialized_sensor = True
+            try:
+                # Raspberry Pi System is created first to enable I2C, SPI & Wifi
+                # This is to ensure they are enabled for the other hardware Sensors
+                if installed_sensors.raspberry_pi and not self.raspberry_pi_a.initialized_sensor:
+                    self.raspberry_pi_a = _raspberry_pi_system.CreateRPSystem()
+                    self.raspberry_pi_a.initialized_sensor = True
+                if installed_sensors.raspberry_pi_sense_hat and not self.rp_sense_hat_a.initialized_sensor:
+                    self.rp_sense_hat_a = _raspberry_pi_sense_hat.CreateRPSenseHAT()
+                    self.rp_sense_hat_a.initialized_sensor = True
+                if installed_sensors.pimoroni_bh1745 and not self.pimoroni_bh1745_a.initialized_sensor:
+                    self.pimoroni_bh1745_a = _pimoroni_bh1745.CreateBH1745()
+                    self.pimoroni_bh1745_a.initialized_sensor = True
+                if installed_sensors.pimoroni_as7262 and not self.pimoroni_as7262_a.initialized_sensor:
+                    self.pimoroni_as7262_a = _pimoroni_as7262.CreateAS7262()
+                    self.pimoroni_as7262_a.initialized_sensor = True
+                if installed_sensors.pimoroni_bme680 and not self.pimoroni_bme680_a.initialized_sensor:
+                    self.pimoroni_bme680_a = _pimoroni_bme680.CreateBME680()
+                    self.pimoroni_bme680_a.initialized_sensor = True
+                if installed_sensors.pimoroni_bme280 and not self.pimoroni_bme280_a.initialized_sensor:
+                    self.pimoroni_bme280_a = _pimoroni_bme280.CreateBME280()
+                    self.pimoroni_bme280_a.initialized_sensor = True
+                if installed_sensors.pimoroni_mcp9600 and not self.pimoroni_mcp9600_a.initialized_sensor:
+                    self.pimoroni_mcp9600_a = _pimoroni_mcp9600.CreateMCP9600()
+                    self.pimoroni_mcp9600_a.initialized_sensor = True
+                if installed_sensors.pimoroni_bmp280 and not self.pimoroni_bmp280_a.initialized_sensor:
+                    self.pimoroni_bmp280_a = _pimoroni_bmp280.CreateBMP280()
+                    self.pimoroni_bmp280_a.initialized_sensor = True
+                if installed_sensors.pimoroni_enviro and not self.pimoroni_enviro_a.initialized_sensor:
+                    self.pimoroni_enviro_a = _pimoroni_enviro.CreateEnviro()
+                    self.pimoroni_enviro_a.initialized_sensor = True
+                if installed_sensors.pimoroni_enviro2 and not self.pimoroni_enviro2_a.initialized_sensor:
+                    self.pimoroni_enviro2_a = _pimoroni_enviroplus.CreateEnviroPlus(enviro_hw_ver_2_w_screen=True)
+                    self.pimoroni_enviro2_a.initialized_sensor = True
+                if installed_sensors.pimoroni_enviroplus and not self.pimoroni_enviroplus_a.initialized_sensor:
+                    self.pimoroni_enviroplus_a = _pimoroni_enviroplus.CreateEnviroPlus()
+                    self.pimoroni_enviroplus_a.initialized_sensor = True
+                if installed_sensors.pimoroni_pms5003 and not self.pimoroni_pms5003_a.initialized_sensor:
+                    self.pimoroni_pms5003_a = _pimoroni_pms5003.CreatePimoroniPMS5003()
+                    self.pimoroni_pms5003_a.initialized_sensor = True
+                if installed_sensors.pimoroni_sgp30 and not self.pimoroni_sgp30_a.initialized_sensor:
+                    self.pimoroni_sgp30_a = _pimoroni_sgp30.CreateSGP30()
+                    self.pimoroni_sgp30_a.initialized_sensor = True
+                if installed_sensors.pimoroni_msa301 and not self.pimoroni_msa301_a.initialized_sensor:
+                    self.pimoroni_msa301_a = _pimoroni_msa301.CreateMSA301()
+                    self.pimoroni_msa301_a.initialized_sensor = True
+                if installed_sensors.pimoroni_lsm303d and not self.pimoroni_lsm303d_a.initialized_sensor:
+                    self.pimoroni_lsm303d_a = _pimoroni_lsm303d.CreateLSM303D()
+                    self.pimoroni_lsm303d_a.initialized_sensor = True
+                if installed_sensors.pimoroni_icm20948 and not self.pimoroni_icm20948_a.initialized_sensor:
+                    self.pimoroni_icm20948_a = _pimoroni_icm20948.CreateICM20948()
+                    self.pimoroni_icm20948_a.initialized_sensor = True
+                if installed_sensors.pimoroni_ltr_559 and not self.pimoroni_ltr_559_a.initialized_sensor:
+                    self.pimoroni_ltr_559_a = _pimoroni_ltr_559.CreateLTR559()
+                    self.pimoroni_ltr_559_a.initialized_sensor = True
+                if installed_sensors.pimoroni_vl53l1x and not self.pimoroni_vl53l1x_a.initialized_sensor:
+                    self.pimoroni_vl53l1x_a = _pimoroni_vl53l1x.CreateVL53L1X()
+                    self.pimoroni_vl53l1x_a.initialized_sensor = True
+                if installed_sensors.pimoroni_veml6075 and not self.pimoroni_veml6075_a.initialized_sensor:
+                    self.pimoroni_veml6075_a = _pimoroni_veml6075.CreateVEML6075()
+                    self.pimoroni_veml6075_a.initialized_sensor = True
+                if installed_sensors.pimoroni_mics6814 and not self.pimoroni_mics6814_a.initialized_sensor:
+                    self.pimoroni_mics6814_a = _pimoroni_mics6814.CreateMICS6814()
+                    self.pimoroni_mics6814_a.initialized_sensor = True
+                if installed_sensors.pimoroni_rv3028 and not self.pimoroni_rv3028_a.initialized_sensor:
+                    self.pimoroni_rv3028_a = _pimoroni_rv3028.CreateRV3028()
+                    self.pimoroni_rv3028_a.initialized_sensor = True
+                if installed_sensors.pimoroni_pa1010d and not self.pimoroni_pa1010d_a.initialized_sensor:
+                    self.pimoroni_pa1010d_a = _pimoroni_pa1010d.CreatePA1010D()
+                    self.pimoroni_pa1010d_a.initialized_sensor = True
+                if installed_sensors.pimoroni_matrix_11x7 and not self.pimoroni_matrix_11x7_a.initialized_sensor:
+                    self.pimoroni_matrix_11x7_a = _pimoroni_11x7_led_matrix.CreateMatrix11x7()
+                    self.pimoroni_matrix_11x7_a.initialized_sensor = True
+                if installed_sensors.pimoroni_st7735 and not self.pimoroni_st7735_a.initialized_sensor:
+                    self.pimoroni_st7735_a = _pimoroni_0_96_spi_colour_lcd.CreateST7735()
+                    self.pimoroni_st7735_a.initialized_sensor = True
+                if installed_sensors.pimoroni_mono_oled_luma and not self.pimoroni_mono_oled_luma_a.initialized_sensor:
+                    self.pimoroni_mono_oled_luma_a = _pimoroni_1_12_mono_oled.CreateLumaOLED()
+                    self.pimoroni_mono_oled_luma_a.initialized_sensor = True
+                if installed_sensors.sensirion_sps30 and not self.sensirion_sps30_a.initialized_sensor:
+                    self.sensirion_sps30_a = _sensirion_sps30.CreateSPS30()
+                    self.sensirion_sps30_a.initialized_sensor = True
+                if installed_sensors.w1_therm_sensor and not self.w1_therm_sensor_a.initialized_sensor:
+                    self.w1_therm_sensor_a = _maxim_dallas_1_wire_multi.CreateW1ThermSenor()
+                    self.w1_therm_sensor_a.initialized_sensor = True
 
-            if not first_start:
-                app_cached_variables.restart_interval_recording_thread = True
-                app_cached_variables.restart_all_trigger_threads = True
-                app_cached_variables.restart_mini_display_thread = True
-                app_cached_variables.restart_mqtt_publisher_thread = True
-                app_cached_variables.restart_weather_underground_thread = True
-                app_cached_variables.restart_luftdaten_thread = True
-                app_cached_variables.restart_open_sense_map_thread = True
+                if not first_start:
+                    app_cached_variables.restart_interval_recording_thread = True
+                    app_cached_variables.restart_all_trigger_threads = True
+                    app_cached_variables.restart_mini_display_thread = True
+                    app_cached_variables.restart_mqtt_publisher_thread = True
+                    app_cached_variables.restart_weather_underground_thread = True
+                    app_cached_variables.restart_luftdaten_thread = True
+                    app_cached_variables.restart_open_sense_map_thread = True
+            except Exception as error:
+                logger.sensors_logger.critical(" -- Hardware Sensor Initializations: " + str(error))
         else:
             logger.sensors_logger.info(" -- Hardware Based Sensor Initializations Skipped - root required")
 
