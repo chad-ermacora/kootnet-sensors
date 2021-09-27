@@ -55,13 +55,13 @@ class CreateDummySensors:
         return self._get_random_float(min_number=-20, max_number=65)
 
     def pressure(self):
-        """ Returns Pressure as a Integer. """
+        """ Returns Pressure as a Float. """
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
         time.sleep(random.uniform(senor_delay_min, sensor_delay_max))
         self.sensor_in_use = False
-        return self._get_random_int(min_number=650, max_number=1200)
+        return self._get_random_float(min_number=650, max_number=1200)
 
     def humidity(self):
         """ Returns Altitude as a Float. """
