@@ -111,8 +111,7 @@ class CreateNetworkGetCommands:
 
         self.download_zipped_everything = "DownloadZippedEverything"
 
-        # TODO: Update wording to all sensors? or add an all sensors?
-        self.sensor_readings = "GetIntervalSensorReadings"
+        self.sensor_readings = "GetAllSensorReadings"
         self.sensors_latency = "GetSensorsLatency"
 
         self.cpu_temp = "GetCPUTemperature"
