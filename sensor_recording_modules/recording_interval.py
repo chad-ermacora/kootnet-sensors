@@ -49,7 +49,7 @@ def _interval_recording():
     app_cached_variables.restart_interval_recording_thread = False
     while not app_cached_variables.restart_interval_recording_thread:
         try:
-            new_sensor_data = get_interval_sensor_readings()
+            new_sensor_data = _get_interval_sensor_readings()
             sql_column_names = ""
             sql_value_placeholders = ""
             sql_data = []
@@ -77,7 +77,7 @@ def _interval_recording():
             sleep_total += sleep_fraction_interval
 
 
-def get_interval_sensor_readings():
+def _get_interval_sensor_readings():
     """
     Returns Interval formatted sensor readings based on installed sensors.
     Format = 'CSV String Installed Sensor Types' + special separator + 'CSV String Sensor Readings'
