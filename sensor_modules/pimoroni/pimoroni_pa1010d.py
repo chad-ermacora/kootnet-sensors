@@ -41,19 +41,19 @@ class CreatePA1010D:
     def __init__(self):
         self.sensor_latency = 0.0
 
-        self.timestamp = None
-        self.latitude = None
-        self.longitude = None
-        self.altitude = None
-        self.number_of_connected_satellites = None
-        self.gps_quality = None
+        self.timestamp_var = ""
+        self.latitude_var = 0.0
+        self.longitude_var = 0.0
+        self.altitude_var = 0.0
+        self.number_of_connected_satellites_var = 0
+        self.gps_quality_var = 0
 
-        self.pdop = None
-        self.hdop = None
-        self.vdop = None
+        self.pdop_var = 0.0
+        self.hdop_var = 0.0
+        self.vdop_var = 0.0
 
-        self.speed_over_ground = None
-        self.mode_fix_type = None
+        self.speed_over_ground_var = 0.0
+        self.mode_fix_type_var = 0
 
         try:
             pa1010d_import = __import__("sensor_modules.drivers.pa1010d", fromlist=["PA1010D"])
@@ -87,31 +87,31 @@ class CreatePA1010D:
                     self.sensor_latency = float(end_time - start_time)
                     set_new_start_time = True
 
-                    self.timestamp = str(self.pa1010d_gps.timestamp)
-                    self.latitude = self.pa1010d_gps.latitude
-                    self.longitude = self.pa1010d_gps.longitude
-                    self.altitude = self.pa1010d_gps.altitude
-                    self.number_of_connected_satellites = self.pa1010d_gps.num_sats
-                    self.gps_quality = self.pa1010d_gps.gps_qual
+                    self.timestamp_var = str(self.pa1010d_gps.timestamp)
+                    self.latitude_var = self.pa1010d_gps.latitude
+                    self.longitude_var = self.pa1010d_gps.longitude
+                    self.altitude_var = self.pa1010d_gps.altitude
+                    self.number_of_connected_satellites_var = self.pa1010d_gps.num_sats
+                    self.gps_quality_var = self.pa1010d_gps.gps_qual
 
-                    self.pdop = self.pa1010d_gps.pdop
-                    self.hdop = self.pa1010d_gps.hdop
-                    self.vdop = self.pa1010d_gps.vdop
+                    self.pdop_var = self.pa1010d_gps.pdop
+                    self.hdop_var = self.pa1010d_gps.hdop
+                    self.vdop_var = self.pa1010d_gps.vdop
 
-                    self.speed_over_ground = self.pa1010d_gps.speed_over_ground
-                    self.mode_fix_type = self.pa1010d_gps.mode_fix_type
+                    self.speed_over_ground_var = self.pa1010d_gps.speed_over_ground
+                    self.mode_fix_type_var = self.pa1010d_gps.mode_fix_type
 
-                    gps_log_str = "GPS Data - TimeStamp: " + str(self.timestamp) + \
-                                  " Latitude: " + str(self.latitude) + \
-                                  " Longitude: " + str(self.longitude) + \
-                                  " Altitude: " + str(self.altitude) + \
-                                  " Number of Sats: " + str(self.number_of_connected_satellites) + \
-                                  " GPS Quality: " + str(self.gps_quality) + \
-                                  " Speed Over Ground: " + str(self.speed_over_ground) + \
-                                  " Mode Fix Type: " + str(self.mode_fix_type) + \
-                                  " PDOP: " + str(self.pdop) + \
-                                  " HDOP: " + str(self.hdop) + \
-                                  " VDOP: " + str(self.vdop)
+                    gps_log_str = "GPS Data - TimeStamp: " + str(self.timestamp_var) + \
+                                  " Latitude: " + str(self.latitude_var) + \
+                                  " Longitude: " + str(self.longitude_var) + \
+                                  " Altitude: " + str(self.altitude_var) + \
+                                  " Number of Sats: " + str(self.number_of_connected_satellites_var) + \
+                                  " GPS Quality: " + str(self.gps_quality_var) + \
+                                  " Speed Over Ground: " + str(self.speed_over_ground_var) + \
+                                  " Mode Fix Type: " + str(self.mode_fix_type_var) + \
+                                  " PDOP: " + str(self.pdop_var) + \
+                                  " HDOP: " + str(self.hdop_var) + \
+                                  " VDOP: " + str(self.vdop_var)
 
                     logger.sensors_logger.debug(gps_log_str)
                     logger.sensors_logger.debug("Pimoroni PA1010D GPS Update Finished")
@@ -121,43 +121,43 @@ class CreatePA1010D:
                 logger.sensors_logger.error("Pimoroni PA1010D GPS Update - Failed: " + str(error))
             time.sleep(sleep_between_readings_seconds)
 
-    def get_latitude_longitude(self):
+    def latitude_longitude(self):
         """ Returns latitude & longitude coordinates (floats) in a list """
-        return [self.latitude, self.longitude]
+        return [self.latitude_var, self.longitude_var]
 
     def altitude(self):
         """ Returns altitude as a float """
-        return self.altitude
+        return self.altitude_var
 
-    def get_number_of_satellites(self):
+    def number_of_satellites(self):
         """ Returns number of satellites as a int """
-        return self.number_of_connected_satellites
+        return self.number_of_connected_satellites_var
 
-    def get_gps_quality(self):
+    def gps_quality(self):
         """ Returns GPS Connection Quality as a int """
-        return self.gps_quality
+        return self.gps_quality_var
 
-    def get_gps_timestamp(self):
+    def gps_timestamp(self):
         """ Returns GPS Timestamp as a string """
-        return self.timestamp
+        return self.timestamp_var
 
-    def get_gps_mode_fix_type(self):
+    def gps_mode_fix_type(self):
         """ Returns GPS Mode Fix Type as a int """
-        return self.mode_fix_type
+        return self.mode_fix_type_var
 
-    def get_speed_over_ground(self):
+    def speed_over_ground(self):
         """ Returns GPS Speed Over Ground as a float """
-        return self.speed_over_ground
+        return self.speed_over_ground_var
 
-    def get_gps_pdop_hdop_vdop(self):
+    def gps_pdop_hdop_vdop(self):
         """ Returns GPS PDOP, HDOP & VDOP (floats) as a list """
-        return [self.pdop, self.hdop, self.vdop]
+        return [self.pdop_var, self.hdop_var, self.vdop_var]
 
-    def get_all_gps_data(self):
+    def all_gps_data(self):
         """
         Returns latitude, longitude, altitude, time stamp, number of satellites, GPS quality,
         'mode fix type', speed over ground, PDOP, HDOP & VDOP in a list
         """
-        return [self.latitude, self.longitude, self.altitude, self.timestamp,
-                self.number_of_connected_satellites, self.gps_quality, self.mode_fix_type,
-                self.speed_over_ground, self.pdop, self.hdop, self.vdop]
+        return [self.latitude_var, self.longitude_var, self.altitude_var, self.timestamp_var,
+                self.number_of_connected_satellites_var, self.gps_quality_var, self.mode_fix_type_var,
+                self.speed_over_ground_var, self.pdop_var, self.hdop_var, self.vdop_var]
