@@ -86,10 +86,10 @@ def html_atpro_dashboard():
 def html_atpro_sensor_readings():
     all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
     html_final_code = ""
-    for index, dic_readings in enumerate(all_readings.items()):
-        reading_unit = " " + sensor_access.get_reading_unit(dic_readings[0])
-        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
-        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]) + reading_unit)
+    for index, reading in all_readings.items():
+        reading_unit = " " + sensor_access.get_reading_unit(index)
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index.replace("_", " "))
+        new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + reading_unit)
         html_final_code += new_reading + "\n"
     return render_template("ATPro_admin/page_templates/sensor-readings.html", HTMLReplacementCode=html_final_code)
 
@@ -98,9 +98,9 @@ def html_atpro_sensor_readings():
 def html_atpro_sensors_latency():
     sensors_latency = sensor_access.get_sensors_latency()
     html_final_code = ""
-    for index, dic_readings in enumerate(sensors_latency.items()):
-        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", dic_readings[0].replace("_", " "))
-        new_reading = new_reading.replace("{{ SensorReading }}", str(dic_readings[1]) + " Seconds")
+    for index, reading in sensors_latency.items():
+        new_reading = html_sensor_readings_row.replace("{{ SensorName }}", index)
+        new_reading = new_reading.replace("{{ SensorReading }}", str(reading) + " Seconds")
         html_final_code += new_reading + "\n"
     return render_template("ATPro_admin/page_templates/sensors-latency.html", HTMLReplacementCode=html_final_code)
 
