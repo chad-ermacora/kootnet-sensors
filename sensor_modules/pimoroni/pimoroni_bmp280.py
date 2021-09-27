@@ -64,17 +64,18 @@ class CreateBMP280:
             pressure_hpa = 0.0
             logger.sensors_logger.error("Pimoroni BMP280 Pressure - Failed: " + str(error))
         self.sensor_in_use = False
-        return int(pressure_hpa)
+        return pressure_hpa
 
     def altitude(self):
-        """ Returns Pressure as a Integer. """
+        """ Returns Altitude in meters? as a float. """
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
         try:
-            pressure_hpa = self.bmp280.get_pressure()
+            altitude_var = self.bmp280.get_altitude()
+            altitude_var = round(altitude_var, round_decimal_to)
         except Exception as error:
-            pressure_hpa = 0.0
-            logger.sensors_logger.error("Pimoroni BMP280 Pressure - Failed: " + str(error))
+            altitude_var = 0.0
+            logger.sensors_logger.error("Pimoroni BMP280 Altitude - Failed: " + str(error))
         self.sensor_in_use = False
-        return int(pressure_hpa)
+        return altitude_var
