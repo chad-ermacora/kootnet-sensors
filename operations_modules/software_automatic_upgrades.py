@@ -112,13 +112,13 @@ def _major_upgrade_msg_and_sleep():
 def get_automatic_upgrade_enabled_text():
     return_text = "Disabled"
     if app_config_access.primary_config.enable_automatic_upgrades_developmental:
-        return_text = "Enabled Developmental"
+        return_text = "Developmental"
     else:
         if app_config_access.primary_config.enable_automatic_upgrades_feature \
                 and app_config_access.primary_config.enable_automatic_upgrades_minor:
-            return_text = "Enabled Stable Feature & Minor"
+            return_text = "Stable Feature & Minor"
         elif app_config_access.primary_config.enable_automatic_upgrades_feature:
-            return_text = "Enabled Stable Feature"
+            return_text = "Stable Feature"
         elif app_config_access.primary_config.enable_automatic_upgrades_minor:
-            return_text = "Enabled Stable Minor"
+            return_text = "Stable Minor"
     return return_text
