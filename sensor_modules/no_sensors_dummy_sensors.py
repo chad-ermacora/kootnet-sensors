@@ -118,3 +118,9 @@ class CreateNoSensorsDummySensor:
         """ Returns a list of 3 0.0 """
         logger.sensors_logger.warning("Dummy 'NoSensor' Gyroscope Accessed")
         return [0.0, 0.0, 0.0]
+
+    @staticmethod
+    def all_gps_data():
+        """ Returns a list of 11 'none' versions of GPS data. Mostly 0.0, one text '' and 3 0's """
+        logger.sensors_logger.warning("Dummy 'NoSensor' All GPS Data Accessed")
+        return [0.0, 0.0, 0.0, "", 0, 0, 0, 0.0, 0.0, 0.0, 0.0]

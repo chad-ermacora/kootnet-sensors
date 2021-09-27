@@ -179,7 +179,7 @@ class CreateDummySensors:
         self.sensor_in_use = False
         return self._get_random_tri_float(min_number=0, max_number=135)
 
-    def get_all_gps_data(self):
+    def all_gps_data(self):
         while self.sensor_in_use:
             time.sleep(pause_sensor_during_access_sec)
         self.sensor_in_use = True
