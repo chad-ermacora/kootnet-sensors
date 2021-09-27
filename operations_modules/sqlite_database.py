@@ -261,6 +261,22 @@ def get_one_db_entry(table_name, column_name, order="DESC", database=file_locati
     return get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database))
 
 
+def get_main_db_first_last_date():
+    """ Returns First and Last recorded date in the SQL Database as a String. """
+    sql_query = "SELECT Min(" + str(database_variables.all_tables_datetime) + ") AS First, " + \
+                "Max(" + str(database_variables.all_tables_datetime) + ") AS Last " + \
+                "FROM " + str(database_variables.table_interval)
+
+    textbox_db_dates = "DataBase Error"
+    try:
+        db_datetime_column = sql_execute_get_data(sql_query)
+        for item in db_datetime_column:
+            textbox_db_dates = item[0] + " < -- > " + item[-1]
+    except Exception as error:
+        logger.sensors_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))
+    return textbox_db_dates
+
+
 def get_sql_element(sql_data):
     try:
         for entry1 in sql_data:
