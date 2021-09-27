@@ -23,9 +23,10 @@ from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import sqlite_database
-from sensor_modules import sensor_access
+from sensor_modules.system_access import get_uptime_minutes
+from sensor_modules import sensor_access as sa
 
-database_variables = app_cached_variables.database_variables
+db_v = app_cached_variables.database_variables
 
 
 def start_interval_recording_server():
@@ -39,7 +40,6 @@ def start_interval_recording_server():
 
 def _interval_recording():
     """ Starts recording all sensor readings to the SQL database every X Seconds (set in config). """
-    table_interval = database_variables.table_interval
     sleep(5)
     app_cached_variables.interval_recording_thread.current_state = "Disabled"
     while not app_config_access.interval_recording_config.enable_interval_recording:
@@ -60,7 +60,7 @@ def _interval_recording():
             sql_column_names = sql_column_names[:-1]
             sql_value_placeholders = sql_value_placeholders[:-1]
 
-            sql_string = "INSERT OR IGNORE INTO " + table_interval + " (" + sql_column_names + ") " + \
+            sql_string = "INSERT OR IGNORE INTO " + db_v.table_interval + " (" + sql_column_names + ") " + \
                          "VALUES (" + sql_value_placeholders + ")"
 
             sqlite_database.write_to_sql_database(sql_string, sql_data)
@@ -83,26 +83,17 @@ def get_interval_sensor_readings():
     Format = 'CSV String Installed Sensor Types' + special separator + 'CSV String Sensor Readings'
     """
     interval_recording_config = app_config_access.interval_recording_config
-    sa = sensor_access
     utc_0_date_time_now = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    return_dictionary = {database_variables.all_tables_datetime: utc_0_date_time_now,
-                         database_variables.sensor_name: app_cached_variables.hostname,
-                         database_variables.ip: app_cached_variables.ip}
+    return_dictionary = {db_v.all_tables_datetime: utc_0_date_time_now,
+                         db_v.sensor_name: app_cached_variables.hostname,
+                         db_v.ip: app_cached_variables.ip}
 
     if interval_recording_config.sensor_uptime_enabled:
-        reading = sa.get_uptime_minutes()
-        if reading is not None:
-            reading = str(reading[database_variables.sensor_uptime])
-            return_dictionary.update({database_variables.sensor_uptime: reading})
+        return_dictionary = _update_dic_with_sensor_reading(get_uptime_minutes, return_dictionary)
     if interval_recording_config.cpu_temperature_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_cpu_temperature, return_dictionary)
     if interval_recording_config.env_temperature_enabled:
-        reading = sa.get_environment_temperature()
-        if reading is not None:
-            return_dictionary.update(reading)
-            reading2 = sa.get_environment_temperature(temperature_correction=False)
-            reading = reading[database_variables.env_temperature] - reading2[database_variables.env_temperature]
-            return_dictionary.update({database_variables.env_temperature_offset: round(reading, 5)})
+        return_dictionary = _add_env_temp_and_offset(return_dictionary)
     if interval_recording_config.pressure_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_pressure, return_dictionary)
     if interval_recording_config.altitude_enabled:
@@ -130,19 +121,29 @@ def get_interval_sensor_readings():
     if interval_recording_config.gyroscope_enabled:
         return_dictionary = _update_dic_with_sensor_reading(sa.get_gyroscope_xyz, return_dictionary)
     if interval_recording_config.gps_enabled:
-        try:
-            gps_readings = sa.get_gps_data()
-            if gps_readings is not None:
-                for name, reading in gps_readings.items():
-                    if reading is not None and reading != "":
-                        return_dictionary.update({name: reading})
-        except Exception as error:
-            logger.primary_logger.warning("Interval Recording - GPS: " + str(error))
+        return_dictionary = _update_dic_with_sensor_reading(sa.get_gps_data, return_dictionary)
     return return_dictionary
 
 
 def _update_dic_with_sensor_reading(sensor_function, sensor_dic):
-    reading = sensor_function()
-    if reading is not None:
-        sensor_dic.update(reading)
+    try:
+        reading = sensor_function()
+        if reading is not None:
+            sensor_dic.update(reading)
+    except Exception as error:
+        logger.primary_logger.warning("Interval Recording - Adding Sensor Data to Dictionary: " + str(error))
+    return sensor_dic
+
+
+def _add_env_temp_and_offset(sensor_dic):
+    try:
+        reading = sa.get_environment_temperature()
+        if reading is not None:
+            sensor_dic.update(reading)
+            reading2 = sa.get_environment_temperature(temperature_correction=False)
+            final_reading = round(reading[db_v.env_temperature] - reading2[db_v.env_temperature], 5)
+            sensor_dic.update({db_v.env_temperature_offset: final_reading})
+    except Exception as error:
+        log_msg = "Interval Recording - Adding Env Temp & Offset Sensor Data to Dictionary: "
+        logger.primary_logger.warning(log_msg + str(error))
     return sensor_dic
