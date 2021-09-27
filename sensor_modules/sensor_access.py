@@ -60,7 +60,7 @@ def _get_sensor_latency(sensor_function):
         return None
 
 
-def get_all_available_sensor_readings(skip_system_info=False):
+def get_all_available_sensor_readings(include_system_info=False):
     """ Returns ALL sensor readings in a dictionary. """
     utc_0_date_time_now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
     env_temp_raw = get_environment_temperature(temperature_correction=False)
@@ -74,16 +74,18 @@ def get_all_available_sensor_readings(skip_system_info=False):
         return_dictionary.update({db_v.env_temperature: env_temp_corrected,
                                   db_v.env_temperature_offset: temp_correction})
 
-    if not skip_system_info:
-        return_dictionary = {db_v.all_tables_datetime: utc_0_date_time_now,
-                             db_v.sensor_name: app_cached_variables.hostname,
-                             db_v.ip: app_cached_variables.ip}
+    if include_system_info:
+        uptime = get_uptime_minutes()
+        if uptime is not None:
+            return_dictionary.update({db_v.sensor_uptime: uptime})
+        return_dictionary.update({db_v.all_tables_datetime: utc_0_date_time_now,
+                                  db_v.sensor_name: app_cached_variables.hostname,
+                                  db_v.ip: app_cached_variables.ip})
 
     functions_list = [
-        get_uptime_minutes, get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude,
-        get_humidity, get_dew_point, get_distance, get_gas, get_particulate_matter, get_lumen,
-        get_ems_colors, get_ultra_violet, get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz,
-        get_gps_data
+        get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude, get_humidity, get_dew_point,
+        get_distance, get_gas, get_particulate_matter, get_lumen, get_ems_colors, get_ultra_violet,
+        get_accelerometer_xyz, get_magnetometer_xyz, get_gyroscope_xyz, get_gps_data
     ]
 
     for function in functions_list:

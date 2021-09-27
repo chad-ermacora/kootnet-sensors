@@ -25,10 +25,10 @@ from sensor_modules import sensor_access
 html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 
 
-@html_sensor_readings_routes.route("/GetIntervalSensorReadings")
-def get_interval_readings():
-    logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    sensor_readings = sensor_access.get_all_available_sensor_readings()
+@html_sensor_readings_routes.route("/GetAllSensorReadings")
+def get_all_sensor_readings():
+    logger.network_logger.debug("* All Sensor Readings sent to " + str(request.remote_addr))
+    sensor_readings = sensor_access.get_all_available_sensor_readings(include_system_info=True)
     readings_name = ""
     readings_data = ""
     for index, reading in sensor_readings.items():

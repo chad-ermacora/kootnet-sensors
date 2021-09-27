@@ -84,7 +84,7 @@ def html_atpro_dashboard():
 
 @html_atpro_main_routes.route("/atpro/sensor-readings")
 def html_atpro_sensor_readings():
-    all_readings = sensor_access.get_all_available_sensor_readings(skip_system_info=True)
+    all_readings = sensor_access.get_all_available_sensor_readings()
     html_final_code = ""
     for index, reading in all_readings.items():
         reading_unit = " " + sensor_access.get_reading_unit(index)

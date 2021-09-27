@@ -197,7 +197,7 @@ def _get_enabled_disabled_text(setting):
 
 @html_atpro_remote_management_routes.route("/atpro/rm-get-readings-entry")
 def get_readings_report_entry():
-    sensor_readings = get_all_available_sensor_readings(skip_system_info=True)
+    sensor_readings = get_all_available_sensor_readings()
     readings_name = []
     readings_data = []
     for index, reading in sensor_readings.items():
