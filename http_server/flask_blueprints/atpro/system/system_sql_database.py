@@ -30,10 +30,9 @@ from operations_modules.app_generic_functions import get_file_content, get_list_
     get_file_size, adjust_datetime
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
     validate_sqlite_database, check_mqtt_subscriber_database_structure, check_main_database_structure, \
-    check_checkin_database_structure
+    check_checkin_database_structure, get_main_db_first_last_date
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, get_html_atpro_index
-from sensor_modules import sensor_access
 
 html_atpro_system_sql_db_routes = Blueprint("html_atpro_system_sql_db_routes", __name__)
 uploaded_databases_folder = file_locations.uploaded_databases_folder
@@ -58,7 +57,7 @@ def html_atpro_settings_db_information():
         HourOffset=app_config_access.primary_config.utc0_hour_offset,
         SQLDatabaseLocation=_remove_filename_from_location(file_locations.sensor_database),
         SQLDatabaseName=file_locations.sensor_database.split("/")[-1],
-        SQLDatabaseDateRange=sensor_access.get_db_first_last_date(),
+        SQLDatabaseDateRange=get_main_db_first_last_date(),
         SQLDatabaseSize=get_file_size(file_locations.sensor_database),
         ZipMainDBCreated=_get_file_creation_date(file_locations.database_zipped),
         ZipMainDBFileSize=get_file_size(file_locations.database_zipped),
