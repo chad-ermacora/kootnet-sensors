@@ -117,7 +117,7 @@
                             </button>
 
                             <div style="display: inline-block; padding-left: 65px;">
-                                <button type="button" class="pure-button button-red" onclick="ButtonPress('delete')">
+                                <button type="button" class="pure-button button-red" onclick="DeleteNote()">
                                     <i class="fas fa-trash-alt"></i> Delete Note
                                 </button>
                             </div>
@@ -155,6 +155,14 @@
     function ButtonPress(button_type) {
         document.getElementById("button_function").value = button_type;
         document.getElementById("note_form").submit()
+    }
+
+    function DeleteNote() {
+        let r = confirm("Are you sure you want to delete the Note?");
+        if (r === true) {
+            document.getElementById("button_function").value = 'delete';
+            document.getElementById("note_form").submit()
+        }
     }
 </script>
 
