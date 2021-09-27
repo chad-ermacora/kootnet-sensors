@@ -24,7 +24,7 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
-from sensor_modules import sensor_access
+from sensor_modules.system_access import get_uptime_minutes
 
 previous_installed_sensors = ""
 previous_primary_logs = ""
@@ -97,7 +97,7 @@ def _get_ip_address():
 
 def _get_sensor_uptime():
     if app_config_access.checkin_config.send_system_uptime:
-        uptime_var = sensor_access.get_uptime_minutes()
+        uptime_var = get_uptime_minutes()
         if uptime_var is not None:
             return uptime_var[app_cached_variables.database_variables.sensor_uptime]
     return ""

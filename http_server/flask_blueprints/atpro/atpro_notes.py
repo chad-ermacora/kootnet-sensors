@@ -21,7 +21,7 @@ from flask import Blueprint, render_template, request
 from operations_modules import app_cached_variables
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
-from sensor_modules.sensor_access import add_note_to_database, update_note_in_database, delete_db_note, \
+from operations_modules.db_notes_access import add_note_to_database, update_note_in_database, delete_db_note, \
     get_db_note_dates, get_db_note_user_dates
 
 html_atpro_notes_routes = Blueprint("html_atpro_notes_routes", __name__)

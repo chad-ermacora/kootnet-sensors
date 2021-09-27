@@ -37,8 +37,8 @@ from configuration_modules.config_trigger_high_low import CreateTriggerHighLowCo
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_sensor_control import CreateIPList
-from sensor_modules.sensor_access import get_cpu_temperature, get_ram_space, get_disk_space, \
-    get_reading_unit, get_sensors_latency
+from sensor_modules.system_access import get_ram_space, get_disk_space
+from sensor_modules.sensor_access import get_cpu_temperature, get_reading_unit, get_sensors_latency
 from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from http_server.flask_blueprints.atpro.remote_management.rm_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
@@ -197,6 +197,7 @@ def _get_enabled_disabled_text(setting):
 
 @html_atpro_remote_management_routes.route("/atpro/rm-get-readings-entry")
 def get_readings_report_entry():
+    # TODO: Change to use sensor access version
     sensor_readings = get_interval_sensor_readings()
     readings_name = []
     readings_data = []

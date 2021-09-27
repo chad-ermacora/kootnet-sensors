@@ -22,6 +22,7 @@ from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
+from sensor_modules import system_access
 from sensor_modules import sensor_access
 
 db_v = app_cached_variables.database_variables
@@ -93,7 +94,7 @@ def _publish_mqtt_message():
         mqtt_pc.magnetometer, mqtt_pc.gyroscope
     ]
     sensors_function_list = [
-        _get_mqtt_formatted_datetime, _get_hostname, _get_ip, sensor_access.get_uptime_minutes, _get_gps_latitude,
+        _get_mqtt_formatted_datetime, _get_hostname, _get_ip, system_access.get_uptime_minutes, _get_gps_latitude,
         _get_gps_longitude, sensor_access.get_cpu_temperature, sensor_access.get_environment_temperature,
         sensor_access.get_pressure, sensor_access.get_altitude, sensor_access.get_humidity, sensor_access.get_dew_point,
         sensor_access.get_distance, sensor_access.get_gas, sensor_access.get_particulate_matter,

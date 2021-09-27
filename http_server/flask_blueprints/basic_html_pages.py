@@ -21,7 +21,7 @@ from flask import Blueprint, render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.software_version import version
-from sensor_modules import sensor_access
+from sensor_modules import system_access
 
 html_basic_routes = Blueprint("html_basic_routes", __name__)
 
@@ -32,7 +32,7 @@ html_basic_routes = Blueprint("html_basic_routes", __name__)
 def html_index():
     disk_message = "<b style='color: green;'>Okay</b>"
 
-    disk_percent_used = sensor_access.get_disk_space(return_type=3)
+    disk_percent_used = system_access.get_disk_space(return_type=3)
     if disk_percent_used is not None:
         try:
             disk_percent_used = float(disk_percent_used)
@@ -43,7 +43,7 @@ def html_index():
             disk_message = "<b style='color: yellow;'>Error</b>"
     return render_template("index.html",
                            KootnetVersion=version,
-                           DateTime=sensor_access.get_system_datetime(),
+                           DateTime=system_access.get_system_datetime(),
                            SensorID=app_cached_variables.tmp_sensor_id,
                            HostName=app_cached_variables.hostname,
                            LocalIP=app_cached_variables.ip,

@@ -24,7 +24,7 @@ from operations_modules import app_cached_variables
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
     check_for_port_in_address, get_ip_and_port_split, thread_function, get_file_content
-from sensor_modules.sensor_access import get_system_datetime
+from sensor_modules.system_access import get_system_datetime
 from http_server.flask_blueprints.html_functional import auth_error_msg
 from operations_modules import software_version
 
