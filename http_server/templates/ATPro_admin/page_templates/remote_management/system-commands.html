@@ -49,28 +49,28 @@
     function UpgradeMessage(upgrade_type, page_url) {
         let r = confirm("Initiate " + upgrade_type + " remote upgrades now?");
         if (r === true) {
-            $("#main-page-view").load("/atpro/rm/functions/" + page_url);
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
         }
     }
 
     function UpgradeDevMessage(upgrade_type, page_url) {
         let r = confirm(dev_upgrade_message + "Initiate " + upgrade_type + " DEV remote upgrades now?");
         if (r === true) {
-            $("#main-page-view").load("/atpro/rm/functions/" + page_url);
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
         }
     }
 
     function CleanUpgradeHTTP() {
         let r = confirm(CU_message + "You will be unable to access the sensors during this time.\nRun now?");
         if (r === true) {
-            $("#main-page-view").load("/atpro/rm/functions/rm-upgrade-clean-http");
+            jQuery("#main-page-view").load("/atpro/rm/functions/rm-upgrade-clean-http");
         }
     }
 
     function PowerMessage(power_type, page_url) {
         let r = confirm("Initiate remote " + power_type + " now?");
         if (r === true) {
-            $("#main-page-view").load("/atpro/rm/functions/" + page_url);
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
         }
     }
 </script>

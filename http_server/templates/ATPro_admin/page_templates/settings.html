@@ -199,7 +199,7 @@
         document.getElementsByClassName("settings-osm")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        $("#settings-page-view").load("/atpro/" + nav_location);
+        jQuery("#settings-page-view").load("/atpro/" + nav_location);
     }
 
     {{ RunScript | safe }}

@@ -395,7 +395,7 @@
 
 <script>
     function OpenReport(nav_location) {
-        $('#download-buttons:button').attr('disabled', 'true');
+        jQuery('#download-buttons:button').attr('disabled', 'true');
         window.open('/atpro/rm-report/' + nav_location);
     }
 
@@ -406,7 +406,7 @@
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
-        $("#remote-management-page-view").load("/atpro/rm/" + nav_location);
+        jQuery("#remote-management-page-view").load("/atpro/rm/" + nav_location);
     }
 
     function ShowHideIPList() {

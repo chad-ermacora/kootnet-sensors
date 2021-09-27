@@ -105,9 +105,9 @@
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 
         if (nav_location==="raw-configurations") {
-            $("#system-page-view").load("/atpro/system/" + nav_location);
+            jQuery("#system-page-view").load("/atpro/system/" + nav_location);
         } else {
-            $("#system-page-view").load("/atpro/" + nav_location);
+            jQuery("#system-page-view").load("/atpro/" + nav_location);
         }
     }
     CheckNotificationsAsync();
