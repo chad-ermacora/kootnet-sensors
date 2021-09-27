@@ -22,36 +22,36 @@ from sensor_modules import sensor_access
 
 
 def auto_set_triggers_wait_time(config, multiplier=10.0, set_lowest=False):
-        sensor_names_list = latency_variables.get_all_latency_as_list()
-        sensor_latencies = {
-            latency_variables.cpu_temperature: 0, latency_variables.environment_temperature: 0,
-            latency_variables.pressure: 0, latency_variables.altitude: 0, latency_variables.humidity: 0,
-            latency_variables.distance: 0, latency_variables.gas: 0, latency_variables.particulate_matter: 0,
-            latency_variables.lumen: 0, latency_variables.colours: 0, latency_variables.ultra_violet: 0,
-            latency_variables.accelerometer_xyz: 0, latency_variables.magnetometer_xyz: 0,
-            latency_variables.gyroscope_xyz: 0
-        }
+    sensor_names_list = latency_variables.get_all_latency_as_list()
+    sensor_latencies = {
+        latency_variables.cpu_temperature: 0, latency_variables.environment_temperature: 0,
+        latency_variables.pressure: 0, latency_variables.altitude: 0, latency_variables.humidity: 0,
+        latency_variables.distance: 0, latency_variables.gas: 0, latency_variables.particulate_matter: 0,
+        latency_variables.lumen: 0, latency_variables.colours: 0, latency_variables.ultra_violet: 0,
+        latency_variables.accelerometer_xyz: 0, latency_variables.magnetometer_xyz: 0,
+        latency_variables.gyroscope_xyz: 0
+    }
 
-        multi_latency_sets = [
-            sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(),
-            sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(),
-            sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency()
-        ]
+    multi_latency_sets = [
+        sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(),
+        sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency(),
+        sensor_access.get_sensors_latency(), sensor_access.get_sensors_latency()
+    ]
 
-        for sensor_name in sensor_names_list:
-            for sensor_latency_pull in multi_latency_sets:
-                try:
-                    if sensor_name in sensor_latency_pull:
-                        if sensor_latency_pull[sensor_name] is not None:
-                            new_latency_with_multiplier = sensor_latency_pull[sensor_name] * multiplier
-                            if new_latency_with_multiplier > sensor_latencies[sensor_name]:
-                                sensor_latencies[sensor_name] = new_latency_with_multiplier
-                        else:
-                            sensor_latencies[sensor_name] = 999.999
-                except Exception as error:
-                    logger.primary_logger.error("Unable to set " + sensor_name + " wait time: " + str(error))
-        sensor_latencies = _update_zero_entries(sensor_latencies)
-        _set_trigger_config_seconds(config, sensor_latencies, set_lowest)
+    for sensor_name in sensor_names_list:
+        for sensor_latency_pull in multi_latency_sets:
+            try:
+                if sensor_name in sensor_latency_pull:
+                    if sensor_latency_pull[sensor_name] is not None:
+                        new_latency_with_multiplier = sensor_latency_pull[sensor_name] * multiplier
+                        if new_latency_with_multiplier > sensor_latencies[sensor_name]:
+                            sensor_latencies[sensor_name] = new_latency_with_multiplier
+                    else:
+                        sensor_latencies[sensor_name] = 999.999
+            except Exception as error:
+                logger.primary_logger.error("Unable to set " + sensor_name + " wait time: " + str(error))
+    sensor_latencies = _update_zero_entries(sensor_latencies)
+    _set_trigger_config_seconds(config, sensor_latencies, set_lowest)
 
 
 def _update_zero_entries(sensor_latencies_dic):

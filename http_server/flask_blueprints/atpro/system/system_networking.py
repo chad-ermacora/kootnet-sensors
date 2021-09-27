@@ -25,7 +25,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
-from operations_modules.app_generic_functions import thread_function, get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
 from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi

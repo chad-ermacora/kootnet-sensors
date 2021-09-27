@@ -66,19 +66,18 @@ def get_all_available_sensor_readings(skip_system_info=False):
     env_temp_raw = get_environment_temperature(temperature_correction=False)
     env_temp_corrected = get_environment_temperature()
 
-    temp_correction = 0
+    return_dictionary = {}
     if env_temp_raw is not None and env_temp_corrected is not None:
         env_temp_raw = env_temp_raw[db_v.env_temperature]
         env_temp_corrected = env_temp_corrected[db_v.env_temperature]
         temp_correction = round((env_temp_corrected - env_temp_raw), 5)
+        return_dictionary.update({db_v.env_temperature: env_temp_corrected,
+                                  db_v.env_temperature_offset: temp_correction})
 
-    if skip_system_info:
-        return_dictionary = {}
-    else:
+    if not skip_system_info:
         return_dictionary = {db_v.all_tables_datetime: utc_0_date_time_now,
                              db_v.sensor_name: app_cached_variables.hostname,
-                             db_v.ip: app_cached_variables.ip,
-                             db_v.env_temperature_offset: temp_correction}
+                             db_v.ip: app_cached_variables.ip}
 
     functions_list = [
         get_uptime_minutes, get_cpu_temperature, get_environment_temperature, get_pressure, get_altitude,

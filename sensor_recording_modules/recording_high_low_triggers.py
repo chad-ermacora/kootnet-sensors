@@ -19,7 +19,7 @@
 from time import sleep
 from datetime import datetime
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread as CMT
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from operations_modules import sqlite_database
@@ -340,98 +340,98 @@ def start_trigger_high_low_recording_server():
         tmp_tv = _CreateHighLowTriggerThreadData()
 
         if app_config_access.trigger_high_low.cpu_temperature_enabled:
-            app_cached_variables.trigger_high_low_cpu_temp = CMT(
+            app_cached_variables.trigger_high_low_cpu_temp = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.system_temperature],
                 thread_name="High/Low Trigger CPU Temperature"
             )
 
         if app_config_access.trigger_high_low.env_temperature_enabled:
-            app_cached_variables.trigger_high_low_env_temp = CMT(
+            app_cached_variables.trigger_high_low_env_temp = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.env_temperature],
                 thread_name="High/Low Trigger Env Temperature"
             )
 
         if app_config_access.trigger_high_low.pressure_enabled:
-            app_cached_variables.trigger_high_low_pressure = CMT(
+            app_cached_variables.trigger_high_low_pressure = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.pressure],
                 thread_name="High/Low Trigger Pressure"
             )
 
         if app_config_access.trigger_high_low.humidity_enabled:
-            app_cached_variables.trigger_high_low_humidity = CMT(
+            app_cached_variables.trigger_high_low_humidity = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.humidity],
                 thread_name="High/Low Trigger Humidity"
             )
 
         if app_config_access.trigger_high_low.altitude_enabled:
-            app_cached_variables.trigger_high_low_altitude = CMT(
+            app_cached_variables.trigger_high_low_altitude = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.altitude],
                 thread_name="High/Low Trigger Altitude"
             )
 
         if app_config_access.trigger_high_low.distance_enabled:
-            app_cached_variables.trigger_high_low_distance = CMT(
+            app_cached_variables.trigger_high_low_distance = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.distance],
                 thread_name="High/Low Trigger Distance"
             )
 
         if app_config_access.trigger_high_low.lumen_enabled:
-            app_cached_variables.trigger_high_low_lumen = CMT(
+            app_cached_variables.trigger_high_low_lumen = CreateMonitoredThread(
                 _SingleTriggerThread,
                 args=[tmp_tv.lumen],
                 thread_name="High/Low Trigger Lumen"
             )
 
         if app_config_access.trigger_high_low.colour_enabled:
-            app_cached_variables.trigger_high_low_visible_colours = CMT(
+            app_cached_variables.trigger_high_low_visible_colours = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.colours],
                 thread_name="High/Low Trigger Colours"
             )
 
         if app_config_access.trigger_high_low.ultra_violet_enabled:
-            app_cached_variables.trigger_high_low_ultra_violet = CMT(
+            app_cached_variables.trigger_high_low_ultra_violet = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.ultra_violet],
                 thread_name="High/Low Trigger Ultra Violet"
             )
 
         if app_config_access.trigger_high_low.gas_enabled:
-            app_cached_variables.trigger_high_low_gas = CMT(
+            app_cached_variables.trigger_high_low_gas = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.gas_resistance],
                 thread_name="High/Low Trigger Gas"
             )
 
         if app_config_access.trigger_high_low.particulate_matter_enabled:
-            app_cached_variables.trigger_high_low_particulate_matter = CMT(
+            app_cached_variables.trigger_high_low_particulate_matter = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.particulate_matter],
                 thread_name="High/Low Trigger Particulate Matter"
             )
 
         if app_config_access.trigger_high_low.accelerometer_enabled:
-            app_cached_variables.trigger_high_low_accelerometer = CMT(
+            app_cached_variables.trigger_high_low_accelerometer = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.accelerometer],
                 thread_name="High/Low Trigger Accelerometer"
             )
 
         if app_config_access.trigger_high_low.magnetometer_enabled:
-            app_cached_variables.trigger_high_low_magnetometer = CMT(
+            app_cached_variables.trigger_high_low_magnetometer = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.magnetometer],
                 thread_name="High/Low Trigger Magnetometer"
             )
 
         if app_config_access.trigger_high_low.gyroscope_enabled:
-            app_cached_variables.trigger_high_low_gyroscope = CMT(
+            app_cached_variables.trigger_high_low_gyroscope = CreateMonitoredThread(
                 _MultiTriggerThread,
                 args=[tmp_tv.gyroscope],
                 thread_name="High/Low Trigger Gyroscope"

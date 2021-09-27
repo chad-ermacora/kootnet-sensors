@@ -23,7 +23,6 @@ from operations_modules import app_generic_functions
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
 from sensor_modules.system_access import restart_services
-from sensor_modules import sensor_access
 
 html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
