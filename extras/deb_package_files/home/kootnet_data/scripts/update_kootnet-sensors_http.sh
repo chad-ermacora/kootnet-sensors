@@ -16,7 +16,7 @@ if [[ "$1" == "dev" ]]; then
   HTTP_FOLDER="/installers/dev"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- %s HTTP UPGRADE OR INSTALL --\n\n' "${INSTALL_TYPE}"
+printf '\n-- %s HTTP Upgrade or Install --\n\n' "${INSTALL_TYPE}"
 # Clean up previous downloads if any
 rm -f /tmp${DEB_INSTALLER} 2>/dev/null
 wget -O /tmp${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}

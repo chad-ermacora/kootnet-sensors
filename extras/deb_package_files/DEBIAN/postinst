@@ -91,9 +91,9 @@ printf "\n\nWaiting for program initialization to finish...\n\n"
 counter=0
 while true; do
   if [[ "$(wget --no-check-certificate -q -O - "https://localhost:10065/CheckOnlineStatus")" == "OK" ]]; then
-    printf "initialization Complete\n\n"
+    printf "Initialization Complete\n\n"
     printf 'Open https://localhost:10065 on the local sensor to configure\n'
-    printf 'Username: Kootnet\nPassword: sensors\n\n'
+    printf 'Default Username & Password\nUsername: Kootnet\nPassword: sensors\n\n'
     printf 'To access the sensor from another device, replace "localhost" with an IP\n'
     printf 'IP addresses show below  ** Note: 127.0.0.1 is the same as localhost **\n\n'
     ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
