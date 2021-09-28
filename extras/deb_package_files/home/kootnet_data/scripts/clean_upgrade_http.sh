@@ -16,8 +16,8 @@ if [[ "$1" == "dev" ]]; then
   HTTP_FOLDER="/installers/dev/"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- %s Clean HTTP UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
-printf '\nLeaving configurations and data, removing program folder and Python Virtual Environment\n'
+printf '\n-- CLEAN %s HTTP RE-INSTALL --\n' "${INSTALL_TYPE}"
+printf '\nLeaving configurations and data, removing program folder and Python Virtual Environment\n\n'
 mkdir /tmp 2>/dev/null
 rm -f /tmp/${DEB_INSTALLER} 2>/dev/null
 wget -O /tmp/${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
@@ -35,3 +35,4 @@ if [[ -f /tmp/${DEB_INSTALLER} ]]; then
   echo ' - Clean HTTP ' >>${CONFIG_DIR}last_updated.txt
 else
   printf '\nHTTP Download Failed, Clean HTTP ' "${INSTALL_TYPE}" ' Upgrade Cancelled\n'
+fi

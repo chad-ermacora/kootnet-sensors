@@ -19,8 +19,8 @@ if [[ "$1" == "dev" ]]; then
   SMB_SHARE="/KootNetSMB/dev"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- %s SMB UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
-printf '\nLeaving configurations and data, removing program folder and Python Virtual Environment\n'
+printf '\n-- CLEAN %s SMB RE-INSTALL --\n' "${INSTALL_TYPE}"
+printf '\nLeaving configurations and data, removing program folder and Python Virtual Environment\n\n'
 mkdir /mnt 2>/dev/null
 mkdir /mnt/supernas 2>/dev/null
 mkdir /tmp 2>/dev/null
@@ -44,3 +44,4 @@ if [[ -f /tmp/${DEB_INSTALLER} ]]; then
   echo ' - Clean SMB ' >>${CONFIG_DIR}last_updated.txt
 else
   printf '\nSMB Download Failed, Clean SMB ' "${INSTALL_TYPE}" ' Upgrade Cancelled\n'
+fi

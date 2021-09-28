@@ -20,7 +20,7 @@ if [[ "$1" == "dev" ]]; then
   SMB_SHARE="/KootNetSMB/dev"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- %s SMB UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
+printf '\n-- %s SMB UPGRADE OR INSTALL --\n\n' "${INSTALL_TYPE}"
 mkdir ${MOUNT_DIR} 2>/dev/null
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} ${MOUNT_DIR} -o ${CIFS_OPTIONS}
 sleep 1
