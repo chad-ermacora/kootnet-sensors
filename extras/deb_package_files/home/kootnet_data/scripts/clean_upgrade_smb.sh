@@ -32,14 +32,13 @@ sleep 1
 umount /mnt/supernas
 # Make sure the installer file is there before deleting everything
 if [[ -f /tmp/${DEB_INSTALLER} ]]; then
-  printf 'Copy complete\nRemoving old install (Configurations & data will be kept)\n'
-  printf 'Removing program folder and Python Virtual Environment ...\n'
+  printf 'Copy complete\nRemoving old install (Configurations & data will be kept) ...\n'
   rm -R -f /home/kootnet_data/env 2>/dev/null
   rm -R -f /opt/kootnet-sensors 2>/dev/null
   rm -f /usr/share/applications/KootNet*.desktop 2>/dev/null
   rm -f /etc/systemd/system/Kootnet*.service 2>/dev/null
   rm -f /etc/systemd/system/SensorU*.service 2>/dev/null
-  printf 'Done\nUpdating OS repository package lists ...\n\n'
+  printf 'Updating OS repository package lists ...\n\n'
   apt-get update
   printf '\nInstalling Kootnet Sensors ...\n\n'
   apt-get -y --reinstall --allow-downgrades install /tmp/${DEB_INSTALLER}
