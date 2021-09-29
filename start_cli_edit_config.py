@@ -26,32 +26,36 @@ try:
     import requests
     from http_server import server_http_auth
 except Exception as import_error:
-    logger.primary_logger.error("CLI Edit Configurations - Import Error: " + str(import_error))
+    logger.primary_logger.error("Terminal Configuration Tool - Import Error: " + str(import_error))
 
 logging.captureWarnings(True)
-logger.primary_logger.debug("CLI Edit Configurations Starting")
+logger.primary_logger.debug("Terminal Configuration Tool Starting")
 
 remote_get = app_cached_variables.CreateNetworkGetCommands()
+
+options_menu = """
+Please Select an Option\n
+1. View/Edit Primary Config & Installed Sensors
+2. Reset ALL Configurations to Default
+3. Change Web Login Credentials
+4. Update Python Modules
+5. Upgrade Kootnet Sensors (Standard HTTP)
+6. Upgrade Kootnet Sensors (Development HTTP)
+7. Upgrade Kootnet Sensors (Clean HTTP)
+8. Create New Self Signed SSL Certificate
+9. Enable & Start KootnetSensors
+10. Disable & Stop KootnetSensors
+11. Restart KootnetSensors Service
+12. Run Sensor Local Tests
+13. Exit
+"""
 
 
 def start_script():
     running = True
     while running:
         os.system("clear")
-        print("Please Select an Option\n")
-        print("1. View/Edit Primary Config & Installed Sensors")
-        print("2. Reset ALL Configurations to Default")
-        print("3. Change Web Login Credentials")
-        print("4. Update Python Modules")
-        print("5. Upgrade Kootnet Sensors (Standard HTTP)")
-        print("6. Upgrade Kootnet Sensors (Development HTTP)")
-        print("7. Upgrade Kootnet Sensors (Clean HTTP)")
-        print("8. Create New Self Signed SSL Certificate")
-        print("9. Enable & Start KootnetSensors")
-        print("10. Disable & Stop KootnetSensors")
-        print("11. Restart KootnetSensors Service")
-        print("12. Run Sensor Local Tests")
-        print("13. Exit")
+        print(options_menu)
         selection = input("Enter Number: ")
 
         try:
@@ -70,10 +74,7 @@ def start_script():
             elif selection == 3:
                 change_https_auth()
             elif selection == 4:
-                print("Upgrading all Python pip modules can take awhile.  Please wait ...\n")
                 _pip_upgrades()
-                logger.primary_logger.info("Python3 Module Upgrades Complete")
-                print("Restart KootnetSensors service for changes to take effect")
             elif selection == 5:
                 os.system(app_cached_variables.bash_commands["UpgradeOnline"])
                 print("Standard HTTP Upgrade Started.  The service will automatically restart when complete.")
@@ -89,11 +90,11 @@ def start_script():
             elif selection == 9:
                 os.system(app_cached_variables.bash_commands["EnableService"])
                 os.system(app_cached_variables.bash_commands["StartService"])
-                logger.primary_logger.info("Kootnet Sensors Enabled")
+                logger.primary_logger.info("TCT - Kootnet Sensors Enabled")
             elif selection == 10:
                 os.system(app_cached_variables.bash_commands["DisableService"])
                 os.system(app_cached_variables.bash_commands["StopService"])
-                logger.primary_logger.info("Kootnet Sensors Disabled")
+                logger.primary_logger.info("TCT - Kootnet Sensors Disabled")
             elif selection == 11:
                 os.system(app_cached_variables.bash_commands["RestartService"])
                 print("Restarting Kootnet Sensors service")
@@ -102,8 +103,15 @@ def start_script():
                 print("Testing Complete")
             elif selection == 13:
                 running = False
+            else:
+                os.system("clear")
+                print("Invalid Selection: " + str(selection))
+        except ValueError:
+            os.system("clear")
+            print("Invalid Selection: " + str(selection))
         except Exception as error:
-            print("Invalid Selection: " + str(error))
+            os.system("clear")
+            print("Invalid Selection: " + str(selection) + " - " + str(error))
         if running:
             input("\nPress enter to continue")
 
@@ -117,60 +125,77 @@ def change_https_auth():
 
 
 def _pip_upgrades():
-    with open(file_locations.program_root_dir + "/requirements.txt") as file:
-        requirements_text_lines_list = file.readlines()
-    for line in requirements_text_lines_list:
-        if line[0] != "#":
-            command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
-            os.system(command)
+    print("Upgrading all Python pip modules can take awhile.  Please wait ...\n")
+    try:
+        with open(file_locations.program_root_dir + "/requirements.txt") as file:
+            requirements_text_lines_list = file.readlines()
+        for line in requirements_text_lines_list:
+            if line[0] != "#":
+                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
+                os.system(command)
+        logger.primary_logger.info("TCT - Python3 Module Upgrades Complete")
+        print("\nRestarting Kootnet Sensors service")
+        os.system(app_cached_variables.bash_commands["RestartService"])
+    except Exception as error:
+        logger.primary_logger.error("TCT - Python3 Module Upgrades: " + str(error))
 
 
 def _test_sensors():
     print("*** Starting Sensor Data test ***\n")
-    interval_data = get_interval_sensor_data()
-    sensor_types = interval_data[0].split(",")
-    sensor_readings = interval_data[1].split(",")
+    try:
+        interval_data = get_interval_sensor_data()
+        sensor_types = interval_data[0].split(",")
+        sensor_readings = interval_data[1].split(",")
 
-    str_message = ""
-    color_readings1 = ""
-    color_readings2 = ""
-    acc_readings = ""
-    mag_readings = ""
-    gyro_readings = ""
-    for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
-        if sensor_type[:3] == "Red" or sensor_type[:5] == "Green" or sensor_type[:4] == "Blue":
-            color_readings1 += str(sensor_type) + ": " + str(sensor_reading) + " || "
-        elif sensor_type[:6] == "Orange" or sensor_type[:6] == "Yellow" or sensor_type[:6] == "Violet":
-            color_readings2 += str(sensor_type) + ": " + str(sensor_reading) + " || "
-        elif sensor_type[:4] == "Acc_":
-            acc_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
-        elif sensor_type[:4] == "Mag_":
-            mag_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
-        elif sensor_type[:4] == "Gyro":
-            gyro_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
-        else:
-            str_message = str_message + str(sensor_type) + ": " + str(sensor_reading) + "\n"
-    for tmp_readings in [color_readings1, color_readings2, acc_readings, mag_readings, gyro_readings]:
-        if len(tmp_readings) > 4:
-            str_message += tmp_readings[:-4] + "\n"
+        str_message = ""
+        color_readings1 = ""
+        color_readings2 = ""
+        acc_readings = ""
+        mag_readings = ""
+        gyro_readings = ""
+        for sensor_type, sensor_reading in zip(sensor_types, sensor_readings):
+            if sensor_type[:3] == "Red" or sensor_type[:5] == "Green" or sensor_type[:4] == "Blue":
+                color_readings1 += str(sensor_type) + ": " + str(sensor_reading) + " || "
+            elif sensor_type[:6] == "Orange" or sensor_type[:6] == "Yellow" or sensor_type[:6] == "Violet":
+                color_readings2 += str(sensor_type) + ": " + str(sensor_reading) + " || "
+            elif sensor_type[:4] == "Acc_":
+                acc_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+            elif sensor_type[:4] == "Mag_":
+                mag_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+            elif sensor_type[:4] == "Gyro":
+                gyro_readings += str(sensor_type) + ": " + str(sensor_reading) + " || "
+            else:
+                str_message = str_message + str(sensor_type) + ": " + str(sensor_reading) + "\n"
+        for tmp_readings in [color_readings1, color_readings2, acc_readings, mag_readings, gyro_readings]:
+            if len(tmp_readings) > 4:
+                str_message += tmp_readings[:-4] + "\n"
 
-    print(str_message)
-    print("Showing Test Message on Installed Display (If Installed)")
-    display_text_on_sensor("Display Test Message")
+        print(str_message)
+        print("Showing Test Message on Installed Display (If Installed)\n")
+        display_text_on_sensor("Display Test Message")
+    except Exception as error:
+        logger.primary_logger.error("TCT - Tests Failed: " + str(error))
 
 
 def get_interval_sensor_data():
     """ Returns local sensor Interval data. """
-    url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
-    tmp_return_data = requests.get(url=url, verify=False)
-    return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
-    return [str(return_data[0]), str(return_data[1])]
+    try:
+        url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
+        tmp_return_data = requests.get(url=url, verify=False)
+        return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
+        return [str(return_data[0]), str(return_data[1])]
+    except Exception as error:
+        logger.primary_logger.warning("TCT - Get Sensor Data - Unable to connect to localhost: " + str(error))
+    return ["error", "error"]
 
 
 def display_text_on_sensor(text_message):
     """ Displays text on local sensors display (if any). """
-    url = "https://127.0.0.1:10065/DisplayText"
-    requests.put(url=url, data={'command_data': text_message}, verify=False)
+    try:
+        url = "https://127.0.0.1:10065/DisplayText"
+        requests.put(url=url, data={'command_data': text_message}, verify=False)
+    except Exception as error:
+        logger.primary_logger.warning("TCT - Display - Unable to connect to localhost: " + str(error))
 
 
 if __name__ == '__main__':
