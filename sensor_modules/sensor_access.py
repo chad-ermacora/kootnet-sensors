@@ -77,7 +77,7 @@ def get_all_available_sensor_readings(include_system_info=False):
     if include_system_info:
         uptime = get_uptime_minutes()
         if uptime is not None:
-            return_dictionary.update({db_v.sensor_uptime: uptime})
+            return_dictionary.update({db_v.sensor_uptime: uptime[db_v.sensor_uptime]})
         return_dictionary.update({db_v.all_tables_datetime: utc_0_date_time_now,
                                   db_v.sensor_name: app_cached_variables.hostname,
                                   db_v.ip: app_cached_variables.ip})
