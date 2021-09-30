@@ -84,7 +84,7 @@ def create_all_databases_zipped(ip_list):
 
         write_to_memory = app_generic_functions.save_to_memory_ok(get_sum_db_sizes(ip_list))
         if write_to_memory:
-            app_generic_functions.clear_zip_names()
+            clear_zip_names()
             app_cached_variables.sc_databases_zip_in_memory = True
             app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(database_names, sensors_database)
         else:
@@ -122,7 +122,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
             zip_names.append(zip_name)
             logs_zipped.append(sensor_data[2])
 
-        app_generic_functions.clear_zip_names()
+        clear_zip_names()
         app_cached_variables.sc_in_memory_zip = app_generic_functions.zip_files(zip_names, logs_zipped)
         app_cached_variables.sc_logs_zip_name = "Multiple_Logs_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
@@ -206,10 +206,28 @@ def _queue_name_and_file_list(ip_list, command):
 def _worker_queue_list_ip_name_file(address, command):
     try:
         sensor_name = app_generic_functions.get_http_sensor_reading(address, command="GetHostName")
-        sensor_data = app_generic_functions.get_http_sensor_file(address, command)
+        sensor_data = get_http_sensor_file(address, command)
         data_queue.put([address, sensor_name, sensor_data])
     except Exception as error:
         logger.network_logger.error("Sensor Control - Get Remote File Failed: " + str(error))
+
+
+def get_http_sensor_file(sensor_address, command, http_port="10065"):
+    """ Returns requested remote sensor file (based on the provided command data). """
+
+    if app_generic_functions.check_for_port_in_address(sensor_address):
+        ip_and_port = app_generic_functions.get_ip_and_port_split(sensor_address)
+        sensor_address = ip_and_port[0]
+        http_port = ip_and_port[1]
+    try:
+        url = "https://" + sensor_address + ":" + http_port + "/" + command
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
+        return tmp_return_data.content
+    except Exception as error:
+        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
+        logger.network_logger.debug(log_msg)
+        return "Error"
 
 
 def get_sum_db_sizes(ip_list):
@@ -261,3 +279,35 @@ def get_data_queue_items():
         que_data.append(data_queue.get())
         data_queue.task_done()
     return que_data
+
+
+def get_response_bg_colour(response_time):
+    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
+
+    try:
+        delay_float = float(response_time)
+        background_colour = "darkgreen"
+        if 0.0 <= delay_float < 0.5:
+            pass
+        elif 0.5 < delay_float < 0.75:
+            background_colour = "#859B14"
+        elif 0.75 < delay_float < 1.5:
+            background_colour = "#8b4c00"
+        elif 1.5 < delay_float:
+            background_colour = "red"
+    except Exception as error:
+        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
+        logger.network_logger.debug("Check Online Status Error: " + str(error))
+        background_colour = "purple"
+    return background_colour
+
+
+def clear_zip_names():
+    """ Set's all sensor control download names to nothing ("") """
+
+    app_cached_variables.sc_reports_zip_name = ""
+    app_cached_variables.sc_logs_zip_name = ""
+    if app_cached_variables.sc_databases_zip_in_memory:
+        app_cached_variables.sc_databases_zip_name = ""
+    if app_cached_variables.sc_big_zip_in_memory:
+        app_cached_variables.sc_big_zip_name = ""

@@ -282,43 +282,6 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         logger.network_logger.error(log_msg)
 
 
-def get_http_sensor_file(sensor_address, command, http_port="10065"):
-    """ Returns requested remote sensor file (based on the provided command data). """
-
-    if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/" + command
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
-        return tmp_return_data.content
-    except Exception as error:
-        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
-        return "Error"
-
-
-def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
-    """ Sends provided text message to a remote sensor's display. """
-
-    if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        send_data = {'command_data': text_message}
-        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
-        if tmp_return_data.text == "OK":
-            return True
-    except Exception as error:
-        logger.network_logger.error("Unable to display text on Sensor: " + str(error))
-    return False
-
-
 def check_for_port_in_address(address):
     """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
 
@@ -393,17 +356,6 @@ def replace_text_lists(original_text, old_list, new_list):
     return original_text
 
 
-def clear_zip_names():
-    """ Set's all sensor control download names to nothing ("") """
-
-    app_cached_variables.sc_reports_zip_name = ""
-    app_cached_variables.sc_logs_zip_name = ""
-    if app_cached_variables.sc_databases_zip_in_memory:
-        app_cached_variables.sc_databases_zip_name = ""
-    if app_cached_variables.sc_big_zip_in_memory:
-        app_cached_variables.sc_big_zip_name = ""
-
-
 def save_to_memory_ok(write_size):
     """ Checks to see if there is enough RAM to save file to to memory or not. """
 
@@ -414,27 +366,6 @@ def save_to_memory_ok(write_size):
     except Exception as error:
         logger.primary_logger.warning("Error checking virtual memory: " + str(error))
     return False
-
-
-def get_response_bg_colour(response_time):
-    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
-
-    try:
-        delay_float = float(response_time)
-        background_colour = "darkgreen"
-        if 0.0 <= delay_float < 0.5:
-            pass
-        elif 0.5 < delay_float < 0.75:
-            background_colour = "#859B14"
-        elif 0.75 < delay_float < 1.5:
-            background_colour = "#8b4c00"
-        elif 1.5 < delay_float:
-            background_colour = "red"
-    except Exception as error:
-        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
-        logger.network_logger.debug("Check Online Status Error: " + str(error))
-        background_colour = "purple"
-    return background_colour
 
 
 def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):

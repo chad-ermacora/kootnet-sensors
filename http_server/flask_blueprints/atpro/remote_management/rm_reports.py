@@ -22,10 +22,11 @@ from queue import Queue
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_response_bg_colour, get_http_sensor_reading, \
-    check_for_port_in_address, get_ip_and_port_split, thread_function, get_file_content
+from operations_modules.app_generic_functions import get_http_sensor_reading, check_for_port_in_address, \
+    get_ip_and_port_split, thread_function, get_file_content
 from sensor_modules.system_access import get_system_datetime
 from http_server.flask_blueprints.html_functional import auth_error_msg
+from http_server.flask_blueprints.atpro.remote_management.rm_functions import get_response_bg_colour
 from operations_modules import software_version
 
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()

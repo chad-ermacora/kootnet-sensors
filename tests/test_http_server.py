@@ -17,11 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import unittest
+import requests
 from json import loads as json_loads
-from operations_modules.app_generic_functions import get_http_sensor_reading, http_display_text_on_sensor, \
-    send_http_command
-from operations_modules.app_cached_variables import command_data_separator, CreateNetworkGetCommands, \
-    CreateNetworkSetCommands
+from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
+    check_for_port_in_address, get_ip_and_port_split
+from operations_modules import app_cached_variables
 from tests.create_test_configs import *
 
 
@@ -174,11 +174,11 @@ class TestApp2(unittest.TestCase):
             self.assertTrue(isinstance(sensor_responses[2], str))
         # from routes file text_sensor_readings.py
         if not check_no_sensor_return(sensor_responses[3], sensor_get_commands[3]):
-            sensor_reading = sensor_responses[3].split(command_data_separator)
+            sensor_reading = sensor_responses[3].split(app_cached_variables.command_data_separator)
             self.assertTrue(len(sensor_reading[0].split(",")) > 0)
             self.assertTrue(len(sensor_reading[1].split(",")) > 0)
         if not check_no_sensor_return(sensor_responses[4], sensor_get_commands[4]):
-            sensor_reading = sensor_responses[4].split(command_data_separator)
+            sensor_reading = sensor_responses[4].split(app_cached_variables.command_data_separator)
             self.assertTrue(len(sensor_reading[0].split(",")) > 0)
             self.assertTrue(len(sensor_reading[1].split(",")) > 0)
         if not check_no_sensor_return(sensor_responses[5], sensor_get_commands[5]):
@@ -261,6 +261,25 @@ def check_dict_floats(sensor_data, data_name):
         print("Error: " + data_name + " - " + str(error))
 
 
+def http_display_text_on_sensor(text_message, sensor_address_var, http_port="10065"):
+    """ Sends provided text message to a remote sensor's display. """
+
+    if check_for_port_in_address(sensor_address_var):
+        ip_and_port = get_ip_and_port_split(sensor_address_var)
+        sensor_address_var = ip_and_port[0]
+        http_port = ip_and_port[1]
+    try:
+        url = "https://" + sensor_address_var + ":" + http_port + "/DisplayText"
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        send_data = {'command_data': text_message}
+        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
+        if tmp_return_data.text == "OK":
+            return True
+    except Exception as error:
+        print("Unable to display text on Sensor: " + str(error))
+    return False
+
+
 primary_config_test = CreatePrimaryConfigurationTest()
 installed_sensors_config_test = CreateInstalledSensorsConfigurationTest()
 display_config_test = CreateDisplayConfigurationTest()
@@ -276,8 +295,8 @@ open_sense_map_config_test = CreateOpenSenseMapConfigurationTest()
 
 sensor_address = "localhost"
 
-remote_set = CreateNetworkSetCommands()
-remote_get = CreateNetworkGetCommands()
+remote_set = app_cached_variables.CreateNetworkSetCommands()
+remote_get = app_cached_variables.CreateNetworkGetCommands()
 sensor_get_commands = [
     remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
     remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,
