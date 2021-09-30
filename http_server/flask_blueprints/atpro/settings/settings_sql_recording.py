@@ -23,7 +23,7 @@ from sensor_recording_modules.triggers_auto_set import auto_set_triggers_wait_ti
 from http_server.server_http_generic_functions import get_html_checkbox_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 html_atpro_settings_sql_recording_routes = Blueprint("html_atpro_settings_sql_recording_routes", __name__)
 

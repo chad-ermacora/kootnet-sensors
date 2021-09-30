@@ -30,7 +30,7 @@ from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from sensor_modules.system_access import restart_services

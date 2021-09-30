@@ -27,7 +27,7 @@ from mqtt.server_mqtt_broker import start_mqtt_broker_server, restart_mqtt_broke
 from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 html_atpro_settings_mqtt_routes = Blueprint("html_atpro_settings_mqtt_routes", __name__)
 email_config = app_config_access.email_config

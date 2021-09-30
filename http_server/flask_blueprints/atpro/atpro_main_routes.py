@@ -27,11 +27,22 @@ from operations_modules.software_automatic_upgrades import get_automatic_upgrade
 from configuration_modules import app_config_access
 from sensor_modules import system_access
 from sensor_modules import sensor_access
-from http_server.flask_blueprints.atpro.atpro_variables import html_sensor_readings_row, atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_text_check_enabled, get_uptime_str
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
+
+html_sensor_readings_row = """
+    <div class='col-3 col-m-6 col-sm-12'>
+        <div class="card">
+            <div class="card-content">
+                <div class="readings-header">{{ SensorName }}</div>
+                <div class="readings">{{ SensorReading }}</div>
+            </div>
+        </div>
+    </div>
+"""
 
 
 @html_atpro_main_routes.route("/atpro/")
@@ -123,9 +134,9 @@ def html_atpro_logout():
 
 @html_atpro_main_routes.route("/atpro/get-notification-count")
 def html_atpro_get_notification_count():
-    return str(atpro_notifications.get_notification_count())
+    return str(atpro_notifications.notification_count)
 
 
 @html_atpro_main_routes.route("/atpro/get-notification-messages")
 def html_atpro_get_notification_messages():
-    return atpro_notifications.get_notifications_as_string()
+    return atpro_notifications.notification_str

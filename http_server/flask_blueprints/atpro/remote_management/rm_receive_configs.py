@@ -28,7 +28,7 @@ from configuration_modules.config_trigger_variances import CreateTriggerVariance
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
-from http_server.flask_blueprints.atpro.atpro_variables import atpro_notifications
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from sensor_modules import sensor_access
 
 

@@ -30,6 +30,7 @@ from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data
 from operations_modules import software_version
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 db_v = app_cached_variables.database_variables
 
@@ -208,3 +209,4 @@ def check_for_new_version():
         logger.primary_logger.debug("Available Update Check Failed: " + str(error))
         app_cached_variables.standard_version_available = "Retrieval Failed"
         app_cached_variables.developmental_version_available = "Retrieval Failed"
+    atpro_notifications.check_updates()
