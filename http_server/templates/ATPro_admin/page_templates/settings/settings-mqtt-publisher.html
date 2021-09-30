@@ -72,7 +72,7 @@
                         <input type="checkbox" id="enable-mqtt-p-auth-toggle-switch" class="toggle-switch-input"
                                name="enable_broker_auth" {{ MQTTPublisherAuthChecked }}>
                         <label class="toggle-switch-label" for="enable-mqtt-p-auth-toggle-switch"></label>
-                        Enable MQTT Topic Authentication
+                        MQTT Topic Authentication
                     </label>
 
                     <br><br>
@@ -284,12 +284,12 @@
                     <label for="SendAsKootnet">
                         <input type="radio" id="SendAsKootnet" name="mqtt_send_type" onchange="topics_hidden()"
                                value="KootnetSensors" {{ SASKSChecked }} />
-                        Kootnet Sensors format
+                        Kootnet Sensors
                     </label>
                     <label for="SendAsIndividual">
                         <input type="radio" id="SendAsIndividual" name="mqtt_send_type" onchange="topics_hidden()"
                                value="IndividualTopics" {{ SASIndChecked }} />
-                        Topic per sensor
+                        Topic Per Sensor
                     </label>
                     <label for="SendAsCustom">
                         <input type="radio" id="SendAsCustom" name="mqtt_send_type" onchange="topics_hidden()"
