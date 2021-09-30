@@ -73,8 +73,6 @@ class CreateWeatherUndergroundConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("weather_underground_interval") is not None:
             self.interval_seconds = float(html_request.form.get("weather_underground_interval"))
-            if self.interval_seconds < 2.0:
-                self.interval_seconds = 2.0
 
         if html_request.form.get("station_id") is not None:
             self.station_id = str(html_request.form.get("station_id")).strip()
