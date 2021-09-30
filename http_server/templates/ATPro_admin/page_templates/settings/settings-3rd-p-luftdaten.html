@@ -1,42 +1,61 @@
-<div class="col-12 col-m-12 col-sm-12">
-    <div class="card">
-        <div class="card-content">
-            <form class="pure-form" method="POST" action="/atpro/settings-luftdaten">
-                <h2><i class="fas fa-plus-circle"></i> Luftdaten</h2>
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-luftdaten">
+                    <h2><i class="fas fa-plus-circle"></i> Sensor Community (Luftdaten)</h2>
 
-                <label class="toggle-switch">
-                    <input type="checkbox" id="enable-luftdaten-toggle-switch" class="toggle-switch-input"
-                           name="enable_luftdaten" {{ CheckedLuftdatenEnabled }}>
-                    <label class="toggle-switch-label" for="enable-luftdaten-toggle-switch"></label>
-                    Enable Luftdaten
-                </label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-luftdaten-toggle-switch" class="toggle-switch-input"
+                               name="enable_luftdaten" {{ CheckedLuftdatenEnabled }}>
+                        <label class="toggle-switch-label" for="enable-luftdaten-toggle-switch"></label>
+                        Enable Sensor Community
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>
-                    Sensor ID<br><br>
-                    <input style="width: 250px;" type="text" maxlength="100" name="station_id"
-                           value="{{ LuftdatenStationID }}" disabled>
-                </label>
+                    <label>
+                        Sensor ID<br><br>
+                        <input style="width: 250px;" type="text" maxlength="100" name="station_id"
+                               value="{{ LuftdatenStationID }}" disabled>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <label>
-                    Seconds between Updates<br><br>
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <input style="width: 100px;" type="number" min="1"
-                                       name="station_interval" value="{{ LuftdatenIntervalSeconds }}">
+                    <label>
+                        Seconds between Updates<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="1"
+                                           name="station_interval" value="{{ LuftdatenIntervalSeconds }}">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </label>
+                    </label>
 
-                <br><br>
+                    <br><br>
 
-                <button type="submit" class="pure-button">Update</button>
-            </form>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="fas fa-exclamation-circle"></i> Information</h2>
+                <p>
+                    You need to add your Raspberry Pi's "Sensor ID" shown on this page to your
+                    <a href="https://devices.sensor.community/" target="_blank">Sensor Community account</a>.
+                    If you are unable to add the Sensor ID to your Sensor Community account,
+                    try enabling Sensor Community here first.<br><br>
+
+                    You must have at least one of the following sensors<br>
+                    Pimoroni EnviroPhat / Enviro+, BMP280, BME680, PMS5003, Sensirion SPS30
+                </p>
+            </div>
         </div>
     </div>
 </div>
