@@ -9,7 +9,7 @@
                         <input type="checkbox" id="debug-toggle-switch" class="toggle-switch-input"
                                name="debug_logging" {{ CheckedDebug }}>
                         <label class="toggle-switch-label" for="debug-toggle-switch"></label>
-                        Enable Debug Logging
+                        Debug Logging
                     </label>
 
                     <br><br>
@@ -52,7 +52,7 @@
                             <input type="checkbox" id="offset-s-toggle-switch" class="toggle-switch-input"
                                    name="enable_custom_temp_offset" {{ CheckedCustomTempOffset }}>
                             <label class="toggle-switch-label" for="offset-s-toggle-switch"></label>
-                            Enable Static Offset
+                            Static Offset
                         </label>
                     </div>
 
@@ -72,7 +72,7 @@
                             <input type="checkbox" id="offset-cf-toggle-switch" class="toggle-switch-input"
                                    name="enable_custom_temp_comp" {{ CheckedCustomTempComp }}>
                             <label class="toggle-switch-label" for="offset-cf-toggle-switch"></label>
-                            Enable Pi Temperature Correction Factor
+                            Pi Temperature Correction Factor
                         </label>
                     </div>
 
@@ -102,6 +102,12 @@
             <div class="card">
                 <div class="card-content">
                     <h2><i class="fas fa-arrow-alt-circle-up"></i> Automatic HTTP Upgrades</h2>
+                    <p>
+                        If you use Kootnet Sensors 'Remote Management' to manage other Kootnet Sensors,
+                        it's recommended to keep all sensors on the same version to maintain full compatibility
+                    </p>
+
+                    <br>
 
                     <div style="display: inline-block; width: 250px;">
                         <label>Check for updates every<br>(Hours)<br><br>
@@ -119,44 +125,41 @@
                     <br><br>
 
                     <label class="toggle-switch">
-                        <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
-                               name="enable_stable_feature_auto_upgrades" {{ EnableStableFeatureAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
-                        Enable Stable Feature Version Upgrades
+                        <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
+                               onclick="ToggleStableAutoUpdates()" name="enable_stable_minor_auto_upgrades"
+                                {{ EnableStableMinorAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="sau-minor-toggle-switch"></label>
+                        <span style="color: green;">Stable Minor</span>
                     </label>
-                    <br>
-                    <span><i>
-                        Updates may break functionality between Feature releases<br>
-                        <span style="color: orange;">* It is Recommended to Check Logs Periodically *</span>
-                    </i></span>
-
-                    <br><br>
 
                     <label class="toggle-switch">
-                        <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
-                               name="enable_stable_minor_auto_upgrades" {{ EnableStableMinorAutoUpgrades }}>
-                        <label class="toggle-switch-label" for="sau-minor-toggle-switch"></label>
-                        Enable Stable Minor Version Upgrades
+                        <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
+                               onclick="ToggleStableAutoUpdates()" name="enable_stable_feature_auto_upgrades"
+                                {{ EnableStableFeatureAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
+                        <span style="color: orange;">Stable Feature</span>
                     </label>
-                    <br>
-                    <span><i>
-                        Only Minor updates are applied to the running feature version
-                    </i></span>
-
-                    <br><br>
 
                     <label class="toggle-switch">
                         <input type="checkbox" id="dau-toggle-switch" class="toggle-switch-input"
-                               name="enable_dev_auto_upgrades" {{ EnableDevAutoUpgrades }}>
+                               onclick="ToggleDevelopmentalAutoUpdates()" name="enable_dev_auto_upgrades"
+                                {{ EnableDevAutoUpgrades }}>
                         <label class="toggle-switch-label" for="dau-toggle-switch"></label>
-                        Enable Developmental Upgrades
+                        <span style="color: orangered;">Developmental</span>
                     </label>
+
                     <br>
-                    <span><i>
-                        <u style="color: red;">Warning</u>: Developmental Upgrades often break settings & functionality between releases<br>
-                        <span style="color: orangered;">* It is Recommended to Check Logs & Settings Periodically *</span>
-                    </i></span>
-                    <br><br><br><br><br><br><br><br><br>
+
+                    <h4>Upgrade Examples</h4>
+                    <p><i>
+                        <b style="color: green;">Stable Minor</b>: Beta.33.10 to Beta.33.11<br>
+                        <b style="color: orange;">Stable Feature</b>: Beta.33.11 to Beta.34.0<br>
+                        <b style="color: orangered;">Developmental</b>: Updates to the current version under Development
+                        <br><br>
+                        * Developmental versions often contain bugs *
+                    </i></p>
+
+                    <br><br><br><br><br><br>
                 </div>
             </div>
         </div>
@@ -166,6 +169,19 @@
 </form>
 
 <script>
+    function ToggleStableAutoUpdates() {
+        if (document.getElementById("sau-feature-toggle-switch").checked || document.getElementById("sau-minor-toggle-switch").checked) {
+            document.getElementById("dau-toggle-switch").checked = false;
+        }
+    }
+
+    function ToggleDevelopmentalAutoUpdates() {
+        if (document.getElementById("dau-toggle-switch").checked) {
+            document.getElementById("sau-minor-toggle-switch").checked = false;
+            document.getElementById("sau-feature-toggle-switch").checked = false;
+        }
+    }
+
     if (screen.width < 500) {
             document.getElementById('checkin_address').style.width = '350px';
         }
