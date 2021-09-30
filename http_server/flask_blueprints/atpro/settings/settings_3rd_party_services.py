@@ -126,7 +126,6 @@ def html_atpro_sensor_settings_wu():
     return render_template(
         "ATPro_admin/page_templates/settings/settings-3rd-p-wu.html",
         CheckedWUEnabled=get_html_checkbox_state(weather_underground_config.weather_underground_enabled),
-        CheckedWURapidFire=get_html_checkbox_state(weather_underground_config.wu_rapid_fire_enabled),
         WUIntervalSeconds=weather_underground_config.interval_seconds,
         CheckedWUOutdoor=get_html_checkbox_state(weather_underground_config.outdoor_sensor),
         WUStationID=weather_underground_config.station_id,

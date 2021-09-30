@@ -837,7 +837,6 @@ class CreateWeatherUndergroundConfigurationTest(CreateWeatherUndergroundConfigur
         self.outdoor_sensor = 0
         self.station_id = "Test_1"
         self.station_key = "Test_2"
-        self.wu_rapid_fire_enabled = 0
         self.update_configuration_settings_list()
 
     def set_settings_for_test2(self):
@@ -846,7 +845,6 @@ class CreateWeatherUndergroundConfigurationTest(CreateWeatherUndergroundConfigur
         self.outdoor_sensor = 1
         self.station_id = "Test_3"
         self.station_key = "Test_5"
-        self.wu_rapid_fire_enabled = 1
         self.update_configuration_settings_list()
 
 
