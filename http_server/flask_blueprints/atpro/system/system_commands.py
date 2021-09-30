@@ -59,18 +59,20 @@ def atpro_upgrade_urls(url_path):
         logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
         title = "Upgrade Started"
         message = "Standard Upgrade by HTTP Started. This may take awhile ..."
-        click_msg = "Kootnet Sensors is currently doing a Standard Upgrade. " + \
-                    "Once complete, the software will restart and this message will disappear"
-        atpro_notifications.add_custom_message("Kootnet Sensors upgrade in progress ...", click_msg)
         system_command = app_cached_variables.bash_commands["UpgradeOnline"]
+        if app_cached_variables.software_update_available:
+            click_msg = "Kootnet Sensors is currently doing a Standard Upgrade. " + \
+                        "Once complete, the software will restart and this message will disappear"
+            atpro_notifications.add_custom_message("Kootnet Sensors upgrade in progress ...", click_msg)
     elif str(url_path) == "upgrade-http-dev":
         logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
         title = "Upgrade Started"
         message = "Development Upgrade by HTTP Started. This may take awhile ..."
         system_command = app_cached_variables.bash_commands["UpgradeOnlineDEV"]
-        click_msg = "Kootnet Sensors is currently doing a Developmental Upgrade. " + \
-                    "Once complete, the software will restart and this message will disappear"
-        atpro_notifications.add_custom_message("Kootnet Sensors upgrade in progress ...", click_msg)
+        if app_cached_variables.software_update_available:
+            click_msg = "Kootnet Sensors is currently doing a Developmental Upgrade. " + \
+                        "Once complete, the software will restart and this message will disappear"
+            atpro_notifications.add_custom_message("Kootnet Sensors upgrade in progress ...", click_msg)
     elif str(url_path) == "upgrade-http-std-clean":
         logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
         title = "Upgrade Started"
