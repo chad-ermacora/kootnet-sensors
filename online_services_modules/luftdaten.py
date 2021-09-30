@@ -44,7 +44,7 @@ def _luftdaten_server():
             if installed_sensors.pimoroni_bmp280 or installed_sensors.pimoroni_enviro:
                 no_sensors = False
                 _bmp280()
-            if installed_sensors.pimoroni_bme680 or installed_sensors.pimoroni_enviroplus:
+            if installed_sensors.pimoroni_bme680 or installed_sensors.pimoroni_enviroplus or installed_sensors.pimoroni_enviro2:
                 no_sensors = False
                 _bme280()
             if installed_sensors.pimoroni_pms5003 or installed_sensors.sensirion_sps30:
