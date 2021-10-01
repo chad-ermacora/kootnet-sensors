@@ -22,11 +22,10 @@ from queue import Queue
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_http_sensor_reading, check_for_port_in_address, \
-    get_ip_and_port_split, thread_function, get_file_content
+from operations_modules.app_generic_functions import get_http_sensor_reading, thread_function, get_file_content, \
+    get_html_response_bg_colour
 from sensor_modules.system_access import get_system_datetime
 from http_server.flask_blueprints.html_functional import auth_error_msg
-from http_server.flask_blueprints.atpro.remote_management.rm_functions import get_response_bg_colour
 from operations_modules import software_version
 
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
@@ -202,7 +201,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
             else:
                 login_check = "Unknown Error"
             sensor_report = get_http_sensor_reading(ip_address, command=sensor_report_url)
-            sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_response_bg_colour(sensor_check))
+            sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_html_response_bg_colour(sensor_check))
             sensor_report = sensor_report.replace("{{ LoginCheck }}", login_check)
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", sensor_check)
         else:
@@ -222,11 +221,3 @@ def _get_sensor_response_time(ip_address):
         return str(round(time.time() - start_time, 3))
     return False
 
-
-def _get_address_and_port_html(ip_address):
-    if check_for_port_in_address(ip_address):
-        address_split = get_ip_and_port_split(ip_address)
-        address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
-    else:
-        address_and_port = ip_address.strip() + ":10065"
-    return address_and_port

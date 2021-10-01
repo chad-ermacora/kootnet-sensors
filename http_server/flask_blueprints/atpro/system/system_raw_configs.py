@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_file_content, remove_line_from_text
+from operations_modules.app_generic_functions import get_file_content
 
 try:
     from plotly import __version__ as plotly_version
@@ -159,3 +159,16 @@ def atpro_raw_config_urls(url_path):
         config_content = get_file_content(file_locations.html_sensor_control_config)
         return _config_to_html_view(config_name, file_locations.html_sensor_control_config, config_content)
     return "<h3>Error</h3>"
+
+
+def remove_line_from_text(text_var, line_numbers_list):
+    """ Removes specified line from provided configuration text. """
+
+    return_config = ""
+    for index, line_content in enumerate(text_var.split("\n")):
+        if index not in line_numbers_list:
+            return_config += line_content + "\n"
+        else:
+            setting_description = line_content.split("=")[1]
+            return_config += "Removed_for_viewing = " + setting_description + "\n"
+    return return_config

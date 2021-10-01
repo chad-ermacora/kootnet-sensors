@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import requests
 from threading import Thread
 from datetime import datetime
 from flask import Blueprint, render_template, request
@@ -24,7 +25,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
-    get_list_of_filenames_in_dir, get_file_size
+    get_list_of_filenames_in_dir, get_file_size, check_for_port_in_address, get_ip_and_port_split
 from operations_modules.app_validation_checks import url_is_valid
 from operations_modules.software_version import version
 from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
@@ -40,14 +41,14 @@ from configuration_modules.config_sensor_control import CreateIPList
 from sensor_modules.system_access import get_ram_space, get_disk_space
 from sensor_modules.sensor_access import get_cpu_temperature, get_reading_unit, get_sensors_latency, \
     get_all_available_sensor_readings
-from http_server.flask_blueprints.atpro.remote_management.rm_functions import CreateSensorHTTPCommand
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
     get_message_page, get_clean_ip_list_name, get_uptime_str
 from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs import \
     remote_management_receive_configuration
+from http_server.flask_blueprints.atpro.remote_management.rm_post import remote_management_main_post
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
-    remote_management_main_post, get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
+    get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
 
 base_rm_template_loc = "ATPro_admin/page_templates/remote_management/report_templates/"
 db_v = app_cached_variables.database_variables
@@ -72,6 +73,36 @@ default_wifi_config = "# https://manpages.debian.org/stretch/wpasupplicant/wpa_s
 default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 html_atpro_remote_management_routes = Blueprint("html_atpro_remote_management_routes", __name__)
+
+
+class CreateSensorHTTPCommand:
+    """ Creates Object to use for Sending a command and optional data to a remote sensor. """
+
+    def __init__(self, sensor_address, command, command_data=None):
+        if command_data is None:
+            self.sensor_command_data = {"NotSet": True}
+        else:
+            self.sensor_command_data = command_data
+
+        self.sensor_address = sensor_address
+        self.http_port = "10065"
+        self.sensor_command = command
+        self._check_ip_port()
+
+    def send_http_command(self):
+        """ Sends command and data to sensor. """
+        try:
+            url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
+            requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data,
+                          auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+        except Exception as error:
+            logger.network_logger.error("Unable to send command to " + str(self.sensor_address) + ": " + str(error))
+
+    def _check_ip_port(self):
+        if check_for_port_in_address(self.sensor_address):
+            ip_and_port = get_ip_and_port_split(self.sensor_address)
+            self.sensor_address = ip_and_port[0]
+            self.http_port = ip_and_port[1]
 
 
 @html_atpro_remote_management_routes.route("/atpro/sensor-rm", methods=["GET", "POST"])
