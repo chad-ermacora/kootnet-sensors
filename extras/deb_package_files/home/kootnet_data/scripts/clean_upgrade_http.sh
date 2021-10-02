@@ -5,7 +5,6 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-clear
 HTTP_SERVER="http://kootenay-networks.com"
 HTTP_FOLDER="/installers/"
 DEB_INSTALLER="KootnetSensors.deb"
@@ -16,13 +15,14 @@ if [[ "$1" == "dev" ]]; then
   HTTP_FOLDER="/installers/dev/"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- Clean %s HTTP Re-Install --\n\n' "${INSTALL_TYPE}"
-printf 'Downloading installer ...\n'
+clear
+printf 'Clean %s HTTP Re-Install\n\n' "${INSTALL_TYPE}"
+printf 'Downloading installer ...\n\n'
 mkdir /tmp 2>/dev/null
 rm -f /tmp/${DEB_INSTALLER} 2>/dev/null
 wget -O /tmp/${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
 # Make sure the installer file is there before deleting everything
-if [[ -f /tmp/${DEB_INSTALLER} ]]; then
+if [[ -s /tmp/${DEB_INSTALLER} ]]; then
   printf 'Download complete\nRemoving old install (Configurations & data will be kept) ...\n'
   rm -R -f /home/kootnet_data/env 2>/dev/null
   rm -R -f /opt/kootnet-sensors 2>/dev/null

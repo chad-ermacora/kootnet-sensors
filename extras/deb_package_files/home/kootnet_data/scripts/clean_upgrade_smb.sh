@@ -7,7 +7,6 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-clear
 SMB_SERVER="//USB-Development"
 SMB_SHARE="/KootNetSMB"
 DEB_INSTALLER="KootnetSensors.deb"
@@ -19,7 +18,8 @@ if [[ "$1" == "dev" ]]; then
   SMB_SHARE="/KootNetSMB/dev"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- Clean %s SMB Re-Install --\n\n' "${INSTALL_TYPE}"
+clear
+printf 'Clean %s SMB Re-Install\n\n' "${INSTALL_TYPE}"
 printf 'Copying installer ...\n'
 mkdir /mnt 2>/dev/null
 mkdir /mnt/supernas 2>/dev/null
@@ -31,7 +31,7 @@ cp /mnt/supernas/${DEB_INSTALLER} /tmp
 sleep 1
 umount /mnt/supernas
 # Make sure the installer file is there before deleting everything
-if [[ -f /tmp/${DEB_INSTALLER} ]]; then
+if [[ -s /tmp/${DEB_INSTALLER} ]]; then
   printf 'Copy complete\nRemoving old install (Configurations & data will be kept) ...\n'
   rm -R -f /home/kootnet_data/env 2>/dev/null
   rm -R -f /opt/kootnet-sensors 2>/dev/null
