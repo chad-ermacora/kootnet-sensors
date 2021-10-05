@@ -87,7 +87,7 @@ def html_atpro_create_new_self_signed_ssl():
 @auth.login_required
 def html_atpro_set_custom_ssl():
     logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
-    return_message_ok = "SSL Certificate and Key files replaced.  Please reboot sensor for changes to take effect."
+    return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
 
     try:
@@ -103,7 +103,7 @@ def html_atpro_set_custom_ssl():
             os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
             os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
             logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
-            app_cached_variables.html_service_restart = 1
+            atpro_notifications.manage_service_restart()
             return get_message_page("Sensor SSL Certificate OK", return_message_ok,
                                     page_url="sensor-system", skip_menu_select=True)
         logger.network_logger.error("Invalid Uploaded SSL Certificate")

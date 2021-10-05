@@ -449,10 +449,6 @@ restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
-# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
-html_service_restart = False
-html_sensor_reboot = False
-
 # Checked before running OS or pip3 upgrades
 # Set to False when stating a upgrade, returns to True after program restarts
 sensor_ready_for_upgrade = True

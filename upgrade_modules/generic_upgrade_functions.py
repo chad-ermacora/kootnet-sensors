@@ -212,7 +212,7 @@ def _pip_upgrades_thread(requirements_list):
         os.system(app_cached_variables.bash_commands["RestartService"])
     except Exception as error:
         logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
-    app_cached_variables.sensor_ready_for_upgrade = True
+        app_cached_variables.sensor_ready_for_upgrade = True
 
 
 def upgrade_linux_os():
@@ -229,4 +229,4 @@ def _upgrade_linux_os_thread():
         os.system(app_cached_variables.bash_commands["RebootSystem"])
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
-    app_cached_variables.sensor_ready_for_upgrade = True
+        app_cached_variables.sensor_ready_for_upgrade = True
