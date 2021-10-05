@@ -26,7 +26,7 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
 
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.checkin_configuration, load_from_file=load_from_file)
-        self.config_file_header = "Enable = 1 & Disable = 0"
+        self.config_file_header = "Enable = 1 and Disable = 0"
         self.valid_setting_count = 17
         self.config_settings_names = [
             "Enable Check-Ins Server", "Count Sensors Checked-In the past X Days",
@@ -34,7 +34,7 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
             "Send Program Version with Checkins",  "Send Installed Sensors with Checkins",
             "Send System Uptime with Checkins",  "Send System Temperature with Checkins",  "Max Logs Lines to send",
             "Send Primary Logs with Checkins", "Send Network Logs with Checkins",  "Send Sensors Logs with Checkins",
-            "Enable Sensor Checkins", "Hours between Sensor Checkins", "Sensor Checkin URL & Port",
+            "Enable Sensor Checkins", "Hours between Sensor Checkins", "Sensor Checkin URL and Port",
             "Maximum Sensors to show on the main Sensor Checkins page"
         ]
 
