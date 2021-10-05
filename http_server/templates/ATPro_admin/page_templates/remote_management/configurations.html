@@ -4,12 +4,13 @@
     <label>
         Select Configuration<br>
         <select name="config_selection" id="config_selection" onchange="ConfigChange()">
-            <option value="primary">Primary</option>
+            <option value="primary">Main</option>
             <option value="installed_sensors">Installed Sensors</option>
+            <option value="display">Display</option>
+            <option value="checkins">Checkins</option>
             <option value="interval_recording">Interval Recording</option>
             <option value="variance_trigger_recording">Variance Trigger Recording</option>
             <option value="high_low_recording">High/Low Trigger Recording</option>
-            <option value="display">Display</option>
             <option value="email">Email</option>
             <option value="wifi">wpa_supplicant.conf (Wifi)</option>
             <option value="network">dhcpcd.conf (Network)</option>
@@ -32,6 +33,7 @@
     function ConfigChange() {
         const primary_config = '{{ DefaultPrimaryText }}';
         const installed_sensors_config = '{{ DefaultInstalledSensorsText }}';
+        const checkins_config = '{{ DefaultCheckinsText }}';
         const interval_rec_config = '{{ DefaultIntervalRecText }}';
         const variance_rec_config = '{{ DefaultVarianceRecText }}';
         const high_low_rec_config = '{{ DefaultHighLowRecText }}';
@@ -46,6 +48,8 @@
                 document.getElementById('new_config_str').value = primary_config;
         } else if (selected_value === 'installed_sensors') {
                 document.getElementById('new_config_str').value = installed_sensors_config;
+        }  else if (selected_value === 'checkins') {
+                document.getElementById('new_config_str').value = checkins_config;
         }  else if (selected_value === 'interval_recording') {
                 document.getElementById('new_config_str').value = interval_rec_config;
         }  else if (selected_value === 'variance_trigger_recording') {
