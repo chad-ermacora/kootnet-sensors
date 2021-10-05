@@ -84,21 +84,24 @@ def _get_html_button_state(setting1, setting2):
 def _get_rm_running_msg():
     extra_message = ""
     if app_cached_variables.creating_the_big_zip:
-        extra_message = "Creating Big Zip"
-    elif app_cached_variables.creating_the_reports_zip:
-        extra_message = "Creating Reports Zip"
-    elif app_cached_variables.creating_databases_zip:
-        extra_message = "Creating Databases Zip"
-    elif app_cached_variables.creating_logs_zip:
-        extra_message = "Creating Logs Zip"
-    elif app_cached_variables.creating_combo_report:
-        extra_message = "Creating Combo Report"
-    elif app_cached_variables.creating_system_report:
-        extra_message = "Creating System Report"
-    elif app_cached_variables.creating_config_report:
-        extra_message = "Creating Configuration Report"
-    elif app_cached_variables.creating_readings_report:
-        extra_message = "Creating Readings Report"
-    elif app_cached_variables.creating_latency_report:
-        extra_message = "Creating Latency Report"
+        extra_message += "Big Zip, "
+    if app_cached_variables.creating_the_reports_zip:
+        extra_message += "Reports Zip, "
+    if app_cached_variables.creating_databases_zip:
+        extra_message += "Databases Zip, "
+    if app_cached_variables.creating_logs_zip:
+        extra_message += "Logs Zip, "
+    if app_cached_variables.creating_combo_report:
+        extra_message += "Combo Report, "
+    if app_cached_variables.creating_system_report:
+        extra_message += "System Report, "
+    if app_cached_variables.creating_config_report:
+        extra_message += "Configuration Report, "
+    if app_cached_variables.creating_readings_report:
+        extra_message += "Readings Report, "
+    if app_cached_variables.creating_latency_report:
+        extra_message += "Latency Report, "
+
+    if extra_message != "":
+        extra_message = "Creating: " + extra_message[:-2]
     return extra_message
