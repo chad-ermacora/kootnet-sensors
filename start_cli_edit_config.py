@@ -50,7 +50,7 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 13. Exit
 """.replace("{{ Version }}", version)
 
-any_key_shutdown = "\nThe TCT must be restarted - Press any key to close"
+any_key_shutdown = "\nThe TCT must be restarted\n\nPress enter to close"
 
 
 def start_script():
@@ -66,12 +66,12 @@ def start_script():
             if selection == 1:
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
-                print("Restart KootnetSensors service for changes to take effect")
+                _restart_service()
             elif selection == 2:
                 if input("Are you sure you want to reset ALL configurations? (y/n): ").lower() == "y":
                     os.system("clear")
                     reset_all_configurations()
-                    print("\nRestart KootnetSensors service for changes to take effect")
+                    _restart_service()
                 else:
                     print("Configuration Reset Cancelled")
             elif selection == 3:
@@ -92,7 +92,7 @@ def start_script():
                 running = False
             elif selection == 8:
                 os.system("rm -f -r " + file_locations.http_ssl_folder)
-                _restart_service()
+                _restart_service(msg="SSL Certificate Removed, Restarting Service to Create a New Certificate")
             elif selection == 9:
                 os.system(app_cached_variables.bash_commands["EnableService"])
                 os.system(app_cached_variables.bash_commands["StartService"])
