@@ -187,7 +187,6 @@ def check_for_new_version():
     logger.primary_logger.debug(" -- Checking for new Kootnet Sensors Versions")
     standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
     developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
-    current_ver = software_version.CreateRefinedVersion(software_version.version)
 
     try:
         request_data = requests.get(standard_url, allow_redirects=False)
@@ -195,18 +194,27 @@ def check_for_new_version():
         request_data = requests.get(developmental_url, allow_redirects=False)
         app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
 
-        latest_std_ver = software_version.CreateRefinedVersion(app_cached_variables.standard_version_available)
-
-        if latest_std_ver.major_version > current_ver.major_version:
+        if _check_if_version_newer(app_cached_variables.standard_version_available):
             app_cached_variables.software_update_available = True
-        elif latest_std_ver.major_version == current_ver.major_version:
-            if latest_std_ver.feature_version > current_ver.feature_version:
-                app_cached_variables.software_update_available = True
-            elif latest_std_ver.feature_version == current_ver.feature_version:
-                if latest_std_ver.minor_version > current_ver.minor_version:
-                    app_cached_variables.software_update_available = True
+        if _check_if_version_newer(app_cached_variables.developmental_version_available):
+            app_cached_variables.software_update_dev_available = True
     except Exception as error:
         logger.primary_logger.debug("Available Update Check Failed: " + str(error))
         app_cached_variables.standard_version_available = "Retrieval Failed"
         app_cached_variables.developmental_version_available = "Retrieval Failed"
     atpro_notifications.check_updates()
+
+
+def _check_if_version_newer(new_version_str):
+    current_ver = software_version.CreateRefinedVersion(software_version.version)
+    latest_ver = software_version.CreateRefinedVersion(new_version_str)
+
+    if latest_ver.major_version > current_ver.major_version:
+        return True
+    elif latest_ver.major_version == current_ver.major_version:
+        if latest_ver.feature_version > current_ver.feature_version:
+            return True
+        elif latest_ver.feature_version == current_ver.feature_version:
+            if latest_ver.minor_version > current_ver.minor_version:
+                return True
+    return False
