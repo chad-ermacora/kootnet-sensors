@@ -93,7 +93,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         self.sensor_ip_dns19 = ""
         self.sensor_ip_dns20 = ""
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -122,7 +122,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.sensor_ip_dns18 = self.ip_list_instance.sensor_ip_dns18
             self.sensor_ip_dns19 = self.ip_list_instance.sensor_ip_dns19
             self.sensor_ip_dns20 = self.ip_list_instance.sensor_ip_dns20
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
         except Exception as error:
             log_msg = "Error Changing IPs to IP List '"
             logger.network_logger.warning(log_msg + self.selected_ip_list + "': " + str(error))
@@ -243,7 +243,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self._save_current_ip_list()
         except Exception as error:
             logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
     def _save_current_ip_list(self):
         self.ip_list_instance.sensor_ip_dns1 = self.sensor_ip_dns1
@@ -269,7 +269,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
 
         self.ip_list_instance.save_list_to_file()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [str(self.selected_action), str(self.selected_send_type), str(self.selected_ip_list)]
@@ -284,7 +284,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.change_ip_list()
         except Exception as error:
             logger.primary_logger.debug("Sensor Control Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving Sensor Control Configuration.")
                 self.save_config_to_file()

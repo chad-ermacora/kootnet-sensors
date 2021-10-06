@@ -49,7 +49,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
 
         self.mqtt_page_view_max_entries = 15
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -102,10 +102,10 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
                 topics_text_list = topics_text_list.split(",")
                 for topic in topics_text_list:
                     self.subscribed_topics_list.append(topic.strip())
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         self.load_from_file = True
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         topics_text = ""
@@ -137,7 +137,7 @@ class CreateMQTTSubscriberConfiguration(CreateGeneralConfiguration):
             self.mqtt_page_view_max_entries = int(self.config_settings[9].strip())
         except Exception as error:
             logger.primary_logger.debug("MQTT Subscriber Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving MQTT Subscriber Configuration.")
                 self.save_config_to_file()

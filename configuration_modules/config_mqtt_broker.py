@@ -32,7 +32,7 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
 
         self.enable_mqtt_broker = 0
 
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
         if load_from_file:
             self._init_config_variables()
             self._update_variables_from_settings_list()
@@ -50,9 +50,9 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
             self.enable_mqtt_broker = 1
         write_file_to_disk(file_locations.mosquitto_configuration,
                            str(html_request.form.get("mosquitto_config")).strip())
-        self._update_configuration_settings_list()
+        self.update_configuration_settings_list()
 
-    def _update_configuration_settings_list(self):
+    def update_configuration_settings_list(self):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [str(self.enable_mqtt_broker)]
@@ -62,7 +62,7 @@ class CreateMQTTBrokerConfiguration(CreateGeneralConfiguration):
             self.enable_mqtt_broker = int(self.config_settings[0])
         except Exception as error:
             logger.primary_logger.debug("MQTT Broker Config: " + str(error))
-            self._update_configuration_settings_list()
+            self.update_configuration_settings_list()
             if self.load_from_file:
                 logger.primary_logger.info("Saving MQTT Broker Configuration.")
                 self.save_config_to_file()
