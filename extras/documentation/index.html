@@ -74,6 +74,8 @@
                                     <li><a href="#line3_4">Sensor Latency</a></li>
                                     <li><a href="#line3_5">Notes</a></li>
                                     <li><a href="#line3_6">Graphing</a></li>
+                                    <li><a href="#line3_7">MQTT Subscriber</a></li>
+                                    <li><a href="#line3_8">Sensor Check-ins</a></li>
                                 </ul>
 							</li>
                             <li><a href="#line6">Remote Management</a>
@@ -124,8 +126,8 @@
                         <div class="intro1">
                             <ul>
                                 <li><strong>Kootnet Sensors : </strong>Documentation</li>
-                                <li><strong>Document Version : </strong>0.8</li>
-                                <li><strong>Last Updated : </strong>Sept 22nd, 2021</li>
+                                <li><strong>Document Version : </strong>0.9</li>
+                                <li><strong>Last Updated : </strong>Oct 5th, 2021</li>
                                 <li><strong>Author  : </strong>Chad Ermacora</li>
                                 <li><strong>Source Code : </strong><a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
                                 <li><strong>License : </strong><a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
@@ -199,11 +201,11 @@
                             downloaded file and look for an install button to start the install process.
                         </p>
                         <p>
-                            <a href="http://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">
+                            <a href="https://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">
                                 Current Stable Release
                             </a><br>
 
-                            <a href="http://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">
+                            <a href="https://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">
                                 Latest Developmental Release
                             </a>
                             ** Warning: Developmental Releases can be unstable **
@@ -222,7 +224,7 @@
                             to finish.<br>
                         </p>
 
-						<pre class="brush: bash">wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
+						<pre class="brush: bash">wget -O KootnetSensors.deb https://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
 
                         <p>
                             If the installation completes successfully, you'll be given the default Username/Password
@@ -376,6 +378,54 @@
                             Example. Skip 12, add one, skip 12, add one, etc, etc<br>
                             <strong>Hour Offset</strong>: Add the set amount of hours to the recorded UTC0 DateTime before plotting<br>
                         </p>
+
+                        <h4 id="line3_7"><u>MQTT Subscriber (Viewing)</u></h4>
+                        <p>
+                            The MQTT Subscriber page shows information about the MQTT Subscriber service itself,
+                            such as if it's enabled, how big the database is and the address of the MQTT Broker it's
+                            getting data from.<br><br>
+
+                            There are 2 buttons on this page, one for getting a table of ALL MQTT Subscriber
+                            sensors that have been recorded to the database, which contains the sensor ID, host name,
+                            IP Address and last contact. The other is for clearing the log containing MQTT Subscriber
+                            connections and readings. Please note, this only clears the log NOT the database.<br><br>
+
+                            Underneath the information and buttons is where the most recent connections and data are
+                            listed. By default the last 15 sensor connections are listed, showing the Sensor ID,
+                            last contact and the readings it sent.
+                        </p>
+
+                        <h4 id="line3_8"><u>Sensor Check-ins (Viewing)</u></h4>
+                        <p>
+                            The Sensor Checkins page shows information about the Sensor Checkin server itself, such as
+                            if it's enabled, how big the database is and number of sensors in the database.
+
+                            There are 4 buttons on the page listed below<br><br>
+
+                            <strong>View Checkins Sensors List</strong>: Opens a new page containing a complete list of
+                            sensors that have checked in. Each sensor shows it's Sensor ID, host name, IP address,
+                            software version, first contact and Last contact. Sensors are ordered by most recent
+                            contact.<br><br>
+
+                            <strong>Open Sensor Search</strong>: Opens a new page where you can past a Sensor ID to get
+                            the sensor's information, including log entries (if enabled on the sensor).<br><br>
+
+                            <strong>Clear Old Checkin Data</strong>: Every checkin from every sensor is saved into the
+                            database but only the last checkin for each sensor is currently viewable.
+                            To clear out data and free up space you can delete all but the latest checkins.<br><br>
+
+                            <strong>Delete</strong>: The number above this button is the number of days the sensors
+                            has to of gone without a checkin before it's deleted from the database
+                            (when you press the Delete button).<br><br>
+
+                            <strong>Note</strong><i>: Currently there is no way to "Un-Delete" something,
+                            use caution</i><br><br>
+
+                            Underneath the information and buttons is where the most recent connections are listed.
+                            By default the last 15 sensor connections are listed. If you with to adjust settings for
+                            this page, you can find them under the <a href="#line4_4a">"Sensor Checkins"</a>
+                            settings page.
+                        </p>
                     </section>
                     <!-- end section -->
 
@@ -514,7 +564,7 @@
 
                             If you have any problems using un-tested sensors and are willing to give me remote access
                             to your sensor for debugging, please contact me through my
-                            <a href="http://kootenay-networks.com/?page_id=11" target="_blank">website</a>.
+                            <a href="https://kootenay-networks.com/?page_id=11" target="_blank">website</a>.
                         </p>
 
                         <h4 id="line4_3"><u>Display</u></h4>
@@ -523,49 +573,25 @@
                             and set what will be displayed at the set interval.
                         </p>
 
-                        <h4 id="line4_4"><u>Sensor Checkins - Main View</u></h4>
+                        <h4 id="line4_4"><u>Sensor Checkin Configuration</u></h4>
                         <p>
-                            The main Sensor Checkins page shows a list of sensors that have checked in, starting
-                            with the most recent checkins at the top. Click the "Open Sensor Search" button to get more
-                            details of a specific sensor by it's sensor ID. You can adjust Checkin options under the
-                            <a href="#line4_4d">"Checkin Server"</a> settings located in the main menu on the left under
-                            "Local Management".
+                            Sensor Checkins sends diagnostic data to the specified server. Any Kootnet Sensor can be a
+                            Checkin Server, see <a href="#line4_4a">Checkin Server Configuration</a>.<br><br>
+
+                            The various options should be fairly self explanatory, however, if you want to send the
+                            data to your own Kootnet Sensor, you'll need to use the IP or domain address of the
+                            Kootnet Sensor receiving checkins. You will also have to enable the Checkins Server
+                            on the receiving Kootnet Sensor.
                         </p>
 
-                        <h4 id="line4_4b"><u>Sensor Checkins - Database Cleanup</u></h4>
+                        <h4 id="line4_4a"><u>Checkin Server Configuration</u></h4>
                         <p>
-                            Use the Database Cleanup section to view the Checkin sensor's database size and remove old
-                            data entries.<br><br>
+                            Enable Sensors Checkin Server to have the local sensor receive checkins from other sensors.
+                            You will need to update other Kootnet Sensors to use this sensor's address under the
+                            <a href="#line4_4">Sensor Checkins settings</a> page.<br><br>
 
-                            <strong>Note</strong>: <i>Data deletions cannot be undone.</i>
-                        </p>
-
-                        <h4 id="line4_4c"><u>Sensor Checkins - Sensor Search</u></h4>
-                        <p>
-                            Use the Sensor Search to get Log information from specific sensors. You can also delete
-                            the specific sensor from the database or clear all it's old checkin data. As of this
-                            writing, only the Primary and Sensor hardware logs are included (due to privacy). In a
-                            future version, I will most likely add the ability to send other information, but by default
-                            it will be disabled.
-                        </p>
-
-                        <h4 id="line4_4d"><u>Checkin Server Configuration</u></h4>
-                        <p>
-                            Enable Sensor Checkins Server to have the local sensor receive checkins from other sensors.
-                            You will need to update the "Checkin Server Address & Port" with this sensors address
-                            (DNS or IP) on the sensors you want reporting to this Checkin Server. The
-                            "Checkin Server Address & Port" setting can be found under the
-                            <a href="#line4_4">Main sensor configuration</a>.<br><br>
-                        </p>
-
-                        <p><b><u>Sensor Checkins - Checkin View Settings</u></b></p>
-                        <p>
-                            These settings adjust the <a href="#line4_4">"Main View"</a>. The first option sets the
-                            "Past Sensor Checkin Count". For instance, set this to 1 and it will show how many sensors
-                            have checked in during the past day.<br><br>
-
-                            The second option changes the default value under <a href="#line4_4b">"Database Cleanup"</a> for removing old
-                            sensors from the Checkin database.
+                            You can adjust how many sensors are shown on the Sensor Checkins page as well as the days
+                            used in the 'Sensor Checkins from the past X Days' bar.
                         </p>
 
                         <h4 id="line4_5"><u>Interval Recording</u></h4>
@@ -683,15 +709,15 @@
 
                         <h4><u>MQTT - Subscriber</u></h4>
                         <p>
-                            The MQTT Subscriber is similar in options to the <a href="#line6_1">MQTT Publisher</a>,
+                            The MQTT Subscriber has similar in options to the <a href="#line4_9">MQTT Publisher</a>,
                             but, instead of sending readings to an MQTT Broker, you receive them. Readings are sent
                             shortly after the broker receives them and can be viewed on the Web Portal's
                             "MQTT Subscriber" page. You can also save these readings to the MQTT Subscriber database
-                            for centralized recordings from multiple Kootnet sensors.<br><br>
+                            for centralized recordings using multiple Kootnet sensors.<br><br>
 
-                            MQTT topics can be specified bellow; By default, it is set to receive all topics (#).
-                            The wildcard "#" can be used at any point in the topic, such as KSDRSjk3K/# will receive
-                            all sensor readings from the sensor KSDRSjk3K only.
+                            MQTT topics can be specified in the "Subscribed Topics" section; By default, it is set
+                            to receive all topics (#). The wildcard "#" can be used at any point in the topic,
+                            such as KSDRSjk3K/# will receive all sensor readings from the sensor KSDRSjk3K only.
                         </p>
 
                         <h4><u>MQTT - Broker (Eclipse Mosquitto)</u></h4>
@@ -749,7 +775,7 @@
                             the Station ID and Key in the Weather Underground settings on the Kootnet Sensor.
                         </p>
 
-                        <h4><u>Luftdaten</u></h4>
+                        <h4><u>Sensor Community (Luftdaten)</u></h4>
                         <blockquote>
                             The OK Lab Stuttgart is part of the program Code for Germany of the Open Knowledge
                             Foundation Germany. The aim of the program is to promote developments in the areas of
@@ -761,10 +787,10 @@
                         </blockquote>
 
                         <p>
-                            <a href="https://luftdaten.info/" target="_blank">Luftdaten</a> is by far one of the easiest
-                            3rd party service to setup, but also one of the more finicky ones. In theory, all you need
-                            to do is create an account with Luftdaten and register the "Sensor ID" found in the
-                            Luftdaten settings on the Kootnet Sensor to your Luftdaten account.
+                            <a href="https://sensor.community/en/" target="_blank">Sensor Community</a> is by far one
+                            of the easiest 3rd party service to setup, but also one of the more finicky ones.
+                            In theory, all you need to do is create an account with Luftdaten and register the
+                            "Sensor ID" found in the Luftdaten settings on the Kootnet Sensor to your Luftdaten account.
                             The sensor should automatically start posting readings to Luftdaten within a day.
                         </p>
                     </section>
@@ -832,7 +858,7 @@
                             use the Kootnet Sensors Web Portal. If you are unable to access the Web Portal after
                             changing the certificate, login to the Kootnet Sensor locally
                             (with a keyboard/mouse/monitor) and create a new self signed SSL certificate through the
-                            <a href="#line4_7">Terminal Configuration Tool</a>.
+                            <a href="#line7_1">Terminal Configuration Tool</a>.
                         </p>
 
 
@@ -874,8 +900,8 @@
                         </div>
                         <!-- end row -->
 
-                        <strong>Note</strong>: <i>You may find useful information in the program <a href="#line3_9">logs </a>
-                        to help diagnose issues.</i>
+                        <strong>Note</strong>: <i>You may find useful information in the program
+                        <a href="#line5_7">logs</a> to help diagnose issues.</i>
 
                         <h4 id="line7_1"><u>Terminal Configuration Tool</u></h4>
                         <p>
@@ -926,12 +952,12 @@
                             <strong><i>Errors may include</i></strong>: Missing dependencies in the Kootnet Sensor logs<br>
                             <strong>Possible Fixes:</strong><br>
                             1. Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)" from the
-                            <a href="#line4_7">Terminal Configurations Tool</a><br>
+                            <a href="#line7_1">Terminal Configurations Tool</a><br>
                             2. Do a fresh flash of Raspbian on the SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
                             3. Replace your current SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
                             4. Try a different Raspberry Pi and <a href="#line2">install Kootnet Sensors</a><br><br>
 
-                            <strong>Note</strong>: <i>You may want to copy the <a href="#line3_5">main SQL3 database</a>
+                            <strong>Note</strong>: <i>You may want to copy the <a href="#line5_1">main SQL3 database</a>
                             to save your sensor recordings & notes before flashing the SD card.</i>
                         </p>
                     </section>
