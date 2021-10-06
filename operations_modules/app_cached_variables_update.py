@@ -185,8 +185,8 @@ def _update_cached_sensor_reboot_count():
 
 def check_for_new_version():
     logger.primary_logger.debug(" -- Checking for new Kootnet Sensors Versions")
-    standard_url = "http://kootenay-networks.com/installers/kootnet_version.txt"
-    developmental_url = "http://kootenay-networks.com/installers/dev/kootnet_version.txt"
+    standard_url = "https://kootenay-networks.com/installers/kootnet_version.txt"
+    developmental_url = "https://kootenay-networks.com/installers/dev/kootnet_version.txt"
 
     try:
         request_data = requests.get(standard_url, allow_redirects=False)

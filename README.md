@@ -8,7 +8,7 @@ color, ultra-violet, acceleration, electromagnetic fields, angular velocity (gyr
 Features include a Web Portal to graph, view live readings, generate reports, 
 upload data to 3rd party weather services and more!  
 
-[Project Website](http://kootenay-networks.com/?page_id=170)  
+[Project Website](https://kootenay-networks.com/?page_id=170)  
 
 Installing, Updating & Removing
 -------------------------
@@ -44,12 +44,12 @@ Enabling the Pimoroni BME680 should work for the Adafruit BME680 for example.*
 **Note**: *Sensors names starting with a * are untested sensors.*
 
 If you have a Debian desktop environment, you can simply 
-[download this file](http://kootenay-networks.com/installers/KootnetSensors.deb) and double click to install.  
-After the install is done, open https://localhost:10065 on the Raspberry Pi itself to configure and use the sensor.  
+[download this file](https://kootenay-networks.com/installers/KootnetSensors.deb) and double click to install.  
+After the installation is done, open https://localhost:10065 on the Raspberry Pi itself to configure and use the sensor.  
 If you are installing from the command line, run the following command in a terminal.  
 
 ```
-wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb
+wget -O KootnetSensors.deb https://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb
 ```
 
 To uninstall Kootnet Sensors, run the following command in a terminal.  

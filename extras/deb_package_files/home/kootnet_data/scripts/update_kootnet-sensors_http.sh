@@ -5,7 +5,7 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-HTTP_SERVER="http://kootenay-networks.com"
+HTTP_SERVER="https://kootenay-networks.com"
 HTTP_FOLDER="/installers"
 DEB_INSTALLER="/KootnetSensors_online.deb"
 CONFIG_DIR="/etc/kootnet"
