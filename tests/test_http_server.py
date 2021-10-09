@@ -159,14 +159,6 @@ class TestApp2(unittest.TestCase):
         for command in sensor_get_commands:
             sensor_responses.append(get_http_sensor_reading(sensor_address, command=command, timeout=5))
 
-        bad_count = 0
-        for response in sensor_responses:
-            if response is None:
-                bad_count += 1
-
-        if bad_count > 0:
-            log_msg = "Warning: " + str(bad_count) + " Bad HTTPS Responses out of " + str(len(sensor_get_commands))
-            print(log_msg + " - Bad Network Connection?")
         # from routes file system_commands.py
         self.assertTrue(sensor_responses[0] == "OK")
         self.assertTrue(isinstance(sensor_responses[1], str))
@@ -205,34 +197,34 @@ class TestApp2(unittest.TestCase):
         if not check_no_sensor_return(sensor_responses[12], sensor_get_commands[12]):
             sensor_reading = eval(sensor_responses[12])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[13], sensor_get_commands[13]):
             sensor_reading = eval(sensor_responses[13])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[14], sensor_get_commands[14]):
             check_float_reading(sensor_responses[14], sensor_get_commands[14])
             self.assertTrue(isinstance(float(sensor_responses[14]), float))
         if not check_no_sensor_return(sensor_responses[15], sensor_get_commands[15]):
             sensor_reading = eval(sensor_responses[15])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[16], sensor_get_commands[16]):
             sensor_reading = eval(sensor_responses[16])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[17], sensor_get_commands[17]):
             sensor_reading = eval(sensor_responses[17])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[18], sensor_get_commands[18]):
             sensor_reading = eval(sensor_responses[18])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[18] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[19], sensor_get_commands[19]):
             sensor_reading = eval(sensor_responses[19])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[19] + str(index))
+                check_float_reading(reading, str(index))
 
 
 def check_no_sensor_return(sensor_data, data_name):
