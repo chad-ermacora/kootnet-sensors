@@ -64,8 +64,13 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
         sql_column_data = sqlite_database.fetchall()
         database_connection.close()
     except Exception as error:
-        logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
-        sql_column_data = []
+        if str(error)[:13] == "no such table":
+            logger.primary_logger.debug("SQL Table name was not found in the Database: " + str(error))
+        elif str(error)[:14] == "no such column":
+            logger.primary_logger.debug("SQL Column name was not found in the Database: " + str(error))
+        else:
+            logger.primary_logger.warning("SQL Execute Get Data Error: " + str(error))
+        return []
     return sql_column_data
 
 
@@ -239,7 +244,51 @@ def get_sqlite_tables_in_list(database_location):
     """ Returns a list of SQLite3 database table names. """
     get_sqlite_tables_query = "SELECT name FROM sqlite_master WHERE type='table';"
     sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
-    return sqlite_tables_list
+    final_list = []
+    for entry in sqlite_tables_list:
+        final_list.append(get_sql_element(entry))
+    return final_list
+
+
+def get_one_db_entry(table_name, column_name, order="DESC", database=file_locations.sensor_database):
+    """
+    Returns the last entry from the provided column in the provided table. Skips blank and null entries.
+
+    Default Options: order="DESC", database=file_locations.sensor_database.
+    """
+    sql_query = "SELECT " + column_name + " FROM '" + table_name + "' WHERE " \
+                + column_name + " != '' ORDER BY " + database_variables.all_tables_datetime + " " + order + " LIMIT 1;"
+    return get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database))
+
+
+def get_main_db_first_last_date():
+    """ Returns First and Last recorded date in the SQL Database as a String. """
+    sql_query = "SELECT Min(" + str(database_variables.all_tables_datetime) + ") AS First, " + \
+                "Max(" + str(database_variables.all_tables_datetime) + ") AS Last " + \
+                "FROM " + str(database_variables.table_interval)
+
+    textbox_db_dates = "DataBase Error"
+    try:
+        db_datetime_column = sql_execute_get_data(sql_query)
+        for item in db_datetime_column:
+            textbox_db_dates = item[0] + " < -- > " + item[-1]
+    except Exception as error:
+        logger.sensors_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))
+    return textbox_db_dates
+
+
+def get_sql_element(sql_data):
+    try:
+        for entry1 in sql_data:
+            if type(entry1) is list or type(entry1) is tuple:
+                for entry2 in entry1:
+                    return str(entry2)
+            else:
+                return str(entry1)
+    except Exception as error:
+        logger.network_logger.debug("Error extracting data in Sensor Check-ins: " + str(error))
+        return "Error"
+    return ""
 
 
 def sql_fetch_items_to_text(sql_query_results):

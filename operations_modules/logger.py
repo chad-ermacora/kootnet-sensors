@@ -30,9 +30,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from operations_modules import file_locations
 
-if not os.path.exists(os.path.dirname(file_locations.log_directory)):
-    os.makedirs(os.path.dirname(file_locations.log_directory))
-
 max_log_lines_return = 150
 
 
@@ -79,16 +76,19 @@ def get_number_of_log_entries(log_file):
 
 def get_sensor_log(log_file, max_lines=max_log_lines_return):
     """ Opens provided log file location and returns its content. """
-    with open(log_file, "r") as log_content:
-        log_lines = log_content.readlines()
-        if max_lines:
-            log_lines = log_lines[-max_lines:]
-        log_lines.reverse()
+    try:
+        with open(log_file, "r") as log_content:
+            log_lines = log_content.readlines()
+            if max_lines:
+                log_lines = log_lines[-max_lines:]
+            log_lines.reverse()
 
-        return_log = ""
-        for log in log_lines:
-            return_log += log
-        return return_log
+            return_log = ""
+            for log in log_lines:
+                return_log += log
+            return return_log
+    except FileNotFoundError:
+        return "Log not found: " + log_file
 
 
 def clear_primary_log():
@@ -131,3 +131,13 @@ initialize_logger(sensors_logger, file_locations.sensors_log, sensor_formatter)
 initialize_logger(mqtt_subscriber_logger, file_locations.mqtt_subscriber_log, mqtt_formatter)
 
 set_logging_level()
+
+# Add a new line to each log file on start. Makes it easier to find logs for a particular boot up session.
+for file_loc in [file_locations.primary_log, file_locations.network_log, file_locations.sensors_log]:
+    with open(file_loc, "r") as current_log_file:
+        current_log_content = current_log_file.readlines()
+        # Only add new line if there isn't one already there
+        if len(current_log_content) > 0:
+            if current_log_content[-1] != "\n":
+                with open(file_loc, "a") as log_file2:
+                    log_file2.write("\n")

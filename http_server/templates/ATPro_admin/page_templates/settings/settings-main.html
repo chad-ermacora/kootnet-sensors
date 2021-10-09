@@ -1,0 +1,188 @@
+<form class="pure-form" method="POST" action="/atpro/settings-main">
+    <div class='row'>
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <h2><i class="fas fa-clipboard-check"></i> Main</h2>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="debug-toggle-switch" class="toggle-switch-input"
+                               name="debug_logging" {{ CheckedDebug }}>
+                        <label class="toggle-switch-label" for="debug-toggle-switch"></label>
+                        Debug Logging
+                    </label>
+
+                    <br><br>
+
+                    <div>
+                        <div style="display: inline-block; width: 250px;">
+                            <label>HTTPS Port Number<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="number" style="width: 100px;" id="ip_web_port" name="ip_web_port" required
+                                                   placeholder="10065" min="1024" max="65535" value="{{ IPWebPort }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div style="display: inline-block;">
+                            <label>Date & Time Offset in hours<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="number" style="width: 75px;" min="-23.5" max="23.5" step="0.25"
+                                                   name="program_hour_offset" value="{{ HourOffset }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <br>
+                        <p><strong>Note</strong>: <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i></p>
+                    </div>
+
+                    <br>
+
+                    <h2><i class="fas fa-temperature-low"></i> Environmental Temperature Offsets</h2>
+
+                    <div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="offset-s-toggle-switch" class="toggle-switch-input"
+                                   name="enable_custom_temp_offset" {{ CheckedCustomTempOffset }}>
+                            <label class="toggle-switch-label" for="offset-s-toggle-switch"></label>
+                            Static Offset
+                        </label>
+                    </div>
+
+                    <label>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="number" style="width: 75px;" step="0.01" min="-100" max="100"
+                                           name="custom_temperature_offset" value="{{ temperature_offset }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="offset-cf-toggle-switch" class="toggle-switch-input"
+                                   name="enable_custom_temp_comp" {{ CheckedCustomTempComp }}>
+                            <label class="toggle-switch-label" for="offset-cf-toggle-switch"></label>
+                            Pi Temperature Correction Factor
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="number" style="width: 75px;" step="0.001" min="0" max="100"
+                                               name="custom_temperature_comp" value="{{ CustomTempComp }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <p>
+                        Compensated environmental temperature formula is as follows<br>
+                        (RawEnvTemperature + StaticOffset) - ((PiTemperature - RawEnvTemperature) x CF)<br>
+                        CF = Correction Factor set above
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <h2><i class="fas fa-arrow-alt-circle-up"></i> Automatic HTTP Upgrades</h2>
+                    <p>
+                        If you use Kootnet Sensors 'Remote Management' to manage other Kootnet Sensors,
+                        it's recommended to keep all sensors on the same version to maintain full compatibility
+                    </p>
+
+                    <br>
+
+                    <div style="display: inline-block; width: 250px;">
+                        <label>Check for updates every<br>(Hours)<br><br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="number" style="width: 100px;" name="auto_upgrade_delay_hours"
+                                               step="0.25" max="8760" value="{{ AutoUpDelayHours }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <br><br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sau-minor-toggle-switch" class="toggle-switch-input"
+                               onclick="ToggleStableAutoUpdates()" name="enable_stable_minor_auto_upgrades"
+                                {{ EnableStableMinorAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="sau-minor-toggle-switch"></label>
+                        <span style="color: green;">Stable Minor</span>
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="sau-feature-toggle-switch" class="toggle-switch-input"
+                               onclick="ToggleStableAutoUpdates()" name="enable_stable_feature_auto_upgrades"
+                                {{ EnableStableFeatureAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="sau-feature-toggle-switch"></label>
+                        <span style="color: orange;">Stable Feature</span>
+                    </label>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="dau-toggle-switch" class="toggle-switch-input"
+                               onclick="ToggleDevelopmentalAutoUpdates()" name="enable_dev_auto_upgrades"
+                                {{ EnableDevAutoUpgrades }}>
+                        <label class="toggle-switch-label" for="dau-toggle-switch"></label>
+                        <span style="color: orangered;">Developmental</span>
+                    </label>
+
+                    <br>
+
+                    <h4>Upgrade Examples</h4>
+                    <p><i>
+                        <b style="color: green;">Stable Minor</b>: Beta.33.10 to Beta.33.11<br>
+                        <b style="color: orange;">Stable Feature</b>: Beta.33.11 to Beta.34.0<br>
+                        <b style="color: orangered;">Developmental</b>: Updates to the current version under Development
+                        <br><br>
+                        * Developmental versions often contain bugs *
+                    </i></p>
+
+                    <br><br><br><br><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="pure-button">Update</button>
+    <br><br><br><br>
+</form>
+
+<script>
+    function ToggleStableAutoUpdates() {
+        if (document.getElementById("sau-feature-toggle-switch").checked || document.getElementById("sau-minor-toggle-switch").checked) {
+            document.getElementById("dau-toggle-switch").checked = false;
+        }
+    }
+
+    function ToggleDevelopmentalAutoUpdates() {
+        if (document.getElementById("dau-toggle-switch").checked) {
+            document.getElementById("sau-minor-toggle-switch").checked = false;
+            document.getElementById("sau-feature-toggle-switch").checked = false;
+        }
+    }
+
+    if (screen.width < 500) {
+            document.getElementById('checkin_address').style.width = '350px';
+        }
+</script>

@@ -16,14 +16,18 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
 from operations_modules import logger
-from operations_modules.app_generic_functions import get_file_content
+from operations_modules import file_locations
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import get_file_content, thread_function
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_display import CreateDisplayConfiguration
+from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
-from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_email import CreateEmailConfiguration
 from configuration_modules.config_mqtt_broker import CreateMQTTBrokerConfiguration
 from configuration_modules.config_mqtt_publisher import CreateMQTTPublisherConfiguration
@@ -32,7 +36,6 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_sensor_control import CreateSensorControlConfiguration
-from configuration_modules.config_check_ins import CreateCheckinConfiguration
 
 
 def successful_upgrade_message(config_name="Generic"):
@@ -51,6 +54,20 @@ def reset_installed_sensors(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_display_config(log_reset=True):
+    """ Writes a default Display configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Display Configuration Reset ****")
+    CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_checkin_config(log_reset=True):
+    """ Writes a default Checkin configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Checkin Configuration Reset ****")
+    CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_interval_recording_config(log_reset=True):
@@ -72,13 +89,6 @@ def reset_trigger_variance_config(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Trigger Variances Configuration Reset ****")
     CreateTriggerVariancesConfiguration(load_from_file=False).save_config_to_file()
-
-
-def reset_display_config(log_reset=True):
-    """ Writes a default Display configuration file. """
-    if log_reset:
-        logger.primary_logger.warning(" **** Display Configuration Reset ****")
-    CreateDisplayConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_email_config(log_reset=True):
@@ -137,13 +147,6 @@ def reset_sensor_control_config(log_reset=True):
     CreateSensorControlConfiguration(load_from_file=False).save_config_to_file()
 
 
-def reset_checkin_config(log_reset=True):
-    """ Writes a default Checkin configuration file. """
-    if log_reset:
-        logger.primary_logger.warning(" **** Checkin Configuration Reset ****")
-    CreateCheckinConfiguration(load_from_file=False).save_config_to_file()
-
-
 def reset_all_configurations(log_reset=True):
     """
     Resets all configuration files to Default settings.
@@ -151,10 +154,11 @@ def reset_all_configurations(log_reset=True):
     """
     reset_primary_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
+    reset_display_config(log_reset=log_reset)
+    reset_checkin_config(log_reset=log_reset)
     reset_interval_recording_config(log_reset=log_reset)
     reset_trigger_high_low_config(log_reset=log_reset)
     reset_trigger_variance_config(log_reset=log_reset)
-    reset_display_config(log_reset=log_reset)
     reset_email_config(log_reset=log_reset)
     reset_mqtt_broker_config(log_reset=log_reset)
     reset_mqtt_publisher_config(log_reset=log_reset)
@@ -163,17 +167,66 @@ def reset_all_configurations(log_reset=True):
     reset_luftdaten_config(log_reset=log_reset)
     reset_open_sense_map_config(log_reset=log_reset)
     reset_sensor_control_config(log_reset=log_reset)
-    reset_checkin_config(log_reset=log_reset)
 
 
-def load_and_save_config_no_logging(configuration_creation_class):
+def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True):
     """ Creates configuration class, loads the config and saves it without logging. """
     new_config_instance = configuration_creation_class(load_from_file=False)
     try:
         old_config_text = get_file_content(new_config_instance.config_file_location)
         new_config_instance.set_config_with_str(old_config_text)
         new_config_instance.save_config_to_file()
-        logger.primary_logger.info(" ** Configuration " + new_config_instance.config_file_location + " Upgraded")
+        if upgrade_msg:
+            logger.primary_logger.info(" ** Configuration " + new_config_instance.config_file_location + " Upgraded")
     except Exception as error:
         log_msg = " ***** Configuration " + new_config_instance.config_file_location
         logger.primary_logger.error(log_msg + " Upgrade Failed: " + str(error))
+
+
+def load_and_save_all_configs_silently():
+    ccl = [CreatePrimaryConfiguration, CreateInstalledSensorsConfiguration, CreateIntervalRecordingConfiguration,
+           CreateTriggerHighLowConfiguration, CreateTriggerVariancesConfiguration, CreateDisplayConfiguration,
+           CreateEmailConfiguration, CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration,
+           CreateMQTTSubscriberConfiguration, CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration,
+           CreateOpenSenseMapConfiguration, CreateSensorControlConfiguration, CreateCheckinConfiguration]
+    for config in ccl:
+        upgrade_config_load_and_save(config, upgrade_msg=False)
+
+
+def upgrade_python_pip_modules():
+    if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
+        requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()
+        requirements_list = requirements_text.split("\n")
+        thread_function(_pip_upgrades_thread, args=requirements_list)
+
+
+def _pip_upgrades_thread(requirements_list):
+    logger.primary_logger.info("Python3 Module Upgrades Started")
+    try:
+        app_cached_variables.sensor_ready_for_upgrade = False
+        for requirement in requirements_list:
+            if requirement[0] != "#":
+                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + requirement.strip()
+                os.system(command)
+        logger.primary_logger.info("Python3 Module Upgrades Complete")
+        os.system(app_cached_variables.bash_commands["RestartService"])
+    except Exception as error:
+        logger.primary_logger.error("Python3 Module Upgrades Error: " + str(error))
+        app_cached_variables.sensor_ready_for_upgrade = True
+
+
+def upgrade_linux_os():
+    thread_function(_upgrade_linux_os_thread)
+
+
+def _upgrade_linux_os_thread():
+    """ Runs a bash command to upgrade the Linux System with apt-get. """
+    try:
+        app_cached_variables.sensor_ready_for_upgrade = False
+        os.system(app_cached_variables.bash_commands["UpgradeSystemOS"])
+        logger.primary_logger.warning("Linux OS Upgrade Done")
+        logger.primary_logger.info("Rebooting System")
+        os.system(app_cached_variables.bash_commands["RebootSystem"])
+    except Exception as error:
+        logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
+        app_cached_variables.sensor_ready_for_upgrade = True

@@ -1,0 +1,76 @@
+<h2><i class="far fa-arrow-alt-circle-up"></i> Software Upgrades</h2>
+<button type="button" class="pure-button" onclick="UpgradeMessage('Kootnet Sensor HTTP', 'rm-upgrade-http')">
+    Upgrade - HTTP
+</button>
+<button type="button" class="pure-button" onclick="UpgradeMessage('Kootnet Sensor SMB', 'rm-upgrade-smb')">
+    Upgrade - SMB
+</button>
+
+<br><br>
+
+<button style="background: orange;" type="button" class="pure-button"
+        onclick="UpgradeDevMessage('Kootnet Sensor HTTP', 'rm-upgrade-dev-http')">
+    DEV Upgrade - HTTP
+</button>
+
+<button style="background: orange;" type="button" class="pure-button"
+        onclick="UpgradeDevMessage('Kootnet Sensor SMB', 'rm-upgrade-dev-smb')">
+    DEV Upgrade - SMB
+</button>
+
+<br><br>
+
+<button style="background: red;" type="button" class="pure-button" onclick="CleanUpgradeHTTP()">
+    Re-install Using Latest Standard - HTTP
+</button>
+
+<h2><i class="far fa-arrow-alt-circle-up"></i> System Upgrades</h2>
+<button type="button" class="pure-button" onclick="UpgradeMessage('System OS', 'rm-upgrade-system-os')">
+    Upgrade OS & Reboot
+</button>
+
+<button type="button" class="pure-button" onclick="UpgradeMessage('Python Module', 'rm-upgrade-pip-modules')">
+    Upgrade Python3 Modules & Restart Service
+</button>
+
+<h2><i class="fas fa-power-off"></i> Power Commands</h2>
+<button type="button" class="pure-button" onclick="PowerMessage('program restart', 'rm-power-restart-program')">
+    Restart Program
+</button>
+
+<button type="button" class="pure-button" onclick="PowerMessage('system reboot', 'rm-power-reboot-system')">
+    Reboot System
+</button>
+
+<script>
+    const dev_upgrade_message = "Developmental Builds can be unstable\n"
+    const CU_message = "This will require Internet access on all remote sensors and may take up to 10 minutes. "
+
+    function UpgradeMessage(upgrade_type, page_url) {
+        let r = confirm("Initiate " + upgrade_type + " remote upgrades now?");
+        if (r === true) {
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
+        }
+    }
+
+    function UpgradeDevMessage(upgrade_type, page_url) {
+        let r = confirm(dev_upgrade_message + "Initiate " + upgrade_type + " DEV remote upgrades now?");
+        if (r === true) {
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
+        }
+    }
+
+    function CleanUpgradeHTTP() {
+        let r = confirm(CU_message + "You will be unable to access the sensors during this time.\nRun now?");
+        if (r === true) {
+            jQuery("#main-page-view").load("/atpro/rm/functions/rm-upgrade-clean-http");
+        }
+    }
+
+    function PowerMessage(power_type, page_url) {
+        let r = confirm("Initiate remote " + power_type + " now?");
+        if (r === true) {
+            jQuery("#main-page-view").load("/atpro/rm/functions/" + page_url);
+        }
+    }
+</script>

@@ -38,7 +38,6 @@ class CreateSGP30:
         try:
             sgp30_import = __import__("sensor_modules.drivers.sgp30", fromlist=["SGP30"])
             self.sensor = sgp30_import.SGP30()
-            self.sensor.start_measurement()
             self.thread_readings_updater = Thread(target=self._readings_updater)
             self.thread_readings_updater.daemon = True
             self.thread_readings_updater.start()
@@ -49,15 +48,21 @@ class CreateSGP30:
             app_config_access.installed_sensors.update_configuration_settings_list()
 
     def _readings_updater(self):
+        thread_measurement_updater = Thread(target=self.sensor.start_measurement)
+        thread_measurement_updater.daemon = True
+        thread_measurement_updater.start()
         logger.sensors_logger.debug("Pimoroni SGP30 readings updater started")
+
+        # Wait for thread_measurement_updater to get started (prevents error in logs)
+        time.sleep(5)
         while True:
             try:
                 start_time = time.time()
                 eco2, tvoc = self.sensor.get_air_quality()
                 end_time = time.time()
                 self.sensor_latency = float(end_time - start_time)
-                self.gas_resistance_var = tvoc / 1000
-                self.e_co2_var = eco2 / 1000
+                self.gas_resistance_var = tvoc
+                self.e_co2_var = eco2
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni SGP30 Readings Update Failed: " + str(error))
                 self.gas_resistance_var = 0.0

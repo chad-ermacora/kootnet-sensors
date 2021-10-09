@@ -1,0 +1,99 @@
+<style>
+    .info-box-data {
+        color: blue;
+        font-weight: bold;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><a style="color: var(--main-color); text-decoration-line: none;"
+                       href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')">
+                    <i class="fas fa-broadcast-tower"></i> MQTT Subscriber
+                </a></h2>
+
+                <h4>
+                    Up to {{ MQTTShowing }} of the last MQTT Subscriber Messages are shown<br><br>
+                    This will automatically refresh every 5 minutes
+                </h4>
+
+                <button class="pure-button" type="button"
+                        onclick="window.open('/atpro/mqtt-subscriber-sensors-list', '_blank')">
+                    View MQTT Subscriber Sensors List
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="fas fa-info-circle"></i> MQTT Subscriber Information</h2>
+                <h3>
+                    <span>MQTT Subscriber Status: </span>
+                    <span style="color: {{ MQTTEnabledColor }};">{{ MQTTSubscriberEnabledText }}</span>
+
+                    <br>
+
+                    <span>Recording Status: </span>
+                    <span style="color: {{ MQTTSQLEnabledColor }};">{{ MQTTSQLSubscriberEnabledText }}</span>
+
+                    <br>
+
+                    <span>Broker Address: </span>{{ MQTTSubscriberServerAddress }}
+
+                    <br>
+
+                    <span>Database Size: </span>{{ MQTTSubDatabaseSize }} MB
+
+                    <br>
+
+                    <span>Sensors in Database: </span>{{ SQLMQTTSensorsInDB }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="far fa-trash-alt"></i> MQTT Log Clean-up</h2>
+                <h3>Showing up to {{ MQTTShowing }} log entries out of a total of {{ MQTTTotoalEntries }}</h3>
+                <button class="pure-button" onclick="ClearMQTTSubLogs()">Clear Log</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">{{ SubscriberTopicsContent | safe }}</div>
+
+<script>
+    function ClearMQTTSubLogs() {
+        let r = confirm("This cannot be undone, are you sure?");
+        if (r === true) {
+            window.location = "/atpro/mqtt-subscriber-clear-log"
+        }
+    }
+
+    function RefreshPageTimed() {
+        SelectNav("mqtt-subscriber-view-data-stream");
+    }
+
+    refresh_timer = setTimeout(() => {
+        clearTimeout(refresh_timer);
+        RefreshPageTimed();
+    }, 300000);
+
+    if (screen.width < 500) {
+        let sensor_id = document.getElementsByClassName("sensor-id");
+        for (let i = 0; i < sensor_id.length; i++) {
+            document.getElementsByClassName('sensor-id')[i].style.fontSize = 'medium';
+        }
+    }
+</script>
+
+<script>
+    CheckNotificationsAsync();
+</script>

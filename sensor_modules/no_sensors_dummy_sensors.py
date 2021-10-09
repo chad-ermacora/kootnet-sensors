@@ -20,101 +20,107 @@ class CreateNoSensorsDummySensor:
     @staticmethod
     def display_text(message):
         """ Does Nothing. """
-        logger.primary_logger.warning("Dummy 'NoSensor' Display Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Display Accessed")
         print(str(message))
 
     @staticmethod
     def cpu_temperature():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' CPU Temperature Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' CPU Temperature Accessed")
         return 0.0
 
     @staticmethod
     def temperature():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Environment Temperature Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Environment Temperature Accessed")
         return 0.0
 
     @staticmethod
     def pressure():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Pressure Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Pressure Accessed")
         return 0.0
 
     @staticmethod
     def humidity():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Humidity Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Humidity Accessed")
         return 0.0
 
     @staticmethod
     def distance():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Distance Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Distance Accessed")
         return 0.0
 
     @staticmethod
     def gas_resistance_index():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Gas Resistance Index Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Gas Resistance Index Accessed")
         return 0.0
 
     @staticmethod
     def gas_data():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Gas Data Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Gas Data Accessed")
         return 0.0
 
     @staticmethod
     def particulate_matter_data():
         """ Returns a list of 3 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Particulate Matter Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Particulate Matter Accessed")
         return [0.0, 0.0, 0.0, 0.0]
 
     @staticmethod
     def ultra_violet_index():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Ultra Violet Index Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Ultra Violet Index Accessed")
         return 0.0
 
     @staticmethod
     def ultra_violet():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Ultra Violet Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Ultra Violet Accessed")
         return 0.0
 
     @staticmethod
     def lumen():
         """ Returns 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Lumen Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Lumen Accessed")
         return 0.0
 
     @staticmethod
     def ems():
         """ Returns a list of 3 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' EMS Colors 3 Channel Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' EMS Colors 3 Channel Accessed")
         return [0.0, 0.0, 0.0]
 
     @staticmethod
     def spectral_six_channel():
         """ Returns a list of 6 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' EMS Colors 6 Channel Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' EMS Colors 6 Channel Accessed")
         return [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     @staticmethod
     def accelerometer_xyz():
         """ Returns a list of 3 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Accelerometer Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Accelerometer Accessed")
         return [0.0, 0.0, 0.0]
 
     @staticmethod
     def magnetometer_xyz():
         """ Returns a list of 3 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Magnetometer Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Magnetometer Accessed")
         return [0.0, 0.0, 0.0]
 
     @staticmethod
     def gyroscope_xyz():
         """ Returns a list of 3 0.0 """
-        logger.primary_logger.warning("Dummy 'NoSensor' Gyroscope Accessed")
+        logger.sensors_logger.warning("Dummy 'NoSensor' Gyroscope Accessed")
         return [0.0, 0.0, 0.0]
+
+    @staticmethod
+    def all_gps_data():
+        """ Returns a list of 11 'none' versions of GPS data. Mostly 0.0, one text '' and 3 0's """
+        logger.sensors_logger.warning("Dummy 'NoSensor' All GPS Data Accessed")
+        return [0.0, 0.0, 0.0, "", 0, 0, 0, 0.0, 0.0, 0.0, 0.0]

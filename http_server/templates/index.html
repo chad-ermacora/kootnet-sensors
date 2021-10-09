@@ -4,17 +4,29 @@
     <meta charset="UTF-8">
     <title>Kootnet Sensors</title>
 </head>
-<body style="background-color: black;">
+
+<style>
+    body {background-color: black;}
+    a {color: lightblue;}
+    b {color: red;}
+    p {color: white;}
+</style>
+
+<body>
     <h1><strong><u><a style="color: red;" href="/">Kootnet Sensors</a></u></strong></h1>
-    <h4><a style="color: purple;" href="/SensorInformation">Click Here to proceed to the Main Interface</a></h4>
-    <p style="color: white;">
-        <b style="color: red;">SensorID:</b> {{ SensorID }}<br><br>
-        <b style="color: red;">Version:</b> {{ KootnetVersion }}<br><br>
-        <b style="color: red;">HostName (Sensor Name):</b> {{ HostName }}<br><br>
-        <b style="color: red;">Local IP:</b> {{ LocalIP }}<br><br>
-        <b style="color: red;">Disk Space:</b> {{ DiskSpaceMessage | safe }}<br><br>
-        <b style="color: red;">Sensor's DateTime with TimeZone:</b>  {{ DateTime }}<br>
-        <b style="color: red;">Sensor's DateTime in UTC0:</b>  {{ DateTimeUTC }}
+
+    <h4><a href="/atpro/">Click Here to proceed to the Main Interface</a></h4>
+
+    <br>
+
+    <p>
+        <b>SensorID:</b> {{ SensorID }}<br><br>
+        <b>Version:</b> {{ KootnetVersion }}<br><br>
+        <b>HostName (Sensor Name):</b> {{ HostName }}<br><br>
+        <b>Local IP:</b> {{ LocalIP }}<br><br>
+        <b>Disk Space:</b> {{ DiskSpaceMessage | safe }}<br><br>
+        <b>Sensor's DateTime with TimeZone:</b>  {{ DateTime }}<br>
+        <b>Sensor's DateTime in UTC0:</b>  {{ DateTimeUTC }}
     </p>
 </body>
 </html>

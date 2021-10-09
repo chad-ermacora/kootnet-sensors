@@ -29,8 +29,8 @@ from operations_modules.app_generic_functions import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
 from tests import test_http_server
 
-compatible_version_str = "Beta.32.x"
-refined_compatible_version = CreateRefinedVersion("Beta.32.45")
+compatible_version_str = "Beta.34.x"
+refined_compatible_version = CreateRefinedVersion("Beta.34.144")
 remote_sensor_version = CreateRefinedVersion()
 
 

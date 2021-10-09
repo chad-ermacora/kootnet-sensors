@@ -1,0 +1,45 @@
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" enctype="multipart/form-data" action="/atpro/system-ssl-custom">
+                    <h1><i class="fab fa-expeditedssl"></i> Web Portal SSL Certificate</h1>
+                    <h3><span style="color: red; font-weight: bolder;">* Warning *</span><br><br>
+                        Invalid Certificate/Key pairs will prevent access to the Web Portal
+                    </h3>
+
+                    <br>
+
+                    <button class="pure-button" type="button" onclick="ReCreateSSLCertificates()">
+                        Create New Self-Signed SSL Certificate & Key
+                    </button>
+
+                    <br><br>
+
+                    <h4>Certificate File</h4>
+
+                    <input type="file" name="custom_crt" accept=".crt,.pem" required>
+
+                    <br><br>
+
+                    <h4>Key File</h4>
+
+                    <input type="file" name="custom_key" accept=".key,.pem" required>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Upload Custom SSL Files</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ReCreateSSLCertificates() {
+        let r = confirm("This will automatically restart the Service, are you sure?");
+        if (r === true) {
+            window.location = "/atpro/system-ssl-new-self-sign"
+        }
+    }
+</script>

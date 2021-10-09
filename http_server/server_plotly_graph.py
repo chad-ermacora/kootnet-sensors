@@ -111,6 +111,9 @@ def _start_plotly_graph(graph_data, db_location):
         elif var_column == sql_column_names.humidity:
             graph_data.sql_humidity = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_humidity_date_time = sql_column_date_time
+        elif var_column == sql_column_names.dew_point:
+            graph_data.sql_dew_point = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
+            graph_data.sql_dew_point_date_time = sql_column_date_time
         elif var_column == sql_column_names.distance:
             graph_data.sql_distance = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location))
             graph_data.sql_distance_date_time = sql_column_date_time
@@ -226,50 +229,54 @@ def _plotly_graph(graph_data):
         except Exception as error:
             logger.primary_logger.error("Plotly Graph Creation - Failed: " + str(error))
     else:
-        logger.primary_logger.error("Graph Plot Failed - No SQL data found in Database within the selected Time Frame")
+        msg = "Plotly Graph Creation - Failed: No SQL data found in the database within the selected time frame"
+        logger.primary_logger.info(msg)
 
 
 def check_form_columns(form_request):
     sql_column_selection = [app_cached_variables.database_variables.all_tables_datetime,
                             app_cached_variables.database_variables.sensor_name,
                             app_cached_variables.database_variables.ip]
-    if form_request.get("SensorUptime") is not None:
+    if form_request.get("sensor_uptime") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.sensor_uptime)
 
-    if form_request.get("CPUTemp") is not None:
+    if form_request.get("cpu_temperature") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.system_temperature)
 
-    if form_request.get("EnvTemp") is not None:
+    if form_request.get("env_temperature") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.env_temperature)
 
-    if form_request.get("Pressure") is not None:
+    if form_request.get("pressure") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.pressure)
 
-    if form_request.get("Altitude") is not None:
+    if form_request.get("altitude") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.altitude)
 
-    if form_request.get("Humidity") is not None:
+    if form_request.get("humidity") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.humidity)
 
-    if form_request.get("Distance") is not None:
+    if form_request.get("dew_point") is not None:
+        sql_column_selection.append(app_cached_variables.database_variables.dew_point)
+
+    if form_request.get("distance") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.distance)
 
-    if form_request.get("Gas") is not None:
+    if form_request.get("gas") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.gas_resistance_index)
         sql_column_selection.append(app_cached_variables.database_variables.gas_nh3)
         sql_column_selection.append(app_cached_variables.database_variables.gas_oxidising)
         sql_column_selection.append(app_cached_variables.database_variables.gas_reducing)
 
-    if form_request.get("ParticulateMatter") is not None:
+    if form_request.get("particulate_matter") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_1)
         sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_2_5)
         sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_4)
         sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_10)
 
-    if form_request.get("Lumen") is not None:
+    if form_request.get("lumen") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.lumen)
 
-    if form_request.get("Colours") is not None:
+    if form_request.get("colour") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.red)
         sql_column_selection.append(app_cached_variables.database_variables.orange)
         sql_column_selection.append(app_cached_variables.database_variables.yellow)
@@ -277,22 +284,22 @@ def check_form_columns(form_request):
         sql_column_selection.append(app_cached_variables.database_variables.blue)
         sql_column_selection.append(app_cached_variables.database_variables.violet)
 
-    if form_request.get("UltraViolet") is not None:
+    if form_request.get("ultra_violet") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_index)
         sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_a)
         sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_b)
 
-    if form_request.get("Accelerometer") is not None:
+    if form_request.get("accelerometer") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.acc_x)
         sql_column_selection.append(app_cached_variables.database_variables.acc_y)
         sql_column_selection.append(app_cached_variables.database_variables.acc_z)
 
-    if form_request.get("Magnetometer") is not None:
+    if form_request.get("magnetometer") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.mag_x)
         sql_column_selection.append(app_cached_variables.database_variables.mag_y)
         sql_column_selection.append(app_cached_variables.database_variables.mag_z)
 
-    if form_request.get("Gyroscope") is not None:
+    if form_request.get("gyroscope") is not None:
         sql_column_selection.append(app_cached_variables.database_variables.gyro_x)
         sql_column_selection.append(app_cached_variables.database_variables.gyro_y)
         sql_column_selection.append(app_cached_variables.database_variables.gyro_z)

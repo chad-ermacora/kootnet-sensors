@@ -1,0 +1,17 @@
+<script>
+    {{ ReportJavaScript }}
+</script>
+
+<script>
+    body.classList.remove(themeLight)
+    body.classList.add(themeDark)
+</script>
+
+<script>
+    if (screen.width < 500) {
+        let sensor_id = document.getElementsByClassName("sensor-id");
+        for (let i = 0; i < sensor_id.length; i++) {
+            sensor_id.item(i).style.fontSize = 'small';
+        }
+    }
+</script>

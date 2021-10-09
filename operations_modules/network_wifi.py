@@ -21,6 +21,8 @@ from operations_modules import app_generic_functions
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 
+wifi_type_secured = "WPA-PSK WPA-EAP SAE"
+
 
 def get_wifi_country_code(wifi_config_lines):
     """
@@ -89,13 +91,14 @@ def html_request_to_config_wifi(html_request):
         wifi_psk1 = html_request.form.get("wifi_key1")
 
         if wifi_security_type1 == "wireless_wpa":
-            wifi_security_type1 = ""
+            wifi_security_type1 = wifi_type_secured
             if wifi_psk1 is not "":
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", wifi_psk1)
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", 'psk="' + wifi_psk1 + '"')
             else:
-                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", app_cached_variables.wifi_psk)
+                wifi_psk1 = app_cached_variables.wifi_psk
+                wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", 'psk="' + wifi_psk1 + '"')
         else:
-            wifi_security_type1 = "key_mgmt=None"
+            wifi_security_type1 = "None"
             wifi_template = wifi_template.replace("{{ WirelessPSK1 }}", "")
 
         wifi_template = wifi_template.replace("{{ WirelessCountryCode }}", wifi_country_code)

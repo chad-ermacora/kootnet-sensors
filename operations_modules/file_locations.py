@@ -21,6 +21,27 @@
 import os
 from getpass import getuser
 
+
+def _check_directories():
+    create_directories = [sensor_data_dir, sensor_config_dir,
+                          custom_ip_lists_folder, uploaded_databases_folder,
+                          sensor_data_dir + "/logs", database_backup_folder,
+                          sensor_data_dir + "/scripts"]
+
+    if os.geteuid() == 0:
+        current_directory = ""
+        for found_dir in mosquitto_configuration.split("/")[1:-1]:
+            current_directory += "/" + str(found_dir)
+            create_directories.append(current_directory)
+
+    for directory in create_directories:
+        if not os.path.isdir(directory):
+            try:
+                os.mkdir(directory)
+            except Exception as dir_error:
+                print(" -- Make Directory Error: " + str(dir_error))
+
+
 # Holds the location of required files such as configurations and extra resources
 # Locations change to the user's home directory + /kootnet_data if not run with root
 program_root_dir = ""
@@ -95,7 +116,7 @@ plotly_graph_custom = sensor_data_dir + "/CustomPlotlyGraph.html"
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
-display_font = program_root_dir + "/extras/DejaVuSans-Bold.ttf"
+display_font = program_root_dir + "/http_server/extras/fontawesome-free/webfonts/fa-solid-900.ttf"
 dhcpcd_config_file_template = program_root_dir + "/extras/dhcpcd_template.conf"
 wifi_config_file_template = program_root_dir + "/extras/wpa_supplicant_template.conf"
 
@@ -104,19 +125,23 @@ http_ssl_key = http_ssl_folder + "/kootnet_default.key"
 http_ssl_csr = http_ssl_folder + "/kootnet_default.csr"
 http_ssl_crt = http_ssl_folder + "/kootnet_default.crt"
 
-html_combo_report = program_root_dir + "/http_server/templates/non-flask/report_3_combo.html"
+html_report_css = program_root_dir + "/http_server/templates/ATPro_admin/style.css"
+html_report_js = program_root_dir + "/http_server/templates/ATPro_admin/index.js"
+html_report_pure_css = program_root_dir + "/http_server/extras/pure-min.css"
+html_pure_css_menu = program_root_dir + "/http_server/templates/ATPro_admin/pure-horizontal-menu.css"
 
-html_report_system1_start = program_root_dir + "/http_server/templates/non-flask/report_system1_start.html"
-html_report_system2_sensor = program_root_dir + "/http_server/templates/non-flask/report_system2_sensor.html"
-html_report_system3_end = program_root_dir + "/http_server/templates/non-flask/report_system3_end.html"
+atpro_reports_folder = program_root_dir + \
+                       "/http_server/templates/ATPro_admin/page_templates/remote_management/report_templates/"
 
-html_report_config1_start = program_root_dir + "/http_server/templates/non-flask/report_config1_start.html"
-html_report_config2_sensor = program_root_dir + "/http_server/templates/non-flask/report_config2_sensor.html"
-html_report_config3_end = program_root_dir + "/http_server/templates/non-flask/report_config3_end.html"
+html_report_all_start = atpro_reports_folder + "report-all-start.html"
+html_report_all_end = atpro_reports_folder + "report-all-end.html"
+html_combo_report = atpro_reports_folder + "report-combo.html"
 
-html_report_sensors_test1_start = program_root_dir + "/http_server/templates/non-flask/report_sensors_test1_start.html"
-html_report_sensors_test2_sensor = program_root_dir + "/http_server/templates/non-flask/report_sensors_test2_sensor.html"
-html_report_sensors_test3_end = program_root_dir + "/http_server/templates/non-flask/report_sensors_test3_end.html"
+html_report_template = atpro_reports_folder + "report-template.html"
 
-html_report_sensors_latency1_start = program_root_dir + "/http_server/templates/non-flask/report_sensors_latency1_start.html"
-html_report_sensors_latency2_sensor = program_root_dir + "/http_server/templates/non-flask/report_sensors_test2_sensor.html"
+html_report_sensor_error_template = atpro_reports_folder + "report-sensor-error-template.html"
+html_report_system_sensor_template = atpro_reports_folder + "report-system-sensor-template.html"
+html_report_config_sensor_template = atpro_reports_folder + "report-configurations-sensor-template.html"
+html_report_sensor_readings_latency_template = atpro_reports_folder + "report-readings-latency-sensor-template.html"
+
+_check_directories()

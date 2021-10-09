@@ -31,7 +31,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         installed_sensors_config = file_locations.installed_sensors_config
         CreateGeneralConfiguration.__init__(self, installed_sensors_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 25
+        self.valid_setting_count = 29
         w1_therm_sensor = "W1ThermSensor - Maxim/Dallas DS18S20 / DS1822 / DS18B20 / DS28EA00 / DS1825/MAX31850K"
         self.config_settings_names = [
             "Kootnet Dummy Sensors", "Gnu/Linux", "Raspberry Pi", "Raspberry Pi Sense HAT", "Pimoroni BH1745",
@@ -40,7 +40,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             "Pimoroni MSA301", "Pimoroni LSM303D", "Pimoroni ICM20948", "Pimoroni VL53L1X", "Pimoroni LTR-559",
             "Pimoroni VEML6075", "Pimoroni 11x7 LED Matrix", "Pimoroni 10.96 SPI Colour LCD (160x80)",
             "Pimoroni 1.12 Mono OLED (128x128, white/black)", "Sensirion SPS30", w1_therm_sensor,
-            "Pimoroni Enviro with Display"
+            "Pimoroni Enviro with Display", "Pimoroni BME280", "Pimoroni MICS6814", "Pimoroni RV3028", "PA1010D GPS"
         ]
 
         self.no_sensors = True
@@ -55,6 +55,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.pimoroni_as7262 = 0
         self.pimoroni_mcp9600 = 0
         self.pimoroni_bmp280 = 0
+        self.pimoroni_bme280 = 0
         self.pimoroni_bme680 = 0
         self.pimoroni_enviro = 0
         self.pimoroni_enviro2 = 0
@@ -67,10 +68,14 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.pimoroni_vl53l1x = 0
         self.pimoroni_ltr_559 = 0
         self.pimoroni_veml6075 = 0
+        self.pimoroni_mics6814 = 0
 
         self.pimoroni_matrix_11x7 = 0
         self.pimoroni_st7735 = 0
         self.pimoroni_mono_oled_luma = 0
+
+        self.pimoroni_rv3028 = 0
+        self.pimoroni_pa1010d = 0
 
         self.sensirion_sps30 = 0
 
@@ -107,6 +112,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.pimoroni_mcp9600 = 1
             if html_request.form.get("pimoroni_bmp280") is not None:
                 self.pimoroni_bmp280 = 1
+            if html_request.form.get("pimoroni_bme280") is not None:
+                self.pimoroni_bme280 = 1
             if html_request.form.get("pimoroni_bme680") is not None:
                 self.pimoroni_bme680 = 1
             if html_request.form.get("pimoroni_enviro") is not None:
@@ -131,12 +138,18 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 self.pimoroni_ltr_559 = 1
             if html_request.form.get("pimoroni_veml6075") is not None:
                 self.pimoroni_veml6075 = 1
+            if html_request.form.get("pimoroni_mics6814") is not None:
+                self.pimoroni_mics6814 = 1
             if html_request.form.get("pimoroni_matrix_11x7") is not None:
                 self.pimoroni_matrix_11x7 = 1
             if html_request.form.get("pimoroni_st7735") is not None:
                 self.pimoroni_st7735 = 1
             if html_request.form.get("pimoroni_mono_oled_luma") is not None:
                 self.pimoroni_mono_oled_luma = 1
+            if html_request.form.get("pimoroni_rv3028") is not None:
+                self.pimoroni_rv3028 = 1
+            if html_request.form.get("pimoroni_pa1010d") is not None:
+                self.pimoroni_pa1010d = 1
             if html_request.form.get("kootnet_dummy_sensor") is not None:
                 self.kootnet_dummy_sensor = 1
             if html_request.form.get("sensirion_sps30") is not None:
@@ -173,7 +186,8 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             str(self.pimoroni_msa301), str(self.pimoroni_lsm303d), str(self.pimoroni_icm20948),
             str(self.pimoroni_vl53l1x), str(self.pimoroni_ltr_559), str(self.pimoroni_veml6075),
             str(self.pimoroni_matrix_11x7), str(self.pimoroni_st7735), str(self.pimoroni_mono_oled_luma),
-            str(self.sensirion_sps30), str(self.w1_therm_sensor), str(self.pimoroni_enviro2)
+            str(self.sensirion_sps30), str(self.w1_therm_sensor), str(self.pimoroni_enviro2), str(self.pimoroni_bme280),
+            str(self.pimoroni_mics6814), str(self.pimoroni_rv3028), str(self.pimoroni_pa1010d)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -203,6 +217,10 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.sensirion_sps30 = int(self.config_settings[22])
             self.w1_therm_sensor = int(self.config_settings[23])
             self.pimoroni_enviro2 = int(self.config_settings[24])
+            self.pimoroni_bme280 = int(self.config_settings[25])
+            self.pimoroni_mics6814 = int(self.config_settings[26])
+            self.pimoroni_rv3028 = int(self.config_settings[27])
+            self.pimoroni_pa1010d = int(self.config_settings[28])
             for sensor in self.config_settings:
                 if sensor:
                     self.no_sensors = False

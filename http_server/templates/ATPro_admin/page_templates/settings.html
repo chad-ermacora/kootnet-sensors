@@ -1,0 +1,210 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
+<style>
+    input, form {
+        display: inline-block;
+    }
+
+    .settings-page-view {
+        display: inline-block;
+        vertical-align: top;
+        width: fit-content;
+    }
+</style>
+
+<div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-main">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-main')">
+                    <i class="fas fa-clipboard-check"></i> Main
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-is">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-is')">
+                    <i class="fas fa-microchip"></i> Installed Sensors
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-display">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-display')">
+                    <i class="fas fa-tv"></i> Display
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="pure-menu">
+        <ul class="pure-menu-list">
+            <li class="pure-menu-item settings-cs">
+                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-cs')">
+                    <i class="fas fa-satellite"></i> Sensor Checkins
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-interval settings-hl settings-variances">
+                    <a style="cursor: default;" href="#" class="pure-menu-link">
+                        <i class="fas fa-database"></i> SQL Recording
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-interval')">
+                                Interval
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-hl')">
+                                High/Low Triggers
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-variances')">
+                                Variance Triggers
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-email-reports settings-email-graphs settings-email-settings">
+                    <a style="cursor: default;" href="#" class="pure-menu-link">
+                        <i class="far fa-envelope"></i> Email
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-reports')">
+                                Reports
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-graphs')">
+                                Graphs
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-email-settings')">
+                                SMTP Settings
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                 settings-mqtt-p settings-mqtt-s settings-mqtt-b">
+                    <a style="cursor: default;" href="#" class="pure-menu-link">
+                        <i class="fas fa-broadcast-tower"></i> MQTT
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-p')">
+                                Publisher
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-s')">
+                                Subscriber
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-mqtt-b')">
+                                Broker
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                settings-osm settings-wu settings-luftdaten">
+                    <a style="cursor: default;" href="#" class="pure-menu-link">
+                        <i class="fas fa-plus-circle"></i> 3rd Party Services
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-osm')">
+                                Open Sense Map
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-wu')">
+                                Weather Underground
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link"
+                               onclick="SelectSettingsNav('settings-luftdaten')">
+                                Sensor Community
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<hr><br>
+
+<div class="settings-page-view" id="settings-page-view">
+    <div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content"><h1>
+        <i class="fas fa-hourglass-half"></i> Loading ...
+    </h1></div></div></div></div>
+</div>
+
+<script>
+    function SelectSettingsNav(nav_location) {
+        document.getElementById("settings-page-view").innerHTML = html_loading;
+
+        document.getElementsByClassName("settings-main")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-interval")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-display")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-email-reports")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-cs")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-mqtt-p")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-osm")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        jQuery("#settings-page-view").load("/atpro/" + nav_location);
+    }
+
+    {{ RunScript | safe }}
+</script>
+
+<script>
+    CheckNotificationsAsync();
+</script>

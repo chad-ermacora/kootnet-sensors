@@ -181,6 +181,75 @@ class CreateMonitoredThread:
         self.shutdown_thread = False
 
 
+def thread_function(function, args=None):
+    """ Starts provided function as a thread with optional arguments. """
+
+    if args:
+        system_thread = Thread(target=function, args=[args])
+    else:
+        system_thread = Thread(target=function)
+    system_thread.daemon = True
+    system_thread.start()
+
+
+def start_and_wait_threads(threads_list):
+    """ Starts provided list of threads and waits for them all to complete. """
+
+    for thread in threads_list:
+        thread.start()
+    for thread in threads_list:
+        thread.join()
+
+
+def get_list_of_filenames_in_dir(folder_location, sort_list=True):
+    """
+    Takes a folder argument and returns a list of filenames from it
+    Optional: Set sort_list to True or False to return a sorted list, Default = True
+    """
+    return_filenames_list = []
+    try:
+        _, _, filenames = next(os.walk(folder_location))
+        for f_name in filenames:
+            return_filenames_list.append(f_name)
+        if sort_list:
+            return_filenames_list.sort()
+    except Exception as custom_db_error:
+        log_msg = " -- Error getting list of filenames in folder " + folder_location + ": "
+        logger.primary_logger.warning(log_msg + str(custom_db_error))
+    return return_filenames_list
+
+
+def get_file_size(file_location, round_to=2, return_as_level=1):
+    """
+     Returns provided file size. By default returns main Database Size.
+     Set return_as_level to 0 for bytes, 1 for MB and 2 for GB.
+     Set round_to for remainder length (Default 2).
+    """
+    if os.path.isfile(file_location):
+        db_size = os.path.getsize(file_location)
+        if db_size != 0:
+            if return_as_level == 1:
+                db_size = db_size / 1024 / 1024
+            elif return_as_level == 2:
+                db_size = db_size / 1024 / 1024 / 1024
+            db_size = round(db_size, round_to)
+        return db_size
+    return "0.0"
+
+
+def get_zip_size(zip_file):
+    """ Returns the size of provided Zip file. """
+
+    files_size = 0.0
+    try:
+        with ZipFile(zip_file, 'r') as zip_file_access:
+            for info in zip_file_access.infolist():
+                files_size += info.compress_size
+    except Exception as error:
+        logger.primary_logger.error("Error during get zip size: " + str(error))
+    return files_size
+
+
 def get_file_content(load_file, open_type="r"):
     """ Loads provided file and returns it's content. """
     logger.primary_logger.debug("Loading File: " + str(load_file))
@@ -209,42 +278,52 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
-def get_list_of_filenames_in_dir(folder_location, sort_list=True):
+def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
     """
-    Takes a folder argument and returns a list of filenames from it
-    Optional: Set sort_list to True or False to return a sorted list, Default = True
+    Creates a zip of 1 or more files provided as a list.
+    Saves to memory or disk based on save_type & file_location
     """
-    return_filenames_list = []
+
     try:
-        _, _, filenames = next(os.walk(folder_location))
-        for f_name in filenames:
-            return_filenames_list.append(f_name)
-        if sort_list:
-            return_filenames_list.sort()
-    except Exception as custom_db_error:
-        log_msg = " -- Error getting list of filenames in folder " + folder_location + ": "
-        logger.primary_logger.warning(log_msg + str(custom_db_error))
-    return return_filenames_list
+        if save_type == "get_bytes_io":
+            return_zip_file = BytesIO()
+        else:
+            return_zip_file = file_location
+        date_time = time.localtime(time.time())[:6]
+
+        file_meta_data_list = []
+        for name in file_names_list:
+            name_data = ZipInfo(name)
+            name_data.date_time = date_time
+            name_data.compress_type = ZIP_DEFLATED
+            file_meta_data_list.append(name_data)
+        with ZipFile(return_zip_file, "w") as zip_file:
+            for file_meta_data, file_content in zip(file_meta_data_list, files_content_list):
+                zip_file.writestr(file_meta_data, file_content)
+        if save_type == "get_bytes_io":
+            return_zip_file.seek(0)
+            return return_zip_file
+        return "Saved to disk"
+    except Exception as error:
+        logger.primary_logger.error("Zip Files Failed: " + str(error))
+        return "error"
 
 
-def thread_function(function, args=None):
-    """ Starts provided function as a thread with optional arguments. """
+def check_for_port_in_address(address):
+    """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
 
-    if args:
-        system_thread = Thread(target=function, args=[args])
-    else:
-        system_thread = Thread(target=function)
-    system_thread.daemon = True
-    system_thread.start()
+    ip_split = address.strip().split(":")
+    if len(ip_split) == 2:
+        return True
+    elif len(ip_split) > 2:
+        logger.network_logger.info("IPv6 Used in Sensor Control")
+    return False
 
 
-def start_and_wait_threads(threads_list):
-    """ Starts provided list of threads and waits for them all to complete. """
+def get_ip_and_port_split(address):
+    """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
 
-    for thread in threads_list:
-        thread.start()
-    for thread in threads_list:
-        thread.join()
+    return address.split(":")
 
 
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
@@ -282,126 +361,25 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         logger.network_logger.error(log_msg)
 
 
-def get_http_sensor_file(sensor_address, command, http_port="10065"):
-    """ Returns requested remote sensor file (based on the provided command data). """
-
-    if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/" + command
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
-        return tmp_return_data.content
-    except Exception as error:
-        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
-        return "Error"
-
-
-def http_display_text_on_sensor(text_message, sensor_address, http_port="10065"):
-    """ Sends provided text message to a remote sensor's display. """
-
-    if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/DisplayText"
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        send_data = {'command_data': text_message}
-        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
-        if tmp_return_data.text == "OK":
-            return True
-    except Exception as error:
-        logger.network_logger.error("Unable to display text on Sensor: " + str(error))
-    return False
-
-
-def check_for_port_in_address(address):
-    """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
-
-    ip_split = address.strip().split(":")
-    if len(ip_split) == 2:
-        return True
-    elif len(ip_split) > 2:
-        logger.network_logger.info("IPv6 Used in Sensor Control")
-    return False
-
-
-def get_ip_and_port_split(address):
-    """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
-
-    return address.split(":")
-
-
-def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
-    """
-    Creates a zip of 1 or more files provided as a list.
-    Saves to memory or disk based on save_type & file_location
-    """
+def get_html_response_bg_colour(response_time):
+    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
 
     try:
-        if save_type == "get_bytes_io":
-            return_zip_file = BytesIO()
-        else:
-            return_zip_file = file_location
-        date_time = time.localtime(time.time())[:6]
-
-        file_meta_data_list = []
-        for name in file_names_list:
-            name_data = ZipInfo(name)
-            name_data.date_time = date_time
-            name_data.compress_type = ZIP_DEFLATED
-            file_meta_data_list.append(name_data)
-        with ZipFile(return_zip_file, "w") as zip_file:
-            for file_meta_data, file_content in zip(file_meta_data_list, files_content_list):
-                zip_file.writestr(file_meta_data, file_content)
-        if save_type == "get_bytes_io":
-            return_zip_file.seek(0)
-            return return_zip_file
-        return "Saved to disk"
+        delay_float = float(response_time)
+        background_colour = "darkgreen"
+        if 0.0 <= delay_float < 0.5:
+            pass
+        elif 0.5 < delay_float < 0.75:
+            background_colour = "#859B14"
+        elif 0.75 < delay_float < 1.5:
+            background_colour = "#8b4c00"
+        elif 1.5 < delay_float:
+            background_colour = "red"
     except Exception as error:
-        logger.primary_logger.error("Zip Files Failed: " + str(error))
-        return "error"
-
-
-def get_zip_size(zip_file):
-    """ Returns the size of provided Zip file. """
-
-    files_size = 0.0
-    try:
-        with ZipFile(zip_file, 'r') as zip_file_access:
-            for info in zip_file_access.infolist():
-                files_size += info.compress_size
-    except Exception as error:
-        logger.primary_logger.error("Error during get zip size: " + str(error))
-    return files_size
-
-
-def replace_text_lists(original_text, old_list, new_list):
-    """
-    Replaces text in the provided 'original_text' argument.
-    original_text = a string of text.
-    old_list = a list of strings to replace in 'original_text'.
-    new_list = a list of strings that will replace the 'old_list' list of strings.
-    """
-
-    for old_text, new_text in zip(old_list, new_list):
-        original_text = original_text.replace(old_text, new_text)
-    return original_text
-
-
-def clear_zip_names():
-    """ Set's all sensor control download names to nothing ("") """
-
-    app_cached_variables.sc_reports_zip_name = ""
-    app_cached_variables.sc_logs_zip_name = ""
-    if app_cached_variables.sc_databases_zip_in_memory:
-        app_cached_variables.sc_databases_zip_name = ""
-    if app_cached_variables.sc_big_zip_in_memory:
-        app_cached_variables.sc_big_zip_name = ""
+        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
+        logger.network_logger.debug("Check Online Status Error: " + str(error))
+        background_colour = "purple"
+    return background_colour
 
 
 def save_to_memory_ok(write_size):
@@ -416,60 +394,31 @@ def save_to_memory_ok(write_size):
     return False
 
 
-def get_response_bg_colour(response_time):
-    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
-
-    try:
-        delay_float = float(response_time)
-        background_colour = "green"
-        if 0.0 <= delay_float < 0.3:
-            pass
-        elif 0.3 < delay_float < 0.5:
-            background_colour = "yellow"
-        elif 0.5 < delay_float < 1.0:
-            background_colour = "orange"
-        elif 1.0 < delay_float:
-            background_colour = "red"
-    except Exception as error:
-        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
-        logger.network_logger.debug("Check Online Status Error: " + str(error))
-        background_colour = "purple"
-    return background_colour
-
-
 def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
     """ Adjusts the provided datetime as a string by the provided hour offset and returns the result as a string. """
+    datetime_format = "%Y-%m-%d %H:%M:%S"
+    cleaned_datetime = var_datetime.strip()
 
-    try:
-        cleaned_datetime = var_datetime.strip()
-        year = cleaned_datetime[:4]
-        month_var = cleaned_datetime[5:7]
-        day_var = cleaned_datetime[8:10]
-        hour_var = cleaned_datetime[11:13]
-        min_var = cleaned_datetime[14:16]
-        second_var = cleaned_datetime[17:19]
+    if len(cleaned_datetime) == len(datetime_format):
+        try:
+            year = cleaned_datetime[:4]
+            month_var = cleaned_datetime[5:7]
+            day_var = cleaned_datetime[8:10]
+            hour_var = cleaned_datetime[11:13]
+            min_var = cleaned_datetime[14:16]
+            second_var = cleaned_datetime[17:19]
 
-        original_date_time = year + "-" + month_var + "-" + day_var + " " + \
-                             hour_var + ":" + min_var + ":" + second_var
-        adjusted_date = datetime.strptime(original_date_time, "%Y-%m-%d %H:%M:%S")
-        adjusted_date = adjusted_date + timedelta(hours=hour_offset)
-        replacement_date = adjusted_date.strftime("%Y-%m-%d %H:%M:%S")
-        if return_datetime_obj:
-            return adjusted_date
-        return replacement_date
-    except Exception as error:
-        logger.primary_logger.warning("Date Adjustment Error: " + str(error))
+            original_date_time = year + "-" + month_var + "-" + day_var + " " + \
+                                 hour_var + ":" + min_var + ":" + second_var
+            adjusted_date = datetime.strptime(original_date_time, datetime_format)
+            adjusted_date = adjusted_date + timedelta(hours=hour_offset)
+            replacement_date = adjusted_date.strftime(datetime_format)
+            if return_datetime_obj:
+                return adjusted_date
+            return replacement_date
+        except Exception as error:
+            logger.primary_logger.warning("Date Adjustment Error: " + str(error))
+            return var_datetime
+    else:
+        logger.primary_logger.debug("DateTime Adjustment input is invalid")
         return var_datetime
-
-
-def remove_line_from_text(text_var, line_numbers_list):
-    """ Removes specified line from provided configuration text. """
-
-    return_config = ""
-    for index, line_content in enumerate(text_var.split("\n")):
-        if index not in line_numbers_list:
-            return_config += line_content + "\n"
-        else:
-            setting_description = line_content.split("=")[1]
-            return_config += "Removed_for_viewing = " + setting_description + "\n"
-    return return_config

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Kootnet Sensors</title>
+
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+	<link rel="icon" type="image/png" href="/atpro/assets/AT-pro-logo.png"/>
+
+	<!-- Import lib -->
+    <link rel="stylesheet" type="text/css" href="/extras/pure-min.css">
+    <link rel="stylesheet" type="text/css" href="/extras/toggle-switch.css">
+	<link rel="stylesheet" type="text/css" href="/extras/fontawesome-free/css/all.min.css">
+	<!-- End import lib -->
+
+	<link rel="stylesheet" type="text/css" href="/atpro/style.css">
+</head>
+
+<style>
+    a {
+        color: var(--second-color);
+    }
+
+    input, form {
+        text-align: center;
+    }
+
+    .pure-button {
+        background-color: lightgrey;
+    }
+
+    .card-content {
+        text-align: center;
+    }
+
+    .sensor-info {
+        font-size: large;
+        font-weight: bolder;
+        color: orange;
+    }
+
+    .sensor-info-names {
+        font-size: x-large;
+        color: black;
+    }
+</style>
+
+<body class="overlay-scrollbar">
+	<!-- navbar -->
+	<div class="navbar">
+		<!-- nav left -->
+		<ul class="navbar-nav">
+			<li class="nav-item">
+				<a class="nav-link">
+					<i class="fas fa-bars" onclick="collapseSidebar()"></i>
+				</a>
+			</li>
+			<li class="nav-item"><a href="/atpro/">
+				<img src="/atpro/assets/AT-pro-black.png" alt="ATPro logo" class="logo logo-light">
+				<img src="/atpro/assets/AT-pro-white.png" alt="ATPro logo" class="logo logo-dark">
+			</a></li>
+		</ul>
+		<!-- end nav left -->
+		<!-- Page Header -->
+        <h2 class="navbar-page-header">
+            Sensor ID: {{ SensorID }}
+        </h2>
+		<!-- end Page Header -->
+		<!-- nav right -->
+		<ul class="navbar-nav nav-right">
+            <li class="nav-item mode">
+				<a class="nav-link" href="#" onclick="window.scrollTo(0, 0);">
+					<i class="fas fa-angle-double-up"></i>
+				</a>
+			</li>
+			<li class="nav-item mode">
+				<a class="nav-link" href="#/" onclick="switchTheme()">
+					<i class="fas fa-moon dark-icon"></i>
+					<i class="fas fa-sun light-icon"></i>
+				</a>
+			</li>
+			<li class="nav-item dropdown mode">
+				<a class="nav-link">
+					<i class="fas fa-bell dropdown-toggle" data-toggle="notification-menu"></i>
+					<span style="background-color: red; display: none;" id="notification-count" class="navbar-badge">
+                    </span>
+				</a>
+				<ul id="notification-menu" class="dropdown-menu notification-menu">
+					<div class="dropdown-menu-header">
+						<span>
+							Notifications
+						</span>
+					</div>
+					<div id="notification-content" class="dropdown-menu-content overlay-scrollbar scrollbar-hover">
+                    </div>
+					<div class="dropdown-menu-footer">
+						<span></span>
+					</div>
+				</ul>
+			</li>
+			<li class="nav-item avt-wrapper">
+				<div class="avt dropdown">
+					<img src="/atpro/assets/AT-pro-logo.png" alt="User image" class="dropdown-toggle" data-toggle="user-menu">
+					<ul id="user-menu" class="dropdown-menu">
+						<li class="dropdown-menu-item">
+							<a href="/" class="dropdown-menu-link">
+								<div>
+									<i class="fas fa-home"></i>
+								</div>
+								<span>Return to Index</span>
+							</a>
+						</li>
+                        <li class="dropdown-menu-item">
+							<a href="#" class="dropdown-menu-link"
+                               onclick="SelectNav('system-about', skip_menu_select=true)">
+								<div>
+									<i class="fas fa-info-circle"></i>
+								</div>
+								<span>About Software</span>
+							</a>
+						</li>
+                        <li class="dropdown-menu-item">
+							<a href="#" class="dropdown-menu-link"
+                               onclick="SelectNav('sensor-system', skip_menu_select=true)">
+								<div>
+									<i class="fas fa-wrench"></i>
+								</div>
+								<span>System</span>
+							</a>
+						</li>
+                        <li class="dropdown-menu-item">
+							<a href="#" class="dropdown-menu-link"
+                               onclick="SelectNav('sensor-logs', skip_menu_select=true)">
+								<div>
+									<i class="fas fa-clipboard"></i>
+								</div>
+								<span>Logs</span>
+							</a>
+						</li>
+						<li  class="dropdown-menu-item">
+							<a href="/atpro/logout" class="dropdown-menu-link">
+								<div>
+									<i class="fas fa-sign-out-alt"></i>
+								</div>
+								<span>Logout</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		</ul>
+		<!-- end nav right -->
+	</div>
+	<!-- end navbar -->
+	<!-- sidebar -->
+	<div class="sidebar">
+		<ul style="overflow-y: auto; overflow-x: hidden; padding-bottom: 125px;" class="sidebar-nav">
+			<li class="sidebar-nav-item">
+				<a id="sensor-dashboard" href="#" onclick="SelectNav('sensor-dashboard')" class="sidebar-nav-link active">
+					<div>
+						<i class="fas fa-tachometer-alt"></i>
+					</div>
+					<span>
+						Dashboard
+					</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-readings" href="#" onclick="SelectNav('sensor-readings')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-temperature-low"></i>
+					</div>
+					<span>Live Sensor Readings</span>
+				</a>
+			</li>
+            <li class="sidebar-nav-item">
+				<a id="sensor-latency" href="#" onclick="SelectNav('sensor-latency')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-hourglass-half"></i>
+					</div>
+					<span>Sensors Latency</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-notes" href="#" onclick="SelectNav('sensor-notes')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-book-open"></i>
+					</div>
+					<span>Notes</span>
+				</a>
+			</li>
+            <li class="sidebar-nav-item">
+				<a id="sensor-graphing-live" href="#" onclick="SelectNav('sensor-graphing-live')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-chart-line"></i>
+					</div>
+					<span>Quick Graphing</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-graphing-db" href="#" onclick="SelectNav('sensor-graphing-db')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-chart-bar"></i>
+					</div>
+					<span>Database Graphing</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-rm" href="#" onclick="SelectNav('sensor-rm')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-project-diagram"></i>
+					</div>
+					<span>Remote Management</span>
+				</a>
+			</li>
+            <li class="sidebar-nav-item">
+				<a id="mqtt-subscriber-view-data-stream" href="#" onclick="SelectNav('mqtt-subscriber-view-data-stream')"
+                   class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-broadcast-tower"></i>
+					</div>
+					<span>MQTT Subscriber</span>
+				</a>
+			</li>
+            <li class="sidebar-nav-item">
+				<a id="sensor-checkin-view" href="#" onclick="SelectNav('sensor-checkin-view')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-satellite-dish"></i>
+					</div>
+					<span>Sensor Check-ins</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-settings" href="#" onclick="SelectNav('sensor-settings')" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-cog"></i>
+					</div>
+					<span>Settings</span>
+				</a>
+			</li>
+			<li class="sidebar-nav-item">
+				<a id="sensor-help" href="/documentation/" target="_blank" class="sidebar-nav-link">
+					<div>
+						<i class="fas fa-question-circle"></i>
+					</div>
+					<span>Help</span>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<!-- end sidebar -->
+	<!-- main content -->
+	<div id="main-page-view" class="wrapper">{{ OptionalHTML | safe }}</div>
+	<!-- end main content -->
+	<!-- import script -->
+	<script src="/atpro/index.js"></script>
+    <script src="/extras/jquery-3.6.0.min.js"></script>
+	<!-- end import script -->
+</body>
+</html>
+
+<script>
+    const html_loading = '<div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card">' +
+        '<div class="card-content"><h1><i class="fas fa-hourglass-half"></i> Loading ...</h1></div></div></div></div>'
+
+    function SelectNav(nav_location, skip_menu_select=false) {
+        document.getElementById("main-page-view").innerHTML = html_loading;
+
+        if (typeof refresh_timer !== 'undefined') {
+            clearTimeout(refresh_timer);
+        }
+
+        if (skip_menu_select === false) {
+            SelectActiveMainMenu(nav_location);
+        } else {
+            UnSelectAllMenus();
+        }
+
+        jQuery("#main-page-view").load("/atpro/" + nav_location);
+    }
+
+    function SelectActiveMainMenu(nav_location) {
+        UnSelectAllMenus();
+        document.getElementById(nav_location).classList.add("active");
+    }
+
+    function UnSelectAllMenus() {
+        document.getElementById("sensor-dashboard").classList.remove("active");
+        document.getElementById("sensor-readings").classList.remove("active");
+        document.getElementById("sensor-latency").classList.remove("active");
+        document.getElementById("sensor-notes").classList.remove("active");
+        document.getElementById("sensor-graphing-db").classList.remove("active");
+        document.getElementById("sensor-graphing-live").classList.remove("active");
+        document.getElementById("sensor-rm").classList.remove("active");
+        document.getElementById("mqtt-subscriber-view-data-stream").classList.remove("active");
+        document.getElementById("sensor-checkin-view").classList.remove("active");
+        document.getElementById("sensor-settings").classList.remove("active");
+    }
+
+    function CheckNotificationsAsync() {
+        let notification_count_xmlHttp = new XMLHttpRequest();
+        notification_count_xmlHttp.onreadystatechange = function() {
+            if (notification_count_xmlHttp.readyState === 4 && notification_count_xmlHttp.status === 200)
+                if (notification_count_xmlHttp.responseText === "0") {
+                    document.getElementById("notification-count").style.display = "none";
+                } else {
+                    document.getElementById("notification-count").style.display = "inline-block";
+                    document.getElementById("notification-count").innerText = notification_count_xmlHttp.responseText;
+                }
+        }
+
+        let notification_msgs_xmlHttp = new XMLHttpRequest();
+        notification_msgs_xmlHttp.onreadystatechange = function() {
+            if (notification_msgs_xmlHttp.readyState === 4 && notification_msgs_xmlHttp.status === 200)
+                if (notification_msgs_xmlHttp.responseText !== "") {
+                    document.getElementById("notification-content").innerHTML = notification_msgs_xmlHttp.responseText;
+                } else {
+                    document.getElementById("notification-content").innerHTML = "";
+                }
+        }
+
+        notification_count_xmlHttp.open("GET", "/atpro/get-notification-count", true); // true for asynchronous
+        notification_msgs_xmlHttp.open("GET", "/atpro/get-notification-messages", true); // true for asynchronous
+        notification_count_xmlHttp.send(null);
+        notification_msgs_xmlHttp.send(null);
+    }
+
+    {{ RunScript | safe }}
+</script>
+
+<script>
+    function NotificationConfirmAction(prompt_text, command_url) {
+        let r = confirm(prompt_text);
+            if (r === true) {
+                window.location = command_url
+            }
+    }
+</script>

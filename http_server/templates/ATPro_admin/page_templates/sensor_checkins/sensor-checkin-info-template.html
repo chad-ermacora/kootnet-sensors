@@ -1,0 +1,72 @@
+<div class="col-6 col-m-12 col-sm-12">
+    <div class="counter bg-success">
+        <h3><span class="sensor-info sensor-info-names">Sensor ID</span><br>
+            <span class="sensor-id">{{ SensorID }}</span>
+        </h3>
+
+        <div class="row">
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Sensor Name</span><br>
+                        {{ SensorName }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Sensor IP</span><br>
+                        <a style="color: whitesmoke;" href="https://{{ SensorIP }}:10065" target="_blank">{{ SensorIP }}</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-12 col-m-12 col-sm-12">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Installed Sensors</span><br>
+                        {{ InstalledSensors }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Last Check-in DateTime</span><br>
+                        {{ LastCheckinDate }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Software Version</span><br>
+                        {{ SoftwareVersion }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Sensor Uptime in Minutes</span><br>
+                        {{ SensorUptime }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-6 col-m-6 col-sm-6">
+                <div class="counter bg-primary">
+                    <p>
+                        <span class='sensor-info'>Total Checkin Count</span><br>
+                        {{ TotalCheckins }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

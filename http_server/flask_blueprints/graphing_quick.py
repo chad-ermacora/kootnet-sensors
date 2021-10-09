@@ -17,78 +17,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from datetime import datetime, timedelta
-from flask import render_template, Blueprint, request
+from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, adjust_datetime
 from configuration_modules import app_config_access
 from operations_modules.sqlite_database import sql_execute_get_data
-from http_server.flask_blueprints.graphing import html_graphing
 
-html_quick_graphing_routes = Blueprint("html_quick_graphing_routes", __name__)
 db_v = app_cached_variables.database_variables
-
-
-@html_quick_graphing_routes.route("/LiveGraphView", methods=["GET", "POST"])
-def html_live_graphing():
-    logger.network_logger.debug("* Live Graphs viewed by " + str(request.remote_addr))
-    if request.method == "POST":
-        if request.form.get("graph_hours") is not None:
-            app_cached_variables.quick_graph_hours = float(request.form.get("graph_hours"))
-            return get_html_live_graphing_page()
-        app_cached_variables.quick_graph_uptime = 0
-        app_cached_variables.quick_graph_cpu_temp = 0
-        app_cached_variables.quick_graph_env_temp = 0
-        app_cached_variables.quick_graph_pressure = 0
-        app_cached_variables.quick_graph_altitude = 0
-        app_cached_variables.quick_graph_humidity = 0
-        app_cached_variables.quick_graph_distance = 0
-        app_cached_variables.quick_graph_gas = 0
-        app_cached_variables.quick_graph_particulate_matter = 0
-        app_cached_variables.quick_graph_lumen = 0
-        app_cached_variables.quick_graph_colours = 0
-        app_cached_variables.quick_graph_ultra_violet = 0
-        app_cached_variables.quick_graph_acc = 0
-        app_cached_variables.quick_graph_mag = 0
-        app_cached_variables.quick_graph_gyro = 0
-
-        if request.form.get("SkipSQL") is not None:
-            app_cached_variables.quick_graph_skip_sql_entries = int(request.form.get("SkipSQL"))
-        if request.form.get("MaxSQLData") is not None:
-            app_cached_variables.quick_graph_max_sql_entries = int(request.form.get("MaxSQLData"))
-        if request.form.get("SensorUptime") is not None:
-            app_cached_variables.quick_graph_uptime = 1
-        if request.form.get("CPUTemp") is not None:
-            app_cached_variables.quick_graph_cpu_temp = 1
-        if request.form.get("EnvTemp") is not None:
-            app_cached_variables.quick_graph_env_temp = 1
-        if request.form.get("Pressure") is not None:
-            app_cached_variables.quick_graph_pressure = 1
-        if request.form.get("Altitude") is not None:
-            app_cached_variables.quick_graph_altitude = 1
-        if request.form.get("Humidity") is not None:
-            app_cached_variables.quick_graph_humidity = 1
-        if request.form.get("Distance") is not None:
-            app_cached_variables.quick_graph_distance = 1
-        if request.form.get("Gas") is not None:
-            app_cached_variables.quick_graph_gas = 1
-        if request.form.get("ParticulateMatter") is not None:
-            app_cached_variables.quick_graph_particulate_matter = 1
-        if request.form.get("Lumen") is not None:
-            app_cached_variables.quick_graph_lumen = 1
-        if request.form.get("Colours") is not None:
-            app_cached_variables.quick_graph_colours = 1
-        if request.form.get("UltraViolet") is not None:
-            app_cached_variables.quick_graph_ultra_violet = 1
-        if request.form.get("Accelerometer") is not None:
-            app_cached_variables.quick_graph_acc = 1
-        if request.form.get("Magnetometer") is not None:
-            app_cached_variables.quick_graph_mag = 1
-        if request.form.get("Gyroscope") is not None:
-            app_cached_variables.quick_graph_gyro = 1
-        return html_graphing()
-    return get_html_live_graphing_page()
 
 
 def get_html_live_graphing_page(email_graph=False):
@@ -169,33 +106,32 @@ def get_html_live_graphing_page(email_graph=False):
             if sensor_db_name[0]:
                 sensor_data = _get_graph_db_data(sensor_db_name[1])
                 if sensor_data is not False:
-                    html_code += "<div style='height: 300px'><canvas id='" + sensor_db_name[
-                        1] + """'></canvas></div>\n"""
-                    tmp_starter = start_sensor_code.replace("{{ ChartName }}", sensor_db_name[1])
-
+                    html_code += "<div><canvas id='" + str(sensor_db_name[1]) + "'></canvas></div>\n<br><hr><br>\n"
                     sensor_dates = get_graph_datetime_from_column(sensor_db_name[1])
+                    c_first_date = datetime.strptime(sensor_dates[-1][0][:-4], "%Y-%m-%d %H:%M:%S")
+                    c_first_date = c_first_date + timedelta(hours=utc0_hour_offset)
+                    c_last_date = datetime.strptime(sensor_dates[0][0][:-4], "%Y-%m-%d %H:%M:%S")
+                    c_last_date = c_last_date + timedelta(hours=utc0_hour_offset)
+                    datetime_labels = _get_graph_db_date_times(sensor_db_name[1])
 
-                    clean_first_checkin_date = datetime.strptime(sensor_dates[-1][0][:-4], "%Y-%m-%d %H:%M:%S")
-                    clean_first_checkin_date = clean_first_checkin_date + timedelta(hours=utc0_hour_offset)
-                    clean_last_checkin_date = datetime.strptime(sensor_dates[0][0][:-4], "%Y-%m-%d %H:%M:%S")
-                    clean_last_checkin_date = clean_last_checkin_date + timedelta(hours=utc0_hour_offset)
+                    tmp_s_text = start_sensor_code.replace("{{ ChartName }}", str(sensor_db_name[1]))
+                    tmp_s_text = tmp_s_text.replace("{{ LabelDataSet }}", str(datetime_labels))
+                    tmp_s_text = tmp_s_text.replace("{{ MainDataSet }}", str(sensor_data))
+                    tmp_s_text = tmp_s_text.replace("{{ BGColour }}", str(colour))
+                    tmp_s_text = tmp_s_text.replace("{{ StartDate }}", c_first_date.strftime("%Y-%m-%d %H:%M:%S"))
+                    tmp_s_text = tmp_s_text.replace("{{ EndDate }}", c_last_date.strftime("%Y-%m-%d %H:%M:%S"))
+                    tmp_s_text = tmp_s_text.replace("{{ Measurement }}", str(sensor_measurement))
 
-                    tmp_starter = tmp_starter.replace("{{ StartDate }}",
-                                                      clean_first_checkin_date.strftime("%Y-%m-%d %H:%M:%S"))
-                    tmp_starter = tmp_starter.replace("{{ EndDate }}",
-                                                      clean_last_checkin_date.strftime("%Y-%m-%d %H:%M:%S"))
-                    tmp_starter = tmp_starter.replace("{{ UTCOffset }}", str(utc0_hour_offset))
-
-                    replacement_code = _add_single_sensor(sensor_db_name[1], sensor_data, colour)
-                    graph_javascript_code += tmp_starter.replace("{{ MainDataSet }}", replacement_code) + "\n"
-                    graph_javascript_code = graph_javascript_code.replace("{{ Measurement }}", sensor_measurement)
+                    graph_javascript_code += tmp_s_text
         except Exception as error:
             logger.network_logger.warning("Live Graph - Error Adding Graph: " + str(error))
     if email_graph:
-        quick_graph = get_file_content(file_locations.program_root_dir + "/http_server/templates/graphing_quick.html")
+        program_dir = file_locations.program_root_dir
+        qg_location = program_dir + "/http_server/templates/ATPro_admin/page_templates/graphing-live-view.html"
+        quick_graph = get_file_content(qg_location)
 
         replacement_text = ["{{ SensorName }}", "{{ TotalSQLEntries }}", "{{ UTCOffset }}", "{{ GraphPastHours }}",
-                            "{{ HoursDisplayedDisabled }}", "{{ GraphJSCode |safe }}", "{{ GraphHTMLCode |safe }}"]
+                            "{{ HoursDisplayedDisabled }}", "{{ GraphJSCode | safe }}", "{{ GraphHTMLCode | safe }}"]
 
         new_values = [app_cached_variables.hostname, total_data_points, utc0_hour_offset,
                       graph_past_hours, "disabled", graph_javascript_code, html_code]
@@ -203,7 +139,7 @@ def get_html_live_graphing_page(email_graph=False):
         for replace_name, content in zip(replacement_text, new_values):
             quick_graph = quick_graph.replace(replace_name, str(content))
         return quick_graph
-    return render_template("graphing_quick.html",
+    return render_template("ATPro_admin/page_templates/graphing-live-view.html",
                            SensorName=app_cached_variables.hostname,
                            TotalSQLEntries=total_data_points,
                            UTCOffset=utc0_hour_offset,
@@ -213,14 +149,9 @@ def get_html_live_graphing_page(email_graph=False):
                            GraphHTMLCode=html_code)
 
 
-def _add_single_sensor(sensor_db_name, sensor_data, colour="red"):
-    return_text = "{ label: '" + sensor_db_name + "', " + "borderColor: '" + colour + \
-                  "', fill: false, data: [" + sensor_data + "] }"
-    return return_text
-
-
-def get_graph_data_from_column(sql_column, graph_table="IntervalData",
-                               start_date="1111-08-21 00:00:01", end_date="9999-01-01 00:00:01"):
+def get_graph_data_from_column(sql_column, graph_table="IntervalData"):
+    start_date = _get_graph_start_date()
+    end_date = "9999-01-01 00:00:01"
     var_sql_query = "SELECT " + sql_column + \
                     " FROM " + graph_table + \
                     " WHERE " + sql_column + \
@@ -231,9 +162,10 @@ def get_graph_data_from_column(sql_column, graph_table="IntervalData",
     return sql_execute_get_data(var_sql_query)
 
 
-def get_graph_datetime_from_column(sql_column, graph_table="IntervalData",
-                                   start_date="1111-08-21 00:00:01",
-                                   end_date="9999-01-01 00:00:01"):
+def get_graph_datetime_from_column(sql_column, graph_table="IntervalData"):
+    start_date = _get_graph_start_date()
+    end_date = "9999-01-01 00:00:01"
+
     var_time_sql_query = "SELECT DateTime" + \
                          " FROM " + graph_table + \
                          " WHERE " + sql_column + \
@@ -244,70 +176,96 @@ def get_graph_datetime_from_column(sql_column, graph_table="IntervalData",
     return sql_execute_get_data(var_time_sql_query)
 
 
-def _get_graph_db_data(database_column, get_len_only=False):
+def _get_graph_start_date():
     hours_to_view = app_cached_variables.quick_graph_hours
     start_date = (datetime.utcnow() - timedelta(hours=hours_to_view)).strftime("%Y-%m-%d %H:%M:%S")
+    return start_date
+
+
+def _get_graph_db_data(database_column, get_len_only=False):
     if get_len_only:
-        return len(get_graph_datetime_from_column(database_column, start_date=start_date))
-    temp_data = get_graph_data_from_column(database_column, start_date=start_date)
-    temp_dates = get_graph_datetime_from_column(database_column, start_date=start_date)
+        return len(get_graph_datetime_from_column(database_column))
+    temp_data = get_graph_data_from_column(database_column)
     if len(temp_data) < 2:
         return False
+    db_temp_data = ""
+    for var_data in temp_data:
+        db_temp_data += "'" + var_data[0] + "',"
+    return db_temp_data[:-1]
+
+
+def _get_graph_db_date_times(database_column):
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    temp_dates = get_graph_datetime_from_column(database_column)
     db_temp_data = " "
-    for var_datetime, var_data in zip(temp_dates, temp_data):
-        replacement_dates = adjust_datetime(var_datetime[0], app_config_access.primary_config.utc0_hour_offset)
-        db_temp_data += "{ x: '" + replacement_dates + "', y: " + var_data[0] + " },"
+    for var_datetime in temp_dates:
+        db_temp_data += "'" + adjust_datetime(var_datetime[0], utc0_hour_offset) + "',"
     return db_temp_data[:-1]
 
 
 start_sensor_code = """
-new Chart(document.getElementById('{{ ChartName }}').getContext('2d'),
-    { 
-        type: 'line',
-        data: {
-            datasets: [ {{ MainDataSet }} ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            title: {
+var {{ ChartName }}ctx = document.getElementById('{{ ChartName }}');
+var {{ ChartName }}Chart = new Chart({{ ChartName }}ctx, {
+    type: 'line',
+    data: {
+        labels: [{{ LabelDataSet }}],
+        datasets: [{
+            label: '{{ ChartName }}',
+            data: [ {{ MainDataSet }} ],
+            backgroundColor: '{{ BGColour }}',
+            borderColor: '{{ BGColour }}'
+        }]
+    },
+    options: {
+        spanGaps: true,
+        animation: false,
+        plugins: {
+            legend: {
                 display: true,
-                text: '{{ StartDate }} <--> {{ EndDate }}'
-            },
-            tooltips: {
-                mode: 'index',
-                intersect: false,
-            },
-            hover: {
-                mode: 'nearest',
-                intersect: true
-            },
-            scales: {
-                xAxes: [{
-                    display: true,
-                    type: 'time',
-                    distribution: 'linear',
-                    time: {
-                        unit: 'day',
-                        tooltipFormat: 'MMM DD HH:mm:ss UTC{{ UTCOffset }}',
-                        displayFormats: {
-                            day: 'MMM D hh:mm'
-                        }
+                labels: {
+                    color: 'white',
+                    font: {
+                        size: 20, 
+                        weight: 'bolder'
                     }
-                }],
-                yAxes: [{
-                    display: true,
-                    ticks: {
-                        beginAtZero: false
-                    },
-                    scaleLabel: {
-                        display: true,
-                        labelString: ' {{ Measurement }}'
-                    }
-                }]
+                }
             }
-
+        },
+        scales: {
+            x: {
+                display: true,
+                reverse: true,
+                ticks: {
+                    display: false
+                },
+                title: {
+                    display: true,
+                    color: 'white',
+                    font: {
+                        size: 20,
+                        weight: 'bolder'
+                    },
+                    text: '{{ StartDate }} <--> {{ EndDate }}'
+                }
+            },
+            y: {
+                beginAtZero: false,
+                ticks: {
+                    color: 'white', 
+                    font: {
+                        size: 20
+                    }
+                },
+                title: {
+                    display: true,
+                    color: 'white',
+                    font: {
+                        size: 20
+                    },
+                    text: '{{ Measurement }}'
+                }
+            }
         }
     }
-);
+});
 """

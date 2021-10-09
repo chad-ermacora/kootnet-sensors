@@ -1,0 +1,885 @@
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
+                    <input type="text" name="ConfigSection" value="Main" hidden>
+                    <h2><i class="fas fa-broadcast-tower"></i> MQTT Publisher</h2>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-p-toggle-switch" class="toggle-switch-input"
+                               name="enable_mqtt_publisher" {{ MQTTPublisherChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-p-toggle-switch"></label>
+                        Enable MQTT Publisher
+                    </label>
+
+                    <br><br>
+
+                    <label>Broker DNS Address or IP<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 350px;" type="text" maxlength="250" name="publish_broker_address"
+                                           value="{{ MQTTBrokerAddress }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label>Broker Port #<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 120px;" type="number" min="1" max="65535" name="publish_broker_port"
+                                           value="{{ MQTTBrokerPort }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label>Seconds between Publishing<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="1" name="publish_seconds_wait"
+                                           value="{{ MQTTPublishSecondsWait }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label>
+                        <a target="_blank"
+                           href="http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc385349264">
+                            Quality of Service Level
+                        </a><br><br>
+                        <select name="publish_qos_level">
+                            <option value=0 {{ PublisherQoSLevel0 }}>Level 0</option>
+                            <option value=1 {{ PublisherQoSLevel1 }}>Level 1</option>
+                            <option value=2 {{ PublisherQoSLevel2 }}>Level 2</option>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-mqtt-p-auth-toggle-switch" class="toggle-switch-input"
+                               name="enable_broker_auth" {{ MQTTPublisherAuthChecked }}>
+                        <label class="toggle-switch-label" for="enable-mqtt-p-auth-toggle-switch"></label>
+                        MQTT Topic Authentication
+                    </label>
+
+                    <br><br>
+
+                    <label>Username<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_username"
+                                           value="{{ MQTTPublisherUsername }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+
+                    <label>Password (Optional)<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="broker_password">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><hr>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input">
+                        <label class="toggle-switch-label" for="select-all-checkboxes"></label>
+                        Select All
+                    </label>
+
+                    <br>
+
+                    <div id="sensor-checkboxes">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="hostname-toggle" class="toggle-switch-input"
+                                   name="system_hostname" {{ CheckedSensorHostName }}>
+                            <label class="toggle-switch-label" for="hostname-toggle"></label>
+                            System Host Name
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="uptime-toggle" class="toggle-switch-input"
+                                   name="sensor_uptime" {{ CheckedSensorUptime }}>
+                            <label class="toggle-switch-label" for="uptime-toggle"></label>
+                            System Uptime
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="ip-toggle" class="toggle-switch-input"
+                                   name="sensor_ip" {{ CheckedSensorIP }}>
+                            <label class="toggle-switch-label" for="ip-toggle"></label>
+                            System IP
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gps-toggle" class="toggle-switch-input"
+                                   name="sensor_gps" {{ CheckedGPS }}>
+                            <label class="toggle-switch-label" for="gps-toggle"></label>
+                            GPS Coordinates
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="datetime-toggle" class="toggle-switch-input"
+                                   name="sensor_datetime" {{ CheckedSensorDateTime }}>
+                            <label class="toggle-switch-label" for="datetime-toggle"></label>
+                            System Date & Time
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="cpu-temp-toggle" class="toggle-switch-input"
+                                   name="cpu_temperature" {{ CheckedCPUTemperature }}>
+                            <label class="toggle-switch-label" for="cpu-temp-toggle"></label>
+                            CPU Temperature
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="env-temp-toggle" class="toggle-switch-input"
+                                   name="env_temperature" {{ CheckedEnvTemperature }}>
+                            <label class="toggle-switch-label" for="env-temp-toggle"></label>
+                            Env Temperature
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="pressure-toggle" class="toggle-switch-input"
+                                   name="pressure" {{ CheckedPressure }}>
+                            <label class="toggle-switch-label" for="pressure-toggle"></label>
+                            Pressure
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="altitude-toggle" class="toggle-switch-input"
+                                   name="altitude" {{ CheckedAltitude }}>
+                            <label class="toggle-switch-label" for="altitude-toggle"></label>
+                            Altitude
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="humidity-toggle" class="toggle-switch-input"
+                                   name="humidity" {{ CheckedHumidity }}>
+                            <label class="toggle-switch-label" for="humidity-toggle"></label>
+                            Humidity
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="dew-point-toggle" class="toggle-switch-input"
+                                   name="dew_point" {{ CheckedDewPoint }}>
+                            <label class="toggle-switch-label" for="dew-point-toggle"></label>
+                            Dew Point
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="distance-toggle" class="toggle-switch-input"
+                                   name="distance" {{ CheckedDistance }}>
+                            <label class="toggle-switch-label" for="distance-toggle"></label>
+                            Distance
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gas-toggle" class="toggle-switch-input"
+                                   name="gas" {{ CheckedGas }}>
+                            <label class="toggle-switch-label" for="gas-toggle"></label>
+                            Gas
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="pm-toggle" class="toggle-switch-input"
+                                   name="particulate_matter" {{ CheckedPM }}>
+                            <label class="toggle-switch-label" for="pm-toggle"></label>
+                            Particulate Matter
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="lumen-toggle" class="toggle-switch-input"
+                                   name="lumen" {{ CheckedLumen }}>
+                            <label class="toggle-switch-label" for="lumen-toggle"></label>
+                            Lumen
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="colour-toggle" class="toggle-switch-input"
+                                   name="colour" {{ CheckedColour }}>
+                            <label class="toggle-switch-label" for="colour-toggle"></label>
+                            Colour
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="uv-toggle" class="toggle-switch-input"
+                                   name="ultra_violet" {{ CheckedUltraViolet }}>
+                            <label class="toggle-switch-label" for="uv-toggle"></label>
+                            Ultra Violet
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="acc-toggle" class="toggle-switch-input"
+                                   name="accelerometer" {{ CheckedAccelerometer }}>
+                            <label class="toggle-switch-label" for="acc-toggle"></label>
+                            Accelerometer
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="mag-toggle" class="toggle-switch-input"
+                                   name="magnetometer" {{ CheckedMagnetometer }}>
+                            <label class="toggle-switch-label" for="mag-toggle"></label>
+                            Magnetometer
+                        </label>
+
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gyroscope-toggle" class="toggle-switch-input"
+                                   name="gyroscope" {{ CheckedGyroscope }}>
+                            <label class="toggle-switch-label" for="gyroscope-toggle"></label>
+                            Gyroscope
+                        </label>
+                    </div>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-mqtt-p">
+                    <input type="text" name="ConfigSection" value="Advanced" hidden><br>
+                    <h2><i class="fas fa-cogs"></i> MQTT Topic Configurations</h2>
+
+                    <label>MQTT Base Topic(s)<br>Ex. Sensor1 or Home/Sensor1<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 350px;" type="text" name="topic_mqtt_base_topic"
+                                           value="{{ MQTTBaseTopic }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <h3><i class="fas fa-box"></i> MQTT Delivery Format</h3>
+                    <label for="SendAsKootnet">
+                        <input type="radio" id="SendAsKootnet" name="mqtt_send_type" onchange="topics_hidden()"
+                               value="KootnetSensors" {{ SASKSChecked }} />
+                        Kootnet Sensors
+                    </label>
+                    <label for="SendAsIndividual">
+                        <input type="radio" id="SendAsIndividual" name="mqtt_send_type" onchange="topics_hidden()"
+                               value="IndividualTopics" {{ SASIndChecked }} />
+                        Topic Per Sensor
+                    </label>
+                    <label for="SendAsCustom">
+                        <input type="radio" id="SendAsCustom" name="mqtt_send_type" onchange="topics_hidden()"
+                               value="CustomString" {{ SASCustomChecked }} />
+                        Custom Single String
+                    </label>
+
+                    <br><br>
+
+                    <div id="MQTTCustomData">
+                        <span style="font-size: x-large;">MQTT Custom Format</span><br><br>
+
+                        <a href="/atpro/settings-mqtt-p-custom-help" target="_blank">
+                            <i>Click Here for Sensor Variables</i>
+                        </a><br><br>
+
+                        <button type="button" class="pure-button"
+                                onclick="window.location.href = '/atpro/settings-mqtt-p-reset-custom-format';">
+                            Reset Custom Format
+                        </button>
+
+                        <br><br>
+
+                        <label>
+                            <textarea id="mqtt_custom_data" name="mqtt_custom_data" cols="55" rows="20">{{ MQTTCustomDataFormat }}</textarea>
+                        </label>
+
+                        <br><br>
+                    </div>
+
+                    <div id="ResetTopics">
+                        <span style="font-size: x-large;">Per Sensor Topics</span><br><br>
+
+                        <button type="button" class="pure-button"
+                            onclick="window.location.href = '/atpro/settings-mqtt-p-reset-topics';">
+                            Reset Topics
+                        </button>
+
+                        <br><br>
+                    </div>
+
+                    <div class="row" id="float_boxes_topics">
+                        <label>Sensor Host Name<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_hostname"
+                                               value="{{ MQTTSystemHostNameTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Sensor Uptime<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_uptime"
+                                               value="{{ MQTTUptimeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                         &nbsp;
+
+                        <label>Sensor IP<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_ip"
+                                               value="{{ MQTTIPTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>GPS Latitude<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gps_lat"
+                                               value="{{ MQTTLatitudeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>GPS Longitude<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gps_long"
+                                               value="{{ MQTTLongitudeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Sensor DateTime<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_system_datetime"
+                                               value="{{ MQTTDateTimeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>CPU Temperature<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_cpu_temp"
+                                               value="{{ MQTTCPUTempTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                         &nbsp;
+
+                        <label>Environmental Temperature<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_env_temp"
+                                               value="{{ MQTTEnvTempTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Pressure<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pressure"
+                                               value="{{ MQTTPressureTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Altitude<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_altitude"
+                                               value="{{ MQTTAltitudeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Humidity<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_humidity"
+                                               value="{{ MQTTHumidityTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Dew Point<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_dew_point"
+                                               value="{{ MQTTDewPointTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Distance<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_distance"
+                                               value="{{ MQTTDistanceTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gas Resistance Index<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_resistance_index"
+                                               value="{{ MQTTGASRestIndexTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gas Oxidising<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_oxidising"
+                                               value="{{ MQTTGASOxidisingTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gas Reducing<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_reducing"
+                                               value="{{ MQTTGASReducingTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gas NH3<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gas_nh3"
+                                               value="{{ MQTTGASNH3Topic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Particulate Matter 1<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_1"
+                                               value="{{ MQTTPM1Topic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Particulate Matter 2.5<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_2_5"
+                                               value="{{ MQTTPM2_5Topic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Particulate Matter 4<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_4"
+                                               value="{{ MQTTPM4Topic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Particulate Matter 10<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_pm_10"
+                                               value="{{ MQTTPM10Topic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Lumen<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_lumen"
+                                               value="{{ MQTTLumenTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Red<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_red"
+                                               value="{{ MQTTColourRedTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Orange<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_orange"
+                                               value="{{ MQTTColourOrangeTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Yellow<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_yellow"
+                                               value="{{ MQTTColourYellowTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Green<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_green"
+                                               value="{{ MQTTColourGreenTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Blue<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_blue"
+                                               value="{{ MQTTColourBlueTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Violet<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_colour_violet"
+                                               value="{{ MQTTColourVioletTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Ultra Violet A<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_a"
+                                               value="{{ MQTTUVATopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Ultra Violet B<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_ultra_violet_b"
+                                               value="{{ MQTTUVBTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Accelerometer X<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_x"
+                                               value="{{ MQTTAccXTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Accelerometer Y<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_y"
+                                               value="{{ MQTTAccYTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Accelerometer Z<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_accelerometer_z"
+                                               value="{{ MQTTAccZTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Magnetometer X<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_x"
+                                               value="{{ MQTTMagXTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Magnetometer Y<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_y"
+                                               value="{{ MQTTMagYTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Magnetometer Z<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_magnetometer_z"
+                                               value="{{ MQTTMagZTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gyroscope X<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_x"
+                                               value="{{ MQTTGyroXTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gyroscope Y<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_y"
+                                               value="{{ MQTTGyroYTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        &nbsp;
+
+                        <label>Gyroscope Z<br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 250px;" type="text" maxlength="250" name="topic_mqtt_gyroscope_z"
+                                               value="{{ MQTTGyroZTopic }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    jQuery('#select-all-checkboxes').change(function () {
+        if (jQuery(this).prop('checked')) {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
+        }
+    });
+</script>
+
+<script>
+    function topics_hidden() {
+        if (document.getElementById("SendAsKootnet").checked) {
+            document.getElementById("float_boxes_topics").style.display = "none";
+            document.getElementById("MQTTCustomData").style.display = "none";
+            document.getElementById("ResetTopics").style.display = "none";
+        } else if (document.getElementById("SendAsIndividual").checked) {
+            document.getElementById("MQTTCustomData").style.display = "none";
+            document.getElementById("ResetTopics").style.display = "inline-block";
+            if (screen.width < 500) {
+                document.getElementById("float_boxes_topics").style.display = "inline-block";
+            } else {
+                document.getElementById("float_boxes_topics").style.display = "inline-flex";
+            }
+        } else if (document.getElementById("SendAsCustom").checked) {
+            document.getElementById("ResetTopics").style.display = "none";
+            document.getElementById("float_boxes_topics").style.display = "none";
+            document.getElementById("MQTTCustomData").style.display = "inline-block";
+        }
+    }
+    topics_hidden();
+
+    if (screen.width < 500) {
+            document.getElementById('mqtt_custom_data').style.width = '350px';
+        }
+</script>

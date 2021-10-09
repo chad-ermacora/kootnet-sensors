@@ -1,0 +1,109 @@
+<div class="row">
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-email-settings">
+                    <h2><i class="far fa-envelope"></i> SMTP Server Settings</h2>
+
+                    <label>
+                        Send Email as/from<br><br>
+                        <input style="width: 350px;" type="email" maxlength="250"
+                               name="server_sending_email" placeholder="me@somewhere.com" value="{{ ServerSendingEmail }}">
+                    </label>
+
+                    <br><br>
+
+                    <label>
+                        Server Address<br><br>
+                        <input style="width: 350px;" type="text" maxlength="250"
+                               name="server_smtp_address" placeholder="mail.somewhere.com" value="{{ ServerSMTPAddress }}">
+                    </label>
+
+                    <br><br>
+
+                    <label>Connection Security<br><br>
+                        <select id="email_security" name="email_security" onchange="EmailSecuritySelection()">
+                            <option value="email_security_none" {{ CheckedCS_None }}>None</option>
+                            <option value="email_security_ssl" {{ CheckedCS_SSL }}>SSL</option>
+                            <option value="email_security_tls" {{ CheckedCS_TLS }}>TLS</option>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <label>SMTP Port Number<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 125px;" type="number" id="smtp_port" name="server_smtp_port"
+                                           placeholder="25" min="1" max="65535" value="{{ ServerSMTPPort }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Username<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="text" maxlength="250" name="server_smtp_user"
+                                           placeholder="someone" value="{{ ServerSMTPUser }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Password<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 200px;" type="password" maxlength="250"
+                                           name="server_smtp_password">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/test-email">
+                    <h3><strong><i class="fas fa-paper-plane"></i> Test SMTP Server Settings</strong></h3>
+
+                    <label>Send Email to<br><br>
+                        <input style="width: 350px;" type="email" maxlength="250"
+                                           name="test_email_address" placeholder="someone@somewhere.com">
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button" name="test_email_button" value="settings">Send Email</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function EmailSecuritySelection() {
+        if (document.getElementById("email_security").value === 'email_security_none') {
+            document.getElementById("smtp_port").value = '25';
+        } else if (document.getElementById("email_security").value === 'email_security_ssl') {
+            document.getElementById("smtp_port").value = '465';
+        } else if (document.getElementById("email_security").value === 'email_security_tls') {
+            document.getElementById("smtp_port").value = '587';
+        }
+    }
+</script>

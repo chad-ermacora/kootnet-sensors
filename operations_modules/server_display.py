@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
+from sensor_modules.system_access import get_uptime_minutes
 from sensor_modules import sensor_access
 
 db_v = app_cached_variables.database_variables
@@ -77,10 +78,7 @@ def get_numerical_display_text():
     text_message = ""
 
     if app_config_access.display_config.sensor_uptime:
-        sensor_reading = sensor_access.get_uptime_minutes()
-        if sensor_reading is not None:
-            text_message += "SystemUptime: " + str(sensor_reading) + " "
-
+        text_message = _get_sensor_reading_text(get_uptime_minutes, text_message)
     if app_config_access.display_config.system_temperature:
         text_message = _get_sensor_reading_text(sensor_access.get_cpu_temperature, text_message)
     if app_config_access.display_config.env_temperature:

@@ -28,9 +28,9 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.email_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 31
+        self.valid_setting_count = 33
         self.config_settings_names = [
-            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL/TLS",
+            "SMTP send from email address", "SMTP server address", "Enable SMTP SSL",
             "SMTP server port #", "SMTP user name", "SMTP password", "Enable Reports email server",
             "Send Report every (daily, weekly, monthly, yearly)", "Send Report to CSV emails",
             "Enable Graph email server", "Sending Graph every (daily, weekly, monthly, yearly)", "Graph the past hours",
@@ -38,7 +38,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             "Graph CPU temperature", "Graph environmental temperature", "Graph pressure", "Graph altitude",
             "Graph humidity", "Graph distance", "Graph GAS", "Graph particulate matter", "Graph lumen", "Graph color",
             "Graph ultra violet", "Graph accelerometer", "Graph magnetometer", "Graph gyroscope",
-            "Email Report at time of day", "Email Graph at time of day"
+            "Email Report at time of day", "Email Graph at time of day", "Dew point", "Enable SMTP TLS"
         ]
 
         # If set to 1+, emails are sent on program start for Graphs and Reports (They must be enabled)
@@ -47,7 +47,8 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.server_sending_email = ""
         self.server_smtp_address = ""
         self.server_smtp_ssl_enabled = 0
-        self.server_smtp_port = 587
+        self.server_smtp_tls_enabled = 0
+        self.server_smtp_port = 25
         self.server_smtp_user = ""
         self.server_smtp_password = ""
 
@@ -75,6 +76,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 1
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -131,6 +133,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         self.pressure = 0
         self.altitude = 0
         self.humidity = 0
+        self.dew_point = 0
         self.distance = 0
         self.gas = 0
         self.particulate_matter = 0
@@ -149,35 +152,37 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("graph_past_hours") is not None:
             self.graph_past_hours = float(html_request.form.get("graph_past_hours"))
 
-        if html_request.form.get("SensorUptime") is not None:
+        if html_request.form.get("sensor_uptime") is not None:
             self.sensor_uptime = 1
-        if html_request.form.get("CPUTemp") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.system_temperature = 1
-        if html_request.form.get("EnvTemp") is not None:
+        if html_request.form.get("env_temperature") is not None:
             self.env_temperature = 1
-        if html_request.form.get("Pressure") is not None:
+        if html_request.form.get("pressure") is not None:
             self.pressure = 1
-        if html_request.form.get("Altitude") is not None:
+        if html_request.form.get("altitude") is not None:
             self.altitude = 1
-        if html_request.form.get("Humidity") is not None:
+        if html_request.form.get("humidity") is not None:
             self.humidity = 1
-        if html_request.form.get("Distance") is not None:
+        if html_request.form.get("dew_point") is not None:
+            self.dew_point = 1
+        if html_request.form.get("distance") is not None:
             self.distance = 1
-        if html_request.form.get("Gas") is not None:
+        if html_request.form.get("gas") is not None:
             self.gas = 1
-        if html_request.form.get("ParticulateMatter") is not None:
+        if html_request.form.get("particulate_matter") is not None:
             self.particulate_matter = 1
-        if html_request.form.get("Lumen") is not None:
+        if html_request.form.get("lumen") is not None:
             self.lumen = 1
-        if html_request.form.get("Colours") is not None:
+        if html_request.form.get("colour") is not None:
             self.color = 1
-        if html_request.form.get("UltraViolet") is not None:
+        if html_request.form.get("ultra_violet") is not None:
             self.ultra_violet = 1
-        if html_request.form.get("Accelerometer") is not None:
+        if html_request.form.get("accelerometer") is not None:
             self.accelerometer = 1
-        if html_request.form.get("Magnetometer") is not None:
+        if html_request.form.get("magnetometer") is not None:
             self.magnetometer = 1
-        if html_request.form.get("Gyroscope") is not None:
+        if html_request.form.get("gyroscope") is not None:
             self.gyroscope = 1
         self.update_configuration_settings_list()
 
@@ -193,8 +198,13 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             self.server_smtp_address = html_request.form.get("server_smtp_address")
 
         self.server_smtp_ssl_enabled = 0
-        if html_request.form.get("email_ssl") is not None:
-            self.server_smtp_ssl_enabled = 1
+        self.server_smtp_tls_enabled = 0
+        email_security = html_request.form.get("email_security")
+        if email_security is not None:
+            if email_security == "email_security_ssl":
+                self.server_smtp_ssl_enabled = 1
+            elif email_security == "email_security_tls":
+                self.server_smtp_tls_enabled = 1
 
         if html_request.form.get("server_smtp_port") is not None:
             self.server_smtp_port = int(html_request.form.get("server_smtp_port"))
@@ -216,7 +226,7 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
             str(self.env_temperature), str(self.pressure), str(self.altitude), str(self.humidity), str(self.distance),
             str(self.gas), str(self.particulate_matter), str(self.lumen), str(self.color), str(self.ultra_violet),
             str(self.accelerometer), str(self.magnetometer), str(self.gyroscope), str(self.email_reports_time_of_day),
-            str(self.email_graph_time_of_day)
+            str(self.email_graph_time_of_day), str(self.dew_point), str(self.server_smtp_tls_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -256,6 +266,8 @@ class CreateEmailConfiguration(CreateGeneralConfiguration):
 
             self.email_reports_time_of_day = self.config_settings[29].strip()
             self.email_graph_time_of_day = self.config_settings[30].strip()
+            self.dew_point = int(self.config_settings[31].strip())
+            self.server_smtp_tls_enabled = int(self.config_settings[32].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Email Config: " + str(error))

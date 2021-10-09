@@ -1,0 +1,35 @@
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content">
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size: x-large;"><span class="sensor-info">Sensor ID</span>:
+                            <b style="color: green;">{{ SensorID }}</b><br>
+                            <a style='font-size: large; color: #7f3299;'
+                               href='https://{{ RSMAddressAndPort }}' target='_blank'>
+                                {{ RSMAddressAndPort }}
+                            </a>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
+                        <td><span class="sensor-info">Sensor Date & Time</span>: {{ SensorDateTime }}</td>
+                        <td style="color: white; background-color: {{ ResponseBackground }};">
+                            Sensor Response Time: {{ SensorResponseTime }} Sec
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table>
+                {{ SensorInfoBoxes | safe }}
+            </table>
+        </div>
+    </div>
+</div>

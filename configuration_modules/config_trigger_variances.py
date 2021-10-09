@@ -161,7 +161,7 @@ class CreateTriggerVariancesConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("enable_trigger_recording") is not None:
             self.enable_trigger_variance = 1
 
-        if html_request.form.get("checkbox_cpu_temperature") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
         if html_request.form.get("trigger_cpu_temperature") is not None:
             self.cpu_temperature_variance = float(html_request.form.get("trigger_cpu_temperature"))

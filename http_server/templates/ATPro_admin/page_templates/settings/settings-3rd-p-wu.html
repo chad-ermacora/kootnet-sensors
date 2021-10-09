@@ -1,0 +1,70 @@
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-wu">
+                    <h2><i class="fas fa-plus-circle"></i> Weather Underground</h2>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="wu_enabled" class="toggle-switch-input"
+                               name="enable_weather_underground" {{ CheckedWUEnabled }}>
+                        <label class="toggle-switch-label" for="wu_enabled"></label>
+                        Enable Weather UnderGround
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between Updates<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="2" name="weather_underground_interval"
+                                           value="{{ WUIntervalSeconds }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-wu-outdoor-toggle-switch" class="toggle-switch-input"
+                               name="weather_underground_outdoor" {{ CheckedWUOutdoor }}>
+                        <label class="toggle-switch-label" for="enable-wu-outdoor-toggle-switch"></label>
+                        Outdoor Sensor
+                    </label>
+
+                    <br><br>
+
+                    <label>Station ID<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 275px;" type="text" maxlength="15"
+                                           name="station_id" value="{{ WUStationID }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Station Key<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 275px;" type="password" maxlength="15"
+                                           name="station_key" placeholder="Leave blank to use previous Key">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<style>
+    .setting-title {
+        font-weight: bolder;
+        font-size: larger;
+        color: orange;
+    }
+
+    .setting-value {
+        font-size: larger;
+    }
+</style>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-primary" style="width: fit-content;">
+            <h2 style="color: orange;">{{ ConfigName | safe }}</h2>
+            <h4><span style="color: orange;">Location</span>: {{ ConfigLocation }}</h4>
+            <br>
+            {{ Config | safe }}
+        </div>
+    </div>
+</div>

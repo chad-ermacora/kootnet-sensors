@@ -1,0 +1,129 @@
+<div class="row">
+    <div class="col-8 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h1><i class="far fa-arrow-alt-circle-up"></i> Kootnet Sensors Upgrades</h1>
+                <button type="button" class="pure-button" style="color: lightblue; background-color: darkgreen;"
+                        onclick="ConfirmFunction('Start Kootnet Sensors Standard Upgrade?','/system/upgrade-http-std')">
+                    <b>Standard Upgrade - HTTP</b>
+                </button>
+
+                <br><br><br>
+
+                <button type="button" id="adv-upgrade-button" class="pure-button" onclick="ShowHideAdvUpgrades()">
+                    Show Advanced Upgrade Options
+                </button>
+
+                <br><br>
+
+                <div id="adv-upgrade-content">
+                    <p>
+                        Want to see whats coming?<br>Don't mind losing settings and or functionality?<br>
+                        Try "Developmental Upgrade - HTTP"
+                    </p>
+
+                    <button type="button" class="pure-button" style="color: white; background-color: red;"
+                            onclick="ConfirmFunction('Developmental Builds can be unstable, are you sure?','/system/upgrade-http-dev')">
+                        <b>Developmental Upgrade - HTTP</b>
+                    </button>
+
+                    <br><br><hr>
+
+                    <h2><i class="fas fa-redo-alt"></i> Re-install Kootnet Sensors</h2>
+
+                    <button type="button" class="pure-button" style="background-color: yellow;"
+                            onclick="ConfirmFunction('Clean Standard Upgrade may take awhile, continue?','/system/upgrade-http-std-clean')">
+                        <b>Latest Standard - HTTP</b>
+                    </button>
+
+                    <br><br>
+
+                    <button type="button" class="pure-button" style="color: white; background-color: darkred;"
+                            onclick="ConfirmFunction('Clean Development Upgrade may take awhile, continue?','/system/upgrade-http-dev-clean')">
+                        <b>Latest Development - HTTP</b>
+                    </button>
+
+                    <br><br><hr>
+
+                    <p>
+                        Developmental Use ONLY<br>See
+                        <span style="color: var(--second-color);">
+                            /home/kootnet_data/scripts/update_kootnet-sensors_smb.sh
+                        </span> for more info
+                    </p>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Proceed with SMB Standard Upgrade?','/system/upgrade-smb-std')">
+                        <b>Standard Upgrade - SMB</b>
+                    </button>
+
+                    <br><br>
+
+                    <button type="button" class="pure-button"
+                            onclick="ConfirmFunction('Proceed with SMB Development Upgrade?','/system/upgrade-smb-dev')">
+                        <b>Development Upgrade - SMB</b>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="far fa-arrow-alt-circle-up"></i> Other Updates</h2>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Internet Required! Kootnet Sensors will restart when done. Proceed with Python3 Modules upgrades?','/system/upgrade-py3-modules')">
+                    Update Python3 Modules
+                </button>
+
+                <br><br>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Internet Required! OS Upgrade may take some time, proceed?','/system/upgrade-os')">
+                    Update OS
+                </button>
+
+                <br><br><hr>
+
+                <h2><i class="fas fa-power-off"></i> Power Commands</h2>
+
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Restart Program?','/system/system-restart-program')">
+                    Restart Program
+                </button>
+                <br><br><br>
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Restart System?','/system/system-restart')">
+                    Restart System
+                </button>
+                <br><br>
+                <button type="button" class="pure-button"
+                        onclick="ConfirmFunction('Shutdown System?','/system/system-shutdown')">
+                    Shutdown System
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function ConfirmFunction(msg, load_url) {
+        let r = confirm(msg);
+        if (r === true) {
+            jQuery("#main-page-view").load("/atpro" + load_url);
+        }
+    }
+
+    function ShowHideAdvUpgrades() {
+        if (document.getElementById("adv-upgrade-content").style.display === "none") {
+            document.getElementById("adv-upgrade-content").style.display = "inline-block";
+            document.getElementById("adv-upgrade-button").textContent = "Hide Advanced Upgrade Options";
+        } else {
+            document.getElementById("adv-upgrade-content").style.display = "none";
+            document.getElementById("adv-upgrade-button").textContent = "Show Advanced Upgrade Options";
+        }
+    }
+    ShowHideAdvUpgrades()
+</script>

@@ -50,12 +50,12 @@ class CreateVEML6075:
         try:
             uva, uvb = self.uv_sensor.get_measurements()
             uv_comp1, uv_comp2 = self.uv_sensor.get_comparitor_readings()
-            uv_index = self.uv_sensor.convert_to_index(uva, uvb, uv_comp1, uv_comp2)
+            uv_index = round(self.uv_sensor.convert_to_index(uva, uvb, uv_comp1, uv_comp2)[2], round_decimal_to)
         except Exception as error:
-            uv_index = [0.0, 0.0, 0.0]
+            uv_index = 0.0
             logger.sensors_logger.error("Pimoroni VEML6075 UV Index Reading - Failed: " + str(error))
         self.sensor_in_use = False
-        return uv_index[2]
+        return uv_index
 
     def ultra_violet(self):
         """ Returns Ultra Violet (A,B) as a list. """

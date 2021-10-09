@@ -1,0 +1,39 @@
+<h2><i class="fas fa-plus-circle"></i> 3rd Party Services</h2>
+
+<label>
+    <input type="radio" name="config_selection" value="weather_underground" checked>
+    Weather Underground
+</label>
+<label>
+    <input type="radio" name="config_selection" value="luftdaten">
+    Luftdaten
+</label>
+<label>
+    <input type="radio" name="config_selection" value="open_sense_map">
+    Open Sense Map
+</label>
+
+<br><br>
+
+<label class="toggle-switch">
+    <input type="checkbox" id="enable-online-service-toggle" class="toggle-switch-input"
+           name="enable_online_service">
+    <label class="toggle-switch-label" for="enable-online-service-toggle"></label>
+    Enable Selected Online Service
+</label>
+
+<br><br>
+
+<label>Seconds between Updates<br>
+    <div style="display: table; margin-left: auto; margin-right: auto;">
+        <div style="display: table-row;">
+            <div style="display: table-cell;">
+                <input style="width: 120px;" type="number" min="1" name="online_service_interval" value="900.0">
+            </div>
+        </div>
+    </div>
+</label>
+
+<br><br>
+
+<button type="submit" class="pure-button" formaction="/atpro/sensor-rm-push-config">Send Update</button>

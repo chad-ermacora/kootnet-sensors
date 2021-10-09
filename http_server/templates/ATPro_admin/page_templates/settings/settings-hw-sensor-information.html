@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KS HW Sensors</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/atpro/style.css">
+
+    <style>
+        a {
+            color: var(--second-color);
+        }
+
+        .sensor-name {
+            font-size: x-large;
+            font-weight: bolder;
+            color: darkorange;
+        }
+
+        .sensor-info-heading {
+            font-size: large;
+            font-weight: bold;
+            color: green;
+        }
+
+        .card-content {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h1><u><a style="color: var(--main-color);" href="/atpro/supported-sensors-info">
+                    Supported Hardware Information
+                </a></u></h1>
+
+                <p>
+                    If you do not have any sensors yet, you can always enable the "Kootnet Dummy Sensors",
+                    this will provide randomly generated fake readings for all sensor types.
+                    If you have some sensors, you can still enable the "Kootnet Dummy Sensors",
+                    your real sensors will override the dummy sensors.
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2>
+                    Raspberry Pi Systems & Sensors -
+                    <a href="https://www.raspberrypi.org/products/" target="_blank">www.raspberrypi.org</a>
+                </h2>
+                <div class="row">
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <p>
+                                    <span class="sensor-name">Raspberry Pi</span><br><br>
+                                    <span class="sensor-info-heading">Supported Systems</span>: Zero, 3B(+), 4B
+                                    <br><br>* Other models of the Pi are untested but should work *
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <p>
+                                    <span class="sensor-name">Sense HAT</span><br><br>
+                                    <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature,
+                                    Pressure, Humidity Accelerometer, Magnetometer, Gyroscope, LED matrix,
+                                    five-button joystick
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2>
+                    Pimoroni Sensors -
+                    <a href="https://shop.pimoroni.com/" target="_blank">shop.pimoroni.com</a>
+                </h2>
+
+                <p>
+                    Although I test using Pimoroni sensors, other branded sensors using the same chip
+                    will most likely work, for example, the Adafruit BME680 & BME688 should work the same as the
+                    Pimoroni BME680/688.
+                </p>
+
+                <div class="row">
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">BH1745</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Lumen, Red, Green,
+                                Blue
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">AS7262</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Lumen, Red, Orange,
+                                Yellow, Green, Blue, Violet<br><br>
+                                6 spectral channels in nanometer wavelengths<br>450, 500, 550, 570, 600, 650
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">BMP280</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature, Pressure
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">BME280</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature, Pressure,
+                                Humidity
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">BME680</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature, Pressure,
+                                Humidity, GAS TVOC
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">Enviro pHAT</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature, Pressure,
+                                Lumen, Red, Green, Blue, Accelerometer, Magnetometer
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">Enviro / Enviro+</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature, Pressure,
+                                Humidity, Lumen, Distance, GAS (Oxidised, Reduced, NH3), Microphone<br><br>
+                                Optional: LCD Screen
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">SGP30</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>GAS TVOC & eCO2
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">PMS5003</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Particulate Matter
+                                (1 / 2.5 / 10)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">MSA301</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Accelerometer
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">LSM303D</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Accelerometer,
+                                Magnetometer
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">ICM20948</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Accelerometer,
+                                Magnetometer, Gyroscope
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">VL53L1X</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Distance
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">LTR-559</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Lumen, Distance
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">VEML6075</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Ultra Violet A/B
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">11x7 LED Matrix</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>LED Display
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">10.96" SPI Colour LCD</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>LCD Display
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">1.12" Mono OLED (128x128, white/black)</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>OLED Display
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">RV3028</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Real Time Clock
+                                (Keeps the time when powered down)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">PA1010D GPS</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>GPS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">MCP9600</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature *Untested
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">MICS6814</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>GAS
+                                (Oxidised, Reduced, NH3)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2>
+                    Other Sensors
+                </h2>
+                <div class="row">
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">Sensirion SPS30</span><br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Particulate Matter
+                                (1 / 2.5 / 4 / 10)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-4 col-m-6 col-sm-12">
+                        <div class="card">
+                            <div class="card-content">
+                                <span class="sensor-name">Maxim / Dallas</span><br><br>
+                                <span class="sensor-info-heading">Supported Models</span><br>
+                                DS18x (x = 22, S20, B20, 25) / DS28EA00 / MAX31850K<br><br>
+                                <span class="sensor-info-heading">Sensor(s) & Abilities</span><br>Temperature *Untested
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/atpro/index.js"></script>

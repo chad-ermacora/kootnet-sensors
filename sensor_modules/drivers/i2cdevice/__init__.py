@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-__version__ = '0.0.6'
+__version__ = '0.0.7'
 
 
 def _mask_width(value, bit_width=8):
@@ -228,8 +228,10 @@ class Device(object):
         """
         result = {}
         self.read_register(register)
+        self.lock_register(register)
         for field in self.registers[register].fields:
             result[field] = self.get_field(register, field)
+        self.unlock_register(register)
         return self.registers[register].namedtuple(**result)
 
     def get_field(self, register, field):
@@ -244,7 +246,10 @@ class Device(object):
         value = (value & field.mask) >> _trailing_zeros(field.mask, register.bit_width)
 
         if field.adapter is not None:
-            value = field.adapter._decode(value)
+            try:
+                value = field.adapter._decode(value)
+            except ValueError as value_error:
+                raise ValueError("{}: {}".format(field.name, str(value_error)))
 
         return value
 

@@ -46,9 +46,6 @@ class CreateNetworkSetCommands:
     """ Create a object instance holding available network "Set" commands (AKA set configurations on remote sensor). """
 
     def __init__(self):
-        self.set_host_name = "SetHostName"
-        self.set_datetime = "SetDateTime"
-
         self.set_primary_configuration = "SetPrimaryConfiguration"
         self.set_installed_sensors = "SetInstalledSensors"
 
@@ -58,11 +55,7 @@ class CreateNetworkSetCommands:
 
         self.set_display_config = "SetDisplayConfiguration"
         self.set_email_configuration = "SetEmailConfiguration"
-        self.set_sensor_control_configuration = "SetSensorControlConfiguration"
         self.set_wifi_configuration = "SetWifiConfiguration"
-
-        self.set_mqtt_publisher_configuration = "SetMQTTPublisherConfiguration"
-        self.set_mqtt_subscriber_configuration = "SetMQTTSubscriberConfiguration"
 
         self.set_weather_underground_configuration = "SetWeatherUndergroundConfiguration"
         self.set_luftdaten_configuration = "SetLuftdatenConfiguration"
@@ -76,6 +69,27 @@ class CreateNetworkGetCommands:
         self.check_online_status = "CheckOnlineStatus"
         self.check_portal_login = "TestLogin"
 
+        self.sensor_name = "GetHostName"
+        self.sensor_id = "GetSensorID"
+
+        self.os_version = "GetOSVersion"
+        self.program_version = "GetSensorVersion"
+        self.program_last_updated = "GetProgramLastUpdated"
+
+        self.rm_system_report = "/atpro/rm-get-system-entry"
+        self.rm_config_report = "/atpro/rm-get-config-entry"
+        self.rm_readings_report = "/atpro/rm-get-readings-entry"
+        self.rm_latency_report = "/atpro/rm-get-latency-entry"
+
+        self.system_uptime = "GetSystemUptime"
+        self.system_date_time = "GetSystemDateTime"
+        self.system_ram_used = "GetRAMUsed"
+        self.system_ram_free = "GetRAMFree"
+        self.system_ram_total = "GetRAMTotal"
+        self.system_ram_size_type = "GetRAMTotalSizeType"
+        self.system_disk_space_free = "GetFreeDiskSpace"
+
+        self.sensor_sql_all_databases_zip = "DownloadALLSQLDatabases"
         self.sensor_sql_database = "DownloadSQLDatabase"
         self.sensor_sql_database_raw = "DownloadSQLDatabaseRAW"
         self.sensor_sql_database_size = "GetSQLDBSize"
@@ -88,28 +102,17 @@ class CreateNetworkGetCommands:
         self.variance_config_file = "GetVarianceConfiguration"
         self.display_configuration_file = "GetDisplayConfiguration"
         self.email_configuration_file = "GetEmailConfiguration"
-        self.mqtt_publisher_configuration_file = "GetMQTTPublisherConfiguration"
-        self.mqtt_subscriber_configuration_file = "GetMQTTSubscriberConfiguration"
-        self.sensor_control_configuration_file = "GetSensorControlConfiguration"
         self.wifi_config_file = "GetWifiConfiguration"
         self.weather_underground_config_file = "GetWeatherUndergroundConfiguration"
         self.luftdaten_config_file = "GetOnlineServicesLuftdaten"
         self.open_sense_map_config_file = "GetOnlineServicesOpenSenseMap"
 
-        self.primary_log = "GetPrimaryLog"
-        self.network_log = "GetNetworkLog"
-        self.sensors_log = "GetSensorsLog"
         self.download_zipped_logs = "DownloadZippedLogs"
-        self.download_zipped_logs_size = "GetZippedLogsSize"
 
         self.download_zipped_everything = "DownloadZippedEverything"
 
-        self.sensor_readings = "GetIntervalSensorReadings"
+        self.sensor_readings = "GetAllSensorReadings"
         self.sensors_latency = "GetSensorsLatency"
-
-        self.sensor_name = "GetHostName"
-        self.system_uptime = "GetSystemUptime"
-        self.system_date_time = "GetSystemDateTime"
 
         self.cpu_temp = "GetCPUTemperature"
         self.environmental_temp = "GetEnvTemperature"
@@ -127,10 +130,6 @@ class CreateNetworkGetCommands:
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
 
-        self.database_notes = "GetDatabaseNotes"
-        self.database_note_dates = "GetDatabaseNoteDates"
-        self.database_user_note_dates = "GetDatabaseNoteUserDates"
-
 
 class CreateDatabaseVariables:
     """ Creates a object instance holding SQLite3 database table and row names. """
@@ -146,6 +145,7 @@ class CreateDatabaseVariables:
         self.sensor_check_in_version = "KootnetVersion"
         self.sensor_check_in_installed_sensors = "InstalledSensors"
         self.sensor_check_in_primary_log = "PrimaryLog"
+        self.sensor_check_in_network_log = "NetworkLog"
         self.sensor_check_in_sensors_log = "SensorsLog"
 
         self.trigger_state = "TriggerState"
@@ -206,6 +206,19 @@ class CreateDatabaseVariables:
         self.gyro_y = "Gyro_Y"
         self.gyro_z = "Gyro_Z"
 
+        self.gps_all_dic = "All_GPS_As_Dictionary"
+        self.latitude = "Latitude"
+        self.longitude = "Longitude"
+        self.gps_timestamp = "GPS_Timestamp"
+        self.gps_num_satellites = "GPS_Number_Of_Satellites"
+        self.gps_quality = "GPS_Quality"
+        self.gps_mode_fix_type = "GPS_Mode_Fix_Type"
+        self.gps_speed_over_ground = "GPS_Speed_Over_Ground"
+
+        self.gps_pdop = "GPS_PDOP"
+        self.gps_hdop = "GPS_HDOP"
+        self.gps_vdop = "GPS_VDOP"
+
     def get_sensor_columns_list(self):
         """ Returns SQL Table columns used for Interval recording as a list. """
         sensor_sql_columns = [self.all_tables_datetime,
@@ -246,7 +259,17 @@ class CreateDatabaseVariables:
                               self.mag_z,
                               self.gyro_x,
                               self.gyro_y,
-                              self.gyro_z]
+                              self.gyro_z,
+                              self.latitude,
+                              self.longitude,
+                              self.gps_timestamp,
+                              self.gps_num_satellites,
+                              self.gps_quality,
+                              self.gps_mode_fix_type,
+                              self.gps_speed_over_ground,
+                              self.gps_pdop,
+                              self.gps_hdop,
+                              self.gps_vdop]
         return sensor_sql_columns
 
     def get_other_columns_list(self):
@@ -254,6 +277,31 @@ class CreateDatabaseVariables:
         other_sql_columns = [self.other_table_column_user_date_time,
                              self.other_table_column_notes]
         return other_sql_columns
+
+
+class CreateLatencyVariables:
+    def __init__(self):
+        self.cpu_temperature = "CPU Temperature"
+        self.environment_temperature = "Environmental Temperature"
+        self.pressure = "Pressure"
+        self.altitude = "Altitude"
+        self.humidity = "Humidity"
+        self.distance = "Distance"
+        self.gas = "GAS"
+        self.particulate_matter = "Particulate Matter"
+        self.lumen = "Lumen"
+        self.colours = "Colours"
+        self.ultra_violet = "Ultra Violet"
+        self.accelerometer_xyz = "Accelerometer XYZ"
+        self.magnetometer_xyz = "Magnetometer XYZ"
+        self.gyroscope_xyz = "Gyroscope XYZ"
+        self.gps = "GPS"
+
+    def get_all_latency_as_list(self):
+        return [self.cpu_temperature, self.environment_temperature, self.pressure, self.altitude,
+                self.humidity, self.distance, self.gas, self.particulate_matter, self.lumen,
+                self.colours, self.ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz,
+                self.gps]
 
 
 class CreateEmptyThreadClass:
@@ -291,9 +339,10 @@ operating_system_name = ""
 program_last_updated = ""
 reboot_count = ""
 total_ram_memory = 0.0
-total_ram_memory_size_type = " MB"
+total_disk_space = 0.0
 tmp_sensor_id = ""
 database_variables = CreateDatabaseVariables()
+latency_variables = CreateLatencyVariables()
 
 # Names of all the uploaded databases for graphing (Only names, no directory path)
 uploaded_databases_list = []
@@ -302,8 +351,10 @@ uploaded_databases_list = []
 zipped_db_backup_list = []
 
 # Is filled with Currently available online Stable / Developmental versions
-standard_version_available = "Retrieving ..."
-developmental_version_available = "Retrieving ..."
+standard_version_available = "Retrieving"
+developmental_version_available = "Retrieving"
+software_update_available = False
+software_update_dev_available = False
 
 # Static variables
 command_data_separator = "[new_data_section]"
@@ -334,16 +385,19 @@ checkin_search_sensor_id = ""
 checkin_search_sensor_installed_sensors = ""
 checkin_sensor_info = ""
 checkin_search_primary_log = ""
+checkin_search_network_log = ""
 checkin_search_sensors_log = ""
 
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()
 sensor_checkin_thread = CreateEmptyThreadClass()
+automatic_upgrades_thread = CreateEmptyThreadClass()
 interval_recording_thread = CreateEmptyThreadClass()
 report_email_thread = CreateEmptyThreadClass()
 graph_email_thread = CreateEmptyThreadClass()
 mini_display_thread = CreateEmptyThreadClass()
 interactive_sensor_thread = CreateEmptyThreadClass()
+mqtt_broker_dummy_thread = CreateEmptyThreadClass()
 mqtt_publisher_thread = CreateEmptyThreadClass()
 mqtt_subscriber_thread = CreateEmptyThreadClass()
 weather_underground_thread = CreateEmptyThreadClass()
@@ -385,6 +439,7 @@ trigger_variance_thread_gyroscope = CreateEmptyThreadClass()
 # If these variables are set to True, it will restart the corresponding thread
 # After the thread restarts, it sets this back to False
 restart_sensor_checkin_thread = False
+restart_automatic_upgrades_thread = False
 restart_interval_recording_thread = False
 restart_all_trigger_threads = False
 restart_report_email_thread = False
@@ -395,15 +450,16 @@ restart_weather_underground_thread = False
 restart_luftdaten_thread = False
 restart_open_sense_map_thread = False
 
-# If set to True, it will prompt to restart service or reboot system in the HTTPS Web Portal
-html_service_restart = False
-html_sensor_reboot = False
-
 # Checked before running OS or pip3 upgrades
 # Set to False when stating a upgrade, returns to True after program restarts
 sensor_ready_for_upgrade = True
 
-# Variables to make sure Sensor Control is only creating a single copy at any given time
+# Variables to make sure the same zip is not being generated multiple times at the same time
+creating_zip_main_db = False
+creating_zip_checkin_db = False
+creating_zip_mqtt_sub_db = False
+
+# Variables to make sure Remote Management is only creating a single copy at any given time
 creating_the_reports_zip = False
 creating_the_big_zip = False
 creating_databases_zip = False
@@ -422,11 +478,11 @@ default_report = """
     <head>
         <meta charset="UTF-8">
         <meta name="robots" content="noindex">
-        <title>Kootnet Sensor</title>
+        <title>Kootnet Sensors</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
     </head>
     <body style='background-color: black;'>
-        <h2><a style='text-decoration: underline; color: red;' href='/SensorControlManage';>Back to Sensor Control</a></h3>
+        <h2 style='text-decoration: underline; color: red;'>Report Not Found</h3>
         <p style='color: white;'>No report found, please generated the report first</p>
     </body>
 </html>
@@ -437,7 +493,7 @@ html_config_report = default_report
 html_readings_report = default_report
 html_latency_report = default_report
 
-# Login used for remote sensors (Used in Sensor Control)
+# Login used for remote sensors (Used in Sensor Remote Management)
 http_login = ""
 http_password = ""
 
@@ -468,6 +524,7 @@ quick_graph_env_temp = 1
 quick_graph_pressure = 0
 quick_graph_altitude = 0
 quick_graph_humidity = 1
+quick_graph_dew_point = 0
 quick_graph_distance = 0
 quick_graph_gas = 0
 quick_graph_particulate_matter = 0

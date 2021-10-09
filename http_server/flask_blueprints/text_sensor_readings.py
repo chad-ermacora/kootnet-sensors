@@ -20,16 +20,15 @@ from flask import Blueprint, request
 from operations_modules import logger
 from operations_modules.app_cached_variables import command_data_separator, database_variables
 from configuration_modules import app_config_access
-from sensor_recording_modules.recording_interval import get_interval_sensor_readings
 from sensor_modules import sensor_access
 
 html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 
 
-@html_sensor_readings_routes.route("/GetIntervalSensorReadings")
-def get_interval_readings():
-    logger.network_logger.debug("* Interval Sensor Readings sent to " + str(request.remote_addr))
-    sensor_readings = get_interval_sensor_readings()
+@html_sensor_readings_routes.route("/GetAllSensorReadings")
+def get_all_sensor_readings():
+    logger.network_logger.debug("* All Sensor Readings sent to " + str(request.remote_addr))
+    sensor_readings = sensor_access.get_all_available_sensor_readings(include_system_info=True)
     readings_name = ""
     readings_data = ""
     for index, reading in sensor_readings.items():
@@ -59,8 +58,8 @@ def get_sensors_latency():
         text_part1 = text_part1[:-1]
         text_part2 = text_part2[:-1]
     except Exception as error:
-        return "Error" + sensor_access.command_data_separator + str(error)
-    return text_part1 + sensor_access.command_data_separator + text_part2
+        return "Error" + command_data_separator + str(error)
+    return text_part1 + command_data_separator + text_part2
 
 
 @html_sensor_readings_routes.route("/GetCPUTemperature")

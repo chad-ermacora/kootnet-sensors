@@ -189,6 +189,5 @@ class BMP280:
 
     def get_altitude(self, qnh=1013.25):
         self.update_sensor()
-        pressure = self.get_pressure()
-        altitude = 44330.0 * (1.0 - pow(pressure / qnh, (1.0 / 5.255)))
+        altitude = 44330.0 * (1.0 - pow(self.pressure / qnh, (1.0 / 5.255)))
         return altitude

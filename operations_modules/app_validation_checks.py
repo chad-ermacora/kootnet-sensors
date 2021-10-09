@@ -100,3 +100,11 @@ def email_is_valid(email):
     if re.search(regex, str(email)):
         return True
     return False
+
+
+def url_is_valid(url_address):
+    url_address = str(url_address)
+    if re.match(r'^[0-9a-zA-Z./-]+$', url_address):
+        return True
+    print(url_address)
+    return False

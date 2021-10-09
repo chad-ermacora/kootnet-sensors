@@ -48,7 +48,7 @@ def _weather_underground_server():
             sw_version_text_list = software_version.version.split(".")
             sw_version_text = str(sw_version_text_list[0]) + "." + str(sw_version_text_list[1])
             if sensor_readings:
-                if weather_underground_config.wu_rapid_fire_enabled:
+                if interval_seconds < 10:
                     url = weather_underground_config.wu_rapid_fire_url_start
                 else:
                     url = weather_underground_config.wu_main_url_start
@@ -60,10 +60,9 @@ def _weather_underground_server():
                        weather_underground_config.wu_software_version + sw_version_text + \
                        weather_underground_config.wu_action
 
-                if weather_underground_config.wu_rapid_fire_enabled:
+                if interval_seconds < 10:
                     url += weather_underground_config.wu_rapid_fire_url_end + str(interval_seconds)
 
-                # logger.network_logger.debug("New Weather Underground URL: " + url)
                 html_get_response = requests.get(url=url)
 
                 if html_get_response.status_code == 200:

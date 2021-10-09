@@ -1,0 +1,500 @@
+<style>
+    .osm-text-sensor-id-box {
+        width: 350px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-8 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-osm">
+                    <h2><i class="fas fa-plus-circle"></i> Open Sense Map</h2>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-osm-toggle-switch" class="toggle-switch-input"
+                               name="enable_open_sense_map" {{ CheckedOSMEnabled }}>
+                        <label class="toggle-switch-label" for="enable-osm-toggle-switch"></label>
+                        Enable Open Sense Map
+                    </label>
+
+                    <br><br>
+
+                    <label>SenseBox ID<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="osm_station_id"
+                                           placeholder="Eg. 8d758b393536b3999a2167d7" value="{{ OSMStationID }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between Updates<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input style="width: 100px;" type="number" min="1" name="osm_interval"
+                                           value="{{ OSMIntervalSeconds }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br>
+                    <hr>
+
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="enable-osm-manual-toggle-switch" class="toggle-switch-input"
+                               name="enable_osm_manual_sensor_ids" onclick="CheckOpenSenseMapIDs()">
+                        <label class="toggle-switch-label" for="enable-osm-manual-toggle-switch"></label>
+                        Manually Set Sensor IDs
+                    </label>
+
+                    <div class="row">
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Temperature ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="env_temp_id"
+                                               placeholder="Eg. 8d758b393536b3999a2167d8" value="{{ OSMSEnvTempID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Pressure ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="pressure_id"
+                                               placeholder="Eg. 8d758b393536b3999a2167d9" value="{{ OSMPressureID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Altitude ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="altitude_id"
+                                               value="{{ OSMAltitudeID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Humidity ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="humidity_id"
+                                               value="{{ OSMHumidityID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Gas V.O.C<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="gas_index_id"
+                                               value="{{ OSMGasIndexID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Gas NH3 ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="gas_nh3_id"
+                                               value="{{ OSMGasNH3ID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Gas Oxidising ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64"
+                                               name="gas_oxidising_id" value="{{ OSMOxidisingID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Gas Reducing ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64"
+                                               name="gas_reducing_id" value="{{ OSMGasReducingID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>PM1 ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="pm1_id"
+                                               value="{{ OSMPM1ID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>PM2.5 ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="pm2_5_id"
+                                               value="{{ OSMPM25ID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>PM4 ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="pm4_id"
+                                               value="{{ OSMPM4ID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>PM10 ID<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="pm10_id"
+                                               value="{{ OSMPM10ID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Lumen<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="lumen_id"
+                                               value="{{ OSMLumenID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Red<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="red_id"
+                                               value="{{ OSMRedID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Orange<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="orange_id"
+                                               value="{{ OSMOrangeID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Yellow<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="yellow_id"
+                                               value="{{ OSMYellowID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Green<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="green_id"
+                                               value="{{ OSMGreenID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Blue<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="blue_id"
+                                               value="{{ OSMBlueID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Violet<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="violet_id"
+                                               value="{{ OSMVioletID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Ultra Violet Index<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="uv_index_id"
+                                               value="{{ OSMUVIndexID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Ultra Violet A<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="uv_a_id"
+                                               value="{{ OSMUVAID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        &nbsp;
+
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;"><br>
+                                    <label>Ultra Violet B<br><br>
+                                        <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="uv_b_id"
+                                               value="{{ OSMUVBID }}">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-osm-registration">
+                    <h3><i class="fas fa-file-signature"></i> Open Sense Map Sensor Registration</h3>
+
+                    <p style="font-size: medium;"><b>
+                        This will automatically setup the sensor on your
+                        <a href="https://opensensemap.org/account" target="_blank">Open Sense Map account</a>.
+                        You will need to get the SenseBox ID and Sensor IDs from your
+                        Open Sense Map account and enter them in the other settings box.
+                    </b></p>
+
+                    <br><br>
+
+                    <label>User Name<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="osm-text-sensor-id-box" type="text" maxlength="128" style="width: 250px;"
+                                           name="osm_account_username" placeholder="Eg. someone@company.com"
+                                           value="{{ OSMAccountUserName }}" {{ OSMAccountUserName }} required>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Password<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="osm-text-sensor-id-box" type="password" maxlength="64"
+                                           name="osm_account_password" style="width: 250px;"
+                                           value="{{ OSMAccountPassword }}" {{ OSMAccountPassword }} required>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>GroupTag (Optional)<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="osm-text-sensor-id-box" type="text" maxlength="64" name="osm_grouptag"
+                                           style="width: 250px;">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <label>Location Coordinates<br>(Latitude, Longitude, Height in meters)<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="osm-text-sensor-id-box" type="text" maxlength="128" style="width: 275px;"
+                                           name="osm_location_coordinates" placeholder="Eg. 50.114739, -116.503914, 18.12"
+                                           required>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <br><br>
+
+                    <h3>Location Type</h3>
+                    <label class="pure-radio">
+                        <input type="radio" name="osm_location_type" value="outdoor" checked>
+                        Outdoors
+                    </label>
+                    <label class="pure-radio">
+                        <input type="radio" name="osm_location_type" value="indoor">
+                        Indoors
+                    </label>
+                    <label class="pure-radio">
+                        <input type="radio" name="osm_location_type" value="mobile">
+                        Mobile
+                    </label>
+                    <label class="pure-radio">
+                        <input type="radio" name="osm_location_type" value="unknown">
+                        Other
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button">Register Sensor</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function CheckOpenSenseMapIDs() {
+        if (jQuery('#enable-osm-manual-toggle-switch').prop('checked')) {
+            document.getElementsByName("env_temp_id")[0].disabled = false;
+            document.getElementsByName("pressure_id")[0].disabled = false;
+            document.getElementsByName("altitude_id")[0].disabled = false;
+            document.getElementsByName("humidity_id")[0].disabled = false;
+            document.getElementsByName("gas_index_id")[0].disabled = false;
+            document.getElementsByName("gas_nh3_id")[0].disabled = false;
+            document.getElementsByName("gas_oxidising_id")[0].disabled = false;
+            document.getElementsByName("gas_reducing_id")[0].disabled = false;
+            document.getElementsByName("pm1_id")[0].disabled = false;
+            document.getElementsByName("pm2_5_id")[0].disabled = false;
+            document.getElementsByName("pm4_id")[0].disabled = false;
+            document.getElementsByName("pm10_id")[0].disabled = false;
+            document.getElementsByName("lumen_id")[0].disabled = false;
+            document.getElementsByName("red_id")[0].disabled = false;
+            document.getElementsByName("orange_id")[0].disabled = false;
+            document.getElementsByName("yellow_id")[0].disabled = false;
+            document.getElementsByName("green_id")[0].disabled = false;
+            document.getElementsByName("blue_id")[0].disabled = false;
+            document.getElementsByName("violet_id")[0].disabled = false;
+            document.getElementsByName("uv_index_id")[0].disabled = false;
+            document.getElementsByName("uv_a_id")[0].disabled = false;
+            document.getElementsByName("uv_b_id")[0].disabled = false;
+        } else {
+            document.getElementsByName("env_temp_id")[0].disabled = true;
+            document.getElementsByName("pressure_id")[0].disabled = true;
+            document.getElementsByName("altitude_id")[0].disabled = true;
+            document.getElementsByName("humidity_id")[0].disabled = true;
+            document.getElementsByName("gas_index_id")[0].disabled = true;
+            document.getElementsByName("gas_nh3_id")[0].disabled = true;
+            document.getElementsByName("gas_oxidising_id")[0].disabled = true;
+            document.getElementsByName("gas_reducing_id")[0].disabled = true;
+            document.getElementsByName("pm1_id")[0].disabled = true;
+            document.getElementsByName("pm2_5_id")[0].disabled = true;
+            document.getElementsByName("pm4_id")[0].disabled = true;
+            document.getElementsByName("pm10_id")[0].disabled = true;
+            document.getElementsByName("lumen_id")[0].disabled = true;
+            document.getElementsByName("red_id")[0].disabled = true;
+            document.getElementsByName("orange_id")[0].disabled = true;
+            document.getElementsByName("yellow_id")[0].disabled = true;
+            document.getElementsByName("green_id")[0].disabled = true;
+            document.getElementsByName("blue_id")[0].disabled = true;
+            document.getElementsByName("violet_id")[0].disabled = true;
+            document.getElementsByName("uv_index_id")[0].disabled = true;
+            document.getElementsByName("uv_a_id")[0].disabled = true;
+            document.getElementsByName("uv_b_id")[0].disabled = true;
+        }
+    }
+
+    CheckOpenSenseMapIDs();
+</script>

@@ -22,7 +22,8 @@ from configuration_modules import app_config_access
 
 round_decimal_to = 5
 # Update readings in seconds
-sleep_between_readings_seconds = 1
+sleep_between_readings_seconds = 0.25
+use_as7262_led = 0  # 0=Disabled, 1=Enabled
 
 
 class CreateAS7262:
@@ -45,7 +46,7 @@ class CreateAS7262:
             self.as7262_access.set_gain(64)
             self.as7262_access.set_integration_time(17.857)
             self.as7262_access.set_measurement_mode(2)
-            self.as7262_access.set_illumination_led(0)
+            self.as7262_access.set_illumination_led(use_as7262_led)
 
             self.thread_readings_updater = Thread(target=self._readings_updater)
             self.thread_readings_updater.daemon = True
@@ -65,12 +66,12 @@ class CreateAS7262:
                 end_time = time.time()
                 self.sensor_latency = float(end_time - start_time)
 
-                self.red_650 = ems_colors_list.red
-                self.orange_600 = ems_colors_list.orange
-                self.yellow_570 = ems_colors_list.yellow
-                self.green_550 = ems_colors_list.green
-                self.blue_500 = ems_colors_list.blue
-                self.violet_450 = ems_colors_list.violet
+                self.red_650 = round(ems_colors_list.red, round_decimal_to)
+                self.orange_600 = round(ems_colors_list.orange, round_decimal_to)
+                self.yellow_570 = round(ems_colors_list.yellow, round_decimal_to)
+                self.green_550 = round(ems_colors_list.green, round_decimal_to)
+                self.blue_500 = round(ems_colors_list.blue, round_decimal_to)
+                self.violet_450 = round(ems_colors_list.violet, round_decimal_to)
             except Exception as error:
                 logger.sensors_logger.error("Pimoroni AS7262 6 channel spectrum - Failed: " + str(error))
                 self.red_650 = 0.0
@@ -83,6 +84,4 @@ class CreateAS7262:
 
     def spectral_six_channel(self):
         """ Returns Red, Orange, Yellow, Green, Blue and Violet as a list. """
-        return [round(self.red_650, round_decimal_to), round(self.orange_600, round_decimal_to),
-                round(self.yellow_570, round_decimal_to), round(self.green_550, round_decimal_to),
-                round(self.blue_500, round_decimal_to), round(self.violet_450, round_decimal_to)]
+        return [self.red_650, self.orange_600, self.yellow_570, self.green_550, self.blue_500, self.violet_450]

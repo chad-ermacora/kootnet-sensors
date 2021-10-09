@@ -1,0 +1,959 @@
+<style>
+    .high-low-number {
+        width: 125px;
+    }
+</style>
+
+<form class="pure-form" method="POST" action="/atpro/settings-variances">
+    <h2><i class="fas fa-database"></i> Trigger Variance Recording</h2>
+
+    <label class="toggle-switch">
+        <input type="checkbox" id="enable-variance-toggle-switch" class="toggle-switch-input"
+               name="enable_trigger_recording" {{ CheckedTrigger }}>
+        <label class="toggle-switch-label" for="enable-variance-toggle-switch"></label>
+        Enable Trigger Variance Recording
+    </label>
+
+    <br>
+
+    <h5 style="color: red; font-weight: bolder; font-size: large;"><b>
+        ** Warning Trigger Variances are still under active development **<br>
+        It is recommended to check the logs periodically
+    </b></h5>
+
+    <br>
+
+    <button type="button" class="pure-button" onclick="window.location.href='/atpro/settings-variances-reset';">
+        Set Seconds to Recommended
+    </button>
+
+    <br><br>
+
+    <button type="button" class="pure-button" onclick="window.location.href='/atpro/settings-variances-low';">
+        Set Seconds to Lowest
+    </button>
+
+    <br><br><hr>
+
+    <h3>Enable / Seconds between readings</h3>
+
+    <div class="row">
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cpu-temp-toggle" class="toggle-switch-input"
+                               name="cpu_temperature" {{ CheckedCPUTemperature }}>
+                        <label class="toggle-switch-label" for="cpu-temp-toggle"></label>
+                        CPU Temperature
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_cpu_temperature" value="{{ SecondsCPUTemperature }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="env-temp-toggle" class="toggle-switch-input"
+                               name="env_temperature" {{ CheckedEnvTemperature }}>
+                        <label class="toggle-switch-label" for="env-temp-toggle"></label>
+                        Environmental Temperature
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_env_temperature" value="{{ SecondsEnvTemperature }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pressure-toggle" class="toggle-switch-input"
+                               name="pressure" {{ CheckedPressure }}>
+                        <label class="toggle-switch-label" for="pressure-toggle"></label>
+                        Pressure
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_pressure" value="{{ SecondsPressure }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="altitude-toggle" class="toggle-switch-input"
+                               name="altitude" {{ CheckedAltitude }}>
+                        <label class="toggle-switch-label" for="altitude-toggle"></label>
+                        Altitude
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_altitude" value="{{ SecondsAltitude }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="humidity-toggle" class="toggle-switch-input"
+                               name="humidity" {{ CheckedHumidity }}>
+                        <label class="toggle-switch-label" for="humidity-toggle"></label>
+                        Humidity
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_humidity" value="{{ SecondsHumidity }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="distance-toggle" class="toggle-switch-input"
+                               name="distance" {{ CheckedDistance }}>
+                        <label class="toggle-switch-label" for="distance-toggle"></label>
+                        Distance
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_distance" value="{{ SecondsDistance }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="gas-toggle" class="toggle-switch-input"
+                               name="gas" {{ CheckedGas }}>
+                        <label class="toggle-switch-label" for="gas-toggle"></label>
+                        Gas
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_gas" value="{{ SecondsGas }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="pm-toggle" class="toggle-switch-input"
+                               name="particulate_matter" {{ CheckedPM }}>
+                        <label class="toggle-switch-label" for="pm-toggle"></label>
+                        Particulate Matter
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_pm" value="{{ SecondsPM }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="lumen-toggle" class="toggle-switch-input"
+                               name="lumen" {{ CheckedLumen }}>
+                        <label class="toggle-switch-label" for="lumen-toggle"></label>
+                        Lumen
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_lumen" value="{{ SecondsLumen }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="colour-toggle" class="toggle-switch-input"
+                               name="colour" {{ CheckedColour }}>
+                        <label class="toggle-switch-label" for="colour-toggle"></label>
+                        Colour
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_colour" value="{{ SecondsColour }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="uv-toggle" class="toggle-switch-input"
+                               name="ultra_violet" {{ CheckedUltraViolet }}>
+                        <label class="toggle-switch-label" for="uv-toggle"></label>
+                        Ultra Violet
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_ultra_violet" value="{{ SecondsUltraViolet }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="acc-toggle" class="toggle-switch-input"
+                               name="accelerometer" {{ CheckedAccelerometer }}>
+                        <label class="toggle-switch-label" for="acc-toggle"></label>
+                        Accelerometer
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_accelerometer" value="{{ SecondsAccelerometer }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="mag-toggle" class="toggle-switch-input"
+                               name="magnetometer" {{ CheckedMagnetometer }}>
+                        <label class="toggle-switch-label" for="mag-toggle"></label>
+                        Magnetometer
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_magnetometer" value="{{ SecondsMagnetometer }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="gyroscope-toggle" class="toggle-switch-input"
+                               name="gyroscope" {{ CheckedGyroscope }}>
+                        <label class="toggle-switch-label" for="gyroscope-toggle"></label>
+                        Gyroscope
+                    </label>
+
+                    <br><br>
+
+                    <label>Seconds between readings<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="seconds_gyroscope" value="{{ SecondsGyroscope }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Trigger Variance Thresholds</h3>
+
+    <div class="row">
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>CPU Temperature Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_cpu_temperature" value="{{ TriggerCPUTemperature }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Environmental Temperature Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_env_temperature" value="{{ TriggerEnvTemperature }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Pressure Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_pressure" value="{{ TriggerPressure }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Altitude Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_altitude" value="{{ TriggerAltitude }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Humidity Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_humidity" value="{{ TriggerHumidity }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Distance Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_distance" value="{{ TriggerDistance }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gas Index Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_gas_index" value="{{ TriggerGasIndex }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gas Oxidising Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_gas_oxidising" value="{{ TriggerGasOxidising }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gas Reducing Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_gas_reducing" value="{{ TriggerGasReducing }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gas NH3 Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_gas_nh3" value="{{ TriggerGasNH3 }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>PM1 Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_pm1" value="{{ TriggerPM1 }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>PM2.5 Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_pm2_5" value="{{ TriggerPM25 }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>PM4 Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_pm4" value="{{ TriggerPM4 }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>PM10 Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_pm10" value="{{ TriggerPM10 }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Lumen Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="trigger_lumen" value="{{ TriggerLumen }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Red Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="red" value="{{ TriggerRed }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Orange Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="orange" value="{{ TriggerOrange }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Yellow Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="yellow" value="{{ TriggerYellow }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Green Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="green" value="{{ TriggerGreen }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Blue Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="blue" value="{{ TriggerBlue }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Violet Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="violet" value="{{ TriggerViolet }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>UVA Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="ultra_violet_a" value="{{ TriggerUltraVioletA }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>UVB Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="ultra_violet_b" value="{{ TriggerUltraVioletB }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Accelerometer X Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="accelerometer_x" value="{{ TriggerAccelerometerX }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Accelerometer Y Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="accelerometer_y" value="{{ TriggerAccelerometerY }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Accelerometer Z Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="accelerometer_z" value="{{ TriggerAccelerometerZ }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Magnetometer X Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="magnetometer_x" value="{{ TriggerMagnetometerX }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Magnetometer Y Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="magnetometer_y" value="{{ TriggerMagnetometerY }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Magnetometer Z Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="magnetometer_z" value="{{ TriggerMagnetometerZ }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gyroscope X Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="gyroscope_x" value="{{ TriggerGyroscopeX }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gyroscope Y Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="gyroscope_y" value="{{ TriggerGyroscopeY }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-2 col-m-4 col-sm-6">
+            <div class="card">
+                <div class="card-content">
+                    <label>Gyroscope Z Trigger variance<br><br>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input class="high-low-number" type="number" min=0 step="any"
+                                           name="gyroscope_z" value="{{ TriggerGyroscopeZ }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <button type="submit" class="pure-button">Update</button>
+</form>

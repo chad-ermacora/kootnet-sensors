@@ -1,0 +1,301 @@
+<style>
+    th {
+        color: red;
+    }
+
+    td {
+        font-weight: bolder;
+        text-align: center;
+    }
+
+    .readings-header {
+        text-align: center;
+    }
+</style>
+
+<div class="row">
+    <div class="col-5 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Host Name</div></th>
+                            <th><div class="readings-header">IP Address</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ HostName }}</td>
+                            <td>{{ LocalIP }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Automatic Upgrades</div></th>
+                            <th><div class="readings-header">Running Version</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ AutoUpgrades }}</td>
+                            <td>{{ KootnetVersion }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Current Release</div></th>
+                            <th><div class="readings-header">Development Release</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ StdVersion }}</td>
+                            <td>{{ DevVersion }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Debug<br>Logging</div></th>
+                            <th><div class="readings-header">System<br>Uptime</div></th>
+                            <th><div class="readings-header">System<br>Reboots</div></th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ DebugLogging }}</td>
+                            <td>{{ SensorUptime | safe }}</td>
+                            <td>{{ SensorReboots }}</td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">System<br>Temperature</div></th>
+                            <th><div class="readings-header">RAM<br>Used/Total</div></th>
+                            <th><div class="readings-header">Storage<br>Used/Total</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ CPUTemperature }} °C</td>
+                            <td>{{ RAMUsage }} of {{ RAMTotal }}</td>
+                            <td>{{ DiskUsage }} of {{ DiskTotal }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Operating System</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ OperatingSystem }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Installed Sensors</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ InstalledSensors }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-8 col-m-8 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">DateTime Sensor's Timezone</div></th>
+                            <th><div class="readings-header">DateTime UTC 0</div></th>
+                            <th><div class="readings-header">Last Updated</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ DateTime }}</td>
+                            <td>{{ DateTimeUTC }}</td>
+                            <td>{{ LastUpdated }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-4 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Sensor Checkins</div></th>
+                            <th><div class="readings-header">Checkin Server</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ SensorCheckins }}</td>
+                            <td>{{ CheckinServer }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Interval Recording</div></th>
+                            <th><div class="readings-header">High/Low Recording</div></th>
+                            <th><div class="readings-header">Variance Recording</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ IntervalRecording }}</td>
+                            <td>{{ TriggerHighLowRecording }}</td>
+                            <td>{{ TriggerVarianceRecording }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">Open Sense Map</div></th>
+                            <th><div class="readings-header">Weather Underground</div></th>
+                            <th><div class="readings-header">Luftdaten</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ OpenSenseMapService }}</td>
+                            <td>{{ WeatherUndergroundService }}</td>
+                            <td>{{ LuftdatenService }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">MQTT Broker (Mosquitto)</div></th>
+                            <th><div class="readings-header">MQTT Publisher</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ MQTTBroker }}</td>
+                            <td>{{ MQTTPublishing }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><div class="readings-header">MQTT Subscriber</div></th>
+                            <th><div class="readings-header">MQTT Subscriber Recording</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ MQTTSubscriber }}</td>
+                            <td>{{ MQTTSubscriberRecording }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    CheckNotificationsAsync();
+</script>

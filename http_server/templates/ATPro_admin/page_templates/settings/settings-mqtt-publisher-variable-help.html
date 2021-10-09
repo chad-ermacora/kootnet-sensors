@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Publisher Replacement Variables</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" href="/atpro/style.css">
+
+    <style>
+        .sensor-name {
+            font-size: x-large;
+            font-weight: bolder;
+            color: orange;
+        }
+
+        .sensor-data {
+            font-size: large;
+            font-weight: bold;
+            background-color: black;
+            color: whitesmoke;
+        }
+    </style>
+</head>
+
+<body>
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="counter bg-success">
+            <h2><u>MQTT Publisher Replacement Variables</u></h2>
+        </div>
+    </div>
+
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <div class="row">
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">System Hostname</span><br>
+                            <span class="sensor-data">{{ SystemHostname }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">System IP Address</span><br>
+                            <span class="sensor-data">{{ SystemIP }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GPS Latitude</span><br>
+                            <span class="sensor-data">{{ Latitude }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GPS Longitude</span><br>
+                            <span class="sensor-data">{{ Longitude }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">System Uptime in Minutes</span><br>
+                            <span class="sensor-data">{{ SystemUptime }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">System Date & Time (UTC0)</span><br>
+                            <span class="sensor-data">{{ SystemDateTime }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">System Temperature</span><br>
+                            <span class="sensor-data">{{ SystemTemperature }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Environmental Temperature</span><br>
+                            <span class="sensor-data">{{ EnvTemperature }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Pressure</span><br>
+                            <span class="sensor-data">{{ Pressure }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Altitude</span><br>
+                            <span class="sensor-data">{{ Altitude }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Humidity</span><br>
+                            <span class="sensor-data">{{ Humidity }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Distance</span><br>
+                            <span class="sensor-data">{{ Distance }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Lumen</span><br>
+                            <span class="sensor-data">{{ Lumen }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Red</span><br>
+                            <span class="sensor-data">{{ Red }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Orange</span><br>
+                            <span class="sensor-data">{{ Orange }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Yellow</span><br>
+                            <span class="sensor-data">{{ Yellow }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Green</span><br>
+                            <span class="sensor-data">{{ Green }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Blue</span><br>
+                            <span class="sensor-data">{{ Blue }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Violet</span><br>
+                            <span class="sensor-data">{{ Violet }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Ultra Violet Index</span><br>
+                            <span class="sensor-data">{{ UVIndex }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Ultra Violet A</span><br>
+                            <span class="sensor-data">{{ UVA }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Ultra Violet B</span><br>
+                            <span class="sensor-data">{{ UVB }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GAS Resistance Index</span><br>
+                            <span class="sensor-data">{{ GASRI }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GAS Oxidising</span><br>
+                            <span class="sensor-data">{{ GASOxidising }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GAS Reducing</span><br>
+                            <span class="sensor-data">{{ GASReducing }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">GAS NH3</span><br>
+                            <span class="sensor-data">{{ GASNH3 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Particulate Matter 1</span><br>
+                            <span class="sensor-data">{{ PM1 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Particulate Matter 2.5</span><br>
+                            <span class="sensor-data">{{ PM2_5 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Particulate Matter 4</span><br>
+                            <span class="sensor-data">{{ PM4 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Particulate Matter 10</span><br>
+                            <span class="sensor-data">{{ PM10 }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Accelerometer X</span><br>
+                            <span class="sensor-data">{{ AccelerometerX }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Accelerometer Y</span><br>
+                            <span class="sensor-data">{{ AccelerometerY }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Accelerometer Z</span><br>
+                            <span class="sensor-data">{{ AccelerometerZ }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Magnetometer X</span><br>
+                            <span class="sensor-data">{{ MagnetometerX }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Magnetometer Y</span><br>
+                            <span class="sensor-data">{{ MagnetometerY }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Magnetometer Z</span><br>
+                            <span class="sensor-data">{{ MagnetometerZ }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Gyroscope X</span><br>
+                            <span class="sensor-data">{{ GyroscopeX }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Gyroscope Y</span><br>
+                            <span class="sensor-data">{{ GyroscopeY }}</span>
+                        </div>
+                    </div>
+
+                    <div class="col-3 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-name">Gyroscope Z</span><br>
+                            <span class="sensor-data">{{ GyroscopeZ }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script src="/atpro/index.js"></script>

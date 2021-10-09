@@ -7,7 +7,6 @@ if [[ $EUID != 0 ]]; then
   sudo "$0" "$@"
   exit $?
 fi
-clear
 SMB_SERVER="//USB-Development"
 SMB_SHARE="/KootNetSMB"
 DEB_INSTALLER="/KootnetSensors_online.deb"
@@ -20,13 +19,26 @@ if [[ "$1" == "dev" ]]; then
   SMB_SHARE="/KootNetSMB/dev"
   INSTALL_TYPE="Developmental"
 fi
-printf '\n-- %s SMB UPGRADE OR INSTALL --\n' "${INSTALL_TYPE}"
-mkdir ${MOUNT_DIR} 2>/dev/null
+clear
+printf '%s SMB Upgrade or Install\n\n' "${INSTALL_TYPE}"
+printf 'Copying installer ...\n'
+mkdir /mnt 2>/dev/null
+mkdir /mnt/supernas 2>/dev/null
+mkdir /tmp 2>/dev/null
+rm -f /tmp${DEB_INSTALLER} 2>/dev/null
 mount -t cifs ${SMB_SERVER}${SMB_SHARE} ${MOUNT_DIR} -o ${CIFS_OPTIONS}
 sleep 1
-apt-get update
-apt-get -y install ${MOUNT_DIR}${DEB_INSTALLER}
+cp ${MOUNT_DIR}${DEB_INSTALLER} /tmp
+sleep 1
 umount ${MOUNT_DIR}
-# Save DateTime and Update type to file (Used in program to show last updated)
-date -u >${CONFIG_DIR}/last_updated.txt
-echo ' - SMB' >>${CONFIG_DIR}/last_updated.txt
+# Make sure the installer file is there
+if [[ -s /tmp${DEB_INSTALLER} ]]; then
+  printf 'Copy complete\nStarting Upgrade\n\n'
+  apt-get update
+  apt-get -y install /tmp${DEB_INSTALLER}
+  # Save DateTime and Update type to file (Used in program to show last updated)
+  date -u >${CONFIG_DIR}/last_updated.txt
+  echo ' - SMB' >>${CONFIG_DIR}/last_updated.txt
+else
+  printf '\nCopy failed, %s SMB upgrade cancelled\n\n' "${INSTALL_TYPE}"
+fi

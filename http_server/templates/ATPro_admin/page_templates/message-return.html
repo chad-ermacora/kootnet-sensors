@@ -1,0 +1,19 @@
+<style>
+    .message_styles, .message_styles:active {
+        color: var(--main-color);
+    }
+
+    .message_paragraph {
+        color: var(--second-color);
+    }
+</style>
+
+<h2><a class="message_styles" href="#" onclick="SelectNav('{{ NavLocation }}', skip_menu_select={{ SkipMenuSelect }})">
+    {{ TextTitle }}
+</a></h2>
+
+<p class="message_paragraph">{{ TextMessage }}</p>
+
+<script>
+    CheckNotificationsAsync();
+</script>

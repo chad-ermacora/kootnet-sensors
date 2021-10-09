@@ -17,11 +17,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import unittest
+import requests
 from json import loads as json_loads
-from operations_modules.app_generic_functions import get_http_sensor_reading, http_display_text_on_sensor, \
-    send_http_command
-from operations_modules.app_cached_variables import command_data_separator, CreateNetworkGetCommands, \
-    CreateNetworkSetCommands
+from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
+    check_for_port_in_address, get_ip_and_port_split
+from operations_modules import app_cached_variables
 from tests.create_test_configs import *
 
 
@@ -67,18 +67,6 @@ class TestApp(unittest.TestCase):
                                                   remote_get.email_configuration_file,
                                                   remote_set.set_email_configuration,
                                                   config_name="Email"))
-
-    def test_mqtt_publisher_config(self):
-        self.assertTrue(self._config_test_changes(mqtt_publisher_config_test,
-                                                  remote_get.mqtt_publisher_configuration_file,
-                                                  remote_set.set_mqtt_publisher_configuration,
-                                                  config_name="MQTT Publisher"))
-
-    def test_mqtt_subscriber_config(self):
-        self.assertTrue(self._config_test_changes(mqtt_subscriber_config_test,
-                                                  remote_get.mqtt_subscriber_configuration_file,
-                                                  remote_set.set_mqtt_subscriber_configuration,
-                                                  config_name="MQTT Subscriber"))
 
     def test_weather_underground_config(self):
         self.assertTrue(self._config_test_changes(weather_underground_config_test,
@@ -171,14 +159,6 @@ class TestApp2(unittest.TestCase):
         for command in sensor_get_commands:
             sensor_responses.append(get_http_sensor_reading(sensor_address, command=command, timeout=5))
 
-        bad_count = 0
-        for response in sensor_responses:
-            if response is None:
-                bad_count += 1
-
-        if bad_count > 0:
-            log_msg = "Warning: " + str(bad_count) + " Bad HTTPS Responses out of " + str(len(sensor_get_commands))
-            print(log_msg + " - Bad Network Connection?")
         # from routes file system_commands.py
         self.assertTrue(sensor_responses[0] == "OK")
         self.assertTrue(isinstance(sensor_responses[1], str))
@@ -186,11 +166,11 @@ class TestApp2(unittest.TestCase):
             self.assertTrue(isinstance(sensor_responses[2], str))
         # from routes file text_sensor_readings.py
         if not check_no_sensor_return(sensor_responses[3], sensor_get_commands[3]):
-            sensor_reading = sensor_responses[3].split(command_data_separator)
+            sensor_reading = sensor_responses[3].split(app_cached_variables.command_data_separator)
             self.assertTrue(len(sensor_reading[0].split(",")) > 0)
             self.assertTrue(len(sensor_reading[1].split(",")) > 0)
         if not check_no_sensor_return(sensor_responses[4], sensor_get_commands[4]):
-            sensor_reading = sensor_responses[4].split(command_data_separator)
+            sensor_reading = sensor_responses[4].split(app_cached_variables.command_data_separator)
             self.assertTrue(len(sensor_reading[0].split(",")) > 0)
             self.assertTrue(len(sensor_reading[1].split(",")) > 0)
         if not check_no_sensor_return(sensor_responses[5], sensor_get_commands[5]):
@@ -217,34 +197,34 @@ class TestApp2(unittest.TestCase):
         if not check_no_sensor_return(sensor_responses[12], sensor_get_commands[12]):
             sensor_reading = eval(sensor_responses[12])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[13], sensor_get_commands[13]):
             sensor_reading = eval(sensor_responses[13])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[14], sensor_get_commands[14]):
             check_float_reading(sensor_responses[14], sensor_get_commands[14])
             self.assertTrue(isinstance(float(sensor_responses[14]), float))
         if not check_no_sensor_return(sensor_responses[15], sensor_get_commands[15]):
             sensor_reading = eval(sensor_responses[15])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[16], sensor_get_commands[16]):
             sensor_reading = eval(sensor_responses[16])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[17], sensor_get_commands[17]):
             sensor_reading = eval(sensor_responses[17])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[17] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[18], sensor_get_commands[18]):
             sensor_reading = eval(sensor_responses[18])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[18] + str(index))
+                check_float_reading(reading, str(index))
         if not check_no_sensor_return(sensor_responses[19], sensor_get_commands[19]):
             sensor_reading = eval(sensor_responses[19])
             for index, reading in sensor_reading.items():
-                check_float_reading(reading, sensor_get_commands[19] + str(index))
+                check_float_reading(reading, str(index))
 
 
 def check_no_sensor_return(sensor_data, data_name):
@@ -273,6 +253,25 @@ def check_dict_floats(sensor_data, data_name):
         print("Error: " + data_name + " - " + str(error))
 
 
+def http_display_text_on_sensor(text_message, sensor_address_var, http_port="10065"):
+    """ Sends provided text message to a remote sensor's display. """
+
+    if check_for_port_in_address(sensor_address_var):
+        ip_and_port = get_ip_and_port_split(sensor_address_var)
+        sensor_address_var = ip_and_port[0]
+        http_port = ip_and_port[1]
+    try:
+        url = "https://" + sensor_address_var + ":" + http_port + "/DisplayText"
+        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        send_data = {'command_data': text_message}
+        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
+        if tmp_return_data.text == "OK":
+            return True
+    except Exception as error:
+        print("Unable to display text on Sensor: " + str(error))
+    return False
+
+
 primary_config_test = CreatePrimaryConfigurationTest()
 installed_sensors_config_test = CreateInstalledSensorsConfigurationTest()
 display_config_test = CreateDisplayConfigurationTest()
@@ -288,8 +287,8 @@ open_sense_map_config_test = CreateOpenSenseMapConfigurationTest()
 
 sensor_address = "localhost"
 
-remote_set = CreateNetworkSetCommands()
-remote_get = CreateNetworkGetCommands()
+remote_set = app_cached_variables.CreateNetworkSetCommands()
+remote_get = app_cached_variables.CreateNetworkGetCommands()
 sensor_get_commands = [
     remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
     remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,

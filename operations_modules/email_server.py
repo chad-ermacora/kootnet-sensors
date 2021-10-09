@@ -20,7 +20,6 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from time import sleep
 import smtplib
-import ssl
 from email import utils, encoders
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
@@ -32,7 +31,7 @@ from operations_modules import software_version
 from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread
 from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
-from http_server.flask_blueprints.sensor_control_files.sensor_control_functions import generate_html_reports_combo
+from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 from http_server.flask_blueprints.graphing_quick import get_html_live_graphing_page
 
 email_config = app_config_access.email_config
@@ -108,17 +107,11 @@ def _set_graphs_to_include():
 
 
 def _update_quick_graph_for_email(quick_graph):
-    old_chart = """<script src="/Chart.min.js"></script>"""
-    new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.js" integrity="sha512-G8JE1Xbr0egZE5gNGyUm1fF764iHVfRXshIoUWCTPAbKkkItp/6qal5YAHXrxEu4HNfPTQs6HOu3D5vCGS1j3w==" crossorigin="anonymous"></script>"""
-    old_mui_min_css = """<link href="/mui.min.css" rel="stylesheet" type="text/css"/>"""
-    new_mui_min_css = """<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mui/3.7.1/css/mui.min.css" integrity="sha512-uclHupzhjfJ5Zbsweb6eEK3HyTUpSfiWq/+ORo20uQLZg3yI5Jg4iCZYOD5Q1Q5Ftm4FG9kCzwT82bVcNgFMRw==" crossorigin="anonymous" />"""
-    old_mui_colors_min_css = """<link href="/mui-colors.min.css" rel="stylesheet" type="text/css"/>"""
-    new_mui_colors_min_css = """<link href="//cdn.muicss.com/mui-0.10.3/extra/mui-colors.min.css" rel="stylesheet" type="text/css" />"""
+    old_chart = """<script src="/extras/chart.min.js"></script>"""
+    new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>"""
 
     quick_graph = quick_graph.replace(">Refresh", " disabled>Refresh")
     quick_graph = quick_graph.replace(old_chart, new_chart)
-    quick_graph = quick_graph.replace(old_mui_min_css, new_mui_min_css)
-    quick_graph = quick_graph.replace(old_mui_colors_min_css, new_mui_colors_min_css)
     return quick_graph
 
 
@@ -141,22 +134,25 @@ def send_email(receiver_email, message):
 
     try:
         if app_config_access.email_config.server_smtp_ssl_enabled:
-            context = ssl.create_default_context()
-            with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-                server.login(login, password)
-                server.sendmail(sender_email, receiver_email, message.as_string())
+            smtp_connection = smtplib.SMTP_SSL(smtp_server, port)
+        elif app_config_access.email_config.server_smtp_tls_enabled:
+            smtp_connection = smtplib.SMTP(smtp_server, port)
+            smtp_connection.starttls()
         else:
-            with smtplib.SMTP(smtp_server, port) as server:
-                server.login(login, password)
-                server.sendmail(sender_email, receiver_email, message.as_string())
+            smtp_connection = smtplib.SMTP(smtp_server, port)
+        smtp_connection.ehlo()
+        smtp_connection.login(login, password)
+        smtp_connection.sendmail(sender_email, receiver_email, message.as_string())
+        smtp_connection.close()
+        logger.network_logger.info("Email Sent OK - '" + str(message["Subject"]) + "'")
     except (gaierror, ConnectionRefusedError):
         logger.network_logger.error("Failed to connect to the server. Bad connection settings?")
     except smtplib.SMTPServerDisconnected:
         logger.network_logger.error("Failed to connect to the server. Wrong user/password?")
     except smtplib.SMTPException as error:
         logger.network_logger.error("SMTP error occurred: " + str(error))
-    else:
-        logger.network_logger.debug("Email Sent OK")
+    except Exception as error:
+        logger.network_logger.error("SMTP Unknown error: " + str(error))
 
 
 def _get_default_email_body_text(attachment_name):

@@ -1,0 +1,119 @@
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content">
+            <table>
+                <thead>
+                    <tr>
+                        <td style="font-size: x-large;"><span class="sensor-info">Sensor ID</span>:
+                            <b style="color: green;">{{ SensorID }}</b><br>
+                            <a style='font-size: large; color: #7f3299;'
+                               href='https://{{ RSMAddressAndPort }}' target='_blank'>
+                                {{ RSMAddressAndPort }}
+                            </a>
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td><span class="sensor-info">Installed Sensors</span><br>{{ InstalledSensors }}</td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
+                        <td><span class="sensor-info">Program Version</span>: {{ ProgramVersion }}</td>
+                        <td><span class="sensor-info">IP Address & HTTPS Port</span>:
+                            <a style='color: #7f3299;' href='https://{{ IPAddressAndPort }}' target='_blank'>
+                                {{ IPAddressAndPort }}
+                            </a>
+                        </td>
+                        <td><span class="sensor-info">Login Check</span>: {{ LoginCheck }}</td>
+                        <td style="color: white; background-color: {{ ResponseBackground }};">
+                            Sensor Response Time: {{ SensorResponseTime }} Sec
+                        </td>
+                    </tr>
+                </thead>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td class="sensor-info">Debug Logging</td>
+                        <td class="sensor-info">Sensor Checkin</td>
+                        <td class="sensor-info">Sensor Checkin Server</td>
+                        <td class="sensor-info">Display</td>
+                        <td class="sensor-info">WiFi Network</td>
+                        <td class="sensor-info">Temperature Offset Adjustments / Value</td>
+                        <td class="sensor-info">RPi Temperature Correction Factor / Value</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>{{ DebugLogging }}</td>
+                        <td>{{ SensorCheckin }}</td>
+                        <td>{{ SensorCheckinServer }}</td>
+                        <td>{{ Display }}</td>
+                        <td>{{ WifiNetwork }}</td>
+                        <td>{{ TemperatureOffset }} / {{ TOValue }}</td>
+                        <td>{{ TemperatureCorrectionFactor }} / {{ TCFValue }}</td>
+                    </tr>
+                </tbody>
+
+                <thead>
+                    <tr>
+                        <td class="sensor-info">Email Report / Graph</td>
+                        <td class="sensor-info">Interval Recording / Interval</td>
+                        <td class="sensor-info">High/Low Trigger Recording</td>
+                        <td class="sensor-info">Variance Trigger Recording</td>
+                        <td class="sensor-info">Weather Underground</td>
+                        <td class="sensor-info">Luftdaten</td>
+                        <td class="sensor-info">Open Sense Map</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>{{ EmailReports }} / {{ EmailGraphs }}</td>
+                        <td>{{ IntervalRecording }} / {{ IntervalSeconds }}</td>
+                        <td>{{ HighLowRecording }}</td>
+                        <td>{{ VarianceRecording }}</td>
+                        <td>{{ WeatherUnderground }}</td>
+                        <td>{{ Luftdaten }}</td>
+                        <td>{{ OpenSenseMap }}</td>
+                    </tr>
+                </tbody>
+
+                <thead>
+                    <tr>
+                        <td class="sensor-info">MQTT Broker</td>
+                        <td class="sensor-info"></td>
+                        <td class="sensor-info">MQTT Subscriber</td>
+                        <td class="sensor-info"></td>
+                        <td class="sensor-info">MQTT Subscriber Recording</td>
+                        <td class="sensor-info"></td>
+                        <td class="sensor-info">MQTT Publisher</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>{{ MQTTBroker }}</td>
+                        <td></td>
+                        <td>{{ MQTTSubscriber }}</td>
+                        <td></td>
+                        <td>{{ MQTTSubscriberRecording }}</td>
+                        <td></td>
+                        <td>{{ MQTTPublisher }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

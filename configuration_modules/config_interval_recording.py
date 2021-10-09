@@ -27,13 +27,13 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.interval_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 18
+        self.valid_setting_count = 19
         self.config_settings_names = [
             "Enable interval recording", "Recording interval in seconds * Caution *", "Enable sensor uptime",
             "Enable CPU temperature", "Enable environmental temperature", "Enable pressure", "Enable humidity",
             "Enable altitude", "Enable distance", "Enable lumen", "Enable color", "Enable ultra violet", "Enable GAS",
             "Enable particulate matter", "Enable accelerometer", "Enable magnetometer", "Enable gyroscope",
-            "Enable Dew Point"
+            "Enable Dew Point", "Enable GPS"
         ]
 
         self.enable_interval_recording = 1
@@ -56,6 +56,8 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.accelerometer_enabled = 1
         self.magnetometer_enabled = 1
         self.gyroscope_enabled = 1
+
+        self.gps_enabled = 1
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -87,6 +89,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
         self.accelerometer_enabled = 0
         self.magnetometer_enabled = 0
         self.gyroscope_enabled = 0
+        self.gps_enabled = 0
 
         if html_request.form.get("enable_interval_recording") is not None:
             self.enable_interval_recording = 1
@@ -94,9 +97,9 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             new_sleep_duration = float(html_request.form.get("interval_delay_seconds"))
             self.sleep_duration_interval = new_sleep_duration
 
-        if html_request.form.get("checkbox_sensor_uptime") is not None:
+        if html_request.form.get("sensor_uptime") is not None:
             self.sensor_uptime_enabled = 1
-        if html_request.form.get("checkbox_cpu_temperature") is not None:
+        if html_request.form.get("cpu_temperature") is not None:
             self.cpu_temperature_enabled = 1
         if html_request.form.get("pressure") is not None:
             self.pressure_enabled = 1
@@ -126,6 +129,8 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             self.ultra_violet_enabled = 1
         if html_request.form.get("gyroscope") is not None:
             self.gyroscope_enabled = 1
+        if html_request.form.get("gps") is not None:
+            self.gps_enabled = 1
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
@@ -137,7 +142,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             str(self.humidity_enabled), str(self.altitude_enabled), str(self.distance_enabled), str(self.lumen_enabled),
             str(self.colour_enabled), str(self.ultra_violet_enabled), str(self.gas_enabled),
             str(self.particulate_matter_enabled), str(self.accelerometer_enabled), str(self.magnetometer_enabled),
-            str(self.gyroscope_enabled), str(self.dew_point_enabled)
+            str(self.gyroscope_enabled), str(self.dew_point_enabled), str(self.gps_enabled)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -160,6 +165,7 @@ class CreateIntervalRecordingConfiguration(CreateGeneralConfiguration):
             self.magnetometer_enabled = int(self.config_settings[15])
             self.gyroscope_enabled = int(self.config_settings[16])
             self.dew_point_enabled = int(self.config_settings[17])
+            self.gps_enabled = int(self.config_settings[18])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Interval Config: " + str(error))

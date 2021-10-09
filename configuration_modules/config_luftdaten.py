@@ -31,8 +31,7 @@ class CreateLuftdatenConfiguration(CreateGeneralConfiguration):
         self.valid_setting_count = 2
         self.config_settings_names = ["Enable Luftdaten", "Send to server every (Seconds)"]
 
-        self.luftdaten_url = "https://api.luftdaten.info/v1/push-sensor-data/"
-        self.madavi_url = "https://api-rrd.madavi.de/data.php"
+        self.luftdaten_url = "https://api.sensor.community/v1/push-sensor-data/"
 
         self.return_software_version = "Kootnet Sensors "
 

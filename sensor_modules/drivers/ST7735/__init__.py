@@ -26,7 +26,7 @@ import spidev
 import RPi.GPIO as GPIO
 
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 BG_SPI_CS_BACK = 0
 BG_SPI_CS_FRONT = 1
@@ -50,15 +50,8 @@ ST7735_SLPOUT = 0x11
 ST7735_PTLON = 0x12
 ST7735_NORON = 0x13
 
-# ILI9341_RDMODE = 0x0A
-# ILI9341_RDMADCTL = 0x0B
-# ILI9341_RDPIXFMT = 0x0C
-# ILI9341_RDIMGFMT = 0x0A
-# ILI9341_RDSELFDIAG = 0x0F
-
 ST7735_INVOFF = 0x20
 ST7735_INVON = 0x21
-# ILI9341_GAMMASET = 0x26
 ST7735_DISPOFF = 0x28
 ST7735_DISPON = 0x29
 
@@ -69,14 +62,12 @@ ST7735_RAMRD = 0x2E
 
 ST7735_PTLAR = 0x30
 ST7735_MADCTL = 0x36
-# ST7735_PIXFMT = 0x3A
 ST7735_COLMOD = 0x3A
 
 ST7735_FRMCTR1 = 0xB1
 ST7735_FRMCTR2 = 0xB2
 ST7735_FRMCTR3 = 0xB3
 ST7735_INVCTR = 0xB4
-# ILI9341_DFUNCTR = 0xB6
 ST7735_DISSET5 = 0xB6
 
 
@@ -86,7 +77,6 @@ ST7735_PWCTR3 = 0xC2
 ST7735_PWCTR4 = 0xC3
 ST7735_PWCTR5 = 0xC4
 ST7735_VMCTR1 = 0xC5
-# ILI9341_VMCTR2 = 0xC7
 
 ST7735_RDID1 = 0xDA
 ST7735_RDID2 = 0xDB
@@ -206,10 +196,7 @@ class ST7735(object):
         # Convert scalar argument to list so either can be passed as parameter.
         if isinstance(data, numbers.Number):
             data = [data & 0xFF]
-        # Write data a chunk at a time.
-        for start in range(0, len(data), chunk_size):
-            end = min(start + chunk_size, len(data))
-            self._spi.xfer(data[start:end])
+        self._spi.xfer3(data)
 
     def set_backlight(self, value):
         """Set the backlight on/off."""

@@ -1,0 +1,121 @@
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content" id="db-info-resize">
+                <form class="pure-form" method="POST" action="/atpro/system-db-management">
+                    <h2><i class="fas fa-file-archive"></i> Delete Database Backup</h2>
+                    <label for="db_backup_selection">Choose a Database:<br>
+                        <select name="db_selected" id="db_backup_selection">
+                            <optgroup label="Main Backed-Up Databases">
+                                {{ BackupDBOptionNames | safe }}
+                            </optgroup>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button" value="delete_backup_db" name="db_management"
+                            onclick="return confirm('Are you sure you want to delete the Database backup?')">
+                        <i class="fas fa-trash-alt"></i> Delete Backup
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/system-db-management">
+                    <h2><i class="fas fa-database"></i> Rename Uploaded Database</h2>
+                    <label for="db_selected">Choose a Database:<br>
+                        <select name="db_selected" id="db_selected">
+                            <optgroup label="Uploaded Databases">
+                                {{ UploadedDBOptionNames | safe }}
+                            </optgroup>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell;">
+                                <label>Database Name<br>
+                                    <input style="width: 250px;" type="text" maxlength="64"
+                                           name="rename_db" value="ChangeMe">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+
+                    <button type="submit" class="pure-button" name="db_management" value="rename_db">
+                        <i class="fas fa-edit"></i> Rename Database
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/system-db-management">
+                    <h2><i class="fas fa-database"></i> Delete Uploaded Database</h2>
+                    <label for="db_selected2">Choose a Database:<br>
+                        <select name="db_selected" id="db_selected2">
+                            <optgroup label="Uploaded Databases">
+                                {{ UploadedDBOptionNames | safe }}
+                            </optgroup>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button" value="delete_db" name="db_management"
+                    onclick="return confirm('Are you sure you want to delete the Database?')">
+                        <i class="fas fa-trash-alt"></i> Delete Database
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 col-m-6 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/system-db-management">
+                    <h2><i class="fas fa-database"></i> Shrink (Vacuum) Database</h2>
+                    <label for="vacuum_databases">Choose a Database:<br>
+                        <select name="SQLDatabaseSelection" id="vacuum_databases">
+                            <optgroup label="Local Databases">
+                                <option value="MainDatabase">Main</option>
+                                <option value="MQTTSubscriberDatabase">MQTT Subscriber</option>
+                                <option value="CheckinDatabase">Sensor Checkins</option>
+                            </optgroup>
+                            <optgroup label="Uploaded Databases">
+                                {{ UploadedDBOptionNames | safe }}
+                            </optgroup>
+                        </select>
+                    </label>
+
+                    <br><br>
+
+                    <button type="submit" class="pure-button" value="shrink_db" name="db_management"
+                            onclick="return confirm('Database Vacuum may take some time ' +
+                             'depending on the size of the Database, Continue?')">
+                        <i class="fas fa-play"></i> Shrink Database
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    if (screen.width < 610) {
+            document.getElementById('db-info-resize').style.width = 'fit-content';
+        }
+</script>

@@ -1,0 +1,248 @@
+<style>
+    .db-header-items-name {
+        color: var(--second-color);
+        font-size: large;
+        font-weight: bolder;
+    }
+
+    .db-header-items-data {
+        font-weight: bold;
+    }
+
+    .blink_shadow {
+        font-weight: bolder;
+        font-size: large;
+    }
+</style>
+
+<form method="POST" id="download-form" action="/DatabaseDownloads">
+    <input type="text" id="button-function" name="button-function" value="download" hidden>
+</form>
+
+<div class="col-12 col-m-12 col-sm-12">
+    <div class="card">
+        <div class="card-content" id="db-info-resize">
+            <form method="POST" action="/atpro/system-db-management" target="_blank">
+                <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
+                <p>
+                    Download SQLite3 Databases for offline access or backup purposes.<br>
+                    You can view and edit databases by using
+                    <a href="https://sqlitebrowser.org/" target="_blank">DB Browser for SQLite</a>
+                </p>
+                <label for="databases_backup_selection">Choose a Database Backup:<br>
+                    <select name="DatabaseBackupSelection" id="databases_backup_selection">
+                        <optgroup label="Backed-Up Local Databases">
+                            {{ BackupDBOptionNames | safe }}
+                        </optgroup>
+                    </select>
+                </label>
+
+                <br><br>
+
+                <button type="submit" class="pure-button" value="download_backup_db" name="db_backups">
+                    <i class="fas fa-file-archive"></i> Download Backup
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="fas fa-database"></i> Main Database</h2>
+
+                <h3 class="db-header-items-name">
+                    DB Name: <span class="db-header-items-data">{{ SQLDatabaseName }}</span>
+                </h3>
+                <h3 class="db-header-items-name">
+                    Location: <span class="db-header-items-data">{{ SQLDatabaseLocation }}</span>
+                </h3>
+
+                <div class="row">
+                    <div class="col-12 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Date Range</span><br>{{ SQLDatabaseDateRange }}
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Size on Disk</span><br>{{ SQLDatabaseSize }} MB
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-6 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of Notes</span><br>{{ NumberNotes }}
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Downloads</h2>
+                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+                <h3 class="db-header-items-name">
+                    Zip Created: <span class="db-header-items-data">{{ ZipMainDBCreated }} UTC{{ HourOffset }}</span>
+                    <br>
+                    Zip Size: <span class="db-header-items-data">{{ ZipMainDBFileSize }} MB</span>
+                </h3>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('create-main-db-zip', target_window='_parent')">
+                    <i class="fas fa-play"></i> Generate New Zip
+                </button>
+
+                <br><br>
+
+                <a class="pure-button" href="/DownloadSQLDatabaseRAW" target="_blank">
+                    <i class="fas fa-database"></i> Database RAW
+                </a>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('download-main-db-zip')">
+                    <i class="fas fa-file-archive"></i> Download Zip
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="fas fa-database"></i> MQTT Subscriber Database</h2>
+
+                <h3 class="db-header-items-name">
+                    DB Name: <span class="db-header-items-data">{{ SQLMQTTDatabaseName }}</span>
+                </h3>
+                <h3 class="db-header-items-name">
+                    Location: <span class="db-header-items-data">{{ SQLMQTTDatabaseLocation }}</span>
+                </h3>
+
+                <div class="row">
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Size on Disk</span><br>{{ SQLMQTTDatabaseSize }} MB
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLMQTTSensorsInDB }}
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Downloads</h2>
+                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+                <h3 class="db-header-items-name">
+                    Zip Created: <span class="db-header-items-data">{{ ZipMQTTDBCreated }} UTC{{ HourOffset }}</span>
+                    <br>
+                    Zip Size: <span class="db-header-items-data">{{ ZipMQTTDBFileSize }} MB</span>
+                </h3>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('create-mqtt-sub-db-zip', target_window='_parent')">
+                    <i class="fas fa-play"></i> Generate New Zip
+                </button>
+
+                <br><br>
+
+                <a class="pure-button" href="/DownloadSQLDatabaseRAWMQTT" target="_blank">
+                    <i class="fas fa-database"></i> Database RAW
+                </a>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('download-mqtt-sub-db-zip')">
+                    <i class="fas fa-file-archive"></i> Download Zip
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <h2><i class="fas fa-database"></i> Checkin Server Database</h2>
+
+                <h3 class="db-header-items-name">
+                    DB Name: <span class="db-header-items-data">{{ SQLCheckinDatabaseName }}</span>
+                </h3>
+                <h3 class="db-header-items-name">
+                    Location: <span class="db-header-items-data">{{ SQLCheckinDatabaseLocation }}</span>
+                </h3>
+
+                <div class="row">
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Size on Disk</span><br>{{ SQLCheckinDatabaseSize }} MB
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-m-12 col-sm-12">
+                        <div class="counter bg-primary">
+                            <span class="sensor-info">Number of Sensors in DB</span><br>{{ SQLCheckinSensorsInDB }}
+                        </div>
+                    </div>
+                </div>
+
+                <h2>Downloads</h2>
+                <p class="blink_shadow" hidden>Generating Database Zip Please Wait ...</p>
+
+                <h3 class="db-header-items-name">
+                    Zip Created: <span class="db-header-items-data">{{ ZipCheckinDBCreated }} UTC{{ HourOffset }}</span>
+                    <br>
+                    Zip Size: <span class="db-header-items-data">{{ ZipCheckinDBFileSize }} MB</span>
+                </h3>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('create-checkin-db-zip', target_window='_parent')">
+                    <i class="fas fa-play"></i> Generate New Zip
+                </button>
+
+                <br><br>
+
+                <a class="pure-button" href="/DownloadSQLDatabaseRAWCheckin" target="_blank">
+                    <i class="fas fa-database"></i> Database RAW
+                </a>
+
+                <button type="button" class="pure-button generating-zip"
+                        onclick="SQLDownloadsButton('download-checkin-db-zip')">
+                    <i class="fas fa-file-archive"></i> Download Zip
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SQLDownloadsButton(new_button_function, target_window='_blank') {
+        document.getElementById("button-function").value = new_button_function;
+        document.getElementById("download-form").target = target_window;
+        document.getElementById("download-form").submit();
+    }
+
+    function CreatingDownload() {
+        document.querySelectorAll('.generating-zip').forEach(e => e.disabled = true);
+        document.querySelectorAll('.blink_shadow').forEach(e => e.hidden = false);
+
+        let shadow_colour = "green";
+        window.setTimeout(RefreshPageTimed, 5000);
+        window.setInterval(function () {
+            shadow_colour = (shadow_colour === "green") ? "red" : "green";
+            document.querySelectorAll('.blink_shadow').forEach(e => e.style.color = shadow_colour);
+        }, 1000);
+    }
+
+    function RefreshPageTimed() {
+        SelectNav('sensor-system', skip_menu_select=true);
+    }
+
+    if (screen.width < 610) {
+            document.getElementById('db-info-resize').style.width = 'fit-content';
+        }
+
+    {{ RunScript | safe }}
+</script>

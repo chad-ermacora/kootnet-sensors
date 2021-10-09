@@ -1,0 +1,134 @@
+<link rel="stylesheet" type="text/css" href="/atpro/pure-horizontal-menu.css">
+
+<style>
+    .log-page-view {
+        color: var(--second-color);
+        font-weight: bold;
+        text-align: left;
+        white-space: pre-wrap;
+    }
+</style>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item log-refresh">
+            <a href="#" class="pure-menu-link" onclick="SelectNav('sensor-logs', skip_menu_select=true)">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item log-primary">
+            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-primary')">
+                <i class="fas fa-clipboard-list"></i> Primary Log
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item log-network">
+            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-network')">
+                <i class="fas fa-clipboard-list"></i> Network Log
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item log-sensors">
+            <a href="#" class="pure-menu-link" onclick="SelectLogNav('log-sensors')">
+                <i class="fas fa-clipboard-list"></i> Sensors Log
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item log-sensors">
+            <a href="#" class="pure-menu-link" onclick="DownloadLogsZipped()">
+                <i class="fas fa-download"></i> Download All Logs
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list pure-menu-horizontal">
+        <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover">
+            <a style="cursor: default;" class="pure-menu-link">
+                <i class="far fa-trash-alt"></i> Delete Log
+            </a>
+            <ul class="pure-menu-children">
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="DeleteLog('primary')">
+                        Primary Log
+                    </a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="DeleteLog('network')">
+                        Network Log
+                    </a>
+                </li>
+                <li class="pure-menu-item">
+                    <a href="#" class="pure-menu-link" onclick="DeleteLog('sensors')">
+                        Sensors Log
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<br><hr><br>
+
+<div id="log-primary">
+    {{ PrimaryLogs | safe }}
+</div>
+
+<div id="log-network">
+    {{ NetworkLogs | safe }}
+</div>
+
+<div id="log-sensors">
+    {{ SensorsLogs | safe }}
+</div>
+
+<br>
+
+<script>
+    function SelectLogNav(nav_location) {
+        document.getElementsByClassName("log-primary")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-refresh")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-network")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("log-sensors")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
+
+        document.getElementById("log-primary").hidden = true;
+        document.getElementById("log-network").hidden = true;
+        document.getElementById("log-sensors").hidden = true;
+        document.getElementById(nav_location).hidden = false;
+    }
+
+    function DownloadLogsZipped() {
+        let r = confirm("Download a zip file of all logs?");
+        if (r === true) {
+            window.location.href = '/atpro/logs/log-download-all-zipped';
+        }
+    }
+
+    function DeleteLog(log_name) {
+        let r = confirm("Are you sure you want to delete the " + log_name + " log?");
+        if (r === true) {
+            window.location.href = "/atpro/delete-log/" + log_name;
+        }
+    }
+
+    SelectLogNav("log-primary");
+</script>
+
+<script>
+    CheckNotificationsAsync();
+</script>

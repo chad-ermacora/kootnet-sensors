@@ -53,7 +53,7 @@ def add_plots(graph_data):
                          graph_data.sql_host_name, subplot_sensor_name)
     if len(graph_data.sql_up_time) > 1:
         name_and_subplot = "Sensor Uptime in Minutes"
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_up_time_date_time,
+        put_sensor_trace(graph_data, scatter_data, "Sensor Uptime", graph_data.sql_up_time_date_time,
                          graph_data.sql_up_time, name_and_subplot)
 
     if len(graph_data.sql_cpu_temp) > 1 or len(graph_data.sql_hat_temp) > 1:
@@ -85,6 +85,11 @@ def add_plots(graph_data):
     if len(graph_data.sql_humidity) > 2:
         put_sensor_trace(graph_data, scatter_data, "Humidity", graph_data.sql_humidity_date_time,
                          graph_data.sql_humidity, "% Relative Humidity")
+
+    if len(graph_data.sql_dew_point) > 2:
+        name_and_subplot = "Dew Point in °C (Celsius)"
+        put_sensor_trace(graph_data, scatter_data, "Dew Point", graph_data.sql_dew_point_date_time,
+                         graph_data.sql_dew_point, name_and_subplot)
 
     if len(graph_data.sql_distance) > 2:
         name_and_subplot = "Distance in Meters?"
@@ -151,7 +156,7 @@ def add_plots(graph_data):
             scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_line
         else:
             scatter_data.set_marker = server_plotly_graph_variables.mark_yellow_dot
-        put_sensor_trace(graph_data, scatter_data, name_and_subplot, graph_data.sql_lumen_date_time,
+        put_sensor_trace(graph_data, scatter_data, "lm", graph_data.sql_lumen_date_time,
                          graph_data.sql_lumen, name_and_subplot)
 
     if len(graph_data.sql_red) > 2:

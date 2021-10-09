@@ -7,7 +7,6 @@
 <!--<![endif]-->
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -17,37 +16,32 @@
 
     <title>Kootnet Sensors Documentation</title>
 
-    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/atpro/assets/AT-pro-logo.png" type="image/x-icon">
 
-    <link rel="stylesheet" type="text/css" href="/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="/stroke.css">
-    <link rel="stylesheet" type="text/css" href="/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="/animate.css">
-    <link rel="stylesheet" type="text/css" href="/prettyPhoto.css">
-    <link rel="stylesheet" type="text/css" href="/doc_style.css">
+    <link rel="stylesheet" type="text/css" href="/extras/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/stroke.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/animate.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/prettyPhoto.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/style.css">
 
-    <link rel="stylesheet" type="text/css" href="/shCore.css" media="all">
-    <link rel="stylesheet" type="text/css" href="/shThemeRDark.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/documentation/js/syntax-highlighter/styles/shCore.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/documentation/js/syntax-highlighter/styles/shThemeRDark.css" media="all">
 
     <!-- CUSTOM -->
-    <link rel="stylesheet" type="text/css" href="/doc_custom.css">
+    <link rel="stylesheet" type="text/css" href="/documentation/css/custom.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-
 </head>
 
 <body>
-
     <div id="wrapper">
-
         <div class="container">
-
             <section id="top" class="section docs-heading">
-
                 <div class="row">
                     <div class="col-md-12">
                         <div class="big-title text-center">
@@ -57,12 +51,10 @@
                 </div>
 
                 <hr>
-
             </section>
             <!-- end section -->
 
             <div class="row">
-
                 <div class="col-md-3">
                     <nav class="docs-sidebar" data-spy="affix" data-offset-top="300" data-offset-bottom="200" role="navigation">
                         <ul class="nav">
@@ -77,89 +69,65 @@
                             <li><a href="#line3">Web Portal Intro</a>
 								<ul class="nav">
                                     <li><a href="#line3_1">General Overview</a></li>
-                                    <li><a href="#line3_2">System Information</a></li>
+                                    <li><a href="#line3_2">Dashboard</a></li>
                                     <li><a href="#line3_3">Sensor Readings</a></li>
                                     <li><a href="#line3_4">Sensor Latency</a></li>
-									<li><a href="#line3_5">Database Management</a></li>
-                                    <li><a href="#line3_6">Notes</a></li>
-                                    <li><a href="#line3_7">Graphing</a></li>
-                                    <li><a href="#line3_8">Advanced</a></li>
-                                    <li><a href="#line3_9">Logs</a></li>
+                                    <li><a href="#line3_5">Notes</a></li>
+                                    <li><a href="#line3_6">Graphing</a></li>
+                                    <li><a href="#line3_7">MQTT Subscriber</a></li>
+                                    <li><a href="#line3_8">Sensor Check-ins</a></li>
                                 </ul>
 							</li>
-
-							<li><a href="#line4">Configurations</a>
+                            <li><a href="#line6">Remote Management</a>
 								<ul class="nav">
-                                    <li><a href="#line4_1">Main/Primary</a></li>
+                                    <li><a href="#line6_1">IP List & Login</a></li>
+                                    <li><a href="#line6_2">Checks & Downloads</a></li>
+                                    <li><a href="#line6_3">Push Configurations</a></li>
+                                    <li><a href="#line6_4">Push System Commands</a></li>
+                                </ul>
+							</li>
+							<li><a href="#line4">Settings</a>
+								<ul class="nav">
+                                    <li><a href="#line4_1">Main / Primary</a></li>
                                     <li><a href="#line4_2">Installed Sensors</a></li>
-                                    <li><a href="#line4_3">Interval Recording</a></li>
-                                    <li><a href="#line4_4">High/Low Triggers</a></li>
-                                    <li><a href="#line4_5">Variance Triggers</a></li>
-                                    <li><a href="#line4_6">Display</a></li>
-                                    <li><a href="#line4_7">Terminal Config Tool</a></li>
+                                    <li><a href="#line4_3">Display</a></li>
+                                    <li><a href="#line4_4">Sensor Checkins</a></li>
+                                    <li><a href="#line4_5">Interval Recording</a></li>
+                                    <li><a href="#line4_6">High/Low Triggers</a></li>
+                                    <li><a href="#line4_7">Variance Triggers</a></li>
+                                    <li><a href="#line4_8">Email</a></li>
+                                    <li><a href="#line4_9">MQTT</a></li>
+                                    <li><a href="#line4_10">3rd Party Services</a></li>
                                 </ul>
 							</li>
-                            <li><a href="#line5">Email</a>
+                            <li><a href="#line5">System</a>
 								<ul class="nav">
-                                    <li><a href="#line5_1">Reports</a></li>
-                                    <li><a href="#line5_2">Graphs</a></li>
-                                    <li><a href="#line5_3">SMTP Settings</a></li>
+                                    <li><a href="#line5_1">Databases</a></li>
+                                    <li><a href="#line5_2">View Versions & Configurations</a></li>
+                                    <li><a href="#line5_3">Networking</a></li>
+                                    <li><a href="#line5_4">SSL</a></li>
+                                    <li><a href="#line5_5">Change Login</a></li>
+                                    <li><a href="#line5_6">Upgrades & Power</a></li>
+                                    <li><a href="#line5_7">Logs</a></li>
                                 </ul>
 							</li>
-                            <li><a href="#line6">MQTT</a>
-								<ul class="nav">
-                                    <li><a href="#line6_1">Publisher</a></li>
-                                    <li><a href="#line6_2">Subscriber</a></li>
-                                    <li><a href="#line6_3">Broker</a></li>
-                                </ul>
-							</li>
-							<li><a href="#line7">3rd Services</a>
-								<ul class="nav">
-                                    <li><a href="#line7_1">Open Sense Map</a></li>
-                                    <li><a href="#line7_2">Weather Underground</a></li>
-                                    <li><a href="#line7_3">Luftdaten</a></li>
-                                </ul>
-							</li>
-                            <li><a href="#line8">Remote Management</a>
-								<ul class="nav">
-                                    <li><a href="#line8_1">IP List & Login</a></li>
-                                    <li><a href="#line8_2">Checks & Downloads</a></li>
-                                    <li><a href="#line8_3">Push Configurations</a></li>
-                                    <li><a href="#line8_4">Push System Commands</a></li>
-                                </ul>
-							</li>
-                            <li><a href="#line9">Checkin Server</a>
+                            <li><a href="#line7">Troubleshooting</a>
                                 <ul class="nav">
-                                    <li><a href="#line9_1">Main View</a></li>
-                                    <li><a href="#line9_2">Database Cleanup</a></li>
-                                    <li><a href="#line9_3">Sensor Search</a></li>
-                                    <li><a href="#line9_4">Configuration</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#line10">Networking</a>
-                                <ul class="nav">
-                                    <li><a href="#line10_1">Main</a></li>
-                                    <li><a href="#line10_2">Wifi</a></li>
-                                    <li><a href="#line10_3">SSL Certificate</a></li>
-                                </ul>
-                            </li>
-                            <li><a href="#line11">Troubleshooting</a>
-                                <ul class="nav">
-                                    <li><a href="#line11_1">Installation & Upgrade Problems</a></li>
-                                    <li><a href="#line11_2">Start-up Problems</a></li>
+                                    <li><a href="#line7_1">Terminal Config Tool</a></li>
+                                    <li><a href="#line7_2">Installation & Upgrade Problems</a></li>
+                                    <li><a href="#line7_3">Start-up Problems</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </nav >
                 </div>
                 <div class="col-md-9">
-
                     <section>
                         <div class="intro1">
                             <ul>
                                 <li><strong>Kootnet Sensors : </strong>Documentation</li>
-                                <li><strong>Document Version : </strong>0.5</li>
-                                <li><strong>Last Updated : </strong>Feb 20th, 2021</li>
+                                <li><strong>Document Version : </strong>0.9</li>
+                                <li><strong>Last Updated : </strong>Oct 5th, 2021</li>
                                 <li><strong>Author  : </strong>Chad Ermacora</li>
                                 <li><strong>Source Code : </strong><a href="https://github.com/chad-ermacora/sensor-rp" target="_blank">GitHub </a></li>
                                 <li><strong>License : </strong><a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">GPL Ver. 3</a></li>
@@ -169,7 +137,6 @@
                     <!-- end section -->
 
                     <section id="line1" class="section">
-
                         <div class="row">
                             <div class="col-md-12 left-align">
                                 <h2 class="dark-text">Introduction <a href="#top">#back to top</a><hr></h2>
@@ -180,71 +147,30 @@
 
                         <div class="row">
                             <div class="col-md-12">
-                                <a href="/KootnetSensorHardware.jpg" data-rel="prettyPhoto" target="_blank">
-                                    <img src="/KootnetSensorHardware.jpg" alt="Demo Sensor Units" class="img-responsive img-thumbnail">
+                                <a href="/extras/SensorHardware.jpg" data-rel="prettyPhoto" target="_blank">
+                                    <img src="/extras/SensorHardware.jpg" alt="Demo Sensor Units" class="img-responsive img-thumbnail">
                                 </a>
 
                                 <p>
                                     Kootnet Sensors is a program used to take sensor readings from multiple sensors and
-                                    record them to an SQLite3 database and or upload them to one or more
-                                    Online 3rd party service like Open Sense Map. Add one or more of the 25+ supported
-                                    hardware sensors to record and view readings of your choice. Sensor types include
-                                    heat, pressure, altitude, humidity, distance, gas, particulate matter 1/2.5/4/10,
-                                    light, color, ultra violet, acceleration, electromagnetic fields and angular
-                                    velocity (gyroscope).
-                                </p>
-
-                                <p>
-                                    KootNet Sensors requires a Raspberry Pi to utilize Sensors but can be installed on
-                                    Ubuntu or Debian in order to use the “Sensor Control” web interface for managing
-                                    up to 20 other Kootnet Sensors remotely. Installing Kootnet Sensors on Ubuntu or
-                                    Debian will also allow the creation of graphs on more powerful systems.
+                                    record them to an SQLite3 database and or upload them online using MQTT or one of
+                                    the 3rd party services like Open Sense Map.<br><br>
+                                    Kootnet Sensors supports more than 21 hardware sensors.
+                                    Supported sensor types include heat, pressure, altitude, humidity, distance,
+                                    gas, particulate matter 1/2.5/4/10, light, color, ultra violet, acceleration,
+                                    electromagnetic fields, angular velocity (gyroscope) & GPS coordinates.<br><br>
+                                    KootNet Sensors requires a Raspberry Pi to utilize hardware sensors but can be
+                                    installed on Ubuntu or Debian for “Remote Management”, "Database Graphing" and
+                                    centralized recording for multiple sensors.
                                 </p>
                             </div>
                             <!-- end col -->
                         </div>
                         <!-- end row -->
-                        <h4><strong>Supported Hardware for Sensor Recording</strong></h4>
-                        <p>
-                            <a href="https://www.raspberrypi.org/products/" target="_blank"><strong><u>Raspberry Pi</u></strong></a><br>
-                            <i><strong>System Boards</strong></i>: Zero W, 3x, 4x and Probably Previous RPi's but they are untested<br>
-                            <i><strong>Combo Sensors</strong></i>: Sense HAT
-                        </p>
-
-                        <p>
-                            <a href="https://shop.pimoroni.com/" target="_blank"><strong><u>Pimoroni</u></strong></a><br>
-                            <i><strong>Displays</strong></i>: 11x7 LED Matrix, 1.12" Mono OLED (128x128, white/black),
-                            0.96" SPI Colour LCD (160x80)<br>
-
-                            <i><strong>Temperature</strong></i>: *MCP9600<br>
-                            <i><strong>Color/Light</strong></i>: AS7262, BH1745, VEML6075<br>
-                            <i><strong>Combo Sensors</strong></i>: Enviro+, EnviroPHAT, BME680, BMP280, LTR-559<br>
-                            <i><strong>Volatile Organic Compounds</strong></i>: *SGP30<br>
-                            <i><strong>Particulate Matter</strong></i>: PMS5003<br>
-                            <i><strong>Distance</strong></i>: VL53L1X<br>
-                            <i><strong>Accelerometer & or Magnetometer & or Gyroscope</strong></i>: ICM20948, LSM303D, *MSA301
-                        </p>
-
-                        <p>
-                            <a href="https://www.maximintegrated.com/" target="_blank"><strong><u>Maxim/Dallas</u></strong></a><br>
-                            <i><strong>Temperature</strong></i>: *DS1822, *DS18S20, *DS18B20, *DS1825, *DS28EA00, *MAX31850K
-                        </p>
-
-                        <p>
-                            <a href="https://www.sensirion.com/en/environmental-sensors/" target="_blank">
-                                <strong><u>Sensirion</u></strong>
-                            </a><br>
-
-                            <i><strong>Particulate Matter</strong></i>: SPS30
-                        </p>
-
-                        <p><strong>Note</strong>: <i>Sensor names starting with a * are untested.</i></p>
-
                     </section>
                     <!-- end section -->
 
                     <section id="line2" class="section">
-
                         <div class="row">
                             <div class="col-md-12 left-align">
                                 <h2 class="dark-text">Installation & Removal <a href="#top">#back to top</a><hr></h2>
@@ -262,7 +188,11 @@
                         can take up to 30 minutes.</i><br>
 
                         <strong>Note : </strong><i>You must use the 32bit Raspbian/Raspberry Pi OS for proper Hardware
-                        Sensor functionality.</i><br><br>
+                        Sensor functionality.</i>
+
+                        <h4><a href="/atpro/supported-sensors-info" target="_blank">
+                            Click here for a list of supported sensors and their abilities
+                        </a></h4>
 
                         <h4 id="line2_1">Installation using a GUI Desktop</h4>
                         <p>
@@ -271,11 +201,11 @@
                             downloaded file and look for an install button to start the install process.
                         </p>
                         <p>
-                            <a href="http://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">
+                            <a href="https://kootenay-networks.com/installers/KootnetSensors.deb" target="_blank">
                                 Current Stable Release
                             </a><br>
 
-                            <a href="http://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">
+                            <a href="https://kootenay-networks.com/installers/dev/KootnetSensors.deb" target="_blank">
                                 Latest Developmental Release
                             </a>
                             ** Warning: Developmental Releases can be unstable **
@@ -294,7 +224,7 @@
                             to finish.<br>
                         </p>
 
-						<pre class="brush: bash">wget -O KootnetSensors.deb http://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
+						<pre class="brush: bash">wget -O KootnetSensors.deb https://kootenay-networks.com/installers/KootnetSensors.deb && sudo apt-get update && sudo apt-get -y install ./KootnetSensors.deb</pre>
 
                         <p>
                             If the installation completes successfully, you'll be given the default Username/Password
@@ -312,12 +242,10 @@
                             <strong><i>Note</i></strong>: The Sensor's Databases, Configurations & Python Virtual
                             Environment will be kept.
                         </p>
-
                     </section>
                     <!-- end section -->
 
                     <section id="line3" class="section">
-
                         <div class="row">
                             <div class="col-md-12 left-align">
                                 <h2 class="dark-text">Web Portal Introduction <a href="#top">#back to top</a><hr></h2>
@@ -333,62 +261,64 @@
                             the Sensor. There is also a 'Remote Management' section in the Web Portal for managing up
                             to 20 remote sensors. Assuming the sensor's IP is 192.168.10.11, you can access the sensor
                             at https://192.168.10.11:10065 from any device with a web browser on the same network.<br><br>
-
-                            <strong>Note</strong>: <i>Internet is required for viewing pictures in the following sections.</i>
                         </p>
 
                         <p>
                             <strong><u>Default Web Portal Login</u></strong><br>
                             <strong>User</strong>: Kootnet<br>
                             <strong>Password</strong>: sensors<br><br>
-                            <strong>Recommended</strong>: <a href="#line3_8"><i>Change the default Web Portal username
+                            <strong>Recommended</strong>: <a href="#line5_5"><i>Change the default Web Portal username
                             and password after install.</i></a><br>
 
                             <strong>Note</strong>: <i>Find shortcuts to edit configurations and access the Web Portal
                             in the operating systems main menu.</i>
                         </p>
 
-                        <h4 id="line3_2"><u>System Information</u></h4>
+                        <h4 id="line3_2"><u>Dashboard</u></h4>
 
                         <p>
-                            The System Information page has all the information you need to get a quick overview
+                            The Dashboard page has all the information you need to get a quick overview
                             of the Sensor's status.
                         </p>
 
                         <p>
-                            <strong>Operating System</strong>: The Underlying Operating System the Sensor Software is running on top of.<br>
-                            <strong>Sensor ID</strong>: A unique identifier for the sensor. Used primarily in 'Sensor Check-Ins'.<br>
-                            <strong>Running Version</strong>: Currently running version of Kootnet Sensors.<br>
-                            <strong>Newest Std Version</strong>: The latest available Standard (Stable) version of Kootnet Sensors.<br>
-                            <strong>Newest Dev Version</strong>: The latest available Developmental (Unstable) version of Kootnet Sensors.<br>
-                            <strong>Last Updated</strong>: Last date & time the local Kootnet Sensor software was updated (In UTC0).<br>
-                            <strong>Sensor Date & Time</strong>: Date & time on the local Sensor (In UTC0 + Hour offset in main config).<br>
+                            <strong>Sensor ID</strong>: A unique identifier for the sensor. Used primarily in 'Sensor Check-Ins' & Graphing.<br><br>
+
+                            <strong>Host name</strong>: The sensor's name, also used as the network name.<br>
+                            <strong>IP Address</strong>: The sensor's local IP.<br><br>
+
+                            <strong>Automatic Upgrades</strong>: Status of Kootnet Sensors Automatic Upgrades.<br>
+                            <strong>Running Version</strong>: The version of Kootnet Sensors running now.<br><br>
+
+                            <strong>Current Release</strong>: The Latest Stable release of Kootnet Sensors.<br>
+                            <strong>Development Release</strong>: The Latest Developmental release of Kootnet Sensors.<br><br>
+
+                            <strong>Debug Logging</strong>: The current state of Debug logging.<br>
                             <strong>Sensor Uptime</strong>: Length of time the local sensor has been online without a reboot or shutdown.<br>
                             <strong>Sensor Reboots</strong>: Amount of times the Sensor has rebooted (According to
-                            uptime recordings in the database).<br>
+                            uptime recordings in the database).<br><br>
 
                             <strong>System Temperature</strong>: Current Temperature of the System's CPU.<br>
-                            <strong>RAM Usage</strong>: % of RAM in use on the local Sensor.<br>
-                            <strong>Drive Usage</strong>: Current % of disk space used on the root drive ('/').<br><br>
+                            <strong>RAM Used/Total</strong>: Amount of RAM in use out of the sensors total RAM.<br>
+                            <strong>Drive Used/Total</strong>: Amount of disk space used on the root drive ('/') out of it's total.<br><br>
+
+                            <strong>Operating System</strong>: The Underlying Operating System the Sensor Software is running on top of.<br><br>
+
                             <strong>Installed Sensors</strong>: Currently Installed Sensors (Most sensors will disable
                             them selves if initialization fails).<br><br>
 
-                            <strong>Program Status</strong>: Status of the different aspects of Kootnet Sensors.
-                            Available Status include Running, Stopped, Enabled & Disabled.<br>
+                            <strong>DateTime Sensor's Timezone</strong>: Date & time on the local Sensor using the Operating Systems's set timezone.<br>
+                            <strong>DateTime UTC 0</strong>: Date & time on the local Sensor in UTC0.<br>
+                            <strong>Last Updated</strong>: Last date & time the local Kootnet Sensor software was updated (In UTC0).<br><br>
 
-                            <strong>Detailed Recording Status</strong>: Opens a new page to display the status of
-                            individual sensors under each SQL recording type.<br>
+                            All other items pertain to the status of the different aspects of Kootnet Sensors.
+                            Available status states include Running, Stopped, Enabled & Disabled.<br>
                         </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/01_system_information.gif" alt="System Information" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_3"><u>Sensor Readings</u></h4>
                         <p>
-                            The Sensor Reading's Page gives a live snapshot of each sensor's readings.
-                            If the sensor is missing or not enabled, it will show "NoSensor".
-                            Most sensor names can be clicked to take you to the relevant Wikipedia page.
+                            The Sensor Reading's Page gives a live snapshot of all sensor readings.
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/02_sensor_readings.gif" alt="Sensor Readings" class="img-responsive img-thumbnail">
 
                         <h4 id="line3_4"><u>Sensors Latency</u></h4>
                         <p>
@@ -401,45 +331,24 @@
                             in the program.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/03_sensor_latency.gif" alt="Sensor Latency" class="img-responsive img-thumbnail">
-
-                        <h4 id="line3_5"><u>Database Management</u></h4>
+                        <h4 id="line3_5"><u>Notes</u></h4>
                         <p>
-                            On the Database Management page you can download all 3 SQLite3 databases that include
-                            Main, MQTT Subscriber & Sensor Checkins. Under the Uploads tab you can replace one
-                            of the 3 SQLite3 databases or upload a custom database to be used in Plotly graphing.
-                            Databases can be uploaded or downloaded in RAW or Zip format.<br><br>
-
-                            When uploading a Main database, the previous Main database is zipped and stored in a
-                            backup folder that can be accessed under the Downloads tab.<br><br>
-
-                            <strong>Main Database Location</strong>: /home/kootnet_data/SensorRecordingDatabase.sqlite<br>
-                            <strong>MQTT Subscriber Database Location</strong>: /home/kootnet_data/MQTTSubscriberDatabase.sqlite<br>
-                            <strong>Checkin Database Location</strong>: /home/kootnet_data/SensorCheckinDatabase.sqlite<br><br>
-
-                            <strong>Note</strong>: <i>The Main SQLite3 database holds all local sensor recordings as well as Notes.</i><br>
-                        </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/19_config_database.gif" alt="Database" class="img-responsive img-thumbnail">
-
-                        <h4 id="line3_6"><u>Notes</u></h4>
-                        <p>
-                            The Notes page is where you can add, modify and remove notes in the SQL database.
+                            The Notes page is where you can add, modify and remove notes that are stored in the SQL database.
                             Use this to help track note worthy recorded readings or issues, such as "readings
                             on Oct 3rd, 1999 are irregular due to a malfunctioning sensor and can be ignored" or
                             "High temperatures and particulate matter starting June 23rd, 2011 are due to an
                             approaching wild fire".
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/04_notes.gif" alt="Notes" class="img-responsive img-thumbnail">
 
-                        <h4 id="line3_7"><u>Graphing</u></h4>
+                        <h4 id="line3_6"><u>Graphing</u></h4>
                         <p>
-                            There are currently 2 types of Graphing available, Plotly graphing and Quick graphing.<br><br>
+                            There are currently 2 types of graphing available, Database graphing (Plotly) and Quick graphing.<br><br>
 
-                            Plotly graphing allows the creation of graphs from the local Main/MQTT Subscriber databases
+                            Database graphing allows the creation of graphs from the local Main/MQTT Subscriber databases
                             or a custom uploaded Main/MQTT subscriber database. Plotly graphs have more features then
                             Quick graphs, such as zooming into a section of a graph or disabling graphed readings
-                            from view. Plotly graphs are created in the background, leaving the web interface
-                            available for other operations.<br><br>
+                            from view. Plotly graphs can take some time to generate
+                            depending on how much data is being processed.<br><br>
 
                             Quick graphing creates line graphs from local Interval recordings and will prevent other
                             web portal operations during it's creation, however, it is generally quicker then
@@ -449,7 +358,7 @@
                             and will continue to record, even when the web portal is unresponsive.</i>
                         </p>
 
-                        <h3>Graphing Options</h3>
+                        <h3>Database Graphing Options</h3>
 
                         <p>
                             <strong>Choose a Database</strong>: Select a Database to get readings from.<br>
@@ -470,39 +379,158 @@
                             <strong>Hour Offset</strong>: Add the set amount of hours to the recorded UTC0 DateTime before plotting<br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/05_graphing_plotly.gif" alt="Plotly Graph" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/ks_help_imgs/06_graphing_quick.gif" alt="Quick Graph" class="img-responsive img-thumbnail">
-
-                        <h4 id="line3_8"><u>Advanced</u></h4>
+                        <h4 id="line3_7"><u>MQTT Subscriber (Viewing)</u></h4>
                         <p>
-                            The Advanced page is used to execute functions that are more System related, as opposed to
-                            sensor related. Find links to upgrade Kootnet Sensors, the OS & Python Modules.
-                            You can also view RAW configurations & Python Module Versions. Power and Login update
-                            functions are located here as well.
+                            The MQTT Subscriber page shows information about the MQTT Subscriber service itself,
+                            such as if it's enabled, how big the database is and the address of the MQTT Broker it's
+                            getting data from.<br><br>
+
+                            There are 2 buttons on this page, one for getting a table of ALL MQTT Subscriber
+                            sensors that have been recorded to the database, which contains the sensor ID, host name,
+                            IP Address and last contact. The other is for clearing the log containing MQTT Subscriber
+                            connections and readings. Please note, this only clears the log NOT the database.<br><br>
+
+                            Underneath the information and buttons is where the most recent connections and data are
+                            listed. By default the last 15 sensor connections are listed, showing the Sensor ID,
+                            last contact and the readings it sent.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/37_advanced.gif" alt="Advanced" class="img-responsive img-thumbnail">
-
-                        <h4 id="line3_9"><u>Logs</u></h4>
+                        <h4 id="line3_8"><u>Sensor Check-ins (Viewing)</u></h4>
                         <p>
-                            The Logs are broken into 3 tabs, Primary, Network and Sensors.<br><br>
+                            The Sensor Checkins page shows information about the Sensor Checkin server itself, such as
+                            if it's enabled, how big the database is and number of sensors in the database.
 
-                            <strong>Default Log Location</strong>: /home/kootnet_data/logs/<br>
-                            <strong>Primary log</strong>: General program operations<br>
-                            <strong>Network log</strong>: Network operations<br>
-                            <strong>Sensors log</strong>: Hardware sensor operations<br>
+                            There are 4 buttons on the page listed below<br><br>
+
+                            <strong>View Checkins Sensors List</strong>: Opens a new page containing a complete list of
+                            sensors that have checked in. Each sensor shows it's Sensor ID, host name, IP address,
+                            software version, first contact and Last contact. Sensors are ordered by most recent
+                            contact.<br><br>
+
+                            <strong>Open Sensor Search</strong>: Opens a new page where you can past a Sensor ID to get
+                            the sensor's information, including log entries (if enabled on the sensor).<br><br>
+
+                            <strong>Clear Old Checkin Data</strong>: Every checkin from every sensor is saved into the
+                            database but only the last checkin for each sensor is currently viewable.
+                            To clear out data and free up space you can delete all but the latest checkins.<br><br>
+
+                            <strong>Delete</strong>: The number above this button is the number of days the sensors
+                            has to of gone without a checkin before it's deleted from the database
+                            (when you press the Delete button).<br><br>
+
+                            <strong>Note</strong><i>: Currently there is no way to "Un-Delete" something,
+                            use caution</i><br><br>
+
+                            Underneath the information and buttons is where the most recent connections are listed.
+                            By default the last 15 sensor connections are listed. If you with to adjust settings for
+                            this page, you can find them under the <a href="#line4_4a">"Sensor Checkins"</a>
+                            settings page.
+                        </p>
+                    </section>
+                    <!-- end section -->
+
+                    <section id="line6" class="section">
+                        <div class="row">
+                            <div class="col-md-12 left-align">
+                                <h2 class="dark-text">Remote Management <a href="#top">#back to top</a><hr></h2>
+                            </div>
+                            <!-- end col -->
+                        </div>
+                        <!-- end row -->
+
+                        <h4 id="line6_1"><u>Sensors List & Login</u></h4>
+
+                        <p>
+                            Populate the Sensors list with sensor addresses you wish to interact with using the Remote
+                            Management page. The Username and Password are optional and not required for many
+                            of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
+                            "System Commands", you will need to enter a valid Username and Password for the remote
+                            sensors. <br><br>
+                            Multiple lists of IP's can be created, managed and swapped to for easier management of
+                            multiple sites or additional sensors.<br><br>
+
+                            <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
+                            such as sensor21.mysensors.org.</i><br>
+                            <strong>Note</strong>: <i>If your sensor uses a different port other then the default
+                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088.</i><br>
                         </p>
 
+                        <h4 id="line6_2"><u>Sensor Checks & Downloads</u></h4>
+
+                        <p>Checks and Downloads are for gathering information about the remote sensor(s).</p>
+
+                        <p><b><u>View</u></b></p>
+                        <p>
+                            <strong>Online Status</strong>: Checks and lists the status of all sensors under
+                            the Sensors list
+                        </p>
+
+                        <p><b><u>Generate Reports</u></b></p>
+                        <p>
+                            Reports are HTML files that contain sensor information. A line is created for each sensor
+                            in the Sensors List.<br><br>
+
+                            <strong>Combination</strong>: Creates all reports, then combines them into a single report<br>
+                            <strong>System</strong>: Creates a report containing system related information<br>
+                            <strong>Configurations</strong>: Creates a report containing some of the more common
+                            configuration settings (Login Required)<br>
+                            <strong>Readings</strong>: Lists all available sensor readings for each Kootnet Sensor<br>
+                            <strong>Latencies</strong>: Lists all available sensor latencies for each Kootnet Sensor<br>
+                        </p>
+
+                        <p><b><u>Generate Zip File</u></b></p>
+                        <p>
+                            Each option here creates a zip file containing one or more items. For "Sensor Databases"
+                            and "Logs" you have the option of doing a direct download, which sends the corresponding
+                            zip file from each sensor directly. If you choose this option, you'll need to allow
+                            pop-ups in your browser.<br><br>
+
+                            The "Relayed Download" option allows that sensor to download other sensors data to itself,
+                            which allows you to access all the sensors data from that single sensor. This can be useful
+                            when you have a site with multiple sensors.<br><br>
+
+                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them.</i><br>
+                            <strong>Note</strong>: <i>In order for direct downloads to work, you must be on the
+                            same network as the corresponding sensors you are downloading from.</i><br><br>
+
+                            <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
+                            a combination report as well as zip files of each sensors databases and logs<br>
+                            <strong>Combination Report</strong>: Creates a zip on the local sensor containing
+                            a combination report<br>
+                            <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
+                            all the sensor's databases<br>
+                            <strong>Logs</strong>: Creates a zip on the local sensor containing all the sensor's Logs<br>
+                        </p>
+
+                        <h4 id="line6_3"><u>Push Sensor Configurations</u></h4>
+                        <p>
+                            Sensor configurations can be pushed to one or more remote sensors. Raw text configurations
+                            are used here (except for 3rd Party Services). Using the text version of the configurations
+                            allows for easy backup + copy paste operations. When you select a configuration, it
+                            automatically populates with a default configuration.<br><br>
+
+                            <strong>Note</strong>: <i>For maximum compatibility, be sure to have the same Kootnet Sensors
+                            version on both the pushing sensor and receiving sensors.</i><br>
+                        </p>
+
+                        <h4 id="line6_4"><u>Push System Commands</u></h4>
+                        <p>
+                            Use the various buttons to initiate upgrades, restarts and reboots.
+                        </p>
                     </section>
                     <!-- end section -->
 
                     <section id="line4" class="section">
-
                         <div class="row">
                             <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Main Configurations <a href="#top">#back to top</a><hr></h2>
+                                <h2 class="dark-text">Settings <a href="#top">#back to top</a><hr></h2>
                             </div>
                             <!-- end col -->
+
+                            <p>
+                                Settings can be accessed from the Web Portal by clicking on the Gear icon on the left
+                                hand side of the page.
+                            </p>
                         </div>
                         <!-- end row -->
 
@@ -524,7 +552,6 @@
                             <strong>Note</strong>: <i>The database holds the adjusted temperature readings and the
                             amount adjusted in another columns.</i><br>
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/12_config_main.gif" alt="Main Config" class="img-responsive img-thumbnail">
 
                         <h4 id="line4_2"><u>Installed Sensors</u></h4>
                         <p>
@@ -537,13 +564,37 @@
 
                             If you have any problems using un-tested sensors and are willing to give me remote access
                             to your sensor for debugging, please contact me through my
-                            <a href="http://kootenay-networks.com/?page_id=11" target="_blank">website</a>.
+                            <a href="https://kootenay-networks.com/?page_id=11" target="_blank">website</a>.
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/13_config_is_1.gif" alt="RPi HW" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/ks_help_imgs/14_config_is_2.gif" alt="Pimoroni HW" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/ks_help_imgs/15_config_is_3.gif" alt="Other HW" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_3"><u>Interval Recording</u></h4>
+                        <h4 id="line4_3"><u>Display</u></h4>
+                        <p>
+                            If you have installed a supported hardware display, you can enable it's use here
+                            and set what will be displayed at the set interval.
+                        </p>
+
+                        <h4 id="line4_4"><u>Sensor Checkin Configuration</u></h4>
+                        <p>
+                            Sensor Checkins sends diagnostic data to the specified server. Any Kootnet Sensor can be a
+                            Checkin Server, see <a href="#line4_4a">Checkin Server Configuration</a>.<br><br>
+
+                            The various options should be fairly self explanatory, however, if you want to send the
+                            data to your own Kootnet Sensor, you'll need to use the IP or domain address of the
+                            Kootnet Sensor receiving checkins. You will also have to enable the Checkins Server
+                            on the receiving Kootnet Sensor.
+                        </p>
+
+                        <h4 id="line4_4a"><u>Checkin Server Configuration</u></h4>
+                        <p>
+                            Enable Sensors Checkin Server to have the local sensor receive checkins from other sensors.
+                            You will need to update other Kootnet Sensors to use this sensor's address under the
+                            <a href="#line4_4">Sensor Checkins settings</a> page.<br><br>
+
+                            You can adjust how many sensors are shown on the Sensor Checkins page as well as the days
+                            used in the 'Sensor Checkins from the past X Days' bar.
+                        </p>
+
+                        <h4 id="line4_5"><u>Interval Recording</u></h4>
                         <p>
                             Interval Recording takes selected and installed sensor readings and records them to the
                             SQLite3 Database every set amount of seconds. You can change the interval at which it records
@@ -556,9 +607,8 @@
                             page within the Sensor's Web Portal to find the slowest sensor (AKA Highest latency) and
                             use at least 4x the reading.</i><br>
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/16_config_sql_rec_interval.gif" alt="Interval Recording" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_4"><u>High/Low Trigger Recording</u></h4>
+                        <h4 id="line4_6"><u>High/Low Trigger Recording</u></h4>
                         <p>
                             High/Low Trigger recording only writes to the database on changes of 'state', for instance,
                             if you have a low trigger of 10 and a high trigger of 20,
@@ -574,9 +624,8 @@
                             such as MQTT, Interval Recordings, Other Trigger Recordings, website access,
                             Online Services, etc.</i><br>
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/17_config_sql_rec_high_low.gif" alt="High/Low Recording" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_5"><u>Variance Trigger Recording</u></h4>
+                        <h4 id="line4_7"><u>Variance Trigger Recording</u></h4>
                         <p>
                             <strong>WARNING</strong>: <i>Variance Trigger Recording is experimental and requires
                             more resources and sensor access then other types of recording.</i><br><br>
@@ -592,48 +641,8 @@
                             what is set by using the 'Set Seconds to Lowest' button may produce unexpected
                             results.</i>
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/18_config_sql_rec_trigger.gif" alt="Variance Recording" class="img-responsive img-thumbnail">
 
-                        <h4 id="line4_6"><u>Display</u></h4>
-                        <p>
-                            If you have installed a supported hardware display, you can enable it's use here
-                            and set what will be displayed at the set interval.
-                        </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/20_config_display.gif" alt="Display" class="img-responsive img-thumbnail">
-
-                        <h4 id="line4_7"><u>Terminal Configuration Tool</u></h4>
-                        <p>
-                            The Terminal Configuration Tool is a command line program used to configure the local sensor.
-                            It can be run, even when the main Kootnet Sensors program won't run. Open it from the
-                            local sensors operating system programs menu or by running the command below in a terminal.
-                        </p>
-
-                        <pre class="brush: bash">sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py</pre><br>
-
-                        <p>
-                            From the TCT you can edit the primary config, installed sensors, reset all configurations,
-                            overwrite the Web Portal login, update the program's Python modules, upgrade the sensor software,
-                            create a new self-signed SSL certificate, Enable/Disable Kootnet Sensors auto-start,
-                            restart the sensor software and finally run a local test on the sensor.<br><br>
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/terminal_config_tool.gif" alt="TCT" class="img-responsive img-thumbnail">
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line5" class="section">
-
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Email <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                        <h4 id="line5_1"><u>Reports</u></h4>
-
+                        <h4 id="line4_8"><u>Email - Reports</u></h4>
                         <p>
                             Send reports automatically to one or more emails in a zip file at the set
                             day/week/month/year + time. You can also generate and send a report to a single email with
@@ -642,9 +651,7 @@
                             <strong>Note</strong>: <i>You must configure the SMTP settings before Email Reports will function.</i>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/21_email_reports.gif" alt="Email Reports" class="img-responsive img-thumbnail">
-
-                        <h4 id="line5_2"><u>Graphs</u></h4>
+                        <h4><u>Email - Graphs</u></h4>
 
                         <p>
                             Send graphs automatically to one or more emails in a zip file at the set
@@ -654,30 +661,13 @@
                             <strong>Note</strong>: <i>You must configure the SMTP settings before Email Graphs will function.</i>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/22_email_graphs.gif" alt="Email Graphs" class="img-responsive img-thumbnail">
-
-                        <h4 id="line5_3"><u>SMTP Settings</u></h4>
+                        <h4><u>Email - SMTP Settings</u></h4>
                         <p>
                             To allow email operations, you will need to get your email provider's SMTP server settings
                             and enter them here.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/23_email_smtp.gif" alt="Email SMTP Settings" class="img-responsive img-thumbnail">
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line6" class="section">
-
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">MQTT <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                        <h4 id="line6_1"><u>Publisher</u></h4>
+                        <h4 id="line4_9"><u>MQTT - Publisher</u></h4>
                         <p>
                             The MQTT Publisher sends sensor readings of your choice to an MQTT Broker. By default the
                             MQTT publisher is setup to send readings in a format for another Kootnet Sensor to use it's
@@ -717,43 +707,27 @@
                             enter that information here<br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/28_mqtt_publisher.gif" alt="MQTT Publisher" class="img-responsive img-thumbnail">
-
-                        <h4 id="line6_2"><u>Subscriber</u></h4>
+                        <h4><u>MQTT - Subscriber</u></h4>
                         <p>
-                            The MQTT Subscriber is similar in options to the <a href="#line6_1">MQTT Publisher</a>,
+                            The MQTT Subscriber has similar in options to the <a href="#line4_9">MQTT Publisher</a>,
                             but, instead of sending readings to an MQTT Broker, you receive them. Readings are sent
                             shortly after the broker receives them and can be viewed on the Web Portal's
                             "MQTT Subscriber" page. You can also save these readings to the MQTT Subscriber database
-                            for centralized recordings from multiple Kootnet sensors.<br><br>
+                            for centralized recordings using multiple Kootnet sensors.<br><br>
 
-                            MQTT topics can be specified bellow; By default, it is set to receive all topics (#).
-                            The wildcard "#" can be used at any point in the topic, such as KSDRSjk3K/# will receive
-                            all sensor readings from the sensor KSDRSjk3K only.
+                            MQTT topics can be specified in the "Subscribed Topics" section; By default, it is set
+                            to receive all topics (#). The wildcard "#" can be used at any point in the topic,
+                            such as KSDRSjk3K/# will receive all sensor readings from the sensor KSDRSjk3K only.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/29_mqtt_subscriber.gif" alt="MQTT Subscriber" class="img-responsive img-thumbnail">
-
-                        <h4 id="line6_3"><u>Broker (Eclipse Mosquitto)</u></h4>
+                        <h4><u>MQTT - Broker (Eclipse Mosquitto)</u></h4>
                         <p>
                             Installs & Enables the Eclipse MQTT Mosquitto Server on the local sensor using apt-get.<br>
                             Optionally set a custom <a href="https://mosquitto.org/man/mosquitto-conf-5.html" target="_blank">
                             Mosquitto configuration</a>.
                         </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/27_mqtt_broker.gif" alt="MQTT Broker" class="img-responsive img-thumbnail">
 
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line7" class="section">
-
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">3rd Party Services <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
+                        <h4 id="line4_10"><u>3rd Party Services</u></h4>
                         <p>
                             The following 3rd party services collect sensor readings to be displayed on their respective
                             websites. Most make this data public and add geolocation data to track where these sensors
@@ -761,7 +735,7 @@
                             the most sensors (all of them).
                         </p>
 
-                        <h4 id="line7_1"><u>Open Sense Map</u></h4>
+                        <h4><u>Open Sense Map</u></h4>
                         <blockquote>
                             openSenseMap is a platform for open sensor data at which everyone can participate in.
                             This project started in 2015 at the GI@School lab at the Institute for Geoinformatics in
@@ -784,10 +758,7 @@
                             sensor history.</i><br><br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/30_3rd_party_osm_1.gif" alt="Open Sense Map" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/ks_help_imgs/31_3rd_party_osm_2.gif" alt="Open Sense Map" class="img-responsive img-thumbnail">
-
-                        <h4 id="line7_2"><u>Weather Underground</u></h4>
+                        <h4><u>Weather Underground</u></h4>
                         <blockquote>
                             Weather Underground has challenged the conventions around how weather information is shared
                             with the public since 1993. We're immensely proud of the unique products that our community
@@ -804,9 +775,7 @@
                             the Station ID and Key in the Weather Underground settings on the Kootnet Sensor.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/32_3rd_party_wu.gif" alt="Weather Underground" class="img-responsive img-thumbnail">
-
-                        <h4 id="line7_3"><u>Luftdaten</u></h4>
+                        <h4><u>Sensor Community (Luftdaten)</u></h4>
                         <blockquote>
                             The OK Lab Stuttgart is part of the program Code for Germany of the Open Knowledge
                             Foundation Germany. The aim of the program is to promote developments in the areas of
@@ -818,211 +787,70 @@
                         </blockquote>
 
                         <p>
-                            <a href="https://luftdaten.info/" target="_blank">Luftdaten</a> is by far one of the easiest
-                            3rd party service to setup, but also one of the more finicky ones. In theory, all you need
-                            to do is create an account with Luftdaten and register the "Sensor ID" found in the
-                            Luftdaten settings on the Kootnet Sensor to your Luftdaten account.
+                            <a href="https://sensor.community/en/" target="_blank">Sensor Community</a> is by far one
+                            of the easiest 3rd party service to setup, but also one of the more finicky ones.
+                            In theory, all you need to do is create an account with Luftdaten and register the
+                            "Sensor ID" found in the Luftdaten settings on the Kootnet Sensor to your Luftdaten account.
                             The sensor should automatically start posting readings to Luftdaten within a day.
                         </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/33_3rd_party_luftdaten.gif" alt="Luftdaten" class="img-responsive img-thumbnail">
-
                     </section>
                     <!-- end section -->
 
-                    <section id="line8" class="section">
-
+                    <section id="line5" class="section">
                         <div class="row">
                             <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Remote Management <a href="#top">#back to top</a><hr></h2>
+                                <h2 class="dark-text">System <a href="#top">#back to top</a><hr></h2>
                             </div>
                             <!-- end col -->
+
+                            <p>
+                                You can access the Sensor's System Menu in the Web Portal by clicking on the icon in
+                                the top right of the page (to the right of the notification bell) and going to "System".
+                            </p>
                         </div>
                         <!-- end row -->
 
-                        <h4 id="line8_1"><u>Sensors List & Login</u></h4>
-
+                        <h4 id="line5_1"><u>Databases</u></h4>
                         <p>
-                            Populate the Sensors list with sensor addresses you wish to interact with using the Remote
-                            Management page. The Username and Password are optional and not required for many
-                            of the "Checks & Downloads" but if you wish to use any of the "Configurations" or
-                            "System Commands", you will need to enter a valid Username and Password for the remote
-                            sensors. <br><br>
-                            Multiple lists of IP's can be created, managed and swapped to for easier management of
-                            multiple sites or additional sensors.<br><br>
+                            There are 3 sections in the Database Menu, they include,
+                            Information & Downloads, Management & Uploads.<br><br>
 
-                            <strong>Note</strong>: <i>You can use an IP address, such as 192.168.1.21 or a DNS address
-                            such as sensor21.mysensors.org.</i><br>
-                            <strong>Note</strong>: <i>If your sensor uses a different port other then the default
-                            10065, you can specify it after the IP or DNS address, such as 192.168.1.21:8088.</i><br>
+                            On the Database Information & Downloads page you can find the size of each database along
+                            with a bit of other information. You can also download databases & database backups here.
+                            Downloads can be done in either RAW or Zipped format.<br><br>
+
+                            On the Database Management page you can rename, delete or shrink databases & backups.<br><br>
+
+                            On the Database Uploads page you can upload other sensor's databases to use with Graphing or
+                            replace one of the 3 primary SQLite3 databases. Databases can be uploaded in RAW or Zip format.<br><br>
+
+                            When uploading a Main database, the previous database is zipped and stored in a backup folder.<br><br>
+
+                            <strong>Main Database Location</strong>: /home/kootnet_data/SensorRecordingDatabase.sqlite<br>
+                            <strong>MQTT Subscriber Database Location</strong>: /home/kootnet_data/MQTTSubscriberDatabase.sqlite<br>
+                            <strong>Checkin Database Location</strong>: /home/kootnet_data/SensorCheckinDatabase.sqlite<br><br>
+
+                            <strong>Note</strong>: <i>The Main SQLite3 database holds all local sensor recordings as well as Notes.</i><br>
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/07_rm_ip_list.gif" alt="RSM Address List" class="img-responsive img-thumbnail">
-
-                        <h4 id="line8_2"><u>Sensor Checks & Downloads</u></h4>
-
-                        <p>Checks and Downloads are for gathering information about the remote sensor(s).</p>
-
-                        <p><b><u>View</u></b></p>
+                        <h4 id="line5_2"><u>View Versions & Configurations</u></h4>
                         <p>
-                            <strong>Online Status</strong>: Checks and lists the status of all sensors under
-                            the Sensors list
+                            The first page displays the current running version of Kootnet Sensors and many of it's
+                            Python modules. The other pages give a more "Raw" view of each configuration file.
                         </p>
 
-                        <p><b><u>Generate Reports</u></b></p>
-                        <p>
-                            Reports are HTML files that contain sensor information. A line is created for each sensor
-                            in the Sensors List.  If the sensor is offline, it is not added.<br><br>
+                        <h4 id="line5_3"><u>Networking</u></h4>
 
-                            <strong>Combination</strong>: Creates all reports, then combines them into a single report<br>
-                            <strong>System</strong>: Creates a report containing system related information<br>
-                            <strong>Configurations</strong>: Creates a report containing some of the more common configuration settings<br>
-                            <strong>Readings</strong>: Lists all available sensor readings for each Kootnet Sensor<br>
-                            <strong>Latencies</strong>: Lists all available sensor latencies for each Kootnet Sensor<br>
+                        <p>
+                            Under networking you can set the hostname of the sensor, add a Static wireless IP,
+                            enable DHCP & configure a wireless network to auto connect to.
+                            You must set the two character
+                            <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">country code</a>
+                            in this section before the wireless will function.
                         </p>
 
-                        <p><b><u>Generate Zip File</u></b></p>
-                        <p>
-                            Each option here creates a zip file containing one or more items. For "Sensor Databases"
-                            and "Logs" you have the option of doing a direct download, which sends the corresponding
-                            zip file from each sensor directly. If you choose this option, you'll need to allow
-                            pop-ups in your browser.<br><br>
 
-                            Using the "Relayed Download" option can be useful when you have a site with multiple
-                            sensors, as you only need to access one sensor remotely to get data from many other
-                            sensors.<br><br>
-
-                            <strong>Note</strong>: <i>Links to Zip downloads only work once, then you must re-create them.</i><br>
-                            <strong>Note</strong>: <i>In order for direct downloads to work, you must be on the
-                            same network as the corresponding sensors you are downloading from.</i><br><br>
-
-                            <strong>Create "The Big Zip"</strong>: Creates a zip on the local sensor containing
-                            a combination report as well as zip files of each sensors Main database and logs<br>
-                            <strong>Combination Report</strong>: Creates a zip on the local sensor containing
-                            a combination report<br>
-                            <strong>Sensor Databases</strong>: Creates a zip on the local sensor containing
-                            all the sensor's databases<br>
-                            <strong>Logs</strong>: Creates a zip on the local sensor containing all the sensor's Logs<br>
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/08_rm_checks_downloads.gif" alt="RSM Information" class="img-responsive img-thumbnail">
-
-                        <h4 id="line8_3"><u>Push Sensor Configurations</u></h4>
-                        <p>
-                            Sensor configurations can be pushed to one or more remote sensors. Raw text configurations
-                            are used here (except for 3rd Party Services). Using the text version of the configurations
-                            allows for easy backup + copy paste operations. When you select a configuration, it
-                            automatically populates with a default configuration.<br><br>
-
-                            <strong>Note</strong>: <i>For maximum compatibility, be sure to have the same Kootnet Sensors
-                            version on both the pushing sensor and receiving sensors.</i><br>
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/09_rm_configs.gif" alt="RSM Config" class="img-responsive img-thumbnail">
-                        <img src="http://kootenay-networks.com/ks_help_imgs/10_rm_config_3rd_party.gif" alt="RSM 3rd Party Config" class="img-responsive img-thumbnail">
-
-                        <h4 id="line8_4"><u>Push System Commands</u></h4>
-                        <p>
-                            Use the various drop down menu's to initiate upgrades or sensor restarts.
-                        </p>
-                        <img src="http://kootenay-networks.com/ks_help_imgs/11_rm_system.gif" alt="RSM System Commands" class="img-responsive img-thumbnail">
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line9" class="section">
-
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Sensor Checkin Server <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                        <h4 id="line9_1"><u>Main View</u></h4>
-                        <p>
-                            The main Sensor Checkins page shows a list of sensors that have checked in, starting
-                            with the most recent checkins at the top. Click the "Open Sensor Search" button to get more
-                            details of a specific sensor by it's sensor ID. You can adjust Checkin options under the
-                            <a href="#line9_4">"Checkin Server"</a> settings located in the main menu on the left under
-                            "Local Management".
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/24_checkin_main.gif" alt="Checkin Main" class="img-responsive img-thumbnail">
-
-                        <h4 id="line9_2"><u>Database Cleanup</u></h4>
-                        <p>
-                            Use the Database Cleanup section to view the Checkin sensor's database size and remove old
-                            data entries.<br><br>
-
-                            <strong>Note</strong>: <i>Data deletions cannot be undone.</i>
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/25_checkin_cleanup.gif" alt="Checkin Cleanup" class="img-responsive img-thumbnail">
-
-                        <h4 id="line9_3"><u>Sensor Search</u></h4>
-                        <p>
-                            Use the Sensor Search to get Log information from specific sensors. You can also delete
-                            the specific sensor from the database or clear all it's old checkin data. As of this
-                            writing, only the Primary and Sensor hardware logs are included (due to privacy). In a
-                            future version, I will most likely add the ability to send other information, but by default
-                            it will be disabled.
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/24_checkin_main_search.gif" alt="Checkin Search" class="img-responsive img-thumbnail">
-
-                        <h4 id="line9_4"><u>Configuration</u></h4>
-                        <p>
-                            Enable Sensor Checkins Server to have the local sensor receive checkins from other sensors.
-                            You will need to update the "Checkin Server Address & Port" with this sensors address
-                            (DNS or IP) on the sensors you want reporting to this Checkin Server. The
-                            "Checkin Server Address & Port" setting can be found under the
-                            <a href="#line4_1">Main sensor configuration</a>.<br><br>
-                        </p>
-
-                        <p><b><u>Checkin View Settings</u></b></p>
-                        <p>
-                            These settings adjust the <a href="#line9_1">"Main View"</a>. The first option sets the
-                            "Past Sensor Checkin Count". For instance, set this to 1 and it will show how many sensors
-                            have checked in during the past day.<br><br>
-
-                            The second option changes the default value under <a href="#line9_2">"Database Cleanup"</a> for removing old
-                            sensors from the Checkin database.
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/26_checkin_config.gif" alt="Checkin Settings" class="img-responsive img-thumbnail">
-
-                    </section>
-                    <!-- end section -->
-
-                    <section id="line10" class="section">
-
-                        <div class="row">
-                            <div class="col-md-12 left-align">
-                                <h2 class="dark-text">Networking <a href="#top">#back to top</a><hr></h2>
-                            </div>
-                            <!-- end col -->
-                        </div>
-                        <!-- end row -->
-
-                        <h4 id="line10_1"><u>Main</u></h4>
-                        <p>
-                            The Main network section allows you to set the hostname and a Static wireless IP
-                            or enable DHCP.
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/34_network_main.gif" alt="Networking Main" class="img-responsive img-thumbnail">
-
-                        <h4 id="line10_2"><u>Wifi</u></h4>
-                        <p>
-                            Set up the sensor to auto connect to a wireless network. You must set the two character
-                            <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank">country code</a>.
-                        </p>
-
-                        <img src="http://kootenay-networks.com/ks_help_imgs/35_network_wifi.gif" alt="Networking Wifi" class="img-responsive img-thumbnail">
-
-                        <h4 id="line10_3"><u>SSL Certificate</u></h4>
+                        <h4 id="line5_4"><u>SSL</u></h4>
                         <p>
                             Use this section to create a new self signed SSL certificate or upload a custom one for
                             3rd party verification, which will prevent the warning page when first accessing the sensor
@@ -1030,16 +858,40 @@
                             use the Kootnet Sensors Web Portal. If you are unable to access the Web Portal after
                             changing the certificate, login to the Kootnet Sensor locally
                             (with a keyboard/mouse/monitor) and create a new self signed SSL certificate through the
-                            <a href="#line4_7">Terminal Configuration Tool</a>.
+                            <a href="#line7_1">Terminal Configuration Tool</a>.
                         </p>
 
-                        <img src="http://kootenay-networks.com/ks_help_imgs/36_network_ssl.gif" alt="Networking SSL" class="img-responsive img-thumbnail">
 
+                        <h4 id="line5_5"><u>Change Login</u></h4>
+                        <p>
+                            Change the username & password for logging into the Web Portal. If you do not know the
+                            current username and password, you can reset them using the
+                            <a href="#line7_1">Terminal Configuration Tool</a>.
+                        </p>
+
+                        <h4 id="line5_6"><u>Upgrades & Power</u></h4>
+                        <p>
+                            Find buttons to upgrade Kootnet Sensors, the Operating System & Python Modules.
+                            Power functions to restart the program, restart the system & shutdown the system
+                            are located here as well.
+                        </p>
+
+                        <h4 id="line5_7"><u>Logs</u></h4>
+                        <p>
+                            You can access the Sensor's Logs in the Web Portal by clicking on the icon in the top
+                            right of the page (to the right of the notification bell) and going to "Logs".<br><br>
+
+                            The Logs are broken up into 3 tabs, Primary, Network and Sensors.<br><br>
+
+                            <strong>Default Log Location</strong>: /home/kootnet_data/logs/<br>
+                            <strong>Primary log</strong>: General program operations<br>
+                            <strong>Network log</strong>: Network operations<br>
+                            <strong>Sensors log</strong>: Hardware sensor operations<br>
+                        </p>
                     </section>
                     <!-- end section -->
 
-                    <section id="line11" class="section">
-
+                    <section id="line7" class="section">
                         <div class="row">
                             <div class="col-md-12 left-align">
                                 <h2 class="dark-text">Troubleshooting <a href="#top">#back to top</a><hr></h2>
@@ -1048,10 +900,26 @@
                         </div>
                         <!-- end row -->
 
-                        <strong>Note</strong>: <i>You may find useful information in the program <a href="#line3_9">logs </a>
-                        to help diagnose issues.</i>
+                        <strong>Note</strong>: <i>You may find useful information in the program
+                        <a href="#line5_7">logs</a> to help diagnose issues.</i>
 
-                        <h3 id="line11_1"><u>Installation & Upgrade Problems</u></h3>
+                        <h4 id="line7_1"><u>Terminal Configuration Tool</u></h4>
+                        <p>
+                            The Terminal Configuration Tool is a command line program used to configure the local sensor.
+                            It can be run, even when the main Kootnet Sensors program won't run. Open it from the
+                            local sensors operating system programs menu or by running the command below in a terminal.
+                        </p>
+
+                        <pre class="brush: bash">sudo /home/kootnet_data/env/bin/python /opt/kootnet-sensors/start_cli_edit_config.py</pre><br>
+
+                        <p>
+                            From the TCT you can edit the primary config, installed sensors, reset all configurations,
+                            overwrite the Web Portal login, update the program's Python modules, upgrade the sensor software,
+                            create a new self-signed SSL certificate, Enable/Disable Kootnet Sensors auto-start,
+                            restart the sensor software and finally run a local test on the sensor.<br><br>
+                        </p>
+
+                        <h3 id="line7_2"><u>Installation & Upgrade Problems</u></h3>
 
                         <p>
                             Installation issues can occur for various reasons. Here are a few common causes and fixes.<br><br>
@@ -1070,12 +938,12 @@
                             <strong>Fix: </strong>Wait 5 or 10 minutes and try again OR change your default apt-get repository<br>
                         </p>
 
-                        <h3 id="line11_2"><u>Kootnet Sensors Start-up Problems</u></h3>
+                        <h3 id="line7_3"><u>Kootnet Sensors Start-up Problems</u></h3>
 
                         <p>
                             <strong>Invalid Configurations</strong><br>
                             <strong><i>Errors may include</i></strong>: Unable to access Web Portal, program crashes on start<br>
-                            <strong>Fix: </strong>Run the <a href="#line4_7">Terminal Configuration Tool</a>
+                            <strong>Fix: </strong>Run the <a href="#line7_1">Terminal Configuration Tool</a>
                             and reset all configurations
                         </p>
 
@@ -1084,43 +952,37 @@
                             <strong><i>Errors may include</i></strong>: Missing dependencies in the Kootnet Sensor logs<br>
                             <strong>Possible Fixes:</strong><br>
                             1. Ensure the Sensor is Online, then run "Upgrade Kootnet Sensors (Clean HTTP)" from the
-                            <a href="#line4_7">Terminal Configurations Tool</a><br>
+                            <a href="#line7_1">Terminal Configurations Tool</a><br>
                             2. Do a fresh flash of Raspbian on the SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
                             3. Replace your current SD card and <a href="#line2">re-install Kootnet Sensors</a><br>
                             4. Try a different Raspberry Pi and <a href="#line2">install Kootnet Sensors</a><br><br>
 
-                            <strong>Note</strong>: <i>You may want to copy the <a href="#line3_5">main SQL3 database</a>
+                            <strong>Note</strong>: <i>You may want to copy the <a href="#line5_1">main SQL3 database</a>
                             to save your sensor recordings & notes before flashing the SD card.</i>
                         </p>
-
                     </section>
                     <!-- end section -->
-
                 </div>
                 <!-- // end .col -->
-
             </div>
             <!-- // end .row -->
-
         </div>
         <!-- // end container -->
-
     </div>
     <!-- end wrapper -->
 
-    <script src="/jquery.min.js"></script>
-    <script src="/bootstrap.min.js"></script>
-    <script src="/retina.js"></script>
-    <script src="/wow.js"></script>
-    <script src="/jquery.prettyPhoto.js"></script>
+    <script src="/extras/jquery-3.6.0.min.js"></script>
+    <script src="/documentation/js/bootstrap.min.js"></script>
+    <script src="/documentation/js/retina.js"></script>
+    <script src="/documentation/js/wow.js"></script>
+    <script src="/documentation/js/jquery.prettyPhoto.js"></script>
 
     <!-- CUSTOM PLUGINS -->
-    <script src="/doc_custom.js"></script>
-    <script src="/doc_main.js"></script>
+    <script src="/documentation/js/custom.js"></script>
+    <script src="/documentation/js/main.js"></script>
 
-    <script src="/shCore.js"></script>
-	<script src="/shBrushBash.js"></script>
+    <script src="/documentation/js/syntax-highlighter/scripts/shCore.js"></script>
+	<script src="/documentation/js/syntax-highlighter/scripts/shBrushBash.js"></script>
 
 </body>
-
 </html>
