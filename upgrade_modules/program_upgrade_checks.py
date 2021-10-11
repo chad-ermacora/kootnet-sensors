@@ -19,7 +19,6 @@
 from operations_modules import logger
 from operations_modules import software_version
 from upgrade_modules import generic_upgrade_functions
-from upgrade_modules.old_configuration_conversions.beta_29_x_to_30_x import upgrade_beta_29_to_30
 from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31
 from upgrade_modules.old_configuration_conversions.beta_33_x_to_33_96 import upgrade_beta_33_x_to_33_96
 
@@ -96,10 +95,9 @@ def run_configuration_upgrade_checks():
             elif previous_version.feature_version == 30:
                 no_changes = False
                 upgrade_beta_30_x_to_31()
-            elif previous_version.feature_version == 29:
+            elif previous_version.feature_version < 30:
                 no_changes = False
-                upgrade_beta_29_to_30()
-                upgrade_beta_30_x_to_31()
+                generic_upgrade_functions.reset_all_configurations()
 
     if no_changes:
         logger.primary_logger.info(" - No configuration changes detected")
