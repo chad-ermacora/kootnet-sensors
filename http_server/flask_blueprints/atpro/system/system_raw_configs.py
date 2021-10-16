@@ -19,10 +19,14 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content
+from operations_modules.app_cached_variables import running_with_root
 
 try:
     from plotly import __version__ as plotly_version
-    from numpy import __version__ as numpy_version
+    if running_with_root:
+        from numpy import __version__ as numpy_version
+    else:
+        numpy_version = "Unknown"
     from greenlet import __version__ as greenlet_version
     from gevent import __version__ as gevent_version
     from requests import __version__ as requests_version
