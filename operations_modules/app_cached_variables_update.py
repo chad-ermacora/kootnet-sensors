@@ -33,10 +33,19 @@ from operations_modules import software_version
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 db_v = app_cached_variables.database_variables
+first_run = True
 
 
 def update_cached_variables():
     """ Updates app_cached_variables.py variables. """
+    global first_run
+    if first_run:
+        first_run = False
+        if not app_cached_variables.running_with_root:
+            click_msg = "The following functions require root access and will not be available - " + \
+                "HW Sensors, Network Configurations"
+            atpro_notifications.add_custom_message("Warning: Not running with root", click_msg=click_msg)
+
     if app_cached_variables.current_platform == "Linux":
         try:
             os_release_content_lines = get_file_content("/etc/os-release").split("\n")
