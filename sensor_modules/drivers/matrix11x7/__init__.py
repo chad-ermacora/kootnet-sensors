@@ -1,7 +1,7 @@
 """Python library for the Pimoroni 11x7 LED Matrix Breakout."""
 import atexit
 from . import is31fl3731
-from .fonts import font5x7
+from . import font5x7
 import numpy
 
 __version__ = '0.0.1'
