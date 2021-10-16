@@ -21,9 +21,6 @@ from threading import Thread
 from operations_modules import logger
 from configuration_modules import app_config_access
 from operations_modules import file_locations
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
 
 round_decimal_to = 5
 turn_off_display_seconds = 25
@@ -37,6 +34,7 @@ class CreateEnviroPlus:
     def __init__(self, enviro_hw_ver_2_w_screen=False):
         ltr559_import = __import__("sensor_modules.drivers.ltr559", fromlist=["LTR559"])
         bme280_import = __import__("sensor_modules.drivers.bme280", fromlist=["BME280"])
+        self.pill_import = __import__("PIL", fromlist=["Image", "ImageDraw", "ImageFont"])
 
         self.ltr_559_ok = False
         self.bme280_ok = False
@@ -47,7 +45,7 @@ class CreateEnviroPlus:
         self.display_is_on = True
         self.display_in_use = False
         self.sensor_in_use = False
-        self.font = ImageFont.truetype(file_locations.display_font, 40)
+        self.font = self.pill_import.ImageFont.truetype(file_locations.display_font, 40)
 
         try:
             self.ltr_559 = ltr559_import.LTR559()
@@ -108,26 +106,25 @@ class CreateEnviroPlus:
         if self.st7735_ok:
             if not self.display_in_use:
                 self.display_in_use = True
-                message_img = Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
-                blank_img = message_img
-                draw = ImageDraw.Draw(message_img)
-
-                self.st7735.set_backlight(1)
-                self.display_off_count = 0
                 self.display_is_on = True
-
-                size_x, size_y = draw.textsize(message, self.font)
-                text_x = 160
-                text_y = (80 - size_y) // 2
-
-                t_start = time.time()
                 try:
+                    msg_img = self.pill_import.Image.new('RGB', (self.st7735.width, self.st7735.height), color=(0, 0, 0))
+                    blank_img = msg_img
+                    draw = self.pill_import.ImageDraw.Draw(msg_img)
+
+                    self.st7735.set_backlight(1)
+                    self.display_off_count = 0
+                    size_x, size_y = draw.textsize(message, self.font)
+                    text_x = 160
+                    text_y = (80 - size_y) // 2
+
+                    t_start = time.time()
                     while self.display_off_count < turn_off_display_seconds and self.display_is_on:
                         x = (time.time() - t_start) * 80
                         x %= (size_x + 160)
                         draw.rectangle((0, 0, 160, 80), (0, 0, 0))
                         draw.text((int(text_x - x), text_y), message, font=self.font, fill=(255, 255, 255))
-                        self.st7735.display(message_img)
+                        self.st7735.display(msg_img)
                         time.sleep(0.1)
                     self.st7735.display(blank_img)
                 except Exception as error:
