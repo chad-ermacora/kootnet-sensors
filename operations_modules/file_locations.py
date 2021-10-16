@@ -116,7 +116,7 @@ plotly_graph_custom = sensor_data_dir + "/CustomPlotlyGraph.html"
 dhcpcd_config_file = "/etc/dhcpcd.conf"
 wifi_config_file = "/etc/wpa_supplicant/wpa_supplicant.conf"
 
-display_font = program_root_dir + "/http_server/extras/fontawesome-free/webfonts/fa-solid-900.ttf"
+display_font = program_root_dir + "/extras/alphanumeric_lcd.ttf"
 dhcpcd_config_file_template = program_root_dir + "/extras/dhcpcd_template.conf"
 wifi_config_file_template = program_root_dir + "/extras/wpa_supplicant_template.conf"
 
