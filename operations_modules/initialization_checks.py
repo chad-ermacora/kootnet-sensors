@@ -73,12 +73,13 @@ def _check_sensor_id():
 
 def _set_file_permissions():
     """ Re-sets program file permissions. """
-    if app_cached_variables.running_with_root:
-        _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o744)
-        _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o744)
-        _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
-        if os.path.isfile(file_locations.http_auth):
-            os.chmod(file_locations.http_auth, 0o700)
+    _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o644)
+    _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o644)
+    _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
+    _change_permissions_recursive(file_locations.sensor_data_dir + "/scripts", 0o755, 0o755)
+    _change_permissions_recursive(file_locations.http_ssl_folder, 0o755, 0o600)
+    if os.path.isfile(file_locations.http_auth):
+        os.chmod(file_locations.http_auth, 0o600)
 
 
 def _change_permissions_recursive(path, folder_mode, files_mode):
@@ -99,9 +100,6 @@ def _check_ssl_files():
     """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
     try:
-        if not os.path.isdir(file_locations.http_ssl_folder):
-            os.mkdir(file_locations.http_ssl_folder)
-
         if os.path.isfile(file_locations.http_ssl_key):
             logger.primary_logger.debug("SSL Key Found")
         else:
