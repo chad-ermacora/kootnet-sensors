@@ -23,10 +23,10 @@ from getpass import getuser
 
 
 def _check_directories():
-    create_directories = [sensor_data_dir, sensor_config_dir,
-                          custom_ip_lists_folder, uploaded_databases_folder,
-                          sensor_data_dir + "/logs", database_backup_folder,
-                          sensor_data_dir + "/scripts"]
+    create_directories = [
+        sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, uploaded_databases_folder,
+        sensor_data_dir + "/logs", database_backup_folder, sensor_data_dir + "/scripts", http_ssl_folder
+    ]
 
     if os.geteuid() == 0:
         current_directory = ""
@@ -120,7 +120,7 @@ display_font = program_root_dir + "/extras/alphanumeric_lcd.ttf"
 dhcpcd_config_file_template = program_root_dir + "/extras/dhcpcd_template.conf"
 wifi_config_file_template = program_root_dir + "/extras/wpa_supplicant_template.conf"
 
-http_ssl_folder = program_root_dir + "/http_server/ssl_files"
+http_ssl_folder = sensor_data_dir + "/ssl_files"
 http_ssl_key = http_ssl_folder + "/kootnet_default.key"
 http_ssl_csr = http_ssl_folder + "/kootnet_default.csr"
 http_ssl_crt = http_ssl_folder + "/kootnet_default.crt"

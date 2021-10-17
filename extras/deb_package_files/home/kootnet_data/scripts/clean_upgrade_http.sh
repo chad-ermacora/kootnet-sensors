@@ -25,6 +25,7 @@ wget -O /tmp/${DEB_INSTALLER} ${HTTP_SERVER}${HTTP_FOLDER}${DEB_INSTALLER}
 if [[ -s /tmp/${DEB_INSTALLER} ]]; then
   printf 'Download complete\nRemoving old install (Configurations & data will be kept) ...\n'
   rm -R -f /home/kootnet_data/env 2>/dev/null
+  rm -R -f /home/kootnet_data/ssl_files 2>/dev/null
   rm -R -f /opt/kootnet-sensors 2>/dev/null
   rm -f /usr/share/applications/KootNet*.desktop 2>/dev/null
   rm -f /etc/systemd/system/Kootnet*.service 2>/dev/null
