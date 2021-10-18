@@ -33,6 +33,7 @@ except Exception as import_error_raw:
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
+from operations_modules.app_generic_functions import check_running_as_service
 from configuration_modules import app_config_access
 from operations_modules.app_cached_variables_update import start_cached_variables_refresh
 from sensor_recording_modules.recording_interval import start_interval_recording_server
@@ -150,7 +151,10 @@ except Exception as error:
 
 try:
     # Start Automatic Upgrades Server
-    start_automatic_upgrades_server()
+    if check_running_as_service():
+        start_automatic_upgrades_server()
+    else:
+        logger.primary_logger.info("Automatic Upgrades Server Disabled - Kootnet Sensors not running as a service")
 except Exception as error:
     logger.primary_logger.critical("Automatic Upgrades Server Error: " + str(error))
 
