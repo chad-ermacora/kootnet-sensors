@@ -75,14 +75,15 @@ def _set_file_permissions():
     """ Re-sets program file permissions. """
     _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o644)
     _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o644)
-    _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
+    # Disable logging due to error thrown in Dev Environment
+    _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755, log_errors=False)
     _change_permissions_recursive(file_locations.sensor_data_dir + "/scripts", 0o755, 0o755)
     _change_permissions_recursive(file_locations.http_ssl_folder, 0o755, 0o600)
     if os.path.isfile(file_locations.http_auth):
         os.chmod(file_locations.http_auth, 0o600)
 
 
-def _change_permissions_recursive(path, folder_mode, files_mode):
+def _change_permissions_recursive(path, folder_mode, files_mode, log_errors=True):
     root = ""
     files = []
     try:
@@ -93,7 +94,10 @@ def _change_permissions_recursive(path, folder_mode, files_mode):
         for file in [os.path.join(root, f) for f in files]:
             os.chmod(file, files_mode)
     except Exception as error:
-        logger.primary_logger.error("Error setting permissions: " + str(error))
+        if log_errors:
+            logger.primary_logger.error("Error setting permissions: " + str(error))
+        else:
+            logger.primary_logger.debug("Error setting permissions: " + str(error))
 
 
 def _check_ssl_files():
