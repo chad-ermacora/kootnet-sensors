@@ -42,8 +42,6 @@ def _check_directories():
                 print(" -- Make Directory Error: " + str(dir_error))
 
 
-# Holds the location of required files such as configurations and extra resources
-# Locations change to the user's home directory + /kootnet_data if not run with root
 program_root_dir = ""
 try:
     split_location = os.path.dirname(os.path.realpath(__file__)).split("/")[:-1]
@@ -53,9 +51,10 @@ try:
 except Exception as error:
     print("Script Location Error: " + str(error))
 
+# Holds the location of required files such as configurations and extra resources
+# Locations change to the user's home directory + /kootnet_data if not run with root
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
-
 if os.geteuid() != 0:
     system_user = str(getuser()).strip()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
@@ -130,8 +129,8 @@ html_report_js = program_root_dir + "/http_server/templates/ATPro_admin/index.js
 html_report_pure_css = program_root_dir + "/http_server/extras/pure-min.css"
 html_pure_css_menu = program_root_dir + "/http_server/templates/ATPro_admin/pure-horizontal-menu.css"
 
-atpro_reports_folder = program_root_dir + \
-                       "/http_server/templates/ATPro_admin/page_templates/remote_management/report_templates/"
+atpro_reports_folder = program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
+atpro_reports_folder += "remote_management/report_templates/"
 
 html_report_all_start = atpro_reports_folder + "report-all-start.html"
 html_report_all_end = atpro_reports_folder + "report-all-end.html"
