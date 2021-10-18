@@ -58,6 +58,48 @@ To uninstall Kootnet Sensors, run the following command in a terminal.
 sudo apt-get remove kootnet-sensors
 ```
 
+Manually Download & Run
+-------------------------
+
+Although not recommended, you can download the source code directly and run it from a terminal.  
+Follow the instructions below to install prerequisites. 
+
+**Note**: *Kootnet Sensors will not autostart when using this method*  
+**Note**: *Program updates will be disabled*  
+**Note**: *You only need to run steps 1-4 once, to start Kootnet Sensors after that, open a terminal and skip to step 5*
+
+1. Open a terminal window
+2. Download and extract Kootnet Sensors
+```
+wget https://github.com/chad-ermacora/kootnet-sensors/archive/refs/tags/Beta.34.145.tar.gz
+
+mkdir ~/kootnet_sensors && tar -xvzf Beta.34.145.tar.gz --directory ~/kootnet_sensors --strip-components=1
+```
+
+3. Install prerequisites by running the following commands one after another (each line is a command). 
+```
+sudo apt-get update && sudo apt-get -y install python3 python3-venv python3-pip python3-dev bash wget openssl libssl-dev
+
+python3 -m venv ~/ks_venv
+
+~/ks_venv/bin/python3 -m pip install -U pip
+
+~/ks_venv/bin/pip3 install -r ~/kootnet_sensors/requirements.txt
+```
+
+4. If you are using a Raspberry Pi run these, if not, skip to step 5
+```
+sudo apt-get -y install libffi-dev libatlas3-base fake-hwclock libopenjp2-7 libtiff-dev
+
+~/ks_venv/bin/pip3 install -r ~/kootnet_sensors/requirements_hw_sensors.txt
+```
+
+5. Start Kootnet Sensors 
+
+```
+sudo ~/ks_venv/bin/python3 ~/kootnet_sensors/start_sensor_services.py
+```
+
 Controlling the Sensor
 -------------------------
 
