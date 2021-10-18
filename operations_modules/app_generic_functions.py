@@ -17,17 +17,20 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import psutil
 import time
-from datetime import datetime, timedelta
-import requests
 import logging
+from datetime import datetime, timedelta
 from io import BytesIO
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules import file_locations
+try:
+    # In try statement so import does not prevent loading when missing
+    import requests
+except Exception as import_error:
+    logger.primary_logger.error("requests python module import error: " + str(import_error))
 
 logging.captureWarnings(True)
 
@@ -388,18 +391,6 @@ def get_html_response_bg_colour(response_time):
         logger.network_logger.debug("Check Online Status Error: " + str(error))
         background_colour = "purple"
     return background_colour
-
-
-def save_to_memory_ok(write_size):
-    """ Checks to see if there is enough RAM to save file to to memory or not. """
-
-    try:
-        # Numbers 1,000,000 / 25,000,000. Not using underscores to maintain compatibility with Python 3.5.x
-        if psutil.virtual_memory().available > (write_size * 1000000) + 25000000:
-            return True
-    except Exception as error:
-        logger.primary_logger.warning("Error checking virtual memory: " + str(error))
-    return False
 
 
 def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
