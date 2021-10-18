@@ -24,7 +24,7 @@ from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_http_sensor_reading, save_to_memory_ok, zip_files, \
+from operations_modules.app_generic_functions import get_http_sensor_reading, zip_files, \
     get_ip_and_port_split, start_and_wait_threads, check_for_port_in_address, get_html_response_bg_colour
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
@@ -140,19 +140,14 @@ def create_the_big_zip(ip_list):
                 return_names.append(current_file_name)
                 return_files.append(sensor[2])
 
-            if save_to_memory_ok(get_sum_db_sizes(ip_list)):
-                app_cached_variables.sc_in_memory_zip = zip_files(return_names, return_files)
-            else:
-                zip_location = file_locations.html_sensor_control_big_zip
-                zip_files(return_names, return_files, save_type="to_disk",
-                                                file_location=zip_location)
+            zip_location = file_locations.html_sensor_control_big_zip
+            zip_files(return_names, return_files, save_type="to_disk", file_location=zip_location)
 
             logger.network_logger.info("Sensor Control - The Big Zip Generation Completed")
-            app_cached_variables.creating_the_big_zip = False
         except Exception as error:
             logger.primary_logger.error("Sensor Control - Big Zip Error: " + str(error))
-            app_cached_variables.creating_the_big_zip = False
             app_cached_variables.sc_big_zip_name = ""
+    app_cached_variables.creating_the_big_zip = False
 
 
 def downloads_direct_rsm(address_list, download_type="sensors_download_databases"):
@@ -239,17 +234,9 @@ def create_all_databases_zipped(ip_list):
             database_names.append(db_name)
             sensors_database.append(sensor_data[2])
 
-        write_to_memory = save_to_memory_ok(get_sum_db_sizes(ip_list))
-        if write_to_memory:
-            clear_zip_names()
-            app_cached_variables.sc_databases_zip_in_memory = True
-            app_cached_variables.sc_in_memory_zip = zip_files(database_names, sensors_database)
-        else:
-            app_cached_variables.sc_databases_zip_in_memory = False
-            zip_files(database_names,
-                                            sensors_database,
-                                            save_type="save_to_disk",
-                                            file_location=file_locations.html_sensor_control_databases_zip)
+        app_cached_variables.sc_databases_zip_in_memory = False
+        zip_files(database_names, sensors_database, save_type="save_to_disk",
+                  file_location=file_locations.html_sensor_control_databases_zip)
         app_cached_variables.sc_databases_zip_name = "Multiple_Databases_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Databases Zip Generation Error: " + str(error))

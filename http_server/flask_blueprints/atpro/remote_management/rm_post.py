@@ -20,14 +20,14 @@ from flask import send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, save_to_memory_ok
+from operations_modules.app_generic_functions import thread_function
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_message_page
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_system_report, \
     generate_config_report, generate_readings_report, generate_latency_report
 from http_server.flask_blueprints.atpro.remote_management.rm_post_functions import check_sensor_status_sensor_control, \
     clear_zip_names, generate_html_reports_combo, put_all_reports_zipped_to_cache, downloads_direct_rsm, \
-    create_all_databases_zipped, create_multiple_sensor_logs_zipped, get_sum_db_sizes, create_the_big_zip
+    create_all_databases_zipped, create_multiple_sensor_logs_zipped, create_the_big_zip
 
 
 def remote_management_main_post(request):
@@ -87,12 +87,6 @@ def remote_management_main_post(request):
                         thread_function(create_multiple_sensor_logs_zipped, args=ip_list)
                 elif sc_action == app_config_access.sensor_control_config.radio_create_the_big_zip:
                     logger.network_logger.info("Sensor Control - The Big Zip Generation Started")
-                    databases_size = get_sum_db_sizes(ip_list)
-                    if save_to_memory_ok(databases_size):
-                        clear_zip_names()
-                        app_cached_variables.sc_big_zip_in_memory = True
-                    else:
-                        app_cached_variables.sc_big_zip_in_memory = False
                     app_cached_variables.creating_the_big_zip = True
                     thread_function(create_the_big_zip, args=ip_list)
         else:
@@ -151,12 +145,12 @@ def remote_management_main_post(request):
                 if app_cached_variables.sc_big_zip_name != "":
                     if app_cached_variables.sc_big_zip_in_memory:
                         zip_file = app_cached_variables.sc_in_memory_zip
+                        app_cached_variables.sc_big_zip_name = ""
+                        app_cached_variables.sc_big_zip_in_memory = False
                     else:
                         zip_file = file_locations.html_sensor_control_big_zip
 
                     zip_filename = app_cached_variables.sc_big_zip_name
-                    app_cached_variables.sc_big_zip_name = ""
-                    app_cached_variables.sc_big_zip_in_memory = False
                     return send_file(zip_file, attachment_filename=zip_filename, as_attachment=True)
         except Exception as error:
             logger.network_logger.error("Send Big Zip Error: " + str(error))
