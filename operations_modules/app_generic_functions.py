@@ -27,6 +27,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from operations_modules import file_locations
 
 logging.captureWarnings(True)
 
@@ -179,6 +180,13 @@ class CreateMonitoredThread:
             time.sleep(5)
         self.current_state = "Stopped"
         self.shutdown_thread = False
+
+
+def check_running_as_service():
+    # When installed as a service, it will be running from /opt/kootnet-sensors
+    if file_locations.program_root_dir == "/opt/kootnet-sensors":
+        return True
+    return False
 
 
 def thread_function(function, args=None):
