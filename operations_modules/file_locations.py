@@ -22,6 +22,23 @@ import os
 from getpass import getuser
 
 
+def _get_user():
+    """Try to find the user who called sudo."""
+    try:
+        user = os.environ['USER']
+    except KeyError:
+        # possibly a systemd service. no sudo was used
+        return getuser()
+
+    if user == 'root':
+        try:
+            return os.environ['SUDO_USER']
+        except KeyError:
+            # no sudo was used
+            pass
+    return user
+
+
 def _check_directories():
     create_directories = [
         sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, uploaded_databases_folder,
@@ -51,12 +68,12 @@ try:
 except Exception as error:
     print("Script Location Error: " + str(error))
 
-# Holds the location of required files such as configurations and extra resources
-# Locations change to the user's home directory + /kootnet_data if not run with root
+# Holds the location of databases, configurations and extra resources
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
-if os.geteuid() != 0:
-    system_user = str(getuser()).strip()
+# If not running as a service or the root user, locations changes to the user's home directory + /kootnet_data
+if program_root_dir != "/opt/kootnet-sensors" or os.geteuid() != 0:
+    system_user = _get_user()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
     sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
 
