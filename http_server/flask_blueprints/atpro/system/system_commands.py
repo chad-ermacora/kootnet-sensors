@@ -38,9 +38,9 @@ def html_atpro_system_upgrades_power():
 @auth.login_required
 def atpro_upgrade_urls(url_path):
     title = "Function Disabled"
-    message = "This function has been disabled because Kootnet Sensors is not running as a service"
+    message = "Kootnet Sensors must be running as a service with root access"
     msg_page = get_message_page(title, message, full_reload=False)
-    if check_running_as_service():
+    if check_running_as_service() and app_cached_variables.running_with_root:
         title = "Error!"
         message = "An Error occurred"
         system_command = "exit"
