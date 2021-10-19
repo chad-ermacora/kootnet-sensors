@@ -42,8 +42,8 @@ def update_cached_variables():
     if first_run:
         first_run = False
         if not app_cached_variables.running_with_root:
-            click_msg = "The following functions require root access and will not be available - " + \
-                "HW Sensors, Network Configurations"
+            click_msg = "The following functions require root access and will not be available - "
+            click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
             atpro_notifications.add_custom_message("Warning: Not running with root", click_msg=click_msg)
 
     if app_cached_variables.current_platform == "Linux":
