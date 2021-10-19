@@ -33,7 +33,6 @@ from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
-from sensor_modules.system_access import restart_services
 
 html_atpro_system_networking_routes = Blueprint("html_atpro_system_networking_routes", __name__)
 
@@ -77,10 +76,10 @@ def html_atpro_system_ssl():
 @html_atpro_system_networking_routes.route("/atpro/system-ssl-new-self-sign")
 @auth.login_required
 def html_atpro_create_new_self_signed_ssl():
-    message2 = "Once complete, the sensor programs will be restarted. This may take a few minutes ..."
+    message2 = "Restart Kootnet Sensors to create and use the new SSL Certificate"
     os.system("rm -f -r " + file_locations.http_ssl_folder)
-    restart_services()
-    return get_message_page("Creating new Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
+    atpro_notifications.manage_service_restart()
+    return get_message_page("New Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
 
 
 @html_atpro_system_networking_routes.route("/atpro/system-ssl-custom", methods=["POST"])
