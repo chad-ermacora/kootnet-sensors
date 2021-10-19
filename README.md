@@ -66,7 +66,7 @@ Follow the instructions below to install prerequisites.
 
 **Note**: *Kootnet Sensors will not autostart when using this method*  
 **Note**: *Program updates will be disabled*  
-**Note**: *You only need to run steps 1-4 once, to start Kootnet Sensors after that, open a terminal and skip to step 5*
+**Note**: *You only need to run steps 2-4 once, to start Kootnet Sensors after that, follow steps 1 & 5 only*
 
 1. Open a terminal window
 2. Download and extract Kootnet Sensors
