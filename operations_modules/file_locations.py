@@ -42,7 +42,7 @@ def _get_user():
 def _check_directories():
     create_directories = [
         sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, uploaded_databases_folder,
-        sensor_data_dir + "/logs", database_backup_folder, sensor_data_dir + "/scripts", http_ssl_folder
+        log_directory, database_backup_folder, sensor_data_dir + "/scripts", http_ssl_folder
     ]
 
     if os.geteuid() == 0:
