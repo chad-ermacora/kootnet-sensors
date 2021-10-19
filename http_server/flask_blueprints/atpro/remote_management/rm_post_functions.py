@@ -337,25 +337,6 @@ def put_all_reports_zipped_to_cache(ip_list):
     logger.network_logger.info("Sensor Control - Reports Zip Generation Complete")
 
 
-def get_sum_db_sizes(ip_list):
-    """ Gets the size of remote sensors zipped database based on provided IP or DNS addresses (as a list) """
-    databases_size = 0.0
-    try:
-        threads = []
-        for address in ip_list:
-            threads.append(Thread(target=_worker_get_db_size, args=[address]))
-        start_and_wait_threads(threads)
-
-        while not data_queue.empty():
-            db_size = data_queue.get()
-            databases_size += db_size
-            data_queue.task_done()
-    except Exception as error:
-        logger.network_logger.error("Sensor Control - Unable to retrieve Database Sizes Sum: " + str(error))
-    logger.network_logger.debug("Total DB Sizes in MB: " + str(databases_size))
-    return databases_size
-
-
 def _worker_get_db_size(address):
     get_database_size_command = network_commands.sensor_sql_database_size
     try:
