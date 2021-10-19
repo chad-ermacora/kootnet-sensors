@@ -26,6 +26,7 @@ ERROR - Due to a more serious problem, the software has not been able to perform
 CRITICAL - A serious error, indicating that the program itself may be unable to continue running.
 """
 import os
+from datetime import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 from operations_modules import file_locations
@@ -94,25 +95,29 @@ def get_sensor_log(log_file, max_lines=max_log_lines_return):
 def clear_primary_log():
     """ Clears Primary Log. """
     with open(file_locations.primary_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_network_log():
     """ Clears Network Log. """
     with open(file_locations.network_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_sensor_log():
     """ Clears Sensors Log. """
     with open(file_locations.sensors_log, "w") as log_content:
-        log_content.write("")
+        log_content.write(_get_log_cleared_msg())
 
 
 def clear_mqtt_subscriber_log():
     """ Clears MQTT Subscriber Log. """
     with open(file_locations.mqtt_subscriber_log, "w") as log_content:
         log_content.write("")
+
+
+def _get_log_cleared_msg():
+    return datetime.utcnow().strftime("Log Cleared on %Y-%m-%d %H:%M:%S UTC0") + "\n"
 
 
 # Initialize 3 Logs, Primary, Network and Sensors
