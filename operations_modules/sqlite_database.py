@@ -267,13 +267,13 @@ def get_main_db_first_last_date():
                 "Max(" + str(database_variables.all_tables_datetime) + ") AS Last " + \
                 "FROM " + str(database_variables.table_interval)
 
-    textbox_db_dates = "DataBase Error"
+    textbox_db_dates = "Database Access Error: "
     try:
-        db_datetime_column = sql_execute_get_data(sql_query)
-        for item in db_datetime_column:
-            textbox_db_dates = item[0] + " < -- > " + item[-1]
+        first_date, last_date = sql_execute_get_data(sql_query)[0]
+        textbox_db_dates = str(first_date) + " < -- > " + str(last_date)
     except Exception as error:
-        logger.sensors_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))
+        logger.primary_logger.error("Get First & Last DateTime from Interval Recording DB Failed: " + str(error))
+        textbox_db_dates += str(error)
     return textbox_db_dates
 
 
