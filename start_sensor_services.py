@@ -151,10 +151,11 @@ except Exception as error:
 
 try:
     # Start Automatic Upgrades Server
-    if check_running_as_service():
+    if check_running_as_service() and running_with_root:
         start_automatic_upgrades_server()
     else:
-        logger.primary_logger.info("Automatic Upgrades Server Disabled - Kootnet Sensors not running as a service")
+        log_msg = "Kootnet Sensors must be running as a service with root privileges"
+        logger.primary_logger.info("Automatic Upgrades Server Disabled - " + log_msg)
 except Exception as error:
     logger.primary_logger.critical("Automatic Upgrades Server Error: " + str(error))
 
