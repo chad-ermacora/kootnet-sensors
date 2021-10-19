@@ -152,11 +152,17 @@ def atpro_raw_config_urls(url_path):
         return _config_to_html_view(config_name, file_locations.luftdaten_config, config_content)
     elif url_path == "config-networking":
         config_name = "<i class='fas fa-network-wired'></i> Networking (dhcpcd.conf)"
-        config_content = get_file_content(file_locations.dhcpcd_config_file)
+        if running_with_root:
+            config_content = get_file_content(file_locations.dhcpcd_config_file)
+        else:
+            config_content = "Access Denied"
         return _config_to_html_view(config_name, file_locations.dhcpcd_config_file, config_content, split_by_line=False)
     elif url_path == "config-wifi":
         config_name = "<i class='fas fa-wifi'></i> WiFi"
-        config_content = get_file_content(file_locations.wifi_config_file)
+        if running_with_root:
+            config_content = get_file_content(file_locations.wifi_config_file)
+        else:
+            config_content = "Access Denied"
         return _config_to_html_view(config_name, file_locations.wifi_config_file, config_content, split_by_line=False)
     elif url_path == "config-sc":
         config_name = "<i class='fas fa-project-diagram'></i> Remote Management Configuration"

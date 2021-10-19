@@ -61,7 +61,10 @@ def update_cached_variables():
 
         if app_cached_variables.operating_system_name[:8] == "Raspbian":
             try:
-                wifi_config_lines = get_file_content(file_locations.wifi_config_file).split("\n")
+                if app_cached_variables.running_with_root:
+                    wifi_config_lines = get_file_content(file_locations.wifi_config_file).split("\n")
+                else:
+                    wifi_config_lines = ""
                 app_cached_variables.wifi_country_code = network_wifi.get_wifi_country_code(wifi_config_lines)
                 app_cached_variables.wifi_ssid = network_wifi.get_wifi_ssid(wifi_config_lines)
                 app_cached_variables.wifi_security_type = network_wifi.get_wifi_security_type(wifi_config_lines)
