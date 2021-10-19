@@ -208,6 +208,8 @@ def get_altitude(get_latency=False):
         sensor_reading = sensors_direct.pimoroni_bmp280_a.altitude()
     elif app_config_access.installed_sensors.pimoroni_enviro:
         sensor_reading = sensors_direct.pimoroni_enviro_a.altitude()
+    elif app_config_access.installed_sensors.kootnet_dummy_sensor:
+        sensor_reading = sensors_direct.dummy_sensors.altitude()
     else:
         sensor_reading = _get_self_calculated_altitude()
         if sensor_reading is None:
@@ -272,7 +274,7 @@ def get_dew_point(get_latency=False):
         alpha = ((variable_a * env_temp) / (variable_b + env_temp)) + math.log(humidity / 100.0)
         dew_point = (variable_b * alpha) / (variable_a - alpha)
     except Exception as error:
-        logger.sensors_logger.error("Unable to calculate dew point: " + str(error))
+        logger.sensors_logger.warning("Unable to calculate dew point: " + str(error))
         dew_point = 0.0
     return {db_v.dew_point: round(dew_point, 5)}
 
