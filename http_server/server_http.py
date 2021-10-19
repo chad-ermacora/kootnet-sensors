@@ -71,7 +71,6 @@ class CreateSensorHTTP:
     def __init__(self):
         app = Flask(__name__)
         Compress(app)
-        server_http_auth.set_http_auth_from_file()
 
         app.register_blueprint(html_functional_routes)
         app.register_blueprint(html_basic_routes)

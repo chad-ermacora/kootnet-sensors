@@ -23,10 +23,12 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content
+from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content, \
+    check_running_as_service
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
     run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
+from http_server.server_http_auth import set_http_auth_from_file
 
 
 def run_program_start_checks():
@@ -35,8 +37,9 @@ def run_program_start_checks():
     Sets file permissions, checks the database and generates the HTTPS certificates if not present.
     """
     logger.primary_logger.info(" -- Pre-Start Initializations Started")
-    _check_ssl_files()
     _check_sensor_id()
+    _check_ssl_files()
+    set_http_auth_from_file()
     _set_file_permissions()
 
     if software_version.old_version != software_version.version:
@@ -73,17 +76,22 @@ def _check_sensor_id():
 
 def _set_file_permissions():
     """ Re-sets program file permissions. """
-    _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, 0o644)
-    _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, 0o644)
+    file_rights_data = 0o666
+    file_rights_sensitive = 0o666
+    if check_running_as_service():
+        file_rights_data = 0o644
+        file_rights_sensitive = 0o600
+
     # Disable logging due to error thrown in Dev Environment
-    _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755, log_errors=False)
+    _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
+    _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, file_rights_sensitive)
+    _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, file_rights_data)
     _change_permissions_recursive(file_locations.sensor_data_dir + "/scripts", 0o755, 0o755)
-    _change_permissions_recursive(file_locations.http_ssl_folder, 0o755, 0o600)
-    if os.path.isfile(file_locations.http_auth):
-        os.chmod(file_locations.http_auth, 0o600)
+    _change_permissions_recursive(file_locations.log_directory, 0o755, file_rights_data)
+    _change_permissions_recursive(file_locations.http_ssl_folder, 0o755, file_rights_sensitive)
 
 
-def _change_permissions_recursive(path, folder_mode, files_mode, log_errors=True):
+def _change_permissions_recursive(path, folder_mode, files_mode):
     root = ""
     files = []
     try:
@@ -94,10 +102,7 @@ def _change_permissions_recursive(path, folder_mode, files_mode, log_errors=True
         for file in [os.path.join(root, f) for f in files]:
             os.chmod(file, files_mode)
     except Exception as error:
-        if log_errors:
-            logger.primary_logger.error("Error setting permissions: " + str(error))
-        else:
-            logger.primary_logger.debug("Error setting permissions: " + str(error))
+        logger.primary_logger.debug("Error setting permissions: " + str(error))
 
 
 def _check_ssl_files():
