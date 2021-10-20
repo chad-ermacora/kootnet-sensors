@@ -23,8 +23,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content, \
-    check_running_as_service
+from operations_modules.app_generic_functions import write_file_to_disk, thread_function, get_file_content
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
     run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
@@ -78,7 +77,7 @@ def _set_file_permissions():
     """ Re-sets program file permissions. """
     file_rights_data = 0o666
     file_rights_sensitive = 0o666
-    if check_running_as_service():
+    if app_cached_variables.running_as_service:
         file_rights_data = 0o644
         file_rights_sensitive = 0o600
 

@@ -20,7 +20,7 @@ import os
 from flask import Blueprint, request, render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, check_running_as_service
+from operations_modules.app_generic_functions import thread_function
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
@@ -40,7 +40,7 @@ def atpro_upgrade_urls(url_path):
     title = "Function Disabled"
     message = "Kootnet Sensors must be running as a service with root access"
     msg_page = get_message_page(title, message, full_reload=False)
-    if check_running_as_service() and app_cached_variables.running_with_root:
+    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
         title = "Error!"
         message = "An Error occurred"
         system_command = "exit"

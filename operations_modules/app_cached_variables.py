@@ -17,7 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from platform import system
-from os import geteuid
+from os import geteuid, path
 
 
 class CreateNetworkSystemCommands:
@@ -333,8 +333,22 @@ bash_commands = {"inkupg": "bash /opt/kootnet-sensors/scripts/update_kootnet-sen
 # This helps lessen disk reads by caching commonly used variables
 current_platform = system()
 running_with_root = True
-if geteuid() != 0:
+if geteuid():
+    # root has UID of 0
     running_with_root = False
+running_as_service = False
+
+program_root_dir = ""
+try:
+    split_location = path.dirname(path.realpath(__file__)).split("/")[:-1]
+    for section in split_location:
+        program_root_dir += "/" + str(section)
+    program_root_dir = program_root_dir[1:]
+except Exception as error:
+    print("App Cached Variables - Script Location Error: " + str(error))
+
+if program_root_dir == "/opt/kootnet-sensors":
+    running_as_service = True
 operating_system_name = ""
 program_last_updated = ""
 reboot_count = ""
