@@ -78,7 +78,6 @@ def html_atpro_sensor_settings_installed_sensors():
 
     return render_template(
         "ATPro_admin/page_templates/settings/settings-installed-sensors.html",
-        GnuLinux=get_html_checkbox_state(installed_sensors.linux_system),
         KootnetDummySensors=get_html_checkbox_state(installed_sensors.kootnet_dummy_sensor),
         RaspberryPi=get_html_checkbox_state(installed_sensors.raspberry_pi),
         SenseHAT=get_html_checkbox_state(installed_sensors.raspberry_pi_sense_hat),

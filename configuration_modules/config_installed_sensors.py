@@ -43,8 +43,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             "Pimoroni Enviro with Display", "Pimoroni BME280", "Pimoroni MICS6814", "Pimoroni RV3028", "PA1010D GPS"
         ]
 
-        self.no_sensors = True
-
         self.kootnet_dummy_sensor = 0
 
         self.linux_system = 1
@@ -98,9 +96,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         self.__init__(load_from_file=False)
         if running_with_root:
             try:
-                self.linux_system = 0
-                if html_request.form.get("linux_system") is not None:
-                    self.linux_system = 1
                 if html_request.form.get("raspberry_pi") is not None:
                     self.raspberry_pi = 1
                 if html_request.form.get("raspberry_pi_sense_hat") is not None:
@@ -222,9 +217,6 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             self.pimoroni_mics6814 = int(self.config_settings[26])
             self.pimoroni_rv3028 = int(self.config_settings[27])
             self.pimoroni_pa1010d = int(self.config_settings[28])
-            for sensor in self.config_settings:
-                if sensor:
-                    self.no_sensors = False
         except Exception as error:
             logger.primary_logger.debug("Installed Sensors Config: " + str(error))
             self.update_configuration_settings_list()
