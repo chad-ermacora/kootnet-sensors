@@ -37,45 +37,59 @@ class CreateATProMenuNotificationClass:
                                      js_action=js_action)
 
     def manage_service_restart(self):
+        click_msg = "Please Restart Kootnet Sensors"
+        msg = "Program Restart Required"
+        js_action = "NotificationOkay"
+        if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
+            msg = "Program Restart Required<br>Click Here to Restart now"
+            js_action = "NotificationConfirmAction"
+
         if not self._restart_service_enabled:
             self._restart_service_enabled = 1
             restart_service_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
-            msg = "Program Restart Required<br>Click Here to Restart now"
-            self._add_notification_entry([msg, "Restart Program", "/RestartServices", restart_service_datetime])
+            self._add_notification_entry([msg, click_msg, "/RestartServices", restart_service_datetime],
+                                         js_action=js_action)
 
     def manage_system_reboot(self):
+        msg = "System Reboot Required"
+        js_action = "NotificationOkay"
+        if app_cached_variables.running_with_root:
+            msg = "System Reboot Required<br>Click Here to Reboot now"
+            js_action = "NotificationConfirmAction"
+
         if not self._reboot_system_enabled:
             self._reboot_system_enabled = 1
             reboot_system_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
-            msg = "System Reboot Required<br>Click Here to Reboot now"
-            self._add_notification_entry([msg, "Reboot System", "/RebootSystem", reboot_system_datetime])
+            self._add_notification_entry([msg, "Please Reboot System", "/RebootSystem", reboot_system_datetime],
+                                         js_action=js_action)
 
     def check_updates(self):
-        if app_cached_variables.software_update_available and not self._upgrade_program_enabled:
-            self._upgrade_program_enabled = 1
-            current_ver = software_version.CreateRefinedVersion(software_version.version)
-            latest_std_ver = software_version.CreateRefinedVersion(app_cached_variables.standard_version_available)
+        if app_cached_variables.running_with_root and app_cached_variables.running_as_service:
+            if app_cached_variables.software_update_available and not self._upgrade_program_enabled:
+                self._upgrade_program_enabled = 1
+                current_ver = software_version.CreateRefinedVersion(software_version.version)
+                latest_std_ver = software_version.CreateRefinedVersion(app_cached_variables.standard_version_available)
 
-            current_ver_str = current_ver.get_version_string()
-            latest_std_ver_str = latest_std_ver.get_version_string()
-            new_and_current_versions = "<br>Current: " + current_ver_str + " -> New: " + latest_std_ver_str + "<br>"
-            upgrade_url = "/UpgradeOnline"
-            current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
-            update_icon = "fas fa-arrow-alt-circle-up"
-            if latest_std_ver.major_version > current_ver.major_version:
-                msg = "Major Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
-                self._add_notification_entry([msg, "Upgrade Program?", upgrade_url,
-                                             current_datetime], icon=update_icon)
-            elif latest_std_ver.major_version == current_ver.major_version:
-                if latest_std_ver.feature_version > current_ver.feature_version:
-                    msg = "Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
+                current_ver_str = current_ver.get_version_string()
+                latest_std_ver_str = latest_std_ver.get_version_string()
+                new_and_current_versions = "<br>Current: " + current_ver_str + " -> New: " + latest_std_ver_str + "<br>"
+                upgrade_url = "/UpgradeOnline"
+                current_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+                update_icon = "fas fa-arrow-alt-circle-up"
+                if latest_std_ver.major_version > current_ver.major_version:
+                    msg = "Major Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
                     self._add_notification_entry([msg, "Upgrade Program?", upgrade_url,
                                                  current_datetime], icon=update_icon)
-                elif latest_std_ver.feature_version == current_ver.feature_version:
-                    if latest_std_ver.minor_version > current_ver.minor_version:
-                        msg = "Minor Update Available" + new_and_current_versions + "Click Here to update now"
-                        self._add_notification_entry([msg, "Update Program?", upgrade_url,
+                elif latest_std_ver.major_version == current_ver.major_version:
+                    if latest_std_ver.feature_version > current_ver.feature_version:
+                        msg = "Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
+                        self._add_notification_entry([msg, "Upgrade Program?", upgrade_url,
                                                      current_datetime], icon=update_icon)
+                    elif latest_std_ver.feature_version == current_ver.feature_version:
+                        if latest_std_ver.minor_version > current_ver.minor_version:
+                            msg = "Minor Update Available" + new_and_current_versions + "Click Here to update now"
+                            self._add_notification_entry([msg, "Update Program?", upgrade_url,
+                                                         current_datetime], icon=update_icon)
 
     def _add_notification_entry(self, options_list, js_action="NotificationConfirmAction", icon="fas fa-info-circle"):
         return_text = _html_confirm_action_notification_text.replace("{{ NotificationText }}", options_list[0])
