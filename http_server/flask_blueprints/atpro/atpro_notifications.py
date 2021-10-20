@@ -32,22 +32,23 @@ class CreateATProMenuNotificationClass:
         self._reboot_system_enabled = 0
         self._upgrade_program_enabled = 0
 
-    def add_custom_message(self, msg, click_msg):
-        self._add_notification_entry(msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M"))
+    def add_custom_message(self, msg, click_msg, js_action="NotificationOkay"):
+        self._add_notification_entry([msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
+                                     js_action=js_action)
 
     def manage_service_restart(self):
         if not self._restart_service_enabled:
             self._restart_service_enabled = 1
             restart_service_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
             msg = "Program Restart Required<br>Click Here to Restart now"
-            self._add_notification_entry(msg, "Restart Program", "/RestartServices", restart_service_datetime)
+            self._add_notification_entry([msg, "Restart Program", "/RestartServices", restart_service_datetime])
 
     def manage_system_reboot(self):
         if not self._reboot_system_enabled:
             self._reboot_system_enabled = 1
             reboot_system_datetime = datetime.utcnow().strftime("%Y-%m-%d %H:%M")
             msg = "System Reboot Required<br>Click Here to Reboot now"
-            self._add_notification_entry(msg, "Reboot System", "/RebootSystem", reboot_system_datetime)
+            self._add_notification_entry([msg, "Reboot System", "/RebootSystem", reboot_system_datetime])
 
     def check_updates(self):
         if app_cached_variables.software_update_available and not self._upgrade_program_enabled:
@@ -63,24 +64,25 @@ class CreateATProMenuNotificationClass:
             update_icon = "fas fa-arrow-alt-circle-up"
             if latest_std_ver.major_version > current_ver.major_version:
                 msg = "Major Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
-                self._add_notification_entry(msg, "Upgrade Program?", upgrade_url,
-                                             current_datetime, icon=update_icon)
+                self._add_notification_entry([msg, "Upgrade Program?", upgrade_url,
+                                             current_datetime], icon=update_icon)
             elif latest_std_ver.major_version == current_ver.major_version:
                 if latest_std_ver.feature_version > current_ver.feature_version:
                     msg = "Upgrade Available" + new_and_current_versions + "Click Here to Upgrade now"
-                    self._add_notification_entry(msg, "Upgrade Program?", upgrade_url,
-                                                 current_datetime, icon=update_icon)
+                    self._add_notification_entry([msg, "Upgrade Program?", upgrade_url,
+                                                 current_datetime], icon=update_icon)
                 elif latest_std_ver.feature_version == current_ver.feature_version:
                     if latest_std_ver.minor_version > current_ver.minor_version:
                         msg = "Minor Update Available" + new_and_current_versions + "Click Here to update now"
-                        self._add_notification_entry(msg, "Update Program?", upgrade_url,
-                                                     current_datetime, icon=update_icon)
+                        self._add_notification_entry([msg, "Update Program?", upgrade_url,
+                                                     current_datetime], icon=update_icon)
 
-    def _add_notification_entry(self, notify_text, msg_prompt, msg_url, datetime_entry, icon="fas fa-info-circle"):
-        return_text = _html_notification_text.replace("{{ NotificationText }}", notify_text)
-        return_text = return_text.replace("{{ DateTime }}", datetime_entry)
-        return_text = return_text.replace("{{ MessagePrompt }}", msg_prompt)
-        return_text = return_text.replace("{{ URL }}", msg_url)
+    def _add_notification_entry(self, options_list, js_action="NotificationConfirmAction", icon="fas fa-info-circle"):
+        return_text = _html_confirm_action_notification_text.replace("{{ NotificationText }}", options_list[0])
+        return_text = return_text.replace("{{ MessagePrompt }}", options_list[1])
+        return_text = return_text.replace("{{ URL }}", options_list[2])
+        return_text = return_text.replace("{{ DateTime }}", options_list[3])
+        return_text = return_text.replace("{{ JSAction }}", js_action)
         return_text = return_text.replace("{{ Icon }}", icon)
 
         notification_name = "notification" + str(len(self._notifications_dic))
@@ -92,9 +94,9 @@ class CreateATProMenuNotificationClass:
             self.notification_str += self._notifications_dic[notification]
 
 
-_html_notification_text = """
+_html_confirm_action_notification_text = """
 <li class="dropdown-menu-item">
-    <a onclick="NotificationConfirmAction('{{ MessagePrompt }}', '{{ URL }}')" class="dropdown-menu-link">
+    <a onclick="{{ JSAction }}('{{ MessagePrompt }}', '{{ URL }}')" class="dropdown-menu-link">
         <div>
             <i class="{{ Icon }}"></i>
         </div>
