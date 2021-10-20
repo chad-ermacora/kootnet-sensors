@@ -17,10 +17,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-from os import geteuid
 from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules.app_cached_variables import running_with_root
 from operations_modules.app_generic_functions import CreateGeneralConfiguration
 
 
@@ -96,68 +96,69 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
         logger.network_logger.debug("Starting HTML Installed Sensors Update Check")
 
         self.__init__(load_from_file=False)
-        try:
-            self.linux_system = 0
-            if html_request.form.get("linux_system") is not None:
-                self.linux_system = 1
-            if html_request.form.get("raspberry_pi") is not None:
-                self.raspberry_pi = 1
-            if html_request.form.get("raspberry_pi_sense_hat") is not None:
-                self.raspberry_pi_sense_hat = 1
-            if html_request.form.get("pimoroni_bh1745") is not None:
-                self.pimoroni_bh1745 = 1
-            if html_request.form.get("pimoroni_as7262") is not None:
-                self.pimoroni_as7262 = 1
-            if html_request.form.get("pimoroni_mcp9600") is not None:
-                self.pimoroni_mcp9600 = 1
-            if html_request.form.get("pimoroni_bmp280") is not None:
-                self.pimoroni_bmp280 = 1
-            if html_request.form.get("pimoroni_bme280") is not None:
-                self.pimoroni_bme280 = 1
-            if html_request.form.get("pimoroni_bme680") is not None:
-                self.pimoroni_bme680 = 1
-            if html_request.form.get("pimoroni_enviro") is not None:
-                self.pimoroni_enviro = 1
-            if html_request.form.get("pimoroni_enviro2") is not None:
-                self.pimoroni_enviro2 = 1
-            if html_request.form.get("pimoroni_enviroplus") is not None:
-                self.pimoroni_enviroplus = 1
-            if html_request.form.get("pimoroni_sgp30") is not None:
-                self.pimoroni_sgp30 = 1
-            if html_request.form.get("pimoroni_pms5003") is not None:
-                self.pimoroni_pms5003 = 1
-            if html_request.form.get("pimoroni_msa301") is not None:
-                self.pimoroni_msa301 = 1
-            if html_request.form.get("pimoroni_lsm303d") is not None:
-                self.pimoroni_lsm303d = 1
-            if html_request.form.get("pimoroni_icm20948") is not None:
-                self.pimoroni_icm20948 = 1
-            if html_request.form.get("pimoroni_vl53l1x") is not None:
-                self.pimoroni_vl53l1x = 1
-            if html_request.form.get("pimoroni_ltr_559") is not None:
-                self.pimoroni_ltr_559 = 1
-            if html_request.form.get("pimoroni_veml6075") is not None:
-                self.pimoroni_veml6075 = 1
-            if html_request.form.get("pimoroni_mics6814") is not None:
-                self.pimoroni_mics6814 = 1
-            if html_request.form.get("pimoroni_matrix_11x7") is not None:
-                self.pimoroni_matrix_11x7 = 1
-            if html_request.form.get("pimoroni_st7735") is not None:
-                self.pimoroni_st7735 = 1
-            if html_request.form.get("pimoroni_mono_oled_luma") is not None:
-                self.pimoroni_mono_oled_luma = 1
-            if html_request.form.get("pimoroni_rv3028") is not None:
-                self.pimoroni_rv3028 = 1
-            if html_request.form.get("pimoroni_pa1010d") is not None:
-                self.pimoroni_pa1010d = 1
-            if html_request.form.get("kootnet_dummy_sensor") is not None:
-                self.kootnet_dummy_sensor = 1
-            if html_request.form.get("sensirion_sps30") is not None:
-                self.sensirion_sps30 = 1
-            if html_request.form.get("w1thermsensor") is not None:
-                self.w1_therm_sensor = 1
-        except Exception as error:
-            logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+        if running_with_root:
+            try:
+                self.linux_system = 0
+                if html_request.form.get("linux_system") is not None:
+                    self.linux_system = 1
+                if html_request.form.get("raspberry_pi") is not None:
+                    self.raspberry_pi = 1
+                if html_request.form.get("raspberry_pi_sense_hat") is not None:
+                    self.raspberry_pi_sense_hat = 1
+                if html_request.form.get("pimoroni_bh1745") is not None:
+                    self.pimoroni_bh1745 = 1
+                if html_request.form.get("pimoroni_as7262") is not None:
+                    self.pimoroni_as7262 = 1
+                if html_request.form.get("pimoroni_mcp9600") is not None:
+                    self.pimoroni_mcp9600 = 1
+                if html_request.form.get("pimoroni_bmp280") is not None:
+                    self.pimoroni_bmp280 = 1
+                if html_request.form.get("pimoroni_bme280") is not None:
+                    self.pimoroni_bme280 = 1
+                if html_request.form.get("pimoroni_bme680") is not None:
+                    self.pimoroni_bme680 = 1
+                if html_request.form.get("pimoroni_enviro") is not None:
+                    self.pimoroni_enviro = 1
+                if html_request.form.get("pimoroni_enviro2") is not None:
+                    self.pimoroni_enviro2 = 1
+                if html_request.form.get("pimoroni_enviroplus") is not None:
+                    self.pimoroni_enviroplus = 1
+                if html_request.form.get("pimoroni_sgp30") is not None:
+                    self.pimoroni_sgp30 = 1
+                if html_request.form.get("pimoroni_pms5003") is not None:
+                    self.pimoroni_pms5003 = 1
+                if html_request.form.get("pimoroni_msa301") is not None:
+                    self.pimoroni_msa301 = 1
+                if html_request.form.get("pimoroni_lsm303d") is not None:
+                    self.pimoroni_lsm303d = 1
+                if html_request.form.get("pimoroni_icm20948") is not None:
+                    self.pimoroni_icm20948 = 1
+                if html_request.form.get("pimoroni_vl53l1x") is not None:
+                    self.pimoroni_vl53l1x = 1
+                if html_request.form.get("pimoroni_ltr_559") is not None:
+                    self.pimoroni_ltr_559 = 1
+                if html_request.form.get("pimoroni_veml6075") is not None:
+                    self.pimoroni_veml6075 = 1
+                if html_request.form.get("pimoroni_mics6814") is not None:
+                    self.pimoroni_mics6814 = 1
+                if html_request.form.get("pimoroni_matrix_11x7") is not None:
+                    self.pimoroni_matrix_11x7 = 1
+                if html_request.form.get("pimoroni_st7735") is not None:
+                    self.pimoroni_st7735 = 1
+                if html_request.form.get("pimoroni_mono_oled_luma") is not None:
+                    self.pimoroni_mono_oled_luma = 1
+                if html_request.form.get("pimoroni_rv3028") is not None:
+                    self.pimoroni_rv3028 = 1
+                if html_request.form.get("pimoroni_pa1010d") is not None:
+                    self.pimoroni_pa1010d = 1
+                if html_request.form.get("sensirion_sps30") is not None:
+                    self.sensirion_sps30 = 1
+                if html_request.form.get("w1thermsensor") is not None:
+                    self.w1_therm_sensor = 1
+            except Exception as error:
+                logger.network_logger.warning("Installed Sensors Configuration Error: " + str(error))
+        if html_request.form.get("kootnet_dummy_sensor") is not None:
+            self.kootnet_dummy_sensor = 1
         self.update_configuration_settings_list()
         self.load_from_file = True
 
@@ -170,7 +171,7 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
             if int(setting):
                 new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
-            if not skip_root_check and geteuid():
+            if not skip_root_check and not running_with_root:
                 return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
             return new_file_content[:-4]
         return "N/A"
