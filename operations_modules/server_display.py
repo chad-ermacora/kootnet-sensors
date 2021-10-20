@@ -31,14 +31,13 @@ def start_display_server():
     text_name = "Display"
     function = _display_server
     app_cached_variables.mini_display_thread = CreateMonitoredThread(function, thread_name=text_name)
-    if not app_config_access.display_config.enable_display:
-        logger.primary_logger.debug("Display Disabled in Primary Configuration")
-        app_cached_variables.mini_display_thread.current_state = "Disabled"
 
 
 def _display_server():
     sleep(5)
     app_cached_variables.mini_display_thread.current_state = "Disabled"
+    if not app_config_access.display_config.enable_display:
+        logger.primary_logger.debug("Display Disabled in Primary Configuration")
     while not app_config_access.display_config.enable_display:
         sleep(5)
     app_cached_variables.mini_display_thread.current_state = "Running"

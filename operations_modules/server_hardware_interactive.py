@@ -33,8 +33,7 @@ def start_hardware_interactive_server():
 
 def _hardware_interactive_server():
     """ If available starts additional hardware Interaction thread. """
-    if app_config_access.installed_sensors.raspberry_pi_sense_hat:
-        logger.primary_logger.info(" -- Raspberry Pi SenseHAT Interactive Server Started")
-        thread_function(sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
-    while True:
-        sleep(900)
+    while not app_config_access.installed_sensors.raspberry_pi_sense_hat:
+        sleep(15)
+    logger.primary_logger.info(" -- Raspberry Pi SenseHAT Interactive Server Started")
+    thread_function(sensors_direct.rp_sense_hat_a.start_joy_stick_commands)
