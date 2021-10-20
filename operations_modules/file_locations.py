@@ -21,6 +21,11 @@
 import os
 from getpass import getuser
 
+running_with_root = True
+if os.geteuid():
+    # root has UID of 0
+    running_with_root = False
+
 
 def _get_user():
     """Try to find the user who called sudo."""
@@ -45,7 +50,7 @@ def _check_directories():
         log_directory, database_backup_folder, sensor_data_dir + "/scripts", http_ssl_folder
     ]
 
-    if os.geteuid() == 0:
+    if running_with_root:
         current_directory = ""
         for found_dir in mosquitto_configuration.split("/")[1:-1]:
             current_directory += "/" + str(found_dir)
@@ -66,13 +71,13 @@ try:
         program_root_dir += "/" + str(section)
     program_root_dir = program_root_dir[1:]
 except Exception as error:
-    print("Script Location Error: " + str(error))
+    print("File Locations - Script Location Error: " + str(error))
 
 # Holds the location of databases, configurations and extra resources
 sensor_data_dir = "/home/kootnet_data"
 sensor_config_dir = "/etc/kootnet"
 # If not running as a service or the root user, locations changes to the user's home directory + /kootnet_data
-if program_root_dir != "/opt/kootnet-sensors" or os.geteuid() != 0:
+if program_root_dir != "/opt/kootnet-sensors" or not running_with_root:
     system_user = _get_user()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
     sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
