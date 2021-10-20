@@ -36,15 +36,7 @@ from configuration_modules.config_check_ins import CreateCheckinConfiguration
 
 logger.primary_logger.info(" -- Loading Configurations")
 # Make sure all hardware based sensors are marked as not installed if lacking root permissions
-if running_with_root:
-    installed_sensors = CreateInstalledSensorsConfiguration()
-else:
-    installed_sensors = CreateInstalledSensorsConfiguration(load_from_file=False)
-    if CreateInstalledSensorsConfiguration().kootnet_dummy_sensor:
-        installed_sensors.kootnet_dummy_sensor = 1
-        installed_sensors.no_sensors = False
-        installed_sensors.update_configuration_settings_list()
-
+installed_sensors = CreateInstalledSensorsConfiguration()
 primary_config = CreatePrimaryConfiguration()
 interval_recording_config = CreateIntervalRecordingConfiguration()
 trigger_high_low = CreateTriggerHighLowConfiguration()
