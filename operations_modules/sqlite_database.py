@@ -19,7 +19,7 @@
 import sqlite3
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules.app_cached_variables import database_variables
+from operations_modules.app_cached_variables import database_variables as db_v
 
 
 class CreateOtherDataEntry:
@@ -74,6 +74,7 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
     return sql_column_data
 
 
+# TODO: For all DB checks (Main/Checkin/MQTT) verify it's that type of DB (Use special DB table with info?)
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
     try:
@@ -83,11 +84,11 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
         sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
-        columns = [database_variables.sensor_check_in_version,
-                   database_variables.sensor_uptime,
-                   database_variables.sensor_check_in_installed_sensors,
-                   database_variables.sensor_check_in_primary_log,
-                   database_variables.sensor_check_in_sensors_log]
+        columns = [db_v.kootnet_sensors_version,
+                   db_v.sensor_uptime,
+                   db_v.sensor_check_in_installed_sensors,
+                   db_v.sensor_check_in_primary_log,
+                   db_v.sensor_check_in_sensors_log]
         for sensor_id in sensor_ids:
             cleaned_id = str(sensor_id[0]).strip()
             for column in columns:
@@ -118,7 +119,7 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
         for sensor_string in mqtt_sensor_strings:
             cleaned_id = str(sensor_string[0]).strip()
 
-            for column in database_variables.get_sensor_columns_list():
+            for column in db_v.get_sensor_columns_list():
                 try:
                     add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
                     db_cursor.execute(add_columns_sql)
@@ -143,24 +144,24 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
 
-        create_table_and_datetime(database_variables.table_interval, db_cursor)
-        create_table_and_datetime(database_variables.table_trigger, db_cursor)
-        for column in database_variables.get_sensor_columns_list():
-            interval_response = check_sql_table_and_column(database_variables.table_interval, column, db_cursor)
-            trigger_response = check_sql_table_and_column(database_variables.table_trigger, column, db_cursor)
+        create_table_and_datetime(db_v.table_interval, db_cursor)
+        create_table_and_datetime(db_v.table_trigger, db_cursor)
+        for column in db_v.get_sensor_columns_list():
+            interval_response = check_sql_table_and_column(db_v.table_interval, column, db_cursor)
+            trigger_response = check_sql_table_and_column(db_v.table_trigger, column, db_cursor)
             for response in [interval_response, trigger_response]:
                 if response:
                     columns_created += 1
                 else:
                     columns_already_made += 1
-        if check_sql_table_and_column(database_variables.table_trigger, database_variables.trigger_state, db_cursor):
+        if check_sql_table_and_column(db_v.table_trigger, db_v.trigger_state, db_cursor):
             columns_created += 1
         else:
             columns_already_made += 1
 
-        create_table_and_datetime(database_variables.table_other, db_cursor)
-        for column_other in database_variables.get_other_columns_list():
-            other_response = check_sql_table_and_column(database_variables.table_other, column_other, db_cursor)
+        create_table_and_datetime(db_v.table_other, db_cursor)
+        for column_other in db_v.get_other_columns_list():
+            other_response = check_sql_table_and_column(db_v.table_other, column_other, db_cursor)
             if other_response:
                 columns_created += 1
             else:
@@ -257,15 +258,15 @@ def get_one_db_entry(table_name, column_name, order="DESC", database=file_locati
     Default Options: order="DESC", database=file_locations.sensor_database.
     """
     sql_query = "SELECT " + column_name + " FROM '" + table_name + "' WHERE " \
-                + column_name + " != '' ORDER BY " + database_variables.all_tables_datetime + " " + order + " LIMIT 1;"
+                + column_name + " != '' ORDER BY " + db_v.all_tables_datetime + " " + order + " LIMIT 1;"
     return get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database))
 
 
 def get_main_db_first_last_date():
     """ Returns First and Last recorded date in the SQL Database as a String. """
-    sql_query = "SELECT Min(" + str(database_variables.all_tables_datetime) + ") AS First, " + \
-                "Max(" + str(database_variables.all_tables_datetime) + ") AS Last " + \
-                "FROM " + str(database_variables.table_interval)
+    sql_query = "SELECT Min(" + str(db_v.all_tables_datetime) + ") AS First, " + \
+                "Max(" + str(db_v.all_tables_datetime) + ") AS Last " + \
+                "FROM " + str(db_v.table_interval)
 
     textbox_db_dates = "Database Access Error: "
     try:
