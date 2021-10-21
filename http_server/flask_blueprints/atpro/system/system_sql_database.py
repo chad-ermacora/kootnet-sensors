@@ -161,27 +161,27 @@ def html_atpro_sensor_settings_database_uploads():
                 new_db_name = get_clean_db_name(str(request.form.get("UploadDatabaseName")).strip())
                 if upload_file_name.split(".")[-1] == "zip":
                     uploaded_file.save(zip_location)
-                    system_thread = Thread(target=_db_upload_zip_worker, args=(zip_location, new_db_name))
+                    system_thread = Thread(target=_unzip_to_upload_folder, args=(zip_location, False))
+                    system_thread.daemon = True
+                    system_thread.start()
+                elif upload_file_name.split(".")[-1] in sqlite_valid_extensions_list:
+                    save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
+                    uploaded_file.save(save_sqlite_to_file)
+                    system_thread = Thread(target=_db_upload_raw_worker, args=(save_sqlite_to_file,))
                     system_thread.daemon = True
                     system_thread.start()
                 else:
-                    save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
-                    uploaded_file.save(save_sqlite_to_file)
-                    system_thread = Thread(target=_db_upload_raw_worker, args=save_sqlite_to_file)
-                    system_thread.daemon = True
-                    system_thread.start()
+                    logger.network_logger.error("Upload Database: Invalid extension on uploaded file")
         elif button_pressed == "replace":
             selected_database = str(request.form.get("DatabaseReplacementSelection"))
             uploaded_file = request.files["command_data"]
-            temp_db_location = file_locations.sensor_data_dir + "/upload_test.sqlite"
+            temp_db_location = file_locations.sensor_data_dir + "/upload_test " + str(randint(111, 999)) + ".sqlite"
             save_db_to = temp_db_location + ".invalid"
             backup_file_name = "_Invalid"
             database_structure_check = check_main_database_structure
-            table_check = None
             if selected_database == "MainDatabase":
                 backup_file_name = "_Main_Database"
                 save_db_to = file_locations.sensor_database
-                table_check = app_cached_variables.database_variables.table_interval
             elif selected_database == "MQTTSubscriberDatabase":
                 backup_file_name = "_MQTT_Database"
                 save_db_to = file_locations.mqtt_subscriber_database
@@ -194,69 +194,139 @@ def html_atpro_sensor_settings_database_uploads():
             if uploaded_file is not None:
                 if uploaded_file.filename.split(".")[-1] == "zip":
                     uploaded_file.save(zip_location)
-                    system_thread = Thread(target=_db_replacement_zip_worker,
-                                           args=(save_db_to, zip_location, backup_file_name, database_structure_check))
+                    system_thread = Thread(target=_unzip_and_replace_database,
+                                           args=(zip_location, save_db_to, backup_file_name, database_structure_check))
+                    system_thread.daemon = True
+                    system_thread.start()
+                elif uploaded_file.filename.split(".")[-1] in sqlite_valid_extensions_list:
+                    uploaded_file.save(temp_db_location)
+                    system_thread = Thread(target=_db_replacement_raw_worker,
+                                           args=(temp_db_location, save_db_to,
+                                                 backup_file_name, database_structure_check))
                     system_thread.daemon = True
                     system_thread.start()
                 else:
-                    uploaded_filename_extension = uploaded_file.filename.split(".")[-1]
-                    if uploaded_filename_extension in sqlite_valid_extensions_list:
-                        uploaded_file.save(temp_db_location)
-                        system_thread = Thread(target=_db_replacement_raw_worker,
-                                               args=(temp_db_location, table_check, save_db_to,
-                                                     backup_file_name, database_structure_check))
-                        system_thread.daemon = True
-                        system_thread.start()
+                    logger.network_logger.error("Upload Database: Invalid extension on uploaded file")
             else:
                 logger.network_logger.error("Database Upload: No File Uploaded")
         return_msg = "Database(s) Uploaded"
-        db_check_msg = "Check logs for more details"
+        db_check_msg = "Database(s) are being processed, check logs for more details"
         return get_message_page(return_msg, db_check_msg, page_url="sensor-system", skip_menu_select=True)
     return render_template("ATPro_admin/page_templates/system/system-db-uploads.html")
 
 
-def _db_upload_zip_worker(zip_location, new_db_name):
-    database_locations_list = _unzip_databases(zip_location, new_db_name)
-    if len(database_locations_list) == 0:
-        logger.network_logger.error("Database Upload: No Valid Database Found in Zip")
+def _unzip_to_upload_folder(zip_location, overwrite):
+    logger.network_logger.info("Database Upload Processing ...")
+    return_database_locations_list = []
+    try:
+        with zipfile.ZipFile(zip_location, "r") as temp_zip:
+            zip_file_infos = temp_zip.infolist()
+            for zip_info in zip_file_infos:
+                if zip_info.filename.split(".")[-1] in sqlite_valid_extensions_list:
+                    db_name_in_zip = zip_info.filename
+                    db_path_and_name = uploaded_databases_folder + "/" + db_name_in_zip
+                    if not os.path.isfile(db_path_and_name):
+                        temp_zip.extract(zip_info, path=uploaded_databases_folder)
+                        if validate_sqlite_database(db_path_and_name):
+                            return_database_locations_list.append(db_path_and_name)
+                        else:
+                            os.remove(db_path_and_name)
+                            log_msg = "Upload Database - Invalid Database found in Zip: "
+                            logger.network_logger.warning(log_msg + db_name_in_zip)
+                    else:
+                        log_msg = "Database " + db_path_and_name + " already exists, skipping database"
+                        if overwrite:
+                            log_msg = "Database " + db_path_and_name + " was overwritten"
+                            os.remove(db_path_and_name)
+                            temp_zip.extract(zip_info, path=uploaded_databases_folder)
+                        logger.network_logger.info(log_msg)
+    except Exception as error:
+        logger.network_logger.error("Database Upload: " + str(error))
+    if os.path.isfile(zip_location):
+        os.remove(zip_location)
+    app_cached_variables.uploaded_databases_list = get_list_of_filenames_in_dir(uploaded_databases_folder)
+    if len(return_database_locations_list):
+        for db_location in return_database_locations_list:
+            _set_file_permissions(db_location)
+            logger.network_logger.info("Database Upload " + db_location + " Okay")
     else:
-        logger.network_logger.info("Database Upload " + new_db_name + " Okay")
+        logger.network_logger.error("No Databases Uploaded: Invalid Database(s) or Database name(s) already exists")
+    logger.network_logger.info("Database Upload Complete")
+
+
+def _unzip_and_replace_database(zip_location, db_location, backup_file_name, database_structure_check):
+    return_database_locations_list = []
+    logger.network_logger.info("Database Replacement Processing ...")
+    try:
+        with zipfile.ZipFile(zip_location, "r") as temp_zip:
+            zip_file_infos = temp_zip.infolist()
+            zip_info = None
+            for tmp_zip_info in zip_file_infos:
+                if tmp_zip_info.filename.split(".")[-1] in sqlite_valid_extensions_list:
+                    return_database_locations_list.append(db_location)
+                    zip_info = tmp_zip_info
+            if len(return_database_locations_list) == 1:
+                tmp_db_name = "temp_up" + str(randint(1111, 99999)) + ".sqlite"
+                tmp_db_full_path_name = uploaded_databases_folder + "/" + tmp_db_name
+                if os.path.isfile(tmp_db_full_path_name):
+                    os.remove(tmp_db_full_path_name)
+                zip_info.filename = tmp_db_name
+                temp_zip.extract(zip_info, path=uploaded_databases_folder)
+                if database_structure_check(tmp_db_full_path_name):
+                    _zip_and_delete_database(db_location, backup_file_name)
+                    zip_info.filename = db_location.split("/")[-1]
+                    temp_zip.extract(zip_info, path=file_locations.sensor_data_dir)
+                    _set_file_permissions(db_location)
+                else:
+                    logger.network_logger.error("Database Replacement - Invalid Database in Zip")
+                    return_database_locations_list = []
+                os.remove(tmp_db_full_path_name)
+            else:
+                logger.network_logger.error("Database Replacement: Zip must only contain 1 database")
+    except Exception as error:
+        logger.network_logger.error("Database Replacement: " + str(error))
+        return_database_locations_list = []
+    if os.path.isfile(zip_location):
+        os.remove(zip_location)
+    app_cached_variables.uploaded_databases_list = get_list_of_filenames_in_dir(uploaded_databases_folder)
+    logger.network_logger.info("Database Replacement Complete")
+    return return_database_locations_list
 
 
 def _db_upload_raw_worker(save_sqlite_to_file):
+    logger.network_logger.info("Database Upload Processing ...")
     if validate_sqlite_database(save_sqlite_to_file):
         uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
         app_cached_variables.uploaded_databases_list = uploaded_db_filenames
+        _set_file_permissions(save_sqlite_to_file)
         logger.network_logger.info("Database Upload " + save_sqlite_to_file + " Okay")
     else:
         os.remove(save_sqlite_to_file)
         logger.network_logger.error("Database Upload: Invalid SQLite3 Database File")
+    logger.network_logger.info("Database Upload Complete")
 
 
-def _db_replacement_zip_worker(save_db_to, zip_location, backup_file_name, database_structure_check):
-    s_db_name = save_db_to.split("/")[-1]
-    sensor_data_dir = file_locations.sensor_data_dir
-    database_locations_list = _unzip_databases(zip_location, s_db_name,
-                                               overwrite=True,
-                                               extract_folder=sensor_data_dir,
-                                               backup_file_name=backup_file_name)
-    if len(database_locations_list) == 0:
-        logger.network_logger.error("Database Upload: No Valid Database Found in Zip")
-    else:
-        database_structure_check()
-        logger.network_logger.info("Database Replacement " + save_db_to + " Complete")
-
-
-def _db_replacement_raw_worker(temp_db_location, table_check, save_db_to, backup_file_name, database_structure_check):
-    if validate_sqlite_database(temp_db_location, check_for_table=table_check):
+def _db_replacement_raw_worker(temp_db_location, save_db_to, backup_file_name, database_structure_check):
+    logger.network_logger.info("Database Replacement Processing ...")
+    if database_structure_check(temp_db_location):
         if _zip_and_delete_database(save_db_to, backup_file_name):
             os.rename(temp_db_location, save_db_to)
-            database_structure_check()
-            logger.network_logger.info("Database Replacement " + save_db_to + " Complete")
+            _set_file_permissions(save_db_to)
+            logger.network_logger.info("Database Replaced " + save_db_to)
         else:
             logger.network_logger.error("Database Backup Failed: Database Replacement Cancelled")
+            os.remove(temp_db_location)
     else:
-        logger.network_logger.error("Database Upload: Invalid SQLite3 Database")
+        logger.network_logger.error("Database Upload: Invalid Database")
+        os.remove(temp_db_location)
+    logger.network_logger.info("Database Replacement Complete")
+
+
+def _set_file_permissions(file_location, file_permissions=0o666):
+    try:
+        os.chmod(file_location, file_permissions)
+    except Exception as error:
+        logger.network_logger.error("Setting file permissions on " + file_location + ": " + str(error))
 
 
 def _get_drop_down_items(file_list):
@@ -282,52 +352,6 @@ def _vacuum_database(selected_database):
         return get_message_page("Database Vacuum Successful", msg, page_url="sensor-system", skip_menu_select=True)
     msg = selected_database + " Database not found"
     return get_message_page("Database Vacuum Failed", msg, page_url="sensor-system", skip_menu_select=True)
-
-
-def _unzip_databases(zip_location, new_db_name, overwrite=False, backup_file_name="_Main_Database",
-                     extract_folder=uploaded_databases_folder):
-    """
-    Takes zip location and new database name as args
-    Optional: overwrite set True will overwrite the provided database name: Default = False
-    Optional: extract_folder is where the database will be extracted to: Default = uploaded_databases_folder
-    Extracts all SQLite3 databases and returns their locations as a list
-    Deletes zip file after completion
-    """
-    save_sqlite_to_file = extract_folder + "/" + new_db_name
-
-    return_database_locations_list = []
-    with zipfile.ZipFile(zip_location, "r") as temp_zip:
-        zip_file_infos = temp_zip.infolist()
-        for zip_info in zip_file_infos:
-            if zip_info.filename.split(".")[-1] in sqlite_valid_extensions_list:
-                db_name_in_zip = zip_info.filename
-                if overwrite and os.path.isfile(save_sqlite_to_file):
-                    zip_info.filename = "upload_test.sqlite"
-                    tmp_database_full_path = extract_folder + "/" + zip_info.filename
-                    if os.path.isfile(tmp_database_full_path):
-                        os.remove(tmp_database_full_path)
-                    temp_zip.extract(zip_info, path=extract_folder)
-                    if validate_sqlite_database(tmp_database_full_path):
-                        _zip_and_delete_database(save_sqlite_to_file, backup_file_name)
-                        os.rename(tmp_database_full_path, save_sqlite_to_file)
-                    else:
-                        return []
-                else:
-                    zip_info.filename = new_db_name
-                    temp_zip.extract(zip_info, path=extract_folder)
-
-                if validate_sqlite_database(save_sqlite_to_file):
-                    return_database_locations_list.append(zip_info.filename)
-                else:
-                    os.remove(save_sqlite_to_file)
-                    log_msg = "Upload Database - Invalid Database found in Zip: "
-                    logger.network_logger.warning(log_msg + db_name_in_zip)
-                new_db_name = get_clean_db_name(new_db_name)
-    if os.path.isfile(zip_location):
-        os.remove(zip_location)
-    backup_db_zip_filenames = get_list_of_filenames_in_dir(file_locations.uploaded_databases_folder)
-    app_cached_variables.uploaded_databases_list = backup_db_zip_filenames
-    return return_database_locations_list
 
 
 def _zip_and_delete_database(database_location, db_save_name):
