@@ -129,7 +129,7 @@ def _get_sensor_html_table_code(sensor_id):
     utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
     sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
     sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
-    sw_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
+    sw_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
     first_contact = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime, order="ASC")
     raw_datetime = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
     last_contact = adjust_datetime(raw_datetime, utc0_hour_offset)
@@ -236,7 +236,7 @@ def _get_sensor_info_string(sensor_id):
                            SensorIP=get_one_db_entry_wrapper(sensor_id, db_v.ip),
                            LastCheckinDate=adjusted_datetime,
                            TotalCheckins=get_sql_element(checkin_count),
-                           SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version),
+                           SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version),
                            SensorUptime=get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime),
                            InstalledSensors=installed_sensors)
 
@@ -254,7 +254,7 @@ def _clear_old_sensor_checkin_data(sensor_id):
     last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
     sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
     sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
-    program_version = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_version)
+    program_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
     installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
     sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
 
@@ -270,7 +270,7 @@ def _clear_old_sensor_checkin_data(sensor_id):
                         db_v.all_tables_datetime + "," + \
                         db_v.sensor_name + "," + \
                         db_v.ip + "," + \
-                        db_v.sensor_check_in_version + "," + \
+                        db_v.kootnet_sensors_version + "," + \
                         db_v.sensor_check_in_installed_sensors + "," + \
                         db_v.sensor_uptime + "," + \
                         db_v.sensor_check_in_primary_log + "," + \

@@ -44,7 +44,7 @@ def remote_sensor_check_ins():
                                 db_v.all_tables_datetime + "," + \
                                 db_v.sensor_name + "," + \
                                 db_v.ip + "," + \
-                                db_v.sensor_check_in_version + "," + \
+                                db_v.kootnet_sensors_version + "," + \
                                 db_v.sensor_check_in_installed_sensors + "," + \
                                 db_v.sensor_uptime + "," + \
                                 db_v.sensor_check_in_primary_log + "," + \
@@ -78,7 +78,7 @@ def check_sensor_checkin_columns(checkin_id):
     create_table_and_datetime(checkin_id, db_cursor)
     check_sql_table_and_column(checkin_id, db_v.sensor_name, db_cursor)
     check_sql_table_and_column(checkin_id, db_v.ip, db_cursor)
-    check_sql_table_and_column(checkin_id, db_v.sensor_check_in_version, db_cursor)
+    check_sql_table_and_column(checkin_id, db_v.kootnet_sensors_version, db_cursor)
     check_sql_table_and_column(checkin_id, db_v.sensor_check_in_installed_sensors, db_cursor)
     check_sql_table_and_column(checkin_id, db_v.sensor_uptime, db_cursor)
     check_sql_table_and_column(checkin_id, db_v.sensor_check_in_primary_log, db_cursor)
