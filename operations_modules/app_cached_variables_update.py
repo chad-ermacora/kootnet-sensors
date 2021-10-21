@@ -19,6 +19,8 @@
 import os
 import psutil
 import socket
+import sqlite3
+from datetime import datetime
 from time import sleep
 import requests
 from operations_modules import logger
@@ -28,9 +30,11 @@ from operations_modules.app_generic_functions import thread_function, get_file_c
     get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk
 from operations_modules import network_ip
 from operations_modules import network_wifi
-from operations_modules.sqlite_database import sql_execute_get_data
+from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
+    check_sql_table_and_column
 from operations_modules import software_version
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
+from configuration_modules import app_config_access
 
 db_v = app_cached_variables.database_variables
 first_run = True
@@ -41,6 +45,7 @@ def update_cached_variables():
     global first_run
     if first_run:
         first_run = False
+        thread_function(_update_ks_info_table_data)
         if not app_cached_variables.running_with_root:
             click_msg = "The following functions require root access and will not be available - "
             click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
@@ -110,6 +115,85 @@ def update_cached_variables():
     _update_cached_ip()
     _update_cached_hostname()
     check_for_new_version()
+
+
+def _update_ks_info_table_data():
+    """ Creates/Updates Kootnet Sensors Main Database Information Table """
+    sleep(30)
+    logger.primary_logger.debug("Updating Kootnet Sensors Database Information Table")
+    try:
+        db_connection = sqlite3.connect(file_locations.sensor_database)
+        db_cursor = db_connection.cursor()
+        create_table_and_datetime(db_v.table_ks_info, db_cursor)
+
+        for column in [db_v.sensor_name, db_v.ip, db_v.kootnet_sensors_version,
+                       db_v.ks_info_logs, db_v.ks_info_configuration_backups]:
+            check_sql_table_and_column(db_v.table_ks_info, column, db_cursor)
+
+        sql_query = "INSERT OR IGNORE INTO '" + db_v.table_ks_info + "' (" + \
+                    db_v.all_tables_datetime + "," + \
+                    db_v.sensor_name + "," + \
+                    db_v.ip + "," + \
+                    db_v.kootnet_sensors_version + "," + \
+                    db_v.ks_info_logs + "," + \
+                    db_v.ks_info_configuration_backups + ")" + \
+                    " VALUES (?,?,?,?,?,?);"
+
+        log_entries = _add_head_foot("Primary Log", logger.get_sensor_log(file_locations.primary_log)) + \
+                      _add_head_foot("Network Log", logger.get_sensor_log(file_locations.network_log)) + \
+                      _add_head_foot("Sensor Log", logger.get_sensor_log(file_locations.sensors_log))
+
+        data_entries = [datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"), app_cached_variables.hostname,
+                        app_cached_variables.ip, software_version.version, log_entries, _get_all_configs_as_str()]
+
+        db_cursor.execute(sql_query, data_entries)
+        db_connection.commit()
+        db_connection.close()
+        logger.primary_logger.debug("Kootnet Sensors Database Information Updated OK")
+    except Exception as error:
+        logger.primary_logger.error("Kootnet Sensors Database Information Update Failed: " + str(error))
+
+
+def _get_all_configs_as_str():
+    main_config = app_config_access.primary_config.get_config_as_str()
+    installed_sensors = app_config_access.installed_sensors.get_config_as_str()
+    display_config = app_config_access.display_config.get_config_as_str()
+    checkin_config = app_config_access.checkin_config.get_config_as_str()
+    interval_recording_config = app_config_access.interval_recording_config.get_config_as_str()
+    trigger_high_low = app_config_access.trigger_high_low.get_config_as_str()
+    trigger_variances = app_config_access.trigger_variances.get_config_as_str()
+    email_config = remove_line_from_text(app_config_access.email_config.get_config_as_str(), [5, 6])
+    mqtt_broker_config = app_config_access.mqtt_broker_config.get_config_as_str()
+    mqtt_pub_config = remove_line_from_text(app_config_access.mqtt_publisher_config.get_config_as_str(), [5, 6])
+    mqtt_sub_config = remove_line_from_text(app_config_access.mqtt_subscriber_config.get_config_as_str(), [5, 6])
+    open_sense_map_config = remove_line_from_text(app_config_access.open_sense_map_config.get_config_as_str(), [2])
+    wu_config = remove_line_from_text(app_config_access.weather_underground_config.get_config_as_str(), [4, 5])
+    luftdaten_config = app_config_access.luftdaten_config.get_config_as_str()
+    sensor_control_config = app_config_access.sensor_control_config.get_config_as_str()
+
+    all_configurations_str = _add_head_foot("Main Configuration", main_config) + \
+                             _add_head_foot("Installed Sensors Configuration", installed_sensors) + \
+                             _add_head_foot("Display Configuration", display_config) + \
+                             _add_head_foot("Sensor Checkins Configuration", checkin_config) + \
+                             _add_head_foot("Interval Recording Configuration", interval_recording_config) + \
+                             _add_head_foot("Trigger High/Low Configuration", trigger_high_low) + \
+                             _add_head_foot("Trigger Variances Configuration", trigger_variances) + \
+                             _add_head_foot("Email Configuration", email_config) + \
+                             _add_head_foot("MQTT Broker Configuration", mqtt_broker_config) + \
+                             _add_head_foot("MQTT Publisher Configuration", mqtt_pub_config) + \
+                             _add_head_foot("MQTT Subscriber Configuration", mqtt_sub_config) + \
+                             _add_head_foot("Open Sense Map Configuration", open_sense_map_config) + \
+                             _add_head_foot("Weather Underground Configuration", wu_config) + \
+                             _add_head_foot("Sensor Community Configuration", luftdaten_config) + \
+                             _add_head_foot("Remote Management Configuration", sensor_control_config)
+    return all_configurations_str
+
+
+def _add_head_foot(name_str, main_content_str):
+    updated_config_str = "------ Start of " + name_str + " ------\n\n"
+    updated_config_str += main_content_str
+    updated_config_str += "\n\n------ End of " + name_str + " ------\n\n"
+    return updated_config_str
 
 
 def start_cached_variables_refresh():
@@ -230,3 +314,16 @@ def _check_if_version_newer(new_version_str):
             if latest_ver.minor_version > current_ver.minor_version:
                 return True
     return False
+
+
+def remove_line_from_text(text_var, line_numbers_list):
+    """ Removes specified line from provided configuration text. """
+
+    return_config = ""
+    for index, line_content in enumerate(text_var.split("\n")):
+        if index not in line_numbers_list:
+            return_config += line_content + "\n"
+        else:
+            setting_description = line_content.split("=")[1]
+            return_config += "Removed_for_viewing = " + setting_description + "\n"
+    return return_config
