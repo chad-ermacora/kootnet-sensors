@@ -20,6 +20,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content
 from operations_modules.app_cached_variables import running_with_root
+from configuration_modules import app_config_access
 
 try:
     from plotly import __version__ as plotly_version
@@ -96,59 +97,59 @@ def atpro_raw_config_urls(url_path):
         return _config_to_html_view(config_name, "NA", module_version_text)
     elif url_path == "config-main":
         config_name = "<i class='fas fa-clipboard-check'></i> Main Configuration"
-        config_content = get_file_content(file_locations.primary_config)
+        config_content = app_config_access.primary_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.primary_config, config_content)
     elif url_path == "config-is":
         config_name = "<i class='fas fa-microchip'></i> Installed Sensors"
-        config_content = get_file_content(file_locations.installed_sensors_config)
+        config_content = app_config_access.installed_sensors.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.installed_sensors_config, config_content)
     elif url_path == "config-display":
         config_name = "<i class='fas fa-tv'></i> Display"
-        config_content = get_file_content(file_locations.display_config)
+        config_content = app_config_access.display_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.display_config, config_content)
     elif url_path == "config-cs":
         config_name = "<i class='fas fa-satellite-dish'></i> Sensor Checkins"
-        config_content = get_file_content(file_locations.checkin_configuration)
+        config_content = app_config_access.checkin_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.checkin_configuration, config_content)
     elif url_path == "config-ir":
         config_name = "<i class='fas fa-database'></i> Interval Recording"
-        config_content = get_file_content(file_locations.interval_config)
+        config_content = app_config_access.interval_recording_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.interval_config, config_content)
     elif url_path == "config-high-low":
         config_name = "<i class='fas fa-database'></i> High/Low Trigger Recording"
-        config_content = get_file_content(file_locations.trigger_high_low_config)
+        config_content = app_config_access.trigger_high_low.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.trigger_high_low_config, config_content)
     elif url_path == "config-variance":
         config_name = "<i class='fas fa-database'></i> Variance Trigger Recording"
-        config_content = get_file_content(file_locations.trigger_variances_config)
+        config_content = app_config_access.trigger_variances.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.trigger_variances_config, config_content)
     elif url_path == "config-email":
         config_name = "<i class='far fa-envelope'></i> Email"
-        config_content = remove_line_from_text(get_file_content(file_locations.email_config), [5, 6])
+        config_content = remove_line_from_text(app_config_access.email_config.get_config_as_str(), [5, 6])
         return _config_to_html_view(config_name, file_locations.email_config, config_content)
     elif url_path == "config-mqtt-b":
         config_name = "<i class='fas fa-broadcast-tower'></i> MQTT Broker"
-        config_content = get_file_content(file_locations.mqtt_broker_config)
+        config_content = app_config_access.mqtt_broker_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.mqtt_broker_config, config_content)
     elif url_path == "config-mqtt-p":
         config_name = "<i class='fas fa-broadcast-tower'></i> MQTT Publisher"
-        config_content = remove_line_from_text(get_file_content(file_locations.mqtt_publisher_config), [5, 6])
+        config_content = remove_line_from_text(app_config_access.mqtt_publisher_config.get_config_as_str(), [5, 6])
         return _config_to_html_view(config_name, file_locations.mqtt_publisher_config, config_content)
     elif url_path == "config-mqtt-s":
         config_name = "<i class='fas fa-broadcast-tower'></i> MQTT Subscriber"
-        config_content = remove_line_from_text(get_file_content(file_locations.mqtt_subscriber_config), [5, 6])
+        config_content = remove_line_from_text(app_config_access.mqtt_subscriber_config.get_config_as_str(), [5, 6])
         return _config_to_html_view(config_name, file_locations.mqtt_subscriber_config, config_content)
     elif url_path == "config-osm":
         config_name = "<i class='fas fa-plus-circle'></i> Open Sense Map"
-        config_content = remove_line_from_text(get_file_content(file_locations.osm_config), [2])
+        config_content = remove_line_from_text(app_config_access.open_sense_map_config.get_config_as_str(), [2])
         return _config_to_html_view(config_name, file_locations.osm_config, config_content)
     elif url_path == "config-wu":
         config_name = "<i class='fas fa-plus-circle'></i> Weather Underground"
-        config_content = remove_line_from_text(get_file_content(file_locations.weather_underground_config), [4, 5])
+        config_content = remove_line_from_text(app_config_access.weather_underground_config.get_config_as_str(), [4, 5])
         return _config_to_html_view(config_name, file_locations.weather_underground_config, config_content)
     elif url_path == "config-luftdaten":
         config_name = "<i class='fas fa-plus-circle'></i> Luftdaten"
-        config_content = get_file_content(file_locations.luftdaten_config)
+        config_content = app_config_access.luftdaten_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.luftdaten_config, config_content)
     elif url_path == "config-networking":
         config_name = "<i class='fas fa-network-wired'></i> Networking (dhcpcd.conf)"
@@ -166,7 +167,7 @@ def atpro_raw_config_urls(url_path):
         return _config_to_html_view(config_name, file_locations.wifi_config_file, config_content, split_by_line=False)
     elif url_path == "config-sc":
         config_name = "<i class='fas fa-project-diagram'></i> Remote Management Configuration"
-        config_content = get_file_content(file_locations.html_sensor_control_config)
+        config_content = app_config_access.sensor_control_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.html_sensor_control_config, config_content)
     return "<h3>Error</h3>"
 
