@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
-from operations_modules.app_cached_variables import running_with_root
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
