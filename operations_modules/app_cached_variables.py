@@ -138,11 +138,14 @@ class CreateDatabaseVariables:
         self.table_interval = "IntervalData"
         self.table_trigger = "TriggerData"
         self.table_other = "OtherData"
+        self.table_ks_info = "SensorInformation"
 
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
-        self.sensor_check_in_version = "KootnetVersion"
+        self.ks_info_configuration_backups = "BackupConfigurations"
+        self.ks_info_logs = "Logs"
+
         self.sensor_check_in_installed_sensors = "InstalledSensors"
         self.sensor_check_in_primary_log = "PrimaryLog"
         self.sensor_check_in_network_log = "NetworkLog"
@@ -151,6 +154,7 @@ class CreateDatabaseVariables:
         self.trigger_state = "TriggerState"
 
         self.all_tables_datetime = "DateTime"
+        self.kootnet_sensors_version = "KootnetVersion"
         self.sensor_name = "SensorName"
         self.ip = "IP"
         self.sensor_uptime = "SensorUpTime"
