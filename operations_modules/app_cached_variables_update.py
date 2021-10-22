@@ -27,7 +27,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_file_content, \
-    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk
+    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
@@ -126,9 +126,10 @@ def _update_ks_info_table_data():
         db_cursor = db_connection.cursor()
         create_table_and_datetime(db_v.table_ks_info, db_cursor)
 
-        for column in [db_v.sensor_name, db_v.ip, db_v.kootnet_sensors_version,
-                       db_v.ks_info_logs, db_v.ks_info_configuration_backups]:
+        for column in [db_v.sensor_name, db_v.ip, db_v.kootnet_sensors_version]:
             check_sql_table_and_column(db_v.table_ks_info, column, db_cursor)
+        check_sql_table_and_column(db_v.table_ks_info, db_v.ks_info_logs, db_cursor, column_type="BLOB")
+        check_sql_table_and_column(db_v.table_ks_info, db_v.ks_info_configuration_backups, db_cursor, column_type="BLOB")
 
         sql_query = "INSERT OR IGNORE INTO '" + db_v.table_ks_info + "' (" + \
                     db_v.all_tables_datetime + "," + \
@@ -139,12 +140,10 @@ def _update_ks_info_table_data():
                     db_v.ks_info_configuration_backups + ")" + \
                     " VALUES (?,?,?,?,?,?);"
 
-        log_entries = _add_head_foot("Primary Log", logger.get_sensor_log(file_locations.primary_log)) + \
-                      _add_head_foot("Network Log", logger.get_sensor_log(file_locations.network_log)) + \
-                      _add_head_foot("Sensor Log", logger.get_sensor_log(file_locations.sensors_log))
-
-        data_entries = [datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"), app_cached_variables.hostname,
-                        app_cached_variables.ip, software_version.version, log_entries, _get_all_configs_as_str()]
+        data_entries = [
+            datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"), app_cached_variables.hostname,
+            app_cached_variables.ip, software_version.version, _get_zipped_logs(), _get_zipped_configurations()
+        ]
 
         db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
@@ -154,7 +153,24 @@ def _update_ks_info_table_data():
         logger.primary_logger.error("Kootnet Sensors Database Information Update Failed: " + str(error))
 
 
-def _get_all_configs_as_str():
+def _get_zipped_logs():
+    utc_now = datetime.utcnow().strftime("%Y-%m-%d_%H:%M_")
+    try:
+        return_names = [utc_now + os.path.basename(file_locations.primary_log),
+                        utc_now + os.path.basename(file_locations.network_log),
+                        utc_now + os.path.basename(file_locations.sensors_log)]
+        return_files = [logger.get_sensor_log(file_locations.primary_log),
+                        logger.get_sensor_log(file_locations.network_log),
+                        logger.get_sensor_log(file_locations.sensors_log)]
+
+        blob_data = zip_files(return_names, return_files).read()
+        return blob_data
+    except Exception as error:
+        logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
+    return None
+
+
+def _get_zipped_configurations():
     main_config = app_config_access.primary_config.get_config_as_str()
     installed_sensors = app_config_access.installed_sensors.get_config_as_str()
     display_config = app_config_access.display_config.get_config_as_str()
@@ -171,29 +187,34 @@ def _get_all_configs_as_str():
     luftdaten_config = app_config_access.luftdaten_config.get_config_as_str()
     sensor_control_config = app_config_access.sensor_control_config.get_config_as_str()
 
-    all_configurations_str = _add_head_foot("Main Configuration", main_config) + \
-                             _add_head_foot("Installed Sensors Configuration", installed_sensors) + \
-                             _add_head_foot("Display Configuration", display_config) + \
-                             _add_head_foot("Sensor Checkins Configuration", checkin_config) + \
-                             _add_head_foot("Interval Recording Configuration", interval_recording_config) + \
-                             _add_head_foot("Trigger High/Low Configuration", trigger_high_low) + \
-                             _add_head_foot("Trigger Variances Configuration", trigger_variances) + \
-                             _add_head_foot("Email Configuration", email_config) + \
-                             _add_head_foot("MQTT Broker Configuration", mqtt_broker_config) + \
-                             _add_head_foot("MQTT Publisher Configuration", mqtt_pub_config) + \
-                             _add_head_foot("MQTT Subscriber Configuration", mqtt_sub_config) + \
-                             _add_head_foot("Open Sense Map Configuration", open_sense_map_config) + \
-                             _add_head_foot("Weather Underground Configuration", wu_config) + \
-                             _add_head_foot("Sensor Community Configuration", luftdaten_config) + \
-                             _add_head_foot("Remote Management Configuration", sensor_control_config)
-    return all_configurations_str
+    utc_now = datetime.utcnow().strftime("%Y-%m-%d_%H:%M_")
+    try:
+        return_names = [utc_now + os.path.basename(file_locations.primary_config),
+                        utc_now + os.path.basename(file_locations.installed_sensors_config),
+                        utc_now + os.path.basename(file_locations.display_config),
+                        utc_now + os.path.basename(file_locations.checkin_configuration),
+                        utc_now + os.path.basename(file_locations.interval_config),
+                        utc_now + os.path.basename(file_locations.trigger_high_low_config),
+                        utc_now + os.path.basename(file_locations.trigger_variances_config),
+                        utc_now + os.path.basename(file_locations.email_config),
+                        utc_now + os.path.basename(file_locations.mqtt_broker_config),
+                        utc_now + os.path.basename(file_locations.mqtt_publisher_config),
+                        utc_now + os.path.basename(file_locations.mqtt_subscriber_config),
+                        utc_now + os.path.basename(file_locations.osm_config),
+                        utc_now + os.path.basename(file_locations.weather_underground_config),
+                        utc_now + os.path.basename(file_locations.luftdaten_config),
+                        utc_now + os.path.basename(file_locations.html_sensor_control_config)]
 
+        return_files = [main_config, installed_sensors, display_config, checkin_config,
+                        interval_recording_config, trigger_high_low, trigger_variances,
+                        email_config, mqtt_broker_config, mqtt_pub_config, mqtt_sub_config,
+                        open_sense_map_config, wu_config, luftdaten_config, sensor_control_config]
 
-def _add_head_foot(name_str, main_content_str):
-    updated_config_str = "------ Start of " + name_str + " ------\n\n"
-    updated_config_str += main_content_str
-    updated_config_str += "\n\n------ End of " + name_str + " ------\n\n"
-    return updated_config_str
+        blob_data = zip_files(return_names, return_files).read()
+        return blob_data
+    except Exception as error:
+        logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
+    return None
 
 
 def start_cached_variables_refresh():
