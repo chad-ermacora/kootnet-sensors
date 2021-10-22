@@ -110,13 +110,13 @@ def remote_management_receive_configuration(request):
         app_cached_variables.restart_luftdaten_thread = True
         logger.network_logger.info("Applied Luftdaten configuration push successfully")
     elif config_type == "wifi":
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             write_file_to_disk(file_locations.wifi_config_file, new_config_str.strip())
             atpro_notifications.manage_service_restart()
         else:
             logger.primary_logger.warning("Wifi set skipped, not running with root")
     elif config_type == "network":
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             write_file_to_disk(file_locations.dhcpcd_config_file, new_config_str.strip())
             atpro_notifications.manage_service_restart()
         else:

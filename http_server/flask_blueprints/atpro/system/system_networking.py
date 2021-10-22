@@ -129,7 +129,7 @@ def _is_valid_ssl_certificate(cert):
 def html_atpro_set_ipv4_config():
     logger.network_logger.debug("** HTML Apply - IPv4 Configuration - Source " + str(request.remote_addr))
     if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             hostname = request.form.get("ip_hostname")
             app_cached_variables.hostname = hostname
             os.system("hostnamectl set-hostname " + hostname)
@@ -198,7 +198,7 @@ def html_atpro_set_wifi_config():
     page_msg = "Not a POST request or missing SSID in form"
     if request.method == "POST" and "ssid1" in request.form:
         page_msg = "Kootnet Sensors not running as root?"
-        if app_config_access.running_with_root:
+        if app_cached_variables.running_with_root:
             if app_validation_checks.text_has_no_double_quotes(request.form.get("wifi_key1")):
                 pass
             else:
