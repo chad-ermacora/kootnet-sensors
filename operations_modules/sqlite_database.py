@@ -207,11 +207,12 @@ def create_ks_db_info_table(db_type, db_cursor):
         logger.primary_logger.debug("SQLite3 KS DB Info Table Check/Creation: " + str(error))
 
 
-def check_sql_table_and_column(table_name, column_name, db_cursor):
+def check_sql_table_and_column(table_name, column_name, db_cursor, column_type="TEXT"):
     """ Adds or verifies provided table and column in the SQLite Database. """
     table_name = get_clean_sql_table_name(table_name)
     try:
-        db_cursor.execute("ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}".format(tn=table_name, cn=column_name, ct="TEXT"))
+        sql_query = "ALTER TABLE {tn} ADD COLUMN '{cn}' {ct}"
+        db_cursor.execute(sql_query.format(tn=table_name, cn=column_name, ct=column_type))
         return True
     except Exception as error:
         if str(error)[:21] != "duplicate column name":
