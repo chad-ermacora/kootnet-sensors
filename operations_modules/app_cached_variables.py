@@ -150,8 +150,8 @@ class CreateDatabaseVariables:
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
 
-        self.ks_info_configuration_backups = "BackupConfigurations"
-        self.ks_info_logs = "Logs"
+        self.ks_info_configuration_backups = "ConfigurationsZIP"
+        self.ks_info_logs = "LogsZIP"
 
         self.sensor_check_in_installed_sensors = "InstalledSensors"
         self.sensor_check_in_primary_log = "PrimaryLog"
