@@ -39,9 +39,7 @@ db_v = app_cached_variables.database_variables
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-view")
 @auth.login_required
 def html_atpro_sensor_checkin_main_view():
-    get_sensor_checkin_count_sql = "SELECT count(*) FROM sqlite_master WHERE type = 'table'" + \
-                                   "AND name != 'android_metadata' AND name != 'sqlite_sequence';"
-    sensor_count = sql_execute_get_data(get_sensor_checkin_count_sql, sql_database_location=db_loc)
+    sensor_count = len(get_sqlite_tables_in_list(db_loc))
     sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
 
     sensor_statistics = ""
@@ -58,7 +56,7 @@ def html_atpro_sensor_checkin_main_view():
             sensor_statistics += _get_sensor_info_string(cleaned_id)
 
     try:
-        past_checkin_percent = round(((sensor_contact_count / int(get_sql_element(sensor_count))) * 100), 2)
+        past_checkin_percent = round(((sensor_contact_count / sensor_count) * 100), 2)
     except ZeroDivisionError:
         logger.primary_logger.debug("No Sensors found for Sensor Checkin View")
         past_checkin_percent = 0.0
@@ -76,7 +74,7 @@ def html_atpro_sensor_checkin_main_view():
         enabled_text = "<span style='color: green;'>Enabled</span>"
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
                            MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,
-                           SensorsInDatabase=get_sql_element(sensor_count),
+                           SensorsInDatabase=str(sensor_count),
                            CheckinDBSize=db_size_mb,
                            ContactInPastDays=app_config_access.checkin_config.count_contact_days,
                            TotalSensorsContactDays=sensor_contact_count,

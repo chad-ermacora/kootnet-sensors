@@ -22,7 +22,6 @@ from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import update_cached_variables
 from configuration_modules import app_config_access
-from http_server import server_http_auth
 
 from http_server.flask_blueprints.html_functional import html_functional_routes
 from http_server.flask_blueprints.basic_html_pages import html_basic_routes
