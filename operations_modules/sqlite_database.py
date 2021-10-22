@@ -81,6 +81,7 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
 
+        create_ks_db_info_table(db_v.db_info_database_type_sensor_checkins, db_cursor)
         get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
         sensor_ids = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
@@ -91,13 +92,14 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
                    db_v.sensor_check_in_sensors_log]
         for sensor_id in sensor_ids:
             cleaned_id = str(sensor_id[0]).strip()
-            for column in columns:
-                try:
-                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
-                    db_cursor.execute(add_columns_sql)
-                except Exception as error:
-                    if str(error)[:21] != "duplicate column name":
-                        logger.primary_logger.error("Checkin Database Error: " + str(error))
+            if not _ks_system_table(cleaned_id):
+                for column in columns:
+                    try:
+                        add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                        db_cursor.execute(add_columns_sql)
+                    except Exception as error:
+                        if str(error)[:21] != "duplicate column name":
+                            logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
@@ -113,19 +115,20 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
 
+        create_ks_db_info_table(db_v.db_info_database_type_mqtt, db_cursor)
         get_sensor_checkin_ids_sql = "SELECT name FROM sqlite_master WHERE type='table';"
         mqtt_sensor_strings = sql_execute_get_data(get_sensor_checkin_ids_sql, sql_database_location=database_location)
 
         for sensor_string in mqtt_sensor_strings:
             cleaned_id = str(sensor_string[0]).strip()
-
-            for column in db_v.get_sensor_columns_list():
-                try:
-                    add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
-                    db_cursor.execute(add_columns_sql)
-                except Exception as error:
-                    if str(error)[:21] != "duplicate column name":
-                        logger.primary_logger.error("Checkin Database Error: " + str(error))
+            if not _ks_system_table(cleaned_id):
+                for column in db_v.get_sensor_columns_list():
+                    try:
+                        add_columns_sql = "ALTER TABLE '" + cleaned_id + "' ADD COLUMN " + column + " TEXT"
+                        db_cursor.execute(add_columns_sql)
+                    except Exception as error:
+                        if str(error)[:21] != "duplicate column name":
+                            logger.primary_logger.error("Checkin Database Error: " + str(error))
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("Check on 'Checkin' Database Complete")
@@ -144,6 +147,7 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         db_connection = sqlite3.connect(database_location)
         db_cursor = db_connection.cursor()
 
+        create_ks_db_info_table(db_v.db_info_database_type_main, db_cursor)
         create_table_and_datetime(db_v.table_interval, db_cursor)
         create_table_and_datetime(db_v.table_trigger, db_cursor)
         for column in db_v.get_sensor_columns_list():
@@ -183,10 +187,24 @@ def create_table_and_datetime(table_name, db_cursor):
     table_name = get_clean_sql_table_name(table_name)
     try:
         # Create or update table
-        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table_name, nf="DateTime", ft="TEXT"))
+        db_cursor.execute("CREATE TABLE {tn} ({nf} {ft})".format(tn=table_name, nf=db_v.all_tables_datetime, ft="TEXT"))
         logger.primary_logger.debug("Table '" + table_name + "' - Created")
     except Exception as error:
         logger.primary_logger.debug("SQLite3 Table Check/Creation: " + str(error))
+
+
+def create_ks_db_info_table(db_type, db_cursor):
+    try:
+        db_cursor.execute("CREATE TABLE {tn} ({cn} {ct})".format(
+            tn=db_v.table_db_info, cn=db_v.db_info_database_type_column, ct="TEXT"
+        ))
+
+        sql_execute = "INSERT INTO " + db_v.table_db_info + \
+                      " ('" + db_v.db_info_database_type_column + "') VALUES ('" + db_type + "');"
+        db_cursor.execute(sql_execute)
+        logger.primary_logger.debug("Table KS DB Info - Created")
+    except Exception as error:
+        logger.primary_logger.debug("SQLite3 KS DB Info Table Check/Creation: " + str(error))
 
 
 def check_sql_table_and_column(table_name, column_name, db_cursor):
@@ -313,3 +331,9 @@ def get_clean_sql_table_name(sql_table):
                 new_sql_table += character
         sql_table = new_sql_table
     return sql_table
+
+
+def _ks_system_table(table_name):
+    if table_name == db_v.table_db_info or table_name == db_v.table_ks_info:
+        return True
+    return False

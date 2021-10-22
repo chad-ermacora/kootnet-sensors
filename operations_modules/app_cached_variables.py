@@ -139,6 +139,13 @@ class CreateDatabaseVariables:
         self.table_trigger = "TriggerData"
         self.table_other = "OtherData"
         self.table_ks_info = "SensorInformation"
+        self.table_db_info = "KootnetSensorsDatabaseInfo"
+
+        self.db_info_database_type_main = "Main"
+        self.db_info_database_type_mqtt = "MQTT"
+        self.db_info_database_type_sensor_checkins = "SensorCheckins"
+
+        self.db_info_database_type_column = "DatabaseType"
 
         self.other_table_column_user_date_time = "UserDateTime"
         self.other_table_column_notes = "Notes"
