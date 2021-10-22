@@ -106,7 +106,7 @@ def check_checkin_database_structure(database_location=file_locations.sensor_che
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
-        return False
+    return False
 
 
 def check_mqtt_subscriber_database_structure(database_location=file_locations.mqtt_subscriber_database):
@@ -135,7 +135,7 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
-        return False
+    return False
 
 
 def check_main_database_structure(database_location=file_locations.sensor_database):
@@ -179,7 +179,7 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on Main Database Failed: " + str(error))
-        return False
+    return False
 
 
 def create_table_and_datetime(table_name, db_cursor):
@@ -199,7 +199,7 @@ def create_ks_db_info_table(db_type, db_cursor):
             tn=db_v.table_db_info, cn=db_v.db_info_database_type_column, ct="TEXT"
         ))
 
-        sql_execute = "INSERT INTO " + db_v.table_db_info + \
+        sql_execute = "INSERT OR IGNORE INTO " + db_v.table_db_info + \
                       " ('" + db_v.db_info_database_type_column + "') VALUES ('" + db_type + "');"
         db_cursor.execute(sql_execute)
         logger.primary_logger.debug("Table KS DB Info - Created")
@@ -265,7 +265,9 @@ def get_sqlite_tables_in_list(database_location):
     sqlite_tables_list = sql_execute_get_data(get_sqlite_tables_query, sql_database_location=database_location)
     final_list = []
     for entry in sqlite_tables_list:
-        final_list.append(get_sql_element(entry))
+        entry = get_sql_element(entry)
+        if not _ks_system_table(entry):
+            final_list.append(entry)
     return final_list
 
 
