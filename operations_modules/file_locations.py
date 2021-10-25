@@ -117,7 +117,9 @@ interval_config = sensor_config_dir + "/interval_recording.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 trigger_high_low_config = sensor_config_dir + "/trigger_high_low.conf"
 
-http_auth = sensor_config_dir + "/auth.conf"
+http_auth = sensor_config_dir + "/auth_http_user.conf"
+flask_login_hash = sensor_config_dir + "/auth_http_hash.scrypt"
+flask_login_hash_salt = sensor_config_dir + "/auth_http_hash_salt.scrypt"
 
 html_sensor_control_config = sensor_config_dir + "/html_sensor_control.conf"
 html_sensor_control_reports_zip = sensor_data_dir + "/ReportsZip.zip"

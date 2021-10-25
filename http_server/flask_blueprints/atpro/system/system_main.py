@@ -17,9 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from flask import Blueprint, render_template, request
-from werkzeug.security import generate_password_hash
-from operations_modules import app_cached_variables
-from http_server.server_http_auth import auth, save_http_auth_to_file
+from http_server.server_http_auth import auth, save_http_auth_to_file, min_length_username, min_length_password
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 
 html_atpro_system_routes = Blueprint("html_atpro_system_routes", __name__)
@@ -36,9 +34,7 @@ def html_atpro_system_change_login():
     if request.method == "POST":
         temp_username = str(request.form.get("login_username"))
         temp_password = str(request.form.get("login_password"))
-        if len(temp_username) > 3 and len(temp_password) > 3:
-            app_cached_variables.http_flask_user = temp_username
-            app_cached_variables.http_flask_password = generate_password_hash(temp_password)
+        if len(temp_username) >= min_length_username and len(temp_password) >= min_length_password:
             save_http_auth_to_file(temp_username, temp_password)
             msg1 = "Username and Password Updated"
             msg2 = "The Username and Password has been updated"

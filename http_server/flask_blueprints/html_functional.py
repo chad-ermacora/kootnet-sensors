@@ -18,10 +18,10 @@
 """
 from time import sleep
 from flask import Blueprint, send_file, request, send_from_directory
-from werkzeug.security import check_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import verify_password_to_hash
 from operations_modules.app_validation_checks import url_is_valid
 from http_server.server_http_auth import auth
 
@@ -96,8 +96,7 @@ def test_login():
 
 @auth.verify_password
 def verify_password(username, password):
-    if username == app_cached_variables.http_flask_user and \
-            check_password_hash(app_cached_variables.http_flask_password, password):
+    if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
         logger.network_logger.debug("* Login to Web Portal Successful from " + str(request.remote_addr))
         return True
     logger.network_logger.debug("* Login to Web Portal Failed from " + str(request.remote_addr))

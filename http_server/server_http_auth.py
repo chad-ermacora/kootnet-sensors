@@ -18,10 +18,10 @@
 """
 import os
 from flask_httpauth import HTTPBasicAuth
-from werkzeug.security import generate_password_hash
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import create_password_hash
 
 default_http_flask_user = "Kootnet"
 default_http_flask_password = "sensors"
@@ -37,21 +37,19 @@ def set_http_auth_from_file():
     if os.path.isfile(file_locations.http_auth):
         try:
             with open(file_locations.http_auth, "r") as auth_file:
-                auth_file_lines = auth_file.readlines()
-                app_cached_variables.http_flask_user = auth_file_lines[0].strip()
-                app_cached_variables.http_flask_password = auth_file_lines[1].strip()
+                app_cached_variables.http_flask_user = auth_file.read().strip()
+            with open(file_locations.flask_login_hash, "rb") as auth_file:
+                app_cached_variables.http_flask_password_hash = auth_file.read()
+            with open(file_locations.flask_login_hash_salt, "rb") as auth_file:
+                app_cached_variables.http_flask_password_salt = auth_file.read()
         except Exception as error:
             logger.primary_logger.error("Problem loading Web Login Credentials - Using Defaults: " + str(error))
             save_http_auth_to_file(default_http_flask_user, default_http_flask_password)
-            app_cached_variables.http_flask_user = default_http_flask_user
-            app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
     else:
         log_msg = "Web Login Credentials not found, using and saving default of Kootnet/sensors"
         logger.primary_logger.warning(log_msg)
         logger.primary_logger.warning("It is Recommended to change default Login Credentials")
         save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
-        app_cached_variables.http_flask_user = default_http_flask_user
-        app_cached_variables.http_flask_password = generate_password_hash(default_http_flask_password)
 
 
 def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging_enabled=True):
@@ -64,9 +62,16 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging
             if len(new_http_flask_password) < min_length_password:
                 logger.primary_logger.warning("Web Login Password provided is too short")
         else:
-            save_data = new_http_flask_user + "\n" + generate_password_hash(new_http_flask_password)
+            new_hash, salt = create_password_hash(new_http_flask_password)
+            app_cached_variables.http_flask_user = new_http_flask_user
+            app_cached_variables.http_flask_password_hash = new_hash
+            app_cached_variables.http_flask_password_salt = salt
             with open(file_locations.http_auth, "w") as auth_file:
-                auth_file.write(save_data)
+                auth_file.write(new_http_flask_user)
+            with open(file_locations.flask_login_hash, "wb") as auth_file:
+                auth_file.write(new_hash)
+            with open(file_locations.flask_login_hash_salt, "wb") as auth_file:
+                auth_file.write(salt)
             if logging_enabled:
                 logger.primary_logger.info("New Web Portal Username & Password Set")
     except Exception as error:

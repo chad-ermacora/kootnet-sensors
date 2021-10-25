@@ -19,6 +19,7 @@
 import os
 import time
 import logging
+from hashlib import scrypt
 from datetime import datetime, timedelta
 from io import BytesIO
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
@@ -413,3 +414,44 @@ def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
     else:
         logger.primary_logger.debug("DateTime Adjustment input is invalid")
         return var_datetime
+
+
+def create_password_hash(password, salt=None):
+    """
+    Creates and returns a [password_hash, password_salt] based on provided password.
+    Optional: Provide the salt (must be bytes)
+    """
+    if salt is None:
+        salt = os.urandom(16)
+    scrypt_n = 16384
+    scrypt_r = 8
+    scrypt_p = 1
+    try:
+        start_time = time.time()
+        pass_bytes = password.encode("UTF-8")
+        password_hash = scrypt(password=pass_bytes, salt=salt, n=scrypt_n, r=scrypt_r, p=scrypt_p)
+        end_time = time.time()
+        total_processing_time = round(float(end_time - start_time), 6)
+        logger.primary_logger.debug("Password Hash took " + str(total_processing_time) + " Seconds to Create")
+        return [password_hash, salt]
+    except Exception as error:
+        logger.primary_logger.error("Creating Password Hash: " + str(error))
+    return ["Hash_Error", "Hash_Error"]
+
+
+def verify_password_to_hash(password_guess, salt=None, valid_password_hash=None):
+    """
+    Takes plain text password and creates hash to compare to the saved password hash.
+    If hashes are equal, return True, else, return False
+    Optional: salt and valid_password_hash, if missing, uses app_cached_variables flask variables
+    """
+    try:
+        if valid_password_hash is None or salt is None:
+            valid_password_hash = app_cached_variables.http_flask_password_hash
+            salt = app_cached_variables.http_flask_password_salt
+        password_guess_hash = create_password_hash(password_guess, salt=salt)[0]
+        if password_guess_hash == valid_password_hash:
+            return True
+    except Exception as error:
+        logger.primary_logger.error("Verifying Password Hash: " + str(error))
+    return False

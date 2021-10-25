@@ -20,6 +20,7 @@ from platform import system
 from os import geteuid, path
 
 
+# ToDo: Re-organize and separate some of the cached variables into other files (take out Remote Management / SC)
 class CreateNetworkSystemCommands:
     """ Create a object instance holding available network "System" commands (Mostly Upgrades). """
 
@@ -403,7 +404,8 @@ wifi_psk = ""
 
 # Flask App Login Variables (Web Portal Login)
 http_flask_user = "Kootnet"
-http_flask_password = "sensors"
+http_flask_password_hash = b''
+http_flask_password_salt = b''
 
 # Sensor Check-in View Variables
 checkin_search_sensor_id = ""
@@ -519,13 +521,11 @@ html_readings_report = default_report
 html_latency_report = default_report
 
 # Login used for remote sensors (Used in Sensor Remote Management)
+# ToDo: Rename these to sc_*login/password* for clarity
 http_login = ""
 http_password = ""
 
-# Download Sensor SQL Database in a zip placeholder
-sensor_database_zipped = b''
-
-# Sensor Control Download placeholders
+# Sensor Control (Remote Management) Download placeholders
 sc_reports_zip_name = ""
 sc_logs_zip_name = ""
 sc_databases_zip_name = ""
