@@ -180,9 +180,15 @@
 <hr><br>
 
 <div class="settings-page-view" id="settings-page-view">
-    <div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card"><div class="card-content"><h1>
-        <i class="fas fa-hourglass-half"></i> Loading ...
-    </h1></div></div></div></div>
+    <div class="row">
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="card" style="width: 100vw;">
+                <div class="card-content">
+                    <h1><i class="fas fa-hourglass-half"></i> Loading ...</h1>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -202,9 +208,7 @@
         jQuery("#settings-page-view").load("/atpro/" + nav_location);
     }
 
-    {{ RunScript | safe }}
-</script>
-
-<script>
     CheckNotificationsAsync();
+
+    {{ RunScript | safe }}
 </script>
