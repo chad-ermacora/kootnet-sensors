@@ -259,8 +259,9 @@
 </html>
 
 <script>
-    const html_loading = '<div class="row"><div class="col-12 col-m-12 col-sm-12"><div class="card">' +
-        '<div class="card-content"><h1><i class="fas fa-hourglass-half"></i> Loading ...</h1></div></div></div></div>'
+    const html_loading = '<div class="row"><div class="col-12 col-m-12 col-sm-12">' +
+        '<div class="card" style="width: 100vw;"><div class="card-content">' +
+        '<h1><i class="fas fa-hourglass-half"></i> Loading ...</h1></div></div></div></div>'
 
     function SelectNav(nav_location, skip_menu_select=false) {
         document.getElementById("main-page-view").innerHTML = html_loading;
@@ -296,6 +297,14 @@
         document.getElementById("sensor-settings").classList.remove("active");
     }
 
+    function select_all_sensor_checkboxes() {
+        if (document.getElementById('select-all-checkboxes').checked) {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
+        } else {
+            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
+        }
+    }
+
     function CheckNotificationsAsync() {
         let notification_count_xmlHttp = new XMLHttpRequest();
         notification_count_xmlHttp.onreadystatechange = function() {
@@ -324,18 +333,16 @@
         notification_msgs_xmlHttp.send(null);
     }
 
-    {{ RunScript | safe }}
-</script>
-
-<script>
     function NotificationConfirmAction(prompt_text, command_url) {
         let r = confirm(prompt_text);
-            if (r === true) {
-                window.location = command_url
-            }
+        if (r === true) {
+            window.location = command_url
+        }
     }
 
     function NotificationOkay(prompt_text, command_url) {
         alert(prompt_text);
     }
+
+    {{ RunScript | safe }}
 </script>
