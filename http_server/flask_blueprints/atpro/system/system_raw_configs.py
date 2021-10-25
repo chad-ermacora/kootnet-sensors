@@ -31,7 +31,6 @@ try:
     from greenlet import __version__ as greenlet_version
     from gevent import __version__ as gevent_version
     from requests import __version__ as requests_version
-    from werkzeug import __version__ as werkzeug_version
     from cryptography import __version__ as cryptography_version
     from flask import __version__ as flask_version
     from operations_modules.software_version import version as kootnet_version
@@ -42,7 +41,6 @@ except ImportError as import_error:
     greenlet_version = "Unknown"
     gevent_version = "Unknown"
     requests_version = "Unknown"
-    werkzeug_version = "Unknown"
     cryptography_version = "Unknown"
     flask_version = "Unknown"
     kootnet_version = "Unknown"
@@ -90,7 +88,6 @@ def atpro_raw_config_urls(url_path):
                               str(gevent_version) + "=Gevent\n" + \
                               str(greenlet_version) + "=Greenlet\n" + \
                               str(cryptography_version) + "=Cryptography\n" + \
-                              str(werkzeug_version) + "=Werkzeug\n" + \
                               str(requests_version) + "=Requests\n" + \
                               str(plotly_version) + "=Plotly Graphing\n" + \
                               str(numpy_version) + "=Numpy\n"
