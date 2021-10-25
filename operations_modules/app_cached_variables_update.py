@@ -47,9 +47,13 @@ def update_cached_variables():
         first_run = False
         thread_function(_update_ks_info_table_data)
         if not app_cached_variables.running_with_root:
-            click_msg = "The following functions require root access and will not be available - "
+            click_msg = "Without root access, the following functions will be unavailable - "
             click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
-            atpro_notifications.add_custom_message("Warning: Not running with root", click_msg=click_msg)
+            icon = "fas fa-exclamation-triangle"
+            atpro_notifications.add_custom_message("Warning: Not running with root", click_msg=click_msg, icon=icon)
+        if app_config_access.primary_config.demo_mode:
+            click_msg = "In Demo mode, the login is locked to Kootnet/sensors and SSL changes are unavailable"
+            atpro_notifications.add_custom_message("Info: Running in Demo mode", click_msg=click_msg)
 
     if app_cached_variables.current_platform == "Linux":
         try:

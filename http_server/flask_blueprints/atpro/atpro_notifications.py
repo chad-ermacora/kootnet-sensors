@@ -32,9 +32,9 @@ class CreateATProMenuNotificationClass:
         self._reboot_system_enabled = 0
         self._upgrade_program_enabled = 0
 
-    def add_custom_message(self, msg, click_msg, js_action="NotificationOkay"):
+    def add_custom_message(self, msg, click_msg, js_action="NotificationOkay", icon="fas fa-info-circle"):
         self._add_notification_entry([msg, click_msg, "#/", datetime.utcnow().strftime("%Y-%m-%d %H:%M")],
-                                     js_action=js_action)
+                                     js_action=js_action, icon=icon)
 
     def manage_service_restart(self):
         click_msg = "Please Restart Kootnet Sensors"

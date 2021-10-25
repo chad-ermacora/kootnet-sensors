@@ -32,15 +32,18 @@ def html_atpro_sensor_settings_system():
 @html_atpro_system_routes.route("/atpro/system-change-login", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_system_change_login():
-    if request.method == "POST" and not primary_config.demo_mode:
-        temp_username = str(request.form.get("login_username"))
-        temp_password = str(request.form.get("login_password"))
-        if len(temp_username) >= min_length_username and len(temp_password) >= min_length_password:
-            save_http_auth_to_file(temp_username, temp_password)
-            msg1 = "Username and Password Updated"
-            msg2 = "The Username and Password has been updated"
+    if request.method == "POST":
+        if primary_config.demo_mode:
+            return get_message_page("Function Disabled", "Demo mode enabled")
         else:
-            msg1 = "Invalid Username or Password"
-            msg2 = "Username and Password must be 4 to 62 characters long and cannot be blank"
-        return get_message_page(msg1, msg2)
+            temp_username = str(request.form.get("login_username"))
+            temp_password = str(request.form.get("login_password"))
+            if len(temp_username) >= min_length_username and len(temp_password) >= min_length_password:
+                save_http_auth_to_file(temp_username, temp_password)
+                msg1 = "Username and Password Updated"
+                msg2 = "The Username and Password has been updated"
+            else:
+                msg1 = "Invalid Username or Password"
+                msg2 = "Username and Password must be 4 to 62 characters long and cannot be blank"
+            return get_message_page(msg1, msg2)
     return render_template("ATPro_admin/page_templates/system/system-change-login.html")

@@ -76,9 +76,12 @@ def html_atpro_system_ssl():
 @html_atpro_system_networking_routes.route("/atpro/system-ssl-new-self-sign")
 @auth.login_required
 def html_atpro_create_new_self_signed_ssl():
-    message2 = "Restart Kootnet Sensors to create and use the new SSL Certificate"
-    os.system("rm -f -r " + file_locations.http_ssl_folder)
-    atpro_notifications.manage_service_restart()
+    if app_config_access.primary_config.demo_mode:
+        message2 = "Unable to Create New SSL Certificate when in Demo mode"
+    else:
+        message2 = "Restart Kootnet Sensors to create and use the new SSL Certificate"
+        os.system("rm -f -r " + file_locations.http_ssl_folder)
+        atpro_notifications.manage_service_restart()
     return get_message_page("New Self-Signed SSL", message2, page_url="sensor-system", skip_menu_select=True)
 
 
@@ -88,7 +91,9 @@ def html_atpro_set_custom_ssl():
     logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
     return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
-    if not app_config_access.primary_config.demo_mode:
+    if app_config_access.primary_config.demo_mode:
+        return_message_fail = "Unable to change SSL Certificate when in Demo mode"
+    else:
         try:
             temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
             temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
@@ -110,8 +115,6 @@ def html_atpro_set_custom_ssl():
                                     page_url="sensor-system", skip_menu_select=True)
         except Exception as error:
             logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
-    else:
-        return_message_fail = "Unable to change SSL Certificate when in Demo mode"
     return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
                             page_url="sensor-system", skip_menu_select=True)
 
