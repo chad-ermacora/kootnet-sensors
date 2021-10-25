@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from datetime import datetime, timedelta
 from time import sleep
 import smtplib
 from email import utils, encoders
@@ -265,34 +264,40 @@ def _get_email_send_sleep_time(send_every, sleep_time_of_day):
     minute = int(sleep_time_of_day[3:5])
 
     if send_every == email_config.send_option_daily:
-        sleep_seconds = _get_email_sleep_seconds(day=1, hour=hour, minute=minute)
+        sleep_seconds = _get_email_sleep_seconds(day=1, hour=hour, minutes=minute)
     elif send_every == email_config.send_option_weekly:
-        sleep_seconds = _get_email_sleep_seconds(day=7, hour=hour, minute=minute)
+        sleep_seconds = _get_email_sleep_seconds(day=7, hour=hour, minutes=minute)
     elif send_every == email_config.send_option_monthly:
-        sleep_seconds = _get_email_sleep_seconds(month=1, hour=hour, minute=minute)
+        sleep_seconds = _get_email_sleep_seconds(month=1, hour=hour, minutes=minute)
     elif send_every == email_config.send_option_yearly:
-        sleep_seconds = _get_email_sleep_seconds(year=1, hour=hour, minute=minute)
+        sleep_seconds = _get_email_sleep_seconds(year=1, hour=hour, minutes=minute)
     return sleep_seconds
 
 
-def _get_email_sleep_seconds(year=0, month=0, day=0, hour=8, minute=0):
+def _get_email_sleep_seconds(year=0, month=0, day=0, hour=8, minutes=0):
     """ Returns seconds between now and the years/months/days from now at the provided hour/minute """
     try:
-        adjusted_utc_now = datetime.utcnow() + relativedelta(hours=app_config_access.primary_config.utc0_hour_offset)
-        next_datetime = adjusted_utc_now + relativedelta(years=year, months=month, days=day, hour=hour, minute=minute)
+        total_add_time = timedelta()
+        if year:
+            total_add_time += timedelta(weeks=52 * year)
+        if month:
+            total_add_time += timedelta(weeks=4 * month)
+        if day:
+            total_add_time += timedelta(days=day)
 
-        if not year and not month and day == 1:
-            if adjusted_utc_now.hour <= hour:
-                if adjusted_utc_now.hour < hour:
-                    hours_in_seconds = ((hour - adjusted_utc_now.hour) * 60 * 60)
-                    minutes_in_seconds = ((minute - adjusted_utc_now.minute) * 60)
-                    return_total_seconds = hours_in_seconds + minutes_in_seconds
-                    return return_total_seconds
-                elif adjusted_utc_now.minute < minute:
-                    return_total_seconds = ((minute - adjusted_utc_now.minute) * 60)
-                    return return_total_seconds
-        return_total_seconds = (next_datetime - adjusted_utc_now).total_seconds()
-        return return_total_seconds
+        utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+        adjusted_utc_now = datetime.utcnow() + timedelta(hours=utc0_hour_offset)
+        adjusted_utc0_total_time = adjusted_utc_now + total_add_time
+
+        if adjusted_utc0_total_time.hour == hour:
+            if adjusted_utc0_total_time.minute < minutes:
+                adjusted_utc0_total_time = adjusted_utc0_total_time - timedelta(days=1)
+        elif adjusted_utc0_total_time.hour < hour:
+            adjusted_utc0_total_time = adjusted_utc0_total_time - timedelta(days=1)
+
+        temp_time_str = adjusted_utc0_total_time.strftime("%Y-%m-%d_" + str(hour) + ":" + str(minutes))
+        next_datetime = datetime.strptime(temp_time_str, "%Y-%m-%d_%H:%M") - adjusted_utc_now
+        return int(next_datetime.total_seconds())
     except Exception as error:
         logger.primary_logger.warning("Getting email sleep time in seconds error: " + str(error))
     return 604800  # 1 week

@@ -31,7 +31,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
       ${PYTHON_MODULES_DIR}/itsdangerous-2.0.1-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/charset_normalizer-2.0.6-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/tenacity-8.0.1-py3-none-any.whl \
-      ${PYTHON_MODULES_DIR}/python_dateutil-2.8.1-py2.py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/Werkzeug-2.0.1-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/Jinja2-3.0.1-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/pycparser-2.20-py2.py3-none-any.whl \
