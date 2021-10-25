@@ -75,7 +75,8 @@
                     <br><br>
 
                     <label class="toggle-switch">
-                        <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input">
+                        <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input"
+                        onclick="select_all_sensor_checkboxes()">
                         <label class="toggle-switch-label" for="select-all-checkboxes"></label>
                         Select All
                     </label>
@@ -231,14 +232,6 @@
 </div>
 
 <script>
-    jQuery('#select-all-checkboxes').change(function () {
-        if (jQuery(this).prop('checked')) {
-            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
-        } else {
-            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
-        }
-    });
-
     if (screen.width < 500) {
             document.getElementById('email-addresses-textarea').style.width = '350px';
         }

@@ -148,11 +148,11 @@
                         </div>
                     </label>
 
-
                     <br><hr><br>
 
                     <label class="toggle-switch">
-                        <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input">
+                        <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input"
+                               onclick="select_all_sensor_checkboxes()">
                         <label class="toggle-switch-label" for="select-all-checkboxes"></label>
                         Select All
                     </label>
@@ -309,21 +309,9 @@
 </div>
 
 <script>
-    jQuery('#select-all-checkboxes').change(function () {
-        if (jQuery(this).prop('checked')) {
-            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', true);
-        } else {
-            jQuery("div[id=sensor-checkboxes] input:checkbox").prop('checked', false);
-        }
-    });
-
-    jQuery('#MQTTDatabaseCheck').change(function () {
-        document.getElementById("MQTTBaseTopicInput").disabled = !jQuery(this).prop('checked');
-    });
-
     function db_selection() {
         if (document.getElementById("databases").value === 'MainDatabase') {
-            jQuery(document.getElementById("MQTTDatabaseCheck")).prop('checked', false);
+            document.getElementById("MQTTDatabaseCheck").checked = false;
             document.getElementById("MQTTDatabaseCheck").disabled = true;
             document.getElementById("MQTTBaseTopicInput").disabled = true;
         } else if (document.getElementById("databases").value === 'MQTTSubscriberDatabase') {
@@ -333,14 +321,10 @@
         }
         else {
             document.getElementById("MQTTDatabaseCheck").disabled = false;
-            if (jQuery(document.getElementById("MQTTDatabaseCheck")).prop('checked')) {
-                document.getElementById("MQTTBaseTopicInput").disabled = false;
-            }
+            document.getElementById("MQTTBaseTopicInput").disabled = false;
         }
     }
-</script>
 
-<script type="text/javascript">
     function CreatingGraph() {
         document.getElementById("blink_shadow").textContent = "Creating Graph - Please Wait";
         document.getElementById("create-graph-button").disabled = true;
@@ -362,8 +346,6 @@
     }
 
     {{ RunScript | safe }}
-</script>
 
-<script>
     CheckNotificationsAsync();
 </script>

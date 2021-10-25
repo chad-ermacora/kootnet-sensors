@@ -21,7 +21,7 @@
 
 <div class="col-12 col-m-12 col-sm-12">
     <div class="card">
-        <div class="card-content" id="db-info-resize">
+        <div class="card-content">
             <form method="POST" action="/atpro/system-db-management" target="_blank">
                 <h2><i class="fas fa-download"></i> Download Backup Databases</h2>
                 <p>
@@ -234,10 +234,6 @@
     function RefreshPageTimed() {
         SelectNav('sensor-system', skip_menu_select=true);
     }
-
-    if (screen.width < 610) {
-            document.getElementById('db-info-resize').style.width = 'fit-content';
-        }
 
     {{ RunScript | safe }}
 </script>
