@@ -21,6 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, thread_function
+from http_server.server_http_auth import save_http_auth_to_file, default_http_flask_user, default_http_flask_password
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
@@ -40,6 +41,12 @@ from configuration_modules.config_sensor_control import CreateSensorControlConfi
 
 def successful_upgrade_message(config_name="Generic"):
     logger.primary_logger.info("Successfully Upgraded " + str(config_name) + " Configuration")
+
+
+def reset_flask_login_credentials(log_reset=True):
+    if log_reset:
+        logger.primary_logger.warning(" **** Web Portal Login Reset to Defaults ****")
+    save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
 
 
 def reset_primary_config(log_reset=True):
@@ -193,6 +200,7 @@ def load_and_save_all_configs_silently():
         upgrade_config_load_and_save(config, upgrade_msg=False)
 
 
+# ToDo: Remove module & OS upgrade functions to somewhere else
 def upgrade_python_pip_modules():
     if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
         requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()

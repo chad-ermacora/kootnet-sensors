@@ -57,6 +57,9 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 34:
+                if previous_version.minor_version < 152:
+                    no_changes = False
+                    generic_upgrade_functions.reset_flask_login_credentials()
                 if previous_version.minor_version < 122:
                     no_changes = False
                     config_class = generic_upgrade_functions.CreateWeatherUndergroundConfiguration
