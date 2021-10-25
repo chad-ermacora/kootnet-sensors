@@ -37,6 +37,8 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
             "Delay in Hours between Automatic Upgrade Checks"
         ]
 
+        self.demo_mode = False
+
         self.sensor_id = app_cached_variables.tmp_sensor_id
 
         self.enable_debug_logging = 0

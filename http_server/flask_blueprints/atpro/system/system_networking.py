@@ -88,28 +88,30 @@ def html_atpro_set_custom_ssl():
     logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
     return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
-
-    try:
-        temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
-        temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
-        new_ssl_certificate = request.files["custom_crt"]
-        new_ssl_key = request.files["custom_key"]
-        new_ssl_certificate.save(temp_ssl_crt_location)
-        new_ssl_key.save(temp_ssl_key_location)
-        if _is_valid_ssl_certificate(get_file_content(temp_ssl_crt_location)):
-            os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
-            os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
-            os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
-            os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
-            logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
-            atpro_notifications.manage_service_restart()
-            return get_message_page("Sensor SSL Certificate OK", return_message_ok,
+    if not app_config_access.primary_config.demo_mode:
+        try:
+            temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
+            temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
+            new_ssl_certificate = request.files["custom_crt"]
+            new_ssl_key = request.files["custom_key"]
+            new_ssl_certificate.save(temp_ssl_crt_location)
+            new_ssl_key.save(temp_ssl_key_location)
+            if _is_valid_ssl_certificate(get_file_content(temp_ssl_crt_location)):
+                os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
+                os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
+                os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
+                os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
+                logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
+                atpro_notifications.manage_service_restart()
+                return get_message_page("Sensor SSL Certificate OK", return_message_ok,
+                                        page_url="sensor-system", skip_menu_select=True)
+            logger.network_logger.error("Invalid Uploaded SSL Certificate")
+            return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
                                     page_url="sensor-system", skip_menu_select=True)
-        logger.network_logger.error("Invalid Uploaded SSL Certificate")
-        return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
-                                page_url="sensor-system", skip_menu_select=True)
-    except Exception as error:
-        logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
+        except Exception as error:
+            logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
+    else:
+        return_message_fail = "Unable to change SSL Certificate when in Demo mode"
     return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
                             page_url="sensor-system", skip_menu_select=True)
 

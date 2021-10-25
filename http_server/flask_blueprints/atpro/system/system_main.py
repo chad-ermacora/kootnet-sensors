@@ -19,6 +19,7 @@
 from flask import Blueprint, render_template, request
 from http_server.server_http_auth import auth, save_http_auth_to_file, min_length_username, min_length_password
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
+from configuration_modules.app_config_access import primary_config
 
 html_atpro_system_routes = Blueprint("html_atpro_system_routes", __name__)
 
@@ -31,7 +32,7 @@ def html_atpro_sensor_settings_system():
 @html_atpro_system_routes.route("/atpro/system-change-login", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_system_change_login():
-    if request.method == "POST":
+    if request.method == "POST" and not primary_config.demo_mode:
         temp_username = str(request.form.get("login_username"))
         temp_password = str(request.form.get("login_password"))
         if len(temp_username) >= min_length_username and len(temp_password) >= min_length_password:
