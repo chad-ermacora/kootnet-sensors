@@ -154,6 +154,8 @@ def atpro_raw_config_urls(url_path):
             config_content = get_file_content(file_locations.dhcpcd_config_file)
         else:
             config_content = "Access Denied"
+            if app_config_access.primary_config.demo_mode:
+                config_content = config_content + " - Demo Mode Enabled"
         return _config_to_html_view(config_name, file_locations.dhcpcd_config_file, config_content, split_by_line=False)
     elif url_path == "config-wifi":
         config_name = "<i class='fas fa-wifi'></i> WiFi"
@@ -161,6 +163,8 @@ def atpro_raw_config_urls(url_path):
             config_content = get_file_content(file_locations.wifi_config_file)
         else:
             config_content = "Access Denied"
+            if app_config_access.primary_config.demo_mode:
+                config_content = config_content + " - Demo Mode Enabled"
         return _config_to_html_view(config_name, file_locations.wifi_config_file, config_content, split_by_line=False)
     elif url_path == "config-sc":
         config_name = "<i class='fas fa-project-diagram'></i> Remote Management Configuration"
