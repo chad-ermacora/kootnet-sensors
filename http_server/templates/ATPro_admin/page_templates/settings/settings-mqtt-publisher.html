@@ -857,7 +857,7 @@
         } else if (document.getElementById("SendAsIndividual").checked) {
             document.getElementById("MQTTCustomData").style.display = "none";
             document.getElementById("ResetTopics").style.display = "inline-block";
-            if (screen.width < 500) {
+            if (window.innerWidth < 500) {
                 document.getElementById("float_boxes_topics").style.display = "inline-block";
             } else {
                 document.getElementById("float_boxes_topics").style.display = "inline-flex";
@@ -870,7 +870,7 @@
     }
     topics_hidden();
 
-    if (screen.width < 500) {
+    if (window.innerWidth < 500) {
             document.getElementById('mqtt_custom_data').style.width = '350px';
         }
 </script>
