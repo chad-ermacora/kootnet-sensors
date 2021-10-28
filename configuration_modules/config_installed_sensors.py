@@ -167,7 +167,10 @@ class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
                 new_file_content += str(setting_name) + " || "
         if len(new_file_content) > 4:
             if not skip_root_check and not running_with_root:
-                return new_file_content[:-4] + " || Hardware Sensors Disabled - Not running with root"
+                new_file_content = "Hardware Sensors Disabled - Not running with root"
+                if self.kootnet_dummy_sensor:
+                    new_file_content = "Kootnet Dummy Sensors || " + new_file_content
+                return "Gnu/Linux || " + new_file_content
             return new_file_content[:-4]
         return "N/A"
 
