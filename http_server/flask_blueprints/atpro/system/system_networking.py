@@ -77,7 +77,7 @@ def html_atpro_system_ssl():
 @auth.login_required
 def html_atpro_create_new_self_signed_ssl():
     if app_config_access.primary_config.demo_mode:
-        message2 = "Unable to Create New SSL Certificate when in Demo mode"
+        message2 = "Unable to Create New SSL Certificate in Demo mode"
     else:
         message2 = "Restart Kootnet Sensors to create and use the new SSL Certificate"
         os.system("rm -f -r " + file_locations.http_ssl_folder)
@@ -92,7 +92,7 @@ def html_atpro_set_custom_ssl():
     return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
     if app_config_access.primary_config.demo_mode:
-        return_message_fail = "Unable to change SSL Certificate when in Demo mode"
+        return_message_fail = "Unable to change SSL Certificate in Demo mode"
     else:
         try:
             temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"

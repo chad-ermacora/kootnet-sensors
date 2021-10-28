@@ -34,7 +34,7 @@ def html_atpro_sensor_settings_system():
 def html_atpro_system_change_login():
     if request.method == "POST":
         if primary_config.demo_mode:
-            return get_message_page("Function Disabled", "Demo mode enabled")
+            return get_message_page("Function Disabled", "Unable to change Login in Demo mode")
         else:
             temp_username = str(request.form.get("login_username"))
             temp_password = str(request.form.get("login_password"))
