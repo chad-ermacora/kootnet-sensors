@@ -150,14 +150,14 @@ def atpro_raw_config_urls(url_path):
         return _config_to_html_view(config_name, file_locations.luftdaten_config, config_content)
     elif url_path == "config-networking":
         config_name = "<i class='fas fa-network-wired'></i> Networking (dhcpcd.conf)"
-        if running_with_root:
+        if running_with_root and not app_config_access.primary_config.demo_mode:
             config_content = get_file_content(file_locations.dhcpcd_config_file)
         else:
             config_content = "Access Denied"
         return _config_to_html_view(config_name, file_locations.dhcpcd_config_file, config_content, split_by_line=False)
     elif url_path == "config-wifi":
         config_name = "<i class='fas fa-wifi'></i> WiFi"
-        if running_with_root:
+        if running_with_root and not app_config_access.primary_config.demo_mode:
             config_content = get_file_content(file_locations.wifi_config_file)
         else:
             config_content = "Access Denied"
