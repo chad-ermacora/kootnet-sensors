@@ -20,6 +20,7 @@ import os
 from flask import Blueprint, request, render_template
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from configuration_modules.app_config_access import primary_config
 from operations_modules.app_generic_functions import thread_function
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from http_server.server_http_auth import auth
@@ -27,6 +28,8 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 html_atpro_system_commands_routes = Blueprint("html_atpro_system_commands_routes", __name__)
+running_with_root = app_cached_variables.running_with_root
+running_as_service = app_cached_variables.running_as_service
 
 
 @html_atpro_system_commands_routes.route("/atpro/system-upgrades-power")
@@ -39,8 +42,10 @@ def html_atpro_system_upgrades_power():
 def atpro_upgrade_urls(url_path):
     title = "Function Disabled"
     message = "Kootnet Sensors must be running as a service with root access"
+    if primary_config.demo_mode:
+        message = "Function Disabled in Demo mode"
     msg_page = get_message_page(title, message, full_reload=False)
-    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
+    if running_as_service and running_with_root and not primary_config.demo_mode:
         title = "Error!"
         message = "An Error occurred"
         system_command = "exit"
