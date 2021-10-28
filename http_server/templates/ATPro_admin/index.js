@@ -41,11 +41,11 @@ function switchTheme() {
 	if (body.classList.contains(themeLight)) {
 		body.classList.remove(themeLight)
 		body.classList.add(themeDark)
-		setCookie(themeCookieName, themeDark)
+		setCookie(themeCookieName, themeDark, 14)
 	} else {
 		body.classList.remove(themeDark)
 		body.classList.add(themeLight)
-		setCookie(themeCookieName, themeLight)
+		setCookie(themeCookieName, themeLight, 14)
 	}
 }
 
@@ -56,7 +56,7 @@ function collapseSidebar() {
 window.onclick = function(event) {
 	openCloseDropdown(event);
 	if (!event.target.matches('.sidebar-stay-on')) {
-		if (window.innerWidth < 500) {
+		if (window.innerWidth < 601) {
 			body.classList.remove('sidebar-expand')
 		}
 	}
