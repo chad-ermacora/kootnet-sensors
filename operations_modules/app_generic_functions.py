@@ -30,7 +30,7 @@ try:
     # In try statement so import does not prevent loading when missing
     import requests
 except Exception as import_error:
-    logger.primary_logger.error("requests python module import error: " + str(import_error))
+    logger.primary_logger.debug("requests python module import error: " + str(import_error))
 
 logging.captureWarnings(True)
 
