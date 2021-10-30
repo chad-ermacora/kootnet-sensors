@@ -33,6 +33,7 @@ def run_configuration_upgrade_checks():
     current_version = software_version.CreateRefinedVersion(software_version.version)
     no_changes = True
 
+    generic_upgrade_functions.create_secondary_python_venv()
     if previous_version.major_version == 999:
         logger.primary_logger.info(" - New Install Detected")
         no_changes = False

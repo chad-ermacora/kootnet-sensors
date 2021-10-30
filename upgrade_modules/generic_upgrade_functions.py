@@ -238,3 +238,23 @@ def _upgrade_linux_os_thread():
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
         app_cached_variables.sensor_ready_for_upgrade = True
+
+
+def create_secondary_python_venv():
+    """
+    Checks to see if the secondary Python virtual environment is present, if not, creates it
+    Used for software upgrades and Kootnet Sensor's TCT
+    :return: Nothing
+    """
+    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
+        upgrade_env_dir = file_locations.sensor_data_dir + "/upgrade_env/"
+        try:
+            if not os.path.isdir(upgrade_env_dir):
+                os.mkdir(upgrade_env_dir)
+            if not os.path.isfile(upgrade_env_dir + "bin/python"):
+                logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
+                os.system("python3 -m venv " + upgrade_env_dir)
+                os.system(upgrade_env_dir + "bin/pip install requests")
+                logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
+        except Exception as error:
+            logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))

@@ -205,23 +205,6 @@ def _get_md5_for_version(kootnet_version, get_full_installer=False):
     return "MD5 of " + kootnet_version + " Not Found"
 
 
-def _create_upgrade_python_venv():
-    """
-    Checks to see if the backup Python virtual environment is present, if not, create it
-    Used for upgrades and Kootnet Sensor's TCT
-    :return: Nothing
-    """
-    upgrade_env_dir = file_locations.sensor_data_dir + "/upgrade_env/"
-    try:
-        if not os.path.isdir(upgrade_env_dir):
-            os.mkdir(upgrade_env_dir)
-        if not os.path.isfile(upgrade_env_dir + "bin/python"):
-            os.system("python3 -m venv " + upgrade_env_dir)
-            os.system(upgrade_env_dir + "bin/pip install requests")
-    except Exception as error:
-        logger.primary_logger.error("Unable to create Python virtual environment for upgrades: " + str(error))
-
-
 def _save_upgrade_config(ks_upgrade_file_location, clean_upgrade_str):
     """
     Saves a configuration file to automate Kootnet Sensor's upgrade program
@@ -245,6 +228,5 @@ def _start_upgrade_service(upgrade_message):
     :param upgrade_message: Message to log just before it starts Kootnet Sensor's upgrade service
     :return: Nothing
     """
-    _create_upgrade_python_venv()
     logger.network_logger.debug(upgrade_message)
     os.system("systemctl start KootnetSensorsUpgrade.service")
