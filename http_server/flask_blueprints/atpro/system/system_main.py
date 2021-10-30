@@ -17,7 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from flask import Blueprint, render_template, request
-from http_server.server_http_auth import auth, save_http_auth_to_file, min_length_username, min_length_password
+from http_server.server_http_generic_functions import save_http_auth_to_file, min_length_username, min_length_password
+from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from configuration_modules.app_config_access import primary_config
 
