@@ -311,7 +311,7 @@ def get_http_sensor_file(sensor_address, command, http_port="10065"):
     try:
         url = "https://" + sensor_address + ":" + http_port + "/" + command
         login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.get(url=url, timeout=(4, 120), verify=False, auth=login_credentials)
+        tmp_return_data = requests.get(url=url, timeout=(8, 30), verify=False, auth=login_credentials)
         return tmp_return_data.content
     except Exception as error:
         log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
