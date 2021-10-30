@@ -27,7 +27,7 @@ from operations_modules.app_generic_functions import write_file_to_disk, thread_
 from operations_modules.sqlite_database import check_main_database_structure, check_checkin_database_structure, \
     run_database_integrity_check, check_mqtt_subscriber_database_structure
 from upgrade_modules.program_upgrade_checks import run_configuration_upgrade_checks
-from http_server.server_http_auth import set_http_auth_from_file
+from http_server.server_http_generic_functions import set_http_auth_from_file
 
 
 def run_program_start_checks():
@@ -85,7 +85,7 @@ def _set_file_permissions():
     _change_permissions_recursive(file_locations.program_root_dir, 0o755, 0o755)
     _change_permissions_recursive(file_locations.sensor_config_dir, 0o755, file_rights_sensitive)
     _change_permissions_recursive(file_locations.sensor_data_dir, 0o755, file_rights_data)
-    _change_permissions_recursive(file_locations.sensor_data_dir + "/scripts", 0o755, 0o755)
+    _change_permissions_recursive(file_locations.upgrade_scripts_folder, 0o755, 0o755)
     _change_permissions_recursive(file_locations.log_directory, 0o755, file_rights_data)
     _change_permissions_recursive(file_locations.http_ssl_folder, 0o755, file_rights_sensitive)
 

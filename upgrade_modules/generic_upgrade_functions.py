@@ -21,7 +21,8 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, thread_function
-from http_server.server_http_auth import save_http_auth_to_file, default_http_flask_user, default_http_flask_password
+from http_server.server_http_generic_functions import save_http_auth_to_file, default_http_flask_user, \
+    default_http_flask_password
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
@@ -200,7 +201,6 @@ def load_and_save_all_configs_silently():
         upgrade_config_load_and_save(config, upgrade_msg=False)
 
 
-# ToDo: Remove module & OS upgrade functions to somewhere else
 def upgrade_python_pip_modules():
     if os.path.isfile(file_locations.program_root_dir + "/requirements.txt"):
         requirements_text = get_file_content(file_locations.program_root_dir + "/requirements.txt").strip()
