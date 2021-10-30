@@ -46,8 +46,8 @@ def _get_user():
 
 def _check_directories():
     create_directories = [
-        sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, uploaded_databases_folder,
-        log_directory, database_backup_folder, sensor_data_dir + "/scripts", http_ssl_folder
+        sensor_data_dir, sensor_config_dir, custom_ip_lists_folder, uploaded_databases_folder, log_directory,
+        database_backup_folder, upgrade_scripts_folder, http_ssl_folder, downloads_folder
     ]
 
     if running_with_root:
@@ -81,6 +81,9 @@ if program_root_dir != "/opt/kootnet-sensors" or not running_with_root:
     system_user = _get_user()
     sensor_data_dir = "/home/" + system_user + "/kootnet_data"
     sensor_config_dir = "/home/" + system_user + "/kootnet_data/config"
+
+downloads_folder = sensor_data_dir + "/downloads"
+upgrade_scripts_folder = sensor_data_dir + "/scripts"
 
 uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 database_backup_folder = sensor_data_dir + "/database_backups"
