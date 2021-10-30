@@ -29,7 +29,7 @@ try:
     from sensor_modules import sensor_access
 except Exception as import_error_raw:
     import_error_msg = str(import_error_raw)
-    log_message = "--- Failed to Start Kootnet Sensors - Problem Loading Sensor Access: "
+    log_message = "-- Failed to Start Kootnet Sensors - Problem Loading Sensor Access: "
     logger.primary_logger.critical(log_message + import_error_msg)
     while True:
         sleep(3600)
@@ -57,43 +57,43 @@ try:
     # Start HTTPS Web Portal Server
     start_https_server()
 except Exception as error:
-    logger.primary_logger.critical("HTTPS Web Portal Server Error: " + str(error))
+    logger.primary_logger.critical("-- HTTPS Web Portal Server Error: " + str(error))
 
 try:
     # Start Interval SQL Recording
     start_interval_recording_server()
 except Exception as error:
-    logger.primary_logger.critical("Interval SQL Recording Server Error: " + str(error))
+    logger.primary_logger.critical("-- Interval SQL Recording Server Error: " + str(error))
 
 try:
     # Start High/Low Trigger SQL Recording
     start_trigger_high_low_recording_server()
 except Exception as error:
-    logger.primary_logger.critical("High/Low Trigger SQL Recording Server Error: " + str(error))
+    logger.primary_logger.critical("-- High/Low Trigger SQL Recording Server Error: " + str(error))
 
 try:
     # Start Variance Trigger SQL Recording
     start_trigger_variance_recording_server()
 except Exception as error:
-    logger.primary_logger.critical("Variance Trigger SQL Recording Server Error: " + str(error))
+    logger.primary_logger.critical("-- Variance Trigger SQL Recording Server Error: " + str(error))
 
 try:
     # Start Hardware Interactions Server
     start_hardware_interactive_server()
 except Exception as error:
-    logger.primary_logger.critical("Hardware Interactions Server Error: " + str(error))
+    logger.primary_logger.critical("-- Hardware Interactions Server Error: " + str(error))
 
 try:
     # Start Display Server
     start_display_server()
 except Exception as error:
-    logger.primary_logger.critical("Display Server Error: " + str(error))
+    logger.primary_logger.critical("-- Display Server Error: " + str(error))
 
 try:
     # Start the "Call Home" Check-in server.
     start_sensor_checkins()
 except Exception as error:
-    logger.primary_logger.critical("Checkins (Sending) Server Error: " + str(error))
+    logger.primary_logger.critical("-- Checkins (Sending) Server Error: " + str(error))
 
 try:
     # Start Automatic Upgrades Server
@@ -101,63 +101,63 @@ try:
         start_automatic_upgrades_server()
     else:
         log_msg = "Kootnet Sensors must be running as a service with root privileges"
-        logger.primary_logger.info("Automatic Upgrades Server Disabled - " + log_msg)
+        logger.primary_logger.info(" -- Automatic Upgrades Server Disabled - " + log_msg)
 except Exception as error:
-    logger.primary_logger.critical("Automatic Upgrades Server Error: " + str(error))
+    logger.primary_logger.critical("-- Automatic Upgrades Server Error: " + str(error))
 
 try:
     # Start Reports Email Server
     start_report_email_server()
 except Exception as error:
-    logger.primary_logger.critical("Reports Email Server Error: " + str(error))
+    logger.primary_logger.critical("-- Reports Email Server Error: " + str(error))
 
 try:
     # Start Graph Email Server
     start_graph_email_server()
 except Exception as error:
-    logger.primary_logger.critical("Graph Email Server Error: " + str(error))
+    logger.primary_logger.critical("-- Graph Email Server Error: " + str(error))
 
 try:
     # Start MQTT Broker Server
     start_mqtt_broker_server()
 except Exception as error:
-    logger.primary_logger.critical("MQTT Broker Server Error: " + str(error))
+    logger.primary_logger.critical("-- MQTT Broker Server Error: " + str(error))
 
 try:
     # Start MQTT Publisher Server
     start_mqtt_publisher_server()
 except Exception as error:
-    logger.primary_logger.critical("MQTT Publisher Server Error: " + str(error))
+    logger.primary_logger.critical("-- MQTT Publisher Server Error: " + str(error))
 
 try:
     # Start MQTT Subscriber Server
     start_mqtt_subscriber_server()
 except Exception as error:
-    logger.primary_logger.critical("MQTT Subscriber Server Error: " + str(error))
+    logger.primary_logger.critical("-- MQTT Subscriber Server Error: " + str(error))
 
 try:
     # Start Luftdaten Online Service Server
     start_luftdaten_server()
 except Exception as error:
-    logger.primary_logger.critical("Luftdaten Server Error: " + str(error))
+    logger.primary_logger.critical("-- Luftdaten Server Error: " + str(error))
 
 try:
     # Start Weather Underground Online Service Server
     start_weather_underground_server()
 except Exception as error:
-    logger.primary_logger.critical("Weather Underground Server Error: " + str(error))
+    logger.primary_logger.critical("-- Weather Underground Server Error: " + str(error))
 
 try:
     # Start Open Sense Map Online Service Server
     start_open_sense_map_server()
 except Exception as error:
-    logger.primary_logger.critical("Open Sense Map Server Error: " + str(error))
+    logger.primary_logger.critical("-- Open Sense Map Server Error: " + str(error))
 
 try:
     # Updates cached variables that may change like IP and hostname every hour
     start_cached_variables_refresh()
 except Exception as error:
-    logger.primary_logger.critical("Cached Variables Update Server Error: " + str(error))
+    logger.primary_logger.critical("-- Cached Variables Update Server Error: " + str(error))
 
 logger.primary_logger.debug(" -- Thread Initializations Complete")
 while True:
