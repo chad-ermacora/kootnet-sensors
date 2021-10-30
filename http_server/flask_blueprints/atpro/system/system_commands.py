@@ -23,6 +23,7 @@ from operations_modules import app_cached_variables
 from configuration_modules.app_config_access import primary_config
 from operations_modules.app_generic_functions import thread_function
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_http, download_type_smb
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
@@ -71,7 +72,7 @@ def atpro_upgrade_urls(url_path):
             if app_cached_variables.software_update_available:
                 title = "Upgrade Started"
                 message = "Standard Upgrade by HTTP Started. This may take awhile ..."
-                system_command = app_cached_variables.bash_commands["UpgradeOnline"]
+                start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http)
                 click_msg = "Kootnet Sensors is currently doing a Standard Upgrade. " + \
                             "Once complete, the software will restart and this message will disappear"
                 atpro_notifications.add_custom_message("KS Std HTTP upgrade in progress ...", click_msg)
@@ -82,7 +83,7 @@ def atpro_upgrade_urls(url_path):
             if app_cached_variables.software_update_dev_available:
                 title = "Upgrade Started"
                 message = "Development Upgrade by HTTP Started. This may take awhile ..."
-                system_command = app_cached_variables.bash_commands["UpgradeOnlineDEV"]
+                start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_http)
                 click_msg = "Kootnet Sensors is currently doing a Developmental Upgrade. " + \
                             "Once complete, the software will restart and this message will disappear"
                 atpro_notifications.add_custom_message("KS Dev HTTP upgrade in progress ...", click_msg)
@@ -90,7 +91,7 @@ def atpro_upgrade_urls(url_path):
             logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Re-installing the latest Standard version of Kootnet Sensors. This may take awhile ..."
-            system_command = app_cached_variables.bash_commands["UpgradeOnlineClean"]
+            start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=True, download_type=download_type_http)
             click_msg = "Kootnet Sensors is currently Re-installing the latest Standard version of Kootnet Sensors. " + \
                         "Once complete, the software will restart and this message will disappear"
             atpro_notifications.add_custom_message("KS Std Re-install HTTP in progress ...", click_msg)
@@ -98,7 +99,7 @@ def atpro_upgrade_urls(url_path):
             logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Re-installing the latest Developmental version of Kootnet Sensors. This may take awhile ..."
-            system_command = app_cached_variables.bash_commands["UpgradeOnlineCleanDEV"]
+            start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_http)
             click_msg = "Kootnet Sensors is currently Re-installing the latest Developmental version of " + \
                         "Kootnet Sensors. Once complete, the software will restart and this message will disappear"
             atpro_notifications.add_custom_message("KS Dev Re-install HTTP in progress ...", click_msg)
@@ -106,7 +107,7 @@ def atpro_upgrade_urls(url_path):
             logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Standard Upgrade by SMB Started. This may take awhile ..."
-            system_command = app_cached_variables.bash_commands["UpgradeSMB"]
+            start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_smb)
             click_msg = "Kootnet Sensors is currently doing a SMB Standard Upgrade. " + \
                         "Once complete, the software will restart and this message will disappear"
             atpro_notifications.add_custom_message("KS Std SMB upgrade in progress ...", click_msg)
@@ -114,7 +115,7 @@ def atpro_upgrade_urls(url_path):
             logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
             title = "Upgrade Started"
             message = "Development Upgrade by SMB Started. This may take awhile ..."
-            system_command = app_cached_variables.bash_commands["UpgradeSMBDEV"]
+            start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_smb)
             click_msg = "Kootnet Sensors is currently doing a SMB Developmental Upgrade. " + \
                         "Once complete, the software will restart and this message will disappear"
             atpro_notifications.add_custom_message("KS Dev SMB upgrade in progress ...", click_msg)

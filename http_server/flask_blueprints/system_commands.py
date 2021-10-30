@@ -25,6 +25,7 @@ from operations_modules import app_cached_variables
 from operations_modules import software_version
 from configuration_modules.app_config_access import primary_config
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_http, download_type_smb
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_uptime_str
 from sensor_modules import system_access
@@ -116,7 +117,7 @@ def get_sensor_program_last_updated():
 @auth.login_required
 def upgrade_http():
     logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
+    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http)
     msg = "HTTP" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
 
@@ -125,7 +126,7 @@ def upgrade_http():
 @auth.login_required
 def upgrade_http_dev():
     logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
+    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_http)
     msg = "HTTP Development" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
 
@@ -134,7 +135,7 @@ def upgrade_http_dev():
 @auth.login_required
 def upgrade_clean_http():
     logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineClean"])
+    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=True, download_type=download_type_http)
     msg = "HTTP Clean" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
 
@@ -143,7 +144,7 @@ def upgrade_clean_http():
 @auth.login_required
 def upgrade_clean_http_dev():
     logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineCleanDEV"])
+    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_http)
     msg = "HTTP Development Clean" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
 
@@ -152,44 +153,18 @@ def upgrade_clean_http_dev():
 @auth.login_required
 def upgrade_smb():
     logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMB"])
+    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_smb)
     msg = "SMB" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
-
-
-# NOTE SMB needs to be setup before clean SMB upgrades can be done.  Disabling by default.
-# @html_system_commands_routes.route("/UpgradeSMBClean")
-# @auth.login_required
-# def upgrade_clean_smb():
-#     logger.network_logger.info("** Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-#     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBClean"])
-#     return message_and_return("SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
-#
-#
-# @html_system_commands_routes.route("/UpgradeSMBCleanDEV")
-# @auth.login_required
-# def upgrade_clean_smb_dev():
-#     logger.network_logger.info("** DEV Clean Upgrade - SMB Initiated by " + str(request.remote_addr))
-#     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBCleanDEV"])
-#     return message_and_return("DEV SMB Clean Upgrade Started", text_message2=message_few_min, url="/SensorInformation")
 
 
 @html_system_commands_routes.route("/UpgradeSMBDev")
 @auth.login_required
 def upgrade_smb_dev():
     logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeSMBDEV"])
+    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_smb)
     msg = "SMB Development" + upgrade_msg
     return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
-
-
-# Old Method, upgrade or remove?
-# @html_system_commands_routes.route("/inkupg")
-# @auth.login_required
-# def upgrade_rp_controller():
-#     logger.network_logger.info("* Upgrade - E-Ink Mobile Initiated by " + str(request.remote_addr))
-#     app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["inkupg"])
-#     return "OK"
 
 
 @html_system_commands_routes.route("/RestartServices")

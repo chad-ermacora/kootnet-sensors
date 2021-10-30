@@ -17,13 +17,13 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-import os
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import check_for_new_version
-from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules.app_generic_functions import CreateMonitoredThread
 from operations_modules.software_version import CreateRefinedVersion, version
 from configuration_modules import app_config_access
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade
 
 
 def start_automatic_upgrades_server():
@@ -72,12 +72,12 @@ def _thread_start_automatic_upgrades_server():
                         if http_dev_version.feature_version > running_version.feature_version:
                             msg2 = "Starting Automatic Developmental Feature Upgrade"
                             logger.primary_logger.info(new_version_msg + msg2)
-                            thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
+                            start_kootnet_sensors_upgrade(dev_upgrade=True)
                         elif http_dev_version.feature_version == running_version.feature_version:
                             if http_dev_version.minor_version > running_version.minor_version:
                                 msg2 = "Starting Automatic Developmental Minor Upgrade"
                                 logger.primary_logger.info(new_version_msg + msg2)
-                                thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnlineDEV"])
+                                start_kootnet_sensors_upgrade(dev_upgrade=True)
                 else:
                     new_version = http_std_version.get_version_string()
                     new_version_msg = new_version_msg.replace("{{ NewVersion }}", new_version)
@@ -87,7 +87,7 @@ def _thread_start_automatic_upgrades_server():
                         else:
                             if http_std_version.feature_version > running_version.feature_version:
                                 logger.primary_logger.info(new_version_msg + "Starting Automatic Feature Upgrade")
-                                thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
+                                start_kootnet_sensors_upgrade()
                     if app_config_access.primary_config.enable_automatic_upgrades_minor:
                         if http_std_version.major_version != running_version.major_version:
                             _major_upgrade_msg_and_sleep()
@@ -95,7 +95,7 @@ def _thread_start_automatic_upgrades_server():
                             if http_std_version.feature_version == running_version.feature_version:
                                 if http_std_version.minor_version > running_version.minor_version:
                                     logger.primary_logger.info(new_version_msg + "Starting Automatic Minor Upgrade")
-                                    thread_function(os.system, args=app_cached_variables.bash_commands["UpgradeOnline"])
+                                    start_kootnet_sensors_upgrade()
             except Exception as error:
                 logger.primary_logger.error("Problem during Automatic Upgrade attempt: " + str(error))
         logger.primary_logger.debug("Automatic Upgrade Check Finished")
