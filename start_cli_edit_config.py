@@ -21,13 +21,15 @@ import logging
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from upgrade_modules.generic_upgrade_functions import reset_all_configurations
+from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
 from operations_modules.software_version import version
+from http_server.server_http_generic_functions import save_http_auth_to_file
+imports_ok = False
 try:
     import requests
-    from http_server import server_http_auth
+    imports_ok = True
 except Exception as import_error:
-    logger.primary_logger.error("Terminal Configuration Tool - Import Error: " + str(import_error))
+    logger.primary_logger.error("Terminal Configuration Tool - Import: " + str(import_error))
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("Terminal Configuration Tool Starting")
@@ -52,6 +54,7 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 
 any_key_shutdown = "\nThe TCT must be restarted\n\nPress enter to close"
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
+msg_requests_missing = "Unable to start update - Python requests module required"
 
 
 def start_script():
@@ -72,7 +75,15 @@ def start_script():
             elif selection == 2:
                 if input("Are you sure you want to reset ALL configurations? (y/n): ").lower() == "y":
                     os.system("clear")
-                    reset_all_configurations()
+                    config_list = [file_locations.primary_config, file_locations.installed_sensors_config,
+                                   file_locations.display_config, file_locations.checkin_configuration,
+                                   file_locations.interval_config, file_locations.trigger_high_low_config,
+                                   file_locations.trigger_variances_config, file_locations.email_config,
+                                   file_locations.mqtt_publisher_config, file_locations.mqtt_subscriber_config,
+                                   file_locations.osm_config, file_locations.weather_underground_config,
+                                   file_locations.luftdaten_config]
+                    for config in config_list:
+                        os.remove(config)
                     if app_cached_variables.running_as_service:
                         _restart_service()
                 else:
@@ -86,23 +97,32 @@ def start_script():
                     print(msg_service_not_installed)
             elif selection == 5:
                 if app_cached_variables.running_as_service:
-                    os.system("/bin/bash /home/kootnet_data/scripts/update_kootnet-sensors_http.sh")
-                    input(any_key_shutdown)
-                    running = False
+                    if imports_ok:
+                        start_kootnet_sensors_upgrade()
+                        input(any_key_shutdown)
+                        running = False
+                    else:
+                        print(msg_requests_missing)
                 else:
                     print(msg_service_not_installed)
             elif selection == 6:
                 if app_cached_variables.running_as_service:
-                    os.system("/bin/bash /home/kootnet_data/scripts/update_kootnet-sensors_http.sh dev")
-                    input(any_key_shutdown)
-                    running = False
+                    if imports_ok:
+                        start_kootnet_sensors_upgrade(dev_upgrade=True)
+                        input(any_key_shutdown)
+                        running = False
+                    else:
+                        print(msg_requests_missing)
                 else:
                     print(msg_service_not_installed)
             elif selection == 7:
                 if app_cached_variables.running_as_service:
-                    os.system("/bin/bash /home/kootnet_data/scripts/clean_upgrade_http.sh")
-                    input(any_key_shutdown)
-                    running = False
+                    if imports_ok:
+                        start_kootnet_sensors_upgrade(clean_upgrade=True)
+                        input(any_key_shutdown)
+                        running = False
+                    else:
+                        print(msg_requests_missing)
                 else:
                     print(msg_service_not_installed)
             elif selection == 8:
@@ -131,10 +151,16 @@ def start_script():
                 else:
                     print(msg_service_not_installed)
             elif selection == 12:
-                _test_sensors()
-                print("Testing Complete")
+                if imports_ok:
+                    _test_sensors()
+                    print("Testing Complete")
+                else:
+                    print(msg_requests_missing)
             elif selection == 13:
                 running = False
+            elif selection == 22:
+                print("Starting SMB Dev Upgrade")
+                start_kootnet_sensors_upgrade(dev_upgrade=True, download_type=download_type_smb)
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))
@@ -153,7 +179,7 @@ def _change_https_auth():
     print("Please enter a new Username and Password for Kootnet Sensor's Web Portal")
     new_user = input("New Username: ")
     new_password = input("New Password: ")
-    server_http_auth.save_http_auth_to_file(new_user, new_password)
+    save_http_auth_to_file(new_user, new_password)
     _restart_service()
 
 
