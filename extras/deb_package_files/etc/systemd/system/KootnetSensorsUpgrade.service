@@ -1,0 +1,12 @@
+[Unit]
+Description=KootNet Sensors - Upgrades
+
+[Service]
+Type=simple
+Restart=no
+User=root
+Group=root
+ExecStart=/home/kootnet_data/upgrade_env/bin/python /home/kootnet_data/scripts/kootnet_sensors_upgrade.py
+
+[Install]
+WantedBy=multi-user.target
