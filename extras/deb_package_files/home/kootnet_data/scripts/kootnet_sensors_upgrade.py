@@ -111,7 +111,7 @@ class CreateUpgradeInterface:
             os.system("date -u >/etc/kootnet/last_updated.txt")
             logger.primary_logger.info(" --- Debian Package Install Complete")
         except Exception as error:
-            logger.primary_logger.info(" --- Debian Package Install Failed: " + str(error))
+            logger.primary_logger.error(" --- Debian Package Install Failed: " + str(error))
 
     @staticmethod
     def _clean_install():
