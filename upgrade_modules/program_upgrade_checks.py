@@ -34,6 +34,7 @@ def run_configuration_upgrade_checks():
     no_changes = True
 
     generic_upgrade_functions.create_secondary_python_venv()
+    generic_upgrade_functions.add_tct_terminal_alias()
     if previous_version.major_version == 999:
         logger.primary_logger.info(" - New Install Detected")
         no_changes = False

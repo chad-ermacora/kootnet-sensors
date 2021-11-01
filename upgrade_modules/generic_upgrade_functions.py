@@ -258,3 +258,19 @@ def create_secondary_python_venv():
                 logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
         except Exception as error:
             logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))
+
+
+def add_tct_terminal_alias():
+    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
+        kootnet_alias_file_location = "/etc/profile.d/00-kootnet-aliases.sh"
+        kootnet_tct_id_line = "### Kootnet Sensors Terminal Configuration Tool Alias ###"
+        python_executable_loc = file_locations.sensor_data_dir + "/upgrade_env/bin/python"
+        tct_alias = "alias ks-tct='sudo " + python_executable_loc + " /opt/kootnet-sensors/start_cli_edit_config.py'"
+        try:
+            if not os.path.isfile(kootnet_alias_file_location):
+                with open(kootnet_alias_file_location, "w") as alias_file:
+                    alias_file.write(kootnet_tct_id_line + "\n" + tct_alias)
+                os.chmod(file_locations.dhcpcd_config_file, 0o775)
+                logger.primary_logger.debug("-- TCT alias added")
+        except Exception as error:
+            logger.primary_logger.warning("-- Unable to create bash alias for TCT: " + str(error))
