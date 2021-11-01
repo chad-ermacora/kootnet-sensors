@@ -59,6 +59,7 @@ def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, downlo
     :return: Nothing
     """
     if app_cached_variables.sensor_ready_for_upgrade:
+        app_cached_variables.sensor_ready_for_upgrade = False
         system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
         system_thread.daemon = True
         system_thread.start()
@@ -98,7 +99,7 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
             _save_upgrade_config(download_file_location, clean_upgrade_str)
             upgrade_can_proceed = True
         else:
-            logger.network_logger.info("Upgrade Cancelled, Bad MD5 Checksum")
+            logger.network_logger.error("Upgrade Cancelled, Bad MD5 Checksum")
     elif download_type == download_type_smb:
         smb_upgrade_file_location = _save_smb_to_file(dev_upgrade)
         if smb_upgrade_file_location is not None:
@@ -109,6 +110,7 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
         os.system("systemctl start KootnetSensorsUpgrade.service")
     else:
         atpro_notifications.manage_ks_upgrade(enable=False)
+        app_cached_variables.sensor_ready_for_upgrade = True
 
 
 def _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type):
@@ -133,7 +135,6 @@ def _set_upgrade_running_variable():
 
 def _check_upgrade_still_running():
     upgrade_running = 1
-    app_cached_variables.sensor_ready_for_upgrade = False
     while upgrade_running:
         try:
             with open(upgrade_running_file_location, "r") as upgrade_file:
@@ -228,12 +229,10 @@ def _verify_http_upgrade_file(file_location, good_md5_checksum):
     except Exception as error:
         logger.network_logger.warning("Error Creating MD5 of File: " + str(error))
 
-    logger.network_logger.debug("Upgrade File MD5: " + file_md5 + " || Online MD5: " + good_md5_checksum)
+    logger.network_logger.info("Downloaded File MD5: " + file_md5 + " || Online MD5: " + good_md5_checksum)
     if file_md5 == good_md5_checksum:
         logger.network_logger.debug("File MD5 Verified")
         return True
-    logger.network_logger.warning("File MD5 Verification Failed")
-    logger.network_logger.warning("Downloaded File MD5: " + file_md5 + " || Online MD5: " + good_md5_checksum)
     return False
 
 
@@ -254,7 +253,7 @@ def _get_md5_for_version(kootnet_version, get_full_installer=False):
                 return versions_md5_list[index + 4].split(":")[-1].strip()
     except Exception as error:
         logger.network_logger.warning("Get MD5 checksum failed for version " + kootnet_version + ": " + str(error))
-    return "MD5 of " + kootnet_version + " Not Found"
+    return kootnet_version + " Not Found"
 
 
 def _save_upgrade_config(ks_upgrade_file_location, clean_upgrade_str):
