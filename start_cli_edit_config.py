@@ -52,9 +52,16 @@ options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 13. Exit
 """.replace("{{ Version }}", version)
 
+extra_options_menu = """Advanced Options\n
+21. Upgrade Kootnet Sensors (Standard SMB)
+22. Upgrade Kootnet Sensors (Development SMB)
+23. Re-Install Kootnet Sensors (Latest Standard SMB)
+24. Re-Install Kootnet Sensors (Latest Developmental SMB)
+"""
 any_key_shutdown = "\nThe TCT must be restarted\n\nPress enter to close"
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
 msg_requests_missing = "Unable to start update - Python requests module required"
+msg_upgrade_started = "Kootnet Sensors upgrade has started\nCheck Logs for more Info /home/kootnet_data/logs/"
 
 
 def start_script():
@@ -67,7 +74,9 @@ def start_script():
         try:
             selection = int(selection)
             os.system("clear")
-            if selection == 1:
+            if selection == 0:
+                print(extra_options_menu)
+            elif selection == 1:
                 os.system("nano " + file_locations.primary_config)
                 os.system("nano " + file_locations.installed_sensors_config)
                 if app_cached_variables.running_as_service:
@@ -98,9 +107,9 @@ def start_script():
             elif selection == 5:
                 if app_cached_variables.running_as_service:
                     if imports_ok:
+                        print("Starting HTTP Standard Upgrade\n")
                         start_kootnet_sensors_upgrade()
-                        input(any_key_shutdown)
-                        running = False
+                        print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
                 else:
@@ -108,9 +117,9 @@ def start_script():
             elif selection == 6:
                 if app_cached_variables.running_as_service:
                     if imports_ok:
+                        print("Starting HTTP Developmental Upgrade\n")
                         start_kootnet_sensors_upgrade(dev_upgrade=True)
-                        input(any_key_shutdown)
-                        running = False
+                        print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
                 else:
@@ -118,9 +127,9 @@ def start_script():
             elif selection == 7:
                 if app_cached_variables.running_as_service:
                     if imports_ok:
+                        print("Starting HTTP Standard Re-Install\n")
                         start_kootnet_sensors_upgrade(clean_upgrade=True)
-                        input(any_key_shutdown)
-                        running = False
+                        print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
                 else:
@@ -158,9 +167,22 @@ def start_script():
                     print(msg_requests_missing)
             elif selection == 13:
                 running = False
+            elif selection == 21:
+                print("Starting SMB Standard Upgrade\n")
+                start_kootnet_sensors_upgrade(download_type=download_type_smb)
+                print(msg_upgrade_started)
             elif selection == 22:
-                print("Starting SMB Dev Upgrade")
+                print("Starting SMB Developmental Upgrade\n")
                 start_kootnet_sensors_upgrade(dev_upgrade=True, download_type=download_type_smb)
+                print(msg_upgrade_started)
+            elif selection == 23:
+                print("Starting SMB Standard Re-Install\n")
+                start_kootnet_sensors_upgrade(clean_upgrade=True, download_type=download_type_smb)
+                print(msg_upgrade_started)
+            elif selection == 24:
+                print("Starting SMB Developmental Re-Install\n")
+                start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_smb)
+                print(msg_upgrade_started)
             else:
                 os.system("clear")
                 print("Invalid Selection: " + str(selection))
@@ -190,7 +212,7 @@ def _pip_upgrades():
             requirements_text_lines_list = file.readlines()
         for line in requirements_text_lines_list:
             if line[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + line.strip()
+                command = file_locations.sensor_data_dir + "/env/bin/python3 -m pip install -U " + line.strip()
                 os.system(command)
         logger.primary_logger.info("TCT - Python3 Module Upgrades Complete\n")
         _restart_service()
