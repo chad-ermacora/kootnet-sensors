@@ -17,12 +17,16 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
+import time
 from threading import Thread
 from hashlib import md5
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
+from operations_modules import app_cached_variables
+from operations_modules.app_generic_functions import thread_function
 from operations_modules.software_version import CreateRefinedVersion
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 try:
     import requests
@@ -43,6 +47,8 @@ smb_server = "//USB-Development/"
 smb_share = "KootNetSMB/"
 smb_deb_installer = "KootnetSensors_online.deb"
 
+upgrade_running_file_location = file_locations.upgrade_scripts_folder + "/upgrade_running.txt"
+
 
 def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http):
     """
@@ -52,9 +58,11 @@ def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, downlo
     :param download_type: Use global variables download_type_http or download_type_smb, Default download_type_http
     :return: Nothing
     """
-    system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
-    system_thread.daemon = True
-    system_thread.start()
+    if app_cached_variables.sensor_ready_for_upgrade:
+        system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
+        system_thread.daemon = True
+        system_thread.start()
+        _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type)
 
 
 def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
@@ -66,6 +74,8 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
     :param download_type: Get upgrade file from HTTP(S) server or SMB server
     :return: Nothing
     """
+    upgrade_can_proceed = False
+
     clean_upgrade_str = "0"
     if clean_upgrade:
         clean_upgrade_str = "1"
@@ -79,19 +89,61 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
             current_online_version = _get_http_url(kootnet_installers_url + "kootnet_version.txt").decode("UTF-8")
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_standard_deb_url
+
         if new_version_str[:1] == "0":
             new_version_str = "Beta" + new_version_str[1:]
+
         download_file_location = _save_http_url_to_file(download_url)
         if _verify_http_upgrade_file(download_file_location, _get_md5_for_version(new_version_str)):
             _save_upgrade_config(download_file_location, clean_upgrade_str)
-            _start_upgrade_service("Starting Upgrade to " + new_version_str)
+            upgrade_can_proceed = True
         else:
             logger.network_logger.info("Upgrade Cancelled, Bad MD5 Checksum")
     elif download_type == download_type_smb:
         smb_upgrade_file_location = _save_smb_to_file(dev_upgrade)
         if smb_upgrade_file_location is not None:
             _save_upgrade_config(smb_upgrade_file_location, clean_upgrade_str)
-            _start_upgrade_service("Starting SMB Upgrade")
+            upgrade_can_proceed = True
+    if upgrade_can_proceed:
+        _set_upgrade_running_variable()
+        os.system("systemctl start KootnetSensorsUpgrade.service")
+    else:
+        atpro_notifications.manage_ks_upgrade(enable=False)
+
+
+def _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type):
+    short_type_msg = "Std " + download_type
+    long_type_msg = "Standard " + download_type
+    if dev_upgrade:
+        short_type_msg = "Dev " + download_type
+        long_type_msg = "Developmental " + download_type
+    if clean_upgrade:
+        short_type_msg += " Re-Install"
+    atpro_notifications.manage_ks_upgrade(short_type_msg, long_type_msg)
+
+
+def _set_upgrade_running_variable():
+    try:
+        with open(upgrade_running_file_location, "w") as upgrade_file:
+            upgrade_file.write("1")
+        thread_function(_check_upgrade_still_running)
+    except Exception as error:
+        logger.network_logger.warning("Accessing upgrade running file: " + str(error))
+
+
+def _check_upgrade_still_running():
+    upgrade_running = 1
+    app_cached_variables.sensor_ready_for_upgrade = False
+    while upgrade_running:
+        try:
+            with open(upgrade_running_file_location, "r") as upgrade_file:
+                upgrade_running = int(upgrade_file.read().strip())
+        except Exception as error:
+            logger.network_logger.warning("Accessing upgrade running file: " + str(error))
+            upgrade_running = 0
+        time.sleep(10)
+    atpro_notifications.manage_ks_upgrade(enable=False)
+    app_cached_variables.sensor_ready_for_upgrade = True
 
 
 def _save_http_url_to_file(file_url, verify_https=True):
@@ -220,13 +272,3 @@ def _save_upgrade_config(ks_upgrade_file_location, clean_upgrade_str):
             info_file.write(config_str)
     except Exception as error:
         logger.primary_logger.error("Save Upgrade Configuration Error: " + str(error))
-
-
-def _start_upgrade_service(upgrade_message):
-    """
-    Initiates Kootnet Sensor's upgrade service
-    :param upgrade_message: Message to log just before it starts Kootnet Sensor's upgrade service
-    :return: Nothing
-    """
-    logger.network_logger.debug(upgrade_message)
-    os.system("systemctl start KootnetSensorsUpgrade.service")

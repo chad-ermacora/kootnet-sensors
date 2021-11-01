@@ -63,6 +63,7 @@ class CreateUpgradeInterface:
         """
         self.configuration_file_present = False
         self.upgrade_config_location = program_root_dir + "upgrade_options.conf"
+        self.upgrade_running_file_location = program_root_dir + "upgrade_running.txt"
         self.upgrade_file_location = ""
         self.clean_upgrade = 0
 
@@ -91,18 +92,19 @@ class CreateUpgradeInterface:
             if self.clean_upgrade:
                 self._clean_install()
             self._install_upgrade()
+        self._set_upgrade_running_false()
 
     def _install_upgrade(self):
         """
         Installs the Debian upgrade file
         :return: Nothing
         """
-        logger.primary_logger.info(" --- Updating apt-get cache ...")
         dpkg_install_str = "dpkg -iEG "
         if self.clean_upgrade:
             dpkg_install_str = "dpkg -i "
 
         try:
+            logger.primary_logger.info(" --- Updating apt-get cache ...")
             os.system("apt-get update")
             logger.primary_logger.info(" --- Starting Install of Debian Package ...")
             os.system(dpkg_install_str + self.upgrade_file_location)
@@ -129,6 +131,13 @@ class CreateUpgradeInterface:
             logger.primary_logger.info(" --- Clean Removal Successful")
         except Exception as error:
             logger.primary_logger.error("--- Clean Removal: " + str(error))
+
+    def _set_upgrade_running_false(self):
+        try:
+            with open(self.upgrade_running_file_location, "w") as upgrade_file:
+                upgrade_file.write("0")
+        except Exception as error:
+            logger.primary_logger.warning("Accessing upgrade running file: " + str(error))
 
 
 logger = CreateUpgradeLogger()
