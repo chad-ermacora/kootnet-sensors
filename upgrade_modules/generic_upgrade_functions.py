@@ -214,7 +214,7 @@ def _pip_upgrades_thread(requirements_list):
         app_cached_variables.sensor_ready_for_upgrade = False
         for requirement in requirements_list:
             if requirement[0] != "#":
-                command = file_locations.sensor_data_dir + "/env/bin/pip3 install --upgrade " + requirement.strip()
+                command = file_locations.sensor_data_dir + "/env/bin/python3 -m pip install -U " + requirement.strip()
                 os.system(command)
         logger.primary_logger.info("Python3 Module Upgrades Complete")
         os.system(app_cached_variables.bash_commands["RestartService"])
@@ -254,7 +254,7 @@ def create_secondary_python_venv():
             if not os.path.isfile(upgrade_env_dir + "bin/python"):
                 logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
                 os.system("python3 -m venv " + upgrade_env_dir)
-                os.system(upgrade_env_dir + "bin/pip install requests")
+                os.system(upgrade_env_dir + "bin/python3 -m pip install requests")
                 logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
         except Exception as error:
             logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))

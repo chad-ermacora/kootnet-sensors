@@ -84,14 +84,14 @@ python3 -m venv ~/ks_venv
 
 ~/ks_venv/bin/python3 -m pip install -U pip
 
-~/ks_venv/bin/pip3 install -r ~/kootnet_sensors/requirements.txt
+~/ks_venv/bin/python3 -m pip install -r ~/kootnet_sensors/requirements.txt
 ```
 
 4. If you are using a Raspberry Pi run these, if not, skip to step 5
 ```
 sudo apt-get -y install libffi-dev libatlas3-base fake-hwclock libopenjp2-7 libtiff-dev
 
-~/ks_venv/bin/pip3 install -r ~/kootnet_sensors/requirements_hw_sensors.txt
+~/ks_venv/bin/python3 -m pip install -r ~/kootnet_sensors/requirements_hw_sensors.txt
 ```
 
 5. Start Kootnet Sensors 
