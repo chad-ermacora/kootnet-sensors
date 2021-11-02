@@ -19,7 +19,7 @@
 import os
 import time
 import logging
-from hashlib import scrypt
+from hashlib import scrypt, md5
 from datetime import datetime, timedelta
 from io import BytesIO
 from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
@@ -282,7 +282,7 @@ def write_file_to_disk(file_location, file_content, open_type="w"):
         logger.primary_logger.error("Unable to open or write file: " + str(file_location) + " - " + str(error))
 
 
-def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location=""):
+def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", file_location="", skip_datetime=False):
     """
     Creates a zip of 1 or more files provided as a list.
     Saves to memory or disk based on save_type & file_location
@@ -298,7 +298,8 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
         file_meta_data_list = []
         for name in file_names_list:
             name_data = ZipInfo(name)
-            name_data.date_time = date_time
+            if not skip_datetime:
+                name_data.date_time = date_time
             name_data.compress_type = ZIP_DEFLATED
             file_meta_data_list.append(name_data)
         with ZipFile(return_zip_file, "w") as zip_file:
@@ -455,3 +456,16 @@ def verify_password_to_hash(password_guess, salt=None, valid_password_hash=None)
     except Exception as error:
         logger.primary_logger.error("Verifying Password Hash: " + str(error))
     return False
+
+
+def get_md5_hash_of_file(file_location):
+    try:
+        if type(file_location) is str:
+            with open(file_location, "rb") as file:
+                file_md5 = md5(file.read()).hexdigest()
+        else:
+            file_md5 = md5(file_location).hexdigest()
+        return file_md5
+    except Exception as error:
+        logger.primary_logger.warning("Error Creating MD5 of " + str(file_location) + ": " + str(error))
+    return None
