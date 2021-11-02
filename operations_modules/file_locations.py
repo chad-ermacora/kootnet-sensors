@@ -103,6 +103,7 @@ sensors_log = log_directory + "sensors_log.txt"
 mqtt_subscriber_log = log_directory + "mqtt_subscriber_log.txt"
 log_zip_file = log_directory + "all_logs.zip"
 
+urls_configuration = sensor_config_dir + "/urls_config.txt"
 checkin_configuration = sensor_config_dir + "/checkin_config.txt"
 sensor_id = sensor_config_dir + "/sensor_id.txt"
 old_version_file = sensor_config_dir + "/installed_version.txt"
