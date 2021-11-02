@@ -107,7 +107,8 @@ def atpro_upgrade_urls(url_path):
             message = "Sensor's operating system upgrade started. This may take awhile ..."
             click_msg = "Kootnet Sensors is currently doing a Operating System Upgrade. " + \
                         "Once complete, the system will restart and this message will disappear"
-            atpro_notifications.add_custom_message("Operating System upgrade in progress ...", click_msg)
+            notification_short_msg = "Operating System upgrade in progress ...<br>Click Here for more information"
+            atpro_notifications.add_custom_message(notification_short_msg, click_msg)
             upgrade_linux_os()
         elif str(url_path) == "upgrade-py3-modules":
             logger.network_logger.info("** Python3 Module Upgrades Initiated by " + str(request.remote_addr))
@@ -115,7 +116,8 @@ def atpro_upgrade_urls(url_path):
             message = "Python3 Module Upgrades Started. This may take awhile ..."
             click_msg = "Kootnet Sensors is currently doing a Python Module Upgrade. " + \
                         "Once complete, the software will restart and this message will disappear"
-            atpro_notifications.add_custom_message("Python Module upgrades in progress ...", click_msg)
+            notification_short_msg = "Python Module upgrades in progress ...<br>Click Here for more information"
+            atpro_notifications.add_custom_message(notification_short_msg, click_msg)
             upgrade_python_pip_modules()
         msg_page = get_message_page(title, message, full_reload=False)
         thread_function(os.system, args=system_command)

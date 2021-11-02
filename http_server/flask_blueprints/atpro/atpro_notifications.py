@@ -42,7 +42,7 @@ class CreateATProMenuNotificationClass:
 
     def manage_ks_upgrade(self, upgrade_type_short_str="", upgrade_type_long_str="", enable=True):
         if enable:
-            msg = "KS " + upgrade_type_short_str + " upgrade in progress ..."
+            msg = "KS " + upgrade_type_short_str + " upgrade in progress ...<br>Click Here for more information"
             click_msg = "Kootnet Sensors is currently doing a " + upgrade_type_long_str + " Upgrade. " + \
                         "Once complete, the software will restart and this message will disappear"
             js_action = js_function_okay_prompt

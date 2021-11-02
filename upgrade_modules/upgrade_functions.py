@@ -19,12 +19,11 @@
 import os
 import time
 from threading import Thread
-from hashlib import md5
 from datetime import datetime
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function
+from operations_modules.app_generic_functions import thread_function, get_md5_hash_of_file
 from operations_modules.software_version import CreateRefinedVersion
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
@@ -222,13 +221,10 @@ def _verify_http_upgrade_file(file_location, good_md5_checksum):
     :param good_md5_checksum: MD5 Checksum the Upgrade file should match
     :return: If Checksums match, True, else False
     """
-    file_md5 = "BAD"
-    try:
-        with open(file_location, "rb") as file:
-            file_md5 = md5(file.read()).hexdigest()
-    except Exception as error:
-        logger.network_logger.warning("Error Creating MD5 of File: " + str(error))
-
+    file_md5 = get_md5_hash_of_file(file_location)
+    if file_md5 is None:
+        logger.network_logger.error("MD5 verification failed - Error getting file MD5 hash")
+        return False
     logger.network_logger.info("Downloaded File MD5: " + file_md5 + " || Online MD5: " + good_md5_checksum)
     if file_md5 == good_md5_checksum:
         logger.network_logger.debug("File MD5 Verified")
