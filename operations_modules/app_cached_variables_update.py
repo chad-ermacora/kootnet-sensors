@@ -27,11 +27,11 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_file_content, \
-    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files
+    get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files, get_md5_hash_of_file
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
-    check_sql_table_and_column
+    check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from configuration_modules import app_config_access
@@ -50,11 +50,13 @@ def update_cached_variables():
             click_msg = "Without root access, the following functions will be unavailable - "
             click_msg += "HW Sensors, Network Configurations, Upgrade & Power commands"
             icon = "fas fa-exclamation-triangle"
-            atpro_notifications.add_custom_message("Warning: Not running with root", click_msg=click_msg, icon=icon)
+            notification_short_msg = "Warning: Not running with root<br>Click Here for more information"
+            atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg, icon=icon)
         if app_config_access.primary_config.demo_mode:
             click_msg = "In Demo mode, the following functions will be unavailable - "
             click_msg += "Network Configurations, SSL, Change Login, Upgrade & Power commands"
-            atpro_notifications.add_custom_message("Info: Running in Demo mode", click_msg=click_msg)
+            notification_short_msg = "Info: Running in Demo mode<br>Click Here for more information"
+            atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg)
 
     if app_cached_variables.current_platform == "Linux":
         try:
@@ -131,7 +133,7 @@ def _update_ks_info_table_data():
         db_cursor = db_connection.cursor()
         create_table_and_datetime(db_v.table_ks_info, db_cursor)
 
-        for column in [db_v.sensor_name, db_v.ip, db_v.kootnet_sensors_version]:
+        for column in [db_v.sensor_name, db_v.ip, db_v.kootnet_sensors_version, db_v.ks_info_configuration_backups_md5]:
             check_sql_table_and_column(db_v.table_ks_info, column, db_cursor)
         check_sql_table_and_column(db_v.table_ks_info, db_v.ks_info_logs, db_cursor, column_type="BLOB")
         check_sql_table_and_column(db_v.table_ks_info, db_v.ks_info_configuration_backups, db_cursor, column_type="BLOB")
@@ -141,21 +143,42 @@ def _update_ks_info_table_data():
                     db_v.sensor_name + "," + \
                     db_v.ip + "," + \
                     db_v.kootnet_sensors_version + "," + \
+                    db_v.ks_info_configuration_backups_md5 + "," + \
                     db_v.ks_info_logs + "," + \
                     db_v.ks_info_configuration_backups + ")" + \
-                    " VALUES (?,?,?,?,?,?);"
+                    " VALUES (?,?,?,?,?,?,?);"
 
+        configs_zipped = _get_zipped_configurations()
+        configs_zip_md5 = get_md5_hash_of_file(configs_zipped)
+        if _md5_matches_previous_configs_zip_md5(configs_zip_md5):
+            log_msg = "Not saving configurations backup to Database - "
+            logger.primary_logger.debug(log_msg + "Configurations have not changed since the last backup")
+            configs_zipped = None
+            configs_zip_md5 = None
         data_entries = [
             datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S.%f"), app_cached_variables.hostname,
-            app_cached_variables.ip, software_version.version, _get_zipped_logs(), _get_zipped_configurations()
+            app_cached_variables.ip, software_version.version, configs_zip_md5, _get_zipped_logs(), configs_zipped
         ]
-
+        data_entries = _check_for_changes_in_sensor_info_data(data_entries)
         db_cursor.execute(sql_query, data_entries)
         db_connection.commit()
         db_connection.close()
         logger.primary_logger.debug("Kootnet Sensors Database Information Updated OK")
     except Exception as error:
         logger.primary_logger.error("Kootnet Sensors Database Information Update Failed: " + str(error))
+
+
+def _check_for_changes_in_sensor_info_data(data_entries):
+    try:
+        if data_entries[1] == str(get_one_db_entry(db_v.table_ks_info, db_v.sensor_name)):
+            data_entries[1] = None
+        if data_entries[2] == str(get_one_db_entry(db_v.table_ks_info, db_v.ip)):
+            data_entries[2] = None
+        if data_entries[3] == str(get_one_db_entry(db_v.table_ks_info, db_v.kootnet_sensors_version)):
+            data_entries[3] = None
+    except Exception as error:
+        logger.primary_logger.error("Checking DB Info entries: " + str(error))
+    return data_entries
 
 
 def _get_zipped_logs():
@@ -175,6 +198,16 @@ def _get_zipped_logs():
     return None
 
 
+def _md5_matches_previous_configs_zip_md5(new_md5):
+    try:
+        last_md5_of_zip = str(get_one_db_entry(db_v.table_ks_info, db_v.ks_info_configuration_backups_md5))
+        if last_md5_of_zip == new_md5:
+            return True
+    except Exception as error:
+        logger.primary_logger.error("* Unable to verify backup configurations MD5: " + str(error))
+    return False
+
+
 def _get_zipped_configurations():
     main_config = app_config_access.primary_config.get_config_as_str()
     installed_sensors = app_config_access.installed_sensors.get_config_as_str()
@@ -192,33 +225,32 @@ def _get_zipped_configurations():
     luftdaten_config = app_config_access.luftdaten_config.get_config_as_str()
     sensor_control_config = app_config_access.sensor_control_config.get_config_as_str()
 
-    utc_now = datetime.utcnow().strftime("%Y-%m-%d_%H:%M_")
     try:
-        return_names = [utc_now + os.path.basename(file_locations.primary_config),
-                        utc_now + os.path.basename(file_locations.installed_sensors_config),
-                        utc_now + os.path.basename(file_locations.display_config),
-                        utc_now + os.path.basename(file_locations.checkin_configuration),
-                        utc_now + os.path.basename(file_locations.interval_config),
-                        utc_now + os.path.basename(file_locations.trigger_high_low_config),
-                        utc_now + os.path.basename(file_locations.trigger_variances_config),
-                        utc_now + os.path.basename(file_locations.email_config),
-                        utc_now + os.path.basename(file_locations.mqtt_broker_config),
-                        utc_now + os.path.basename(file_locations.mqtt_publisher_config),
-                        utc_now + os.path.basename(file_locations.mqtt_subscriber_config),
-                        utc_now + os.path.basename(file_locations.osm_config),
-                        utc_now + os.path.basename(file_locations.weather_underground_config),
-                        utc_now + os.path.basename(file_locations.luftdaten_config),
-                        utc_now + os.path.basename(file_locations.html_sensor_control_config)]
+        return_names = [os.path.basename(file_locations.primary_config),
+                        os.path.basename(file_locations.installed_sensors_config),
+                        os.path.basename(file_locations.display_config),
+                        os.path.basename(file_locations.checkin_configuration),
+                        os.path.basename(file_locations.interval_config),
+                        os.path.basename(file_locations.trigger_high_low_config),
+                        os.path.basename(file_locations.trigger_variances_config),
+                        os.path.basename(file_locations.email_config),
+                        os.path.basename(file_locations.mqtt_broker_config),
+                        os.path.basename(file_locations.mqtt_publisher_config),
+                        os.path.basename(file_locations.mqtt_subscriber_config),
+                        os.path.basename(file_locations.osm_config),
+                        os.path.basename(file_locations.weather_underground_config),
+                        os.path.basename(file_locations.luftdaten_config),
+                        os.path.basename(file_locations.html_sensor_control_config)]
 
         return_files = [main_config, installed_sensors, display_config, checkin_config,
                         interval_recording_config, trigger_high_low, trigger_variances,
                         email_config, mqtt_broker_config, mqtt_pub_config, mqtt_sub_config,
                         open_sense_map_config, wu_config, luftdaten_config, sensor_control_config]
 
-        blob_data = zip_files(return_names, return_files).read()
+        blob_data = zip_files(return_names, return_files, skip_datetime=True).read()
         return blob_data
     except Exception as error:
-        logger.primary_logger.error("* Unable to Zip Logs: " + str(error))
+        logger.primary_logger.error("* Unable to Zip Configurations: " + str(error))
     return None
 
 
