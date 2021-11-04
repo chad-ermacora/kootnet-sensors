@@ -44,8 +44,6 @@ def html_atpro_sensor_settings_main():
         return get_message_page("Main Settings Updated", msg, page_url="sensor-settings")
 
     debug_logging = get_html_checkbox_state(app_config_access.primary_config.enable_debug_logging)
-    custom_temp_offset = get_html_checkbox_state(app_config_access.primary_config.enable_custom_temp)
-    custom_temp_comp = get_html_checkbox_state(app_config_access.primary_config.enable_temperature_comp_factor)
     enable_major_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_feature)
     enable_minor_upgrades = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_minor)
     enable_dev_up = get_html_checkbox_state(app_config_access.primary_config.enable_automatic_upgrades_developmental)
@@ -58,11 +56,18 @@ def html_atpro_sensor_settings_main():
         EnableStableFeatureAutoUpgrades=enable_major_upgrades,
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
-        CheckedCustomTempOffset=custom_temp_offset,
-        temperature_offset=float(app_config_access.primary_config.temperature_offset),
-        CheckedCustomTempComp=custom_temp_comp,
-        CustomTempComp=float(app_config_access.primary_config.temperature_comp_factor)
+        CheckinAddress=app_config_access.urls_config.url_checkin_server,
+        UpdateServerAddress=app_config_access.urls_config.url_update_server
     )
+
+
+@html_atpro_settings_routes.route("/atpro/settings-urls", methods=["POST"])
+@auth.login_required
+def html_atpro_sensor_settings_urls():
+    app_config_access.urls_config.update_with_html_request(request)
+    app_config_access.urls_config.save_config_to_file()
+    app_cached_variables.restart_automatic_upgrades_thread = True
+    return get_message_page("URL Settings Updated", page_url="sensor-settings")
 
 
 @html_atpro_settings_routes.route("/atpro/settings-is", methods=["GET", "POST"])
@@ -106,6 +111,23 @@ def html_atpro_sensor_settings_installed_sensors():
         PimoroniMonoOLED128x128BW=get_html_checkbox_state(installed_sensors.pimoroni_mono_oled_luma),
         SensirionSPS30=get_html_checkbox_state(installed_sensors.sensirion_sps30),
         W1ThermSensor=get_html_checkbox_state(installed_sensors.w1_therm_sensor)
+    )
+
+
+@html_atpro_settings_routes.route("/atpro/settings-sensor-offsets", methods=["GET", "POST"])
+@auth.login_required
+def html_atpro_sensor_settings_offsets():
+    if request.method == "POST":
+        app_config_access.sensor_offsets.update_with_html_request(request)
+        app_config_access.sensor_offsets.save_config_to_file()
+        return get_message_page("Sensor Offset Settings Updated", page_url="sensor-settings")
+
+    return render_template(
+        "ATPro_admin/page_templates/settings/settings-sensor-offsets.html",
+        CheckedCustomTempOffset=get_html_checkbox_state(app_config_access.sensor_offsets.enable_temp_offset),
+        temperature_offset=app_config_access.sensor_offsets.temperature_offset,
+        CheckedCustomTempComp=get_html_checkbox_state(app_config_access.sensor_offsets.enable_temperature_comp_factor),
+        CustomTempComp=app_config_access.sensor_offsets.temperature_comp_factor,
     )
 
 
@@ -182,7 +204,6 @@ def _get_checkin_settings_page_render():
         "ATPro_admin/page_templates/settings/settings-checkin-server.html",
         CheckedSensorCheckIns=sensor_check_ins,
         CheckinHours=app_config_access.checkin_config.checkin_wait_in_hours,
-        CheckinAddress=app_config_access.checkin_config.checkin_url,
         CheckedEnableCheckin=get_html_checkbox_state(app_config_access.checkin_config.enable_checkin_recording),
         ContactInPastDays=app_config_access.checkin_config.count_contact_days,
         MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,

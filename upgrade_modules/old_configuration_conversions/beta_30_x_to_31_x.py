@@ -26,10 +26,6 @@ def upgrade_beta_30_x_to_31():
         primary_config_lines = primary_config_lines[1:]
         new_primary_config.web_portal_port = int(primary_config_lines[0].split("=")[0].strip())
         new_primary_config.enable_debug_logging = int(primary_config_lines[1].split("=")[0].strip())
-        new_primary_config.enable_custom_temp = int(primary_config_lines[5].split("=")[0].strip())
-        new_primary_config.temperature_offset = float(primary_config_lines[6].split("=")[0].strip())
-        new_primary_config.enable_temperature_comp_factor = int(primary_config_lines[7].split("=")[0].strip())
-        new_primary_config.temperature_comp_factor = float(primary_config_lines[8].split("=")[0].strip())
         new_primary_config.update_configuration_settings_list()
         new_primary_config.save_config_to_file()
         successful_upgrade_message("Primary")

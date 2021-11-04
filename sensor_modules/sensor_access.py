@@ -146,8 +146,8 @@ def get_environment_temperature(temperature_correction=True, get_latency=False):
 
 
 def _apply_environment_temperature_correction(temperature):
-    enable_custom_temp = app_config_access.primary_config.enable_custom_temp
-    temperature_offset = app_config_access.primary_config.temperature_offset
+    enable_custom_temp = app_config_access.sensor_offsets.enable_temp_offset
+    temperature_offset = app_config_access.sensor_offsets.temperature_offset
     new_temp = temperature
     if enable_custom_temp:
         try:
@@ -157,8 +157,8 @@ def _apply_environment_temperature_correction(temperature):
             logger.sensors_logger.debug(str(error))
 
     cpu_temp = get_cpu_temperature()
-    enable_temperature_comp_factor = app_config_access.primary_config.enable_temperature_comp_factor
-    temperature_comp_factor = app_config_access.primary_config.temperature_comp_factor
+    enable_temperature_comp_factor = app_config_access.sensor_offsets.enable_temperature_comp_factor
+    temperature_comp_factor = app_config_access.sensor_offsets.temperature_comp_factor
     if enable_temperature_comp_factor and cpu_temp is not None and temperature_comp_factor != 0:
         try:
             cpu_temp = cpu_temp[db_v.system_temperature]

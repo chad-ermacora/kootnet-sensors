@@ -24,6 +24,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_md5_hash_of_file
+from configuration_modules.app_config_access import urls_config
 from operations_modules.software_version import CreateRefinedVersion
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
@@ -32,21 +33,8 @@ try:
 except Exception as import_error:
     print("Please Install Python requests module: " + str(import_error))
 
-http_standard_deb_url = "https://kootenay-networks.com/installers/KootnetSensors_online.deb"
-http_developmental_deb_url = "https://kootenay-networks.com/installers/dev/KootnetSensors_online.deb"
-
-kootnet_installers_url = "https://kootenay-networks.com/installers/"
-md5_file_url = kootnet_installers_url + "KootnetSensors-deb-MD5.txt"
 download_type_http = "HTTP"
 download_type_smb = "SMB"
-
-smb_cifs_options = "username=myself,password='123'"
-smb_mount_dir = "/tmp/super_nas/"
-smb_server = "//USB-Development/"
-smb_share = "KootNetSMB/"
-smb_deb_installer = "KootnetSensors_online.deb"
-
-upgrade_running_file_location = file_locations.upgrade_scripts_folder + "/upgrade_running.txt"
 
 
 def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http):
@@ -74,6 +62,10 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
     :param download_type: Get upgrade file from HTTP(S) server or SMB server
     :return: Nothing
     """
+    http_standard_version_url = urls_config.url_update_server + "kootnet_version.txt"
+    http_developmental_version_url = urls_config.url_update_server + "dev/kootnet_version.txt"
+    http_standard_deb_url = urls_config.url_update_server + "KootnetSensors_online.deb"
+    http_developmental_deb_url = urls_config.url_update_server + "dev/KootnetSensors_online.deb"
     upgrade_can_proceed = False
 
     clean_upgrade_str = "0"
@@ -82,11 +74,11 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
 
     if download_type == download_type_http:
         if dev_upgrade:
-            current_online_version = _get_http_url(kootnet_installers_url + "dev/kootnet_version.txt").decode("UTF-8")
+            current_online_version = _get_http_url(http_developmental_version_url).decode("UTF-8")
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_developmental_deb_url
         else:
-            current_online_version = _get_http_url(kootnet_installers_url + "kootnet_version.txt").decode("UTF-8")
+            current_online_version = _get_http_url(http_standard_version_url).decode("UTF-8")
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_standard_deb_url
 
@@ -125,7 +117,7 @@ def _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type):
 
 def _set_upgrade_running_variable():
     try:
-        with open(upgrade_running_file_location, "w") as upgrade_file:
+        with open(file_locations.upgrade_running_file_location, "w") as upgrade_file:
             upgrade_file.write("1")
         thread_function(_check_upgrade_still_running)
     except Exception as error:
@@ -136,7 +128,7 @@ def _check_upgrade_still_running():
     upgrade_running = 1
     while upgrade_running:
         try:
-            with open(upgrade_running_file_location, "r") as upgrade_file:
+            with open(file_locations.upgrade_running_file_location, "r") as upgrade_file:
                 upgrade_running = int(upgrade_file.read().strip())
         except Exception as error:
             logger.network_logger.warning("Accessing upgrade running file: " + str(error))
@@ -175,6 +167,12 @@ def _save_smb_to_file(dev_upgrade=False):
     :param dev_upgrade: Download the Developmental version, Default False
     :return: Upgrade file's locally saved location, on failure None
     """
+    smb_cifs_options = "username=myself,password='123'"
+    smb_mount_dir = "/tmp/super_nas/"
+    smb_server = "//USB-Development/"
+    smb_share = "KootNetSMB/"
+    smb_deb_installer = "KootnetSensors_online.deb"
+
     file_name = "smb_upgrade_" + datetime.utcnow().strftime("%Y_%m_%d_%H_%M_%S") + ".deb"
     file_location = file_locations.downloads_folder + "/" + file_name
 
@@ -239,7 +237,7 @@ def _get_md5_for_version(kootnet_version, get_full_installer=False):
     :param get_full_installer: Get the full installer instead of the upgrade installer, Default: upgrade installer
     :return: MD5 checksum of provided version's Kootnet Senors installer, on error returns not found message
     """
-    versions_md5 = _get_http_url(md5_file_url).decode("UTF-8")
+    versions_md5 = _get_http_url(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt").decode("UTF-8")
     versions_md5_list = versions_md5.split("\n")
     try:
         for index, version in enumerate(versions_md5_list):

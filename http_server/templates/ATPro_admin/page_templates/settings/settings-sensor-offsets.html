@@ -1,0 +1,68 @@
+<form class="pure-form" method="POST" action="/atpro/settings-sensor-offsets">
+    <div class='row'>
+        <div class="col-12 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <h2><i class="fas fa-link"></i> Sensor Offsets</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-m-12 col-sm-12">
+            <div class="card">
+                <div class="card-content">
+                    <h2><i class="fas fa-temperature-low"></i> Environmental Temperature</h2>
+
+                    <div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="offset-s-toggle-switch" class="toggle-switch-input"
+                                   name="enable_custom_temp_offset" {{ CheckedCustomTempOffset }}>
+                            <label class="toggle-switch-label" for="offset-s-toggle-switch"></label>
+                            Static Offset
+                        </label>
+                    </div>
+
+                    <label>
+                        <div style="display: table; margin-left: auto; margin-right: auto;">
+                            <div style="display: table-row;">
+                                <div style="display: table-cell;">
+                                    <input type="number" style="width: 75px;" step="0.01" min="-100" max="100"
+                                           name="custom_temperature_offset" value="{{ temperature_offset }}">
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+
+                    <div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="offset-cf-toggle-switch" class="toggle-switch-input"
+                                   name="enable_custom_temp_comp" {{ CheckedCustomTempComp }}>
+                            <label class="toggle-switch-label" for="offset-cf-toggle-switch"></label>
+                            Pi Temperature Correction Factor
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input type="number" style="width: 75px;" step="0.001" min="0" max="100"
+                                               name="custom_temperature_comp" value="{{ CustomTempComp }}">
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <p>
+                        Compensated environmental temperature formula<br>
+                        (RawEnvTemperature + StaticOffset) - ((PiTemperature - RawEnvTemperature) x CF)<br>
+                        CF = Correction Factor set above
+                    </p>
+                    <br>
+                    <button type="submit" class="pure-button">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

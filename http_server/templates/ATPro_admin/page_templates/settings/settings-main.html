@@ -1,8 +1,8 @@
-<form class="pure-form" method="POST" action="/atpro/settings-main">
-    <div class='row'>
-        <div class="col-6 col-m-12 col-sm-12">
-            <div class="card">
-                <div class="card-content">
+<div class='row'>
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-main">
                     <h2><i class="fas fa-clipboard-check"></i> Main</h2>
 
                     <label class="toggle-switch">
@@ -45,62 +45,6 @@
 
                     <br>
 
-                    <h2><i class="fas fa-temperature-low"></i> Environmental Temperature Offsets</h2>
-
-                    <div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="offset-s-toggle-switch" class="toggle-switch-input"
-                                   name="enable_custom_temp_offset" {{ CheckedCustomTempOffset }}>
-                            <label class="toggle-switch-label" for="offset-s-toggle-switch"></label>
-                            Static Offset
-                        </label>
-                    </div>
-
-                    <label>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input type="number" style="width: 75px;" step="0.01" min="-100" max="100"
-                                           name="custom_temperature_offset" value="{{ temperature_offset }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
-
-                    <div>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="offset-cf-toggle-switch" class="toggle-switch-input"
-                                   name="enable_custom_temp_comp" {{ CheckedCustomTempComp }}>
-                            <label class="toggle-switch-label" for="offset-cf-toggle-switch"></label>
-                            Pi Temperature Correction Factor
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>
-                            <div style="display: table; margin-left: auto; margin-right: auto;">
-                                <div style="display: table-row;">
-                                    <div style="display: table-cell;">
-                                        <input type="number" style="width: 75px;" step="0.001" min="0" max="100"
-                                               name="custom_temperature_comp" value="{{ CustomTempComp }}">
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <p>
-                        Compensated environmental temperature formula is as follows<br>
-                        (RawEnvTemperature + StaticOffset) - ((PiTemperature - RawEnvTemperature) x CF)<br>
-                        CF = Correction Factor set above
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-6 col-m-12 col-sm-12">
-            <div class="card">
-                <div class="card-content">
                     <h2><i class="fas fa-arrow-alt-circle-up"></i> Automatic HTTP Upgrades</h2>
                     <p>
                         If you use Kootnet Sensors 'Remote Management' to manage other Kootnet Sensors,
@@ -158,15 +102,69 @@
                         <br><br>
                         * Developmental versions often contain bugs *
                     </i></p>
-
-                    <br><br><br><br><br><br>
-                </div>
+                    <br>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
             </div>
         </div>
     </div>
-    <button type="submit" class="pure-button">Update</button>
-    <br><br><br><br>
-</form>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-urls">
+                    <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
+
+                    <p>Warning: For custom setups only</p>
+
+                    <button type="button" id="adv-urls-button" class="pure-button" onclick="ShowHideURLs()">
+                        Show URLs
+                    </button>
+
+                    <div id="adv-urls-content">
+                        <div>
+                            <label><h3>Checkin Server Address & Port</h3>
+                                Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 450px;" maxlength="250"
+                                                   id="checkin_address" name="checkin_address"
+                                                   placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <br><br>
+
+                        <div>
+                            <label><h3>Update server Address</h3>
+                                Eg. update.sensors.org/installers/ or 192.168.1.16/ks_upgrades/<br>
+                                (Must be an HTTP(S) server)<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 450px;" maxlength="250"
+                                                   id="update_server_address" name="update_server_address"
+                                                   placeholder="updates.some-server.com" value="{{ UpdateServerAddress }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <br><br>
+
+                        <button type="submit" class="pure-button">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
     function ToggleStableAutoUpdates() {
@@ -182,7 +180,18 @@
         }
     }
 
+    function ShowHideURLs() {
+        if (document.getElementById("adv-urls-content").style.display === "none") {
+            document.getElementById("adv-urls-content").style.display = "inline-block";
+            document.getElementById("adv-urls-button").textContent = "Hide URLs";
+        } else {
+            document.getElementById("adv-urls-content").style.display = "none";
+            document.getElementById("adv-urls-button").textContent = "Show URLs";
+        }
+    }
+
     if (window.innerWidth < 500) {
             document.getElementById('checkin_address').style.width = '350px';
         }
+    ShowHideURLs()
 </script>

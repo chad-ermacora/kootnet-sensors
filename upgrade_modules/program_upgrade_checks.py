@@ -21,6 +21,7 @@ from operations_modules import software_version
 from upgrade_modules import generic_upgrade_functions
 from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31
 from upgrade_modules.old_configuration_conversions.beta_33_x_to_33_96 import upgrade_beta_33_x_to_33_96
+from upgrade_modules.old_configuration_conversions.beta_34_164_to_34_plus import upgrade_beta_34_164_to_34_plus
 
 
 def run_configuration_upgrade_checks():
@@ -58,6 +59,9 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 34:
+                if previous_version.minor_version < 165:
+                    no_changes = False
+                    upgrade_beta_34_164_to_34_plus()
                 if previous_version.minor_version < 152:
                     no_changes = False
                     generic_upgrade_functions.reset_flask_login_credentials()

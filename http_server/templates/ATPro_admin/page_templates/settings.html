@@ -22,14 +22,29 @@
             </li>
         </ul>
     </div>
-    <div class="pure-menu">
-        <ul class="pure-menu-list">
-            <li class="pure-menu-item settings-is">
-                <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-is')">
-                    <i class="fas fa-microchip"></i> Installed Sensors
-                </a>
-            </li>
-        </ul>
+    <div style="display: inline-block;">
+        <div class="pure-menu pure-menu-horizontal">
+            <ul class="pure-menu-list">
+                <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
+                 settings-is settings-sensor-offsets">
+                    <a style="cursor: default;" href="#" class="pure-menu-link">
+                        <i class="fas fa-microchip"></i> Sensors
+                    </a>
+                    <ul class="pure-menu-children">
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-is')">
+                                Installed Sensors
+                            </a>
+                        </li>
+                        <li class="pure-menu-item">
+                            <a href="#" class="pure-menu-link" onclick="SelectSettingsNav('settings-sensor-offsets')">
+                                Sensor Offsets
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
     <div class="pure-menu">
         <ul class="pure-menu-list">
@@ -151,7 +166,7 @@
                 <li class="pure-menu-item pure-menu-has-children pure-menu-allow-hover
                 settings-osm settings-wu settings-luftdaten">
                     <a style="cursor: default;" href="#" class="pure-menu-link">
-                        <i class="fas fa-plus-circle"></i> 3rd Party Services
+                        <i class="fas fa-plus-circle"></i> 3rd Party
                     </a>
                     <ul class="pure-menu-children">
                         <li class="pure-menu-item">
@@ -197,6 +212,7 @@
 
         document.getElementsByClassName("settings-main")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("settings-sensor-offsets")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-interval")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-display")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("settings-email-reports")[0].classList.remove("pure-menu-selected");

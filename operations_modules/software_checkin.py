@@ -48,9 +48,9 @@ class CreateCheckinServer:
 
         while not app_cached_variables.restart_sensor_checkin_thread:
             try:
-                url = "https://" + app_config_access.checkin_config.checkin_url + "/SensorCheckin"
+                url_checkin_server = app_config_access.urls_config.url_checkin_server
                 data = _get_sensor_checkin_data()
-                requests.post(url=url, timeout=10, verify=False, data=data)
+                requests.post(url=url_checkin_server, timeout=10, verify=False, data=data)
             except Exception as error:
                 logger.network_logger.debug("Failed to send Checkin ID: " + str(error))
             sleep_duration = app_config_access.checkin_config.checkin_wait_in_hours * 60 * 60

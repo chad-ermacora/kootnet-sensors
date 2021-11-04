@@ -18,7 +18,9 @@
 """
 from operations_modules import logger
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_high_low import CreateTriggerHighLowConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -36,7 +38,9 @@ from configuration_modules.config_check_ins import CreateCheckinConfiguration
 logger.primary_logger.info(" -- Loading Configurations")
 # Make sure all hardware based sensors are marked as not installed if lacking root permissions
 installed_sensors = CreateInstalledSensorsConfiguration()
+sensor_offsets = CreateSensorOffsetsConfiguration()
 primary_config = CreatePrimaryConfiguration()
+urls_config = CreateURLConfiguration()
 interval_recording_config = CreateIntervalRecordingConfiguration()
 trigger_high_low = CreateTriggerHighLowConfiguration()
 trigger_variances = CreateTriggerVariancesConfiguration()

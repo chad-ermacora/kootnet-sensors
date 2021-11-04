@@ -28,10 +28,9 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.primary_config, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 11
+        self.valid_setting_count = 7
         self.config_settings_names = [
-            "HTTPS port number (Default is 10065)", "Enable debug logging", "Enable temperature offset",
-            "Temperature offset", "Enable temperature compensation factor", "Temperature compensation factor",
+            "HTTPS port number (Default is 10065)", "Enable debug logging",
             "DateTime offset in hours (Program uses UTC 0)", "Enable Automatic Feature version upgrades",
             "Enable Automatic Minor version upgrades", "Enable Automatic Developmental version upgrades",
             "Delay in Hours between Automatic Upgrade Checks"
@@ -43,11 +42,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
 
         self.enable_debug_logging = 0
         self.utc0_hour_offset = 0.0
-
-        self.enable_custom_temp = 0
-        self.temperature_offset = 0.0
-        self.enable_temperature_comp_factor = 0
-        self.temperature_comp_factor = 0.0
 
         self.flask_http_ip = ""
         self.web_portal_port = 10065
@@ -74,8 +68,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         self.enable_automatic_upgrades_feature = 0
         self.enable_automatic_upgrades_minor = 0
         self.enable_automatic_upgrades_developmental = 0
-        self.enable_custom_temp = 0
-        self.enable_temperature_comp_factor = 0
 
         if html_request.form.get("debug_logging") is not None:
             self.enable_debug_logging = 1
@@ -103,16 +95,6 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("enable_dev_auto_upgrades") is not None:
             self.enable_automatic_upgrades_developmental = 1
 
-        if html_request.form.get("enable_custom_temp_offset") is not None:
-            new_temp = float(html_request.form.get("custom_temperature_offset"))
-            self.enable_custom_temp = 1
-            self.temperature_offset = new_temp
-
-        if html_request.form.get("enable_custom_temp_comp") is not None:
-            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
-            self.enable_temperature_comp_factor = 1
-            self.temperature_comp_factor = new_temp_comp
-
         if html_request.form.get("ip_web_port") is not None:
             self.web_portal_port = int(html_request.form.get("ip_web_port"))
         self.update_configuration_settings_list()
@@ -121,26 +103,20 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         """ Set's config_settings variable list based on current settings. """
 
         self.config_settings = [
-            str(self.web_portal_port), str(self.enable_debug_logging), str(self.enable_custom_temp),
-            str(self.temperature_offset), str(self.enable_temperature_comp_factor), str(self.temperature_comp_factor),
-            str(self.utc0_hour_offset), str(self.enable_automatic_upgrades_feature),
-            str(self.enable_automatic_upgrades_minor), str(self.enable_automatic_upgrades_developmental),
-            str(self.automatic_upgrade_delay_hours)
+            str(self.web_portal_port), str(self.enable_debug_logging), str(self.utc0_hour_offset),
+            str(self.enable_automatic_upgrades_feature), str(self.enable_automatic_upgrades_minor),
+            str(self.enable_automatic_upgrades_developmental), str(self.automatic_upgrade_delay_hours)
         ]
 
     def _update_variables_from_settings_list(self):
         try:
             self.web_portal_port = int(self.config_settings[0])
             self.enable_debug_logging = int(self.config_settings[1])
-            self.enable_custom_temp = int(self.config_settings[2])
-            self.temperature_offset = float(self.config_settings[3])
-            self.enable_temperature_comp_factor = int(self.config_settings[4])
-            self.temperature_comp_factor = float(self.config_settings[5])
-            self.utc0_hour_offset = float(self.config_settings[6].strip())
-            self.enable_automatic_upgrades_feature = int(self.config_settings[7])
-            self.enable_automatic_upgrades_minor = int(self.config_settings[8])
-            self.enable_automatic_upgrades_developmental = int(self.config_settings[9])
-            self.automatic_upgrade_delay_hours = float(self.config_settings[10])
+            self.utc0_hour_offset = float(self.config_settings[2].strip())
+            self.enable_automatic_upgrades_feature = int(self.config_settings[3])
+            self.enable_automatic_upgrades_minor = int(self.config_settings[4])
+            self.enable_automatic_upgrades_developmental = int(self.config_settings[5])
+            self.automatic_upgrade_delay_hours = float(self.config_settings[6])
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Primary Config: " + str(error))

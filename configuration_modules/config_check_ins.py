@@ -27,15 +27,14 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.checkin_configuration, load_from_file=load_from_file)
         self.config_file_header = "Enable = 1 and Disable = 0"
-        self.valid_setting_count = 17
+        self.valid_setting_count = 16
         self.config_settings_names = [
             "Enable Check-Ins Server", "Count Sensors Checked-In the past X Days",
             "Delete sensors with checkin older then X Days", "Send Sensor Name with Checkins",  "Send IP with Checkins",
             "Send Program Version with Checkins",  "Send Installed Sensors with Checkins",
             "Send System Uptime with Checkins",  "Send System Temperature with Checkins",  "Max Logs Lines to send",
             "Send Primary Logs with Checkins", "Send Network Logs with Checkins",  "Send Sensors Logs with Checkins",
-            "Enable Sensor Checkins", "Hours between Sensor Checkins", "Sensor Checkin URL and Port",
-            "Maximum Sensors to show on the main Sensor Checkins page"
+            "Enable Sensor Checkins", "Hours between Sensor Checkins", "Maximum Sensors shown in Sensor Checkins"
         ]
 
         self.enable_checkin_recording = 0
@@ -47,7 +46,6 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         # These settings are used when sending a sensor checkin to a server.
         self.enable_checkin = 1
         self.checkin_wait_in_hours = 24
-        self.checkin_url = "server.dragonwarz.net:10065"
 
         self.send_sensor_name = 0
         self.send_ip = 0
@@ -103,10 +101,6 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
             self.enable_checkin = 1
         if html_request.form.get("checkin_hours") is not None:
             self.checkin_wait_in_hours = float(html_request.form.get("checkin_hours"))
-        if html_request.form.get("checkin_address") is not None:
-            self.checkin_url = str(html_request.form.get("checkin_address")).strip()
-            if ":" not in self.checkin_url:
-                self.checkin_url = self.checkin_url + ":10065"
 
         if html_request.form.get("max_lines_per_log") is not None:
             try:
@@ -144,7 +138,7 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
             str(self.send_installed_sensors), str(self.send_system_uptime), str(self.send_system_temperature),
             str(self.max_log_lines_to_send), str(self.send_primary_log), str(self.send_network_log),
             str(self.send_sensors_log), str(self.enable_checkin), str(self.checkin_wait_in_hours),
-            str(self.checkin_url), str(self.main_page_max_sensors)
+            str(self.main_page_max_sensors)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -164,8 +158,7 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
             self.send_sensors_log = int(self.config_settings[12])
             self.enable_checkin = int(self.config_settings[13])
             self.checkin_wait_in_hours = float(self.config_settings[14])
-            self.checkin_url = self.config_settings[15].strip()
-            self.main_page_max_sensors = int(self.config_settings[16].strip())
+            self.main_page_max_sensors = int(self.config_settings[15].strip())
         except Exception as error:
             logger.primary_logger.debug("Checkin Config: " + str(error))
             self.update_configuration_settings_list()

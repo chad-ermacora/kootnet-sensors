@@ -84,6 +84,7 @@ if program_root_dir != "/opt/kootnet-sensors" or not running_with_root:
 
 downloads_folder = sensor_data_dir + "/downloads"
 upgrade_scripts_folder = sensor_data_dir + "/scripts"
+upgrade_running_file_location = upgrade_scripts_folder + "/upgrade_running.txt"
 
 uploaded_databases_folder = sensor_data_dir + "/uploaded_databases"
 database_backup_folder = sensor_data_dir + "/database_backups"
@@ -117,6 +118,7 @@ mqtt_publisher_config = sensor_config_dir + "/mqtt_publisher_config.conf"
 email_config = sensor_config_dir + "/email_config.conf"
 display_config = sensor_config_dir + "/display_config.conf"
 installed_sensors_config = sensor_config_dir + "/installed_sensors.conf"
+sensor_offsets_config = sensor_config_dir + "/sensor_offsets.conf"
 interval_config = sensor_config_dir + "/interval_recording.conf"
 trigger_variances_config = sensor_config_dir + "/trigger_variances.conf"
 trigger_high_low_config = sensor_config_dir + "/trigger_high_low.conf"

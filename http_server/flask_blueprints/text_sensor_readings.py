@@ -83,7 +83,7 @@ def get_env_temperature():
 @html_sensor_readings_routes.route("/GetTempOffsetEnv")
 def get_env_temp_offset():
     logger.network_logger.debug("* Environment Temperature Offset sent to " + str(request.remote_addr))
-    return str(app_config_access.primary_config.temperature_offset)
+    return str(app_config_access.sensor_offsets.temperature_offset)
 
 
 @html_sensor_readings_routes.route("/GetPressure")

@@ -179,8 +179,8 @@ def get_config_report_entry():
     interval_recording = _get_enabled_disabled_text(aca.interval_recording_config.enable_interval_recording)
     high_low_recording = _get_enabled_disabled_text(aca.trigger_high_low.enable_high_low_trigger_recording)
     variance_recording = _get_enabled_disabled_text(aca.trigger_variances.enable_trigger_variance)
-    temp_offset = _get_enabled_disabled_text(aca.primary_config.enable_custom_temp)
-    temp_comp_factor = _get_enabled_disabled_text(aca.primary_config.enable_temperature_comp_factor)
+    temp_offset = _get_enabled_disabled_text(aca.sensor_offsets.enable_custom_temp)
+    temp_comp_factor = _get_enabled_disabled_text(aca.sensor_offsets.enable_temperature_comp_factor)
     mqtt_broker = _get_enabled_disabled_text(aca.mqtt_broker_config.enable_mqtt_broker)
     mqtt_subscriber = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_subscriber)
     mqtt_sub_rec = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_sql_recording)
@@ -211,9 +211,9 @@ def get_config_report_entry():
                            HighLowRecording=high_low_recording,
                            VarianceRecording=variance_recording,
                            TemperatureOffset=temp_offset,
-                           TOValue=str(app_config_access.primary_config.temperature_offset),
+                           TOValue=str(app_config_access.sensor_offsets.temperature_offset),
                            TemperatureCorrectionFactor=temp_comp_factor,
-                           TCFValue=str(app_config_access.primary_config.temperature_comp_factor),
+                           TCFValue=str(app_config_access.sensor_offsets.temperature_comp_factor),
                            MQTTBroker=mqtt_broker,
                            MQTTSubscriber=mqtt_subscriber,
                            MQTTSubscriberRecording=mqtt_sub_rec,
