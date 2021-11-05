@@ -125,9 +125,10 @@ class CreateUpgradeInterface:
             rmtree("/home/kootnet_data/env/")
             rmtree("/home/kootnet_data/ssl_files/")
             rmtree("/opt/kootnet-sensors/")
-            os.system("rm -f /usr/share/applications/KootNet*.desktop")
-            os.system("rm -f /etc/systemd/system/Kootnet*.service")
-            os.system("rm -f /etc/systemd/system/SensorU*.service")
+            os.system("rm -f /usr/share/applications/KootNet-Sensor-*.desktop")
+            os.system("rm -f /etc/systemd/system/KootnetSensor*.service")
+            # removal of SensorUpgrade* is for versions before Beta.34.165
+            os.system("rm -f /etc/systemd/system/SensorUpgrade*.service")
             logger.primary_logger.info(" --- Clean Removal Successful")
         except Exception as error:
             logger.primary_logger.error("--- Clean Removal: " + str(error))
