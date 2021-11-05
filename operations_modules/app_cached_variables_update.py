@@ -344,9 +344,11 @@ def check_for_new_version():
 
     try:
         request_data = requests.get(standard_url, allow_redirects=False)
-        app_cached_variables.standard_version_available = request_data.content.decode("utf-8").strip()
+        standard_version_available = _get_cleaned_version(request_data.content.decode("utf-8").strip())
+        app_cached_variables.standard_version_available = standard_version_available
         request_data = requests.get(developmental_url, allow_redirects=False)
-        app_cached_variables.developmental_version_available = request_data.content.decode("utf-8").strip()
+        developmental_version_available = _get_cleaned_version(request_data.content.decode("utf-8").strip())
+        app_cached_variables.developmental_version_available = developmental_version_available
 
         if _check_if_version_newer(app_cached_variables.standard_version_available):
             app_cached_variables.software_update_available = True
@@ -357,6 +359,12 @@ def check_for_new_version():
         app_cached_variables.standard_version_available = "Retrieval Failed"
         app_cached_variables.developmental_version_available = "Retrieval Failed"
     atpro_notifications.check_updates()
+
+
+def _get_cleaned_version(version_text):
+    if len(version_text) < 13 and len(version_text.split(".")) == 3:
+        return version_text
+    return "NA"
 
 
 def _check_if_version_newer(new_version_str):
