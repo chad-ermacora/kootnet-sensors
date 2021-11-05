@@ -70,6 +70,13 @@ def html_atpro_sensor_settings_urls():
     return get_message_page("URL Settings Updated", page_url="sensor-settings")
 
 
+@html_atpro_settings_routes.route("/atpro/reset-urls-config")
+@auth.login_required
+def html_atpro_sensor_settings_urls_reset():
+    app_config_access.urls_config.reset_urls_to_default()
+    return get_message_page("URLs Configuration Reset", page_url="sensor-settings")
+
+
 @html_atpro_settings_routes.route("/atpro/settings-is", methods=["GET", "POST"])
 @auth.login_required
 def html_atpro_sensor_settings_installed_sensors():
