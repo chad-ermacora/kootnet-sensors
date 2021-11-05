@@ -57,12 +57,12 @@ def get_clean_db_name(db_text_name, find_unique_name=True):
     for letter in db_text_name:
         if re.match("^[A-Za-z0-9_.-]*$", letter):
             final_db_name += letter
-
     if final_db_name == "":
         final_db_name = "No_Name"
-
     if final_db_name.split(".")[-1] == "sqlite":
         final_db_name = final_db_name[:-7]
+
+    db_text_name = final_db_name
 
     if find_unique_name:
         count_num = 1
@@ -70,6 +70,7 @@ def get_clean_db_name(db_text_name, find_unique_name=True):
             while final_db_name + str(count_num) + ".sqlite" in app_cached_variables.uploaded_databases_list:
                 count_num += 1
             final_db_name = final_db_name + str(count_num)
+            logger.network_logger.warning("Database " + db_text_name + " already exists, renamed to " + final_db_name)
     return final_db_name + ".sqlite"
 
 

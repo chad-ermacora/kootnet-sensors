@@ -156,15 +156,27 @@ def html_atpro_sensor_settings_database_uploads():
         button_pressed = str(request.form.get("db_upload_button"))
         if button_pressed == "upload":
             uploaded_file = request.files["command_data"]
+
+            overwrite = False
+            if request.form.get("overwrite_database") is not None:
+                overwrite = True
+
             if uploaded_file is not None:
                 upload_file_name = uploaded_file.filename
-                new_db_name = get_clean_db_name(str(request.form.get("UploadDatabaseName")).strip())
                 if upload_file_name.split(".")[-1] == "zip":
                     uploaded_file.save(zip_location)
-                    system_thread = Thread(target=_unzip_to_upload_folder, args=(zip_location, False))
+                    system_thread = Thread(target=_unzip_to_upload_folder, args=(zip_location, overwrite))
                     system_thread.daemon = True
                     system_thread.start()
                 elif upload_file_name.split(".")[-1] in sqlite_valid_extensions_list:
+                    original_new_db_name = str(request.form.get("UploadDatabaseName")).strip()
+                    if overwrite:
+                        new_db_name = get_clean_db_name(original_new_db_name, find_unique_name=False)
+                        if os.path.isfile(uploaded_databases_folder + "/" + new_db_name):
+                            os.remove(uploaded_databases_folder + "/" + new_db_name)
+                    else:
+                        new_db_name = get_clean_db_name(original_new_db_name)
+
                     save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
                     uploaded_file.save(save_sqlite_to_file)
                     system_thread = Thread(target=_db_upload_raw_worker, args=(save_sqlite_to_file,))
@@ -225,21 +237,24 @@ def _unzip_to_upload_folder(zip_location, overwrite):
                 if zip_info.filename.split(".")[-1] in sqlite_valid_extensions_list:
                     db_name_in_zip = zip_info.filename
                     db_path_and_name = uploaded_databases_folder + "/" + db_name_in_zip
-                    if not os.path.isfile(db_path_and_name):
-                        temp_zip.extract(zip_info, path=uploaded_databases_folder)
-                        if validate_sqlite_database(db_path_and_name):
-                            return_database_locations_list.append(db_path_and_name)
-                        else:
-                            os.remove(db_path_and_name)
-                            log_msg = "Upload Database - Invalid Database found in Zip: "
-                            logger.network_logger.warning(log_msg + db_name_in_zip)
-                    else:
-                        log_msg = "Database " + db_path_and_name + " already exists, skipping database"
+
+                    if os.path.isfile(db_path_and_name):
                         if overwrite:
                             log_msg = "Database " + db_path_and_name + " was overwritten"
                             os.remove(db_path_and_name)
                             temp_zip.extract(zip_info, path=uploaded_databases_folder)
+                        else:
+                            log_msg = "Database " + db_path_and_name + " already exists, skipping database"
                         logger.network_logger.info(log_msg)
+                    else:
+                        temp_zip.extract(zip_info, path=uploaded_databases_folder)
+
+                    if validate_sqlite_database(db_path_and_name):
+                        return_database_locations_list.append(db_path_and_name)
+                    else:
+                        os.remove(db_path_and_name)
+                        log_msg = "Upload Database - Invalid Database found in Zip: "
+                        logger.network_logger.warning(log_msg + db_name_in_zip)
     except Exception as error:
         logger.network_logger.error("Database Upload: " + str(error))
     if os.path.isfile(zip_location):
