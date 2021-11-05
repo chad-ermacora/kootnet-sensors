@@ -34,8 +34,6 @@ except Exception as import_error:
 logging.captureWarnings(True)
 logger.primary_logger.debug("Terminal Configuration Tool Starting")
 
-remote_get = app_cached_variables.CreateNetworkGetCommands()
-
 options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 1. View/Edit Primary & Installed Sensors Configurations
 2. Change Web Login Credentials
@@ -61,10 +59,11 @@ extra_options_menu = """Advanced Menu\n
 28. Re-Install Kootnet Sensors (Latest Standard SMB)
 29. Re-Install Kootnet Sensors (Latest Developmental SMB)
 """
-any_key_shutdown = "\nThe TCT must be restarted\n\nPress enter to close"
+remote_get_commands = app_cached_variables.CreateNetworkGetCommands()
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
 msg_requests_missing = "Unable to start update - Python requests module required"
 msg_upgrade_started = "Kootnet Sensors upgrade has started\nCheck Logs for more Info /home/kootnet_data/logs/"
+view_log_system_command = "tail -n 50 "
 
 
 def start_script():
@@ -128,13 +127,16 @@ def start_script():
                     print(msg_requests_missing)
             elif selection == 9:
                 os.system("clear")
-                os.system("tail -n 20 " + file_locations.primary_log)
+                print("Primary Log\n\n")
+                os.system(view_log_system_command + file_locations.primary_log)
                 input("\nPress enter for the next log")
                 os.system("clear")
-                os.system("tail -n 20 " + file_locations.network_log)
+                print("Network Log\n\n")
+                os.system(view_log_system_command + file_locations.network_log)
                 input("\nPress enter for the next log")
                 os.system("clear")
-                os.system("tail -n 20 " + file_locations.sensors_log)
+                print("Sensors Log\n\n")
+                os.system(view_log_system_command + file_locations.sensors_log)
                 print("\nEnd of Logs")
             elif selection == 10:
                 print(extra_options_menu)
@@ -283,7 +285,7 @@ def _test_sensors():
 def _get_interval_sensor_data():
     """ Returns local sensor Interval data. """
     try:
-        url = "https://127.0.0.1:10065/" + remote_get.sensor_readings
+        url = "https://127.0.0.1:10065/" + remote_get_commands.sensor_readings
         tmp_return_data = requests.get(url=url, verify=False)
         return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
         return [str(return_data[0]), str(return_data[1])]
