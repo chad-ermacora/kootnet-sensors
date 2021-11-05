@@ -22,7 +22,9 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import write_file_to_disk
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -45,12 +47,23 @@ def remote_management_receive_configuration(request):
         if new_config is not None:
             app_config_access.primary_config = new_config
             app_cached_variables.restart_automatic_upgrades_thread = True
+    elif config_type == "urls":
+        config_instance = CreateURLConfiguration(load_from_file=False)
+        new_config = _apply_config(config_instance, new_config_str, "URLs")
+        if new_config is not None:
+            app_config_access.urls_config = new_config
+            app_cached_variables.restart_automatic_upgrades_thread = True
     elif config_type == "installed_sensors":
         config_instance = CreateInstalledSensorsConfiguration(load_from_file=False)
         new_config = _apply_config(config_instance, new_config_str, "Installed Sensors")
         if new_config is not None:
             app_config_access.installed_sensors = new_config
             restart_hw_sensors = True
+    elif config_type == "sensor_offsets":
+        config_instance = CreateSensorOffsetsConfiguration(load_from_file=False)
+        new_config = _apply_config(config_instance, new_config_str, "Sensor Offsets")
+        if new_config is not None:
+            app_config_access.sensor_offsets = new_config
     elif config_type == "checkins":
         config_instance = CreateCheckinConfiguration(load_from_file=False)
         new_config = _apply_config(config_instance, new_config_str, "Checkins")

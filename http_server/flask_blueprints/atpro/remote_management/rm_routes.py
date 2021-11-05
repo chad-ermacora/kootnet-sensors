@@ -31,7 +31,9 @@ from operations_modules.software_version import version
 from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
 from configuration_modules import app_config_access
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
 from configuration_modules.config_trigger_variances import CreateTriggerVariancesConfiguration
@@ -58,8 +60,12 @@ network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
 
 default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
 default_primary_config = default_primary_config.replace("\n", "\\n")
+default_urls_config = CreateURLConfiguration(load_from_file=False).get_config_as_str()
+default_urls_config = default_urls_config.replace("\n", "\\n")
 default_installed_sensors_config = CreateInstalledSensorsConfiguration(load_from_file=False).get_config_as_str()
 default_installed_sensors_config = default_installed_sensors_config.replace("\n", "\\n")
+default_sensor_offsets_config = CreateSensorOffsetsConfiguration(load_from_file=False).get_config_as_str()
+default_sensor_offsets_config = default_sensor_offsets_config.replace("\n", "\\n")
 default_checkins_config = CreateCheckinConfiguration(load_from_file=False).get_config_as_str()
 default_checkins_config = default_checkins_config.replace("\n", "\\n")
 default_interval_recording_config = CreateIntervalRecordingConfiguration(load_from_file=False).get_config_as_str()
@@ -324,7 +330,9 @@ def html_atpro_rm_configurations():
     return render_template(
         "ATPro_admin/page_templates/remote_management/configurations.html",
         DefaultPrimaryText=default_primary_config,
+        DefaultURLsText=default_urls_config,
         DefaultInstalledSensorsText=default_installed_sensors_config,
+        DefaultSensorOffsetsText=default_sensor_offsets_config,
         DefaultCheckinsText=default_checkins_config,
         DefaultIntervalRecText=default_interval_recording_config,
         DefaultVarianceRecText=default_variance_config,

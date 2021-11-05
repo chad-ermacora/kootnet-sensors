@@ -5,7 +5,9 @@
         Select Configuration<br>
         <select name="config_selection" id="config_selection" onchange="ConfigChange()">
             <option value="primary">Main</option>
+            <option value="urls">URLs</option>
             <option value="installed_sensors">Installed Sensors</option>
+            <option value="sensor_offsets">Sensor Offsets</option>
             <option value="display">Display</option>
             <option value="checkins">Checkins</option>
             <option value="interval_recording">Interval Recording</option>
@@ -32,7 +34,9 @@
 <script>
     function ConfigChange() {
         const primary_config = '{{ DefaultPrimaryText }}';
+        const urls_config = '{{ DefaultURLsText }}';
         const installed_sensors_config = '{{ DefaultInstalledSensorsText }}';
+        const sensor_offsets_config = '{{ DefaultSensorOffsetsText }}';
         const checkins_config = '{{ DefaultCheckinsText }}';
         const interval_rec_config = '{{ DefaultIntervalRecText }}';
         const variance_rec_config = '{{ DefaultVarianceRecText }}';
@@ -46,8 +50,12 @@
 
         if (selected_value === 'primary') {
                 document.getElementById('new_config_str').value = primary_config;
+        } else if (selected_value === 'urls') {
+                document.getElementById('new_config_str').value = urls_config;
         } else if (selected_value === 'installed_sensors') {
                 document.getElementById('new_config_str').value = installed_sensors_config;
+        } else if (selected_value === 'sensor_offsets') {
+                document.getElementById('new_config_str').value = sensor_offsets_config;
         }  else if (selected_value === 'checkins') {
                 document.getElementById('new_config_str').value = checkins_config;
         }  else if (selected_value === 'interval_recording') {
