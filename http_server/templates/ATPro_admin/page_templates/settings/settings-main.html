@@ -42,9 +42,118 @@
                         <br>
                         <p><strong>Note</strong>: <i>Date & Time Offset is applied for viewing only, all data is saved in UTC0</i></p>
                     </div>
+                    <button type="submit" class="pure-button">Update</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-urls">
+                    <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
+
+                    <h3>For custom setups only</h3>
+
+                    <button type="button" id="adv-urls-button" class="pure-button" onclick="ShowHideURLs()">
+                        Show URLs
+                    </button>
 
                     <br>
 
+                    <div id="adv-urls-content">
+                        <br><br>
+                        <button type="button" class="pure-button"
+                                onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
+                            Reset URLs to Default
+                        </button>
+
+                        <br><br>
+
+                        <div>
+                            <label><h3>Checkin Server Address & Port</h3>
+                                Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 450px;" maxlength="250"
+                                                   id="checkin_address" name="checkin_address"
+                                                   placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <br>
+
+                        <div>
+                            <h3>Update server Address</h3>
+                            <button type="button" class="pure-button" id="update-server-requirements"
+                                    onclick="ShowHideUpdateRequirements()">
+                                Show Update Server Requirements
+                            </button>
+
+                            <div id="update-server-requirements-content">
+                                <h3>The update server should contain the following files</h3>
+                                <p>
+                                    <a id="ks-up-md5-text" style="color: {{ USMD5 }};" target="_blank"
+                                       href="https://kootenay-networks.com/installers/KootnetSensors-deb-MD5.txt">
+                                        KootnetSensors-deb-MD5.txt <i id="ks-up-md5" class="fas"></i>
+                                    </a><br>
+                                    MD5 checksums of available versions<br><br>
+
+                                    <a id="ks-up-version-text" style="color: {{ USVersion }};" target="_blank"
+                                       href="https://kootenay-networks.com/installers/kootnet_version.txt">
+                                        kootnet_version.txt <i id="ks-up-version" class="fas"></i>
+                                    </a><br>
+                                    Current version of Kootnet Sensors on the server<br><br>
+
+                                    <a id="ks-up-f-installer-text" style="color: {{ USFullInstaller }}" target="_blank"
+                                       href="https://kootenay-networks.com/installers/KootnetSensors.deb">
+                                        KootnetSensors.deb <i id="ks-up-f-installer" class="fas"></i>
+                                    </a><br>
+                                    Full installer of Kootnet Sensors (Used in Re-Installs)<br><br>
+
+                                    <a id="ks-up-u-installer-text" style="color: {{ USUpgradeInstaller }}" target="_blank"
+                                       href="https://kootenay-networks.com/installers/KootnetSensors_online.deb">
+                                        KootnetSensors_online.deb <i id="ks-up-u-installer" class="fas"></i>
+                                    </a><br>
+                                    Upgrade installer for Kootnet Sensors<br><br>
+                                    Optional<br>
+                                    dev/ - Folder for developmental upgrade and version<br>
+                                    Contains all the same files as above, minus the MD5 checksum file
+                                </p>
+                            </div>
+
+                            <br><br>
+
+                            <label>Eg. update.sensors.org/installers/ or 192.168.1.16/ks_upgrades/<br>
+                                (Must be an HTTP(S) server)<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input type="text" style="width: 450px;" maxlength="250"
+                                                   id="update_server_address" name="update_server_address"
+                                                   placeholder="updates.some-server.com" value="{{ UpdateServerAddress }}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <br><br>
+
+                        <button type="submit" class="pure-button">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-m-12 col-sm-12">
+        <div class="card">
+            <div class="card-content">
+                <form class="pure-form" method="POST" action="/atpro/settings-main">
                     <h2><i class="fas fa-arrow-alt-circle-up"></i> Automatic HTTP Upgrades</h2>
                     <p>
                         If you use Kootnet Sensors 'Remote Management' to manage other Kootnet Sensors,
@@ -102,71 +211,7 @@
                         <br><br>
                         * Developmental versions often contain bugs *
                     </i></p>
-                    <br>
                     <button type="submit" class="pure-button">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-6 col-m-12 col-sm-12">
-        <div class="card">
-            <div class="card-content">
-                <form class="pure-form" method="POST" action="/atpro/settings-urls">
-                    <h2><i class="fas fa-link"></i> Kootnet Sensor Program URLs</h2>
-
-                    <p>Warning: For custom setups only</p>
-
-                    <button type="button" id="adv-urls-button" class="pure-button" onclick="ShowHideURLs()">
-                        Show URLs
-                    </button>
-
-                    <div id="adv-urls-content">
-                        <br><br>
-                        <button type="button" class="pure-button"
-                                onclick="NotificationConfirmAction('Reset all URLs to default?', '/atpro/reset-urls-config')">
-                            Reset URLs to Default
-                        </button>
-
-                        <br>
-
-                        <div>
-                            <label><h3>Checkin Server Address & Port</h3>
-                                Eg. MySensor.sensors.org:10065 or 192.168.1.16:10065<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 450px;" maxlength="250"
-                                                   id="checkin_address" name="checkin_address"
-                                                   placeholder="server.dragonwarz.net:10065" value="{{ CheckinAddress }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <br><br>
-
-                        <div>
-                            <label><h3>Update server Address</h3>
-                                Eg. update.sensors.org/installers/ or 192.168.1.16/ks_upgrades/<br>
-                                (Must be an HTTP(S) server)<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input type="text" style="width: 450px;" maxlength="250"
-                                                   id="update_server_address" name="update_server_address"
-                                                   placeholder="updates.some-server.com" value="{{ UpdateServerAddress }}">
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-
-                        <br><br>
-
-                        <button type="submit" class="pure-button">Update</button>
-                    </div>
                 </form>
             </div>
         </div>
@@ -198,9 +243,45 @@
         }
     }
 
-    if (window.innerWidth < 500) {
+    function ShowHideUpdateRequirements() {
+        if (document.getElementById("update-server-requirements-content").style.display === "none") {
+            document.getElementById("update-server-requirements-content").style.display = "inline-block";
+            document.getElementById("update-server-requirements").textContent = "Hide Update Server Requirements";
+        } else {
+            document.getElementById("update-server-requirements-content").style.display = "none";
+            document.getElementById("update-server-requirements").textContent = "Show Update Server Requirements";
+        }
+    }
+
+    function InitializeWindow() {
+        if (document.getElementById("ks-up-md5-text").style.color === 'green') {
+            document.getElementById("ks-up-md5").classList.add('fa-check-circle');
+        } else if (document.getElementById("ks-up-md5-text").style.color === 'red') {
+            document.getElementById("ks-up-md5").classList.add('fa-times-circle');
+        }
+        if (document.getElementById("ks-up-version-text").style.color === 'green') {
+            document.getElementById("ks-up-version").classList.add('fa-check-circle');
+        } else if (document.getElementById("ks-up-version-text").style.color === 'red') {
+            document.getElementById("ks-up-version").classList.add('fa-times-circle');
+        }
+        if (document.getElementById("ks-up-f-installer-text").style.color === 'green') {
+            document.getElementById("ks-up-f-installer").classList.add('fa-check-circle');
+        } else if (document.getElementById("ks-up-f-installer-text").style.color === 'red') {
+            document.getElementById("ks-up-f-installer").classList.add('fa-times-circle');
+        }
+        if (document.getElementById("ks-up-u-installer-text").style.color === 'green') {
+            document.getElementById("ks-up-u-installer").classList.add('fa-check-circle');
+        } else if (document.getElementById("ks-up-u-installer-text").style.color === 'red') {
+            document.getElementById("ks-up-u-installer").classList.add('fa-times-circle');
+        }
+
+        if (window.innerWidth < 500) {
             document.getElementById('checkin_address').style.width = '325px';
             document.getElementById('update_server_address').style.width = '325px';
         }
-    ShowHideURLs()
+        ShowHideURLs()
+        ShowHideUpdateRequirements()
+    }
+
+    InitializeWindow()
 </script>

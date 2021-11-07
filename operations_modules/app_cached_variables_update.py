@@ -342,6 +342,11 @@ def check_for_new_version():
     standard_url = app_config_access.urls_config.url_update_server + "kootnet_version.txt"
     developmental_url = app_config_access.urls_config.url_update_server + "dev/kootnet_version.txt"
 
+    app_cached_variables.update_server_file_present_md5 = None
+    app_cached_variables.update_server_file_present_version = None
+    app_cached_variables.update_server_file_present_full_installer = None
+    app_cached_variables.update_server_file_present_upgrade_installer = None
+
     try:
         request_data = requests.get(standard_url, allow_redirects=False)
         standard_version_available = _get_cleaned_version(request_data.content.decode("utf-8").strip())
@@ -358,7 +363,40 @@ def check_for_new_version():
         logger.primary_logger.debug("Available Update Check Failed: " + str(error))
         app_cached_variables.standard_version_available = "Retrieval Failed"
         app_cached_variables.developmental_version_available = "Retrieval Failed"
+
+    try:
+        update_server_files = [
+            app_config_access.urls_config.url_update_server + "KootnetSensors-deb-MD5.txt",
+            app_config_access.urls_config.url_update_server + "kootnet_version.txt",
+            app_config_access.urls_config.url_update_server + "KootnetSensors.deb",
+            app_config_access.urls_config.url_update_server + "KootnetSensors_online.deb"
+        ]
+
+        md5_file, version_file, full_installer_file, upgrade_installer_file = _get_files_exist(update_server_files)
+        app_cached_variables.update_server_file_present_md5 = md5_file
+        app_cached_variables.update_server_file_present_version = version_file
+        app_cached_variables.update_server_file_present_full_installer = full_installer_file
+        app_cached_variables.update_server_file_present_upgrade_installer = upgrade_installer_file
+    except Exception as error:
+        logger.primary_logger.debug("Update Server Files Check Failed: " + str(error))
+
     atpro_notifications.check_updates()
+
+
+def _get_files_exist(file_urls_list):
+    return_results = []
+    for file_url in file_urls_list:
+        try:
+            response = requests.head(file_url)
+            if response.status_code != 404:
+                return_results.append(True)
+            else:
+                return_results.append(False)
+        except Exception as error:
+            log_msg = "Error checking for update server file " + file_url + " Check Failed: "
+            logger.primary_logger.debug(log_msg + str(error))
+            return_results.append(False)
+    return return_results
 
 
 def _get_cleaned_version(version_text):

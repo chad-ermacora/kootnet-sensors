@@ -375,6 +375,12 @@ developmental_version_available = "Retrieving"
 software_update_available = False
 software_update_dev_available = False
 
+# Update Files found on Update Server. They will be set to either True or False
+update_server_file_present_md5 = None
+update_server_file_present_version = None
+update_server_file_present_full_installer = None
+update_server_file_present_upgrade_installer = None
+
 # Static variables
 command_data_separator = "[new_data_section]"
 

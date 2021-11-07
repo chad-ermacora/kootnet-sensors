@@ -17,7 +17,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from flask import Blueprint, render_template, request
+from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
+from operations_modules.app_cached_variables_update import check_for_new_version
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
 from http_server.server_http_generic_functions import get_html_checkbox_state
@@ -57,8 +59,20 @@ def html_atpro_sensor_settings_main():
         EnableStableMinorAutoUpgrades=enable_minor_upgrades,
         EnableDevAutoUpgrades=enable_dev_up,
         CheckinAddress=app_config_access.urls_config.url_checkin_server,
-        UpdateServerAddress=app_config_access.urls_config.url_update_server
+        UpdateServerAddress=app_config_access.urls_config.url_update_server,
+        USMD5=_get_file_present_color(app_cached_variables.update_server_file_present_md5),
+        USVersion=_get_file_present_color(app_cached_variables.update_server_file_present_version),
+        USFullInstaller=_get_file_present_color(app_cached_variables.update_server_file_present_full_installer),
+        USUpgradeInstaller=_get_file_present_color(app_cached_variables.update_server_file_present_upgrade_installer)
     )
+
+
+def _get_file_present_color(upgrade_file):
+    if upgrade_file is None:
+        return ""
+    if upgrade_file:
+        return "green"
+    return "red"
 
 
 @html_atpro_settings_routes.route("/atpro/settings-urls", methods=["POST"])
@@ -66,6 +80,7 @@ def html_atpro_sensor_settings_main():
 def html_atpro_sensor_settings_urls():
     app_config_access.urls_config.update_with_html_request(request)
     app_config_access.urls_config.save_config_to_file()
+    thread_function(check_for_new_version)
     app_cached_variables.restart_automatic_upgrades_thread = True
     return get_message_page("URL Settings Updated", page_url="sensor-settings")
 
@@ -74,6 +89,7 @@ def html_atpro_sensor_settings_urls():
 @auth.login_required
 def html_atpro_sensor_settings_urls_reset():
     app_config_access.urls_config.reset_urls_to_default()
+    thread_function(check_for_new_version)
     return get_message_page("URLs Configuration Reset", page_url="sensor-settings")
 
 
