@@ -31,13 +31,17 @@ class CreateRefinedVersion:
         self.load_from_string(version_text)
 
     def load_from_string(self, version_text):
-        version_split = str(version_text).strip().split(".")
-        if len(version_split) == 3:
-            self.major_version = self._convert_to_int(version_split[0])
-            self.feature_version = self._convert_to_int(version_split[1])
-            self.minor_version = self._convert_to_int(version_split[2])
-        else:
-            logger.primary_logger.debug("Software Version - Invalid version text")
+        try:
+            if len(version_text) < 15:
+                version_split = str(version_text).strip().split(".")
+                if len(version_split) == 3:
+                    self.major_version = self._convert_to_int(version_split[0])
+                    self.feature_version = self._convert_to_int(version_split[1])
+                    self.minor_version = self._convert_to_int(version_split[2])
+                else:
+                    logger.primary_logger.debug("Software Version - Invalid version text")
+        except Exception as error:
+            logger.primary_logger.debug("Software Version - Error converting text to version: " + str(error))
 
     def get_version_string(self):
         return str(self.major_version) + "." + str(self.feature_version) + "." + str(self.minor_version)
@@ -69,5 +73,5 @@ def write_program_version_to_file():
 
 
 # Current Version of the program
-version = "Beta.34.163"
+version = "Beta.34.168"
 old_version = _get_old_version()
