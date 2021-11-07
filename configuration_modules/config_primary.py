@@ -64,39 +64,35 @@ class CreatePrimaryConfiguration(CreateGeneralConfiguration):
         """ Updates the primary configuration based on provided HTML configuration data. """
         logger.network_logger.debug("Starting HTML Primary Configuration Update Check")
 
-        self.enable_debug_logging = 0
-        self.enable_automatic_upgrades_feature = 0
-        self.enable_automatic_upgrades_minor = 0
-        self.enable_automatic_upgrades_developmental = 0
+        if html_request.form.get("ip_web_port") is None:
+            self.enable_automatic_upgrades_feature = 0
+            self.enable_automatic_upgrades_minor = 0
+            self.enable_automatic_upgrades_developmental = 0
 
-        if html_request.form.get("debug_logging") is not None:
-            self.enable_debug_logging = 1
-            logger.set_logging_level(debug_enabled=True)
-        else:
-            logger.set_logging_level(debug_enabled=False)
-
-        if html_request.form.get("program_hour_offset") is not None:
-            self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
-
-        if html_request.form.get("auto_upgrade_delay_hours") is not None:
-            try:
+            if html_request.form.get("auto_upgrade_delay_hours") is not None:
                 new_hours = float(html_request.form.get("auto_upgrade_delay_hours"))
                 if new_hours < 0.25:
                     new_hours = 0.25
-            except Exception as error:
-                logger.network_logger.warning("Automatic Software Upgrades - New Delay Setting Error: " + str(error))
-                new_hours = 6
-            self.automatic_upgrade_delay_hours = new_hours
+                self.automatic_upgrade_delay_hours = new_hours
 
-        if html_request.form.get("enable_stable_feature_auto_upgrades") is not None:
-            self.enable_automatic_upgrades_feature = 1
-        if html_request.form.get("enable_stable_minor_auto_upgrades") is not None:
-            self.enable_automatic_upgrades_minor = 1
-        if html_request.form.get("enable_dev_auto_upgrades") is not None:
-            self.enable_automatic_upgrades_developmental = 1
+            if html_request.form.get("enable_stable_feature_auto_upgrades") is not None:
+                self.enable_automatic_upgrades_feature = 1
+            if html_request.form.get("enable_stable_minor_auto_upgrades") is not None:
+                self.enable_automatic_upgrades_minor = 1
+            if html_request.form.get("enable_dev_auto_upgrades") is not None:
+                self.enable_automatic_upgrades_developmental = 1
+        else:
+            self.enable_debug_logging = 0
+            if html_request.form.get("debug_logging") is not None:
+                self.enable_debug_logging = 1
+                logger.set_logging_level(debug_enabled=True)
+            else:
+                logger.set_logging_level(debug_enabled=False)
 
-        if html_request.form.get("ip_web_port") is not None:
-            self.web_portal_port = int(html_request.form.get("ip_web_port"))
+            if html_request.form.get("program_hour_offset") is not None:
+                self.utc0_hour_offset = float(html_request.form.get("program_hour_offset"))
+            if html_request.form.get("ip_web_port") is not None:
+                self.web_portal_port = int(html_request.form.get("ip_web_port"))
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
