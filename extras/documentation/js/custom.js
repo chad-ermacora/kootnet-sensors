@@ -64,10 +64,10 @@
     VIDEO FIX -->
     =============================================== */
 
-    $(document).ready(function() {
-        // Target your .container, .wrapper, .post, etc.
-        $(".media").fitVids();
-    });
+    // $(document).ready(function() {
+    //     // Target your .container, .wrapper, .post, etc.
+    //     $(".media").fitVids();
+    // });
 
     /* ==============================================
     VIDEO FIX -->
