@@ -18,7 +18,7 @@
 """
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import update_cached_variables
 from configuration_modules import app_config_access
@@ -100,7 +100,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_system_commands_routes)
         app.register_blueprint(html_sensor_check_ins_routes)
 
-        update_cached_variables()
+        thread_function(update_cached_variables)
 
         try:
             # Removes excessive "SSL Error" messages to console when using a self signed certificate
