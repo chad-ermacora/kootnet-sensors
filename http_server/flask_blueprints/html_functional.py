@@ -18,6 +18,8 @@
 """
 from os import urandom
 from hashlib import sha256
+from time import sleep
+from datetime import datetime
 from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory
 from operations_modules import logger
 from operations_modules import file_locations
@@ -31,7 +33,6 @@ html_functional_routes = Blueprint("html_functional_routes", __name__)
 
 html_extras_dir = file_locations.program_root_dir + "/http_server/extras"
 documentation_root_dir = file_locations.program_root_dir + "/extras/documentation"
-auth_error_msg = "Unauthorized Access - Incorrect username or Password"
 
 
 @html_functional_routes.route("/robots.txt")
@@ -105,9 +106,10 @@ def login():
         if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
             new_session_id = sha256(urandom(12)).hexdigest()
             session['user_id'] = new_session_id
-            if new_session_id not in app_cached_variables.http_flask_login_session_ids:
-                app_cached_variables.http_flask_login_session_ids.append(new_session_id)
+            app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()
             return redirect('/atpro/')
+        # Sleep on failure to help prevent brute force attempts
+        sleep(0.25)
         return redirect('/atpro/login')
     return render_template("ATPro_admin/page_templates/login.html")
 
