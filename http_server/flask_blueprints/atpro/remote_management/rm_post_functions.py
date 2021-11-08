@@ -17,7 +17,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import time
-import requests
 from threading import Thread
 from queue import Queue
 from flask import render_template
@@ -295,28 +294,10 @@ def _queue_name_and_file_list(ip_list, command):
 def _worker_queue_list_ip_name_file(address, command):
     try:
         sensor_name = get_http_sensor_reading(address, command="GetHostName")
-        sensor_data = get_http_sensor_file(address, command)
+        sensor_data = get_http_sensor_reading(address, command, get_file=True)
         data_queue.put([address, sensor_name, sensor_data])
     except Exception as error:
         logger.network_logger.error("Sensor Control - Get Remote File Failed: " + str(error))
-
-
-def get_http_sensor_file(sensor_address, command, http_port="10065"):
-    """ Returns requested remote sensor file (based on the provided command data). """
-
-    if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/" + command
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.get(url=url, timeout=(8, 30), verify=False, auth=login_credentials)
-        return tmp_return_data.content
-    except Exception as error:
-        log_msg = "Remote Sensor File Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
-        return "Error"
 
 
 def put_all_reports_zipped_to_cache(ip_list):
