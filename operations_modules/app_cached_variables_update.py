@@ -20,7 +20,7 @@ import os
 import psutil
 import socket
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
 import requests
 from operations_modules import logger
@@ -256,6 +256,7 @@ def _get_zipped_configurations():
 
 def start_cached_variables_refresh():
     thread_function(_cached_variables_refresh)
+    thread_function(_remove_stale_http_logins)
 
 
 def _cached_variables_refresh():
@@ -269,6 +270,22 @@ def _cached_variables_refresh():
         _update_cached_hostname()
         check_for_new_version()
         sleep(3600)
+
+
+def _remove_stale_http_logins():
+    """
+    Removes stale http logins from the http_flask_login_session_ids dictionary every 15 minutes
+    If login has not been active for 30 minutes or more, the login is considered stale
+    :return: Nothing
+    """
+    while True:
+        stale_http_login_ids = []
+        for login_id, login_id_datetime in app_cached_variables.http_flask_login_session_ids.items():
+            if datetime.utcnow() - login_id_datetime > timedelta(hours=0.5):
+                stale_http_login_ids.append(login_id)
+        for stale_id in stale_http_login_ids:
+            del app_cached_variables.http_flask_login_session_ids[stale_id]
+        sleep(900)
 
 
 def _update_cached_ip():
