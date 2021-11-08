@@ -133,6 +133,7 @@ def create_the_big_zip(ip_list):
                 try:
                     if auth_error_msg_contains in sensor[2].decode("utf-8"):
                         current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".txt"
+                        sensor[2] = "Incorrect Login Provided"
                 except Exception as error:
                     print(str(error))
 
@@ -228,6 +229,7 @@ def create_all_databases_zipped(ip_list):
             try:
                 if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
                     db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
+                    sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
                 print(str(error))
             database_names.append(db_name)
@@ -260,6 +262,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
             try:
                 if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
                     zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
+                    sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
                 print(str(error))
             zip_names.append(zip_name)
@@ -294,7 +297,7 @@ def _queue_name_and_file_list(ip_list, command):
 def _worker_queue_list_ip_name_file(address, command):
     try:
         sensor_name = get_http_sensor_reading(address, command="GetHostName")
-        sensor_data = get_http_sensor_reading(address, command, get_file=True)
+        sensor_data = get_http_sensor_reading(address, command=command, get_file=True)
         data_queue.put([address, sensor_name, sensor_data])
     except Exception as error:
         logger.network_logger.error("Sensor Control - Get Remote File Failed: " + str(error))
@@ -316,25 +319,3 @@ def put_all_reports_zipped_to_cache(ip_list):
         logger.network_logger.error("Sensor Control - Reports Zip Generation Error: " + str(error))
     app_cached_variables.creating_the_reports_zip = False
     logger.network_logger.info("Sensor Control - Reports Zip Generation Complete")
-
-
-def _worker_get_db_size(address):
-    get_database_size_command = network_commands.sensor_sql_database_size
-    try:
-        try_get = True
-        get_error_count = 0
-        while try_get and get_error_count < 3:
-            try:
-                db_size = float(get_http_sensor_reading(address, command=get_database_size_command))
-                data_queue.put(db_size)
-                try_get = False
-            except Exception as error:
-                log_msg = "Sensor Control - Error getting sensor DB Size for "
-                logger.network_logger.error(log_msg + address + " attempt #" + str(get_error_count + 1))
-                logger.network_logger.debug("Sensor Control DB Sizes Error: " + str(error))
-                get_error_count += 1
-        if get_error_count > 2:
-            data_queue.put(0)
-    except Exception as error:
-        log_msg = "Sensor Control - Unable to retrieve Database Size for " + address + ": " + str(error)
-        logger.network_logger.error(log_msg)
