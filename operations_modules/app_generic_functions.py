@@ -33,6 +33,7 @@ except Exception as import_error:
     logger.primary_logger.debug("requests python module import error: " + str(import_error))
 
 logging.captureWarnings(True)
+get_sensor_reading_error_msg = "Unable to get Sensor Reading/File"
 
 
 class CreateGeneralConfiguration:
@@ -327,7 +328,6 @@ def check_for_port_in_address(address):
 
 def get_ip_and_port_split(address):
     """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
-
     return address.split(":")
 
 
@@ -352,7 +352,7 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
     except Exception as error:
         log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
         logger.network_logger.debug(log_msg)
-        return "Error"
+        return get_sensor_reading_error_msg
 
 
 def send_http_command(sensor_address, command, included_data=None, test_run=None, http_port="10065", timeout=10):
