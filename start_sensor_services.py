@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from datetime import datetime
+program_initialization_start_time = datetime.utcnow()
 from time import sleep
 from operations_modules import logger
 from operations_modules.initialization_checks import run_program_start_checks
@@ -159,6 +161,7 @@ try:
 except Exception as error:
     logger.primary_logger.critical("-- Cached Variables Update Server Error: " + str(error))
 
-logger.primary_logger.debug(" -- Thread Initializations Complete")
+init_time_seconds = round((datetime.utcnow() - program_initialization_start_time).total_seconds(), 3)
+logger.primary_logger.debug(" -- Thread Initializations Complete: " + str(init_time_seconds) + " Seconds")
 while True:
     sleep(3600)
