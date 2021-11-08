@@ -25,7 +25,7 @@ from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_http_sensor_reading, thread_function, get_file_content, \
     get_html_response_bg_colour
 from sensor_modules.system_access import get_system_datetime
-from http_server.flask_blueprints.html_functional import auth_error_msg
+from http_server.server_http_auth import auth_error_msg_contains
 from operations_modules import software_version
 
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
@@ -168,7 +168,7 @@ def create_sensor_report(address_list, sensor_report_url, html_report_heading):
     for report in sensor_reports:
         html_report = str(report[1])
         rsm_address_port = str(report[2])
-        if html_report == auth_error_msg:
+        if auth_error_msg_contains in html_report:
             sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
             sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
             final_report_replacement += sensor_report + "\n"
@@ -196,7 +196,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
         if login_check == "OK" or not login_required:
             if login_check == "OK":
                 login_check = "Login OK"
-            elif login_check == auth_error_msg:
+            elif auth_error_msg_contains in login_check:
                 login_check = "Login Failed"
             else:
                 login_check = "Unknown Error"

@@ -28,7 +28,7 @@ from operations_modules.app_generic_functions import get_http_sensor_reading, zi
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
-from http_server.flask_blueprints.html_functional import auth_error_msg
+from http_server.server_http_auth import auth_error_msg_contains
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 data_queue = Queue()
@@ -131,7 +131,7 @@ def create_the_big_zip(ip_list):
             for sensor in ip_name_and_data:
                 current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".zip"
                 try:
-                    if sensor[2].decode("utf-8") == auth_error_msg:
+                    if auth_error_msg_contains in sensor[2].decode("utf-8"):
                         current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".txt"
                 except Exception as error:
                     print(str(error))
@@ -226,7 +226,7 @@ def create_all_databases_zipped(ip_list):
         for sensor_data in data_list:
             db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
             try:
-                if sensor_data[2].decode("utf-8") == auth_error_msg:
+                if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
                     db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
             except Exception as error:
                 print(str(error))
@@ -258,7 +258,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
         for sensor_data in data_list:
             zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
             try:
-                if sensor_data[2].decode("utf-8") == auth_error_msg:
+                if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
                     zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
             except Exception as error:
                 print(str(error))
