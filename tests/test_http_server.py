@@ -262,9 +262,8 @@ def http_display_text_on_sensor(text_message, sensor_address_var, http_port="100
         http_port = ip_and_port[1]
     try:
         url = "https://" + sensor_address_var + ":" + http_port + "/DisplayText"
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
         send_data = {'command_data': text_message}
-        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False, auth=login_credentials)
+        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False)
         if tmp_return_data.text == "OK":
             return True
     except Exception as error:
