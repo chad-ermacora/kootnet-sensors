@@ -190,7 +190,7 @@ def get_config_report_entry():
     interval_recording = _get_enabled_disabled_text(aca.interval_recording_config.enable_interval_recording)
     high_low_recording = _get_enabled_disabled_text(aca.trigger_high_low.enable_high_low_trigger_recording)
     variance_recording = _get_enabled_disabled_text(aca.trigger_variances.enable_trigger_variance)
-    temp_offset = _get_enabled_disabled_text(aca.sensor_offsets.enable_custom_temp)
+    temp_offset = _get_enabled_disabled_text(aca.sensor_offsets.enable_temp_offset)
     temp_comp_factor = _get_enabled_disabled_text(aca.sensor_offsets.enable_temperature_comp_factor)
     mqtt_broker = _get_enabled_disabled_text(aca.mqtt_broker_config.enable_mqtt_broker)
     mqtt_subscriber = _get_enabled_disabled_text(aca.mqtt_subscriber_config.enable_mqtt_subscriber)
