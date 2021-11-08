@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from os import urandom
+from hashlib import sha256
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
@@ -69,6 +71,7 @@ class CreateSensorHTTP:
 
     def __init__(self):
         app = Flask(__name__)
+        app.secret_key = sha256(urandom(32)).hexdigest()
         Compress(app)
 
         app.register_blueprint(html_functional_routes)
