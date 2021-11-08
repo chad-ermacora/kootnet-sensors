@@ -74,11 +74,11 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
 
     if download_type == download_type_http:
         if dev_upgrade:
-            current_online_version = _get_http_url(http_developmental_version_url).decode("UTF-8")
+            current_online_version = _get_http_url_text_file(http_developmental_version_url)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_developmental_deb_url
         else:
-            current_online_version = _get_http_url(http_standard_version_url).decode("UTF-8")
+            current_online_version = _get_http_url_text_file(http_standard_version_url)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_standard_deb_url
 
@@ -151,7 +151,7 @@ def _save_http_url_to_file(file_url, verify_https=True):
         if os.path.isfile(file_location):
             os.remove(file_location)
 
-        tmp_return_data = requests.get(url=file_url, timeout=(4, 30), allow_redirects=True, verify=verify_https)
+        tmp_return_data = requests.get(url=file_url, verify=verify_https)
 
         with open(file_location, "wb") as upgrade_file:
             upgrade_file.write(tmp_return_data.content)
@@ -196,7 +196,7 @@ def _save_smb_to_file(dev_upgrade=False):
     return None
 
 
-def _get_http_url(file_url, verify_https=True):
+def _get_http_url_text_file(file_url, verify_https=True):
     """
     Downloads and returns HTTP(S) URL content.
     :param file_url: HTTP(S) URL to a file
@@ -204,8 +204,8 @@ def _get_http_url(file_url, verify_https=True):
     :return: URL file content
     """
     try:
-        tmp_return_data = requests.get(url=file_url, timeout=(4, 30), allow_redirects=True, verify=verify_https)
-        return tmp_return_data.content
+        tmp_return_data = requests.get(url=file_url, verify=verify_https)
+        return tmp_return_data.text
     except Exception as error:
         logger.network_logger.error("URL Download " + file_url + ": " + str(error))
     return None
@@ -237,11 +237,11 @@ def _get_md5_for_version(kootnet_version, get_full_installer=False):
     :param get_full_installer: Get the full installer instead of the upgrade installer, Default: upgrade installer
     :return: MD5 checksum of provided version's Kootnet Senors installer, on error returns not found message
     """
-    versions_md5 = _get_http_url(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt").decode("UTF-8")
-    versions_md5_list = versions_md5.split("\n")
     try:
+        versions_md5 = _get_http_url_text_file(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt")
+        versions_md5_list = versions_md5.split("\n")
         for index, version in enumerate(versions_md5_list):
-            if kootnet_version == version[:11].strip():
+            if kootnet_version == version[:15].split(" ")[0]:
                 if get_full_installer:
                     return versions_md5_list[index + 1].split(":")[-1].strip()
                 return versions_md5_list[index + 4].split(":")[-1].strip()
