@@ -77,10 +77,10 @@ class CreateNetworkGetCommands:
         self.program_version = "GetSensorVersion"
         self.program_last_updated = "GetProgramLastUpdated"
 
-        self.rm_system_report = "/atpro/rm-get-system-entry"
-        self.rm_config_report = "/atpro/rm-get-config-entry"
-        self.rm_readings_report = "/atpro/rm-get-readings-entry"
-        self.rm_latency_report = "/atpro/rm-get-latency-entry"
+        self.rm_system_report = "atpro/rm-get-system-entry"
+        self.rm_config_report = "atpro/rm-get-config-entry"
+        self.rm_readings_report = "atpro/rm-get-readings-entry"
+        self.rm_latency_report = "atpro/rm-get-latency-entry"
 
         self.system_uptime = "GetSystemUptime"
         self.system_date_time = "GetSystemDateTime"
@@ -405,7 +405,8 @@ wifi_psk = ""
 http_flask_user = "Kootnet"
 http_flask_password_hash = b''
 http_flask_password_salt = b''
-http_flask_login_session_ids = []
+# Place holder for logged in http users {user_id: datetime.utcnow()}
+http_flask_login_session_ids = {}
 
 # Sensor Check-in View Variables
 checkin_search_sensor_id = ""
