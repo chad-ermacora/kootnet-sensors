@@ -110,7 +110,7 @@ def login():
             return redirect('/atpro/')
         # Sleep on failure to help prevent brute force attempts
         sleep(0.25)
-        return redirect('/atpro/login')
+        return get_message_page("Incorrect Login Provided", page_url="sensor-settings")
     return render_template("ATPro_admin/page_templates/login.html")
 
 
