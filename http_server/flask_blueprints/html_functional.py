@@ -16,14 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-from time import sleep
-from flask import Blueprint, send_file, request, send_from_directory
+from os import urandom
+from hashlib import sha256
+from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import verify_password_to_hash
 from operations_modules.app_validation_checks import url_is_valid
 from http_server.server_http_auth import auth
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 
 html_functional_routes = Blueprint("html_functional_routes", __name__)
 
@@ -94,17 +96,23 @@ def test_login():
     return "OK"
 
 
-@auth.verify_password
-def verify_password(username, password):
-    if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
-        logger.network_logger.debug("* Login to Web Portal Successful from " + str(request.remote_addr))
-        return True
-    logger.network_logger.debug("* Login to Web Portal Failed from " + str(request.remote_addr))
-    # Sleep on failure to help prevent brute force attempts
-    sleep(0.5)
-    return False
+@html_functional_routes.route('/atpro/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['login_username']
+        password = request.form['login_password']
+
+        if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
+            new_session_id = sha256(urandom(12)).hexdigest()
+            session['user_id'] = new_session_id
+            if new_session_id not in app_cached_variables.http_flask_login_session_ids:
+                app_cached_variables.http_flask_login_session_ids.append(new_session_id)
+            return redirect('/atpro/')
+        return redirect('/atpro/login')
+    return render_template("ATPro_admin/page_templates/login.html")
 
 
-@auth.error_handler
-def auth_error():
-    return auth_error_msg
+@html_functional_routes.route("/atpro/logout")
+def html_atpro_logout():
+    session.pop('user_id', None)
+    return get_message_page("Logged Out", "You have been logged out")

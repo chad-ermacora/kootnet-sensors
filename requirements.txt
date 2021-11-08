@@ -1,7 +1,6 @@
 # Required Sensor Program Modules
 flask
 Flask-Compress
-Flask-HTTPAuth
 gevent
 greenlet
 cryptography

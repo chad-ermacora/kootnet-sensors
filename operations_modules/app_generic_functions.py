@@ -331,7 +331,7 @@ def get_ip_and_port_split(address):
     return address.split(":")
 
 
-def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10):
+def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10, get_file=False):
     """ Returns requested remote sensor data (based on the provided command data). """
 
     if check_for_port_in_address(sensor_address):
@@ -339,9 +339,15 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         sensor_address = ip_and_port[0]
         http_port = ip_and_port[1]
     try:
-        url = "https://" + sensor_address + ":" + http_port + "/" + command
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
-        tmp_return_data = requests.get(url=url, timeout=timeout, verify=False, auth=login_credentials)
+        url = "https://" + sensor_address + ":" + http_port + "/"
+        login_credentials = {"login_username": app_cached_variables.http_login,
+                             "login_password": app_cached_variables.http_password}
+        authenticated_requests = requests.Session()
+        authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
+        url = url + command
+        tmp_return_data = authenticated_requests.get(url=url, timeout=timeout, verify=False)
+        if get_file:
+            return tmp_return_data.content
         return tmp_return_data.text
     except Exception as error:
         log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
@@ -357,10 +363,15 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         sensor_address = ip_and_port[0]
         http_port = ip_and_port[1]
     try:
-        url = "https://" + sensor_address + ":" + http_port + "/" + command
-        login_credentials = (app_cached_variables.http_login, app_cached_variables.http_password)
+        url = "https://" + sensor_address + ":" + http_port + "/"
+        login_credentials = {"login_username": app_cached_variables.http_login,
+                             "login_password": app_cached_variables.http_password}
+        authenticated_requests = requests.Session()
+        authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
+
+        url = url + command
         command_data = {"command_data": included_data, "test_run": test_run}
-        requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
+        authenticated_requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
     except Exception as error:
         log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
         logger.network_logger.error(log_msg)

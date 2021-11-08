@@ -101,9 +101,14 @@ class CreateSensorHTTPCommand:
     def send_http_command(self):
         """ Sends command and data to sensor. """
         try:
-            url = "https://" + self.sensor_address + ":" + self.http_port + "/" + self.sensor_command
-            requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data,
-                          auth=(app_cached_variables.http_login, app_cached_variables.http_password))
+            url = "https://" + self.sensor_address + ":" + self.http_port + "/"
+            login_credentials = {"login_username": app_cached_variables.http_login,
+                                 "login_password": app_cached_variables.http_password}
+            authenticated_requests = requests.Session()
+            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
+
+            url = url + self.sensor_command
+            authenticated_requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data)
         except Exception as error:
             logger.network_logger.error("Unable to send command to " + str(self.sensor_address) + ": " + str(error))
 

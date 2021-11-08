@@ -28,8 +28,8 @@ from configuration_modules import app_config_access
 from sensor_modules import system_access
 from sensor_modules import sensor_access
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_text_check_enabled, get_uptime_str
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_text_check_enabled, \
+    get_uptime_str
 
 html_atpro_main_routes = Blueprint("html_atpro_main_routes", __name__)
 
@@ -125,11 +125,6 @@ def html_atpro_sensor_help():
 @html_atpro_main_routes.route("/atpro/system-about")
 def html_atpro_about():
     return render_template("ATPro_admin/page_templates/system/system-about.html", KootnetVersion=kootnet_version)
-
-
-@html_atpro_main_routes.route("/atpro/logout")
-def html_atpro_logout():
-    return get_message_page("Logged Out", "You have been logged out"), 401
 
 
 @html_atpro_main_routes.route("/atpro/get-notification-count")

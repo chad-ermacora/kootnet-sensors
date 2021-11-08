@@ -118,7 +118,6 @@ venv.bak/
 /extras/python_modules/cryptography-3.4.8-cp37-cp37m-linux_armv7l.whl
 /extras/python_modules/Flask-2.0.1-py3-none-any.whl
 /extras/python_modules/Flask_Compress-1.10.1-py3-none-any.whl
-/extras/python_modules/Flask_HTTPAuth-4.4.0-py2.py3-none-any.whl
 /extras/python_modules/gevent-21.8.0-cp37-cp37m-linux_armv6l.whl
 /extras/python_modules/gevent-21.8.0-cp37-cp37m-linux_armv7l.whl
 /extras/python_modules/gpiozero-1.5.1-py2.py3-none-any.whl

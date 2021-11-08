@@ -405,6 +405,7 @@ wifi_psk = ""
 http_flask_user = "Kootnet"
 http_flask_password_hash = b''
 http_flask_password_salt = b''
+http_flask_login_session_ids = []
 
 # Sensor Check-in View Variables
 checkin_search_sensor_id = ""

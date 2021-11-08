@@ -38,7 +38,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
       ${PYTHON_MODULES_DIR}/pyftdi-0.51.2-py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/colorzero-1.1-py2.py3-none-any.whl
       ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/Flask-2.0.1-py3-none-any.whl \
-      ${PYTHON_MODULES_DIR}/Flask_HTTPAuth-4.4.0-py2.py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/zope.event-4.5.0-py2.py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/luma.core-1.14.0-py2.py3-none-any.whl \
       ${PYTHON_MODULES_DIR}/luma.oled-3.4.0-py2.py3-none-any.whl \
