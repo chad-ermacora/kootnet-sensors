@@ -131,7 +131,7 @@ def create_the_big_zip(ip_list):
             for sensor in ip_name_and_data:
                 current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".zip"
                 try:
-                    if auth_error_msg_contains in sensor[2].decode("utf-8"):
+                    if auth_error_msg_contains in str(sensor[2]):
                         current_file_name = sensor[0].split(".")[-1] + "_" + sensor[1] + ".txt"
                         sensor[2] = "Incorrect Login Provided"
                 except Exception as error:
@@ -227,7 +227,7 @@ def create_all_databases_zipped(ip_list):
         for sensor_data in data_list:
             db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
             try:
-                if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
+                if auth_error_msg_contains in str(sensor_data[2]):
                     db_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
                     sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
@@ -260,7 +260,7 @@ def create_multiple_sensor_logs_zipped(ip_list):
         for sensor_data in data_list:
             zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".zip"
             try:
-                if auth_error_msg_contains in sensor_data[2].decode("utf-8"):
+                if auth_error_msg_contains in str(sensor_data[2]):
                     zip_name = sensor_data[0].split(".")[-1] + "_" + sensor_data[1] + ".txt"
                     sensor_data[2] = "Incorrect Login Provided"
             except Exception as error:
