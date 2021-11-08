@@ -26,6 +26,7 @@ html_atpro_system_routes = Blueprint("html_atpro_system_routes", __name__)
 
 
 @html_atpro_system_routes.route("/atpro/sensor-system")
+@auth.login_required
 def html_atpro_sensor_settings_system():
     return render_template("ATPro_admin/page_templates/system.html")
 

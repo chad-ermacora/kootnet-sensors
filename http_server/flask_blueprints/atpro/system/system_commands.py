@@ -34,6 +34,7 @@ running_as_service = app_cached_variables.running_as_service
 
 
 @html_atpro_system_commands_routes.route("/atpro/system-upgrades-power")
+@auth.login_required
 def html_atpro_system_upgrades_power():
     return render_template("ATPro_admin/page_templates/system/system-upgrades-power.html")
 
