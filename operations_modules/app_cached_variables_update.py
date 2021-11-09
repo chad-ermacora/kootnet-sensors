@@ -274,18 +274,18 @@ def _cached_variables_refresh():
 
 def _remove_stale_http_logins():
     """
-    Removes stale http logins from the http_flask_login_session_ids dictionary every 15 minutes
-    If login has not been active for 30 minutes or more, the login is considered stale
+    Removes stale http logins from the http_flask_login_session_ids dictionary every 30 minutes
+    If login has not been active for 12 hours or more, the login is considered stale
     :return: Nothing
     """
     while True:
         stale_http_login_ids = []
         for login_id, login_id_datetime in app_cached_variables.http_flask_login_session_ids.items():
-            if datetime.utcnow() - login_id_datetime > timedelta(hours=0.5):
+            if datetime.utcnow() - login_id_datetime > timedelta(hours=12):
                 stale_http_login_ids.append(login_id)
         for stale_id in stale_http_login_ids:
             del app_cached_variables.http_flask_login_session_ids[stale_id]
-        sleep(900)
+        sleep(1800)
 
 
 def _update_cached_ip():
