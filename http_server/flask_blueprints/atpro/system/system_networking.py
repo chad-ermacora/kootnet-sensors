@@ -25,7 +25,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import app_cached_variables_update
-from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk, thread_function
 from operations_modules import app_validation_checks
 from operations_modules import network_ip
 from operations_modules import network_wifi
@@ -188,7 +188,7 @@ def html_atpro_set_ipv4_config():
 
                 title_message = "IPv4 Configuration Updated"
                 message = "You must reboot for all settings to take effect."
-                app_cached_variables_update.update_cached_variables()
+                thread_function(app_cached_variables_update.update_cached_variables)
                 atpro_notifications.manage_system_reboot()
                 return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
             else:
@@ -225,7 +225,7 @@ def html_atpro_set_wifi_config():
                         message = "You must reboot the sensor to take effect."
                         try:
                             write_file_to_disk(file_locations.wifi_config_file, new_wireless_config)
-                            app_cached_variables_update.update_cached_variables()
+                            thread_function(app_cached_variables_update.update_cached_variables)
                             atpro_notifications.manage_system_reboot()
                             return get_message_page(title_message, message, page_url="sensor-system", skip_menu_select=True)
                         except Exception as error:
