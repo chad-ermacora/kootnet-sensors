@@ -50,9 +50,15 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
 
         if html_request.form.get("update_server_address") is not None:
             self.url_update_server = self.ensure_http_in_url(html_request.form.get("update_server_address"))
+            if self.url_update_server[-1] != "/":
+                self.url_update_server += "/"
 
         if html_request.form.get("checkin_address") is not None:
             self.url_checkin_server = self.ensure_http_in_url(html_request.form.get("checkin_address"))
+            if self.url_checkin_server.split("/")[-1] != "SensorCheckin":
+                if self.url_checkin_server[-1] != "/":
+                    self.url_checkin_server += "/"
+                self.url_checkin_server += "SensorCheckin"
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
@@ -75,10 +81,11 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
                 logger.primary_logger.info("Saving URLs Configuration.")
                 self.save_config_to_file()
 
-    def ensure_http_in_url(self, url_address):
+    @staticmethod
+    def ensure_http_in_url(url_address):
         url_address = url_address.strip()
         if "http" not in url_address.lower():
-            url_address = "https://" + self.url_checkin_server
+            url_address = "https://" + url_address
         return url_address
 
     def reset_urls_to_default(self):
