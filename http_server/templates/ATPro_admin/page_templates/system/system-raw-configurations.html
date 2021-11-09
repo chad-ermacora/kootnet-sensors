@@ -16,6 +16,17 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-urls">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-urls')">
+                <i class="fas fa-link"></i> URLs Configuration
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-is">
@@ -25,6 +36,17 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-sensor-offsets">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-sensor-offsets')">
+                <i class="fas fa-sliders-h"></i> Sensor Offsets
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-display">
@@ -171,7 +193,9 @@
 
         document.getElementsByClassName("config-software-ver")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-main")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-urls")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-is")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-sensor-offsets")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-cs")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-display")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-sc")[0].classList.remove("pure-menu-selected");
