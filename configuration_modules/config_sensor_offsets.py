@@ -55,13 +55,15 @@ class CreateSensorOffsetsConfiguration(CreateGeneralConfiguration):
         self.enable_temperature_comp_factor = 0
 
         if html_request.form.get("enable_custom_temp_offset") is not None:
-            new_temp = float(html_request.form.get("custom_temperature_offset"))
             self.enable_temp_offset = 1
+        if html_request.form.get("custom_temperature_offset") is not None:
+            new_temp = float(html_request.form.get("custom_temperature_offset"))
             self.temperature_offset = new_temp
 
         if html_request.form.get("enable_custom_temp_comp") is not None:
-            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
             self.enable_temperature_comp_factor = 1
+        if html_request.form.get("custom_temperature_comp") is not None:
+            new_temp_comp = float(html_request.form.get("custom_temperature_comp"))
             self.temperature_comp_factor = new_temp_comp
         self.update_configuration_settings_list()
 
