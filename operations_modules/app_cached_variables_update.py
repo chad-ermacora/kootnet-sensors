@@ -256,6 +256,7 @@ def _get_zipped_configurations():
 
 def start_cached_variables_refresh():
     thread_function(_cached_variables_refresh)
+    thread_function(_remove_stale_failed_login_entries)
     thread_function(_remove_stale_http_logins)
 
 
@@ -270,6 +271,22 @@ def _cached_variables_refresh():
         _update_cached_hostname()
         check_for_new_version()
         sleep(3600)
+
+
+def _remove_stale_failed_login_entries():
+    """
+    Removes stale failed http logins from the failed_flask_logins_dic dictionary every 12 hours
+    A failed login is considered stale if it has not been active for more than 2 hour
+    :return:
+    """
+    while True:
+        stale_ip_addresses = []
+        for ip_address, data_list in app_cached_variables.failed_flask_logins_dic.items():
+            if datetime.utcnow() - data_list[0] > timedelta(hours=2):
+                stale_ip_addresses.append(ip_address)
+        for stale_ip in stale_ip_addresses:
+            del app_cached_variables.failed_flask_logins_dic[stale_ip]
+        sleep(86400)
 
 
 def _remove_stale_http_logins():

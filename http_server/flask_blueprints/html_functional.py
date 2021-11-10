@@ -19,7 +19,7 @@
 from os import urandom
 from hashlib import sha256
 from time import sleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory
 from operations_modules import logger
 from operations_modules import file_locations
@@ -100,17 +100,22 @@ def test_login():
 @html_functional_routes.route('/atpro/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form['login_username']
-        password = request.form['login_password']
+        ip_address = str(request.remote_addr)
+        if _address_is_banned(ip_address):
+            _ip_failed_login(ip_address)
+            return_msg = "Too many failed login attempts, your IP address has been banned for 15 Min"
+            return get_message_page("IP Banned from Logins", message=return_msg)
+        else:
+            username = request.form['login_username']
+            password = request.form['login_password']
 
-        if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
-            new_session_id = sha256(urandom(12)).hexdigest()
-            session['user_id'] = new_session_id
-            app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()
-            return redirect('/atpro/')
-        # Sleep on failure to help prevent brute force attempts
-        sleep(0.25)
-        return get_message_page("Incorrect Login Provided", page_url="sensor-settings")
+            if username == app_cached_variables.http_flask_user and verify_password_to_hash(password):
+                new_session_id = sha256(urandom(12)).hexdigest()
+                session['user_id'] = new_session_id
+                app_cached_variables.http_flask_login_session_ids[new_session_id] = datetime.utcnow()
+                return redirect('/atpro/')
+        _ip_failed_login(ip_address)
+        return get_message_page("Login Failed", page_url="sensor-settings")
     return render_template("ATPro_admin/page_templates/login.html")
 
 
@@ -118,3 +123,36 @@ def login():
 def html_atpro_logout():
     session.pop('user_id', None)
     return get_message_page("Logged Out", "You have been logged out")
+
+
+def _address_is_banned(ip_address):
+    """
+    Checks to see if an IP is banned
+    If the last failed login was more than 15 minutes ago, reset failed login attempts to 0
+    Returns True if there are more then 10 failed logins, else, False
+    :param ip_address: IP address as a string
+    :return: True/False
+    """
+    if ip_address in app_cached_variables.failed_flask_logins_dic:
+        if datetime.utcnow() - app_cached_variables.failed_flask_logins_dic[ip_address][0] > timedelta(minutes=15):
+            app_cached_variables.failed_flask_logins_dic[ip_address][1] = 0
+        elif app_cached_variables.failed_flask_logins_dic[ip_address][1] > 10:
+            log_msg = ip_address + " Banned || " + str(app_cached_variables.failed_flask_logins_dic[ip_address][1])
+            logger.network_logger.warning(log_msg + " Failed Logins")
+            # Sleep to lessen the strain on the system due to brute force or DOS attacks
+            sleep(2)
+            return True
+    return False
+
+
+def _ip_failed_login(ip_address):
+    """
+    Runs on login failure to adds the failed attempt to a "watch list" of addresses
+    :param ip_address: IP address as a string
+    :return: Nothing
+    """
+    if ip_address not in app_cached_variables.failed_flask_logins_dic:
+        app_cached_variables.failed_flask_logins_dic[ip_address] = [datetime.utcnow(), 1]
+    else:
+        app_cached_variables.failed_flask_logins_dic[ip_address][0] = datetime.utcnow()
+        app_cached_variables.failed_flask_logins_dic[ip_address][1] += 1

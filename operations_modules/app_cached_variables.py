@@ -407,6 +407,8 @@ http_flask_password_hash = b''
 http_flask_password_salt = b''
 # Place holder for logged in http users {user_id: datetime.utcnow()}
 http_flask_login_session_ids = {}
+# Failed login IPs are stored here, {IP: [last_failed_login_date, number_of_failed_login_attempts]}
+failed_flask_logins_dic = {}
 
 # Sensor Check-in View Variables
 checkin_search_sensor_id = ""
