@@ -28,6 +28,7 @@ html_get_set_config_routes = Blueprint("html_get_set_config_routes", __name__)
 
 
 @html_get_set_config_routes.route("/GetConfiguration")
+@auth.login_required
 def get_primary_configuration():
     logger.network_logger.debug("* Primary Sensor Configuration Sent to " + str(request.remote_addr))
     return app_config_access.primary_config.get_config_as_str()
