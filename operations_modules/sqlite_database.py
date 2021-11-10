@@ -154,7 +154,6 @@ def check_main_database_structure(database_location=file_locations.sensor_databa
     return False
 
 
-# TODO: For all DB checks (Main/Checkin/MQTT) verify it's that type of DB (Use special DB table with info?)
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
     try:
