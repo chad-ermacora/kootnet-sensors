@@ -74,6 +74,77 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
     return sql_column_data
 
 
+def universal_database_structure_check(database_location):
+    """
+    Returns validated database type from the database itself, else, returns False
+    :param database_location: Location of Database
+    :return: If found and validated, Database type as string, else, False
+    """
+    try:
+        sql_query = "SELECT " + db_v.db_info_database_type_column + " FROM '" + db_v.table_db_info + "' WHERE " \
+                    + db_v.db_info_database_type_column + " != ''"
+        database_type = get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database_location))
+        logger.primary_logger.debug("Database Type for " + database_location + ": " + str(database_type))
+        if database_type == db_v.db_info_database_type_main:
+            check_main_database_structure(database_location)
+        elif database_type == db_v.db_info_database_type_sensor_checkins:
+            check_checkin_database_structure(database_location)
+        elif database_type == db_v.db_info_database_type_mqtt:
+            check_mqtt_subscriber_database_structure(database_location)
+        else:
+            log_msg = "Database Structure Check Failed - Unknown Database type for " + database_type
+            logger.network_logger.warning(log_msg)
+            return False
+        return database_type
+    except Exception as error:
+        logger.network_logger.error("Database Structure Check Failed: " + str(error))
+    return False
+
+
+def check_main_database_structure(database_location=file_locations.sensor_database):
+    """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
+    logger.primary_logger.debug("Running Checks on Main Database")
+    columns_created = 0
+    columns_already_made = 0
+    try:
+        db_connection = sqlite3.connect(database_location)
+        db_cursor = db_connection.cursor()
+
+        create_ks_db_info_table(db_v.db_info_database_type_main, db_cursor)
+        create_table_and_datetime(db_v.table_interval, db_cursor)
+        create_table_and_datetime(db_v.table_trigger, db_cursor)
+        for column in db_v.get_sensor_columns_list():
+            interval_response = check_sql_table_and_column(db_v.table_interval, column, db_cursor)
+            trigger_response = check_sql_table_and_column(db_v.table_trigger, column, db_cursor)
+            for response in [interval_response, trigger_response]:
+                if response:
+                    columns_created += 1
+                else:
+                    columns_already_made += 1
+        if check_sql_table_and_column(db_v.table_trigger, db_v.trigger_state, db_cursor):
+            columns_created += 1
+        else:
+            columns_already_made += 1
+
+        create_table_and_datetime(db_v.table_other, db_cursor)
+        for column_other in db_v.get_other_columns_list():
+            other_response = check_sql_table_and_column(db_v.table_other, column_other, db_cursor)
+            if other_response:
+                columns_created += 1
+            else:
+                columns_already_made += 1
+
+        db_connection.commit()
+        db_connection.close()
+        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
+        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
+        logger.primary_logger.debug("Checks on Main Database Complete")
+        return True
+    except Exception as error:
+        logger.primary_logger.error("Checks on Main Database Failed: " + str(error))
+    return False
+
+
 # TODO: For all DB checks (Main/Checkin/MQTT) verify it's that type of DB (Use special DB table with info?)
 def check_checkin_database_structure(database_location=file_locations.sensor_checkin_database):
     logger.primary_logger.debug("Running Check on 'Checkin' Database")
@@ -135,50 +206,6 @@ def check_mqtt_subscriber_database_structure(database_location=file_locations.mq
         return True
     except Exception as error:
         logger.primary_logger.error("Checks on 'Checkin' Database Failed: " + str(error))
-    return False
-
-
-def check_main_database_structure(database_location=file_locations.sensor_database):
-    """ Loads or creates the SQLite database then verifies or adds all tables and columns. """
-    logger.primary_logger.debug("Running Checks on Main Database")
-    columns_created = 0
-    columns_already_made = 0
-    try:
-        db_connection = sqlite3.connect(database_location)
-        db_cursor = db_connection.cursor()
-
-        create_ks_db_info_table(db_v.db_info_database_type_main, db_cursor)
-        create_table_and_datetime(db_v.table_interval, db_cursor)
-        create_table_and_datetime(db_v.table_trigger, db_cursor)
-        for column in db_v.get_sensor_columns_list():
-            interval_response = check_sql_table_and_column(db_v.table_interval, column, db_cursor)
-            trigger_response = check_sql_table_and_column(db_v.table_trigger, column, db_cursor)
-            for response in [interval_response, trigger_response]:
-                if response:
-                    columns_created += 1
-                else:
-                    columns_already_made += 1
-        if check_sql_table_and_column(db_v.table_trigger, db_v.trigger_state, db_cursor):
-            columns_created += 1
-        else:
-            columns_already_made += 1
-
-        create_table_and_datetime(db_v.table_other, db_cursor)
-        for column_other in db_v.get_other_columns_list():
-            other_response = check_sql_table_and_column(db_v.table_other, column_other, db_cursor)
-            if other_response:
-                columns_created += 1
-            else:
-                columns_already_made += 1
-
-        db_connection.commit()
-        db_connection.close()
-        debug_log_message = str(columns_already_made) + " Columns found in 3 SQL Tables, "
-        logger.primary_logger.debug(debug_log_message + str(columns_created) + " Created")
-        logger.primary_logger.debug("Checks on Main Database Complete")
-        return True
-    except Exception as error:
-        logger.primary_logger.error("Checks on Main Database Failed: " + str(error))
     return False
 
 

@@ -29,8 +29,7 @@ from configuration_modules import app_config_access
 from operations_modules.app_generic_functions import get_file_content, get_list_of_filenames_in_dir, zip_files, \
     get_file_size, adjust_datetime
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, write_to_sql_database, \
-    validate_sqlite_database, check_mqtt_subscriber_database_structure, check_main_database_structure, \
-    check_checkin_database_structure, get_main_db_first_last_date
+    get_main_db_first_last_date, universal_database_structure_check
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_clean_db_name, get_html_atpro_index
 
@@ -179,7 +178,7 @@ def html_atpro_sensor_settings_database_uploads():
 
                     save_sqlite_to_file = uploaded_databases_folder + "/" + new_db_name
                     uploaded_file.save(save_sqlite_to_file)
-                    system_thread = Thread(target=_db_upload_raw_worker, args=(save_sqlite_to_file,))
+                    system_thread = Thread(target=_check_uploaded_db_raw_worker, args=(save_sqlite_to_file,))
                     system_thread.daemon = True
                     system_thread.start()
                 else:
@@ -190,31 +189,27 @@ def html_atpro_sensor_settings_database_uploads():
             temp_db_location = file_locations.sensor_data_dir + "/upload_test " + str(randint(111, 999)) + ".sqlite"
             save_db_to = temp_db_location + ".invalid"
             backup_file_name = "_Invalid"
-            database_structure_check = check_main_database_structure
             if selected_database == "MainDatabase":
                 backup_file_name = "_Main_Database"
                 save_db_to = file_locations.sensor_database
             elif selected_database == "MQTTSubscriberDatabase":
                 backup_file_name = "_MQTT_Database"
                 save_db_to = file_locations.mqtt_subscriber_database
-                database_structure_check = check_mqtt_subscriber_database_structure
             elif selected_database == "CheckinDatabase":
                 backup_file_name = "_SensorsCheckin_Database"
                 save_db_to = file_locations.sensor_checkin_database
-                database_structure_check = check_checkin_database_structure
 
             if uploaded_file is not None:
                 if uploaded_file.filename.split(".")[-1] == "zip":
                     uploaded_file.save(zip_location)
                     system_thread = Thread(target=_unzip_and_replace_database,
-                                           args=(zip_location, save_db_to, backup_file_name, database_structure_check))
+                                           args=(zip_location, save_db_to, backup_file_name))
                     system_thread.daemon = True
                     system_thread.start()
                 elif uploaded_file.filename.split(".")[-1] in sqlite_valid_extensions_list:
                     uploaded_file.save(temp_db_location)
                     system_thread = Thread(target=_db_replacement_raw_worker,
-                                           args=(temp_db_location, save_db_to,
-                                                 backup_file_name, database_structure_check))
+                                           args=(temp_db_location, save_db_to, backup_file_name))
                     system_thread.daemon = True
                     system_thread.start()
                 else:
@@ -249,7 +244,7 @@ def _unzip_to_upload_folder(zip_location, overwrite):
                     else:
                         temp_zip.extract(zip_info, path=uploaded_databases_folder)
 
-                    if validate_sqlite_database(db_path_and_name):
+                    if universal_database_structure_check(db_path_and_name):
                         return_database_locations_list.append(db_path_and_name)
                     else:
                         os.remove(db_path_and_name)
@@ -269,7 +264,7 @@ def _unzip_to_upload_folder(zip_location, overwrite):
     logger.network_logger.info("Database Upload Complete")
 
 
-def _unzip_and_replace_database(zip_location, db_location, backup_file_name, database_structure_check):
+def _unzip_and_replace_database(zip_location, db_location, backup_file_name):
     return_database_locations_list = []
     logger.network_logger.info("Database Replacement Processing ...")
     try:
@@ -287,7 +282,7 @@ def _unzip_and_replace_database(zip_location, db_location, backup_file_name, dat
                     os.remove(tmp_db_full_path_name)
                 zip_info.filename = tmp_db_name
                 temp_zip.extract(zip_info, path=uploaded_databases_folder)
-                if database_structure_check(tmp_db_full_path_name):
+                if universal_database_structure_check(tmp_db_full_path_name):
                     _zip_and_delete_database(db_location, backup_file_name)
                     zip_info.filename = db_location.split("/")[-1]
                     temp_zip.extract(zip_info, path=file_locations.sensor_data_dir)
@@ -308,22 +303,22 @@ def _unzip_and_replace_database(zip_location, db_location, backup_file_name, dat
     return return_database_locations_list
 
 
-def _db_upload_raw_worker(save_sqlite_to_file):
+def _check_uploaded_db_raw_worker(sqlite_file_location):
     logger.network_logger.info("Database Upload Processing ...")
-    if validate_sqlite_database(save_sqlite_to_file):
+    if universal_database_structure_check(sqlite_file_location):
         uploaded_db_filenames = get_list_of_filenames_in_dir(uploaded_databases_folder)
         app_cached_variables.uploaded_databases_list = uploaded_db_filenames
-        _set_file_permissions(save_sqlite_to_file)
-        logger.network_logger.info("Database Upload " + save_sqlite_to_file + " Okay")
+        _set_file_permissions(sqlite_file_location)
+        logger.network_logger.info("Database Upload " + sqlite_file_location + " Okay")
     else:
-        os.remove(save_sqlite_to_file)
+        os.remove(sqlite_file_location)
         logger.network_logger.error("Database Upload: Invalid SQLite3 Database File")
     logger.network_logger.info("Database Upload Complete")
 
 
-def _db_replacement_raw_worker(temp_db_location, save_db_to, backup_file_name, database_structure_check):
+def _db_replacement_raw_worker(temp_db_location, save_db_to, backup_file_name):
     logger.network_logger.info("Database Replacement Processing ...")
-    if database_structure_check(temp_db_location):
+    if universal_database_structure_check(temp_db_location):
         if _zip_and_delete_database(save_db_to, backup_file_name):
             os.rename(temp_db_location, save_db_to)
             _set_file_permissions(save_db_to)
