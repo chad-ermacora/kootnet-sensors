@@ -47,9 +47,9 @@ def set_http_auth_from_file():
     """ Loads Web Portal (flask app) login credentials from file and updates them in the configuration. """
     logger.primary_logger.debug("Loading HTTP Authentication File")
 
-    if os.path.isfile(file_locations.http_auth):
+    if os.path.isfile(file_locations.flask_login_user):
         try:
-            with open(file_locations.http_auth, "r") as auth_file:
+            with open(file_locations.flask_login_user, "r") as auth_file:
                 app_cached_variables.http_flask_user = auth_file.read().strip()
             with open(file_locations.flask_login_hash, "rb") as auth_file:
                 app_cached_variables.http_flask_password_hash = auth_file.read()
@@ -79,7 +79,7 @@ def save_http_auth_to_file(new_http_flask_user, new_http_flask_password, logging
             app_cached_variables.http_flask_user = new_http_flask_user
             app_cached_variables.http_flask_password_hash = new_hash
             app_cached_variables.http_flask_password_salt = salt
-            with open(file_locations.http_auth, "w") as auth_file:
+            with open(file_locations.flask_login_user, "w") as auth_file:
                 auth_file.write(new_http_flask_user)
             with open(file_locations.flask_login_hash, "wb") as auth_file:
                 auth_file.write(new_hash)

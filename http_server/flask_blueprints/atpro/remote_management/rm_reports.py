@@ -29,26 +29,35 @@ from http_server.server_http_auth import auth_error_msg_contains
 from operations_modules import software_version
 
 sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
+html_report_css = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/style.css"
+html_report_js = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/index.js"
+html_report_pure_css = file_locations.program_root_dir + "/http_server/extras/pure-min.css"
+html_pure_css_menu = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/pure-horizontal-menu.css"
+html_report_all_start = file_locations.atpro_reports_folder + "report-all-start.html"
+html_report_all_end = file_locations.atpro_reports_folder + "report-all-end.html"
+html_report_template = file_locations.atpro_reports_folder + "report-template.html"
+html_report_sensor_error_template = file_locations.atpro_reports_folder + "report-sensor-error-template.html"
+
 
 # Save disk read time when upgrade in progress
 if software_version.old_version == software_version.version:
-    html_pure_css = get_file_content(file_locations.html_report_pure_css).strip()
-    html_pure_css_menu = get_file_content(file_locations.html_pure_css_menu).strip()
-    html_report_css = get_file_content(file_locations.html_report_css).strip()
-    html_report_js = get_file_content(file_locations.html_report_js).strip()
+    html_pure_css = get_file_content(html_report_pure_css).strip()
+    html_pure_css_menu = get_file_content(html_pure_css_menu).strip()
+    html_report_css = get_file_content(html_report_css).strip()
+    html_report_js = get_file_content(html_report_js).strip()
 
     html_report_combo = get_file_content(file_locations.html_combo_report).strip()
     html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
     html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
     html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
 
-    html_report_start = get_file_content(file_locations.html_report_all_start).strip()
+    html_report_start = get_file_content(html_report_all_start).strip()
     html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_end = get_file_content(file_locations.html_report_all_end).strip()
+    html_report_end = get_file_content(html_report_all_end).strip()
     html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
 
-    html_report_template = get_file_content(file_locations.html_report_template).strip()
-    report_sensor_error_template = get_file_content(file_locations.html_report_sensor_error_template).strip()
+    html_report_template = get_file_content(html_report_template).strip()
+    report_sensor_error_template = get_file_content(html_report_sensor_error_template).strip()
 
 
 def generate_html_reports_combo(ip_list):
@@ -220,4 +229,3 @@ def _get_sensor_response_time(ip_address):
     if sensor_check == "OK":
         return str(round(time.time() - start_time, 3))
     return False
-

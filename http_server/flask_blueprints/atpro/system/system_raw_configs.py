@@ -16,36 +16,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_generic_functions import get_file_content
 from operations_modules.app_cached_variables import running_with_root
 from configuration_modules import app_config_access
+from operations_modules.software_version import version as kootnet_version
+from http_server.server_http_auth import auth
 
 try:
     from plotly import __version__ as plotly_version
-    if running_with_root:
-        from numpy import __version__ as numpy_version
-    else:
-        numpy_version = "Unknown"
     from greenlet import __version__ as greenlet_version
     from gevent import __version__ as gevent_version
     from requests import __version__ as requests_version
     from cryptography import __version__ as cryptography_version
     from flask import __version__ as flask_version
-    from operations_modules.software_version import version as kootnet_version
 except ImportError as import_error:
     logger.primary_logger.warning("Import Versions Failed: " + str(import_error))
     plotly_version = "Unknown"
-    numpy_version = "Unknown"
     greenlet_version = "Unknown"
     gevent_version = "Unknown"
     requests_version = "Unknown"
     cryptography_version = "Unknown"
     flask_version = "Unknown"
-    kootnet_version = "Unknown"
-from flask import Blueprint, render_template, request
-from http_server.server_http_auth import auth
 
 html_atpro_system_raw_configs_routes = Blueprint("html_atpro_system_raw_configs_routes", __name__)
 
@@ -89,8 +83,7 @@ def atpro_raw_config_urls(url_path):
                               str(greenlet_version) + "=Greenlet\n" + \
                               str(cryptography_version) + "=Cryptography\n" + \
                               str(requests_version) + "=Requests\n" + \
-                              str(plotly_version) + "=Plotly Graphing\n" + \
-                              str(numpy_version) + "=Numpy\n"
+                              str(plotly_version) + "=Plotly Graphing\n"
         return _config_to_html_view(config_name, "NA", module_version_text)
     elif url_path == "config-main":
         config_name = "<i class='fas fa-clipboard-check'></i> Main Configuration"
