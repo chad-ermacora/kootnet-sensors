@@ -34,6 +34,7 @@ except Exception as import_error:
 
 logging.captureWarnings(True)
 get_sensor_reading_error_msg = "Unable to get Sensor Reading/File"
+network_get_commands = app_cached_variables.CreateNetworkGetCommands()
 
 
 class CreateGeneralConfiguration:
@@ -343,7 +344,8 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         login_credentials = {"login_username": app_cached_variables.http_login,
                              "login_password": app_cached_variables.http_password}
         authenticated_requests = requests.Session()
-        authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
+        if command not in network_get_commands.no_http_auth_required_commands_list:
+            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
         url = url + command
         tmp_return_data = authenticated_requests.get(url=url, timeout=timeout, verify=False)
         if get_file:
@@ -367,7 +369,8 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         login_credentials = {"login_username": app_cached_variables.http_login,
                              "login_password": app_cached_variables.http_password}
         authenticated_requests = requests.Session()
-        authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
+        if command not in network_get_commands.no_http_auth_required_commands_list:
+            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
 
         url = url + command
         command_data = {"command_data": included_data, "test_run": test_run}

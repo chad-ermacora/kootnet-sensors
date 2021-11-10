@@ -131,6 +131,18 @@ class CreateNetworkGetCommands:
         self.magnetometer_xyz = "GetMagnetometerXYZ"
         self.gyroscope_xyz = "GetGyroscopeXYZ"
 
+        self.no_http_auth_required_commands_list = [
+            self.check_online_status, self.sensor_name, self.sensor_id, self.os_version, self.program_version,
+            self.program_last_updated, self.rm_system_report, self.rm_readings_report, self.rm_latency_report,
+            self.system_uptime, self.system_date_time, self.system_ram_used, self.system_ram_free,
+            self.system_ram_total, self.system_ram_size_type, self.system_disk_space_free, self.installed_sensors_file,
+            self.interval_configuration_file, self.high_low_trigger_configuration_file, self.variance_config_file,
+            self.display_configuration_file, self.luftdaten_config_file, self.sensor_readings, self.sensors_latency,
+            self.cpu_temp, self.environmental_temp, self.env_temp_offset, self.pressure, self.altitude, self.humidity,
+            self.distance, self.all_gas, self.all_particulate_matter, self.lumen, self.electromagnetic_spectrum,
+            self.all_ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz
+        ]
+
 
 class CreateDatabaseVariables:
     """ Creates a object instance holding SQLite3 database table and row names. """
