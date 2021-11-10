@@ -74,9 +74,10 @@ def sql_execute_get_data(sql_query, sql_database_location=file_locations.sensor_
     return sql_column_data
 
 
-def universal_database_structure_check(database_location):
+def universal_database_structure_check(database_location, expected_database_type=None):
     """
     Returns validated database type from the database itself, else, returns False
+    :param expected_database_type: Optional: Check to make sure it's the correct Type of Database
     :param database_location: Location of Database
     :return: If found and validated, Database type as string, else, False
     """
@@ -84,7 +85,15 @@ def universal_database_structure_check(database_location):
         sql_query = "SELECT " + db_v.db_info_database_type_column + " FROM '" + db_v.table_db_info + "' WHERE " \
                     + db_v.db_info_database_type_column + " != ''"
         database_type = get_sql_element(sql_execute_get_data(sql_query, sql_database_location=database_location))
+        if expected_database_type is None:
+            expected_database_type = database_type
+
         logger.primary_logger.debug("Database Type for " + database_location + ": " + str(database_type))
+        if expected_database_type != database_type:
+            log_msg = "Database Structure Check Failed: Expected Database Type '" + expected_database_type
+            logger.network_logger.warning(log_msg + "' not '" + str(database_type) + "'")
+            return False
+
         if database_type == db_v.db_info_database_type_main:
             check_main_database_structure(database_location)
         elif database_type == db_v.db_info_database_type_sensor_checkins:

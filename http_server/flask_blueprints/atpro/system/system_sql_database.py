@@ -267,6 +267,14 @@ def _unzip_to_upload_folder(zip_location, overwrite):
 def _unzip_and_replace_database(zip_location, db_location, backup_file_name):
     return_database_locations_list = []
     logger.network_logger.info("Database Replacement Processing ...")
+    expected_database_type = None
+    if db_location == file_locations.sensor_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_main
+    elif db_location == file_locations.sensor_checkin_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_sensor_checkins
+    elif db_location == file_locations.mqtt_subscriber_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_mqtt
+
     try:
         with zipfile.ZipFile(zip_location, "r") as temp_zip:
             zip_file_infos = temp_zip.infolist()
@@ -282,7 +290,7 @@ def _unzip_and_replace_database(zip_location, db_location, backup_file_name):
                     os.remove(tmp_db_full_path_name)
                 zip_info.filename = tmp_db_name
                 temp_zip.extract(zip_info, path=uploaded_databases_folder)
-                if universal_database_structure_check(tmp_db_full_path_name):
+                if universal_database_structure_check(tmp_db_full_path_name, expected_database_type):
                     _zip_and_delete_database(db_location, backup_file_name)
                     zip_info.filename = db_location.split("/")[-1]
                     temp_zip.extract(zip_info, path=file_locations.sensor_data_dir)
@@ -318,7 +326,15 @@ def _check_uploaded_db_raw_worker(sqlite_file_location):
 
 def _db_replacement_raw_worker(temp_db_location, save_db_to, backup_file_name):
     logger.network_logger.info("Database Replacement Processing ...")
-    if universal_database_structure_check(temp_db_location):
+    expected_database_type = None
+    if save_db_to == file_locations.sensor_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_main
+    elif save_db_to == file_locations.sensor_checkin_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_sensor_checkins
+    elif save_db_to == file_locations.mqtt_subscriber_database:
+        expected_database_type = app_cached_variables.database_variables.db_info_database_type_mqtt
+
+    if universal_database_structure_check(temp_db_location, expected_database_type):
         if _zip_and_delete_database(save_db_to, backup_file_name):
             os.rename(temp_db_location, save_db_to)
             _set_file_permissions(save_db_to)
