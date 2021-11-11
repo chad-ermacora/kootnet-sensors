@@ -41,9 +41,18 @@
     Sensor Checkins Sensors List
 </a></u></strong></h2>
 
-<p style="color: red; font-size: large;">Total Sensors in Checkin Database: {{ SQLSensorsInDB }}</p>
+<p style="color: red; font-size: large;">
+    Total Sensors in Checkin Database: {{ SQLSensorsInDB }}<br><br>
+    Table Last Updated: {{ CheckinsLastTableUpdateDatetime }}
+</p>
 
 <br>
+
+<button type="button" class="pure-button" onclick="window.location='/atpro/generate-checkin-sensors-list'">
+    Update Table Content
+</button>
+
+<br><br>
 
 <table class="pure-table">
     <thead>
@@ -62,3 +71,14 @@
 </table>
 </body>
 </html>
+
+<script>
+    function CreatingSensorCheckinsTable() {
+        window.setTimeout(RefreshPageTimed, 5000);
+    }
+
+    function RefreshPageTimed() {
+        window.location = "/atpro/checkin-sensors-list"
+    }
+    {{ RunScript }}
+</script>

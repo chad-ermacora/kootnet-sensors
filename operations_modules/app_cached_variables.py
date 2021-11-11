@@ -429,6 +429,15 @@ checkin_sensor_info = ""
 checkin_search_primary_log = ""
 checkin_search_network_log = ""
 checkin_search_sensors_log = ""
+# Checkin Cached Table Variables
+checkins_sensors_html_list_last_updated = "No Sensor Checkins Table Generated"
+checkins_db_sensors_count = 0
+checkins_sensors_html_table_list = ""
+
+# MQTT Subscriber Variables
+mqtt_subscriber_sensors_html_list_last_updated = "No MQTT Table Generated"
+mqtt_subscriber_sensors_count = 0
+mqtt_subscriber_sensors_html_list = ""
 
 # Running "Service" Threads
 http_server_thread = CreateEmptyThreadClass()

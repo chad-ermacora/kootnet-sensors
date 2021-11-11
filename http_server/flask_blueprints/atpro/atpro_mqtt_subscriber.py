@@ -16,11 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from datetime import datetime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_file_size, adjust_datetime
+from operations_modules.app_generic_functions import get_file_size, adjust_datetime, thread_function, get_file_content
 from operations_modules.sqlite_database import get_sqlite_tables_in_list, get_clean_sql_table_name, get_one_db_entry
 from configuration_modules import app_config_access
 from sensor_modules import sensor_access
@@ -30,6 +31,12 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_inde
 html_atpro_mqtt_subscriber_routes = Blueprint("html_atpro_mqtt_subscriber_routes", __name__)
 db_loc = file_locations.mqtt_subscriber_database
 db_v = app_cached_variables.database_variables
+
+
+mqtt_sub_tet_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
+mqtt_sub_tet_location += "mqtt-subscriber-table-entry-template.html"
+mqtt_sub_table_entry_template = get_file_content(mqtt_sub_tet_location).strip()
+generating_mqtt_table_html = "<h3><strong><a style='color: red;'>Generating list, please wait ...</a></strong></h3>"
 
 
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-view-data-stream")
@@ -121,22 +128,47 @@ def html_atpro_clear_mqtt_subscriber_log():
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-sensors-list")
 @auth.login_required
 def html_atpro_mqtt_subscriber_sensors_list():
-    mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
-    sensors_count = len(mqtt_subscriber_sensors)
-
-    sensors_html_list = []
-    for sensor_id in mqtt_subscriber_sensors:
-        sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
-
-    sensors_html_list.sort(key=lambda x: x[1], reverse=True)
-    html_sensor_table_code = ""
-    for sensor in sensors_html_list:
-        html_sensor_table_code += sensor[0]
+    run_script = ""
+    if app_cached_variables.mqtt_subscriber_sensors_html_list == generating_mqtt_table_html:
+        run_script = "CreatingMQTTSubTable();"
     return render_template(
         "ATPro_admin/page_templates/mqtt-subscriber-sensors-list.html",
         DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
-        SQLMQTTSensorsInDB=str(sensors_count),
-        HTMLSensorsTableCode=html_sensor_table_code)
+        SQLMQTTSensorsInDB=str(app_cached_variables.mqtt_subscriber_sensors_count),
+        MQTTLastTableUpdateDatetime=str(app_cached_variables.mqtt_subscriber_sensors_html_list_last_updated),
+        HTMLSensorsTableCode=app_cached_variables.mqtt_subscriber_sensors_html_list,
+        RunScript=run_script)
+
+
+@html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-generate-sensors-list")
+@auth.login_required
+def html_atpro_mqtt_subscriber_generate_sensors_html_list():
+    thread_function(_generate_mqtt_subscriber_sensors_html_list)
+    return html_atpro_mqtt_subscriber_sensors_list()
+
+
+def _generate_mqtt_subscriber_sensors_html_list():
+    app_cached_variables.mqtt_subscriber_sensors_html_list = generating_mqtt_table_html
+    try:
+        mqtt_subscriber_sensors = get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database)
+        app_cached_variables.mqtt_subscriber_sensors_count = len(mqtt_subscriber_sensors)
+
+        sensors_html_list = []
+        for sensor_id in mqtt_subscriber_sensors:
+            sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
+
+        sensors_html_list.sort(key=lambda x: x[1], reverse=True)
+        html_sensor_table_code = ""
+        for sensor in sensors_html_list:
+            html_sensor_table_code += sensor[0]
+        app_cached_variables.mqtt_subscriber_sensors_html_list = html_sensor_table_code
+        dt_format = "%Y-%m-%d %H:%M:%S"
+        app_cached_variables.mqtt_subscriber_sensors_html_list_last_updated = datetime.utcnow().strftime(dt_format)
+    except Exception as error:
+        logger.network_logger.warning("Failed to Generate MQTT Subscriber HTML List: " + str(error))
+        html_sensor_table_code = "<h3><strong><a style='color: red;'>MQTT Subscriber List Generation Failed</a></strong></h3>"
+        app_cached_variables.mqtt_subscriber_sensors_html_list = html_sensor_table_code
+        app_cached_variables.mqtt_subscriber_sensors_html_list_last_updated = "NA"
 
 
 def _get_sensor_html_table_code(sensor_id):
@@ -145,11 +177,10 @@ def _get_sensor_html_table_code(sensor_id):
     sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
     last_contact = adjust_datetime(get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime),
                                    app_config_access.primary_config.utc0_hour_offset)
-    html_code = render_template("ATPro_admin/page_templates/mqtt-subscriber-table-entry-template.html",
-                                SensorID=sensor_id,
-                                SensorHostName=sensor_name,
-                                IPAddress=sensor_ip,
-                                LastContact=last_contact)
+    html_code = mqtt_sub_table_entry_template.replace("{{ SensorID }}", sensor_id)
+    html_code = html_code.replace("{{ SensorHostName }}", sensor_name)
+    html_code = html_code.replace("{{ IPAddress }}", sensor_ip)
+    html_code = html_code.replace("{{ LastContact }}", last_contact)
     return [html_code, last_contact]
 
 
