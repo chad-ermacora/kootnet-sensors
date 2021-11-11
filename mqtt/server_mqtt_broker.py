@@ -96,7 +96,8 @@ def start_mqtt_broker_server():
 def _start_mosquitto_install_worker():
     os.system(terminal_install_mqtt_mosquitto)
     if not os.path.isfile(file_locations.mosquitto_configuration):
-        write_file_to_disk(file_locations.mosquitto_configuration, "")
+        default_mqtt_config = "listener 1883\nallow_anonymous true"
+        write_file_to_disk(file_locations.mosquitto_configuration, default_mqtt_config)
     if os.path.isfile("/usr/sbin/mosquitto") or os.path.isfile("/usr/bin/mosquitto"):
         logger.primary_logger.info("MQTT Mosquitto Broker has been installed")
         os.system(terminal_enable_start_mosquitto)

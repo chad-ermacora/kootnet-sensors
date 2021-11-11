@@ -274,7 +274,7 @@ def html_atpro_sensor_settings_mqtt_broker():
             return_text = "MQTT Broker Service Stopped"
             stop_mqtt_broker_server()
         return get_message_page("MQTT Broker Settings Updated", return_text, page_url="sensor-settings")
-    mosquitto_configuration = ""
+    mosquitto_configuration = "listener 1883\nallow_anonymous true"
     if os.path.isfile(file_locations.mosquitto_configuration):
         mosquitto_configuration = get_file_content(file_locations.mosquitto_configuration)
     return render_template(
