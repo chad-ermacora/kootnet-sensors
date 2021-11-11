@@ -19,6 +19,7 @@
 from datetime import datetime
 from flask import session, redirect
 from operations_modules import app_cached_variables
+from configuration_modules import app_config_access
 
 auth_error_msg_contains = '<form class="pure-form" method="POST" action="/atpro/login">'
 
@@ -27,6 +28,8 @@ class CreateLoginManager:
     @staticmethod
     def login_required(func):
         def secure_function(*args, **kwargs):
+            if app_config_access.primary_config.demo_mode:
+                return func(*args, **kwargs)
             if "user_id" in session and session['user_id'] in app_cached_variables.http_flask_login_session_ids:
                 app_cached_variables.http_flask_login_session_ids[session['user_id']] = datetime.utcnow()
                 return func(*args, **kwargs)

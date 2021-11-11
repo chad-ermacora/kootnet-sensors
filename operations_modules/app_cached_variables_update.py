@@ -53,7 +53,7 @@ def update_cached_variables():
             notification_short_msg = "Warning: Not running with root<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg, icon=icon)
         if app_config_access.primary_config.demo_mode:
-            click_msg = "In Demo mode, the following functions will be unavailable - "
+            click_msg = "In Demo mode, there are no login prompts and the following functions will be unavailable - "
             click_msg += "Network Configurations, SSL, Change Login, Upgrade & Power commands"
             notification_short_msg = "Info: Running in Demo mode<br>Click Here for more information"
             atpro_notifications.add_custom_message(notification_short_msg, click_msg=click_msg)
