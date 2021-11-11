@@ -430,12 +430,13 @@ checkin_search_primary_log = ""
 checkin_search_network_log = ""
 checkin_search_sensors_log = ""
 # Checkin Cached Table Variables
-checkins_sensors_html_list_last_updated = "No Sensor Checkins Table Generated"
+checkins_sensors_html_list_last_updated = "Please Refresh Information || Datetime is displayed in "
 checkins_db_sensors_count = 0
+checkins_db_sensors_count_from_past_days = 0
 checkins_sensors_html_table_list = ""
 
 # MQTT Subscriber Variables
-mqtt_subscriber_sensors_html_list_last_updated = "No MQTT Table Generated"
+mqtt_subscriber_sensors_html_list_last_updated = "Please Refresh Table Content || Datetime is displayed in "
 mqtt_subscriber_sensors_count = 0
 mqtt_subscriber_sensors_html_list = ""
 
