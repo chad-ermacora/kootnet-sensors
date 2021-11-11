@@ -404,9 +404,11 @@ def get_html_response_bg_colour(response_time):
 def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
     """ Adjusts the provided datetime as a string by the provided hour offset and returns the result as a string. """
     datetime_format = "%Y-%m-%d %H:%M:%S"
+    min_expected_datetime_length = 19
+    max_expected_datetime_length = 26
     cleaned_datetime = var_datetime.strip()
 
-    if len(cleaned_datetime) == len(datetime_format):
+    if min_expected_datetime_length <= len(cleaned_datetime) <= max_expected_datetime_length:
         try:
             year = cleaned_datetime[:4]
             month_var = cleaned_datetime[5:7]
