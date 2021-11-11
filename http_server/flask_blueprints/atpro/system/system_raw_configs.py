@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from sys import version_info as python_version
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
@@ -40,7 +41,7 @@ except ImportError as import_error:
     requests_version = "Unknown"
     cryptography_version = "Unknown"
     flask_version = "Unknown"
-
+python_version_str = str(python_version[0]) + "." + str(python_version[1]) + "." + str(python_version[2])
 html_atpro_system_raw_configs_routes = Blueprint("html_atpro_system_raw_configs_routes", __name__)
 
 
@@ -78,6 +79,7 @@ def atpro_raw_config_urls(url_path):
         config_name = "<i class='fas fa-code-branch'></i> Software Versions"
         module_version_text = "This will be removed\n" + \
                               kootnet_version + "=Kootnet Sensors\n" + \
+                              python_version_str + "=Python\n" + \
                               str(flask_version) + "=Flask\n" + \
                               str(gevent_version) + "=Gevent\n" + \
                               str(greenlet_version) + "=Greenlet\n" + \
