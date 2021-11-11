@@ -24,7 +24,9 @@ from operations_modules.app_generic_functions import get_file_content, thread_fu
 from http_server.server_http_generic_functions import save_http_auth_to_file, default_http_flask_user, \
     default_http_flask_password
 from configuration_modules.config_primary import CreatePrimaryConfiguration
+from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
+from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_display import CreateDisplayConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
 from configuration_modules.config_interval_recording import CreateIntervalRecordingConfiguration
@@ -57,11 +59,25 @@ def reset_primary_config(log_reset=True):
     CreatePrimaryConfiguration(load_from_file=False).save_config_to_file()
 
 
+def reset_urls_config(log_reset=True):
+    """ Writes a default URLs configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** URLs Configuration Reset ****")
+    CreateURLConfiguration(load_from_file=False).save_config_to_file()
+
+
 def reset_installed_sensors(log_reset=True):
     """ Writes a default installed sensor configuration file. """
     if log_reset:
         logger.primary_logger.warning(" **** Installed Sensors Configuration Reset ****")
     CreateInstalledSensorsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_sensor_offsets_config(log_reset=True):
+    """ Writes a default Sensor Offsets configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Sensor Offsets Configuration Reset ****")
+    CreateSensorOffsetsConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_display_config(log_reset=True):
@@ -161,7 +177,9 @@ def reset_all_configurations(log_reset=True):
     If log_reset is True, adds log entry for each reset.  Default True.
     """
     reset_primary_config(log_reset=log_reset)
+    reset_urls_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
+    reset_sensor_offsets_config(log_reset=log_reset)
     reset_display_config(log_reset=log_reset)
     reset_checkin_config(log_reset=log_reset)
     reset_interval_recording_config(log_reset=log_reset)
@@ -192,11 +210,12 @@ def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True)
 
 
 def load_and_save_all_configs_silently():
-    ccl = [CreatePrimaryConfiguration, CreateInstalledSensorsConfiguration, CreateIntervalRecordingConfiguration,
-           CreateTriggerHighLowConfiguration, CreateTriggerVariancesConfiguration, CreateDisplayConfiguration,
-           CreateEmailConfiguration, CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration,
-           CreateMQTTSubscriberConfiguration, CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration,
-           CreateOpenSenseMapConfiguration, CreateSensorControlConfiguration, CreateCheckinConfiguration]
+    ccl = [CreatePrimaryConfiguration, CreateURLConfiguration, CreateInstalledSensorsConfiguration,
+           CreateSensorOffsetsConfiguration, CreateIntervalRecordingConfiguration, CreateTriggerHighLowConfiguration,
+           CreateTriggerVariancesConfiguration, CreateDisplayConfiguration, CreateEmailConfiguration,
+           CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration, CreateMQTTSubscriberConfiguration,
+           CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration, CreateOpenSenseMapConfiguration,
+           CreateSensorControlConfiguration, CreateCheckinConfiguration]
     for config in ccl:
         upgrade_config_load_and_save(config, upgrade_msg=False)
 
@@ -238,23 +257,3 @@ def _upgrade_linux_os_thread():
     except Exception as error:
         logger.primary_logger.error("Linux OS Upgrade Error: " + str(error))
         app_cached_variables.sensor_ready_for_upgrade = True
-
-
-def create_secondary_python_venv():
-    """
-    Checks to see if the secondary Python virtual environment is present, if not, creates it
-    Used for software upgrades and Kootnet Sensor's TCT
-    :return: Nothing
-    """
-    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
-        upgrade_env_dir = file_locations.sensor_data_dir + "/upgrade_env/"
-        try:
-            if not os.path.isdir(upgrade_env_dir):
-                os.mkdir(upgrade_env_dir)
-            if not os.path.isfile(upgrade_env_dir + "bin/python"):
-                logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
-                os.system("python3 -m venv " + upgrade_env_dir)
-                os.system(upgrade_env_dir + "bin/python3 -m pip install requests")
-                logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
-        except Exception as error:
-            logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))

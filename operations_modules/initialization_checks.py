@@ -41,6 +41,7 @@ def run_program_start_checks():
     set_http_auth_from_file()
     _set_file_permissions()
     _add_tct_terminal_alias()
+    thread_function(_create_secondary_python_venv)
 
     if software_version.old_version != software_version.version:
         run_database_integrity_check(file_locations.sensor_database, quick=False)
@@ -149,3 +150,23 @@ def _add_tct_terminal_alias():
                 logger.primary_logger.debug("-- TCT alias added")
             except Exception as error:
                 logger.primary_logger.warning("-- Unable to create bash alias for TCT: " + str(error))
+
+
+def _create_secondary_python_venv():
+    """
+    Checks to see if the secondary Python virtual environment is present, if not, creates it
+    Used for software upgrades and Kootnet Sensor's TCT
+    :return: Nothing
+    """
+    if app_cached_variables.running_as_service and app_cached_variables.running_with_root:
+        upgrade_env_dir = file_locations.sensor_data_dir + "/upgrade_env/"
+        try:
+            if not os.path.isdir(upgrade_env_dir):
+                os.mkdir(upgrade_env_dir)
+            if not os.path.isfile(upgrade_env_dir + "bin/python"):
+                logger.primary_logger.info(" - Creating Kootnet Sensor's Upgrade & TCT Python Virtual Environment")
+                os.system("python3 -m venv " + upgrade_env_dir)
+                os.system(upgrade_env_dir + "bin/python3 -m pip install requests")
+                logger.primary_logger.info(" - Python Virtual Environment Created Successfully")
+        except Exception as error:
+            logger.primary_logger.critical("-- Unable to create Python virtual environment for upgrades: " + str(error))
