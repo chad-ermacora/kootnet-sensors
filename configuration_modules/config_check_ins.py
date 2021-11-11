@@ -38,6 +38,8 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
         ]
 
         self.enable_checkin_recording = 0
+
+        # This setting is no longer used as of Beta.35.16
         self.main_page_max_sensors = 15
 
         self.count_contact_days = 7.0
@@ -77,8 +79,6 @@ class CreateCheckinConfiguration(CreateGeneralConfiguration):
                 self.enable_checkin_recording = 1
             if html_request.form.get("contact_in_past_days") is not None:
                 self.count_contact_days = float(html_request.form.get("contact_in_past_days"))
-            if html_request.form.get("number_of_sensors_to_show") is not None:
-                self.main_page_max_sensors = int(html_request.form.get("number_of_sensors_to_show"))
         if html_request.form.get("delete_sensors_older_days") is not None:
             self.delete_sensors_older_days = float(html_request.form.get("delete_sensors_older_days"))
         self.update_configuration_settings_list()

@@ -38,18 +38,26 @@
 
 <body>
 <h2><strong><u><a style="color: red;" href="/atpro/checkin-sensors-list">
-    Sensor Checkins Sensors List
+    Checkin Server's Sensors List
 </a></u></strong></h2>
+
+<button type="button" class="pure-button" onclick="window.location='/atpro/generate-checkin-sensors-list'">
+    Refresh Information
+</button>
+
+<br>
 
 <p style="color: red; font-size: large;">
     Total Sensors in Checkin Database: {{ SQLSensorsInDB }}<br><br>
-    Table Last Updated: {{ CheckinsLastTableUpdateDatetime }}
+    Sensor Checkins from the past {{ ContactInPastDays }} Days: {{ TotalSensorsContactDays }}<br><br>
+    Info Last Updated: {{ CheckinsLastTableUpdateDatetime }}
 </p>
 
 <br>
 
-<button type="button" class="pure-button" onclick="window.location='/atpro/generate-checkin-sensors-list'">
-    Update Table Content
+<button class="pure-button" onclick="window.open('/atpro/sensor-checkin-search','targetWindow',
+   'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1100,height=800'); return false;">
+    Open Sensor Search
 </button>
 
 <br><br>

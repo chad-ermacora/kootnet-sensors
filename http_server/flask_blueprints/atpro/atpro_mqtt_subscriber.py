@@ -36,7 +36,7 @@ db_v = app_cached_variables.database_variables
 mqtt_sub_tet_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
 mqtt_sub_tet_location += "mqtt-subscriber-table-entry-template.html"
 mqtt_sub_table_entry_template = get_file_content(mqtt_sub_tet_location).strip()
-generating_mqtt_table_html = "<h3><strong><a style='color: red;'>Generating list, please wait ...</a></strong></h3>"
+generating_mqtt_table_html = "<h3><strong><a style='color: red;'>Generating Table, please wait ...</a></strong></h3>"
 
 
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-view-data-stream")
@@ -52,13 +52,15 @@ def html_atpro_mqtt_subscriber_data_stream_view():
         for line in mqtt_subscriber_log_content.split("\n"):
             new_return += _mqtt_sub_entry_to_html(line)
         mqtt_subscriber_log_content = new_return
+    new_sensors_in_db_count = len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))
+    app_cached_variables.mqtt_subscriber_sensors_count = new_sensors_in_db_count
     return render_template(
         "ATPro_admin/page_templates/mqtt-subscriber-data-view.html",
         MQTTSubDatabaseSize=get_file_size(file_locations.mqtt_subscriber_database),
         MQTTSubscriberServerAddress=app_config_access.mqtt_subscriber_config.broker_address,
         MQTTShowing=max_entries,
         MQTTTotoalEntries=logger.get_number_of_log_entries(mqtt_subscriber_log),
-        SQLMQTTSensorsInDB=str(len(get_sqlite_tables_in_list(file_locations.mqtt_subscriber_database))),
+        SQLMQTTSensorsInDB=str(new_sensors_in_db_count),
         MQTTEnabledColor=_get_html_color(app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber),
         MQTTSubscriberEnabledText=_get_html_text(app_config_access.mqtt_subscriber_config.enable_mqtt_subscriber),
         MQTTSQLEnabledColor=_get_html_color(app_config_access.mqtt_subscriber_config.enable_mqtt_sql_recording),
@@ -128,6 +130,9 @@ def html_atpro_clear_mqtt_subscriber_log():
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-sensors-list")
 @auth.login_required
 def html_atpro_mqtt_subscriber_sensors_list():
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    mqtt_table_last_updated = app_cached_variables.mqtt_subscriber_sensors_html_list_last_updated
+    mqtt_info_last_updated = adjust_datetime(mqtt_table_last_updated, utc0_hour_offset)
     run_script = ""
     if app_cached_variables.mqtt_subscriber_sensors_html_list == generating_mqtt_table_html:
         run_script = "CreatingMQTTSubTable();"
@@ -135,7 +140,7 @@ def html_atpro_mqtt_subscriber_sensors_list():
         "ATPro_admin/page_templates/mqtt-subscriber-sensors-list.html",
         DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
         SQLMQTTSensorsInDB=str(app_cached_variables.mqtt_subscriber_sensors_count),
-        MQTTLastTableUpdateDatetime=str(app_cached_variables.mqtt_subscriber_sensors_html_list_last_updated),
+        MQTTLastTableUpdateDatetime=str(mqtt_info_last_updated) + " UTC" + str(utc0_hour_offset),
         HTMLSensorsTableCode=app_cached_variables.mqtt_subscriber_sensors_html_list,
         RunScript=run_script)
 
@@ -143,7 +148,8 @@ def html_atpro_mqtt_subscriber_sensors_list():
 @html_atpro_mqtt_subscriber_routes.route("/atpro/mqtt-subscriber-generate-sensors-list")
 @auth.login_required
 def html_atpro_mqtt_subscriber_generate_sensors_html_list():
-    thread_function(_generate_mqtt_subscriber_sensors_html_list)
+    if app_cached_variables.mqtt_subscriber_sensors_html_list != generating_mqtt_table_html:
+        thread_function(_generate_mqtt_subscriber_sensors_html_list)
     return html_atpro_mqtt_subscriber_sensors_list()
 
 

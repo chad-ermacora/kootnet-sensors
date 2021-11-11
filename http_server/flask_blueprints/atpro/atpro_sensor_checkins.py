@@ -38,7 +38,7 @@ db_v = app_cached_variables.database_variables
 checkin_temp_location = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/page_templates/"
 checkin_temp_location += "sensor_checkins/sensor-checkin-table-entry-template.html"
 checkin_table_entry_template = get_file_content(checkin_temp_location).strip()
-generating_checkin_table_html = "<h3><strong><a style='color: red;'>Generating list, please wait ...</a></strong></h3>"
+updating_checkin_info_html_msg = "<h3><strong><a style='color: red;'>Updating Information, please wait ...</a></strong></h3>"
 checkin_table_failed = "<h3><strong><a style='color: red;'>Sensor Checkins List Generation Failed</a></strong></h3>"
 
 
@@ -46,30 +46,7 @@ checkin_table_failed = "<h3><strong><a style='color: red;'>Sensor Checkins List 
 @auth.login_required
 def html_atpro_sensor_checkin_main_view():
     sensor_count = len(get_sqlite_tables_in_list(db_loc))
-    sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
-
-    sensor_statistics = ""
-    current_date_time = datetime.utcnow()
-
-    sensor_contact_count = 0
-    count_contact_days = app_config_access.checkin_config.count_contact_days
-    for count, sensor_id_and_date in enumerate(sensor_ids_and_date_list):
-        cleaned_id = sensor_id_and_date[0]
-        checkin_date = sensor_id_and_date[1]
-        if (current_date_time - checkin_date) < timedelta(days=count_contact_days):
-            sensor_contact_count += 1
-        if count < app_config_access.checkin_config.main_page_max_sensors:
-            sensor_statistics += _get_sensor_info_string(cleaned_id)
-
-    try:
-        past_checkin_percent = round(((sensor_contact_count / sensor_count) * 100), 2)
-    except ZeroDivisionError:
-        logger.primary_logger.debug("No Sensors found for Sensor Checkin View")
-        past_checkin_percent = 0.0
-    except Exception as error:
-        logger.primary_logger.warning("Unknown Sensor Checkin View Error: " + str(error))
-        past_checkin_percent = 0.0
-
+    app_cached_variables.checkins_db_sensors_count = sensor_count
     if os.path.isfile(db_loc):
         db_size_mb = get_file_size(db_loc, round_to=3)
     else:
@@ -79,15 +56,10 @@ def html_atpro_sensor_checkin_main_view():
     if app_config_access.checkin_config.enable_checkin_recording:
         enabled_text = "<span style='color: green;'>Enabled</span>"
     return render_template("ATPro_admin/page_templates/sensor_checkins/sensor-checkin-main-view.html",
-                           MaxSensorCount=app_config_access.checkin_config.main_page_max_sensors,
                            SensorsInDatabase=str(sensor_count),
                            CheckinDBSize=db_size_mb,
-                           ContactInPastDays=app_config_access.checkin_config.count_contact_days,
-                           TotalSensorsContactDays=sensor_contact_count,
-                           PercentOfTotalDays=past_checkin_percent,
                            DeleteSensorsOlderDays=app_config_access.checkin_config.delete_sensors_older_days,
-                           CheckinEnabledText=enabled_text,
-                           CheckinSensorStatistics=sensor_statistics)
+                           CheckinEnabledText=enabled_text)
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-delete-old-sensors", methods=["POST"])
@@ -111,14 +83,19 @@ def delete_sensors_older_then():
 @html_atpro_sensor_check_ins_routes.route("/atpro/checkin-sensors-list")
 @auth.login_required
 def html_atpro_checkin_sensors_list():
+    utc0_hour_offset = app_config_access.primary_config.utc0_hour_offset
+    checkin_info_last_updated = app_cached_variables.checkins_sensors_html_list_last_updated
+    checkins_sensors_html_list_last_updated = adjust_datetime(checkin_info_last_updated, utc0_hour_offset)
     run_script = ""
-    if app_cached_variables.checkins_sensors_html_table_list == generating_checkin_table_html:
+    if app_cached_variables.checkins_sensors_html_table_list == updating_checkin_info_html_msg:
         run_script = "CreatingSensorCheckinsTable();"
     return render_template(
         "ATPro_admin/page_templates/sensor_checkins/checkin-sensors-list.html",
         DateTimeOffset=str(app_config_access.primary_config.utc0_hour_offset),
         SQLSensorsInDB=str(app_cached_variables.checkins_db_sensors_count),
-        CheckinsLastTableUpdateDatetime=str(app_cached_variables.checkins_sensors_html_list_last_updated),
+        CheckinsLastTableUpdateDatetime=str(checkins_sensors_html_list_last_updated) + " UTC" + str(utc0_hour_offset),
+        ContactInPastDays=str(app_config_access.checkin_config.count_contact_days),
+        TotalSensorsContactDays=str(app_cached_variables.checkins_db_sensors_count_from_past_days),
         HTMLSensorsTableCode=app_cached_variables.checkins_sensors_html_table_list,
         RunScript=run_script)
 
@@ -126,19 +103,26 @@ def html_atpro_checkin_sensors_list():
 @html_atpro_sensor_check_ins_routes.route("/atpro/generate-checkin-sensors-list")
 @auth.login_required
 def html_atpro_sensor_checkins_generate_sensors_html_list():
-    thread_function(_generate_sensors_checkins_html_list)
+    if app_cached_variables.checkins_sensors_html_table_list != updating_checkin_info_html_msg:
+        thread_function(_generate_sensors_checkins_html_list)
     return html_atpro_checkin_sensors_list()
 
 
 def _generate_sensors_checkins_html_list():
-    app_cached_variables.checkins_sensors_html_table_list = generating_checkin_table_html
+    app_cached_variables.checkins_sensors_html_table_list = updating_checkin_info_html_msg
     try:
-        checkin_sensors = get_sqlite_tables_in_list(db_loc)
-        app_cached_variables.checkins_db_sensors_count = len(checkin_sensors)
+        sensor_ids_and_date_list = _get_sensor_id_and_last_checkin_date_as_list()
+        app_cached_variables.checkins_db_sensors_count = len(sensor_ids_and_date_list)
+        current_date_time = datetime.utcnow()
 
+        sensor_contact_count = 0
         sensors_html_list = []
-        for sensor_id in checkin_sensors:
-            sensors_html_list.append(_get_sensor_html_table_code(sensor_id))
+        for sensor_id_and_date in sensor_ids_and_date_list:
+            sensors_html_list.append(_get_sensor_html_table_code(sensor_id_and_date[0]))
+            checkin_date = sensor_id_and_date[1]
+            if (current_date_time - checkin_date) < timedelta(days=app_config_access.checkin_config.count_contact_days):
+                sensor_contact_count += 1
+        app_cached_variables.checkins_db_sensors_count_from_past_days = sensor_contact_count
 
         sensors_html_list.sort(key=lambda x: x[1], reverse=True)
         html_sensor_table_code = ""
