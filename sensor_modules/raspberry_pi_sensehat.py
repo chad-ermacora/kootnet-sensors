@@ -156,10 +156,10 @@ class CreateRPSenseHAT:
                  s1, s1, s1, b1, b1, s1, s1, s1,
                  s1, s1, b1, s1, s1, b1, s1, s1,
                  s1, s1, b1, b1, b1, b1, s1, s1]
-        try:
-            logger.primary_logger.info("SenseHAT JoyStick Program Started")
-            shutdown_confirm = False
-            while True:
+        logger.primary_logger.info(" -- Raspberry Pi SenseHAT Joystick Service Started")
+        shutdown_confirm = False
+        while True:
+            try:
                 event = self.sense_hat_access.stick.wait_for_event()
 
                 acc = self.accelerometer_xyz()
@@ -195,8 +195,8 @@ class CreateRPSenseHAT:
 
                 # Clear events to prevent multiple loops if button(s) hit multiple times
                 self.sense_hat_access.stick.get_events()
-        except Exception as error:
-            logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations: " + str(error))
+            except Exception as error:
+                logger.sensors_logger.error("Unable Start SenseHAT JoyStick Operations: " + str(error))
 
     def display_text(self, message):
         """ Scrolls Provided Text on LED Display. """
