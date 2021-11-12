@@ -131,6 +131,8 @@ venv.bak/
 /extras/python_modules/numpy-1.21.4-cp39-cp39-linux_armv6l.whl
 /extras/python_modules/numpy-1.21.4-cp39-cp39-linux_armv7l.whl
 /extras/python_modules/paho_mqtt-1.6.1-py3-none-any.whl
+/extras/python_modules/Pillow-8.4.0-cp39-cp39-linux_armv6l.whl
+/extras/python_modules/Pillow-8.4.0-cp39-cp39-linux_armv7l.whl
 /extras/python_modules/plotly-5.3.1-py2.py3-none-any.whl
 /extras/python_modules/psutil-5.8.0-cp39-cp39-linux_armv6l.whl
 /extras/python_modules/psutil-5.8.0-cp39-cp39-linux_armv7l.whl

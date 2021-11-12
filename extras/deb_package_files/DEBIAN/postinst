@@ -21,11 +21,13 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
       if [ "${PI_zero_MODEL}" == "Raspberry Pi Zero W Rev 1.1" ] || [ "${PI_1_MODEL}" == "Raspberry Pi 1" ]; then
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/MarkupSafe-2.0.1-cp39-cp39-linux_armv6l.whl \
         ${PYTHON_MODULES_DIR}/spidev-3.5-cp39-cp39-linux_armv6l.whl \
-        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.1a4-cp39-cp39-linux_armv6l.whl
+        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.1a4-cp39-cp39-linux_armv6l.whl \
+        ${PYTHON_MODULES_DIR}/Pillow-8.4.0-cp39-cp39-linux_armv6l.whl
       else
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/MarkupSafe-2.0.1-cp39-cp39-linux_armv7l.whl \
         ${PYTHON_MODULES_DIR}/spidev-3.5-cp39-cp39-linux_armv7l.whl \
-        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.1a4-cp39-cp39-linux_armv7l.whl
+        ${PYTHON_MODULES_DIR}/RPi.GPIO-0.7.1a4-cp39-cp39-linux_armv7l.whl \
+        ${PYTHON_MODULES_DIR}/Pillow-8.4.0-cp39-cp39-linux_armv7l.whl
       fi
       ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/pyserial-3.4-py2.py3-none-any.whl
       ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/click-7.1.2-py2.py3-none-any.whl \
