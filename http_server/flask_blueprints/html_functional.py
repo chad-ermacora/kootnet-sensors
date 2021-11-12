@@ -16,15 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+from io import BytesIO
 from os import urandom
 from hashlib import sha256
 from time import sleep
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory
+from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory, make_response
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import verify_password_to_hash
+from operations_modules.app_generic_functions import verify_password_to_hash, get_file_content
 from operations_modules.app_validation_checks import url_is_valid
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
@@ -33,6 +34,10 @@ html_functional_routes = Blueprint("html_functional_routes", __name__)
 
 html_extras_dir = file_locations.program_root_dir + "/http_server/extras"
 documentation_root_dir = file_locations.program_root_dir + "/extras/documentation"
+fav_icon_file_content = None
+help_index_page = None
+charts_min_js = None
+jquery_min_js = None
 
 
 @html_functional_routes.route("/robots.txt")
@@ -41,22 +46,48 @@ def no_robots():
 
 
 @html_functional_routes.route("/favicon.ico")
-def fav_icon():
-    return send_file(file_locations.program_root_dir + "/http_server/templates/ATPro_admin/assets/AT-pro-logo.png")
+@html_functional_routes.route("/AT-pro-logo.png")
+def fav_icon_func():
+    global fav_icon_file_content
+    fav_icon_loc = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/assets/AT-pro-logo.png"
+    if fav_icon_file_content is None:
+        fav_icon_file_content = get_file_content(fav_icon_loc, open_type="rb")
+    return_response = make_response(send_file(BytesIO(fav_icon_file_content), mimetype="image/jpeg"))
+    return_response.headers["Cache-Control"] = "public, max-age=432000"
+    return return_response
+
+
+@html_functional_routes.route("/chart.min.js")
+def charts_min_js_fun():
+    global charts_min_js
+    charts_min_js_loc = file_locations.program_root_dir + "/http_server/extras/chart.min.js"
+    if charts_min_js is None:
+        charts_min_js = get_file_content(charts_min_js_loc)
+    return_response = make_response(charts_min_js)
+    return_response.headers["Cache-Control"] = "public, max-age=432000"
+    return return_response
+
+
+@html_functional_routes.route("/jquery.min.js")
+def jquery_min_js_fun():
+    global jquery_min_js
+    jquery_min_js_loc = file_locations.program_root_dir + "/http_server/extras/jquery-3.6.0.min.js"
+    if jquery_min_js is None:
+        jquery_min_js = get_file_content(jquery_min_js_loc)
+    return_response = make_response(jquery_min_js)
+    return_response.headers["Cache-Control"] = "public, max-age=432000"
+    return return_response
 
 
 # Start -- HTML assets for 'ATPro admin' interface
 @html_functional_routes.route("/documentation/")
 def sensor_unit_help():
-    return send_file(documentation_root_dir + "/index.html")
-
-
-@html_functional_routes.route('/extras/<path:filename>')
-def html_extras_folder_static_files(filename):
-    if url_is_valid(filename):
-        extras_folder = file_locations.program_root_dir + "/http_server/extras/"
-        return send_from_directory(extras_folder, filename)
-    return ""
+    global help_index_page
+    if help_index_page is None:
+        help_index_page = get_file_content(documentation_root_dir + "/index.html")
+    return_response = make_response(help_index_page)
+    return_response.headers["Cache-Control"] = "public, max-age=432000"
+    return return_response
 
 
 @html_functional_routes.route('/documentation/css/<path:filename>')
@@ -72,6 +103,14 @@ def html_documentation_js_folder_static_files(filename):
     if url_is_valid(filename):
         doc_folder = file_locations.program_root_dir + "/extras/documentation/js/"
         return send_from_directory(doc_folder, filename)
+    return ""
+
+
+@html_functional_routes.route('/extras/<path:filename>')
+def html_extras_folder_static_files(filename):
+    if url_is_valid(filename):
+        extras_folder = file_locations.program_root_dir + "/http_server/extras/"
+        return send_from_directory(extras_folder, filename)
     return ""
 
 
