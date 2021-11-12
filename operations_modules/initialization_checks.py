@@ -109,31 +109,29 @@ def _change_permissions_recursive(path, folder_mode, files_mode):
 def _check_ssl_files():
     """ Checks for, and if missing, creates the HTTPS SSL certificate files. """
     logger.primary_logger.debug("Running SSL Certificate & Key Checks")
+    http_ssl_key_found = os.path.isfile(file_locations.http_ssl_key)
+    http_ssl_csr_found = os.path.isfile(file_locations.http_ssl_csr)
+    http_ssl_crt_found = os.path.isfile(file_locations.http_ssl_crt)
     try:
-        if os.path.isfile(file_locations.http_ssl_key):
-            logger.primary_logger.debug("SSL Key Found")
+        if http_ssl_key_found and http_ssl_csr_found and http_ssl_crt_found:
+            logger.primary_logger.debug("SSL Key/CSR/Certificate Found")
         else:
-            logger.primary_logger.info("SSL Key not Found - Generating Key")
+            logger.primary_logger.info("SSL not Found - Generating New SSL Key/CSR/Certificate")
+            os.system("rm -f " + file_locations.http_ssl_folder + "/kootnet_default.*")
+
             os.system("openssl genrsa -out " + file_locations.http_ssl_key + " 2048")
 
-        if os.path.isfile(file_locations.http_ssl_csr):
-            logger.primary_logger.debug("SSL CSR Found")
-        else:
-            logger.primary_logger.info("SSL CSR not Found - Generating CSR")
             terminal_command_part1 = "openssl req -new -key " + file_locations.http_ssl_key
             terminal_command_part2 = " -out " + file_locations.http_ssl_csr + " -subj"
             terminal_command_part3 = " '/C=CA/ST=BC/L=Castlegar/O=Kootenay Networks I.T./OU=Kootnet Sensors/CN=kootnet.ca'"
             os.system(terminal_command_part1 + terminal_command_part2 + terminal_command_part3)
 
-        if os.path.isfile(file_locations.http_ssl_crt):
-            logger.primary_logger.debug("SSL Certificate Found")
-        else:
-            logger.primary_logger.info("SSL Certificate not Found - Generating Certificate")
             terminal_command_part1 = "openssl x509 -req -days 3650 -in " + file_locations.http_ssl_csr
             terminal_command_part2 = " -signkey " + file_locations.http_ssl_key + " -out " + file_locations.http_ssl_crt
             os.system(terminal_command_part1 + terminal_command_part2)
+            logger.primary_logger.info("SSL Generation Complete")
     except Exception as error:
-        logger.primary_logger.error("Problem Creating HTTPS SSL Files: " + str(error))
+        logger.primary_logger.error("Generating New SSL Key/CSR/Certificate: " + str(error))
 
 
 def _add_tct_terminal_alias():
