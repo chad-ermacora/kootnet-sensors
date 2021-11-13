@@ -145,6 +145,12 @@ def _add_tct_terminal_alias():
             try:
                 with open(kootnet_alias_file_location, "w") as alias_file:
                     alias_file.write(kootnet_tct_id_line + "\n" + tct_alias)
+
+                with open("/etc/bash.bashrc", "r") as alias_file:
+                    file_content = str(alias_file.read())
+                with open("/etc/bash.bashrc", "a") as alias_file:
+                    if kootnet_tct_id_line not in file_content:
+                        alias_file.write("\n\n" + kootnet_tct_id_line + "\n" + tct_alias)
                 logger.primary_logger.debug("-- TCT alias added")
             except Exception as error:
                 logger.primary_logger.warning("-- Unable to create bash alias for TCT: " + str(error))
