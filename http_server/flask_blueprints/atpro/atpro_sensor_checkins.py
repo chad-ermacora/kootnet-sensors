@@ -28,7 +28,7 @@ from operations_modules.sqlite_database import sql_execute_get_data, write_to_sq
     get_sql_element, get_sqlite_tables_in_list, get_one_db_entry
 from configuration_modules import app_config_access
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from http_server.flask_blueprints.sensor_checkin_server import check_sensor_checkin_columns
 
 html_atpro_sensor_check_ins_routes = Blueprint("html_atpro_sensor_check_ins_routes", __name__)
@@ -62,12 +62,70 @@ def html_atpro_sensor_checkin_main_view():
                            CheckinEnabledText=enabled_text)
 
 
+@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
+@auth.login_required
+def clear_check_ins_counts():
+    thread_function(_thread_clear_check_ins_counts)
+    return_msg = "Clearing all but the last Sensor Checkin from all sensors, check Logs for more info"
+    return get_message_page("Redundant Sensor Checkins Clean-up Started", return_msg, page_url="sensor-checkin-view")
+
+
+def _thread_clear_check_ins_counts():
+    logger.network_logger.info("Checkin Database 'Clear Old Checkin Data' Started")
+    for sensor_id in get_sqlite_tables_in_list(db_loc):
+        _clear_old_sensor_checkin_data(sensor_id)
+    write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
+    logger.network_logger.info("Checkin Database 'Clear Old Checkin Data' Finished")
+
+
+def _clear_old_sensor_checkin_data(sensor_id):
+    last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
+    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
+    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
+    program_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
+    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
+    sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
+
+    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
+    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
+    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
+
+    try:
+        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
+
+        check_sensor_checkin_columns(sensor_id)
+        sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
+                        db_v.all_tables_datetime + "," + \
+                        db_v.sensor_name + "," + \
+                        db_v.ip + "," + \
+                        db_v.kootnet_sensors_version + "," + \
+                        db_v.sensor_check_in_installed_sensors + "," + \
+                        db_v.sensor_uptime + "," + \
+                        db_v.sensor_check_in_primary_log + "," + \
+                        db_v.sensor_check_in_network_log + "," + \
+                        db_v.sensor_check_in_sensors_log + ")" + \
+                        " VALUES (?,?,?,?,?,?,?,?,?);"
+
+        sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
+                    sensor_uptime, primary_logs, network_logs, sensors_logs]
+        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_loc)
+    except Exception as error:
+        logger.primary_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
+
+
 @html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-delete-old-sensors", methods=["POST"])
 @auth.login_required
 def delete_sensors_older_then():
+    delete_sensors_older_days = 365000  # 1000 years
+    if request.form.get("delete_sensors_older_days") is not None:
+        delete_sensors_older_days = float(request.form.get("delete_sensors_older_days"))
+    thread_function(_thread_delete_sensors_older_then, args=delete_sensors_older_days)
+    return get_message_page("Old Sensor Clean-up Started", "Check Logs for more info", page_url="sensor-checkin-view")
+
+
+def _thread_delete_sensors_older_then(delete_sensors_older_days):
+    logger.network_logger.info("Checkin Database Clean-up Started")
     try:
-        app_config_access.checkin_config.update_with_html_request(request, skip_all_but_delete_setting=True)
-        delete_sensors_older_days = app_config_access.checkin_config.delete_sensors_older_days
         datetime_sensor_ids_list = _get_sensor_id_and_last_checkin_date_as_list()
         current_date_time = datetime.utcnow() + timedelta(hours=app_config_access.primary_config.utc0_hour_offset)
         for date_and_sensor_id in datetime_sensor_ids_list:
@@ -75,9 +133,9 @@ def delete_sensors_older_then():
             if (current_date_time - clean_last_checkin_date).days >= delete_sensors_older_days:
                 _delete_sensor_id(date_and_sensor_id[0])
         write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
+        logger.network_logger.info("Checkin Database Clean-up Finished")
     except Exception as error:
         logger.primary_logger.warning("Error trying to delete old sensors from the Check-Ins database: " + str(error))
-    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
 
 
 @html_atpro_sensor_check_ins_routes.route("/atpro/checkin-sensors-list")
@@ -251,50 +309,6 @@ def _get_sensor_info_string(sensor_id):
                            SoftwareVersion=get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version),
                            SensorUptime=get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime),
                            InstalledSensors=installed_sensors)
-
-
-@html_atpro_sensor_check_ins_routes.route("/atpro/sensor-checkin-clear-old-data")
-@auth.login_required
-def clear_check_ins_counts():
-    for sensor_id in get_sqlite_tables_in_list(db_loc):
-        _clear_old_sensor_checkin_data(sensor_id)
-    write_to_sql_database("VACUUM;", None, sql_database_location=db_loc)
-    return get_html_atpro_index(run_script="SelectNav('sensor-checkin-view');")
-
-
-def _clear_old_sensor_checkin_data(sensor_id):
-    last_checkin_date = get_one_db_entry_wrapper(sensor_id, db_v.all_tables_datetime)
-    sensor_name = get_one_db_entry_wrapper(sensor_id, db_v.sensor_name)
-    sensor_ip = get_one_db_entry_wrapper(sensor_id, db_v.ip)
-    program_version = get_one_db_entry_wrapper(sensor_id, db_v.kootnet_sensors_version)
-    installed_sensors = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_installed_sensors)
-    sensor_uptime = get_one_db_entry_wrapper(sensor_id, db_v.sensor_uptime)
-
-    primary_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_primary_log)
-    network_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_network_log)
-    sensors_logs = get_one_db_entry_wrapper(sensor_id, db_v.sensor_check_in_sensors_log)
-
-    try:
-        write_to_sql_database("DELETE FROM '" + sensor_id + "';", None, sql_database_location=db_loc)
-
-        check_sensor_checkin_columns(sensor_id)
-        sql_ex_string = "INSERT OR IGNORE INTO '" + sensor_id + "' (" + \
-                        db_v.all_tables_datetime + "," + \
-                        db_v.sensor_name + "," + \
-                        db_v.ip + "," + \
-                        db_v.kootnet_sensors_version + "," + \
-                        db_v.sensor_check_in_installed_sensors + "," + \
-                        db_v.sensor_uptime + "," + \
-                        db_v.sensor_check_in_primary_log + "," + \
-                        db_v.sensor_check_in_network_log + "," + \
-                        db_v.sensor_check_in_sensors_log + ")" + \
-                        " VALUES (?,?,?,?,?,?,?,?,?);"
-
-        sql_data = [last_checkin_date, sensor_name, sensor_ip, program_version, installed_sensors,
-                    sensor_uptime, primary_logs, network_logs, sensors_logs]
-        write_to_sql_database(sql_ex_string, sql_data, sql_database_location=db_loc)
-    except Exception as error:
-        logger.network_logger.error("Sensor Check-ins - Clearing Sensor '" + sensor_id + "' Data: " + str(error))
 
 
 def _get_sensor_id_and_last_checkin_date_as_list(sort_by_date_time=True):
