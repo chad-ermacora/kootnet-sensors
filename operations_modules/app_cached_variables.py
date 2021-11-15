@@ -83,6 +83,7 @@ class CreateNetworkGetCommands:
         self.rm_latency_report = "atpro/rm-get-latency-entry"
 
         self.system_uptime = "GetSystemUptime"
+        self.system_uptime_minutes = "GetSystemUptimeMinutes"
         self.system_date_time = "GetSystemDateTime"
         self.system_ram_used = "GetRAMUsed"
         self.system_ram_free = "GetRAMFree"
@@ -122,14 +123,48 @@ class CreateNetworkGetCommands:
         self.altitude = "GetAltitude"
         self.humidity = "GetHumidity"
         self.distance = "GetDistance"
+        self.dew_point = "GetDewPoint"
+
         self.all_gas = "GetAllGas"
+        self.gas_resistance_index = "GetGasResistanceIndex"
+        self.gas_oxidising = "GetGasOxidising"
+        self.gas_reducing = "GetGasReducing"
+        self.gas_nh3 = "GetGasNH3"
+
         self.all_particulate_matter = "GetAllParticulateMatter"
+        self.particulate_matter_1 = "GetParticulateMatter1"
+        self.particulate_matter_2_5 = "GetParticulateMatter2_5"
+        self.particulate_matter_4 = "GetParticulateMatter4"
+        self.particulate_matter_10 = "GetParticulateMatter10"
+
         self.lumen = "GetLumen"
         self.electromagnetic_spectrum = "GetEMSColors"
+        self.red = "GetRed"
+        self.orange = "GetOrange"
+        self.yellow = "GetYellow"
+        self.green = "GetGreen"
+        self.blue = "GetBlue"
+        self.violet = "GetViolet"
+
         self.all_ultra_violet = "GetAllUltraViolet"
+        self.ultra_violet_index = "GetUltraVioletIndex"
+        self.ultra_violet_a = "GetUltraVioletA"
+        self.ultra_violet_b = "GetUltraVioletB"
+
         self.accelerometer_xyz = "GetAccelerometerXYZ"
+        self.acc_x = "GetAccX"
+        self.acc_y = "GetAccY"
+        self.acc_z = "GetAccZ"
+
         self.magnetometer_xyz = "GetMagnetometerXYZ"
+        self.mag_x = "GetMagX"
+        self.mag_y = "GetMagY"
+        self.mag_z = "GetMagZ"
+
         self.gyroscope_xyz = "GetGyroscopeXYZ"
+        self.gyro_x = "GetGyroX"
+        self.gyro_y = "GetGyroY"
+        self.gyro_z = "GetGyroZ"
 
         self.no_http_auth_required_commands_list = [
             self.check_online_status, self.sensor_name, self.sensor_id, self.os_version, self.program_version,
@@ -140,7 +175,12 @@ class CreateNetworkGetCommands:
             self.display_configuration_file, self.luftdaten_config_file, self.sensor_readings, self.sensors_latency,
             self.cpu_temp, self.environmental_temp, self.env_temp_offset, self.pressure, self.altitude, self.humidity,
             self.distance, self.all_gas, self.all_particulate_matter, self.lumen, self.electromagnetic_spectrum,
-            self.all_ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz
+            self.all_ultra_violet, self.accelerometer_xyz, self.magnetometer_xyz, self.gyroscope_xyz,
+            self.gas_resistance_index, self.gas_oxidising, self.gas_reducing, self.gas_nh3, self.particulate_matter_1,
+            self.particulate_matter_2_5, self.particulate_matter_4, self.particulate_matter_10, self.red, self.orange,
+            self.yellow, self.green, self.blue, self.violet, self.ultra_violet_index, self.ultra_violet_a,
+            self.ultra_violet_b, self.acc_x, self.acc_y, self.acc_z, self.mag_x, self.mag_y, self.mag_z, self.gyro_x,
+            self.gyro_y, self.gyro_z, self.system_uptime_minutes
         ]
 
 
@@ -563,24 +603,3 @@ sc_in_memory_zip = b''
 notes_total_count = 0
 note_current = 1
 cached_notes_as_list = []
-
-# Quick Graph's Variables
-quick_graph_max_sql_entries = 1000
-quick_graph_skip_sql_entries = 0
-quick_graph_hours = 48
-quick_graph_uptime = 1
-quick_graph_cpu_temp = 0
-quick_graph_env_temp = 1
-quick_graph_pressure = 0
-quick_graph_altitude = 0
-quick_graph_humidity = 1
-quick_graph_dew_point = 0
-quick_graph_distance = 0
-quick_graph_gas = 0
-quick_graph_particulate_matter = 0
-quick_graph_lumen = 0
-quick_graph_colours = 0
-quick_graph_ultra_violet = 0
-quick_graph_acc = 0
-quick_graph_mag = 0
-quick_graph_gyro = 0
