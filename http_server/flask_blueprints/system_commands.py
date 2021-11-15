@@ -23,7 +23,7 @@ from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
 from operations_modules import software_version
-from configuration_modules.app_config_access import primary_config
+from configuration_modules import app_config_access
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_http, download_type_smb
 from http_server.server_http_auth import auth
@@ -33,12 +33,13 @@ from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
 upgrade_msg = " Upgrade Starting, this may take a few minutes ..."
+demo_mode_enabled_msg = "Demo mode enabled, function disabled"
 
 
 @html_system_commands_routes.route("/GetSensorID")
 def get_sensor_id():
     logger.network_logger.debug("* Sensor's ID sent to " + str(request.remote_addr))
-    return str(primary_config.sensor_id)
+    return str(app_config_access.primary_config.sensor_id)
 
 
 @html_system_commands_routes.route("/GetHostName")
@@ -116,115 +117,140 @@ def get_sensor_program_last_updated():
 @html_system_commands_routes.route("/UpgradeOnline")
 @auth.login_required
 def upgrade_http():
-    logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http)
-    msg = "HTTP" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("* Upgrade - HTTP Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http)
+        msg = "HTTP" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeOnlineDev")
 @auth.login_required
 def upgrade_http_dev():
-    logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_http)
-    msg = "HTTP Development" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Developer Upgrade - HTTP Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_http)
+        msg = "HTTP Development" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeOnlineClean")
 @auth.login_required
 def upgrade_clean_http():
-    logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=True, download_type=download_type_http)
-    msg = "HTTP Clean" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=True, download_type=download_type_http)
+        msg = "HTTP Clean" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeOnlineCleanDEV")
 @auth.login_required
 def upgrade_clean_http_dev():
-    logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_http)
-    msg = "HTTP Development Clean" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** DEV Clean Upgrade - HTTP Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_http)
+        msg = "HTTP Development Clean" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeSMB")
 @auth.login_required
 def upgrade_smb():
-    logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_smb)
-    msg = "SMB" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("* Upgrade - SMB Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_smb)
+        msg = "SMB" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeSMBDev")
 @auth.login_required
 def upgrade_smb_dev():
-    logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
-    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_smb)
-    msg = "SMB Development" + upgrade_msg
-    return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Developer Upgrade - SMB Initiated by " + str(request.remote_addr))
+        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=False, download_type=download_type_smb)
+        msg = "SMB Development" + upgrade_msg
+        return get_message_page("Upgrade Started", msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/RestartServices")
 @auth.login_required
 def services_restart():
-    logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
-    system_access.restart_services()
-    return get_message_page("Restarting Program", page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Service restart Initiated by " + str(request.remote_addr))
+        system_access.restart_services()
+        return get_message_page("Restarting Program", page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/RebootSystem")
 @auth.login_required
 def system_reboot():
-    logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["RebootSystem"])
-    return get_message_page("Rebooting System", message="This may take a few Minutes ...", page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** System Reboot Initiated by " + str(request.remote_addr))
+        app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["RebootSystem"])
+        return_msg = "This may take a few Minutes ..."
+        return get_message_page("Rebooting System", message=return_msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/ShutdownSystem")
 @auth.login_required
 def system_shutdown():
-    logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
-    app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["ShutdownSystem"])
-    msg = "You must physically turn the sensor back on for future access"
-    return get_message_page("Shutting Down System", message=msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** System Shutdown Initiated by " + str(request.remote_addr))
+        app_generic_functions.thread_function(os.system, args=app_cached_variables.bash_commands["ShutdownSystem"])
+        msg = "You must physically turn the sensor back on for future access"
+        return get_message_page("Shutting Down System", message=msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpgradeSystemOS")
 @auth.login_required
 def upgrade_system_os():
-    logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
-    if app_cached_variables.sensor_ready_for_upgrade:
-        upgrade_linux_os()
-    else:
-        logger.network_logger.warning("* Upgrades Already Running")
-    msg = "Upgrading the Operating System requires Internet & may take up to an hour or more.<br>"
-    msg = msg + "Once complete, the system will automatically reboot."
-    return get_message_page("Upgrading Operating System", message=msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** OS Upgrade and Reboot Initiated by " + str(request.remote_addr))
+        if app_cached_variables.sensor_ready_for_upgrade:
+            upgrade_linux_os()
+        else:
+            logger.network_logger.warning("* Upgrades Already Running")
+        msg = "Upgrading the Operating System requires Internet & may take up to an hour or more.<br>"
+        msg = msg + "Once complete, the system will automatically reboot."
+        return get_message_page("Upgrading Operating System", message=msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/UpdatePipModules")
 @auth.login_required
 def upgrade_pip_modules():
-    logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
-    if app_cached_variables.sensor_ready_for_upgrade:
-        upgrade_python_pip_modules()
-    else:
-        logger.network_logger.warning("* Upgrades Already Running")
-    msg = "Python Modules for Kootnet Sensors are being upgraded. Once complete, the program will be restarted."
-    return get_message_page("Upgrading Python Modules", message=msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Program pip3 modules upgrade Initiated by " + str(request.remote_addr))
+        if app_cached_variables.sensor_ready_for_upgrade:
+            upgrade_python_pip_modules()
+        else:
+            logger.network_logger.warning("* Upgrades Already Running")
+        msg = "Python Modules for Kootnet Sensors are being upgraded. Once complete, the program will be restarted."
+        return get_message_page("Upgrading Python Modules", message=msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/CreateNewSelfSignedSSL")
 @auth.login_required
 def create_new_self_signed_ssl():
-    logger.network_logger.info("** Create New Self-Signed SSL Initiated by " + str(request.remote_addr))
-    os.system("rm -f -r " + file_locations.http_ssl_folder)
-    system_access.restart_services()
-    msg = "You may have to clear your browser cache to re-gain access. The program is now restarting."
-    return get_message_page("New SSL Key Created", message=msg, page_url="sensor-dashboard")
+    if not app_config_access.primary_config.demo_mode:
+        logger.network_logger.info("** Create New Self-Signed SSL Initiated by " + str(request.remote_addr))
+        os.system("rm -f -r " + file_locations.http_ssl_folder)
+        system_access.restart_services()
+        msg = "You may have to clear your browser cache to re-gain access. The program is now restarting."
+        return get_message_page("New SSL Key Created", message=msg, page_url="sensor-dashboard")
+    return demo_mode_enabled_msg
 
 
 @html_system_commands_routes.route("/DisplayText", methods=["PUT"])
