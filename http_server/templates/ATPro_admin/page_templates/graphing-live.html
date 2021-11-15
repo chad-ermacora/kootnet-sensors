@@ -3,39 +3,57 @@
         <div class="card">
             <div class="card-content">
                 <form class="pure-form" method="POST" action="/atpro/sensor-graphing-live">
-                    <h2><i class="fas fa-chart-line"></i> Quick Graphing</h2>
+                    <h2><i class="fas fa-chart-line"></i> Live Graphing</h2>
 
-                    <button class="pure-button" onclick="OpenQuickGraphWindow()">Open Graph Window</button>
+                    <button class="pure-button" onclick="window.open('/LiveGraphView', '_blank',
+                    'location=yes,scrollbars=yes,status=yes')">
+                        Open Graph Window
+                    </button>
 
                     <br><br>
 
-                    <label>
-                        Add Plot Data after skipping<br>
+                    <label style="font-size: medium;">Sensor Address (Blank for local sensor)<br>
+                        <span style="font-size: small;">Ex. 192.168.0.5 or sensor.mydomain.net<br>
+                        Optional: Specify port -> sensor.mydomain.net:10065</span>
+                        <br><br>
                         <div style="display: table; margin-left: auto; margin-right: auto;">
                             <div style="display: table-row;">
                                 <div style="display: table-cell;">
-                                    <input style="width: 120px;" type="number" min="0" max="9999"
-                                           name="SkipSQL" value="{{ SkipSQLEntries }}">
+                                    <input style="width: 325px;" type="text" name="graph_sensor_address"
+                                           value="{{ GraphSensorAddress }}">
                                 </div>
                             </div>
                         </div>
                     </label>
 
-                    <br><br>
+                    <br>
+                    <div class="row">
+                        <div class="col-6 col-m-6 col-sm-12">
+                            <label>Sensors per Row<br><br>
+                                <select name="graphs_per_line">
+                                    <option value="graphs_per_line_1" {{ CheckedGPL1 }}>1</option>
+                                    <option value="graphs_per_line_2" {{ CheckedGPL2 }}>2</option>
+                                    <option value="graphs_per_line_3" {{ CheckedGPL3 }}>3</option>
+                                    <option value="graphs_per_line_4" {{ CheckedGPL4 }}>4</option>
+                                </select>
+                            </label>
+                        </div>
 
-                    <div style="display: table; margin-left: auto; margin-right: auto;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell;">
-                                <label>
-                                    Max Plot Points<br>
-                                    <input style="width: 120px;" type="number" min="5" max="999999"
-                                           name="MaxSQLData" value="{{ MaxSQLEntries }}">
-                                </label>
-                            </div>
+                        <div class="col-6 col-m-6 col-sm-12">
+                            <label style="font-size: medium;">Update Interval in Seconds<br><br>
+                                <div style="display: table; margin-left: auto; margin-right: auto;">
+                                    <div style="display: table-row;">
+                                        <div style="display: table-cell;">
+                                            <input style="width: 75px;" type="number" min="1" name="graph_update_interval"
+                                                   value="{{ GraphIntervalValue }}" required>
+                                        </div>
+                                    </div>
+                                </div>
+                            </label>
                         </div>
                     </div>
 
-                    <br><br><hr><br>
+                    <br><hr><br>
 
                     <label class="toggle-switch">
                         <input type="checkbox" id="select-all-checkboxes" class="toggle-switch-input"
@@ -170,11 +188,5 @@
 </div>
 
 <script>
-    function OpenQuickGraphWindow() {
-        const w_op = 'toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,'
-        const w_op2 = 'width=' + screen.width + ',height=' + screen.height
-        window.open('/LiveGraphView', 'targetWindow', w_op + w_op2); return false;
-    }
-
     CheckNotificationsAsync();
 </script>
