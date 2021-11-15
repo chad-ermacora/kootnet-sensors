@@ -34,6 +34,7 @@ from configuration_modules.config_weather_underground import CreateWeatherUnderg
 from configuration_modules.config_luftdaten import CreateLuftdatenConfiguration
 from configuration_modules.config_open_sense_map import CreateOpenSenseMapConfiguration
 from configuration_modules.config_check_ins import CreateCheckinConfiguration
+from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
 
 logger.primary_logger.info(" -- Loading Configurations")
 # Make sure all hardware based sensors are marked as not installed if lacking root permissions
@@ -54,4 +55,5 @@ weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()
 checkin_config = CreateCheckinConfiguration()
+live_graphs_config = CreateLiveGraphsConfiguration()
 logger.primary_logger.info(" -- Configurations Loaded")
