@@ -37,19 +37,24 @@ download_type_http = "HTTP"
 download_type_smb = "SMB"
 
 
-def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False, download_type=download_type_http):
+def start_kootnet_sensors_upgrade(dev_upgrade=False, clean_upgrade=False,
+                                  download_type=download_type_http, thread_download=True):
     """
     Starts the Kootnet Sensors Upgrade process
     :param dev_upgrade: Developmental Upgrade, True/False, Default False
     :param clean_upgrade: Clean Upgrade (Re-Install), True/False, Default False
     :param download_type: Use global variables download_type_http or download_type_smb, Default download_type_http
+    :param thread_download: Use global variables download_type_http or download_type_smb, Default download_type_http
     :return: Nothing
     """
     if app_cached_variables.sensor_ready_for_upgrade:
         app_cached_variables.sensor_ready_for_upgrade = False
-        system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
-        system_thread.daemon = True
-        system_thread.start()
+        if thread_download:
+            system_thread = Thread(target=_kootnet_sensors_upgrade, args=[dev_upgrade, clean_upgrade, download_type])
+            system_thread.daemon = True
+            system_thread.start()
+        else:
+            _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type)
         _set_upgrade_notification_text(dev_upgrade, clean_upgrade, download_type)
 
 

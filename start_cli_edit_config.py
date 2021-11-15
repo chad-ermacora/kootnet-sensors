@@ -92,7 +92,7 @@ def start_script():
                 if app_cached_variables.running_as_service:
                     if imports_ok:
                         print("Starting HTTP Standard Upgrade\n")
-                        start_kootnet_sensors_upgrade()
+                        start_kootnet_sensors_upgrade(thread_download=False)
                         print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
@@ -102,7 +102,7 @@ def start_script():
                 if app_cached_variables.running_as_service:
                     if imports_ok:
                         print("Starting HTTP Standard Re-Install\n")
-                        start_kootnet_sensors_upgrade(clean_upgrade=True)
+                        start_kootnet_sensors_upgrade(clean_upgrade=True, thread_download=False)
                         print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
@@ -146,7 +146,7 @@ def start_script():
                 if app_cached_variables.running_as_service:
                     if imports_ok:
                         print("Starting HTTP Developmental Upgrade\n")
-                        start_kootnet_sensors_upgrade(dev_upgrade=True)
+                        start_kootnet_sensors_upgrade(dev_upgrade=True, thread_download=False)
                         print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
@@ -156,7 +156,7 @@ def start_script():
                 if app_cached_variables.running_as_service:
                     if imports_ok:
                         print("Starting HTTP Developmental Re-Install\n")
-                        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True)
+                        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, thread_download=False)
                         print(msg_upgrade_started)
                     else:
                         print(msg_requests_missing)
@@ -194,19 +194,23 @@ def start_script():
                     print("Configuration Reset Cancelled")
             elif selection == 26:
                 print("Starting SMB Standard Upgrade\n")
-                start_kootnet_sensors_upgrade(download_type=download_type_smb)
+                start_kootnet_sensors_upgrade(download_type=download_type_smb,
+                                              thread_download=False)
                 print(msg_upgrade_started)
             elif selection == 27:
                 print("Starting SMB Developmental Upgrade\n")
-                start_kootnet_sensors_upgrade(dev_upgrade=True, download_type=download_type_smb)
+                start_kootnet_sensors_upgrade(dev_upgrade=True, download_type=download_type_smb,
+                                              thread_download=False)
                 print(msg_upgrade_started)
             elif selection == 28:
                 print("Starting SMB Standard Re-Install\n")
-                start_kootnet_sensors_upgrade(clean_upgrade=True, download_type=download_type_smb)
+                start_kootnet_sensors_upgrade(clean_upgrade=True, download_type=download_type_smb,
+                                              thread_download=False)
                 print(msg_upgrade_started)
             elif selection == 29:
                 print("Starting SMB Developmental Re-Install\n")
-                start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_smb)
+                start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, download_type=download_type_smb,
+                                              thread_download=False)
                 print(msg_upgrade_started)
             else:
                 os.system("clear")
