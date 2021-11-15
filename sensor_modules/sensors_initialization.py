@@ -192,9 +192,6 @@ class CreateSensorAccess:
             app_config_access.installed_sensors.__init__(load_from_file=False)
             app_config_access.installed_sensors.kootnet_dummy_sensor = dummy_sensor
 
-        # If demo mode is enabled, make sure the dummy sensor is enabled and interval recording is enabled / set
-        if app_config_access.primary_config.demo_mode:
-            app_config_access.installed_sensors.kootnet_dummy_sensor = 1
         if app_config_access.installed_sensors.kootnet_dummy_sensor:
             self.dummy_sensors = _kootnet_dummy_sensors.CreateDummySensors()
             log_msg2 = "Readings will be randomly generated for any missing sensor types"
