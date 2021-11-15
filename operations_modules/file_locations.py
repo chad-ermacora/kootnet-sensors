@@ -142,6 +142,8 @@ weather_underground_config = sensor_config_dir + "/online_services_weather_under
 luftdaten_config = sensor_config_dir + "/online_services_luftdaten.conf"
 osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
 
+live_graphs_config = sensor_config_dir + "/live_graphs.conf"
+
 plotly_graph_interval = ks_generated_folder + "/IntervalPlotlyGraph.html"
 plotly_graph_triggers = ks_generated_folder + "/TriggersPlotlyGraph.html"
 plotly_graph_mqtt = ks_generated_folder + "/MQTTPlotlyGraph.html"
