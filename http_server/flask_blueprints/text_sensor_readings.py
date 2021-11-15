@@ -25,6 +25,13 @@ from sensor_modules import sensor_access
 html_sensor_readings_routes = Blueprint("html_sensor_readings_routes", __name__)
 
 
+@html_sensor_readings_routes.after_request
+def after_request(response):
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 @html_sensor_readings_routes.route("/GetAllSensorReadings")
 def get_all_sensor_readings():
     logger.network_logger.debug("* All Sensor Readings sent to " + str(request.remote_addr))
@@ -60,6 +67,12 @@ def get_sensors_latency():
     except Exception as error:
         return "Error" + command_data_separator + str(error)
     return text_part1 + command_data_separator + text_part2
+
+
+@html_sensor_readings_routes.route("/GetSystemUptimeMinutes")
+def get_system_uptime_minutes():
+    logger.network_logger.debug("* Sensor's Uptime in minutes sent to " + str(request.remote_addr))
+    return str(sensor_access.get_uptime_minutes()[database_variables.sensor_uptime])
 
 
 @html_sensor_readings_routes.route("/GetCPUTemperature")
@@ -122,16 +135,73 @@ def get_distance():
     return str(reading)
 
 
+@html_sensor_readings_routes.route("/GetDewPoint")
+def get_dew_point():
+    logger.network_logger.debug("* Dew Point sent to " + str(request.remote_addr))
+    reading = sensor_access.get_dew_point()
+    if reading is not None:
+        reading = reading[database_variables.dew_point]
+    return str(reading)
+
+
 @html_sensor_readings_routes.route("/GetAllGas")
 def get_all_gas():
     logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
     return str(sensor_access.get_gas())
 
 
+@html_sensor_readings_routes.route("/GetGasResistanceIndex")
+def get_gas_index():
+    logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gas()[database_variables.gas_resistance_index])
+
+
+@html_sensor_readings_routes.route("/GetGasOxidising")
+def get_gas_oxidising():
+    logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gas()[database_variables.gas_oxidising])
+
+
+@html_sensor_readings_routes.route("/GetGasReducing")
+def get_gas_reducing():
+    logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gas()[database_variables.gas_reducing])
+
+
+@html_sensor_readings_routes.route("/GetGasNH3")
+def get_gas_nh3():
+    logger.network_logger.debug("* GAS Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gas()[database_variables.gas_nh3])
+
+
 @html_sensor_readings_routes.route("/GetAllParticulateMatter")
 def get_all_particulate_matter():
     logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
     return str(sensor_access.get_particulate_matter())
+
+
+@html_sensor_readings_routes.route("/GetParticulateMatter1")
+def get_particulate_matter_1():
+    logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_particulate_matter()[database_variables.particulate_matter_1])
+
+
+@html_sensor_readings_routes.route("/GetParticulateMatter2_5")
+def get_particulate_matter_2_5():
+    logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_particulate_matter()[database_variables.particulate_matter_2_5])
+
+
+@html_sensor_readings_routes.route("/GetParticulateMatter4")
+def get_particulate_matter_4():
+    logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_particulate_matter()[database_variables.particulate_matter_4])
+
+
+@html_sensor_readings_routes.route("/GetParticulateMatter10")
+def get_particulate_matter_10():
+    logger.network_logger.debug("* Particulate Matter Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_particulate_matter()[database_variables.particulate_matter_10])
 
 
 @html_sensor_readings_routes.route("/GetLumen")
@@ -149,10 +219,64 @@ def get_ems_colors():
     return str(sensor_access.get_ems_colors())
 
 
+@html_sensor_readings_routes.route("/GetRed")
+def get_ems_red():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.red])
+
+
+@html_sensor_readings_routes.route("/GetOrange")
+def get_ems_orange():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.orange])
+
+
+@html_sensor_readings_routes.route("/GetYellow")
+def get_ems_yellow():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.yellow])
+
+
+@html_sensor_readings_routes.route("/GetGreen")
+def get_ems_green():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.green])
+
+
+@html_sensor_readings_routes.route("/GetBlue")
+def get_ems_blue():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.blue])
+
+
+@html_sensor_readings_routes.route("/GetViolet")
+def get_ems_violet():
+    logger.network_logger.debug("* Visible Electromagnetic Spectrum sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ems_colors()[database_variables.violet])
+
+
 @html_sensor_readings_routes.route("/GetAllUltraViolet")
 def get_all_ultra_violet():
     logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
     return str(sensor_access.get_ultra_violet())
+
+
+@html_sensor_readings_routes.route("/GetUltraVioletIndex")
+def get_ultra_violet_index():
+    logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ultra_violet()[database_variables.ultra_violet_index])
+
+
+@html_sensor_readings_routes.route("/GetUltraVioletA")
+def get_ultra_violet_a():
+    logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ultra_violet()[database_variables.ultra_violet_a])
+
+
+@html_sensor_readings_routes.route("/GetUltraVioletB")
+def get_ultra_violet_b():
+    logger.network_logger.debug("* Ultra Violet Sensors sent to " + str(request.remote_addr))
+    return str(sensor_access.get_ultra_violet()[database_variables.ultra_violet_b])
 
 
 @html_sensor_readings_routes.route("/GetAccelerometerXYZ")
@@ -161,13 +285,67 @@ def get_acc_xyz():
     return str(sensor_access.get_accelerometer_xyz())
 
 
+@html_sensor_readings_routes.route("/GetAccX")
+def get_acc_x():
+    logger.network_logger.debug("* Accelerometer X sent to " + str(request.remote_addr))
+    return str(sensor_access.get_accelerometer_xyz()[database_variables.acc_x])
+
+
+@html_sensor_readings_routes.route("/GetAccY")
+def get_acc_y():
+    logger.network_logger.debug("* Accelerometer Y sent to " + str(request.remote_addr))
+    return str(sensor_access.get_accelerometer_xyz()[database_variables.acc_y])
+
+
+@html_sensor_readings_routes.route("/GetAccZ")
+def get_acc_z():
+    logger.network_logger.debug("* Accelerometer Z sent to " + str(request.remote_addr))
+    return str(sensor_access.get_accelerometer_xyz()[database_variables.acc_z])
+
+
 @html_sensor_readings_routes.route("/GetMagnetometerXYZ")
 def get_mag_xyz():
     logger.network_logger.debug("* Magnetometer XYZ sent to " + str(request.remote_addr))
     return str(sensor_access.get_magnetometer_xyz())
 
 
+@html_sensor_readings_routes.route("/GetMagX")
+def get_mag_x():
+    logger.network_logger.debug("* Magnetometer X sent to " + str(request.remote_addr))
+    return str(sensor_access.get_magnetometer_xyz()[database_variables.mag_x])
+
+
+@html_sensor_readings_routes.route("/GetMagY")
+def get_mag_y():
+    logger.network_logger.debug("* Magnetometer Y sent to " + str(request.remote_addr))
+    return str(sensor_access.get_magnetometer_xyz()[database_variables.mag_y])
+
+
+@html_sensor_readings_routes.route("/GetMagZ")
+def get_mag_z():
+    logger.network_logger.debug("* Magnetometer Z sent to " + str(request.remote_addr))
+    return str(sensor_access.get_magnetometer_xyz()[database_variables.mag_z])
+
+
 @html_sensor_readings_routes.route("/GetGyroscopeXYZ")
 def get_gyro_xyz():
     logger.network_logger.debug("* Gyroscope XYZ sent to " + str(request.remote_addr))
     return str(sensor_access.get_gyroscope_xyz())
+
+
+@html_sensor_readings_routes.route("/GetGyroX")
+def get_gyro_x():
+    logger.network_logger.debug("* Gyroscope X sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gyroscope_xyz()[database_variables.gyro_x])
+
+
+@html_sensor_readings_routes.route("/GetGyroY")
+def get_gyro_y():
+    logger.network_logger.debug("* Gyroscope Y sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gyroscope_xyz()[database_variables.gyro_y])
+
+
+@html_sensor_readings_routes.route("/GetGyroZ")
+def get_gyro_z():
+    logger.network_logger.debug("* Gyroscope Z sent to " + str(request.remote_addr))
+    return str(sensor_access.get_gyroscope_xyz()[database_variables.gyro_z])
