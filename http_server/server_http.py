@@ -31,6 +31,7 @@ from http_server.flask_blueprints.basic_html_pages import html_basic_routes
 from http_server.flask_blueprints.atpro.atpro_main_routes import html_atpro_main_routes
 from http_server.flask_blueprints.atpro.atpro_notes import html_atpro_notes_routes
 from http_server.flask_blueprints.atpro.atpro_graphing import html_atpro_graphing_routes
+from http_server.flask_blueprints.atpro.atpro_live_graphing_wrappers import html_live_graph_sensor_wrappers_routes
 from http_server.flask_blueprints.atpro.remote_management.rm_routes import html_atpro_remote_management_routes
 from http_server.flask_blueprints.atpro.atpro_mqtt_subscriber import html_atpro_mqtt_subscriber_routes
 from http_server.flask_blueprints.atpro.atpro_sensor_checkins import html_atpro_sensor_check_ins_routes
@@ -80,6 +81,7 @@ class CreateSensorHTTP:
         app.register_blueprint(html_atpro_main_routes)
         app.register_blueprint(html_atpro_notes_routes)
         app.register_blueprint(html_atpro_graphing_routes)
+        app.register_blueprint(html_live_graph_sensor_wrappers_routes)
         app.register_blueprint(html_atpro_remote_management_routes)
         app.register_blueprint(html_atpro_mqtt_subscriber_routes)
         app.register_blueprint(html_atpro_sensor_check_ins_routes)

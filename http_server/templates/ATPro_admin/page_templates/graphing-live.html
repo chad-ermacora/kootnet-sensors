@@ -12,44 +12,67 @@
 
                     <br><br>
 
-                    <label style="font-size: medium;">Sensor Address (Blank for local sensor)<br>
-                        <span style="font-size: small;">Ex. 192.168.0.5 or sensor.mydomain.net<br>
-                        Optional: Specify port -> sensor.mydomain.net:10065</span>
-                        <br><br>
-                        <div style="display: table; margin-left: auto; margin-right: auto;">
-                            <div style="display: table-row;">
-                                <div style="display: table-cell;">
-                                    <input style="width: 325px;" type="text" name="graph_sensor_address"
-                                           value="{{ GraphSensorAddress }}">
-                                </div>
-                            </div>
-                        </div>
-                    </label>
+                    <button type="button" class="pure-button" id="lga-button" onclick="ShowHideLGA_Adv()">
+                        Show Advanced Settings
+                    </button>
 
                     <br>
-                    <div class="row">
-                        <div class="col-6 col-m-6 col-sm-12">
-                            <label>Sensors per Row<br><br>
-                                <select name="graphs_per_line">
-                                    <option value="graphs_per_line_1" {{ CheckedGPL1 }}>1</option>
-                                    <option value="graphs_per_line_2" {{ CheckedGPL2 }}>2</option>
-                                    <option value="graphs_per_line_3" {{ CheckedGPL3 }}>3</option>
-                                    <option value="graphs_per_line_4" {{ CheckedGPL4 }}>4</option>
-                                </select>
-                            </label>
-                        </div>
 
-                        <div class="col-6 col-m-6 col-sm-12">
-                            <label style="font-size: medium;">Update Interval in Seconds<br><br>
-                                <div style="display: table; margin-left: auto; margin-right: auto;">
-                                    <div style="display: table-row;">
-                                        <div style="display: table-cell;">
-                                            <input style="width: 75px;" type="number" min="1" name="graph_update_interval"
-                                                   value="{{ GraphIntervalValue }}" required>
-                                        </div>
+                    <div id="lga-settings-content"><br>
+                        <label style="font-size: medium;">Sensor Address (Blank for local sensor)<br>
+                            <span style="font-size: small;">Ex. 192.168.0.5 or sensor.mydomain.net<br>
+                            Optional: Specify port -> sensor.mydomain.net:10065</span>
+                            <br><br>
+                            <div style="display: table; margin-left: auto; margin-right: auto;">
+                                <div style="display: table-row;">
+                                    <div style="display: table-cell;">
+                                        <input style="width: 325px;" type="text" name="graph_sensor_address"
+                                               value="{{ GraphSensorAddress }}">
                                     </div>
                                 </div>
-                            </label>
+                            </div>
+                        </label>
+
+                        <br>
+
+                        <p>
+                            <span style="color: orange;">Warning</span><br>
+                            "Disable SSL Verification" will greatly degrade performance
+                            but is required for Self Signed Certificates and direct IP access
+                        </p>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="disable-ssl-toggle-switch" class="toggle-switch-input"
+                                   name="disable_ssl_verification" {{ CheckedDisableSSLVerification }}>
+                            <label class="toggle-switch-label" for="disable-ssl-toggle-switch"></label>
+                            Disable SSL Verification
+                        </label>
+
+                        <br>
+
+                        <div class="row">
+                            <div class="col-6 col-m-6 col-sm-12">
+                                <label>Sensors per<br>Row<br><br>
+                                    <select name="graphs_per_line">
+                                        <option value="graphs_per_line_1" {{ CheckedGPL1 }}>1</option>
+                                        <option value="graphs_per_line_2" {{ CheckedGPL2 }}>2</option>
+                                        <option value="graphs_per_line_3" {{ CheckedGPL3 }}>3</option>
+                                        <option value="graphs_per_line_4" {{ CheckedGPL4 }}>4</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div class="col-6 col-m-6 col-sm-12">
+                                <label style="font-size: medium;">Update Interval<br>Seconds<br><br>
+                                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                                        <div style="display: table-row;">
+                                            <div style="display: table-cell;">
+                                                <input style="width: 75px;" type="number" min="1" name="graph_update_interval"
+                                                       value="{{ GraphIntervalValue }}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -188,5 +211,15 @@
 </div>
 
 <script>
+    function ShowHideLGA_Adv() {
+        if (document.getElementById("lga-settings-content").style.display === "none") {
+            document.getElementById("lga-settings-content").style.display = "inline-block";
+            document.getElementById("lga-button").textContent = "Hide Advanced Settings";
+        } else {
+            document.getElementById("lga-settings-content").style.display = "none";
+            document.getElementById("lga-button").textContent = "Show Advanced Settings";
+        }
+    }
+    ShowHideLGA_Adv();
     CheckNotificationsAsync();
 </script>

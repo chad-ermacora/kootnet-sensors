@@ -182,6 +182,93 @@ class CreateNetworkGetCommands:
             self.ultra_violet_b, self.acc_x, self.acc_y, self.acc_z, self.mag_x, self.mag_y, self.mag_z, self.gyro_x,
             self.gyro_y, self.gyro_z, self.system_uptime_minutes
         ]
+        extra_no_auth_list = CreateLiveGraphWrapperNetworkGetCommands().no_http_auth_required_commands_list
+        self.no_http_auth_required_commands_list.append(extra_no_auth_list)
+
+
+class CreateLiveGraphWrapperNetworkGetCommands:
+    """ Create a object instance holding Wrapper versions of available network "Get" commands """
+
+    def __init__(self):
+        self.sensor_name = "LGWGetHostName"
+        self.sensor_id = "LGWGetSensorID"
+
+        self.os_version = "LGWGetOSVersion"
+        self.program_version = "LGWGetSensorVersion"
+        self.program_last_updated = "LGWGetProgramLastUpdated"
+
+        self.system_uptime = "LGWGetSystemUptime"
+        self.system_uptime_minutes = "LGWGetSystemUptimeMinutes"
+        self.system_date_time = "LGWGetSystemDateTime"
+        self.system_ram_used = "LGWGetRAMUsed"
+        self.system_ram_free = "LGWGetRAMFree"
+        self.system_ram_total = "LGWGetRAMTotal"
+        self.system_ram_size_type = "LGWGetRAMTotalSizeType"
+        self.system_disk_space_free = "LGWGetFreeDiskSpace"
+
+        self.cpu_temp = "LGWGetCPUTemperature"
+        self.environmental_temp = "LGWGetEnvTemperature"
+        self.env_temp_offset = "LGWGetTempOffsetEnv"
+        self.pressure = "LGWGetPressure"
+        self.altitude = "LGWGetAltitude"
+        self.humidity = "LGWGetHumidity"
+        self.distance = "LGWGetDistance"
+        self.dew_point = "LGWGetDewPoint"
+
+        self.all_gas = "LGWGetAllGas"
+        self.gas_resistance_index = "LGWGetGasResistanceIndex"
+        self.gas_oxidising = "LGWGetGasOxidising"
+        self.gas_reducing = "LGWGetGasReducing"
+        self.gas_nh3 = "LGWGetGasNH3"
+
+        self.all_particulate_matter = "LGWGetAllParticulateMatter"
+        self.particulate_matter_1 = "LGWGetParticulateMatter1"
+        self.particulate_matter_2_5 = "LGWGetParticulateMatter2_5"
+        self.particulate_matter_4 = "LGWGetParticulateMatter4"
+        self.particulate_matter_10 = "LGWGetParticulateMatter10"
+
+        self.lumen = "LGWGetLumen"
+        self.electromagnetic_spectrum = "LGWGetEMSColors"
+        self.red = "LGWGetRed"
+        self.orange = "LGWGetOrange"
+        self.yellow = "LGWGetYellow"
+        self.green = "LGWGetGreen"
+        self.blue = "LGWGetBlue"
+        self.violet = "LGWGetViolet"
+
+        self.all_ultra_violet = "LGWGetAllUltraViolet"
+        self.ultra_violet_index = "LGWGetUltraVioletIndex"
+        self.ultra_violet_a = "LGWGetUltraVioletA"
+        self.ultra_violet_b = "LGWGetUltraVioletB"
+
+        self.accelerometer_xyz = "LGWGetAccelerometerXYZ"
+        self.acc_x = "LGWGetAccX"
+        self.acc_y = "LGWGetAccY"
+        self.acc_z = "LGWGetAccZ"
+
+        self.magnetometer_xyz = "LGWGetMagnetometerXYZ"
+        self.mag_x = "LGWGetMagX"
+        self.mag_y = "LGWGetMagY"
+        self.mag_z = "LGWGetMagZ"
+
+        self.gyroscope_xyz = "LGWGetGyroscopeXYZ"
+        self.gyro_x = "LGWGetGyroX"
+        self.gyro_y = "LGWGetGyroY"
+        self.gyro_z = "LGWGetGyroZ"
+
+        self.no_http_auth_required_commands_list = [
+            self.sensor_name, self.sensor_id, self.os_version, self.program_version, self.program_last_updated,
+            self.system_uptime, self.system_uptime_minutes, self.system_date_time, self.system_ram_used,
+            self.system_ram_free, self.system_ram_total, self.system_ram_size_type, self.system_disk_space_free,
+            self.cpu_temp, self.environmental_temp, self.env_temp_offset, self.pressure, self.altitude, self.humidity,
+            self.distance, self.dew_point, self.all_gas, self.gas_resistance_index, self.gas_oxidising,
+            self.gas_reducing, self.gas_nh3, self.all_particulate_matter, self.particulate_matter_1,
+            self.particulate_matter_2_5, self.particulate_matter_4, self.particulate_matter_10, self.lumen,
+            self.electromagnetic_spectrum, self.red, self.orange, self.yellow, self.green, self.blue, self.violet,
+            self.all_ultra_violet, self.ultra_violet_index, self.ultra_violet_a, self.ultra_violet_b,
+            self.accelerometer_xyz, self.acc_x, self.acc_y, self.acc_z, self.magnetometer_xyz, self.mag_x, self.mag_y,
+            self.mag_z, self.gyroscope_xyz, self.gyro_x, self.gyro_y, self.gyro_z
+        ]
 
 
 class CreateDatabaseVariables:

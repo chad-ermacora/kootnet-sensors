@@ -34,12 +34,13 @@ html_atpro_graphing_routes = Blueprint("html_atpro_graphing_routes", __name__)
 lgc = app_config_access.live_graphs_config
 acv = app_cached_variables
 db_gc = app_cached_variables.CreateNetworkGetCommands()
+db_wrapper_gc = app_cached_variables.CreateLiveGraphWrapperNetworkGetCommands()
 db_v = app_cached_variables.database_variables
 http_base_html_files = file_locations.program_root_dir + "/http_server/templates/"
 charts_templates_dir = http_base_html_files + "ATPro_admin/page_templates/graphs_live/"
 live_chart_sensor_template = get_file_content(charts_templates_dir + "graphing-live-sensor-template.html")
 live_chart_html_template = """
-<div class="col-{{ MinColSize }} col-m-6 col-sm-12">
+<div id="{{ ChartName }}container" class="col-{{ MinColSize }} col-m-6 col-sm-12">
     <div class="card">
         <div class="card-content">
             <canvas id="{{ ChartName }}"></canvas>
@@ -73,23 +74,33 @@ fill: false}
 """
 
 live_chart_js_add_graph_data = """
-function {{ ChartName }}StartGraphDataUpdateTimed() {
-    window.setInterval({{ ChartName }}AddDataToGraph, {{ ChartUpdateInterval }});
-}
-
-async function {{ ChartName }}AddDataToGraph() {
+setTimeout(async function {{ ChartName }}AddDataToGraph() {
+    let {{ ChartName }}update_okay = false;
     {{ AllFetchCommands }}
-    {{ ChartName }}.data.labels.push(new Date().toLocaleTimeString());
-    {{ ChartName }}.update();
-}
-{{ ChartName }}StartGraphDataUpdateTimed();
+    if ({{ ChartName }}update_okay) {
+        document.getElementById('{{ ChartName }}container').hidden = false;
+        {{ ChartName }}.data.labels.push(new Date().toLocaleTimeString());
+        {{ ChartName }}.update();
+        setTimeout({{ ChartName }}AddDataToGraph, {{ ChartUpdateInterval }});
+    } else {
+        document.getElementById('{{ ChartName }}container').hidden = true;
+        setTimeout({{ ChartName }}AddDataToGraph, 15000);
+    }
+}, {{ ChartUpdateInterval }});
 """
 live_chart_js_add_graph_data_fetch_entry = """
-fetch("{{ SensorDataURL }}")
-    .then(response => response.json())
-    .then(data => {
-        {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.push(data);
+await fetch("{{ SensorDataURL }}")
+    .then(response => {
+        if (!response.ok) {throw new Error('Network response was not OK');}
+        return response.json();
     })
+    .then(data => {
+        if (data !== "NoSensor") {
+            {{ ChartName }}update_okay = true;
+            {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.push(data);
+        }
+    })
+    .catch(error => {});
 """
 
 
@@ -100,7 +111,7 @@ class CreateLiveGraphGenerator:
         self.chart_colors_list = graph_options_list[2]
         self.chart_http_commands_list = graph_options_list[3]
         self.chart_http_address = graph_options_list[4]
-        self.chart_row_size = app_config_access.live_graphs_config.graphs_per_row
+        self.chart_row_size = lgc.graphs_per_row
 
     def get_html_js_graph_code(self):
         try:
@@ -127,14 +138,14 @@ class CreateLiveGraphGenerator:
         return return_chart_functions
 
     def _get_chart_js_functions(self):
-        chart_interval = str(app_config_access.live_graphs_config.live_graph_update_interval * 1000)
+        chart_interval = str(lgc.live_graph_update_interval * 1000)
         return_chart_functions = live_chart_js_add_graph_data.replace("{{ ChartName }}", self.chart_name)
         return_chart_functions = return_chart_functions.replace("{{ ChartUpdateInterval }}", chart_interval)
 
         chart_data_fetch_code = ""
         for index, command in enumerate(self.chart_http_commands_list):
             sensor_url_command = "/" + command
-            if self.chart_http_address is not None:
+            if command[:3] != "LGW" and self.chart_http_address is not None:
                 sensor_url_command = self.chart_http_address + command
             chart_data_fetch_code += live_chart_js_add_graph_data_fetch_entry.replace("{{ ChartName }}",
                                                                                       self.chart_name)
@@ -147,47 +158,58 @@ class CreateLiveGraphGenerator:
 @html_atpro_graphing_routes.route("/atpro/sensor-graphing-live", methods=["GET", "POST"])
 def html_atpro_sensor_graphing_live():
     if request.method == "POST":
-        app_config_access.live_graphs_config.update_with_html_request(request)
-        app_config_access.live_graphs_config.save_config_to_file()
+        lgc.update_with_html_request(request)
+        lgc.save_config_to_file()
         return get_html_atpro_index(run_script="SelectNav('sensor-graphing-live');")
-    sensor_address = app_config_access.live_graphs_config.graph_sensor_address
+    sensor_address = lgc.graph_sensor_address
     if sensor_address is None:
         sensor_address = ""
     return render_template(
         "ATPro_admin/page_templates/graphing-live.html",
         GraphSensorAddress=sensor_address,
-        CheckedGPL1=app_config_access.live_graphs_config.get_checked_graph_per_line_state(1),
-        CheckedGPL2=app_config_access.live_graphs_config.get_checked_graph_per_line_state(2),
-        CheckedGPL3=app_config_access.live_graphs_config.get_checked_graph_per_line_state(3),
-        CheckedGPL4=app_config_access.live_graphs_config.get_checked_graph_per_line_state(4),
-        GraphIntervalValue=app_config_access.live_graphs_config.live_graph_update_interval,
-        CheckedSensorUptime=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_uptime),
-        CheckedCPUTemperature=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_cpu_temp),
-        CheckedEnvTemperature=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_env_temp),
-        CheckedPressure=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_pressure),
-        CheckedAltitude=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_altitude),
-        CheckedHumidity=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_humidity),
-        CheckedDewPoint=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_dew_point),
-        CheckedDistance=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_distance),
-        CheckedGas=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_gas),
-        CheckedPM=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_particulate_matter),
-        CheckedLumen=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_lumen),
-        CheckedColour=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_colours),
-        CheckedUltraViolet=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_ultra_violet),
-        CheckedAccelerometer=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_acc),
-        CheckedMagnetometer=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_mag),
-        CheckedGyroscope=get_html_checkbox_state(app_config_access.live_graphs_config.live_graph_gyro)
+        CheckedDisableSSLVerification=get_html_checkbox_state(lgc.disable_ssl_verification),
+        CheckedGPL1=lgc.get_checked_graph_per_line_state(1),
+        CheckedGPL2=lgc.get_checked_graph_per_line_state(2),
+        CheckedGPL3=lgc.get_checked_graph_per_line_state(3),
+        CheckedGPL4=lgc.get_checked_graph_per_line_state(4),
+        GraphIntervalValue=lgc.live_graph_update_interval,
+        CheckedSensorUptime=get_html_checkbox_state(lgc.live_graph_uptime),
+        CheckedCPUTemperature=get_html_checkbox_state(lgc.live_graph_cpu_temp),
+        CheckedEnvTemperature=get_html_checkbox_state(lgc.live_graph_env_temp),
+        CheckedPressure=get_html_checkbox_state(lgc.live_graph_pressure),
+        CheckedAltitude=get_html_checkbox_state(lgc.live_graph_altitude),
+        CheckedHumidity=get_html_checkbox_state(lgc.live_graph_humidity),
+        CheckedDewPoint=get_html_checkbox_state(lgc.live_graph_dew_point),
+        CheckedDistance=get_html_checkbox_state(lgc.live_graph_distance),
+        CheckedGas=get_html_checkbox_state(lgc.live_graph_gas),
+        CheckedPM=get_html_checkbox_state(lgc.live_graph_particulate_matter),
+        CheckedLumen=get_html_checkbox_state(lgc.live_graph_lumen),
+        CheckedColour=get_html_checkbox_state(lgc.live_graph_colours),
+        CheckedUltraViolet=get_html_checkbox_state(lgc.live_graph_ultra_violet),
+        CheckedAccelerometer=get_html_checkbox_state(lgc.live_graph_acc),
+        CheckedMagnetometer=get_html_checkbox_state(lgc.live_graph_mag),
+        CheckedGyroscope=get_html_checkbox_state(lgc.live_graph_gyro)
     )
 
 
 @html_atpro_graphing_routes.route("/LiveGraphView")
 def html_atpro_live_graphing():
     logger.network_logger.debug("* Live Graphs viewed by " + str(request.remote_addr))
-    sensor_name = app_config_access.live_graphs_config.graph_sensor_address
-    if sensor_name is None:
-        sensor_name = "Local Sensor"
+    graph_sensor_address = lgc.graph_sensor_address
+    formatted_graph_sensor_address = _get_formatted_sensor_address(graph_sensor_address)
+    if formatted_graph_sensor_address is None:
+        formatted_graph_sensor_address = "/"
+    if graph_sensor_address is None:
+        graph_sensor_address = app_cached_variables.ip
+    sensor_hostname_command = formatted_graph_sensor_address + db_gc.sensor_name
+    sensor_version_command = formatted_graph_sensor_address + db_gc.program_version
+    if lgc.graph_sensor_address is not None and app_config_access.live_graphs_config.disable_ssl_verification:
+        sensor_hostname_command = "/" + db_wrapper_gc.sensor_name
+        sensor_version_command = "/" + db_wrapper_gc.program_version
     return render_template("ATPro_admin/page_templates/graphs_live/graphing-live-view.html",
-                           SensorName=sensor_name,
+                           SensorAddress=graph_sensor_address,
+                           SensorNameFetchURL=sensor_hostname_command,
+                           SensorVersionFetchURL=sensor_version_command,
                            SensorChartCode=get_quick_graph_html_js_code())
 
 
@@ -200,67 +222,80 @@ def get_quick_graph_html_js_code():
         lgc.live_graph_ultra_violet, lgc.live_graph_acc, lgc.live_graph_mag, lgc.live_graph_gyro
 
     ]
+    get_commands = db_gc
+    if lgc.graph_sensor_address is not None and lgc.disable_ssl_verification:
+        get_commands = db_wrapper_gc
     graph_creation_options_list = [
-        [db_gc.system_uptime_minutes, ["Uptime Minutes"], ["red"], [db_gc.system_uptime_minutes], sensor_address],
-        [db_gc.cpu_temp, ["CPU Temperature"], ["orange"], [db_gc.cpu_temp], sensor_address],
-        [db_gc.environmental_temp, ["Env Temperature"], ["Green"], [db_gc.environmental_temp], sensor_address],
-        [db_gc.pressure, ["Pressure"], ["grey"], [db_gc.pressure], sensor_address],
-        [db_gc.altitude, ["Altitude"], ["grey"], [db_gc.altitude], sensor_address],
-        [db_gc.humidity, ["Humidity"], ["grey"], [db_gc.humidity], sensor_address],
-        [db_gc.dew_point, ["Dew Point"], ["blue"], [db_gc.dew_point], sensor_address],
-        [db_gc.distance, ["Distance"], ["grey"], [db_gc.distance], sensor_address],
+        [get_commands.system_uptime_minutes, ["Uptime Minutes"], ["red"], [get_commands.system_uptime_minutes],
+         sensor_address],
+        [get_commands.cpu_temp, ["CPU Temperature"], ["orange"], [get_commands.cpu_temp],
+         sensor_address],
+        [get_commands.environmental_temp, ["Env Temperature"], ["Green"], [get_commands.environmental_temp],
+         sensor_address],
+        [get_commands.pressure, ["Pressure"], ["grey"], [get_commands.pressure],
+         sensor_address],
+        [get_commands.altitude, ["Altitude"], ["grey"], [get_commands.altitude],
+         sensor_address],
+        [get_commands.humidity, ["Humidity"], ["grey"], [get_commands.humidity],
+         sensor_address],
+        [get_commands.dew_point, ["Dew Point"], ["blue"], [get_commands.dew_point],
+         sensor_address],
+        [get_commands.distance, ["Distance"], ["grey"], [get_commands.distance],
+         sensor_address],
 
         [
-            db_gc.all_gas,
+            get_commands.all_gas,
             ["Resistance Index", "Oxidising", "Reducing", "NH3"],
             ["grey", "grey", "grey", "grey"],
-            [db_gc.gas_resistance_index, db_gc.gas_oxidising, db_gc.gas_reducing, db_gc.gas_nh3],
+            [get_commands.gas_resistance_index, get_commands.gas_oxidising,
+             get_commands.gas_reducing, get_commands.gas_nh3],
             sensor_address
         ],
         [
-            db_gc.all_particulate_matter,
+            get_commands.all_particulate_matter,
             ["PM1", "PM2.5", "PM4", "PM10"],
             ["grey", "grey", "grey", "grey"],
             [
-                db_gc.particulate_matter_1, db_gc.particulate_matter_2_5,
-                db_gc.particulate_matter_4, db_gc.particulate_matter_10
+                get_commands.particulate_matter_1, get_commands.particulate_matter_2_5,
+                get_commands.particulate_matter_4, get_commands.particulate_matter_10
             ],
             sensor_address
         ],
-        [db_gc.lumen, ["Lumen"], ["yellow"], [db_gc.lumen], sensor_address],
+        [get_commands.lumen, ["Lumen"], ["yellow"], [get_commands.lumen], sensor_address],
         [
-            db_gc.electromagnetic_spectrum,
+            get_commands.electromagnetic_spectrum,
             ["Red", "Orange", "Yellow", "Green", "Blue", "Violet"],
             ["red", "orange", "yellow", "green", "blue", "violet"],
-            [db_gc.red, db_gc.orange, db_gc.yellow, db_gc.green, db_gc.blue, db_gc.violet],
+            [get_commands.red, get_commands.orange, get_commands.yellow,
+             get_commands.green, get_commands.blue, get_commands.violet],
             sensor_address
         ],
         [
-            db_gc.all_ultra_violet,
+            get_commands.all_ultra_violet,
             ["UV Index", "UV A", "UV B"],
             ["grey", "lightblue", "green"],
-            [db_gc.ultra_violet_index, db_gc.ultra_violet_a, db_gc.ultra_violet_b],
+            [get_commands.ultra_violet_index, get_commands.ultra_violet_a, get_commands.ultra_violet_b],
             sensor_address
         ],
         [
-            db_gc.accelerometer_xyz,
+            get_commands.accelerometer_xyz,
             ["Accelerometer X", "Accelerometer Y", "Accelerometer Z"],
             ["red", "orange", "green"],
-            [db_gc.acc_x, db_gc.acc_y, db_gc.acc_z],
+            [get_commands.acc_x, get_commands.acc_y, get_commands.acc_z],
             sensor_address
         ],
         [
-            db_gc.magnetometer_xyz,
+            get_commands.magnetometer_xyz,
             ["Magnetometer X", "Magnetometer Y", "Magnetometer Z"],
             ["red", "orange", "green"],
-            [db_gc.mag_x, db_gc.mag_y, db_gc.mag_z],
+            [get_commands.mag_x, get_commands.mag_y, get_commands.mag_z],
             sensor_address
         ],
         [
-            db_gc.gyroscope_xyz,
+            get_commands.gyroscope_xyz,
             ["Gyroscope X", "Gyroscope Y", "Gyroscope Z"],
             ["red", "orange", "green"],
-            [db_gc.gyro_x, db_gc.gyro_y, db_gc.gyro_z],
+            [get_commands.gyro_x, get_commands.gyro_y, get_commands.gyro_z],
             sensor_address
         ]
     ]

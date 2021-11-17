@@ -22,96 +22,17 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_generic_functions
 from operations_modules import app_cached_variables
-from operations_modules import software_version
 from configuration_modules import app_config_access
 from upgrade_modules.generic_upgrade_functions import upgrade_python_pip_modules, upgrade_linux_os
 from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_http, download_type_smb
 from http_server.server_http_auth import auth
-from http_server.flask_blueprints.atpro.atpro_generic import get_message_page, get_uptime_str
+from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 from sensor_modules import system_access
 from sensor_modules import sensor_access
 
 html_system_commands_routes = Blueprint("html_system_commands_routes", __name__)
 upgrade_msg = " Upgrade Starting, this may take a few minutes ..."
 demo_mode_enabled_msg = "Demo mode enabled, function disabled"
-
-
-@html_system_commands_routes.route("/GetSensorID")
-def get_sensor_id():
-    logger.network_logger.debug("* Sensor's ID sent to " + str(request.remote_addr))
-    return str(app_config_access.primary_config.sensor_id)
-
-
-@html_system_commands_routes.route("/GetHostName")
-def get_hostname():
-    logger.network_logger.debug("* Sensor's HostName sent to " + str(request.remote_addr))
-    return app_cached_variables.hostname
-
-
-@html_system_commands_routes.route("/GetSystemDateTime")
-def get_system_date_time():
-    logger.network_logger.debug("* Sensor's Date & Time sent to " + str(request.remote_addr))
-    return str(system_access.get_system_datetime())
-
-
-@html_system_commands_routes.route("/GetSystemUptime")
-def get_system_uptime():
-    logger.network_logger.debug("* Sensor's Uptime sent to " + str(request.remote_addr))
-    return str(get_uptime_str().replace("<br>", " "))
-
-
-@html_system_commands_routes.route("/GetOSVersion")
-def get_operating_system_version():
-    logger.network_logger.debug("* Sensor's Operating System Version sent to " + str(request.remote_addr))
-    return app_cached_variables.operating_system_name
-
-
-@html_system_commands_routes.route("/GetSensorVersion")
-def get_sensor_program_version():
-    logger.network_logger.debug("* Sensor's Version sent to " + str(request.remote_addr))
-    return str(software_version.version)
-
-
-@html_system_commands_routes.route("/GetRAMUsed")
-def get_ram_usage_percent():
-    logger.network_logger.debug("* Sensor's RAM % used sent to " + str(request.remote_addr))
-    return str(system_access.get_ram_space(return_type=3))
-
-
-@html_system_commands_routes.route("/GetRAMFree")
-def get_ram_free():
-    logger.network_logger.debug("* Sensor's Free RAM sent to " + str(request.remote_addr))
-    return str(system_access.get_ram_space(return_type=0))
-
-
-@html_system_commands_routes.route("/GetRAMTotal")
-def get_ram_total():
-    logger.network_logger.debug("* Sensor's Total RAM amount sent to " + str(request.remote_addr))
-    return str(app_cached_variables.total_ram_memory)
-
-
-@html_system_commands_routes.route("/GetRAMTotalSizeType")
-def get_ram_total_size_type():
-    logger.network_logger.debug("* Sensor's Total RAM amount size type sent to " + str(request.remote_addr))
-    return "GB"
-
-
-@html_system_commands_routes.route("/GetUsedDiskSpace")
-def get_disk_usage_gb():
-    logger.network_logger.debug("* Sensor's Used Disk Space as GBs sent to " + str(request.remote_addr))
-    return str(system_access.get_disk_space(return_type=1))
-
-
-@html_system_commands_routes.route("/GetFreeDiskSpace")
-def get_disk_free_gb():
-    logger.network_logger.debug("* Sensor's Free Disk Space as GBs sent to " + str(request.remote_addr))
-    return str(system_access.get_disk_space(return_type=0))
-
-
-@html_system_commands_routes.route("/GetProgramLastUpdated")
-def get_sensor_program_last_updated():
-    logger.network_logger.debug("* Sensor's Program Last Updated sent to " + str(request.remote_addr))
-    return app_cached_variables.program_last_updated
 
 
 @html_system_commands_routes.route("/UpgradeOnline")
