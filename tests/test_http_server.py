@@ -257,9 +257,9 @@ def http_display_text_on_sensor(text_message, sensor_address_var, http_port="100
     """ Sends provided text message to a remote sensor's display. """
 
     if check_for_port_in_address(sensor_address_var):
-        ip_and_port = get_ip_and_port_split(sensor_address_var)
-        sensor_address_var = ip_and_port[0]
-        http_port = ip_and_port[1]
+        sensor_address_var, http_port = get_ip_and_port_split(sensor_address_var)
+    elif len(sensor_address_var.split(":")) > 1:
+        sensor_address_var = "[" + sensor_address_var + "]"
     try:
         url = "https://" + sensor_address_var + ":" + http_port + "/DisplayText"
         send_data = {'command_data': text_message}

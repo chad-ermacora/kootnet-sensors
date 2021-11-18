@@ -54,10 +54,10 @@ def check_sensor_status_sensor_control(address_list):
     for response in address_responses:
         new_address = response["address"]
         port = "10065"
-        if check_for_port_in_address(response["address"]):
-            address_split = get_ip_and_port_split(response["address"])
-            new_address = address_split[0]
-            port = address_split[1]
+        if check_for_port_in_address(new_address):
+            new_address, port = get_ip_and_port_split(new_address)
+        elif len(new_address.split(":")) > 1:
+            new_address = "[" + new_address + "]"
         response_time = response["response_time"]
         background_colour = get_html_response_bg_colour(response_time)
         sensor_url_link = "'https://" + new_address + ":" + port + "/'"
@@ -190,11 +190,14 @@ def downloads_direct_rsm(address_list, download_type="sensors_download_databases
     address_responses = sorted(address_responses, key=lambda i: i['address'])
     for response in address_responses:
         if response["status"] == "OK":
-            if check_for_port_in_address(response["address"]):
-                address_split = get_ip_and_port_split(response["address"])
-                address_and_port = address_split[0].strip() + ":" + address_split[1].strip()
+            new_address = response["address"].strip()
+            if check_for_port_in_address(new_address):
+                address_split = get_ip_and_port_split(new_address)
+                address_and_port = address_split[0] + ":" + address_split[1]
+            elif len(new_address.split(":")) > 1:
+                address_and_port = "[" + new_address + "]:10065"
             else:
-                address_and_port = response["address"].strip() + ":10065"
+                address_and_port = new_address + ":10065"
             response_time = response["response_time"]
             background_colour = get_html_response_bg_colour(response_time)
             new_download = sensor_download_url.replace("{{ IPAddress }}", address_and_port)

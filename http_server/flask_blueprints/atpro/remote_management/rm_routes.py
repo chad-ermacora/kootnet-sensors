@@ -114,9 +114,9 @@ class CreateSensorHTTPCommand:
 
     def _check_ip_port(self):
         if check_for_port_in_address(self.sensor_address):
-            ip_and_port = get_ip_and_port_split(self.sensor_address)
-            self.sensor_address = ip_and_port[0]
-            self.http_port = ip_and_port[1]
+            self.sensor_address, self.http_port = get_ip_and_port_split(self.sensor_address)
+        elif len(self.sensor_address.split(":")) > 1:
+            self.sensor_address = "[" + self.sensor_address + "]"
 
 
 @html_atpro_remote_management_routes.route("/atpro/sensor-rm", methods=["GET", "POST"])

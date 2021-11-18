@@ -319,26 +319,34 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
 def check_for_port_in_address(address):
     """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
 
-    ip_split = address.strip().split(":")
-    if len(ip_split) == 2:
+    if "]" in address:
+        ip_6_split = address.strip().split("]")[-1]
+        if ":" in ip_6_split:
+            return True
+    elif len(address.strip().split(":")) == 2:
         return True
-    elif len(ip_split) > 2:
-        logger.network_logger.info("IPv6 Used in Sensor Control")
     return False
 
 
 def get_ip_and_port_split(address):
     """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
-    return address.split(":")
+
+    address = address.strip()
+    if "]" in address:
+        ip_6_address = address.split("[")[-1].split("]")[0]
+        ip_6_port = address.split("]")[-1].split(":")[-1]
+        return ["[" + ip_6_address + "]", ip_6_port]
+    else:
+        return address.split(":")
 
 
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10, get_file=False):
     """ Returns requested remote sensor data (based on the provided command data). """
 
     if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
+        sensor_address, http_port = get_ip_and_port_split(sensor_address)
+    elif len(sensor_address.split(":")) > 1:
+        sensor_address = "[" + sensor_address + "]"
     try:
         url = "https://" + sensor_address + ":" + http_port + "/"
         login_credentials = {"login_username": app_cached_variables.http_login,
@@ -361,9 +369,9 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
     """ Sends command and data (if any) to a remote sensor. """
 
     if check_for_port_in_address(sensor_address):
-        ip_and_port = get_ip_and_port_split(sensor_address)
-        sensor_address = ip_and_port[0]
-        http_port = ip_and_port[1]
+        sensor_address, http_port = get_ip_and_port_split(sensor_address)
+    elif len(sensor_address.split(":")) > 1:
+        sensor_address = "[" + sensor_address + "]"
     try:
         url = "https://" + sensor_address + ":" + http_port + "/"
         login_credentials = {"login_username": app_cached_variables.http_login,
