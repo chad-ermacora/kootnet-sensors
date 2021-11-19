@@ -181,9 +181,7 @@ class CreateNetworkGetCommands:
             self.yellow, self.green, self.blue, self.violet, self.ultra_violet_index, self.ultra_violet_a,
             self.ultra_violet_b, self.acc_x, self.acc_y, self.acc_z, self.mag_x, self.mag_y, self.mag_z, self.gyro_x,
             self.gyro_y, self.gyro_z, self.system_uptime_minutes
-        ]
-        extra_no_auth_list = CreateLiveGraphWrapperNetworkGetCommands().no_http_auth_required_commands_list
-        self.no_http_auth_required_commands_list = self.no_http_auth_required_commands_list + extra_no_auth_list
+        ] + CreateLiveGraphWrapperNetworkGetCommands().no_http_auth_required_commands_list
 
 
 class CreateLiveGraphWrapperNetworkGetCommands:
