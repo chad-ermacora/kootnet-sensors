@@ -74,6 +74,7 @@ fill: false}
 """
 
 live_chart_js_add_graph_data = """
+let {{ ChartName }}set_timeout_timer = 15000;
 setTimeout(async function {{ ChartName }}AddDataToGraph() {
     let {{ ChartName }}update_okay = false;
     {{ AllFetchCommands }}
@@ -84,15 +85,23 @@ setTimeout(async function {{ ChartName }}AddDataToGraph() {
         setTimeout({{ ChartName }}AddDataToGraph, {{ ChartUpdateInterval }});
     } else {
         document.getElementById('{{ ChartName }}container').hidden = true;
-        setTimeout({{ ChartName }}AddDataToGraph, 15000);
+        setTimeout({{ ChartName }}AddDataToGraph, {{ ChartName }}set_timeout_timer);
     }
 }, {{ ChartUpdateInterval }});
 """
 live_chart_js_add_graph_data_fetch_entry = """
 await fetch("{{ SensorDataURL }}")
     .then(response => {
-        if (!response.ok) {throw new Error('Network response was not OK');}
-        return response.json();
+        if (response.status === 404) {
+            {{ ChartName }}set_timeout_timer = 600000;
+            return "NoSensor";
+        } else if (response.status === 503) {
+            {{ ChartName }}set_timeout_timer = 10000;
+            return "NoSensor";
+        } else {
+            if (!response.ok) {throw new Error('Network response was not OK');}
+            return response.json();
+        }
     })
     .then(data => {
         if (data !== "NoSensor") {

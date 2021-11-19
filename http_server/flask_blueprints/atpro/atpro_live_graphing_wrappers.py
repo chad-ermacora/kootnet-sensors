@@ -358,12 +358,11 @@ def lgw_get_gyro_z():
 
 
 def _get_sensor_reading(sensor_get_command):
-    try:
-        graph_sensor_address = app_config_access.live_graphs_config.graph_sensor_address
-        remote_reading = get_http_sensor_reading(graph_sensor_address, command=sensor_get_command)
-        if remote_reading == get_sensor_reading_error_msg:
-            return "0"
-        return remote_reading
-    except Exception as error:
-        logger.network_logger.warning("LGW ** Redirect Failed: " + str(error))
-    return "0"
+    no_sensor_return = "NoSensor"
+    graph_sensor_address = app_config_access.live_graphs_config.graph_sensor_address
+    remote_reading = get_http_sensor_reading(graph_sensor_address, command=sensor_get_command, timeout=0.5)
+    if remote_reading == get_sensor_reading_error_msg:
+        return no_sensor_return, 503
+    elif remote_reading == no_sensor_return:
+        return no_sensor_return, 404
+    return remote_reading
