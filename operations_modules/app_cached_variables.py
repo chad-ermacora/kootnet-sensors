@@ -183,7 +183,7 @@ class CreateNetworkGetCommands:
             self.gyro_y, self.gyro_z, self.system_uptime_minutes
         ]
         extra_no_auth_list = CreateLiveGraphWrapperNetworkGetCommands().no_http_auth_required_commands_list
-        self.no_http_auth_required_commands_list.append(extra_no_auth_list)
+        self.no_http_auth_required_commands_list = self.no_http_auth_required_commands_list + extra_no_auth_list
 
 
 class CreateLiveGraphWrapperNetworkGetCommands:
