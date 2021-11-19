@@ -184,7 +184,8 @@ def html_atpro_sensor_graphing_live():
     return render_template(
         "ATPro_admin/page_templates/graphing-live.html",
         GraphSensorAddress=sensor_address,
-        CheckedDisableSSLVerification=get_html_checkbox_state(lgc.disable_ssl_verification),
+        CheckedEnableSSLVerification=get_html_checkbox_state(lgc.enable_ssl_verification),
+        CheckedEnablePerformanceMode=get_html_checkbox_state(lgc.enable_performance_mode),
         CheckedGPL1=lgc.get_checked_graph_per_line_state(1),
         CheckedGPL2=lgc.get_checked_graph_per_line_state(2),
         CheckedGPL3=lgc.get_checked_graph_per_line_state(3),
@@ -221,7 +222,7 @@ def html_atpro_live_graphing():
         graph_sensor_address = app_cached_variables.ip
     sensor_hostname_command = formatted_graph_sensor_address + db_gc.sensor_name
     sensor_version_command = formatted_graph_sensor_address + db_gc.program_version
-    if lgc.graph_sensor_address is not None and app_config_access.live_graphs_config.disable_ssl_verification:
+    if lgc.graph_sensor_address is not None and not app_config_access.live_graphs_config.enable_ssl_verification:
         sensor_hostname_command = "/" + db_wrapper_gc.sensor_name
         sensor_version_command = "/" + db_wrapper_gc.program_version
     return render_template("ATPro_admin/page_templates/graphs_live/graphing-live-view.html",
@@ -241,7 +242,7 @@ def get_quick_graph_html_js_code():
 
     ]
     get_commands = db_gc
-    if lgc.graph_sensor_address is not None and lgc.disable_ssl_verification:
+    if lgc.graph_sensor_address is not None and not lgc.enable_ssl_verification:
         get_commands = db_wrapper_gc
     graph_creation_options_list = [
         [get_commands.system_uptime_minutes, ["Uptime Minutes"], ["red"], [get_commands.system_uptime_minutes],

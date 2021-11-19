@@ -37,19 +37,31 @@
 
                         <p>
                             <span style="color: orange;">Warning</span><br>
-                            "Disable SSL Verification" will greatly degrade performance
-                            but is required for Self Signed Certificates and direct IP access
+                            If you disable SSL verification, performance will be greatly degraded
+                            but it is required for Self Signed Certificates and direct IP access
                         </p>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="disable-ssl-toggle-switch" class="toggle-switch-input"
-                                   name="disable_ssl_verification" {{ CheckedDisableSSLVerification }}>
-                            <label class="toggle-switch-label" for="disable-ssl-toggle-switch"></label>
-                            Disable SSL Verification
-                        </label>
 
                         <br>
 
                         <div class="row">
+                            <div class="col-6 col-m-6 col-sm-12">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="disable-ssl-toggle-switch" class="toggle-switch-input"
+                                           name="enable_ssl_verification" {{ CheckedEnableSSLVerification }}>
+                                    <label class="toggle-switch-label" for="disable-ssl-toggle-switch"></label>
+                                    SSL Verification
+                                </label>
+                            </div>
+
+                            <div class="col-6 col-m-6 col-sm-12">
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="performance-toggle-switch" class="toggle-switch-input"
+                                           name="enable_performance_mode" {{ CheckedEnablePerformanceMode }}>
+                                    <label class="toggle-switch-label" for="performance-toggle-switch"></label>
+                                    Performance Mode
+                                </label>
+                            </div>
+
                             <div class="col-4 col-m-4 col-sm-12">
                                 <label>Sensors per<br>Row<br><br>
                                     <select name="graphs_per_line">
