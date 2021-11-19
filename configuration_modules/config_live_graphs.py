@@ -27,7 +27,7 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.live_graphs_config, load_from_file=load_from_file)
         self.config_file_header = "Live Graphs Configuration. Enable = 1 and Disable = 0"
-        self.valid_setting_count = 21
+        self.valid_setting_count = 22
         self.config_settings_names = [
             "Sensor Address", "Graph Update Interval in seconds", "Enable Uptime", "Enable CPU Temperature",
             "Enable Environmental Temperature", "Enable Pressure", "Enable Altitude", "Enable Humidity",
