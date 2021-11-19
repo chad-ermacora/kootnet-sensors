@@ -50,7 +50,7 @@
                         <br>
 
                         <div class="row">
-                            <div class="col-6 col-m-6 col-sm-12">
+                            <div class="col-4 col-m-4 col-sm-12">
                                 <label>Sensors per<br>Row<br><br>
                                     <select name="graphs_per_line">
                                         <option value="graphs_per_line_1" {{ CheckedGPL1 }}>1</option>
@@ -61,7 +61,20 @@
                                 </label>
                             </div>
 
-                            <div class="col-6 col-m-6 col-sm-12">
+                            <div class="col-4 col-m-4 col-sm-12">
+                                <label style="font-size: medium;">Max Data Points<br>Per Graph<br><br>
+                                    <div style="display: table; margin-left: auto; margin-right: auto;">
+                                        <div style="display: table-row;">
+                                            <div style="display: table-cell;">
+                                                <input style="width: 75px;" type="number" min="5" name="graph_max_data_points"
+                                                       value="{{ GraphMaxDataPoints }}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="col-4 col-m-4 col-sm-12">
                                 <label style="font-size: medium;">Update Interval<br>Seconds<br><br>
                                     <div style="display: table; margin-left: auto; margin-right: auto;">
                                         <div style="display: table-row;">

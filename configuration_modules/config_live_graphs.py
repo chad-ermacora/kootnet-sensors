@@ -27,18 +27,20 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
     def __init__(self, load_from_file=True):
         CreateGeneralConfiguration.__init__(self, file_locations.live_graphs_config, load_from_file=load_from_file)
         self.config_file_header = "Live Graphs Configuration. Enable = 1 and Disable = 0"
-        self.valid_setting_count = 20
+        self.valid_setting_count = 21
         self.config_settings_names = [
             "Sensor Address", "Graph Update Interval in seconds", "Enable Uptime", "Enable CPU Temperature",
             "Enable Environmental Temperature", "Enable Pressure", "Enable Altitude", "Enable Humidity",
             "Enable Dew Point", "Enable Distance", "Enable GAS", "Enable Particulate Matter", "Enable Lumen",
             "Enable Colours", "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope",
-            "Graphs Per Row - Enter 12 for 1 sensor per row, 6 for 2, 4 for 3 and 3 for 4", "Disable SSL Verification"
+            "Graphs Per Row - Enter 12 for 1 sensor per row, 6 for 2, 4 for 3 and 3 for 4", "Disable SSL Verification",
+            "Max Data Points per Graph"
         ]
 
         self.graph_sensor_address = None
         self.live_graph_update_interval = 5
         self.graphs_per_row = "6"
+        self.max_graph_data_points = 240
         self.disable_ssl_verification = 0
 
         self.live_graph_uptime = 0
@@ -127,6 +129,9 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
             elif graph_per_row_selection == "graphs_per_line_4":
                 self.graphs_per_row = "3"
 
+        if html_request.form.get("graph_max_data_points") is not None:
+            self.max_graph_data_points = int(html_request.form.get("graph_max_data_points"))
+
         if html_request.form.get("sensor_uptime") is not None:
             self.live_graph_uptime = 1
         if html_request.form.get("cpu_temperature") is not None:
@@ -173,7 +178,7 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
             str(self.live_graph_distance), str(self.live_graph_gas), str(self.live_graph_particulate_matter),
             str(self.live_graph_lumen), str(self.live_graph_colours), str(self.live_graph_ultra_violet),
             str(self.live_graph_acc), str(self.live_graph_mag), str(self.live_graph_gyro), str(self.graphs_per_row),
-            str(self.disable_ssl_verification)
+            str(self.disable_ssl_verification), str(self.max_graph_data_points)
         ]
 
     def _update_variables_from_settings_list(self):
@@ -200,6 +205,7 @@ class CreateLiveGraphsConfiguration(CreateGeneralConfiguration):
             self.live_graph_gyro = int(self.config_settings[17].strip())
             self.graphs_per_row = self.config_settings[18].strip()
             self.disable_ssl_verification = int(self.config_settings[19].strip())
+            self.max_graph_data_points = int(self.config_settings[20].strip())
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Live Graphs Config: " + str(error))

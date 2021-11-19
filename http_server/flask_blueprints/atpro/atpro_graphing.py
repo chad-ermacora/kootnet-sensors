@@ -80,6 +80,9 @@ setTimeout(async function {{ ChartName }}AddDataToGraph() {
     {{ AllFetchCommands }}
     if ({{ ChartName }}update_okay) {
         document.getElementById('{{ ChartName }}container').hidden = false;
+        if ({{ ChartName }}.data.labels.length > {{ GraphMaxDataPoints }}) {
+            {{ ChartName }}.data.labels.shift();
+        }
         {{ ChartName }}.data.labels.push(new Date().toLocaleTimeString());
         {{ ChartName }}.update();
         setTimeout({{ ChartName }}AddDataToGraph, {{ ChartUpdateInterval }});
@@ -106,6 +109,9 @@ await fetch("{{ SensorDataURL }}")
     .then(data => {
         if (data !== "NoSensor") {
             {{ ChartName }}update_okay = true;
+            if ({{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.length > {{ GraphMaxDataPoints }}) {
+                {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.shift();
+            }
             {{ ChartName }}.data.datasets[{{ DataSetNumber }}].data.push(data);
         }
     })
@@ -148,6 +154,7 @@ class CreateLiveGraphGenerator:
 
     def _get_chart_js_functions(self):
         chart_interval = str(lgc.live_graph_update_interval * 1000)
+        max_dp = lgc.max_graph_data_points
         return_chart_functions = live_chart_js_add_graph_data.replace("{{ ChartName }}", self.chart_name)
         return_chart_functions = return_chart_functions.replace("{{ ChartUpdateInterval }}", chart_interval)
 
@@ -161,6 +168,7 @@ class CreateLiveGraphGenerator:
             chart_data_fetch_code = chart_data_fetch_code.replace("{{ SensorDataURL }}", sensor_url_command)
             chart_data_fetch_code = chart_data_fetch_code.replace("{{ DataSetNumber }}", str(index))
         return_chart_functions = return_chart_functions.replace("{{ AllFetchCommands }}", chart_data_fetch_code)
+        return_chart_functions = return_chart_functions.replace("{{ GraphMaxDataPoints }}", str(max_dp))
         return return_chart_functions
 
 
@@ -181,6 +189,7 @@ def html_atpro_sensor_graphing_live():
         CheckedGPL2=lgc.get_checked_graph_per_line_state(2),
         CheckedGPL3=lgc.get_checked_graph_per_line_state(3),
         CheckedGPL4=lgc.get_checked_graph_per_line_state(4),
+        GraphMaxDataPoints=lgc.max_graph_data_points,
         GraphIntervalValue=lgc.live_graph_update_interval,
         CheckedSensorUptime=get_html_checkbox_state(lgc.live_graph_uptime),
         CheckedCPUTemperature=get_html_checkbox_state(lgc.live_graph_cpu_temp),
