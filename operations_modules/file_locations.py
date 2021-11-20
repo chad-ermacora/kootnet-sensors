@@ -143,6 +143,8 @@ luftdaten_config = sensor_config_dir + "/online_services_luftdaten.conf"
 osm_config = sensor_config_dir + "/online_services_open_sense_map.conf"
 
 live_graphs_config = sensor_config_dir + "/live_graphs.conf"
+db_graphs_config = sensor_config_dir + "/database_graphs.conf"
+db_graphs_email_config = sensor_config_dir + "/database_email_graphs.conf"
 
 plotly_graph_interval = ks_generated_folder + "/IntervalPlotlyGraph.html"
 plotly_graph_triggers = ks_generated_folder + "/TriggersPlotlyGraph.html"
