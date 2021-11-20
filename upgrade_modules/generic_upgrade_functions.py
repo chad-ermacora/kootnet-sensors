@@ -23,6 +23,8 @@ from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_file_content, thread_function
 from http_server.server_http_generic_functions import save_http_auth_to_file, default_http_flask_user, \
     default_http_flask_password
+from configuration_modules.config_live_graphs import CreateLiveGraphsConfiguration
+from configuration_modules.config_database_graphs import CreateDatabaseGraphsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
 from configuration_modules.config_urls import CreateURLConfiguration
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
@@ -50,6 +52,20 @@ def reset_flask_login_credentials(log_reset=True):
     if log_reset:
         logger.primary_logger.warning(" **** Web Portal Login Reset to Defaults ****")
     save_http_auth_to_file(default_http_flask_user, default_http_flask_password, logging_enabled=False)
+
+
+def reset_live_graph_config(log_reset=True):
+    """ Writes a default Live Graph configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Live Graph Configuration Reset ****")
+    CreateLiveGraphsConfiguration(load_from_file=False).save_config_to_file()
+
+
+def reset_database_graph_config(log_reset=True):
+    """ Writes a default Database Graph configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Database Graph Configuration Reset ****")
+    CreateDatabaseGraphsConfiguration(load_from_file=False).save_config_to_file()
 
 
 def reset_primary_config(log_reset=True):
@@ -176,6 +192,8 @@ def reset_all_configurations(log_reset=True):
     Resets all configuration files to Default settings.
     If log_reset is True, adds log entry for each reset.  Default True.
     """
+    reset_live_graph_config(log_reset=log_reset)
+    reset_database_graph_config(log_reset=log_reset)
     reset_primary_config(log_reset=log_reset)
     reset_urls_config(log_reset=log_reset)
     reset_installed_sensors(log_reset=log_reset)
