@@ -46,7 +46,7 @@
     }
 </style>
 
-<form class="pure-form" id="note_form" method="POST" action="/atpro/sensor-notes">
+<form class="pure-form" id="button_function_form" method="POST" action="/atpro/sensor-notes">
     <input type="hidden" id="button_function" name="button_function">
     <div class="row">
         <div class="col-12 col-m-12 col-sm-12">
@@ -58,12 +58,14 @@
 
                             <br>
 
-                            <button type="button" class="pure-button button-blue" onclick="ButtonPress('back')">
+                            <button type="button" class="pure-button button-blue"
+                                    onclick="UpdateHiddenInputButtonPress('back')">
                                 <i class="fas fa-step-backward"></i> Back
                             </button>
 
                             <div style="padding-left: 15px; display: inline-block;">
-                                <button type="button" class="pure-button button-blue" onclick="ButtonPress('next')">
+                                <button type="button" class="pure-button button-blue"
+                                        onclick="UpdateHiddenInputButtonPress('next')">
                                     Next <i class="fas fa-step-forward"></i>
                                 </button>
                             </div>
@@ -87,7 +89,8 @@
                             </div>
 
                             <div style="padding-left: 15px; display: inline-block;">
-                                <button type="button" class="pure-button button-orange" onclick="ButtonPress('go')">
+                                <button type="button" class="pure-button button-orange"
+                                        onclick="UpdateHiddenInputButtonPress('go')">
                                     <i class="fas fa-search"></i> Go
                                 </button>
                             </div>
@@ -112,7 +115,8 @@
                 <div class="card-content">
                     <div class="row">
                         <div class="col-12 col-m-12 col-sm-12">
-                            <button type="button" class="pure-button button-green" onclick="ButtonPress('new')">
+                            <button type="button" class="pure-button button-green"
+                                    onclick="UpdateHiddenInputButtonPress('new')">
                                 <i class="fas fa-sticky-note"></i> New Note
                             </button>
 
@@ -123,7 +127,8 @@
                             </div>
 
                             <div style="display: inline-block; padding-left: 65px;">
-                                <button type="button" class="pure-button button-dark-blue" onclick="ButtonPress('save')">
+                                <button type="button" class="pure-button button-dark-blue"
+                                        onclick="UpdateHiddenInputButtonPress('save')">
                                     <i class="fas fa-save"></i> Save Note
                                 </button>
                             </div>
@@ -152,16 +157,10 @@
         insertdatetime_formats: ["%B %d, %Y - %H:%M:%S"]
     });
 
-    function ButtonPress(button_type) {
-        document.getElementById("button_function").value = button_type;
-        document.getElementById("note_form").submit()
-    }
-
     function DeleteNote() {
         let r = confirm("Are you sure you want to delete the Note?");
         if (r === true) {
-            document.getElementById("button_function").value = 'delete';
-            document.getElementById("note_form").submit()
+            UpdateHiddenInputButtonPress("delete");
         }
     }
 </script>
