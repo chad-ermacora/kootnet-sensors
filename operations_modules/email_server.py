@@ -25,13 +25,15 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from socket import gaierror
 from operations_modules import logger
+from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import software_version
-from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread
+from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread, get_file_content
 from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
-from http_server.flask_blueprints.graphing_quick import get_html_live_graphing_page
+from http_server.flask_blueprints.atpro.atpro_graphing import generate_plotly_graph
+from http_server import server_plotly_graph_variables
 
 email_config = app_config_access.email_config
 
@@ -66,52 +68,29 @@ def send_report_email(to_email, report_generated=False):
     send_email(to_email, message)
 
 
-def send_quick_graph_email(to_email, graph=None):
-    _set_graphs_to_include()
-    message = get_new_email_message(to_email, "Kootnet Sensor Graph - " + app_cached_variables.hostname)
-    message.attach(MIMEText(_get_default_email_body_text("Quick Graph"), "plain"))
-    if graph is None:
-        quick_graph = get_html_live_graphing_page(email_graph=True)
-        quick_graph = _update_quick_graph_for_email(quick_graph)
-    else:
-        quick_graph = graph
-
-    date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
-    filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
-    zipped_graph = zip_files([filename + ".html"], [quick_graph])
-    payload = MIMEBase("application", "zip")
-    payload.set_payload(zipped_graph.read())
-    encoders.encode_base64(payload)
-    payload.add_header("Content-Disposition", "attachment", filename=filename + ".zip")
-    message.attach(payload)
-    send_email(to_email, message)
-
-
-def _set_graphs_to_include():
-    app_cached_variables.quick_graph_uptime = email_config.sensor_uptime
-    app_cached_variables.quick_graph_cpu_temp = email_config.system_temperature
-    app_cached_variables.quick_graph_env_temp = email_config.env_temperature
-    app_cached_variables.quick_graph_pressure = email_config.pressure
-    app_cached_variables.quick_graph_altitude = email_config.altitude
-    app_cached_variables.quick_graph_humidity = email_config.humidity
-    app_cached_variables.quick_graph_distance = email_config.distance
-    app_cached_variables.quick_graph_gas = email_config.gas
-    app_cached_variables.quick_graph_particulate_matter = email_config.particulate_matter
-    app_cached_variables.quick_graph_lumen = email_config.lumen
-    app_cached_variables.quick_graph_colours = email_config.color
-    app_cached_variables.quick_graph_ultra_violet = email_config.ultra_violet
-    app_cached_variables.quick_graph_acc = email_config.accelerometer
-    app_cached_variables.quick_graph_mag = email_config.magnetometer
-    app_cached_variables.quick_graph_gyro = email_config.gyroscope
-
-
-def _update_quick_graph_for_email(quick_graph):
-    old_chart = """<script src="/chart.min.js"></script>"""
-    new_chart = """<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>"""
-
-    quick_graph = quick_graph.replace(">Refresh", " disabled>Refresh")
-    quick_graph = quick_graph.replace(old_chart, new_chart)
-    return quick_graph
+def send_db_graph_email(to_email):
+    try:
+        message = get_new_email_message(to_email, "Kootnet Sensor Graph - " + app_cached_variables.hostname)
+        message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))
+        db_graph_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
+        db_graph_config.set_config_with_str(get_file_content(file_locations.db_graphs_email_config))
+        db_graph_config.update_variables_from_settings_list()
+        generate_plotly_graph(None, graph_config=db_graph_config)
+        sleep(5)
+        while server_plotly_graph_variables.graph_creation_in_progress:
+            sleep(5)
+        date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
+        filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
+        zipped_graph = zip_files([filename + ".html"],
+                                 [get_file_content(db_graph_config.plotly_graph_saved_location, open_type="rb")])
+        payload = MIMEBase("application", "zip")
+        payload.set_payload(zipped_graph.read())
+        encoders.encode_base64(payload)
+        payload.add_header("Content-Disposition", "attachment", filename=filename + ".zip")
+        message.attach(payload)
+        send_email(to_email, message)
+    except Exception as error:
+        logger.network_logger.error("Graph Email did not send: " + str(error))
 
 
 def get_new_email_message(to_email, email_subject):
@@ -156,7 +135,8 @@ def send_email(receiver_email, message):
 
 def _get_default_email_body_text(attachment_name):
     email_message = "Your " + attachment_name + " should be in a zip file attached to this email." + \
-                    "\nThis Email was sent at " + datetime.utcnow().strftime("%Y-%m-%d %H:%M") + " UTC0, Sensor Time." + \
+                    "\nThis Email was sent at " + datetime.utcnow().strftime("%Y-%m-%d %H:%M") + \
+                    " UTC0, Sensor Time." + \
                     "\n\nKootnet Sensor Information\nSensorName: " + app_cached_variables.hostname + \
                     "\nIP: " + app_cached_variables.ip + \
                     "\nKootnet Sensors Version: " + software_version.version
@@ -231,7 +211,7 @@ def _graph_email_server():
         for email in app_config_access.email_config.send_graphs_to_csv_emails.split(","):
             email = email.strip()
             if email_is_valid(email):
-                send_quick_graph_email(email)
+                send_db_graph_email(email)
                 sleep(5)
             else:
                 logger.network_logger.warning("Invalid Email found in Graph Emails")
@@ -244,12 +224,10 @@ def _graph_email_server():
             sleep_total += 5
         if not app_cached_variables.restart_graph_email_thread:
             try:
-                quick_graph = get_html_live_graphing_page(email_graph=True)
-                quick_graph = _update_quick_graph_for_email(quick_graph)
                 for email in app_config_access.email_config.send_graphs_to_csv_emails.split(","):
                     email = email.strip()
                     if email_is_valid(email):
-                        send_quick_graph_email(email, graph=quick_graph)
+                        send_db_graph_email(email)
                         sleep(5)
                     else:
                         logger.network_logger.warning("Invalid Email found in Graph Emails")

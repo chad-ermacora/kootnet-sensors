@@ -75,7 +75,7 @@ fill: false}
 
 live_chart_js_add_graph_data = """
 let {{ ChartName }}set_timeout_timer = 15000;
-setTimeout(async function {{ ChartName }}AddDataToGraph() {
+async function {{ ChartName }}AddDataToGraph() {
     let {{ ChartName }}update_okay = false;
     {{ AllFetchCommands }}
     if ({{ ChartName }}update_okay) {
@@ -90,7 +90,8 @@ setTimeout(async function {{ ChartName }}AddDataToGraph() {
         document.getElementById('{{ ChartName }}container').hidden = true;
         setTimeout({{ ChartName }}AddDataToGraph, {{ ChartName }}set_timeout_timer);
     }
-}, {{ ChartUpdateInterval }});
+}
+{{ ChartName }}AddDataToGraph();
 """
 live_chart_js_add_graph_data_fetch_entry = """
 await fetch("{{ SensorDataURL }}")
@@ -343,26 +344,74 @@ def html_atpro_sensor_graphing_database():
         "ATPro_admin/page_templates/graphing-database.html",
         RunScript=run_script,
         UploadedDBOptionNames=database_dropdown_selection_html,
+        CheckedMQTTDatabase=get_html_checkbox_state(app_config_access.db_graphs_config.mqtt_database_checked),
+        MQTTSenorID=app_config_access.db_graphs_config.mqtt_database_topic,
         IntervalPlotlyDate=get_file_creation_date(file_locations.plotly_graph_interval),
         TriggerPlotlyDate=get_file_creation_date(file_locations.plotly_graph_triggers),
         MQTTPlotlyDate=get_file_creation_date(file_locations.plotly_graph_mqtt),
         CustomPlotlyDate=get_file_creation_date(file_locations.plotly_graph_custom),
-        UTCOffset=app_config_access.primary_config.utc0_hour_offset
+        MaxDataPoints=app_config_access.db_graphs_config.max_graph_data_points,
+        SkipDataPoints=app_config_access.db_graphs_config.skip_data_between_plots,
+        DateTimeStart=app_config_access.db_graphs_config.graph_start_date.replace(" ", "T")[:-3],
+        DateTimeEnd=app_config_access.db_graphs_config.graph_end_date.replace(" ", "T")[:-3],
+        UTCOffset=app_config_access.db_graphs_config.date_time_hours_offset,
+        CheckedSensorUptime=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_uptime),
+        CheckedCPUTemperature=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_cpu_temp),
+        CheckedEnvTemperature=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_env_temp),
+        CheckedPressure=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_pressure),
+        CheckedAltitude=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_altitude),
+        CheckedHumidity=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_humidity),
+        CheckedDewPoint=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_dew_point),
+        CheckedDistance=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_distance),
+        CheckedGas=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_gas),
+        CheckedPM=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_particulate_matter),
+        CheckedLumen=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_lumen),
+        CheckedColour=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_colours),
+        CheckedUltraViolet=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_ultra_violet),
+        CheckedAccelerometer=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_acc),
+        CheckedMagnetometer=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_mag),
+        CheckedGyroscope=get_html_checkbox_state(app_config_access.db_graphs_config.db_graph_gyro)
     )
 
 
 @html_atpro_graphing_routes.route("/atpro/graphing-create-plotly", methods=["POST"])
 @auth.login_required
 def html_create_plotly_graph():
-    if not server_plotly_graph_variables.graph_creation_in_progress:
-        logger.network_logger.info("* Plotly Graph Initiated by " + str(request.remote_addr))
+    generate_plotly_graph(request)
+    return get_html_atpro_index(run_script="SelectNav('sensor-graphing-db');")
+
+
+def generate_plotly_graph(graph_request, graph_config=None):
+    create_graph = True
+    if graph_config is None:
+        create_graph = False
+        if graph_request.form.get("button_function") == "update":
+            logger.network_logger.info("* Plotly Graph Config Update Initiated by " + str(request.remote_addr))
+            app_config_access.db_graphs_config.update_with_html_request(graph_request)
+            app_config_access.db_graphs_config.save_config_to_file()
+        elif graph_request.form.get("button_function") == "email":
+            logger.network_logger.info("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
+            new_email_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
+            new_email_config.config_file_location = file_locations.db_graphs_email_config
+            new_email_config.update_with_html_request(graph_request)
+            new_email_config.save_config_to_file()
+        elif graph_request.form.get("button_function") == "create":
+            logger.network_logger.debug("* Plotly Graph Create Initiated by " + str(request.remote_addr))
+            app_config_access.db_graphs_config.update_with_html_request(graph_request)
+            graph_config = app_config_access.db_graphs_config
+            create_graph = True
+
+    if create_graph and not server_plotly_graph_variables.graph_creation_in_progress:
+        logger.network_logger.info("Plotly Graph Generation Started")
         invalid_msg1 = "Invalid Options Selection"
         try:
             new_graph_data = server_plotly_graph_variables.CreateGraphData()
-            new_graph_data.graph_table = request.form.get("SQLRecordingType")
-            new_graph_data.max_sql_queries = int(request.form.get("MaxSQLData"))
+            new_graph_data.graph_table = graph_config.sql_recording_type
+            if graph_config.mqtt_database_checked:
+                new_graph_data.graph_table = graph_config.mqtt_database_topic
+            new_graph_data.max_sql_queries = graph_config.max_graph_data_points
 
-            db_location = request.form.get("SQLDatabaseSelection")
+            db_location = graph_config.sql_database_selection
             if db_location == "MainDatabase":
                 new_graph_data.db_location = file_locations.sensor_database
                 new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_interval
@@ -375,25 +424,25 @@ def html_create_plotly_graph():
                 new_graph_data.db_location = file_locations.uploaded_databases_folder + "/" + db_location
                 new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_custom
 
-            if request.form.get("MQTTDatabaseCheck") is not None:
-                remote_sensor_id = str(request.form.get("MQTTCustomBaseTopic")).strip()
+            if graph_config.mqtt_database_checked:
+                remote_sensor_id = graph_config.mqtt_database_topic
                 if remote_sensor_id.isalnum() and len(remote_sensor_id) < 65:
                     new_graph_data.graph_table = remote_sensor_id
                 else:
                     msg2 = "Invalid Remote Sensor ID"
                     return get_message_page(invalid_msg1, msg2, page_url="sensor-graphing-db")
 
-            if request.form.get("PlotlyRenderType") == "OpenGL":
+            if graph_config.render_engine == "OpenGL":
                 new_graph_data.enable_plotly_webgl = True
             else:
                 new_graph_data.enable_plotly_webgl = False
 
             # The format the received datetime should look like "2019-01-01 00:00:00"
-            new_graph_data.graph_start = request.form.get("graph_datetime_start").replace("T", " ") + ":00"
-            new_graph_data.graph_end = request.form.get("graph_datetime_end").replace("T", " ") + ":00"
-            new_graph_data.datetime_offset = float(request.form.get("HourOffset"))
-            new_graph_data.sql_queries_skip = int(request.form.get("SkipSQL"))
-            new_graph_data.graph_columns = server_plotly_graph.check_form_columns(request.form)
+            new_graph_data.graph_start = graph_config.graph_start_date
+            new_graph_data.graph_end = graph_config.graph_end_date
+            new_graph_data.datetime_offset = graph_config.date_time_hours_offset
+            new_graph_data.sql_queries_skip = graph_config.skip_data_between_plots
+            new_graph_data.graph_columns = graph_config.get_enabled_graph_sensors_list()
 
             if len(new_graph_data.graph_columns) < 4:
                 msg2 = "Please Select at least One Sensor"
@@ -402,7 +451,6 @@ def html_create_plotly_graph():
                 thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
         except Exception as error:
             logger.primary_logger.warning("Plotly Graph: " + str(error))
-    return get_html_atpro_index(run_script="SelectNav('sensor-graphing-db');")
 
 
 @html_atpro_graphing_routes.route("/ViewIntervalPlotlyGraph")
