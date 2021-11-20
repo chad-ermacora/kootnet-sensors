@@ -342,7 +342,8 @@ def get_ip_and_port_split(address):
 
 def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10, get_file=False):
     """ Returns requested remote sensor data (based on the provided command data). """
-
+    if get_file:
+        timeout = (10, 600)
     if check_for_port_in_address(sensor_address):
         sensor_address, http_port = get_ip_and_port_split(sensor_address)
     elif len(sensor_address.split(":")) > 1:
