@@ -83,7 +83,7 @@ class CreateGraphData:
         # Graph data holders for SQL DataBase
         self.sql_time = []
 
-        self.sql_ip = []
+        self.sql_ip = ""
         self.sql_host_name = []
         self.sql_up_time = []
         self.sql_cpu_temp = []
@@ -122,7 +122,6 @@ class CreateGraphData:
         self.sql_gyro_y = []
         self.sql_gyro_z = []
 
-        self.sql_ip_date_time = []
         self.sql_host_name_date_time = []
         self.sql_up_time_date_time = []
         self.sql_cpu_temp_date_time = []

@@ -20,7 +20,7 @@ from multiprocessing import Process
 from operations_modules import app_cached_variables
 from operations_modules import logger
 from operations_modules.app_generic_functions import adjust_datetime
-from operations_modules.sqlite_database import sql_execute_get_data
+from operations_modules.sqlite_database import sql_execute_get_data, get_one_db_entry
 from http_server import server_plotly_graph_extras
 from http_server import server_plotly_graph_variables
 try:
@@ -87,8 +87,7 @@ def _start_plotly_graph(graph_data, db_location):
         if var_column == sql_column_names.all_tables_datetime:
             graph_data.sql_time = sql_column_date_time
         elif var_column == sql_column_names.ip:
-            graph_data.sql_ip = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location), data_to_float=False)
-            graph_data.sql_ip_date_time = sql_column_date_time
+            graph_data.sql_ip = get_one_db_entry(graph_data.graph_table, sql_column_names.ip, database=db_location)
         elif var_column == sql_column_names.sensor_name:
             cleaned_data = _clean_sql_data(sql_execute_get_data(var_sql_query, db_location), data_to_float=False)
             graph_data.sql_host_name = cleaned_data
@@ -217,9 +216,8 @@ def _plotly_graph(graph_data):
 
             for graph in graph_data.graph_collection:
                 fig.add_trace(graph[0], graph[1], graph[2])
-            if len(graph_data.sql_ip) > 1:
-                start_text = "Plotly Graph for Sensor IP: "
-                fig['layout'].update(title=start_text + str(graph_data.sql_ip[0]), title_font_size=25)
+            start_text = "Plotly Graph for Sensor IP: "
+            fig['layout'].update(title=start_text + str(graph_data.sql_ip), title_font_size=25)
 
             if graph_data.row_count > 4:
                 fig['layout'].update(height=2048)
@@ -231,79 +229,6 @@ def _plotly_graph(graph_data):
     else:
         msg = "Plotly Graph Creation - Failed: No SQL data found in the database within the selected time frame"
         logger.primary_logger.info(msg)
-
-
-def check_form_columns(form_request):
-    sql_column_selection = [app_cached_variables.database_variables.all_tables_datetime,
-                            app_cached_variables.database_variables.sensor_name,
-                            app_cached_variables.database_variables.ip]
-    if form_request.get("sensor_uptime") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.sensor_uptime)
-
-    if form_request.get("cpu_temperature") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.system_temperature)
-
-    if form_request.get("env_temperature") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.env_temperature)
-
-    if form_request.get("pressure") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.pressure)
-
-    if form_request.get("altitude") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.altitude)
-
-    if form_request.get("humidity") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.humidity)
-
-    if form_request.get("dew_point") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.dew_point)
-
-    if form_request.get("distance") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.distance)
-
-    if form_request.get("gas") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.gas_resistance_index)
-        sql_column_selection.append(app_cached_variables.database_variables.gas_nh3)
-        sql_column_selection.append(app_cached_variables.database_variables.gas_oxidising)
-        sql_column_selection.append(app_cached_variables.database_variables.gas_reducing)
-
-    if form_request.get("particulate_matter") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_1)
-        sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_2_5)
-        sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_4)
-        sql_column_selection.append(app_cached_variables.database_variables.particulate_matter_10)
-
-    if form_request.get("lumen") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.lumen)
-
-    if form_request.get("colour") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.red)
-        sql_column_selection.append(app_cached_variables.database_variables.orange)
-        sql_column_selection.append(app_cached_variables.database_variables.yellow)
-        sql_column_selection.append(app_cached_variables.database_variables.green)
-        sql_column_selection.append(app_cached_variables.database_variables.blue)
-        sql_column_selection.append(app_cached_variables.database_variables.violet)
-
-    if form_request.get("ultra_violet") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_index)
-        sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_a)
-        sql_column_selection.append(app_cached_variables.database_variables.ultra_violet_b)
-
-    if form_request.get("accelerometer") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.acc_x)
-        sql_column_selection.append(app_cached_variables.database_variables.acc_y)
-        sql_column_selection.append(app_cached_variables.database_variables.acc_z)
-
-    if form_request.get("magnetometer") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.mag_x)
-        sql_column_selection.append(app_cached_variables.database_variables.mag_y)
-        sql_column_selection.append(app_cached_variables.database_variables.mag_z)
-
-    if form_request.get("gyroscope") is not None:
-        sql_column_selection.append(app_cached_variables.database_variables.gyro_x)
-        sql_column_selection.append(app_cached_variables.database_variables.gyro_y)
-        sql_column_selection.append(app_cached_variables.database_variables.gyro_z)
-    return sql_column_selection
 
 
 def _clean_sql_data(sql_data_tuple, data_to_float=True):
