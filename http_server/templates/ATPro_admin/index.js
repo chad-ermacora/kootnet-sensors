@@ -167,3 +167,8 @@ function NotificationConfirmAction(prompt_text, command_url) {
 function NotificationOkay(prompt_text, command_url) {
 	alert(prompt_text);
 }
+
+function UpdateHiddenInputButtonPress(button_type) {
+        document.getElementById("button_function").value = button_type;
+        document.getElementById("button_function_form").submit()
+    }
