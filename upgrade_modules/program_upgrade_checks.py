@@ -19,9 +19,7 @@
 from operations_modules import logger
 from operations_modules import software_version
 from upgrade_modules import generic_upgrade_functions
-from upgrade_modules.old_configuration_conversions.beta_30_x_to_31_x import upgrade_beta_30_x_to_31
-from upgrade_modules.old_configuration_conversions.beta_33_x_to_33_96 import upgrade_beta_33_x_to_33_96
-from upgrade_modules.old_configuration_conversions.beta_34_164_to_34_plus import upgrade_beta_34_164_to_34_plus
+from upgrade_modules.old_configuration_conversions.beta_34_x_to_35_x import upgrade_beta_34_x_to_35_x
 
 
 def run_configuration_upgrade_checks():
@@ -58,55 +56,35 @@ def run_configuration_upgrade_checks():
                 generic_upgrade_functions.reset_installed_sensors()
                 generic_upgrade_functions.reset_primary_config()
             elif previous_version.feature_version == 35:
+                if previous_version.minor_version < 53:
+                    no_changes = False
+                    generic_upgrade_functions.reset_live_graph_config(log_reset=False)
+                    generic_upgrade_functions.reset_database_graph_config(log_reset=False)
                 if previous_version.minor_version < 51:
                     no_changes = False
                     generic_upgrade_functions.reset_email_config()
             elif previous_version.feature_version == 34:
-                if previous_version.minor_version < 165:
-                    no_changes = False
-                    upgrade_beta_34_164_to_34_plus()
-                if previous_version.minor_version < 152:
-                    no_changes = False
-                    generic_upgrade_functions.reset_flask_login_credentials()
+                no_changes = False
+                upgrade_beta_34_x_to_35_x()
                 if previous_version.minor_version < 122:
-                    no_changes = False
                     config_class = generic_upgrade_functions.CreateWeatherUndergroundConfiguration
                     generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 33:
+                no_changes = False
+                generic_upgrade_functions.reset_live_graph_config(log_reset=False)
+                generic_upgrade_functions.reset_database_graph_config(log_reset=False)
+                generic_upgrade_functions.reset_email_config()
+                generic_upgrade_functions.reset_flask_login_credentials()
                 if previous_version.minor_version < 145:
-                    if previous_version.minor_version < 96:
-                        if previous_version.minor_version < 61:
-                            config_class = generic_upgrade_functions.CreateEmailConfiguration
-                            generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-                        upgrade_beta_33_x_to_33_96()
-                    else:
-                        config_class = generic_upgrade_functions.CreatePrimaryConfiguration
-                        generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-                    no_changes = False
+                    config_class = generic_upgrade_functions.CreatePrimaryConfiguration
+                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
             elif previous_version.feature_version == 32:
                 no_changes = False
+                generic_upgrade_functions.reset_flask_login_credentials()
+                generic_upgrade_functions.reset_primary_config()
                 generic_upgrade_functions.reset_mqtt_publisher_config()
                 generic_upgrade_functions.reset_sensor_control_config()
-                upgrade_beta_33_x_to_33_96()
-                config_class = generic_upgrade_functions.CreateEmailConfiguration
-                generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-            elif previous_version.feature_version == 31:
-                no_changes = False
-                generic_upgrade_functions.reset_mqtt_publisher_config()
-                generic_upgrade_functions.reset_sensor_control_config()
-                generic_upgrade_functions.reset_checkin_config()
-                generic_upgrade_functions.reset_trigger_high_low_config()
-
-                config_classes = [generic_upgrade_functions.CreateInstalledSensorsConfiguration,
-                                  generic_upgrade_functions.CreateIntervalRecordingConfiguration,
-                                  generic_upgrade_functions.CreateMQTTSubscriberConfiguration]
-                for config_class in config_classes:
-                    generic_upgrade_functions.upgrade_config_load_and_save(config_class)
-                upgrade_beta_33_x_to_33_96()
-            elif previous_version.feature_version == 30:
-                no_changes = False
-                upgrade_beta_30_x_to_31()
-            elif previous_version.feature_version < 30:
+            elif previous_version.feature_version < 32:
                 no_changes = False
                 generic_upgrade_functions.reset_all_configurations()
 
