@@ -173,9 +173,9 @@ def _address_is_banned(ip_address):
     :return: True/False
     """
     if ip_address in app_cached_variables.failed_flask_logins_dic:
-        if datetime.utcnow() - app_cached_variables.failed_flask_logins_dic[ip_address][0] > timedelta(minutes=15):
+        if datetime.utcnow() - app_cached_variables.failed_flask_logins_dic[ip_address][0] > timedelta(minutes=10):
             app_cached_variables.failed_flask_logins_dic[ip_address][1] = 0
-        elif app_cached_variables.failed_flask_logins_dic[ip_address][1] > 10:
+        elif app_cached_variables.failed_flask_logins_dic[ip_address][1] > 30:
             log_msg = ip_address + " Banned || " + str(app_cached_variables.failed_flask_logins_dic[ip_address][1])
             logger.network_logger.warning(log_msg + " Failed Logins")
             # Sleep to lessen the strain on the system due to brute force or DOS attacks
