@@ -58,10 +58,19 @@ let {{ ChartName }} = new Chart({{ ChartName }}ctx,
             labels: [],
             datasets: [{{ ChartDataSets }}]
         },
+        {{ ChartOptions }}
+    });
+"""
+chart_options_standard = """
         options: {
             plugins: {}
         }
-    });
+"""
+chart_options_performance = """
+        options: {
+            animation: false,
+            plugins: {}
+        }
 """
 live_chart_data_entry = """
 {data: [],
@@ -151,6 +160,10 @@ class CreateLiveGraphGenerator:
             all_data_sets = all_data_sets.replace("{{ ChartColor }}", color)
             all_data_sets += ","
         return_chart_functions = return_chart_functions.replace("{{ ChartDataSets }}", all_data_sets[:-1])
+        if app_config_access.live_graphs_config.enable_performance_mode:
+            return_chart_functions = return_chart_functions.replace("{{ ChartOptions }}", chart_options_performance)
+        else:
+            return_chart_functions = return_chart_functions.replace("{{ ChartOptions }}", chart_options_standard)
         return return_chart_functions
 
     def _get_chart_js_functions(self):
