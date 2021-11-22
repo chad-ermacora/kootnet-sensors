@@ -405,7 +405,7 @@ def generate_plotly_graph(graph_request, graph_config=None):
         elif graph_request.form.get("button_function") == "email":
             logger.network_logger.info("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
             new_email_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
-            new_email_config.config_file_location = file_locations.db_graphs_email_config
+            new_email_config.config_file_location = file_locations.email_db_graph_config
             new_email_config.update_with_html_request(graph_request)
             new_email_config.save_config_to_file()
         elif graph_request.form.get("button_function") == "create":

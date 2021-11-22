@@ -73,7 +73,7 @@ def send_db_graph_email(to_email):
         message = get_new_email_message(to_email, "Kootnet Sensor Graph - " + app_cached_variables.hostname)
         message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))
         db_graph_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
-        db_graph_config.set_config_with_str(get_file_content(file_locations.db_graphs_email_config))
+        db_graph_config.set_config_with_str(get_file_content(file_locations.email_db_graph_config))
         db_graph_config.update_variables_from_settings_list()
         generate_plotly_graph(None, graph_config=db_graph_config)
         sleep(5)
