@@ -25,7 +25,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from socket import gaierror
 from operations_modules import logger
-from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules import software_version
 from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread, get_file_content
@@ -54,7 +53,7 @@ def send_report_email(to_email, report_generated=False):
     message.attach(MIMEText(_get_default_email_body_text("HTML Report"), "plain"))
 
     if not report_generated:
-        ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
+        ip_list = app_config_access.email_reports_config.get_clean_ip_addresses_as_list()
         generate_html_reports_combo(ip_list)
 
     date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
@@ -72,17 +71,16 @@ def send_db_graph_email(to_email):
     try:
         message = get_new_email_message(to_email, "Kootnet Sensor Graph - " + app_cached_variables.hostname)
         message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))
-        db_graph_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
-        db_graph_config.set_config_with_str(get_file_content(file_locations.email_db_graph_config))
-        db_graph_config.update_variables_from_settings_list()
-        generate_plotly_graph(None, graph_config=db_graph_config)
+        generate_plotly_graph(None, graph_config=app_config_access.email_db_graph_config)
         sleep(5)
         while server_plotly_graph_variables.graph_creation_in_progress:
             sleep(5)
         date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
         filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
-        zipped_graph = zip_files([filename + ".html"],
-                                 [get_file_content(db_graph_config.plotly_graph_saved_location, open_type="rb")])
+        zipped_graph = zip_files(
+            [filename + ".html"],
+            [get_file_content(app_config_access.email_db_graph_config.plotly_graph_saved_location, open_type="rb")]
+        )
         payload = MIMEBase("application", "zip")
         payload.set_payload(zipped_graph.read())
         encoders.encode_base64(payload)

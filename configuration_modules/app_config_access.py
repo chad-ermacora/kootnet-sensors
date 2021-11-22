@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from operations_modules import logger
+from operations_modules import file_locations
 from configuration_modules.config_installed_sensors import CreateInstalledSensorsConfiguration
 from configuration_modules.config_sensor_offsets import CreateSensorOffsetsConfiguration
 from configuration_modules.config_primary import CreatePrimaryConfiguration
@@ -52,6 +53,8 @@ mqtt_broker_config = CreateMQTTBrokerConfiguration()
 mqtt_publisher_config = CreateMQTTPublisherConfiguration()
 mqtt_subscriber_config = CreateMQTTSubscriberConfiguration()
 email_config = CreateEmailConfiguration()
+email_reports_config = CreateSensorControlConfiguration(config_file_location=file_locations.email_reports_config)
+email_db_graph_config = CreateDatabaseGraphsConfiguration(config_file_location=file_locations.email_db_graph_config)
 weather_underground_config = CreateWeatherUndergroundConfiguration()
 luftdaten_config = CreateLuftdatenConfiguration()
 open_sense_map_config = CreateOpenSenseMapConfiguration()

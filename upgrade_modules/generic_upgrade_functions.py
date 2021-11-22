@@ -131,6 +131,24 @@ def reset_trigger_variance_config(log_reset=True):
     CreateTriggerVariancesConfiguration(load_from_file=False).save_config_to_file()
 
 
+def reset_email_reports_config(log_reset=True):
+    """ Writes a default Email Reports configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Email Reports Configuration Reset ****")
+    file_loc = file_locations.email_reports_config
+    temp_config = CreateSensorControlConfiguration(load_from_file=False, config_file_location=file_loc)
+    temp_config.save_config_to_file()
+
+
+def reset_email_db_graphs_config(log_reset=True):
+    """ Writes a default Email Database Graphs configuration file. """
+    if log_reset:
+        logger.primary_logger.warning(" **** Email Database Graphs Configuration Reset ****")
+    file_loc = file_locations.email_db_graph_config
+    temp_config = CreateDatabaseGraphsConfiguration(load_from_file=False, config_file_location=file_loc)
+    temp_config.save_config_to_file()
+
+
 def reset_email_config(log_reset=True):
     """ Writes a default Email configuration file. """
     if log_reset:
@@ -203,6 +221,8 @@ def reset_all_configurations(log_reset=True):
     reset_interval_recording_config(log_reset=log_reset)
     reset_trigger_high_low_config(log_reset=log_reset)
     reset_trigger_variance_config(log_reset=log_reset)
+    reset_email_reports_config(log_reset=log_reset)
+    reset_email_db_graphs_config(log_reset=log_reset)
     reset_email_config(log_reset=log_reset)
     reset_mqtt_broker_config(log_reset=log_reset)
     reset_mqtt_publisher_config(log_reset=log_reset)
@@ -228,8 +248,9 @@ def upgrade_config_load_and_save(configuration_creation_class, upgrade_msg=True)
 
 
 def load_and_save_all_configs_silently():
-    ccl = [CreatePrimaryConfiguration, CreateURLConfiguration, CreateInstalledSensorsConfiguration,
-           CreateSensorOffsetsConfiguration, CreateIntervalRecordingConfiguration, CreateTriggerHighLowConfiguration,
+    ccl = [CreateLiveGraphsConfiguration, CreateDatabaseGraphsConfiguration, CreatePrimaryConfiguration,
+           CreateURLConfiguration, CreateInstalledSensorsConfiguration, CreateSensorOffsetsConfiguration,
+           CreateIntervalRecordingConfiguration, CreateTriggerHighLowConfiguration,
            CreateTriggerVariancesConfiguration, CreateDisplayConfiguration, CreateEmailConfiguration,
            CreateMQTTBrokerConfiguration, CreateMQTTPublisherConfiguration, CreateMQTTSubscriberConfiguration,
            CreateWeatherUndergroundConfiguration, CreateLuftdatenConfiguration, CreateOpenSenseMapConfiguration,

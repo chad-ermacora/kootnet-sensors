@@ -39,6 +39,9 @@ def remote_management_main_post(request):
     elif run_command == "SaveSettings":
         app_config_access.sensor_control_config.update_with_html_request(request)
         app_config_access.sensor_control_config.save_config_to_file()
+    elif run_command == "SaveSettings-report-emails":
+        app_config_access.email_reports_config.update_with_html_request(request)
+        app_config_access.email_reports_config.save_config_to_file()
     elif run_command == "RunAction":
         sc_action = request.form.get("selected_action")
         sc_download_type = request.form.get("selected_send_type")

@@ -404,10 +404,8 @@ def generate_plotly_graph(graph_request, graph_config=None):
             app_config_access.db_graphs_config.save_config_to_file()
         elif graph_request.form.get("button_function") == "email":
             logger.network_logger.info("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
-            new_email_config = app_config_access.CreateDatabaseGraphsConfiguration(load_from_file=False)
-            new_email_config.config_file_location = file_locations.email_db_graph_config
-            new_email_config.update_with_html_request(graph_request)
-            new_email_config.save_config_to_file()
+            app_config_access.email_db_graph_config.update_with_html_request(graph_request)
+            app_config_access.email_db_graph_config.save_config_to_file()
         elif graph_request.form.get("button_function") == "create":
             logger.network_logger.debug("* Plotly Graph Create Initiated by " + str(request.remote_addr))
             app_config_access.db_graphs_config.update_with_html_request(graph_request)

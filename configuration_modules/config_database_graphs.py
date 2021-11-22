@@ -25,8 +25,10 @@ from operations_modules import app_cached_variables
 class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
     """ Creates the Database Graphs Configuration object and loads settings from file (by default). """
 
-    def __init__(self, load_from_file=True):
-        CreateGeneralConfiguration.__init__(self, file_locations.db_graphs_config, load_from_file=load_from_file)
+    def __init__(self, load_from_file=True, config_file_location=None):
+        if config_file_location is None:
+            config_file_location = file_locations.db_graphs_config
+        CreateGeneralConfiguration.__init__(self, config_file_location, load_from_file=load_from_file)
         self.config_file_header = "Database Graphs Configuration. Enable = 1 and Disable = 0"
         self.valid_setting_count = 27
         self.config_settings_names = [

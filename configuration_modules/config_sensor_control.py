@@ -29,9 +29,10 @@ from operations_modules.app_generic_functions import CreateGeneralConfiguration,
 class CreateSensorControlConfiguration(CreateGeneralConfiguration):
     """ Creates the HTML Sensor Control Configuration object and loads settings from file (by default). """
 
-    def __init__(self, load_from_file=True):
-        html_sensor_control_config = file_locations.html_sensor_control_config
-        CreateGeneralConfiguration.__init__(self, html_sensor_control_config, load_from_file=load_from_file)
+    def __init__(self, load_from_file=True, config_file_location=None):
+        if config_file_location is None:
+            config_file_location = file_locations.html_sensor_control_config
+        CreateGeneralConfiguration.__init__(self, config_file_location, load_from_file=load_from_file)
         self.config_file_header = "This contains saved values for HTML Sensor Control"
         self.valid_setting_count = 3
         self.config_settings_names = ["selected_action", "selected_send_type", "selected_ip_list"]
@@ -52,6 +53,9 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.custom_ip_list_names = get_list_of_filenames_in_dir(file_locations.custom_ip_lists_folder)
 
         self.selected_ip_list = self.custom_ip_list_names[0]
+        # ToDo: Have program use these instead of app_cached_access http_login & http_password
+        self.logon_user = "Kootnet"
+        self.logon_password = "sensors"
 
         # Dictionary filled with Class instances of CreateIPList
         self.ip_list_instance = None
