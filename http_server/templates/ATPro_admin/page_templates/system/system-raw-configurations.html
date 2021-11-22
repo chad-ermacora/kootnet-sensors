@@ -175,6 +175,24 @@
 </div>
 <div class="pure-menu">
     <ul class="pure-menu-list">
+        <li class="pure-menu-item config-live-graph">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-live-graph')">
+                <i class="fas fa-chart-line"></i> Live Graphing
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-db-graph">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-db-graph')">
+                <i class="fas fa-chart-bar"></i> Database Graphing
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
         <li class="pure-menu-item config-sc">
             <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-sc')">
                 <i class="fas fa-project-diagram"></i> Sensor Control
@@ -211,6 +229,8 @@
         document.getElementsByClassName("config-email")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-networking")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-wifi")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-db-graph")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-live-graph")[0].classList.remove("pure-menu-selected");
 
         document.getElementsByClassName(nav_location)[0].classList.add("pure-menu-selected");
 

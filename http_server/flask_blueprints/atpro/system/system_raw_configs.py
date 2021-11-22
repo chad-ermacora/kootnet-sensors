@@ -173,6 +173,18 @@ def atpro_raw_config_urls(url_path):
         config_name = "<i class='fas fa-project-diagram'></i> Remote Management Configuration"
         config_content = app_config_access.sensor_control_config.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.html_sensor_control_config, config_content)
+    elif url_path == "config-live-graph":
+        config_name = "<i class='fas fa-chart-line'></i> Live Graphing"
+        config_content = app_config_access.live_graphs_config.get_config_as_str()
+        return _config_to_html_view(config_name, file_locations.live_graphs_config, config_content)
+    elif url_path == "config-db-graph":
+        config_name = "<i class='fas fa-chart-bar'></i> Database Graphing - Plotly"
+        config_content = app_config_access.db_graphs_config.get_config_as_str()
+        first_box = _config_to_html_view(config_name, file_locations.db_graphs_config, config_content)
+        config_name = "<i class='fas fa-project-diagram'></i> Database Graphing Email - Plotly"
+        config_content = get_file_content(file_locations.db_graphs_email_config)
+        second_box = _config_to_html_view(config_name, file_locations.db_graphs_email_config, config_content)
+        return first_box + second_box
     return "<h3>Error</h3>"
 
 
