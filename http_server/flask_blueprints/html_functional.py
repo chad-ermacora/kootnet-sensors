@@ -178,8 +178,6 @@ def _address_is_banned(ip_address):
         elif app_cached_variables.failed_flask_logins_dic[ip_address][1] > 30:
             log_msg = ip_address + " Banned || " + str(app_cached_variables.failed_flask_logins_dic[ip_address][1])
             logger.network_logger.warning(log_msg + " Failed Logins")
-            # Sleep to lessen the strain on the system due to brute force or DOS attacks
-            sleep(2)
             return True
     return False
 
