@@ -92,6 +92,26 @@
         </li>
     </ul>
 </div>
+
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-reports-email">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-reports-email')">
+                <i class="far fa-envelope"></i> Email Reports
+            </a>
+        </li>
+    </ul>
+</div>
+<div class="pure-menu">
+    <ul class="pure-menu-list">
+        <li class="pure-menu-item config-db-graphs-email">
+            <a href="#" class="pure-menu-link" onclick="SelectRAWConfigNav('config-db-graphs-email')">
+                <i class="far fa-envelope"></i> Email DB Graphs
+            </a>
+        </li>
+    </ul>
+</div>
+
 <div class="pure-menu">
     <ul class="pure-menu-list">
         <li class="pure-menu-item config-email">
@@ -226,6 +246,8 @@
         document.getElementsByClassName("config-wu")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-luftdaten")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-osm")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-reports-email")[0].classList.remove("pure-menu-selected");
+        document.getElementsByClassName("config-db-graphs-email")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-email")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-networking")[0].classList.remove("pure-menu-selected");
         document.getElementsByClassName("config-wifi")[0].classList.remove("pure-menu-selected");

@@ -123,6 +123,14 @@ def atpro_raw_config_urls(url_path):
         config_name = "<i class='fas fa-database'></i> Variance Trigger Recording"
         config_content = app_config_access.trigger_variances.get_config_as_str()
         return _config_to_html_view(config_name, file_locations.trigger_variances_config, config_content)
+    elif url_path == "config-reports-email":
+        config_name = "<i class='far fa-envelope'></i> Email Reports"
+        config_content = app_config_access.email_reports_config.get_config_as_str()
+        return _config_to_html_view(config_name, file_locations.email_reports_config, config_content)
+    elif url_path == "config-db-graphs-email":
+        config_name = "<i class='far fa-envelope'></i> Email Database Graphs"
+        config_content = app_config_access.email_db_graph_config.get_config_as_str()
+        return _config_to_html_view(config_name, file_locations.email_db_graph_config, config_content)
     elif url_path == "config-email":
         config_name = "<i class='far fa-envelope'></i> Email"
         config_content = remove_line_from_text(app_config_access.email_config.get_config_as_str(), [5, 6])
@@ -180,11 +188,7 @@ def atpro_raw_config_urls(url_path):
     elif url_path == "config-db-graph":
         config_name = "<i class='fas fa-chart-bar'></i> Database Graphing - Plotly"
         config_content = app_config_access.db_graphs_config.get_config_as_str()
-        first_box = _config_to_html_view(config_name, file_locations.db_graphs_config, config_content)
-        config_name = "<i class='fas fa-project-diagram'></i> Database Graphing Email - Plotly"
-        config_content = get_file_content(file_locations.email_db_graph_config)
-        second_box = _config_to_html_view(config_name, file_locations.email_db_graph_config, config_content)
-        return first_box + second_box
+        return _config_to_html_view(config_name, file_locations.db_graphs_config, config_content)
     return "<h3>Error</h3>"
 
 
