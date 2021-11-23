@@ -28,7 +28,7 @@ from tests.create_test_configs import *
 class TestApp(unittest.TestCase):
     def test_primary_config(self):
         self.assertTrue(self._config_test_changes(primary_config_test,
-                                                  remote_get.sensor_configuration_file,
+                                                  remote_get.primary_configuration_file,
                                                   remote_set.set_primary_configuration,
                                                   config_name="Primary"))
 
