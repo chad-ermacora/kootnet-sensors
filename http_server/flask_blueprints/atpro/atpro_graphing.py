@@ -21,7 +21,7 @@ from flask import Blueprint, render_template, request, send_file
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import thread_function, get_file_content
+from operations_modules.app_generic_functions import thread_function
 from configuration_modules import app_config_access
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
@@ -32,13 +32,8 @@ from http_server.server_http_auth import auth
 
 html_atpro_graphing_routes = Blueprint("html_atpro_graphing_routes", __name__)
 lgc = app_config_access.live_graphs_config
-acv = app_cached_variables
 db_gc = app_cached_variables.CreateNetworkGetCommands()
 db_wrapper_gc = app_cached_variables.CreateLiveGraphWrapperNetworkGetCommands()
-db_v = app_cached_variables.database_variables
-http_base_html_files = file_locations.program_root_dir + "/http_server/templates/"
-charts_templates_dir = http_base_html_files + "ATPro_admin/page_templates/graphs_live/"
-live_chart_sensor_template = get_file_content(charts_templates_dir + "graphing-live-sensor-template.html")
 live_chart_html_template = """
 <div id="{{ ChartName }}container" class="col-{{ MinColSize }} col-m-6 col-sm-12">
     <div class="card">
