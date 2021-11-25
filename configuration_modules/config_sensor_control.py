@@ -20,10 +20,10 @@ from threading import Thread
 from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import app_cached_variables
 from operations_modules import app_validation_checks
 from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_http_sensor_reading, \
     get_list_of_filenames_in_dir, get_file_content, write_file_to_disk
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 
 class CreateSensorControlConfiguration(CreateGeneralConfiguration):
@@ -53,7 +53,8 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             self.custom_ip_list_names = get_list_of_filenames_in_dir(file_locations.custom_ip_lists_folder)
 
         self.selected_ip_list = self.custom_ip_list_names[0]
-        # ToDo: Have program use these instead of app_cached_access http_login & http_password
+        # ToDo: Have program use these instead of rm_cached_variables http_login & http_password
+        # Save hash of user/pass to config file? send hash as auth?
         self.logon_user = "Kootnet"
         self.logon_password = "sensors"
 
@@ -240,9 +241,11 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
             http_login = html_request.form.get("sensor_username")
             http_password = html_request.form.get("sensor_password")
             if http_login != "":
-                app_cached_variables.http_login = http_login
+                self.logon_user = http_login
+                rm_cached_variables.http_login = http_login
             if http_password != "":
-                app_cached_variables.http_password = http_password
+                self.logon_password = http_password
+                rm_cached_variables.http_password = http_password
 
             self._save_current_ip_list()
         except Exception as error:

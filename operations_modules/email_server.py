@@ -30,6 +30,7 @@ from operations_modules import software_version
 from operations_modules.app_generic_functions import zip_files, CreateMonitoredThread, get_file_content
 from operations_modules.app_validation_checks import email_is_valid
 from configuration_modules import app_config_access
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 from http_server.flask_blueprints.atpro.atpro_graphing import generate_plotly_graph
 from http_server import server_plotly_graph_variables
@@ -58,7 +59,7 @@ def send_report_email(to_email, report_generated=False):
 
     date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
     filename = app_cached_variables.hostname + "_" + date_time + "_KS_Report"
-    zipped_report = zip_files([filename + ".html"], [app_cached_variables.html_combo_report])
+    zipped_report = zip_files([filename + ".html"], [rm_cached_variables.html_combo_report])
     payload = MIMEBase("application", "zip")
     payload.set_payload(zipped_report.read())
     encoders.encode_base64(payload)

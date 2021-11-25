@@ -20,6 +20,7 @@ from queue import Queue
 from flask import render_template
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables as rm_cv
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
@@ -34,10 +35,10 @@ def get_atpro_sensor_remote_management_page():
     return render_template(
         "ATPro_admin/page_templates/remote-management.html",
         RunningRSMScript=run_script,
-        DownloadReportsZipDisabled=_get_html_button_state(acv.creating_the_reports_zip, acv.sc_reports_zip_name),
-        DownloadDatabasesDisabled=_get_html_button_state(acv.creating_databases_zip, acv.sc_databases_zip_name),
-        DownloadLogsDisabled=_get_html_button_state(acv.creating_logs_zip, acv.sc_logs_zip_name),
-        DownloadBigZipDisabled=_get_html_button_state(acv.creating_the_big_zip, acv.sc_big_zip_name),
+        DownloadReportsZipDisabled=_get_html_button_state(rm_cv.creating_combo_reports_zip, rm_cv.sc_reports_zip_name),
+        DownloadDatabasesDisabled=_get_html_button_state(rm_cv.creating_databases_zip, rm_cv.sc_databases_zip_name),
+        DownloadLogsDisabled=_get_html_button_state(rm_cv.creating_logs_zip, rm_cv.sc_logs_zip_name),
+        DownloadBigZipDisabled=_get_html_button_state(rm_cv.creating_the_big_zip, rm_cv.sc_big_zip_name),
         IPListsOptionNames=get_rm_ip_lists_drop_down(),
         SensorIP1=app_config_access.sensor_control_config.sensor_ip_dns1,
         SensorIP2=app_config_access.sensor_control_config.sensor_ip_dns2,
@@ -83,23 +84,23 @@ def _get_html_button_state(setting1, setting2):
 
 def _get_rm_running_msg():
     extra_message = ""
-    if app_cached_variables.creating_the_big_zip:
+    if rm_cv.creating_the_big_zip:
         extra_message += "Big Zip, "
-    if app_cached_variables.creating_the_reports_zip:
+    if rm_cv.creating_combo_reports_zip:
         extra_message += "Reports Zip, "
-    if app_cached_variables.creating_databases_zip:
+    if rm_cv.creating_databases_zip:
         extra_message += "Databases Zip, "
-    if app_cached_variables.creating_logs_zip:
+    if rm_cv.creating_logs_zip:
         extra_message += "Logs Zip, "
-    if app_cached_variables.creating_combo_report:
+    if rm_cv.creating_combo_report:
         extra_message += "Combo Report, "
-    if app_cached_variables.creating_system_report:
+    if rm_cv.creating_system_report:
         extra_message += "System Report, "
-    if app_cached_variables.creating_config_report:
+    if rm_cv.creating_config_report:
         extra_message += "Configuration Report, "
-    if app_cached_variables.creating_readings_report:
+    if rm_cv.creating_readings_report:
         extra_message += "Readings Report, "
-    if app_cached_variables.creating_latency_report:
+    if rm_cv.creating_latency_report:
         extra_message += "Latency Report, "
 
     if extra_message != "":

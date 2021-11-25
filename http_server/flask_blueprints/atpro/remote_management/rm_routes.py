@@ -52,6 +52,7 @@ from http_server.flask_blueprints.atpro.remote_management.rm_receive_configs imp
 from http_server.flask_blueprints.atpro.remote_management.rm_post import remote_management_main_post
 from http_server.flask_blueprints.atpro.remote_management.rm_main import \
     get_atpro_sensor_remote_management_page, get_rm_ip_lists_drop_down
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 base_rm_template_loc = "ATPro_admin/page_templates/remote_management/report_templates/"
 db_v = app_cached_variables.database_variables
@@ -84,6 +85,7 @@ default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.c
 html_atpro_remote_management_routes = Blueprint("html_atpro_remote_management_routes", __name__)
 
 
+# ToDo: Remove need, create requests generic functions for all things requests
 class CreateSensorHTTPCommand:
     """ Creates Object to use for Sending a command and optional data to a remote sensor. """
 
@@ -102,8 +104,8 @@ class CreateSensorHTTPCommand:
         """ Sends command and data to sensor. """
         try:
             url = "https://" + self.sensor_address + ":" + self.http_port + "/"
-            login_credentials = {"login_username": app_cached_variables.http_login,
-                                 "login_password": app_cached_variables.http_password}
+            login_credentials = {"login_username": rm_cached_variables.http_login,
+                                 "login_password": rm_cached_variables.http_password}
             authenticated_requests = requests.Session()
             authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
 
@@ -400,15 +402,15 @@ def html_atpro_rm_system_commands():
 def html_atpro_get_remote_management_reports(filename):
     if url_is_valid(filename):
         if filename == "combination":
-            return app_cached_variables.html_combo_report
+            return rm_cached_variables.html_combo_report
         if filename == "system":
-            return app_cached_variables.html_system_report
+            return rm_cached_variables.html_system_report
         if filename == "configuration":
-            return app_cached_variables.html_config_report
+            return rm_cached_variables.html_config_report
         if filename == "readings":
-            return app_cached_variables.html_readings_report
+            return rm_cached_variables.html_readings_report
         if filename == "latency":
-            return app_cached_variables.html_latency_report
+            return rm_cached_variables.html_latency_report
     return ""
 
 
@@ -474,7 +476,7 @@ def _login_successful(ip):
 
 
 def _missing_login_credentials():
-    if app_cached_variables.http_login == "" or app_cached_variables.http_password == "":
+    if rm_cached_variables.http_login == "" or rm_cached_variables.http_password == "":
         return True
     return False
 

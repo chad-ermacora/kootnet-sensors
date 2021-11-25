@@ -638,54 +638,6 @@ creating_zip_main_db = False
 creating_zip_checkin_db = False
 creating_zip_mqtt_sub_db = False
 
-# Variables to make sure Remote Management is only creating a single copy at any given time
-creating_the_reports_zip = False
-creating_the_big_zip = False
-creating_databases_zip = False
-creating_logs_zip = False
-
-creating_combo_report = False
-creating_system_report = False
-creating_config_report = False
-creating_readings_report = False
-creating_latency_report = False
-
-# Cached Reports
-default_report = """
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="robots" content="noindex">
-        <title>Kootnet Sensors</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    </head>
-    <body style='background-color: black;'>
-        <h2 style='text-decoration: underline; color: red;'>Report Not Found</h3>
-        <p style='color: white;'>No report found, please generated the report first</p>
-    </body>
-</html>
-"""
-html_combo_report = default_report
-html_system_report = default_report
-html_config_report = default_report
-html_readings_report = default_report
-html_latency_report = default_report
-
-# Login used for remote sensors (Used in Sensor Remote Management)
-# ToDo: Rename these to sc_*login/password* for clarity
-http_login = ""
-http_password = ""
-
-# Sensor Control (Remote Management) Download placeholders
-sc_reports_zip_name = ""
-sc_logs_zip_name = ""
-sc_databases_zip_name = ""
-sc_big_zip_name = ""
-sc_databases_zip_in_memory = False
-sc_big_zip_in_memory = False
-sc_in_memory_zip = b''
-
 # HTML Sensor Notes Variables
 notes_total_count = 0
 note_current = 1

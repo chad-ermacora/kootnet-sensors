@@ -20,44 +20,14 @@ import time
 from threading import Thread
 from queue import Queue
 from operations_modules import logger
-from operations_modules import app_cached_variables
-from operations_modules import file_locations
-from operations_modules.app_generic_functions import get_http_sensor_reading, thread_function, get_file_content, \
+from operations_modules.app_cached_variables import CreateNetworkGetCommands
+from operations_modules.app_generic_functions import get_http_sensor_reading, thread_function, \
     get_html_response_bg_colour
 from sensor_modules.system_access import get_system_datetime
 from http_server.server_http_auth import auth_error_msg_contains
-from operations_modules import software_version
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
-sensor_get_commands = app_cached_variables.CreateNetworkGetCommands()
-html_report_css = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/style.css"
-html_report_js = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/index.js"
-html_report_pure_css = file_locations.program_root_dir + "/http_server/extras/pure-min.css"
-html_pure_css_menu = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/pure-horizontal-menu.css"
-html_report_all_start = file_locations.atpro_reports_folder + "report-all-start.html"
-html_report_all_end = file_locations.atpro_reports_folder + "report-all-end.html"
-html_report_template = file_locations.atpro_reports_folder + "report-template.html"
-html_report_sensor_error_template = file_locations.atpro_reports_folder + "report-sensor-error-template.html"
-
-
-# Save disk read time when upgrade in progress
-if software_version.old_version == software_version.version:
-    html_pure_css = get_file_content(html_report_pure_css).strip()
-    html_pure_css_menu = get_file_content(html_pure_css_menu).strip()
-    html_report_css = get_file_content(html_report_css).strip()
-    html_report_js = get_file_content(html_report_js).strip()
-
-    html_report_combo = get_file_content(file_locations.html_combo_report).strip()
-    html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
-
-    html_report_start = get_file_content(html_report_all_start).strip()
-    html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_end = get_file_content(html_report_all_end).strip()
-    html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
-
-    html_report_template = get_file_content(html_report_template).strip()
-    report_sensor_error_template = get_file_content(html_report_sensor_error_template).strip()
+sg_commands = CreateNetworkGetCommands()
 
 
 def generate_html_reports_combo(ip_list):
@@ -75,27 +45,27 @@ def generate_html_reports_combo(ip_list):
         for thread in threads:
             thread.join()
 
-        html_system_report = _remove_css_js(app_cached_variables.html_system_report)
-        html_config_report = _remove_css_js(app_cached_variables.html_config_report)
-        html_readings_report = _remove_css_js(app_cached_variables.html_readings_report)
-        html_latency_report = _remove_css_js(app_cached_variables.html_latency_report)
+        tmp_html_system_report = _remove_css_js(rm_cached_variables.html_system_report)
+        tmp_html_config_report = _remove_css_js(rm_cached_variables.html_config_report)
+        tmp_html_readings_report = _remove_css_js(rm_cached_variables.html_readings_report)
+        tmp_html_latency_report = _remove_css_js(rm_cached_variables.html_latency_report)
 
-        html_final_combo_return = html_report_combo
+        html_final_combo_return = rm_cached_variables.html_report_combo
 
-        html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", html_system_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", html_config_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", html_readings_report)
-        html_final_combo_return = html_final_combo_return.replace("{{ FullLatencyReport }}", html_latency_report)
-        html_final_combo_return += "\n" + html_report_end
+        html_final_combo_return = html_final_combo_return.replace("{{ FullSystemReport }}", tmp_html_system_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullConfigurationReport }}", tmp_html_config_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullReadingsReport }}", tmp_html_readings_report)
+        html_final_combo_return = html_final_combo_return.replace("{{ FullLatencyReport }}", tmp_html_latency_report)
+        html_final_combo_return += "\n" + rm_cached_variables.html_report_end
     except Exception as error:
         logger.primary_logger.error("Sensor Control - Unable to Generate Combo Report: " + str(error))
         html_final_combo_return = "Generation Error: " + str(error)
-    app_cached_variables.html_combo_report = html_final_combo_return
+    rm_cached_variables.html_combo_report = html_final_combo_return
 
 
 def _remove_css_js(html_report):
-    html_report = html_report.replace(html_report_css, "")
-    html_report = html_report.replace(html_report_js, "")
+    html_report = html_report.replace(rm_cached_variables.html_report_css, "")
+    html_report = html_report.replace(rm_cached_variables.html_report_js, "")
     return html_report
 
 
@@ -107,10 +77,10 @@ def generate_system_report(ip_list, threaded=True):
 
 
 def _thread_system_report(ip_list):
-    app_cached_variables.creating_system_report = True
-    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_system_report, "System")
-    app_cached_variables.html_system_report = new_report
-    app_cached_variables.creating_system_report = False
+    rm_cached_variables.creating_system_report = True
+    new_report = create_sensor_report(ip_list, sg_commands.rm_system_report, "System")
+    rm_cached_variables.html_system_report = new_report
+    rm_cached_variables.creating_system_report = False
 
 
 def generate_config_report(ip_list, threaded=True):
@@ -121,10 +91,10 @@ def generate_config_report(ip_list, threaded=True):
 
 
 def _thread_config_report(ip_list):
-    app_cached_variables.creating_config_report = True
-    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_config_report, "Configurations")
-    app_cached_variables.html_config_report = new_report
-    app_cached_variables.creating_config_report = False
+    rm_cached_variables.creating_config_report = True
+    new_report = create_sensor_report(ip_list, sg_commands.rm_config_report, "Configurations")
+    rm_cached_variables.html_config_report = new_report
+    rm_cached_variables.creating_config_report = False
 
 
 def generate_readings_report(ip_list, threaded=True):
@@ -135,10 +105,10 @@ def generate_readings_report(ip_list, threaded=True):
 
 
 def _thread_readings_report(ip_list):
-    app_cached_variables.creating_readings_report = True
-    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_readings_report, "Readings")
-    app_cached_variables.html_readings_report = new_report
-    app_cached_variables.creating_readings_report = False
+    rm_cached_variables.creating_readings_report = True
+    new_report = create_sensor_report(ip_list, sg_commands.rm_readings_report, "Readings")
+    rm_cached_variables.html_readings_report = new_report
+    rm_cached_variables.creating_readings_report = False
 
 
 def generate_latency_report(ip_list, threaded=True):
@@ -149,10 +119,10 @@ def generate_latency_report(ip_list, threaded=True):
 
 
 def _thread_latency_report(ip_list):
-    app_cached_variables.creating_latency_report = True
-    new_report = create_sensor_report(ip_list, sensor_get_commands.rm_latency_report, "Latency")
-    app_cached_variables.html_latency_report = new_report
-    app_cached_variables.creating_latency_report = False
+    rm_cached_variables.creating_latency_report = True
+    new_report = create_sensor_report(ip_list, sg_commands.rm_latency_report, "Latency")
+    rm_cached_variables.html_latency_report = new_report
+    rm_cached_variables.creating_latency_report = False
 
 
 def create_sensor_report(address_list, sensor_report_url, html_report_heading):
@@ -178,16 +148,17 @@ def create_sensor_report(address_list, sensor_report_url, html_report_heading):
         html_report = str(report[1])
         rsm_address_port = str(report[2])
         if auth_error_msg_contains in html_report:
-            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
+            sensor_report = rm_cached_variables.report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
             sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
             final_report_replacement += sensor_report + "\n"
         elif '<div class="col-12 col-m-12 col-sm-12">' in html_report:
             final_report_replacement += html_report + "\n"
         else:
-            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Unknown Error")
+            sensor_report = rm_cached_variables.report_sensor_error_template.replace("{{ Heading }}", "Unknown Error")
             sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
             final_report_replacement += sensor_report + "\n"
-    new_report = html_report_start + html_report_template + html_report_end
+    new_report = rm_cached_variables.html_report_start + rm_cached_variables.html_report_template
+    new_report += rm_cached_variables.html_report_end
     new_report = new_report.replace("{{ ReportHeading }}", html_report_heading)
     new_report = new_report.replace("{{ DateTime }}", get_system_datetime())
     new_report = new_report.replace("{{ SensorInfoBoxes }}", final_report_replacement)
@@ -201,7 +172,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
         rsm_address_port = ip_address.strip() + ":10065"
 
     if sensor_check:
-        login_check = get_http_sensor_reading(ip_address, command=sensor_get_commands.check_portal_login)
+        login_check = get_http_sensor_reading(ip_address, command=sg_commands.check_portal_login)
         if login_check == "OK" or not login_required:
             if login_check == "OK":
                 login_check = "Login OK"
@@ -214,11 +185,11 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
             sensor_report = sensor_report.replace("{{ LoginCheck }}", login_check)
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", sensor_check)
         else:
-            sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
+            sensor_report = rm_cached_variables.report_sensor_error_template.replace("{{ Heading }}", "Login Failed")
     else:
         logger.network_logger.debug("Remote Sensor " + ip_address + " Offline")
         sensor_check = "99.99"
-        sensor_report = report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
+        sensor_report = rm_cached_variables.report_sensor_error_template.replace("{{ Heading }}", "Sensor Offline")
     sensor_report = sensor_report.replace("{{ RSMAddressAndPort }}", rsm_address_port)
     data_queue.put([sensor_check, sensor_report, rsm_address_port])
 

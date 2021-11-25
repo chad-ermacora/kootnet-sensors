@@ -26,6 +26,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 try:
     # In try statement so import does not prevent loading when missing
     import requests
@@ -350,8 +351,8 @@ def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnl
         sensor_address = "[" + sensor_address + "]"
     try:
         url = "https://" + sensor_address + ":" + http_port + "/"
-        login_credentials = {"login_username": app_cached_variables.http_login,
-                             "login_password": app_cached_variables.http_password}
+        login_credentials = {"login_username": rm_cached_variables.http_login,
+                             "login_password": rm_cached_variables.http_password}
         authenticated_requests = requests.Session()
         if command not in network_get_commands.no_http_auth_required_commands_list:
             authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
@@ -375,8 +376,8 @@ def send_http_command(sensor_address, command, included_data=None, test_run=None
         sensor_address = "[" + sensor_address + "]"
     try:
         url = "https://" + sensor_address + ":" + http_port + "/"
-        login_credentials = {"login_username": app_cached_variables.http_login,
-                             "login_password": app_cached_variables.http_password}
+        login_credentials = {"login_username": rm_cached_variables.http_login,
+                             "login_password": rm_cached_variables.http_password}
         authenticated_requests = requests.Session()
         if command not in network_get_commands.no_http_auth_required_commands_list:
             authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)

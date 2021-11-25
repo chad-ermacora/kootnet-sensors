@@ -24,9 +24,9 @@ from time import strftime
 from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 from tests import test_http_server
 
 compatible_version_str = "Beta.34.x"
@@ -44,8 +44,8 @@ def run_tests():
     app_textbox_address.disable()
     app_button_test_sensor.disable()
     app_text_output.disable()
-    app_cached_variables.http_login = app_textbox_user.value
-    app_cached_variables.http_password = app_textbox_password.value
+    rm_cached_variables.http_login = app_textbox_user.value
+    rm_cached_variables.http_password = app_textbox_password.value
 
     sensor_address = app_textbox_address.value
     test_http_server.sensor_address = sensor_address

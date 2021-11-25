@@ -29,6 +29,7 @@ from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
 from http_server.server_http_auth import auth_error_msg_contains
+from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 network_commands = app_cached_variables.CreateNetworkGetCommands()
 data_queue = Queue()
@@ -74,12 +75,12 @@ def check_sensor_status_sensor_control(address_list):
 def clear_zip_names():
     """ Set's all sensor control download names to nothing ("") """
 
-    app_cached_variables.sc_reports_zip_name = ""
-    app_cached_variables.sc_logs_zip_name = ""
-    if app_cached_variables.sc_databases_zip_in_memory:
-        app_cached_variables.sc_databases_zip_name = ""
-    if app_cached_variables.sc_big_zip_in_memory:
-        app_cached_variables.sc_big_zip_name = ""
+    rm_cached_variables.sc_reports_zip_name = ""
+    rm_cached_variables.sc_logs_zip_name = ""
+    if rm_cached_variables.sc_databases_zip_in_memory:
+        rm_cached_variables.sc_databases_zip_name = ""
+    if rm_cached_variables.sc_big_zip_in_memory:
+        rm_cached_variables.sc_big_zip_name = ""
 
 
 def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=False, add_logs_size=False):
@@ -117,13 +118,13 @@ def create_the_big_zip(ip_list):
     then creates a single zip file for download off the local web portal.
     """
     new_name = "TheBigZip_" + app_cached_variables.hostname + "_" + str(time.time())[:-8] + ".zip"
-    app_cached_variables.sc_big_zip_name = new_name
+    rm_cached_variables.sc_big_zip_name = new_name
 
     if len(ip_list) > 0:
         try:
             return_names = ["ReportCombo.html"]
             generate_html_reports_combo(ip_list)
-            return_files = [app_cached_variables.html_combo_report]
+            return_files = [rm_cached_variables.html_combo_report]
 
             _queue_name_and_file_list(ip_list, network_commands.download_zipped_everything)
             ip_name_and_data = get_data_queue_items()
@@ -146,8 +147,8 @@ def create_the_big_zip(ip_list):
             logger.network_logger.info("Sensor Control - The Big Zip Generation Completed")
         except Exception as error:
             logger.primary_logger.error("Sensor Control - Big Zip Error: " + str(error))
-            app_cached_variables.sc_big_zip_name = ""
-    app_cached_variables.creating_the_big_zip = False
+            rm_cached_variables.sc_big_zip_name = ""
+    rm_cached_variables.creating_the_big_zip = False
 
 
 def downloads_direct_rsm(address_list, download_type="sensors_download_databases"):
@@ -238,14 +239,14 @@ def create_all_databases_zipped(ip_list):
             database_names.append(db_name)
             sensors_database.append(sensor_data[2])
 
-        app_cached_variables.sc_databases_zip_in_memory = False
+        rm_cached_variables.sc_databases_zip_in_memory = False
         zip_files(database_names, sensors_database, save_type="save_to_disk",
                   file_location=file_locations.html_sensor_control_databases_zip)
-        app_cached_variables.sc_databases_zip_name = "Multiple_Databases_" + str(time.time())[:-8] + ".zip"
+        rm_cached_variables.sc_databases_zip_name = "Multiple_Databases_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Databases Zip Generation Error: " + str(error))
-        app_cached_variables.sc_databases_zip_name = ""
-    app_cached_variables.creating_databases_zip = False
+        rm_cached_variables.sc_databases_zip_name = ""
+    rm_cached_variables.creating_databases_zip = False
     logger.network_logger.info("Sensor Control - Databases Zip Generation Complete")
 
 
@@ -272,12 +273,12 @@ def create_multiple_sensor_logs_zipped(ip_list):
             logs_zipped.append(sensor_data[2])
 
         clear_zip_names()
-        app_cached_variables.sc_in_memory_zip = zip_files(zip_names, logs_zipped)
-        app_cached_variables.sc_logs_zip_name = "Multiple_Logs_" + str(time.time())[:-8] + ".zip"
+        rm_cached_variables.sc_in_memory_zip = zip_files(zip_names, logs_zipped)
+        rm_cached_variables.sc_logs_zip_name = "Multiple_Logs_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Logs Zip Generation Error: " + str(error))
-        app_cached_variables.sc_logs_zip_name = ""
-    app_cached_variables.creating_logs_zip = False
+        rm_cached_variables.sc_logs_zip_name = ""
+    rm_cached_variables.creating_logs_zip = False
     logger.network_logger.info("Sensor Control - Multi Sensors Logs Zip Generation Complete")
 
 
@@ -314,11 +315,11 @@ def put_all_reports_zipped_to_cache(ip_list):
     try:
         hostname = app_cached_variables.hostname
         generate_html_reports_combo(ip_list)
-        html_reports = [app_cached_variables.html_combo_report]
+        html_reports = [rm_cached_variables.html_combo_report]
         html_report_names = ["ReportCombo.html"]
-        app_cached_variables.sc_in_memory_zip = zip_files(html_report_names, html_reports)
-        app_cached_variables.sc_reports_zip_name = "Reports_from_" + hostname + "_" + str(time.time())[:-8] + ".zip"
+        rm_cached_variables.sc_in_memory_zip = zip_files(html_report_names, html_reports)
+        rm_cached_variables.sc_reports_zip_name = "Reports_from_" + hostname + "_" + str(time.time())[:-8] + ".zip"
     except Exception as error:
         logger.network_logger.error("Sensor Control - Reports Zip Generation Error: " + str(error))
-    app_cached_variables.creating_the_reports_zip = False
+    rm_cached_variables.creating_combo_reports_zip = False
     logger.network_logger.info("Sensor Control - Reports Zip Generation Complete")
