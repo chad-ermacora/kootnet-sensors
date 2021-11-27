@@ -16,12 +16,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import requests
 from time import sleep
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_network import send_http_command, get_http_formatted_sensor_address
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules.system_access import get_uptime_minutes
@@ -48,9 +48,9 @@ class CreateCheckinServer:
 
         while not app_cached_variables.restart_sensor_checkin_thread:
             try:
-                url_checkin_server = app_config_access.urls_config.url_checkin_server
-                data = _get_sensor_checkin_data()
-                requests.post(url=url_checkin_server, timeout=10, verify=False, data=data)
+                url_checkin_server = get_http_formatted_sensor_address(app_config_access.urls_config.url_checkin_server)
+                resp = send_http_command(url_checkin_server, "SensorCheckin", dic_data=_get_sensor_checkin_data())
+                logger.network_logger.debug("Sensor Checkin Status Code: " + str(resp))
             except Exception as error:
                 logger.network_logger.debug("Failed to send Checkin ID: " + str(error))
             sleep_duration = app_config_access.checkin_config.checkin_wait_in_hours * 60 * 60

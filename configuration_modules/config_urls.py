@@ -33,7 +33,7 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
         ]
 
         self.url_update_server = "https://kootenay-networks.com/installers/"
-        self.url_checkin_server = "https://server.dragonwarz.net:10065/SensorCheckin"
+        self.url_checkin_server = "server.dragonwarz.net"
 
         self.update_configuration_settings_list()
         if load_from_file:
@@ -54,11 +54,7 @@ class CreateURLConfiguration(CreateGeneralConfiguration):
                 self.url_update_server += "/"
 
         if html_request.form.get("checkin_address") is not None:
-            self.url_checkin_server = self.ensure_http_in_url(html_request.form.get("checkin_address"))
-            if self.url_checkin_server.split("/")[-1] != "SensorCheckin":
-                if self.url_checkin_server[-1] != "/":
-                    self.url_checkin_server += "/"
-                self.url_checkin_server += "SensorCheckin"
+            self.url_checkin_server = html_request.form.get("checkin_address")
         self.update_configuration_settings_list()
 
     def update_configuration_settings_list(self):
