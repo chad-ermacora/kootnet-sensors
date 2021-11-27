@@ -21,18 +21,16 @@ import logging
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
+from configuration_modules.config_primary import CreatePrimaryConfiguration
 from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade, download_type_smb
 from operations_modules.software_version import version
+from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from http_server.server_http_generic_functions import save_http_auth_to_file
-imports_ok = False
-try:
-    import requests
-    imports_ok = True
-except Exception as import_error:
-    logger.primary_logger.error("Terminal Configuration Tool - Import: " + str(import_error))
 
 logging.captureWarnings(True)
 logger.primary_logger.debug("Terminal Configuration Tool Starting")
+primary_config = CreatePrimaryConfiguration()
+local_sensor_address = "127.0.0.1:" + str(primary_config.web_portal_port)
 
 options_menu = """Kootnet Sensors {{ Version }} - Terminal Configuration Tool\n
 1. View/Edit Primary & Installed Sensors Configurations
@@ -61,7 +59,6 @@ extra_options_menu = """Advanced Menu\n
 """
 remote_get_commands = app_cached_variables.CreateNetworkGetCommands()
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
-msg_requests_missing = "Unable to start update - Python requests module required"
 msg_upgrade_started = "Kootnet Sensors upgrade has started\nCheck Logs for more Info /home/kootnet_data/logs/"
 view_log_system_command = "tail -n 50 "
 
@@ -90,22 +87,16 @@ def start_script():
                     print(msg_service_not_installed)
             elif selection == 4:
                 if app_cached_variables.running_as_service:
-                    if imports_ok:
-                        print("Starting HTTP Standard Upgrade\n")
-                        start_kootnet_sensors_upgrade(thread_download=False)
-                        print(msg_upgrade_started)
-                    else:
-                        print(msg_requests_missing)
+                    print("Starting HTTP Standard Upgrade\n")
+                    start_kootnet_sensors_upgrade(thread_download=False)
+                    print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 5:
                 if app_cached_variables.running_as_service:
-                    if imports_ok:
-                        print("Starting HTTP Standard Re-Install\n")
-                        start_kootnet_sensors_upgrade(clean_upgrade=True, thread_download=False)
-                        print(msg_upgrade_started)
-                    else:
-                        print(msg_requests_missing)
+                    print("Starting HTTP Standard Re-Install\n")
+                    start_kootnet_sensors_upgrade(clean_upgrade=True, thread_download=False)
+                    print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 6:
@@ -120,11 +111,8 @@ def start_script():
                 else:
                     print(msg_service_not_installed)
             elif selection == 8:
-                if imports_ok:
-                    _test_sensors()
-                    print("Testing Complete")
-                else:
-                    print(msg_requests_missing)
+                _test_sensors()
+                print("Testing Complete")
             elif selection == 9:
                 os.system("clear")
                 print("Primary Log\n\n")
@@ -144,22 +132,16 @@ def start_script():
                 running = False
             elif selection == 21:
                 if app_cached_variables.running_as_service:
-                    if imports_ok:
-                        print("Starting HTTP Developmental Upgrade\n")
-                        start_kootnet_sensors_upgrade(dev_upgrade=True, thread_download=False)
-                        print(msg_upgrade_started)
-                    else:
-                        print(msg_requests_missing)
+                    print("Starting HTTP Developmental Upgrade\n")
+                    start_kootnet_sensors_upgrade(dev_upgrade=True, thread_download=False)
+                    print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 22:
                 if app_cached_variables.running_as_service:
-                    if imports_ok:
-                        print("Starting HTTP Developmental Re-Install\n")
-                        start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, thread_download=False)
-                        print(msg_upgrade_started)
-                    else:
-                        print(msg_requests_missing)
+                    print("Starting HTTP Developmental Re-Install\n")
+                    start_kootnet_sensors_upgrade(dev_upgrade=True, clean_upgrade=True, thread_download=False)
+                    print(msg_upgrade_started)
                 else:
                     print(msg_service_not_installed)
             elif selection == 23:
@@ -252,7 +234,9 @@ def _pip_upgrades():
 def _test_sensors():
     print("*** Starting Sensor Data test ***\n")
     try:
-        interval_data = _get_interval_sensor_data()
+        tmp_interval_data = get_http_sensor_reading(local_sensor_address, remote_get_commands.sensor_readings)
+        tmp_interval_data = tmp_interval_data.split(app_cached_variables.command_data_separator)
+        interval_data = [str(tmp_interval_data[0]), str(tmp_interval_data[1])]
         sensor_types = interval_data[0].split(",")
         sensor_readings = interval_data[1].split(",")
 
@@ -281,30 +265,13 @@ def _test_sensors():
 
         print(str_message)
         print("Showing Test Message on Installed Display (If Installed)\n")
-        _display_text_on_sensor("Display Test Message")
+        send_http_command(
+            sensor_address=local_sensor_address,
+            http_command="DisplayText",
+            dic_data={'command_data': "Display Test Message"}
+        )
     except Exception as error:
         logger.primary_logger.error("TCT - Tests Failed: " + str(error))
-
-
-def _get_interval_sensor_data():
-    """ Returns local sensor Interval data. """
-    try:
-        url = "https://127.0.0.1:10065/" + remote_get_commands.sensor_readings
-        tmp_return_data = requests.get(url=url, verify=False)
-        return_data = tmp_return_data.text.split(app_cached_variables.command_data_separator)
-        return [str(return_data[0]), str(return_data[1])]
-    except Exception as error:
-        logger.primary_logger.warning("TCT - Get Sensor Data - Unable to connect to localhost: " + str(error))
-    return ["error", "error"]
-
-
-def _display_text_on_sensor(text_message):
-    """ Displays text on local sensors display (if any). """
-    try:
-        url = "https://127.0.0.1:10065/DisplayText"
-        requests.put(url=url, data={'command_data': text_message}, verify=False)
-    except Exception as error:
-        logger.primary_logger.warning("TCT - Display - Unable to connect to localhost: " + str(error))
 
 
 def _restart_service(msg="Restarting Kootnet Sensors service to apply changes"):
