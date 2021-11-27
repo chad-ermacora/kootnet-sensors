@@ -55,8 +55,8 @@ from http_server.flask_blueprints.atpro.remote_management import rm_cached_varia
 
 base_rm_template_loc = "ATPro_admin/page_templates/remote_management/report_templates/"
 db_v = app_cached_variables.database_variables
-network_commands = app_cached_variables.CreateNetworkGetCommands()
-network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
+network_commands = app_cached_variables.network_get_commands
+network_system_commands = app_cached_variables.network_system_commands
 
 default_primary_config = CreatePrimaryConfiguration(load_from_file=False).get_config_as_str()
 default_primary_config = default_primary_config.replace("\n", "\\n")

@@ -57,7 +57,7 @@ extra_options_menu = """Advanced Menu\n
 28. Re-Install Kootnet Sensors (Latest Standard SMB)
 29. Re-Install Kootnet Sensors (Latest Developmental SMB)
 """
-remote_get_commands = app_cached_variables.CreateNetworkGetCommands()
+remote_get_commands = app_cached_variables.network_get_commands
 msg_service_not_installed = "Operation Cancelled - Not Running as Installed Service"
 msg_upgrade_started = "Kootnet Sensors upgrade has started\nCheck Logs for more Info /home/kootnet_data/logs/"
 view_log_system_command = "tail -n 50 "

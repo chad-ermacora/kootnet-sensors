@@ -29,7 +29,7 @@ except Exception as import_error:
 
 logging.captureWarnings(True)
 get_sensor_reading_error_msg = "Unable to get Sensor Reading/File"
-network_get_commands = app_cached_variables.CreateNetworkGetCommands()
+network_get_commands = app_cached_variables.network_get_commands
 
 
 def get_http_regular_file(file_http_url_location, get_text=True, timeout=10, verify_ssl=False):

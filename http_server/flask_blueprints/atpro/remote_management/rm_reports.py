@@ -20,14 +20,12 @@ import time
 from threading import Thread
 from queue import Queue
 from operations_modules import logger
-from operations_modules.app_cached_variables import CreateNetworkGetCommands
+from operations_modules.app_cached_variables import network_get_commands as sg_commands
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.http_generic_network import get_http_sensor_reading, get_html_response_bg_colour
 from sensor_modules.system_access import get_system_datetime
 from http_server.server_http_auth import auth_error_msg_contains
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
-
-sg_commands = CreateNetworkGetCommands()
 
 
 def generate_html_reports_combo(ip_list):

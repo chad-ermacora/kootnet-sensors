@@ -22,8 +22,8 @@ from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables as rm_cv
 
-network_commands = app_cached_variables.CreateNetworkGetCommands()
-network_system_commands = app_cached_variables.CreateNetworkSystemCommands()
+network_commands = app_cached_variables.network_get_commands
+network_system_commands = app_cached_variables.network_system_commands
 acv = app_cached_variables
 data_queue = Queue()
 

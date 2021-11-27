@@ -22,8 +22,6 @@ from operations_modules.http_generic_network import get_http_sensor_reading, sen
 from operations_modules import app_cached_variables
 from tests.create_test_configs import *
 
-sg_commands = app_cached_variables.CreateNetworkGetCommands()
-
 
 class TestApp(unittest.TestCase):
     def test_primary_config(self):
@@ -275,8 +273,8 @@ open_sense_map_config_test = CreateOpenSenseMapConfigurationTest()
 
 sensor_address = "localhost"
 
-remote_set = app_cached_variables.CreateNetworkSetCommands()
-remote_get = app_cached_variables.CreateNetworkGetCommands()
+remote_set = app_cached_variables.network_set_commands
+remote_get = app_cached_variables.network_get_commands
 sensor_get_commands = [
     remote_get.check_online_status, remote_get.sensor_name, remote_get.system_uptime,
     remote_get.sensor_readings, remote_get.sensors_latency, remote_get.cpu_temp,

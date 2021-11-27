@@ -32,7 +32,7 @@ from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_inde
 from http_server.server_http_auth import auth_error_msg_contains
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
-network_commands = app_cached_variables.CreateNetworkGetCommands()
+network_commands = app_cached_variables.network_get_commands
 data_queue = Queue()
 
 

@@ -24,7 +24,7 @@ from time import strftime
 from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules.app_cached_variables import CreateNetworkGetCommands
+from operations_modules.app_cached_variables import network_get_commands as sg_commands
 from operations_modules.http_generic_network import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
@@ -33,7 +33,6 @@ from tests import test_http_server
 compatible_version_str = "Beta.34.x"
 refined_compatible_version = CreateRefinedVersion("Beta.34.144")
 remote_sensor_version = CreateRefinedVersion()
-sg_commands = CreateNetworkGetCommands()
 
 
 def button_go():

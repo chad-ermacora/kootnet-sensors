@@ -24,7 +24,7 @@ from configuration_modules import app_config_access
 
 html_live_graph_sensor_wrappers_routes = Blueprint("html_live_graph_sensor_wrappers_routes", __name__)
 database_variables = app_cached_variables.database_variables
-db_gc = app_cached_variables.CreateNetworkGetCommands()
+db_gc = app_cached_variables.network_get_commands
 
 
 @html_live_graph_sensor_wrappers_routes.route("/LGWGetSensorID")
