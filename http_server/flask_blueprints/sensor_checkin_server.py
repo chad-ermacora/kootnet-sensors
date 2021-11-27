@@ -32,7 +32,7 @@ sc_database_location = file_locations.sensor_checkin_database
 
 
 @html_sensor_check_ins_routes.route("/remote-sensor-checkin", methods=["POST"])
-@html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST"])
+@html_sensor_check_ins_routes.route("/SensorCheckin", methods=["POST", "PUT"])
 def remote_sensor_check_ins():
     if app_config_access.checkin_config.enable_checkin_recording:
         if request.form.get("checkin_id"):
@@ -68,7 +68,7 @@ def remote_sensor_check_ins():
             except Exception as error:
                 logger.network_logger.warning("Sensor Checkin error for " + checkin_id + ": " + str(error))
         return "Failed", 400
-    return "Checkin Recording Disabled", 202
+    return "Checkin Recording Disabled", 503
 
 
 def check_sensor_checkin_columns(checkin_id):
