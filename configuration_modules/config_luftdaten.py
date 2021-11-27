@@ -19,7 +19,7 @@
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import software_version
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 
 
 class CreateLuftdatenConfiguration(CreateGeneralConfiguration):

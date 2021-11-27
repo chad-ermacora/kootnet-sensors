@@ -21,7 +21,7 @@ from subprocess import check_output
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules.app_cached_variables import running_with_root
-from operations_modules.app_generic_functions import CreateGeneralConfiguration
+from operations_modules.app_generic_classes import CreateGeneralConfiguration
 
 
 class CreateInstalledSensorsConfiguration(CreateGeneralConfiguration):
