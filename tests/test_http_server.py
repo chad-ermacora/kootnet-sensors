@@ -17,12 +17,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import unittest
-import requests
 from json import loads as json_loads
-from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
-    check_for_port_in_address, get_ip_and_port_split
+from operations_modules.http_generic_network import get_http_sensor_reading, send_http_test_config, send_http_command
 from operations_modules import app_cached_variables
 from tests.create_test_configs import *
+
+sg_commands = app_cached_variables.CreateNetworkGetCommands()
 
 
 class TestApp(unittest.TestCase):
@@ -87,31 +87,31 @@ class TestApp(unittest.TestCase):
                                                   config_name="OSM"))
 
     def _config_test_changes(self, config_instance, config_get_command, config_set_command, config_name=""):
-        original_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        original_config = get_http_sensor_reading(sensor_address, http_command=config_get_command)
 
         config_instance.set_settings_for_test1()
 
         send_config = config_instance.get_config_as_str()
-        send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
-        first_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        send_http_test_config(sensor_address, config_set_command, send_config)
+        first_set_config = get_http_sensor_reading(sensor_address, http_command=config_get_command)
         if self._bad_config(config_instance.get_config_as_str(), first_set_config, config_name=config_name + " 1"):
-            send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
+            send_http_test_config(sensor_address, config_set_command, original_config)
             return False
 
         config_instance.set_settings_for_test2()
 
         send_config = config_instance.get_config_as_str()
-        send_http_command(sensor_address, command=config_set_command, included_data=send_config, test_run=True)
-        second_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        send_http_test_config(sensor_address, config_set_command, send_config)
+        second_set_config = get_http_sensor_reading(sensor_address, http_command=config_get_command)
         if self._bad_config(config_instance.get_config_as_str(), second_set_config, config_name=config_name + " 2"):
-            send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
+            send_http_test_config(sensor_address, config_set_command, original_config)
             return False
 
-        send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
+        send_http_test_config(sensor_address, config_set_command, original_config)
 
-        original_set_config = get_http_sensor_reading(sensor_address, command=config_get_command)
+        original_set_config = get_http_sensor_reading(sensor_address, http_command=config_get_command)
         if self._bad_config(original_config, original_set_config, config_name=config_name + " 3"):
-            send_http_command(sensor_address, command=config_set_command, included_data=original_config, test_run=True)
+            send_http_test_config(sensor_address, config_set_command, original_config)
             return False
         return True
 
@@ -157,7 +157,7 @@ class TestApp2(unittest.TestCase):
     def test_sensor_get_commands(self):
         sensor_responses = []
         for command in sensor_get_commands:
-            sensor_responses.append(get_http_sensor_reading(sensor_address, command=command, timeout=5))
+            sensor_responses.append(get_http_sensor_reading(sensor_address, http_command=command, timeout=5))
 
         # from routes file system_commands.py
         self.assertTrue(sensor_responses[0] == "OK")
@@ -253,21 +253,10 @@ def check_dict_floats(sensor_data, data_name):
         print("Error: " + data_name + " - " + str(error))
 
 
-def http_display_text_on_sensor(text_message, sensor_address_var, http_port="10065"):
+def http_display_text_on_sensor(text_message, sensor_address_var):
     """ Sends provided text message to a remote sensor's display. """
-
-    if check_for_port_in_address(sensor_address_var):
-        sensor_address_var, http_port = get_ip_and_port_split(sensor_address_var)
-    elif len(sensor_address_var.split(":")) > 1:
-        sensor_address_var = "[" + sensor_address_var + "]"
-    try:
-        url = "https://" + sensor_address_var + ":" + http_port + "/DisplayText"
-        send_data = {'command_data': text_message}
-        tmp_return_data = requests.put(url=url, timeout=4, data=send_data, verify=False)
-        if tmp_return_data.text == "OK":
-            return True
-    except Exception as error:
-        print("Unable to display text on Sensor: " + str(error))
+    if send_http_command(sensor_address_var, "DisplayText", dic_data={'command_data': text_message}) == 200:
+        return True
     return False
 
 
