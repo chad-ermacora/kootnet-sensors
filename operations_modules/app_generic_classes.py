@@ -16,6 +16,161 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import os
+import time
+from threading import Thread
+from operations_modules import logger
+from operations_modules.app_generic_functions import get_file_content, write_file_to_disk
+
+
+class CreateGeneralConfiguration:
+    """ Base Configuration Template Class """
+
+    def __init__(self, config_file_location, load_from_file=True):
+        self.load_from_file = load_from_file
+        self.config_file_location = config_file_location
+        self.config_file_header = "General Configuration File"
+        self.valid_setting_count = 0
+        self.config_settings = []
+        self.config_settings_names = []
+
+    def _init_config_variables(self):
+        """ Sets configuration settings from file, saves default if missing. """
+
+        try:
+            if self.check_config_file_exists():
+                self.set_config_with_str(get_file_content(self.config_file_location))
+        except Exception as error:
+            log_msg = "Error setting variables from "
+            log_msg2 = "Saving Default Configuration for "
+            logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - " + str(error))
+            logger.primary_logger.warning(log_msg2 + str(self.config_file_location))
+            self.save_config_to_file()
+
+    def check_config_file_exists(self):
+        if not os.path.isfile(self.config_file_location):
+            logger.primary_logger.info(self.config_file_location + " Not found, saving default")
+            self.save_config_to_file()
+            return False
+        return True
+
+    def save_config_to_file(self):
+        """ Saves configuration to file. """
+        logger.primary_logger.debug("Saving Configuration to " + str(self.config_file_location))
+
+        write_file_to_disk(self.config_file_location, self.get_config_as_str())
+
+    def get_config_as_str(self):
+        """ Returns configuration as a String. """
+        logger.primary_logger.debug("Returning Configuration as string for " + str(self.config_file_location))
+
+        new_file_content = self.config_file_header + "\n"
+        for setting, setting_name in zip(self.config_settings, self.config_settings_names):
+            new_file_content += str(setting) + " = " + str(setting_name) + "\n"
+        return new_file_content
+
+    def set_config_with_str(self, config_file_text):
+        """ Sets configuration with the provided Text. """
+
+        if config_file_text is not None:
+            config_file_text = config_file_text.strip().split("\n")
+            config_file_text = config_file_text[1:]  # Remove the header that's not a setting
+            if not self.valid_setting_count == len(config_file_text):
+                if self.load_from_file:
+                    log_msg = "Invalid number of settings found in "
+                    logger.primary_logger.warning(log_msg + str(self.config_file_location) + " - Please Check Config")
+
+            self.config_settings = []
+            for line in config_file_text:
+                try:
+                    line_split = line.split("=")
+                    setting = line_split[0].strip()
+                except Exception as error:
+                    if self.load_from_file:
+                        logger.primary_logger.warning(str(self.config_file_location) + " - " + str(error))
+                    setting = "error"
+                self.config_settings.append(setting)
+        else:
+            if self.load_from_file:
+                logger.primary_logger.error("Null configuration text provided " + str(self.config_file_location))
+
+
+class CreateMonitoredThread:
+    """
+    Creates a thread and checks every 30 seconds to make sure its still running.
+    If the thread stops, it will be restarted up to 5 times by default.
+    If it gets restarted more then 5 times, it logs an error message and stops.
+    """
+
+    def __init__(self, function, args=None, thread_name="Generic Thread", max_restart_tries=10):
+        self.is_running = True
+        self.current_state = "Starting"
+        self.function = function
+        self.args = args
+        self.thread_name = thread_name
+        self.current_restart_count = 0
+        self.max_restart_count = max_restart_tries
+
+        self.shutdown_thread = False
+
+        if self.args is not None:
+            self.monitored_thread = Thread(target=self.function, args=self.args)
+        else:
+            self.monitored_thread = Thread(target=self.function)
+        self.monitored_thread.daemon = True
+
+        self.watch_thread = Thread(target=self._thread_and_monitor)
+        self.watch_thread.daemon = True
+        self.watch_thread.start()
+
+        self.restart_watch_thread = Thread(target=self._restart_count_reset_watch)
+        self.restart_watch_thread.daemon = True
+        self.restart_watch_thread.start()
+        self.current_state = "Running"
+
+    def _restart_count_reset_watch(self):
+        """ Resets self.current_restart_count to 0 if it's been longer then 60 seconds since a restart. """
+
+        last_restart_time = time.time()
+        last_count = 0
+        while True:
+            if self.current_restart_count:
+                if last_count != self.current_restart_count:
+                    last_count = self.current_restart_count
+                    last_restart_time = time.time()
+                elif time.time() - last_restart_time > 60:
+                    self.current_restart_count = 0
+            time.sleep(30)
+
+    def _thread_and_monitor(self):
+        logger.primary_logger.debug(" -- Starting " + self.thread_name + " Thread")
+
+        self.monitored_thread.start()
+        while not self.shutdown_thread:
+            if not self.monitored_thread.is_alive():
+                logger.primary_logger.info(self.thread_name + " Restarting...")
+                self.is_running = False
+                self.current_state = "Restarting"
+                self.current_restart_count += 1
+                if self.current_restart_count < self.max_restart_count:
+                    if self.args is None:
+                        self.monitored_thread = Thread(target=self.function)
+                    else:
+                        self.monitored_thread = Thread(target=self.function, args=self.args)
+                    self.monitored_thread.daemon = True
+                    self.monitored_thread.start()
+                    self.is_running = True
+                    self.current_state = "Running"
+                else:
+                    log_msg = self.thread_name + " has restarted " + str(self.current_restart_count)
+                    log_msg += " times in less then 1 minutes."
+                    logger.primary_logger.critical(log_msg + " No further restart attempts will be made.")
+                    self.current_state = "Error"
+                    while True:
+                        time.sleep(600)
+            time.sleep(5)
+        self.current_state = "Stopped"
+        self.shutdown_thread = False
 
 
 class CreateNetworkSystemCommands:
