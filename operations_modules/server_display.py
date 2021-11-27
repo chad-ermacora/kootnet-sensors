@@ -18,7 +18,7 @@
 """
 from time import sleep
 from operations_modules import logger
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules.system_access import get_uptime_minutes

@@ -20,7 +20,8 @@ from os import urandom
 from hashlib import sha256
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules.app_generic_functions import CreateMonitoredThread, thread_function
+from operations_modules.app_generic_classes import CreateMonitoredThread
+from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import update_cached_variables
 from configuration_modules import app_config_access

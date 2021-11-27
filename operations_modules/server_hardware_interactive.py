@@ -17,7 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 from time import sleep
-from operations_modules.app_generic_functions import thread_function, CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
+from operations_modules.app_generic_functions import thread_function
 from operations_modules import app_cached_variables
 from configuration_modules import app_config_access
 from sensor_modules.sensor_access import sensors_direct

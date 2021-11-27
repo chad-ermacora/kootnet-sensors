@@ -20,7 +20,7 @@ from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_cached_variables_update import check_for_new_version
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
 from operations_modules.software_version import CreateRefinedVersion, version
 from configuration_modules import app_config_access
 from upgrade_modules.upgrade_functions import start_kootnet_sensors_upgrade

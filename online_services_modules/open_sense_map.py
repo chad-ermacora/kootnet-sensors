@@ -20,7 +20,7 @@ import requests
 from time import sleep
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import CreateMonitoredThread
+from operations_modules.app_generic_classes import CreateMonitoredThread
 from configuration_modules.app_config_access import installed_sensors, open_sense_map_config as osm_config
 from online_services_modules.osm_sensor_templates import pimoroni_enviro_plus, sensirion_sps30, pimoroni_as7262, \
     pimoroni_enviro, pimoroni_ltr_559, pimoroni_bmp280, raspberry_pi_sense_hat, pimoroni_bme680, pimoroni_veml6075, \
