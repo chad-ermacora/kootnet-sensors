@@ -22,19 +22,19 @@ import socket
 import sqlite3
 from datetime import datetime, timedelta
 from time import sleep
-import requests
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_file_content, \
     get_list_of_filenames_in_dir as get_names_list_from_dir, write_file_to_disk, zip_files, get_md5_hash_of_file
+from operations_modules.http_generic_network import get_http_regular_file, check_http_file_exist
 from operations_modules import network_ip
 from operations_modules import network_wifi
 from operations_modules.sqlite_database import sql_execute_get_data, create_table_and_datetime, \
     check_sql_table_and_column, get_one_db_entry
 from operations_modules import software_version
-from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 from configuration_modules import app_config_access
+from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
 
 db_v = app_cached_variables.database_variables
 first_run = True
@@ -382,11 +382,9 @@ def check_for_new_version():
     app_cached_variables.update_server_file_present_upgrade_installer = None
 
     try:
-        request_data = requests.get(standard_url, allow_redirects=False)
-        standard_version_available = _get_cleaned_version(request_data.content.decode("utf-8").strip())
+        standard_version_available = _get_cleaned_version(get_http_regular_file(standard_url, timeout=10))
         app_cached_variables.standard_version_available = standard_version_available
-        request_data = requests.get(developmental_url, allow_redirects=False)
-        developmental_version_available = _get_cleaned_version(request_data.content.decode("utf-8").strip())
+        developmental_version_available = _get_cleaned_version(get_http_regular_file(developmental_url, timeout=10))
         app_cached_variables.developmental_version_available = developmental_version_available
 
         if _check_if_version_newer(app_cached_variables.standard_version_available):
@@ -405,32 +403,19 @@ def check_for_new_version():
             app_config_access.urls_config.url_update_server + "KootnetSensors.deb",
             app_config_access.urls_config.url_update_server + "KootnetSensors_online.deb"
         ]
-
-        md5_file, version_file, full_installer_file, upgrade_installer_file = _get_files_exist(update_server_files)
-        app_cached_variables.update_server_file_present_md5 = md5_file
-        app_cached_variables.update_server_file_present_version = version_file
-        app_cached_variables.update_server_file_present_full_installer = full_installer_file
-        app_cached_variables.update_server_file_present_upgrade_installer = upgrade_installer_file
+        files_exist_list = []
+        for update_file in update_server_files:
+            if check_http_file_exist(update_file):
+                files_exist_list.append(True)
+            else:
+                files_exist_list.append(False)
+        app_cached_variables.update_server_file_present_md5 = files_exist_list[0]
+        app_cached_variables.update_server_file_present_version = files_exist_list[1]
+        app_cached_variables.update_server_file_present_full_installer = files_exist_list[2]
+        app_cached_variables.update_server_file_present_upgrade_installer = files_exist_list[3]
     except Exception as error:
         logger.primary_logger.debug("Update Server Files Check Failed: " + str(error))
-
     atpro_notifications.check_updates()
-
-
-def _get_files_exist(file_urls_list):
-    return_results = []
-    for file_url in file_urls_list:
-        try:
-            response = requests.head(file_url)
-            if response.status_code != 404:
-                return_results.append(True)
-            else:
-                return_results.append(False)
-        except Exception as error:
-            log_msg = "Error checking for update server file " + file_url + " Check Failed: "
-            logger.primary_logger.debug(log_msg + str(error))
-            return_results.append(False)
-    return return_results
 
 
 def _get_cleaned_version(version_text):

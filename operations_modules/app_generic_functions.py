@@ -18,7 +18,6 @@
 """
 import os
 import time
-import logging
 from hashlib import scrypt, md5
 from datetime import datetime, timedelta
 from io import BytesIO
@@ -26,16 +25,6 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 from threading import Thread
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
-try:
-    # In try statement so import does not prevent loading when missing
-    import requests
-except Exception as import_error:
-    logger.primary_logger.debug("requests python module import error: " + str(import_error))
-
-logging.captureWarnings(True)
-get_sensor_reading_error_msg = "Unable to get Sensor Reading/File"
-network_get_commands = app_cached_variables.CreateNetworkGetCommands()
 
 
 class CreateGeneralConfiguration:
@@ -315,100 +304,6 @@ def zip_files(file_names_list, files_content_list, save_type="get_bytes_io", fil
     except Exception as error:
         logger.primary_logger.error("Zip Files Failed: " + str(error))
         return "error"
-
-
-def check_for_port_in_address(address):
-    """ Checks provided remote sensor address text (IP or DNS) for a port and if found, returns True, else False. """
-
-    if "]" in address:
-        ip_6_split = address.strip().split("]")[-1]
-        if ":" in ip_6_split:
-            return True
-    elif len(address.strip().split(":")) == 2:
-        return True
-    return False
-
-
-def get_ip_and_port_split(address):
-    """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
-
-    address = address.strip()
-    if "]" in address:
-        ip_6_address = address.split("[")[-1].split("]")[0]
-        ip_6_port = address.split("]")[-1].split(":")[-1]
-        return ["[" + ip_6_address + "]", ip_6_port]
-    else:
-        return address.split(":")
-
-
-def get_http_sensor_reading(sensor_address, http_port="10065", command="CheckOnlineStatus", timeout=10, get_file=False):
-    """ Returns requested remote sensor data (based on the provided command data). """
-    if get_file:
-        timeout = (10, 600)
-    if check_for_port_in_address(sensor_address):
-        sensor_address, http_port = get_ip_and_port_split(sensor_address)
-    elif len(sensor_address.split(":")) > 1:
-        sensor_address = "[" + sensor_address + "]"
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/"
-        login_credentials = {"login_username": rm_cached_variables.http_login,
-                             "login_password": rm_cached_variables.http_password}
-        authenticated_requests = requests.Session()
-        if command not in network_get_commands.no_http_auth_required_commands_list:
-            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
-        url = url + command
-        tmp_return_data = authenticated_requests.get(url=url, timeout=timeout, verify=False)
-        if get_file:
-            return tmp_return_data.content
-        return tmp_return_data.text
-    except Exception as error:
-        log_msg = "Remote Sensor Data Request - HTTPS GET Error for " + sensor_address + ": " + str(error)
-        logger.network_logger.debug(log_msg)
-        return get_sensor_reading_error_msg
-
-
-def send_http_command(sensor_address, command, included_data=None, test_run=None, http_port="10065", timeout=10):
-    """ Sends command and data (if any) to a remote sensor. """
-
-    if check_for_port_in_address(sensor_address):
-        sensor_address, http_port = get_ip_and_port_split(sensor_address)
-    elif len(sensor_address.split(":")) > 1:
-        sensor_address = "[" + sensor_address + "]"
-    try:
-        url = "https://" + sensor_address + ":" + http_port + "/"
-        login_credentials = {"login_username": rm_cached_variables.http_login,
-                             "login_password": rm_cached_variables.http_password}
-        authenticated_requests = requests.Session()
-        if command not in network_get_commands.no_http_auth_required_commands_list:
-            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
-
-        url = url + command
-        command_data = {"command_data": included_data, "test_run": test_run}
-        authenticated_requests.put(url=url, timeout=timeout, verify=False, auth=login_credentials, data=command_data)
-    except Exception as error:
-        log_msg = "Remote Sensor Send Command: HTTPS PUT Error:" + sensor_address + ": " + str(error)
-        logger.network_logger.error(log_msg)
-
-
-def get_html_response_bg_colour(response_time):
-    """ Returns background colour to use in Sensor Control HTML pages based on provided sensor response time. """
-
-    try:
-        delay_float = float(response_time)
-        background_colour = "darkgreen"
-        if 0.0 <= delay_float < 0.5:
-            pass
-        elif 0.5 < delay_float < 0.75:
-            background_colour = "#859B14"
-        elif 0.75 < delay_float < 1.5:
-            background_colour = "#8b4c00"
-        elif 1.5 < delay_float:
-            background_colour = "red"
-    except Exception as error:
-        logger.network_logger.debug("Sensor Control - Check Online Status - Bad Delay")
-        logger.network_logger.debug("Check Online Status Error: " + str(error))
-        background_colour = "purple"
-    return background_colour
 
 
 def adjust_datetime(var_datetime, hour_offset, return_datetime_obj=False):
