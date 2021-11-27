@@ -182,7 +182,7 @@ class CreateNetworkGetCommands:
             self.particulate_matter_2_5, self.particulate_matter_4, self.particulate_matter_10, self.red, self.orange,
             self.yellow, self.green, self.blue, self.violet, self.ultra_violet_index, self.ultra_violet_a,
             self.ultra_violet_b, self.acc_x, self.acc_y, self.acc_z, self.mag_x, self.mag_y, self.mag_z, self.gyro_x,
-            self.gyro_y, self.gyro_z, self.system_uptime_minutes
+            self.gyro_y, self.gyro_z, self.system_uptime_minutes, "SensorCheckin", "remote-sensor-checkin"
         ] + CreateLiveGraphWrapperNetworkGetCommands().no_http_auth_required_commands_list
 
 
