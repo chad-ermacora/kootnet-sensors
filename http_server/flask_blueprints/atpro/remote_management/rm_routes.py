@@ -17,15 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import os
-import requests
 from threading import Thread
 from datetime import datetime
 from flask import Blueprint, render_template, request
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_http_sensor_reading, send_http_command, \
-    get_list_of_filenames_in_dir, get_file_size, check_for_port_in_address, get_ip_and_port_split
+from operations_modules.app_generic_functions import get_list_of_filenames_in_dir, get_file_size
+from operations_modules.http_generic_network import get_http_sensor_reading, send_http_command
 from operations_modules.app_validation_checks import url_is_valid
 from operations_modules.software_version import version
 from operations_modules.software_automatic_upgrades import get_automatic_upgrade_enabled_text
@@ -83,42 +82,6 @@ default_wifi_config = "# https://manpages.debian.org/stretch/wpasupplicant/wpa_s
 default_network_config = "# https://manpages.debian.org/testing/dhcpcd5/dhcpcd.conf.5.en.html"
 
 html_atpro_remote_management_routes = Blueprint("html_atpro_remote_management_routes", __name__)
-
-
-# ToDo: Remove need, create requests generic functions for all things requests
-class CreateSensorHTTPCommand:
-    """ Creates Object to use for Sending a command and optional data to a remote sensor. """
-
-    def __init__(self, sensor_address, command, command_data=None):
-        if command_data is None:
-            self.sensor_command_data = {"NotSet": True}
-        else:
-            self.sensor_command_data = command_data
-
-        self.sensor_address = sensor_address
-        self.http_port = "10065"
-        self.sensor_command = command
-        self._check_ip_port()
-
-    def send_http_command(self):
-        """ Sends command and data to sensor. """
-        try:
-            url = "https://" + self.sensor_address + ":" + self.http_port + "/"
-            login_credentials = {"login_username": rm_cached_variables.http_login,
-                                 "login_password": rm_cached_variables.http_password}
-            authenticated_requests = requests.Session()
-            authenticated_requests.post(url + "atpro/login", login_credentials, verify=False)
-
-            url = url + self.sensor_command
-            authenticated_requests.post(url=url, timeout=5, verify=False, data=self.sensor_command_data)
-        except Exception as error:
-            logger.network_logger.error("Unable to send command to " + str(self.sensor_address) + ": " + str(error))
-
-    def _check_ip_port(self):
-        if check_for_port_in_address(self.sensor_address):
-            self.sensor_address, self.http_port = get_ip_and_port_split(self.sensor_address)
-        elif len(self.sensor_address.split(":")) > 1:
-            self.sensor_address = "[" + self.sensor_address + "]"
 
 
 @html_atpro_remote_management_routes.route("/atpro/sensor-rm", methods=["GET", "POST"])
@@ -376,8 +339,7 @@ def _push_data_to_sensors(url_command, html_dictionary_data):
     if len(ip_list) < 1:
         return get_message_page("All sensors appear to be Offline", page_url="sensor-rm")
     for ip in ip_list:
-        http_command_instance = CreateSensorHTTPCommand(ip, url_command, command_data=html_dictionary_data)
-        http_command_instance.send_http_command()
+        send_http_command(ip, url_command, dic_data=html_dictionary_data)
     msg_2 = "HTML configuration data sent to " + str(len(ip_list)) + " Sensors"
     return get_message_page("Sensor Control - Configuration(s) Sent", msg_2, page_url="sensor-rm")
 
@@ -438,7 +400,7 @@ def html_atpro_remote_management_functions(filename):
     return get_message_page("Invalid Remote Sensor Management Command", page_url="sensor-rm", full_reload=False)
 
 
-def run_system_command(command, include_data=None):
+def run_system_command(command):
     logger.network_logger.debug("* Sensor Control '" + command + "' initiated by " + str(request.remote_addr))
     if len(app_config_access.sensor_control_config.get_raw_ip_addresses_as_list()) < 1:
         return _get_missing_sensor_addresses_page()
@@ -453,23 +415,20 @@ def run_system_command(command, include_data=None):
         return get_message_page(msg_1, msg_2, page_url="sensor-rm", full_reload=False)
 
     for ip in ip_list:
-        thread = Thread(target=_system_command_thread, args=(ip, command, include_data))
+        thread = Thread(target=_system_command_thread, args=(ip, command))
         thread.daemon = True
         thread.start()
     msg_1 = command + " is now being sent to " + str(len(ip_list)) + " Sensors"
     return get_message_page("Sending Sensor Commands", msg_1, page_url="sensor-rm", full_reload=False)
 
 
-def _system_command_thread(ip, command, include_data=None):
+def _system_command_thread(ip, command):
     if _login_successful(ip):
-        if include_data is not None:
-            send_http_command(ip, command, included_data=include_data)
-        else:
-            get_http_sensor_reading(ip, command=command)
+        get_http_sensor_reading(ip, http_command=command)
 
 
 def _login_successful(ip):
-    if get_http_sensor_reading(ip, command=network_commands.check_portal_login) == "OK":
+    if get_http_sensor_reading(ip, http_command=network_commands.check_portal_login) == "OK":
         return True
     logger.network_logger.warning("The Sensor " + str(ip) + " did not accept provided Login Credentials")
     return False

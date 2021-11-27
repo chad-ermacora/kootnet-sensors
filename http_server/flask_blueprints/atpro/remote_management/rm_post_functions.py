@@ -23,8 +23,9 @@ from flask import render_template
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_http_sensor_reading, zip_files, \
-    get_ip_and_port_split, start_and_wait_threads, check_for_port_in_address, get_html_response_bg_colour
+from operations_modules.app_generic_functions import zip_files, start_and_wait_threads
+from operations_modules.http_generic_network import get_http_sensor_reading, get_http_kootnet_sensor_file, \
+    check_for_port_in_address, get_html_response_bg_colour, get_ip_and_port_split
 from configuration_modules import app_config_access
 from http_server.flask_blueprints.atpro.remote_management.rm_reports import generate_html_reports_combo
 from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index
@@ -96,11 +97,11 @@ def get_remote_sensor_check_and_delay(address, add_hostname=False, add_db_size=F
         sensor_hostname = ""
         download_size = "NA"
         if add_hostname:
-            sensor_hostname = get_sensor_reading(address, command="GetHostName").strip()
+            sensor_hostname = get_sensor_reading(address, http_command="GetHostName").strip()
         if add_db_size:
-            download_size = get_sensor_reading(address, command="GetSQLDBSize").strip()
+            download_size = get_sensor_reading(address, http_command="GetSQLDBSize").strip()
         if add_logs_size:
-            download_size = get_sensor_reading(address, command="GetZippedLogsSize").strip()
+            download_size = get_sensor_reading(address, http_command="GetZippedLogsSize").strip()
     else:
         task_end_time = "NA "
         sensor_hostname = "Offline"
@@ -300,8 +301,8 @@ def _queue_name_and_file_list(ip_list, command):
 
 def _worker_queue_list_ip_name_file(address, command):
     try:
-        sensor_name = get_http_sensor_reading(address, command="GetHostName")
-        sensor_data = get_http_sensor_reading(address, command=command, get_file=True)
+        sensor_name = get_http_sensor_reading(address, http_command="GetHostName")
+        sensor_data = get_http_kootnet_sensor_file(address, http_command=command)
         data_queue.put([address, sensor_name, sensor_data])
     except Exception as error:
         logger.network_logger.error("Sensor Control - Get Remote File Failed: " + str(error))

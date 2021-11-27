@@ -24,7 +24,8 @@ from time import strftime
 from threading import Thread
 from operations_modules import file_locations
 from operations_modules import logger
-from operations_modules.app_generic_functions import get_http_sensor_reading
+from operations_modules.app_cached_variables import CreateNetworkGetCommands
+from operations_modules.http_generic_network import get_http_sensor_reading
 from operations_modules.software_version import CreateRefinedVersion
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 from tests import test_http_server
@@ -32,6 +33,7 @@ from tests import test_http_server
 compatible_version_str = "Beta.34.x"
 refined_compatible_version = CreateRefinedVersion("Beta.34.144")
 remote_sensor_version = CreateRefinedVersion()
+sg_commands = CreateNetworkGetCommands()
 
 
 def button_go():
@@ -52,8 +54,8 @@ def run_tests():
 
     print("Sensor: " + str(sensor_address) + "\n\n")
     if get_http_sensor_reading(sensor_address, timeout=5) == "OK":
-        if get_http_sensor_reading(sensor_address, command="TestLogin", timeout=5) == "OK":
-            temp_version = get_http_sensor_reading(sensor_address, command="GetSensorVersion", timeout=5)
+        if get_http_sensor_reading(sensor_address, http_command=sg_commands.check_portal_login, timeout=5) == "OK":
+            temp_version = get_http_sensor_reading(sensor_address, http_command=sg_commands.program_version, timeout=5)
             remote_sensor_version.load_from_string(temp_version)
             if remote_sensor_version.major_version == refined_compatible_version.major_version and \
                     remote_sensor_version.feature_version == refined_compatible_version.feature_version and \

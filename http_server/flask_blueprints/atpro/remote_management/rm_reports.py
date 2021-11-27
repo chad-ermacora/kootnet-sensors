@@ -21,8 +21,8 @@ from threading import Thread
 from queue import Queue
 from operations_modules import logger
 from operations_modules.app_cached_variables import CreateNetworkGetCommands
-from operations_modules.app_generic_functions import get_http_sensor_reading, thread_function, \
-    get_html_response_bg_colour
+from operations_modules.app_generic_functions import thread_function
+from operations_modules.http_generic_network import get_http_sensor_reading, get_html_response_bg_colour
 from sensor_modules.system_access import get_system_datetime
 from http_server.server_http_auth import auth_error_msg_contains
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
@@ -172,7 +172,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
         rsm_address_port = ip_address.strip() + ":10065"
 
     if sensor_check:
-        login_check = get_http_sensor_reading(ip_address, command=sg_commands.check_portal_login)
+        login_check = get_http_sensor_reading(ip_address, http_command=sg_commands.check_portal_login)
         if login_check == "OK" or not login_required:
             if login_check == "OK":
                 login_check = "Login OK"
@@ -180,7 +180,7 @@ def _get_remote_management_report(ip_address, sensor_report_url, data_queue, log
                 login_check = "Login Failed"
             else:
                 login_check = "Unknown Error"
-            sensor_report = get_http_sensor_reading(ip_address, command=sensor_report_url)
+            sensor_report = get_http_sensor_reading(ip_address, http_command=sensor_report_url)
             sensor_report = sensor_report.replace("{{ ResponseBackground }}", get_html_response_bg_colour(sensor_check))
             sensor_report = sensor_report.replace("{{ LoginCheck }}", login_check)
             sensor_report = sensor_report.replace("{{ SensorResponseTime }}", sensor_check)

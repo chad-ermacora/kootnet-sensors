@@ -19,7 +19,7 @@
 from flask import Blueprint, request
 from operations_modules import logger
 from operations_modules import app_cached_variables
-from operations_modules.app_generic_functions import get_sensor_reading_error_msg, get_http_sensor_reading
+from operations_modules.http_generic_network import get_sensor_reading_error_msg, get_http_sensor_reading
 from configuration_modules import app_config_access
 
 html_live_graph_sensor_wrappers_routes = Blueprint("html_live_graph_sensor_wrappers_routes", __name__)
@@ -360,7 +360,7 @@ def lgw_get_gyro_z():
 def _get_sensor_reading(sensor_get_command):
     no_sensor_return = "NoSensor"
     graph_sensor_address = app_config_access.live_graphs_config.graph_sensor_address
-    remote_reading = get_http_sensor_reading(graph_sensor_address, command=sensor_get_command, timeout=0.5)
+    remote_reading = get_http_sensor_reading(graph_sensor_address, http_command=sensor_get_command, timeout=0.5)
     if remote_reading == get_sensor_reading_error_msg:
         return no_sensor_return, 503
     elif remote_reading == no_sensor_return:

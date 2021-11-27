@@ -21,8 +21,9 @@ from queue import Queue
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_validation_checks
-from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_http_sensor_reading, \
-    get_list_of_filenames_in_dir, get_file_content, write_file_to_disk
+from operations_modules.app_generic_functions import CreateGeneralConfiguration, get_list_of_filenames_in_dir, \
+    get_file_content, write_file_to_disk
+from operations_modules.http_generic_network import get_http_sensor_reading
 from http_server.flask_blueprints.atpro.remote_management import rm_cached_variables
 
 
@@ -182,7 +183,7 @@ class CreateSensorControlConfiguration(CreateGeneralConfiguration):
         """ Checks if a remote sensor is online and if so, saves the results to a queue. """
 
         try:
-            sensor_online_check = get_http_sensor_reading(sensor_address, timeout=4)
+            sensor_online_check = get_http_sensor_reading(sensor_address)
             if sensor_online_check == "OK":
                 self.local_queue.put(sensor_address)
         except Exception as error:

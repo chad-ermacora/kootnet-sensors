@@ -21,7 +21,7 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import CreateMonitoredThread
-from operations_modules.app_generic_network import send_http_command, get_http_formatted_sensor_address
+from operations_modules.http_generic_network import send_http_command, get_http_formatted_sensor_address
 from operations_modules.software_version import version
 from configuration_modules import app_config_access
 from sensor_modules.system_access import get_uptime_minutes

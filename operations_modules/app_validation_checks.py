@@ -19,7 +19,7 @@
 import re
 from operations_modules import logger
 from ipaddress import ip_address as _check_ip_address
-from operations_modules.app_generic_functions import check_for_port_in_address
+from operations_modules.http_generic_network import check_for_port_in_address
 
 
 def text_is_alphanumeric(text_string):

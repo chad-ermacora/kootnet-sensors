@@ -24,14 +24,10 @@ from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function, get_md5_hash_of_file
+from operations_modules.http_generic_network import get_http_regular_file
 from configuration_modules.app_config_access import urls_config
 from operations_modules.software_version import CreateRefinedVersion
 from http_server.flask_blueprints.atpro.atpro_notifications import atpro_notifications
-
-try:
-    import requests
-except Exception as import_error:
-    print("Please Install Python requests module: " + str(import_error))
 
 download_type_http = "HTTP"
 download_type_smb = "SMB"
@@ -79,11 +75,11 @@ def _kootnet_sensors_upgrade(dev_upgrade, clean_upgrade, download_type):
 
     if download_type == download_type_http:
         if dev_upgrade:
-            current_online_version = _get_http_url_text_file(http_developmental_version_url)
+            current_online_version = get_http_regular_file(http_developmental_version_url, timeout=5)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_developmental_deb_url
         else:
-            current_online_version = _get_http_url_text_file(http_standard_version_url)
+            current_online_version = get_http_regular_file(http_standard_version_url, timeout=5)
             new_version_str = CreateRefinedVersion(current_online_version).get_version_string()
             download_url = http_standard_deb_url
 
@@ -143,11 +139,11 @@ def _check_upgrade_still_running():
     app_cached_variables.sensor_ready_for_upgrade = True
 
 
-def _save_http_url_to_file(file_url, verify_https=True):
+def _save_http_url_to_file(file_url, verify_ssl=True):
     """
     Downloads & saves HTTP(S) URL to file then returns the file's location
     :param file_url: HTTP(S) URL to a file
-    :param verify_https: Verify HTTPS SSL connection, Default: True
+    :param verify_ssl: Verify HTTPS SSL connection, Default: True
     :return: File's locally saved location, on failure None
     """
     try:
@@ -156,10 +152,10 @@ def _save_http_url_to_file(file_url, verify_https=True):
         if os.path.isfile(file_location):
             os.remove(file_location)
 
-        tmp_return_data = requests.get(url=file_url, verify=verify_https)
+        file_content = get_http_regular_file(file_url, get_text=False, verify_ssl=verify_ssl)
 
         with open(file_location, "wb") as upgrade_file:
-            upgrade_file.write(tmp_return_data.content)
+            upgrade_file.write(file_content)
         return file_location
     except Exception as error:
         logger.network_logger.error("HTTP(S) Upgrade URL Download " + file_url + ": " + str(error))
@@ -201,21 +197,6 @@ def _save_smb_to_file(dev_upgrade=False):
     return None
 
 
-def _get_http_url_text_file(file_url, verify_https=True):
-    """
-    Downloads and returns HTTP(S) URL content.
-    :param file_url: HTTP(S) URL to a file
-    :param verify_https: Verify HTTPS connection, Default: True
-    :return: URL file content
-    """
-    try:
-        tmp_return_data = requests.get(url=file_url, verify=verify_https)
-        return tmp_return_data.text
-    except Exception as error:
-        logger.network_logger.error("URL Download " + file_url + ": " + str(error))
-    return None
-
-
 def _verify_http_upgrade_file(file_location, good_md5_checksum):
     """
     Creates and checks MD5 hash of file and compares it to the provided MD5 hash.
@@ -243,7 +224,7 @@ def _get_md5_for_version(kootnet_version, get_full_installer=False):
     :return: MD5 checksum of provided version's Kootnet Senors installer, on error returns not found message
     """
     try:
-        versions_md5 = _get_http_url_text_file(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt")
+        versions_md5 = get_http_regular_file(urls_config.url_update_server + "KootnetSensors-deb-MD5.txt", timeout=5)
         versions_md5_list = versions_md5.split("\n")
         for index, version in enumerate(versions_md5_list):
             if kootnet_version == version[:15].split(" ")[0]:
