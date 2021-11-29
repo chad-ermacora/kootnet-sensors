@@ -19,7 +19,6 @@
 import os
 from operations_modules import logger
 from operations_modules import file_locations
-from operations_modules import software_version
 
 
 # Copied from app_generic_functions to prevent circular importing
@@ -76,26 +75,23 @@ html_config_report = default_report
 html_readings_report = default_report
 html_latency_report = default_report
 
+html_pure_css = get_file_content(html_report_pure_css).strip()
+html_pure_css_menu = get_file_content(html_pure_css_menu).strip()
+html_report_css = get_file_content(html_report_css).strip()
+html_report_js = get_file_content(html_report_js).strip()
 
-# Save disk read time when upgrade in progress
-if software_version.old_version == software_version.version:
-    html_pure_css = get_file_content(html_report_pure_css).strip()
-    html_pure_css_menu = get_file_content(html_pure_css_menu).strip()
-    html_report_css = get_file_content(html_report_css).strip()
-    html_report_js = get_file_content(html_report_js).strip()
+html_report_combo = get_file_content(file_locations.html_combo_report).strip()
+html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
+html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
+html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
 
-    html_report_combo = get_file_content(file_locations.html_combo_report).strip()
-    html_report_combo = html_report_combo.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSS }}", html_pure_css)
-    html_report_combo = html_report_combo.replace("{{ PureCSSHorizontalMenu }}", html_pure_css_menu)
+html_report_start = get_file_content(html_report_all_start).strip()
+html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
+html_report_end = get_file_content(html_report_all_end).strip()
+html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
 
-    html_report_start = get_file_content(html_report_all_start).strip()
-    html_report_start = html_report_start.replace("{{ ReportCSSStyles }}", html_report_css)
-    html_report_end = get_file_content(html_report_all_end).strip()
-    html_report_end = html_report_end.replace("{{ ReportJavaScript }}", html_report_js)
-
-    html_report_template = get_file_content(html_report_template).strip()
-    report_sensor_error_template = get_file_content(html_report_sensor_error_template).strip()
+html_report_template = get_file_content(html_report_template).strip()
+report_sensor_error_template = get_file_content(html_report_sensor_error_template).strip()
 
 # Variables to make sure Remote Management is only creating a single copy at any given time
 creating_combo_reports_zip = False
