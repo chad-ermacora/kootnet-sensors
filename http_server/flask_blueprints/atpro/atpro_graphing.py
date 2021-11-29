@@ -27,14 +27,14 @@ from configuration_modules import app_config_access
 from http_server import server_plotly_graph
 from http_server import server_plotly_graph_variables
 from http_server.server_http_generic_functions import get_html_checkbox_state
-from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, \
-    get_message_page, get_file_creation_date
+from http_server.flask_blueprints.atpro.atpro_generic import get_html_atpro_index, get_file_creation_date
 from http_server.server_http_auth import auth
 
 html_atpro_graphing_routes = Blueprint("html_atpro_graphing_routes", __name__)
 lgc = app_config_access.live_graphs_config
 db_gc = app_cached_variables.network_get_commands
 db_wrapper_gc = CreateLiveGraphWrapperNetworkGetCommands()
+
 live_chart_html_template = """
 <div id="{{ ChartName }}container" class="col-{{ MinColSize }} col-m-6 col-sm-12">
     <div class="card">
@@ -391,73 +391,19 @@ def html_create_plotly_graph():
 
 
 def generate_plotly_graph(graph_request, graph_config=None):
-    create_graph = True
     if graph_config is None:
-        create_graph = False
-        if graph_request.form.get("button_function") == "update":
-            logger.network_logger.info("* Plotly Graph Config Update Initiated by " + str(request.remote_addr))
-            app_config_access.db_graphs_config.update_with_html_request(graph_request)
-            app_config_access.db_graphs_config.save_config_to_file()
-        elif graph_request.form.get("button_function") == "email":
-            logger.network_logger.info("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
-            app_config_access.email_db_graph_config.update_with_html_request(graph_request)
-            app_config_access.email_db_graph_config.save_config_to_file()
-        elif graph_request.form.get("button_function") == "create":
+        if graph_request.form.get("button_function") == "create":
             logger.network_logger.debug("* Plotly Graph Create Initiated by " + str(request.remote_addr))
             app_config_access.db_graphs_config.update_with_html_request(graph_request)
+            app_config_access.db_graphs_config.save_config_to_file()
             graph_config = app_config_access.db_graphs_config
-            create_graph = True
-
-    if create_graph and not server_plotly_graph_variables.graph_creation_in_progress:
-        logger.network_logger.info("Plotly Graph Generation Started")
-        invalid_msg1 = "Invalid Options Selection"
-        try:
-            new_graph_data = server_plotly_graph_variables.CreateGraphData()
-            new_graph_data.graph_table = graph_config.sql_recording_type
-            if graph_config.mqtt_database_checked:
-                new_graph_data.graph_table = graph_config.mqtt_database_topic
-            new_graph_data.max_sql_queries = graph_config.max_graph_data_points
-
-            db_location = graph_config.sql_database_selection
-            if db_location == "MainDatabase":
-                new_graph_data.db_location = file_locations.sensor_database
-                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_interval
-                if new_graph_data.graph_table == app_cached_variables.database_variables.table_trigger:
-                    new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_triggers
-            elif db_location == "MQTTSubscriberDatabase":
-                new_graph_data.db_location = file_locations.mqtt_subscriber_database
-                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_mqtt
-            else:
-                new_graph_data.db_location = file_locations.uploaded_databases_folder + "/" + db_location
-                new_graph_data.save_plotly_graph_to = file_locations.plotly_graph_custom
-
-            if graph_config.mqtt_database_checked:
-                remote_sensor_id = graph_config.mqtt_database_topic
-                if remote_sensor_id.isalnum() and len(remote_sensor_id) < 65:
-                    new_graph_data.graph_table = remote_sensor_id
-                else:
-                    msg2 = "Invalid Remote Sensor ID"
-                    return get_message_page(invalid_msg1, msg2, page_url="sensor-graphing-db")
-
-            if graph_config.render_engine == "OpenGL":
-                new_graph_data.enable_plotly_webgl = True
-            else:
-                new_graph_data.enable_plotly_webgl = False
-
-            # The format the received datetime should look like "2019-01-01 00:00:00"
-            new_graph_data.graph_start = graph_config.graph_start_date
-            new_graph_data.graph_end = graph_config.graph_end_date
-            new_graph_data.datetime_offset = graph_config.date_time_hours_offset
-            new_graph_data.sql_queries_skip = graph_config.skip_data_between_plots
-            new_graph_data.graph_columns = graph_config.get_enabled_graph_sensors_list()
-
-            if len(new_graph_data.graph_columns) < 4:
-                msg2 = "Please Select at least One Sensor"
-                return get_message_page(invalid_msg1, msg2, page_url="sensor-graphing-db")
-            else:
-                thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
-        except Exception as error:
-            logger.primary_logger.warning("Plotly Graph: " + str(error))
+        elif graph_request.form.get("button_function") == "email":
+            logger.network_logger.debug("* Plotly Graph Email Config Update Initiated by " + str(request.remote_addr))
+            app_config_access.email_db_graph_config.update_with_html_request(graph_request)
+            app_config_access.email_db_graph_config.save_config_to_file()
+    if graph_config is not None and not server_plotly_graph_variables.graph_creation_in_progress:
+        new_graph_data = server_plotly_graph_variables.CreateGraphData(graph_config)
+        thread_function(server_plotly_graph.create_plotly_graph, args=new_graph_data)
 
 
 @html_atpro_graphing_routes.route("/ViewIntervalPlotlyGraph")

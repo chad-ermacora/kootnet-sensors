@@ -30,17 +30,18 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             config_file_location = file_locations.db_graphs_config
         CreateGeneralConfiguration.__init__(self, config_file_location, load_from_file=load_from_file)
         self.config_file_header = "Database Graphs Configuration. Enable = 1 and Disable = 0"
-        self.valid_setting_count = 27
+        self.valid_setting_count = 29
         self.config_settings_names = [
             "SQL Recording Type", "Render Engine", "Maximum Data Points per Graph", "Skip Data Points between Plots",
             "DateTime Offset in Hours", "Start Date", "End Date", "SQL Database Selection", "MQTT Database Checked",
             "MQTT Database Topic (Sensor ID)", "Plotly Graph Save Location", "Enable Uptime", "Enable CPU Temperature",
             "Enable Environmental Temperature", "Enable Pressure", "Enable Altitude", "Enable Humidity",
             "Enable Dew Point", "Enable Distance", "Enable GAS", "Enable Particulate Matter", "Enable Lumen",
-            "Enable Colours", "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope"
+            "Enable Colours", "Enable Ultra Violet", "Enable Accelerometer", "Enable Magnetometer", "Enable Gyroscope",
+            "Database Location", "Graph Database Table Name"
         ]
 
-        self.sql_recording_type = "IntervalData"  # or TriggerData
+        self.sql_recording_type = app_cached_variables.database_variables.table_interval
         self.render_engine = "OpenGL"  # or CPU
         self.max_graph_data_points = 200000
         self.skip_data_between_plots = 12
@@ -53,6 +54,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.mqtt_database_checked = 0
         self.mqtt_database_topic = ""
 
+        self.database_location = file_locations.sensor_database
+        self.graph_db_table = app_cached_variables.database_variables.table_interval
         self.plotly_graph_saved_location = file_locations.plotly_graph_interval
 
         self.db_graph_uptime = 0
@@ -85,7 +88,6 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         sql_column_selection = [
             app_cached_variables.database_variables.all_tables_datetime,
             app_cached_variables.database_variables.sensor_name,
-            app_cached_variables.database_variables.ip,
         ]
 
         if self.db_graph_uptime:
@@ -162,6 +164,7 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         self.db_graph_acc = 0
         self.db_graph_mag = 0
         self.db_graph_gyro = 0
+
         if html_request.form.get("sql_recording_type") is not None:
             self.sql_recording_type = str(html_request.form.get("sql_recording_type"))
         if html_request.form.get("plotly_render_engine") is not None:
@@ -175,26 +178,37 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
         if html_request.form.get("utc_hour_offset") is not None:
             self.date_time_hours_offset = float(html_request.form.get("utc_hour_offset"))
 
+        # The datetime format should look like "2019-01-01 00:00:00"
         if html_request.form.get("graph_datetime_start") is not None:
             self.graph_start_date = str(html_request.form.get("graph_datetime_start")).replace("T", " ") + ":00"
         if html_request.form.get("graph_datetime_end") is not None:
             self.graph_end_date = str(html_request.form.get("graph_datetime_end")).replace("T", " ") + ":00"
 
+        if html_request.form.get("mqtt_database_checked") is not None:
+            self.mqtt_database_checked = 1
+        if html_request.form.get("mqtt_database_topic") is not None:
+            remote_sensor_id = str(html_request.form.get("mqtt_database_topic")).strip()
+            self.mqtt_database_topic = "Invalid_MQTT_Sensor_ID"
+            if remote_sensor_id.isalnum() and len(remote_sensor_id) < 65:
+                self.mqtt_database_topic = remote_sensor_id
+
         if html_request.form.get("sql_database_selection") is not None:
             self.sql_database_selection = str(html_request.form.get("sql_database_selection"))
+            self.graph_db_table = self.sql_recording_type
             if self.sql_database_selection == "MainDatabase":
+                self.database_location = file_locations.sensor_database
                 self.plotly_graph_saved_location = file_locations.plotly_graph_interval
                 if self.sql_recording_type == app_cached_variables.database_variables.table_trigger:
                     self.plotly_graph_saved_location = file_locations.plotly_graph_triggers
             elif self.sql_database_selection == "MQTTSubscriberDatabase":
+                self.database_location = file_locations.mqtt_subscriber_database
                 self.plotly_graph_saved_location = file_locations.plotly_graph_mqtt
+                self.graph_db_table = str(self.mqtt_database_topic)
             else:
+                self.database_location = file_locations.uploaded_databases_folder + "/" + self.sql_database_selection
                 self.plotly_graph_saved_location = file_locations.plotly_graph_custom
-
-        if html_request.form.get("mqtt_database_checked") is not None:
-            self.mqtt_database_checked = 1
-        if html_request.form.get("mqtt_database_topic") is not None:
-            self.mqtt_database_topic = str(html_request.form.get("mqtt_database_topic")).strip()
+                if self.mqtt_database_checked:
+                    self.graph_db_table = str(self.mqtt_database_topic)
 
         if html_request.form.get("sensor_uptime") is not None:
             self.db_graph_uptime = 1
@@ -241,7 +255,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             str(self.db_graph_altitude), str(self.db_graph_humidity), str(self.db_graph_dew_point),
             str(self.db_graph_distance), str(self.db_graph_gas), str(self.db_graph_particulate_matter),
             str(self.db_graph_lumen), str(self.db_graph_colours), str(self.db_graph_ultra_violet),
-            str(self.db_graph_acc), str(self.db_graph_mag), str(self.db_graph_gyro)
+            str(self.db_graph_acc), str(self.db_graph_mag), str(self.db_graph_gyro), str(self.database_location),
+            str(self.graph_db_table)
         ]
 
     def update_variables_from_settings_list(self):
@@ -273,6 +288,8 @@ class CreateDatabaseGraphsConfiguration(CreateGeneralConfiguration):
             self.db_graph_acc = int(self.config_settings[24].strip())
             self.db_graph_mag = int(self.config_settings[25].strip())
             self.db_graph_gyro = int(self.config_settings[26].strip())
+            self.database_location = self.config_settings[27].strip()
+            self.graph_db_table = self.config_settings[28].strip()
         except Exception as error:
             if self.load_from_file:
                 logger.primary_logger.debug("Database Graphs Config: " + str(error))
