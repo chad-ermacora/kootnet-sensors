@@ -31,7 +31,6 @@ try:
     from greenlet import __version__ as greenlet_version
     from gevent import __version__ as gevent_version
     from requests import __version__ as requests_version
-    from cryptography import __version__ as cryptography_version
     from flask import __version__ as flask_version
 except ImportError as import_error:
     logger.primary_logger.warning("Import Versions Failed: " + str(import_error))
@@ -39,7 +38,6 @@ except ImportError as import_error:
     greenlet_version = "Unknown"
     gevent_version = "Unknown"
     requests_version = "Unknown"
-    cryptography_version = "Unknown"
     flask_version = "Unknown"
 python_version_str = str(python_version[0]) + "." + str(python_version[1]) + "." + str(python_version[2])
 html_atpro_system_raw_configs_routes = Blueprint("html_atpro_system_raw_configs_routes", __name__)
@@ -83,7 +81,6 @@ def atpro_raw_config_urls(url_path):
                               str(flask_version) + "=Flask\n" + \
                               str(gevent_version) + "=Gevent\n" + \
                               str(greenlet_version) + "=Greenlet\n" + \
-                              str(cryptography_version) + "=Cryptography\n" + \
                               str(requests_version) + "=Requests\n" + \
                               str(plotly_version) + "=Plotly Graphing\n"
         return _config_to_html_view(config_name, "NA", module_version_text)

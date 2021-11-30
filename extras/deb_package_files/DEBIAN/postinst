@@ -50,7 +50,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
       ${PYTHON_MODULES_DIR}/guizero-1.1.0-py3-none-any.whl
       if [ "${PI_zero_MODEL}" == "Raspberry Pi Zero W Rev 1.1" ] || [ "${PI_1_MODEL}" == "Raspberry Pi 1" ]; then
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/Brotli-1.0.9-cp39-cp39-linux_armv6l.whl \
-        ${PYTHON_MODULES_DIR}/cryptography-35.0.0-cp39-cp39-linux_armv6l.whl \
         ${PYTHON_MODULES_DIR}/cffi-1.15.0-cp39-cp39-linux_armv6l.whl \
         ${PYTHON_MODULES_DIR}/zope.interface-5.4.0-cp39-cp39-linux_armv6l.whl \
         ${PYTHON_MODULES_DIR}/greenlet-1.1.2-cp39-cp39-linux_armv6l.whl \
@@ -60,7 +59,6 @@ if [[ ! -f ${PYTHON_VENV_DIR}/bin/python ]]; then
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/gevent-21.8.0-cp39-cp39-linux_armv6l.whl
       else
         ${PYTHON_VENV_DIR}/bin/python3 -m pip install ${PYTHON_MODULES_DIR}/Brotli-1.0.9-cp39-cp39-linux_armv7l.whl \
-        ${PYTHON_MODULES_DIR}/cryptography-35.0.0-cp39-cp39-linux_armv7l.whl \
         ${PYTHON_MODULES_DIR}/cffi-1.15.0-cp39-cp39-linux_armv7l.whl \
         ${PYTHON_MODULES_DIR}/zope.interface-5.4.0-cp39-cp39-linux_armv7l.whl \
         ${PYTHON_MODULES_DIR}/greenlet-1.1.2-cp39-cp39-linux_armv7l.whl \

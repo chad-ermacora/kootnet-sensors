@@ -19,8 +19,6 @@
 import os
 import shutil
 from flask import Blueprint, render_template, request
-from cryptography import x509
-from cryptography.hazmat.backends import default_backend
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
@@ -89,7 +87,7 @@ def html_atpro_create_new_self_signed_ssl():
 @auth.login_required
 def html_atpro_set_custom_ssl():
     logger.network_logger.info("* Sensor's Web SSL Replacement accessed by " + str(request.remote_addr))
-    title_message = "Sensor SSL Certificate Failed"
+    title_message = "Sensor SSL Certificate Upload Failed"
     return_message_ok = "SSL Certificate and Key files replaced.  Please restart program for changes to take effect."
     return_message_fail = "Failed to set SSL Certificate and Key files.  Invalid Files?"
     if app_config_access.primary_config.demo_mode:
@@ -97,35 +95,39 @@ def html_atpro_set_custom_ssl():
         return_message_fail = "Function Disabled in Demo mode"
     else:
         try:
-            temp_ssl_crt_location = file_locations.http_ssl_folder + "/custom_upload_certificate.crt"
-            temp_ssl_key_location = file_locations.http_ssl_folder + "/custom_upload_key.key"
-            new_ssl_certificate = request.files["custom_crt"]
-            new_ssl_key = request.files["custom_key"]
-            new_ssl_certificate.save(temp_ssl_crt_location)
-            new_ssl_key.save(temp_ssl_key_location)
-            if _is_valid_ssl_certificate(get_file_content(temp_ssl_crt_location)):
-                os.system("mv -f " + file_locations.http_ssl_crt + " " + file_locations.http_ssl_folder + "/old_cert.crt")
-                os.system("mv -f " + file_locations.http_ssl_key + " " + file_locations.http_ssl_folder + "/old_key.key")
-                os.system("mv -f " + temp_ssl_crt_location + " " + file_locations.http_ssl_crt)
-                os.system("mv -f " + temp_ssl_key_location + " " + file_locations.http_ssl_key)
+            move_old_key_to = file_locations.http_ssl_folder + "/old_key.key"
+            move_old_crt_to = file_locations.http_ssl_folder + "/old_cert.crt"
+            new_ssl_key = request.files["custom_key"].stream.read().decode()
+            new_ssl_certificate = request.files["custom_crt"].stream.read().decode()
+            if _is_valid_ssl_key(new_ssl_key) and _is_valid_ssl_certificate(new_ssl_certificate):
+                os.system("mv -f " + file_locations.http_ssl_key + " " + move_old_key_to)
+                os.system("mv -f " + file_locations.http_ssl_crt + " " + move_old_crt_to)
+                write_file_to_disk(file_locations.http_ssl_key, new_ssl_key)
+                write_file_to_disk(file_locations.http_ssl_crt, new_ssl_certificate)
                 logger.primary_logger.info("Web Portal SSL Certificate and Key replaced successfully")
                 atpro_notifications.manage_service_restart()
-                return get_message_page("Sensor SSL Certificate OK", return_message_ok,
+                return get_message_page("Sensor SSL Certificate Upload OK", return_message_ok,
                                         page_url="sensor-system", skip_menu_select=True)
-            logger.network_logger.error("Invalid Uploaded SSL Certificate")
-            return get_message_page("Sensor SSL Certificate Failed", return_message_fail,
+            return get_message_page("Sensor SSL Certificate Upload Failed", return_message_fail,
                                     page_url="sensor-system", skip_menu_select=True)
         except Exception as error:
-            logger.network_logger.error("Failed to set Web Portal SSL Certificate and Key - " + str(error))
+            logger.network_logger.error("Sensor SSL Certificate Upload Failed - " + str(error))
     return get_message_page(title_message, return_message_fail, page_url="sensor-system", skip_menu_select=True)
 
 
-def _is_valid_ssl_certificate(cert):
-    try:
-        x509.load_pem_x509_certificate(str.encode(cert), default_backend())
-        return True
-    except Exception as error:
-        logger.network_logger.debug("Invalid SSL Certificate - " + str(error))
+def _is_valid_ssl_key(ssl_key):
+    if type(ssl_key) is str:
+        if "BEGIN PRIVATE KEY" in ssl_key.upper():
+            return True
+    logger.network_logger.warning("Invalid SSL Key")
+    return False
+
+
+def _is_valid_ssl_certificate(ssl_cert):
+    if type(ssl_cert) is str:
+        if "BEGIN CERTIFICATE" in str(ssl_cert).upper():
+            return True
+    logger.network_logger.warning("Invalid SSL Certificate")
     return False
 
 

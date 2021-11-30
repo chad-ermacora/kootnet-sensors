@@ -3,7 +3,6 @@ flask
 Flask-Compress
 gevent
 greenlet
-cryptography
 paho-mqtt
 requests
 psutil

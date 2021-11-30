@@ -114,8 +114,6 @@ venv.bak/
 /extras/python_modules/Brotli-1.0.9-cp39-cp39-linux_armv7l.whl
 /extras/python_modules/cffi-1.15.0-cp39-cp39-linux_armv6l.whl
 /extras/python_modules/cffi-1.15.0-cp39-cp39-linux_armv7l.whl
-/extras/python_modules/cryptography-35.0.0-cp39-cp39-linux_armv6l.whl
-/extras/python_modules/cryptography-35.0.0-cp39-cp39-linux_armv7l.whl
 /extras/python_modules/Flask-2.0.2-py3-none-any.whl
 /extras/python_modules/Flask_Compress-1.10.1-py3-none-any.whl
 /extras/python_modules/gevent-21.8.0-cp39-cp39-linux_armv6l.whl
