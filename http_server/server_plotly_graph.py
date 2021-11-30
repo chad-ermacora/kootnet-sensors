@@ -80,6 +80,7 @@ def _start_plotly_graph(graph_data):
                             " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
                             "') AND datetime('" + get_sql_graph_end + \
                             "') AND ROWID % " + str(graph_data.sql_queries_skip + 1) + " = 0" + \
+                            " ORDER BY " + db_v.all_tables_datetime + " DESC" + \
                             " LIMIT " + str(graph_data.max_sql_queries)
 
             var_time_sql_query = "SELECT " + db_v.all_tables_datetime + \
@@ -88,6 +89,7 @@ def _start_plotly_graph(graph_data):
                                  " IS NOT NULL AND DateTime BETWEEN datetime('" + get_sql_graph_start + \
                                  "') AND datetime('" + get_sql_graph_end + \
                                  "') AND ROWID % " + str(graph_data.sql_queries_skip + 1) + " = 0" + \
+                                 " ORDER BY " + db_v.all_tables_datetime + " DESC" + \
                                  " LIMIT " + str(graph_data.max_sql_queries)
 
             original_sql_column_date_time = sql_execute_get_data(var_time_sql_query, graph_data.db_location)
@@ -157,12 +159,15 @@ def _get_clean_sql_data(var_sql_query, db_location, data_to_float=True):
 
 def add_plots(graph_data):
     scatter_data = CreateGraphScatterData(graph_data.enable_plotly_webgl, graph_data.graph_db_table)
+
+    previous_subplot_name = ""
     for sensor_db_name, sensor_graph_data in graph_data.graph_data_dic.items():
         if len(sensor_graph_data[0]) > 1:
             try:
-                if sensor_graph_data[2]:
+                if sensor_graph_data[2] != previous_subplot_name:
                     graph_data.row_count += 1
                     graph_data.sub_plots.append(sensor_graph_data[2])
+                previous_subplot_name = sensor_graph_data[2]
 
                 scatter_data.sql_data_list = sensor_graph_data[0]
                 scatter_data.sql_time_list = sensor_graph_data[1]

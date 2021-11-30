@@ -25,7 +25,7 @@ mark_red_dot = dict(size=5, color='rgba(255, 0, 0, .9)')
 mark_orange_dot = dict(size=5, color='rgba(255, 102, 0, .9)')
 mark_yellow_dot = dict(size=5, color='rgba(255, 170, 29, .9)')
 mark_green_dot = dict(size=5, color='rgba(0, 255, 0, .9)')
-mark_blue_dot = dict(size=5, color='rgba(0, 0, 255, .9)')
+mark_blue_dot = dict(size=5, color='rgba(25, 230, 255, .9)')
 mark_violet_dot = dict(size=5, color='rgba(153, 0, 204, .9)')
 mark_x_dot = dict(size=5, color='rgba(255, 0, 0, 1)')
 mark_y_dot = dict(size=5, color='rgba(0, 255, 0, 1)')
@@ -63,42 +63,42 @@ class CreateGraphData:
         self.selected_sensors_list = graph_config.get_enabled_graph_sensors_list()
 
         # Filled with sensor data to be graphed later in the process. [[Sensor Data], [Sensor Datetime entries]]
-        temperature_text = " Temperature in °C (Celsius)"
+        temperature_text = "Temperature in °C (Celsius)"
         self.graph_data_dic = {
             db_v.sensor_name: [[], [], "Sensor Names over Time", "Sensor Name", False],
             db_v.sensor_uptime: [[], [], "Sensor Uptime in Minutes", "Sensor Uptime", False],
-            db_v.system_temperature: [[], [], "CPU" + temperature_text, "CPU", mark_red_dot],
-            db_v.env_temperature: [[], [], "Environmental" + temperature_text, "Environmental", mark_green_dot],
+            db_v.system_temperature: [[], [], "Temperature in °C (Celsius)", "CPU", mark_red_dot],
+            db_v.env_temperature: [[], [], "Temperature in °C (Celsius)", "Environmental", mark_green_dot],
+            db_v.dew_point: [[], [], "Temperature in °C (Celsius)", "Dew Point", mark_blue_dot],
+            db_v.humidity: [[], [], "% Relative Humidity", "Humidity", False],
             db_v.pressure: [[], [], "Pressure in hPa (Hectopascals)", "Pressure", False],
             db_v.altitude: [[], [], "Altitude in m (Meters)", "Altitude", False],
-            db_v.humidity: [[], [], "% Relative Humidity", "Humidity", False],
-            db_v.dew_point: [[], [], "Dew Point" + temperature_text, "Dew Point", False],
             db_v.distance: [[], [], "Distance in Meters?", "Distance", False],
             db_v.gas_resistance_index: [[], [], "Gas Resistance in Ω (ohms)", "VOC", mark_red_dot],
-            db_v.gas_oxidising: [[], [], False, "Oxidising", mark_orange_dot],
-            db_v.gas_reducing: [[], [], False, "Reducing", mark_yellow_dot],
-            db_v.gas_nh3: [[], [], False, "NH3", mark_green_dot],
+            db_v.gas_oxidising: [[], [], "Gas Resistance in Ω (ohms)", "Oxidising", mark_orange_dot],
+            db_v.gas_reducing: [[], [], "Gas Resistance in Ω (ohms)", "Reducing", mark_yellow_dot],
+            db_v.gas_nh3: [[], [], "Gas Resistance in Ω (ohms)", "NH3", mark_green_dot],
             db_v.particulate_matter_1: [[], [], "Particulate Matter", "PM1", mark_red_dot],
-            db_v.particulate_matter_2_5: [[], [], False, "PM2.5", mark_orange_dot],
-            db_v.particulate_matter_4: [[], [], False, "PM4", mark_yellow_dot],
-            db_v.particulate_matter_10: [[], [], False, "PM10", mark_blue_dot],
+            db_v.particulate_matter_2_5: [[], [], "Particulate Matter", "PM2.5", mark_orange_dot],
+            db_v.particulate_matter_4: [[], [], "Particulate Matter", "PM4", mark_yellow_dot],
+            db_v.particulate_matter_10: [[], [], "Particulate Matter", "PM10", mark_blue_dot],
             db_v.lumen: [[], [], "Lumen in lm", "lm", mark_yellow_dot],
             db_v.red: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Red", mark_red_dot],
-            db_v.orange: [[], [], False, "Orange", mark_orange_dot],
-            db_v.yellow: [[], [], False, "Yellow", mark_yellow_dot],
-            db_v.green: [[], [], False, "Green", mark_green_dot],
-            db_v.blue: [[], [], False, "Blue", mark_blue_dot],
-            db_v.violet: [[], [], False, "Violet", mark_violet_dot],
+            db_v.orange: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Orange", mark_orange_dot],
+            db_v.yellow: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Yellow", mark_yellow_dot],
+            db_v.green: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Green", mark_green_dot],
+            db_v.blue: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Blue", mark_blue_dot],
+            db_v.violet: [[], [], "Visible Electromagnetic Spectrum in lm? (Lumen)", "Violet", mark_violet_dot],
             db_v.ultra_violet_index: [[], [], "Ultra Violet", "Index", mark_red_dot],
-            db_v.ultra_violet_a: [[], [], False, "UVA", mark_orange_dot],
-            db_v.ultra_violet_b: [[], [], False, "UVB", mark_yellow_dot],
+            db_v.ultra_violet_a: [[], [], "Ultra Violet", "UVA", mark_orange_dot],
+            db_v.ultra_violet_b: [[], [], "Ultra Violet", "UVB", mark_yellow_dot],
             db_v.acc_x: [[], [], "Accelerometer in g (G-forces)", "Accelerometer X", mark_x_dot],
-            db_v.acc_y: [[], [], False, "Accelerometer Y", mark_y_dot],
-            db_v.acc_z: [[], [], False, "Accelerometer Z", mark_z_dot],
+            db_v.acc_y: [[], [], "Accelerometer in g (G-forces)", "Accelerometer Y", mark_y_dot],
+            db_v.acc_z: [[], [], "Accelerometer in g (G-forces)", "Accelerometer Z", mark_z_dot],
             db_v.mag_x: [[], [], "Magnetometer in μT (microtesla)", "Magnetometer X", mark_x_dot],
-            db_v.mag_y: [[], [], False, "Magnetometer Y", mark_y_dot],
-            db_v.mag_z: [[], [], False, "Magnetometer Z", mark_z_dot],
+            db_v.mag_y: [[], [], "Magnetometer in μT (microtesla)", "Magnetometer Y", mark_y_dot],
+            db_v.mag_z: [[], [], "Magnetometer in μT (microtesla)", "Magnetometer Z", mark_z_dot],
             db_v.gyro_x: [[], [], "Gyroscopic in °/s (degrees per second)", "Gyroscopic X", mark_x_dot],
-            db_v.gyro_y: [[], [], False, "Gyroscopic Y", mark_y_dot],
-            db_v.gyro_z: [[], [], False, "Gyroscopic Z", mark_z_dot]
+            db_v.gyro_y: [[], [], "Gyroscopic in °/s (degrees per second)", "Gyroscopic Y", mark_y_dot],
+            db_v.gyro_z: [[], [], "Gyroscopic in °/s (degrees per second)", "Gyroscopic Z", mark_z_dot]
         }
