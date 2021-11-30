@@ -65,15 +65,15 @@ class CreateGraphData:
         # Filled with sensor data to be graphed later in the process. [[Sensor Data], [Sensor Datetime entries]]
         temperature_text = "Temperature in °C (Celsius)"
         self.graph_data_dic = {
-            db_v.sensor_name: [[], [], "Sensor Names over Time", "Sensor Name", False],
-            db_v.sensor_uptime: [[], [], "Sensor Uptime in Minutes", "Sensor Uptime", False],
+            db_v.sensor_name: [[], [], "Sensor Names over Time", "Sensor Name", mark_generic_dot],
+            db_v.sensor_uptime: [[], [], "Sensor Uptime in Minutes", "Sensor Uptime", mark_generic_dot],
             db_v.system_temperature: [[], [], "Temperature in °C (Celsius)", "CPU", mark_red_dot],
             db_v.env_temperature: [[], [], "Temperature in °C (Celsius)", "Environmental", mark_green_dot],
             db_v.dew_point: [[], [], "Temperature in °C (Celsius)", "Dew Point", mark_blue_dot],
-            db_v.humidity: [[], [], "% Relative Humidity", "Humidity", False],
-            db_v.pressure: [[], [], "Pressure in hPa (Hectopascals)", "Pressure", False],
-            db_v.altitude: [[], [], "Altitude in m (Meters)", "Altitude", False],
-            db_v.distance: [[], [], "Distance in Meters?", "Distance", False],
+            db_v.humidity: [[], [], "% Relative Humidity", "Humidity", mark_generic_dot],
+            db_v.pressure: [[], [], "Pressure in hPa (Hectopascals)", "Pressure", mark_generic_dot],
+            db_v.altitude: [[], [], "Altitude in m (Meters)", "Altitude", mark_generic_dot],
+            db_v.distance: [[], [], "Distance in Meters?", "Distance", mark_generic_dot],
             db_v.gas_resistance_index: [[], [], "Gas Resistance in Ω (ohms)", "VOC", mark_red_dot],
             db_v.gas_oxidising: [[], [], "Gas Resistance in Ω (ohms)", "Oxidising", mark_orange_dot],
             db_v.gas_reducing: [[], [], "Gas Resistance in Ω (ohms)", "Reducing", mark_yellow_dot],

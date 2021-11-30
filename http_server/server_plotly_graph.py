@@ -172,10 +172,9 @@ def add_plots(graph_data):
                 scatter_data.sql_data_list = sensor_graph_data[0]
                 scatter_data.sql_time_list = sensor_graph_data[1]
                 scatter_data.text_sensor_name = sensor_graph_data[3]
-                if sensor_graph_data[4]:
-                    if graph_data.graph_db_table != db_v.table_trigger:
-                        sensor_graph_data[4]["line"] = {"width": 2, "color": 'rgb(0, 0, 0)'}
-                    scatter_data.set_marker = sensor_graph_data[4]
+                if graph_data.graph_db_table != db_v.table_trigger:
+                    sensor_graph_data[4]["line"] = {"width": 2, "color": 'rgb(0, 0, 0)'}
+                scatter_data.set_marker = sensor_graph_data[4]
 
                 graph_data.graph_collection.append([_add_scatter(scatter_data), graph_data.row_count, 1])
                 logger.primary_logger.debug("Graph " + sensor_graph_data[3] + " Name Added")
