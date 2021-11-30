@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import sqlite3
+from datetime import datetime
 from operations_modules import file_locations
 from operations_modules import logger
 from operations_modules.app_cached_variables import database_variables as db_v
@@ -276,21 +277,22 @@ def validate_sqlite_database(database_location, check_for_table=None):
 
 def run_database_integrity_check(sqlite_database_location, quick=True):
     try:
+        start_time = datetime.utcnow()
+
         db_connection = sqlite3.connect(sqlite_database_location)
         db_cursor = db_connection.cursor()
-
         if quick:
             integrity_check_fetch = db_cursor.execute("PRAGMA quick_check;").fetchall()
         else:
             integrity_check_fetch = db_cursor.execute("PRAGMA integrity_check;").fetchall()
-
         db_connection.commit()
         db_connection.close()
 
-        log_msg1 = " - Full Integrity Check ran on "
-        if quick:
-            log_msg1 = " - Quick Integrity Check ran on "
         integrity_msg = sql_fetch_items_to_text(integrity_check_fetch)
+        total_time_taken = str(round((datetime.utcnow() - start_time).total_seconds(), 4))
+        log_msg1 = " - Finished Full Integrity Check in " + total_time_taken + " Seconds on "
+        if quick:
+            log_msg1 = " - Finished Quick Integrity Check in " + total_time_taken + " Seconds on "
         logger.primary_logger.info(log_msg1 + sqlite_database_location + ": " + integrity_msg)
     except Exception as error:
         log_msg = "SQLite3 Database Integrity Check Error on " + sqlite_database_location + ": "
