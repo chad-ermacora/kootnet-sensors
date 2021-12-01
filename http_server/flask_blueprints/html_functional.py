@@ -16,17 +16,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+import re
 from io import BytesIO
 from os import urandom
 from hashlib import sha256
-from time import sleep
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, session, redirect, request, send_file, send_from_directory, make_response
 from operations_modules import logger
 from operations_modules import file_locations
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import verify_password_to_hash, get_file_content
-from operations_modules.app_validation_checks import url_is_valid
 from http_server.server_http_auth import auth
 from http_server.flask_blueprints.atpro.atpro_generic import get_message_page
 
@@ -92,7 +91,7 @@ def sensor_unit_help():
 
 @html_functional_routes.route('/documentation/css/<path:filename>')
 def html_documentation_css_folder_static_files(filename):
-    if url_is_valid(filename):
+    if _is_valid_filename(filename):
         doc_folder = file_locations.program_root_dir + "/extras/documentation/css/"
         return send_from_directory(doc_folder, filename)
     return ""
@@ -100,7 +99,7 @@ def html_documentation_css_folder_static_files(filename):
 
 @html_functional_routes.route('/documentation/js/<path:filename>')
 def html_documentation_js_folder_static_files(filename):
-    if url_is_valid(filename):
+    if _is_valid_filename(filename):
         doc_folder = file_locations.program_root_dir + "/extras/documentation/js/"
         return send_from_directory(doc_folder, filename)
     return ""
@@ -108,7 +107,7 @@ def html_documentation_js_folder_static_files(filename):
 
 @html_functional_routes.route('/extras/<path:filename>')
 def html_extras_folder_static_files(filename):
-    if url_is_valid(filename):
+    if _is_valid_filename(filename):
         extras_folder = file_locations.program_root_dir + "/http_server/extras/"
         return send_from_directory(extras_folder, filename)
     return ""
@@ -116,10 +115,17 @@ def html_extras_folder_static_files(filename):
 
 @html_functional_routes.route('/atpro/<path:filename>')
 def atpro_root_static_files(filename):
-    if url_is_valid(filename):
+    if _is_valid_filename(filename):
         atpro_folder = file_locations.program_root_dir + "/http_server/templates/ATPro_admin/"
         return send_from_directory(atpro_folder, filename)
     return ""
+
+
+def _is_valid_filename(filename):
+    filename = str(filename)
+    if re.match('[0-9a-zA-Z_./-]+$', filename):
+        return True
+    return False
 # End -- HTML assets for 'ATPro admin' interface
 
 
