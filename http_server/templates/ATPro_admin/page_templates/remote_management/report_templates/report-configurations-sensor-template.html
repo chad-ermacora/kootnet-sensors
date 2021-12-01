@@ -7,7 +7,7 @@
                         <td style="font-size: x-large;"><span class="sensor-info">Sensor ID</span>:
                             <b style="color: green;">{{ SensorID }}</b><br>
                             <a style='font-size: large; color: #7f3299;'
-                               href='https://{{ RSMAddressAndPort }}' target='_blank'>
+                               href='https://{{ RSMAddressAndPort }}' rel="noopener noreferrer" target='_blank'>
                                 {{ RSMAddressAndPort }}
                             </a>
                         </td>
@@ -29,7 +29,8 @@
                         <td><span class="sensor-info">Sensor Name</span>: {{ SensorName }}</td>
                         <td><span class="sensor-info">Program Version</span>: {{ ProgramVersion }}</td>
                         <td><span class="sensor-info">IP Address & HTTPS Port</span>:
-                            <a style='color: #7f3299;' href='https://{{ IPAddressAndPort }}' target='_blank'>
+                            <a style='color: #7f3299;' href='https://{{ IPAddressAndPort }}'
+                               rel="noopener noreferrer" target='_blank'>
                                 {{ IPAddressAndPort }}
                             </a>
                         </td>
