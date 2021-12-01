@@ -85,13 +85,15 @@ def text_has_no_double_quotes(text_string):
 
 def hostname_is_valid(text_hostname):
     """
-    Returns True if provided text only uses Alphanumeric characters plus underscores and dashes.
-    Otherwise returns False.
+    Checks for valid Linux Hostname and returns True, else, False
+    :param text_hostname: new hostname string
+    :return: True if hostname is valid, else, False
     """
-    if text_hostname is None:
-        return False
-    if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
-        return True
+    if text_hostname is not None:
+        if re.match(r'^[a-zA-Z0-9_-]*$', text_hostname):
+            if 1 < len(text_hostname) < 64:
+                if text_hostname[0] != "-":
+                    return True
     return False
 
 
