@@ -140,9 +140,9 @@ def html_atpro_set_ipv4_config():
         title_message = "Function Disabled"
         message = "Function Disabled in Demo mode"
     else:
-        if request.method == "POST" and app_validation_checks.hostname_is_valid(request.form.get("ip_hostname")):
+        hostname = request.form.get("ip_hostname")
+        if app_validation_checks.hostname_is_valid(hostname):
             if app_cached_variables.running_with_root:
-                hostname = request.form.get("ip_hostname")
                 app_cached_variables.hostname = hostname
                 os.system("hostnamectl set-hostname " + hostname)
 
