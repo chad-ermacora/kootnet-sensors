@@ -77,10 +77,9 @@ def text_has_no_double_quotes(text_string):
     Checks if the provided string has double quotes or not.
     Returns True if no quotes are found and False if they are.
     """
-    if text_string.find('"') is not -1:
-        return False
-    else:
+    if '"' not in text_string:
         return True
+    return False
 
 
 def hostname_is_valid(text_hostname):
