@@ -70,7 +70,8 @@ def get_sensors_latency():
         text_part1 = text_part1[:-1]
         text_part2 = text_part2[:-1]
     except Exception as error:
-        return "Error" + command_data_separator + str(error)
+        logger.sensors_logger.error("Getting Latency readings Failed: " + str(error))
+        return "Error" + command_data_separator + "Getting-Sensor-Latencies-Failed"
     return text_part1 + command_data_separator + text_part2
 
 
