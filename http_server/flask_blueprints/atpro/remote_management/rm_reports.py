@@ -76,7 +76,7 @@ def generate_system_report(ip_list, threaded=True):
 
 def _thread_system_report(ip_list):
     rm_cached_variables.creating_system_report = True
-    new_report = create_sensor_report(ip_list, sg_commands.rm_system_report, "System")
+    new_report = _create_sensor_report(ip_list, sg_commands.rm_system_report, "System")
     rm_cached_variables.html_system_report = new_report
     rm_cached_variables.creating_system_report = False
 
@@ -90,7 +90,7 @@ def generate_config_report(ip_list, threaded=True):
 
 def _thread_config_report(ip_list):
     rm_cached_variables.creating_config_report = True
-    new_report = create_sensor_report(ip_list, sg_commands.rm_config_report, "Configurations")
+    new_report = _create_sensor_report(ip_list, sg_commands.rm_config_report, "Configurations")
     rm_cached_variables.html_config_report = new_report
     rm_cached_variables.creating_config_report = False
 
@@ -104,7 +104,7 @@ def generate_readings_report(ip_list, threaded=True):
 
 def _thread_readings_report(ip_list):
     rm_cached_variables.creating_readings_report = True
-    new_report = create_sensor_report(ip_list, sg_commands.rm_readings_report, "Readings")
+    new_report = _create_sensor_report(ip_list, sg_commands.rm_readings_report, "Readings")
     rm_cached_variables.html_readings_report = new_report
     rm_cached_variables.creating_readings_report = False
 
@@ -118,12 +118,12 @@ def generate_latency_report(ip_list, threaded=True):
 
 def _thread_latency_report(ip_list):
     rm_cached_variables.creating_latency_report = True
-    new_report = create_sensor_report(ip_list, sg_commands.rm_latency_report, "Latency")
+    new_report = _create_sensor_report(ip_list, sg_commands.rm_latency_report, "Latency")
     rm_cached_variables.html_latency_report = new_report
     rm_cached_variables.creating_latency_report = False
 
 
-def create_sensor_report(address_list, sensor_report_url, html_report_heading):
+def _create_sensor_report(address_list, sensor_report_url, html_report_heading):
     data_queue = Queue()
     sensor_reports = []
     threads = []
