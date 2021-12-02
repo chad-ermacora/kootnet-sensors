@@ -121,7 +121,7 @@ def get_system_report_entry():
                                CheckinDBSize=get_file_size(file_locations.sensor_checkin_database))
     except Exception as error:
         logger.network_logger.error("System Report - " + str(error))
-        return "System Report - " + str(error)
+        return "System Report Error - Unable to generate system report entry"
 
 
 def _get_cpu_background_colour(cpu_temp):
