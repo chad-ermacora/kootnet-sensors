@@ -36,6 +36,19 @@ def ip_address_is_valid(ip_address):
     return False
 
 
+def sensor_address_is_valid(ip_or_dns_address):
+    try:
+        if check_for_port_in_address(ip_or_dns_address):
+            ip_or_dns_address, port = get_ip_and_port_split(ip_or_dns_address)
+            ip_or_dns_address = ip_or_dns_address.replace("[", "")
+            ip_or_dns_address = ip_or_dns_address.replace("]", "")
+        if re.match(r'^[a-zA-Z0-9_:.-]*$', ip_or_dns_address):
+            return True
+    except Exception as error:
+        logger.network_logger.debug("Sensor Address Failed Validation Check: " + str(error))
+    return False
+
+
 def subnet_mask_is_valid(subnet_mask):
     """ Checks if a subnet mask if valid.  Returns True for valid and False for Invalid. """
     try:
