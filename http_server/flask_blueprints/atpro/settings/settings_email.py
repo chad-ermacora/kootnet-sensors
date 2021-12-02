@@ -21,7 +21,7 @@ from operations_modules import logger
 from operations_modules import app_cached_variables
 from operations_modules.app_generic_functions import thread_function
 from operations_modules.app_validation_checks import email_is_valid
-from operations_modules.email_server import send_test_email, send_report_email, send_db_graph_email
+from operations_modules.email_server import send_test_email, send_report_emails, send_db_graph_emails
 from configuration_modules import app_config_access
 from http_server.server_http_generic_functions import get_html_checkbox_state, get_html_selected_state
 from http_server.server_http_auth import auth
@@ -120,10 +120,10 @@ def html_atpro_send_reports_email():
     msg = "Check the Network logs for more information"
     if email_is_valid(email_address):
         if button_pressed == "reports":
-            thread_function(send_report_email, args=email_address)
+            thread_function(send_report_emails, args=[email_address])
             return get_message_page("Reports email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "graphs":
-            thread_function(send_db_graph_email, args=email_address)
+            thread_function(send_db_graph_emails, args=[email_address])
             return get_message_page("Graph email is being sent", msg, page_url="sensor-settings")
         elif button_pressed == "settings":
             thread_function(send_test_email, args=email_address)

@@ -36,11 +36,9 @@ from http_server.flask_blueprints.atpro.remote_management.rm_reports import gene
 from http_server.flask_blueprints.atpro.atpro_graphing import generate_plotly_graph
 from http_server import server_plotly_graph_variables
 
-email_config = app_config_access.email_config
-
 
 def send_test_email(to_email):
-    message = get_new_email_message(to_email, "Kootnet Sensor Test Email")
+    message = get_new_email_message("Kootnet Sensor Test Email")
     body_text = "This is a test email from a Kootnet Sensor. " + \
                 "\nThis Email was sent at " + datetime.utcnow().strftime("%Y-%m-%d %H:%M") + " UTC0, Sensor Time." + \
                 "\n\nKootnet Sensor Information\nSensorName: " + app_cached_variables.hostname + \
@@ -50,14 +48,13 @@ def send_test_email(to_email):
     send_email(to_email, message)
 
 
-def send_report_email(to_email, report_generated=False):
-    message = get_new_email_message(to_email, "Kootnet Sensor Report - " + app_cached_variables.hostname)
+def send_report_emails(email_address_list):
+    generate_html_reports_combo(app_config_access.email_reports_config.get_raw_ip_addresses_as_list())
+    while rm_cached_variables.creating_combo_report:
+        sleep(5)
+
+    message = get_new_email_message("Kootnet Sensor Report - " + app_cached_variables.hostname)
     message.attach(MIMEText(_get_default_email_body_text("HTML Report"), "plain"))
-
-    if not report_generated:
-        ip_list = app_config_access.email_reports_config.get_clean_ip_addresses_as_list()
-        generate_html_reports_combo(ip_list)
-
     date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
     filename = app_cached_variables.hostname + "_" + date_time + "_KS_Report"
     zipped_report = zip_files([filename + ".html"], [rm_cached_variables.html_combo_report])
@@ -66,19 +63,23 @@ def send_report_email(to_email, report_generated=False):
     encoders.encode_base64(payload)
     payload.add_header("Content-Disposition", "attachment", filename=filename + ".zip")
     message.attach(payload)
-    send_email(to_email, message)
+
+    for email_address in email_address_list:
+        send_email(email_address, message)
 
 
-def send_db_graph_email(to_email):
-    try:
-        message = get_new_email_message(to_email, "Kootnet Sensor Graph - " + app_cached_variables.hostname)
-        message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))
-        generate_plotly_graph(None, graph_config=app_config_access.email_db_graph_config)
+def send_db_graph_emails(email_address_list):
+    generate_plotly_graph(None, graph_config=app_config_access.email_db_graph_config)
+    sleep(5)
+    while server_plotly_graph_variables.graph_creation_in_progress:
         sleep(5)
-        while server_plotly_graph_variables.graph_creation_in_progress:
-            sleep(5)
-        date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
-        filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
+
+    date_time = datetime.utcnow().strftime("%Y-%m-%d_%H:%M")
+    filename = app_cached_variables.hostname + "_" + date_time + "_KS_Graph"
+    message = get_new_email_message("Kootnet Sensor Graph - " + app_cached_variables.hostname)
+    message.attach(MIMEText(_get_default_email_body_text("Plotly Graph"), "plain"))
+
+    try:
         zipped_graph = zip_files(
             [filename + ".html"],
             [get_file_content(app_config_access.email_db_graph_config.plotly_graph_saved_location, open_type="rb")]
@@ -88,16 +89,19 @@ def send_db_graph_email(to_email):
         encoders.encode_base64(payload)
         payload.add_header("Content-Disposition", "attachment", filename=filename + ".zip")
         message.attach(payload)
-        send_email(to_email, message)
     except Exception as error:
         logger.network_logger.error("Graph Email did not send: " + str(error))
+        payload = MIMEText("\n\nError Generating Zip of Plotly Graph\n\n", "plain")
+        message.attach(payload)
+
+    for email_address in email_address_list:
+        send_email(email_address, message)
 
 
-def get_new_email_message(to_email, email_subject):
+def get_new_email_message(email_subject):
     message = MIMEMultipart()
     message["Subject"] = email_subject
     message["From"] = app_config_access.email_config.server_sending_email
-    message["To"] = to_email
     message["Date"] = utils.formatdate()
     message["Message-ID"] = utils.make_msgid()
     return message
@@ -111,18 +115,23 @@ def send_email(receiver_email, message):
     password = app_config_access.email_config.server_smtp_password
 
     try:
-        if app_config_access.email_config.server_smtp_ssl_enabled:
-            smtp_connection = smtplib.SMTP_SSL(smtp_server, port)
-        elif app_config_access.email_config.server_smtp_tls_enabled:
-            smtp_connection = smtplib.SMTP(smtp_server, port)
-            smtp_connection.starttls()
+        receiver_email = receiver_email.strip()
+        if not email_is_valid(receiver_email):
+            logger.network_logger.warning("Invalid Email found in Email list: " + str(receiver_email))
         else:
-            smtp_connection = smtplib.SMTP(smtp_server, port)
-        smtp_connection.ehlo()
-        smtp_connection.login(login, password)
-        smtp_connection.sendmail(sender_email, receiver_email, message.as_string())
-        smtp_connection.close()
-        logger.network_logger.info("Email Sent OK - '" + str(message["Subject"]) + "'")
+            message["To"] = receiver_email
+            if app_config_access.email_config.server_smtp_ssl_enabled:
+                smtp_connection = smtplib.SMTP_SSL(smtp_server, port)
+            elif app_config_access.email_config.server_smtp_tls_enabled:
+                smtp_connection = smtplib.SMTP(smtp_server, port)
+                smtp_connection.starttls()
+            else:
+                smtp_connection = smtplib.SMTP(smtp_server, port)
+            smtp_connection.ehlo()
+            smtp_connection.login(login, password)
+            smtp_connection.sendmail(sender_email, receiver_email, message.as_string())
+            smtp_connection.close()
+            logger.network_logger.info("Email Sent OK - '" + str(message["Subject"]) + "'")
     except (gaierror, ConnectionRefusedError):
         logger.network_logger.error("Failed to connect to the server. Bad connection settings?")
     except smtplib.SMTPServerDisconnected:
@@ -161,33 +170,19 @@ def _report_email_server():
     app_cached_variables.restart_report_email_thread = False
 
     if app_config_access.email_config.send_on_start:
-        for email in app_config_access.email_config.send_report_to_csv_emails.split(","):
-            email = email.strip()
-            if email_is_valid(email):
-                send_report_email(email)
-                sleep(5)
-            else:
-                logger.network_logger.warning("Invalid Email found in Report Emails")
+        send_report_emails(app_config_access.email_config.send_report_to_csv_emails.split(","))
+
     while not app_cached_variables.restart_report_email_thread:
-        main_sleep = _get_email_send_sleep_time(email_config.send_report_every, email_config.email_reports_time_of_day)
+        send_report_every = app_config_access.email_config.send_report_every
+        email_reports_time_of_day = app_config_access.email_config.email_reports_time_of_day
+        main_sleep = _get_email_send_sleep_time(send_report_every, email_reports_time_of_day)
         sleep_total = 0
         while sleep_total < main_sleep and not app_cached_variables.restart_report_email_thread:
             sleep(5)
             sleep_total += 5
         if not app_cached_variables.restart_report_email_thread:
-            try:
-                ip_list = app_config_access.sensor_control_config.get_clean_ip_addresses_as_list()
-                generate_html_reports_combo(ip_list)
-                for email in app_config_access.email_config.send_report_to_csv_emails.split(","):
-                    email = email.strip()
-                    if email_is_valid(email):
-                        send_report_email(email, report_generated=True)
-                        sleep(5)
-                    else:
-                        logger.network_logger.warning("Invalid Email found in Report Emails")
-            except Exception as error:
-                logger.network_logger.error("Problem sending Report emails: " + str(error))
-        logger.network_logger.debug("Report Emails Sent")
+            send_report_emails(app_config_access.email_config.send_report_to_csv_emails.split(","))
+            logger.network_logger.debug("Report Emails Sent")
 
 
 def start_graph_email_server():
@@ -208,31 +203,18 @@ def _graph_email_server():
     app_cached_variables.restart_graph_email_thread = False
 
     if app_config_access.email_config.send_on_start:
-        for email in app_config_access.email_config.send_graphs_to_csv_emails.split(","):
-            email = email.strip()
-            if email_is_valid(email):
-                send_db_graph_email(email)
-                sleep(5)
-            else:
-                logger.network_logger.warning("Invalid Email found in Graph Emails")
+        send_db_graph_emails(app_config_access.email_config.send_graphs_to_csv_emails.split(","))
 
     while not app_cached_variables.restart_graph_email_thread:
         sleep_total = 0
-        main_sleep = _get_email_send_sleep_time(email_config.send_graph_every, email_config.email_graph_time_of_day)
+        send_graph_every = app_config_access.email_config.send_graph_every
+        email_graph_time_of_day = app_config_access.email_config.email_graph_time_of_day
+        main_sleep = _get_email_send_sleep_time(send_graph_every, email_graph_time_of_day)
         while sleep_total < main_sleep and not app_cached_variables.restart_graph_email_thread:
             sleep(5)
             sleep_total += 5
         if not app_cached_variables.restart_graph_email_thread:
-            try:
-                for email in app_config_access.email_config.send_graphs_to_csv_emails.split(","):
-                    email = email.strip()
-                    if email_is_valid(email):
-                        send_db_graph_email(email)
-                        sleep(5)
-                    else:
-                        logger.network_logger.warning("Invalid Email found in Graph Emails")
-            except Exception as error:
-                logger.network_logger.error("Problem sending Graph emails: " + str(error))
+            send_db_graph_emails(app_config_access.email_config.send_graphs_to_csv_emails.split(","))
         logger.network_logger.debug("Graph Emails Sent")
 
 
@@ -241,13 +223,13 @@ def _get_email_send_sleep_time(send_every, sleep_time_of_day):
     hour = int(sleep_time_of_day[0:2])
     minute = int(sleep_time_of_day[3:5])
 
-    if send_every == email_config.send_option_daily:
+    if send_every == app_config_access.email_config.send_option_daily:
         sleep_seconds = _get_email_sleep_seconds(day=1, hour=hour, minutes=minute)
-    elif send_every == email_config.send_option_weekly:
+    elif send_every == app_config_access.email_config.send_option_weekly:
         sleep_seconds = _get_email_sleep_seconds(day=7, hour=hour, minutes=minute)
-    elif send_every == email_config.send_option_monthly:
+    elif send_every == app_config_access.email_config.send_option_monthly:
         sleep_seconds = _get_email_sleep_seconds(month=1, hour=hour, minutes=minute)
-    elif send_every == email_config.send_option_yearly:
+    elif send_every == app_config_access.email_config.send_option_yearly:
         sleep_seconds = _get_email_sleep_seconds(year=1, hour=hour, minutes=minute)
     return sleep_seconds
 
