@@ -175,14 +175,15 @@ def check_for_port_in_address(address):
 
 def get_ip_and_port_split(address):
     """ Takes a text address (IP or DNS) and returns a text list of address, and if found port number. """
-
-    address = address.strip()
-    if "]" in address:
-        ip_6_address = address.split("[")[-1].split("]")[0]
-        ip_6_port = address.split("]")[-1].split(":")[-1]
-        return ["[" + ip_6_address + "]", ip_6_port]
-    else:
-        return address.split(":")
+    if check_for_port_in_address(address):
+        address = address.strip()
+        if "]" in address:
+            ip_6_address = address.split("[")[-1].split("]")[0]
+            ip_6_port = address.split("]")[-1].split(":")[-1]
+            return ["[" + ip_6_address + "]", ip_6_port]
+        else:
+            return address.split(":")
+    return [address, "10065"]
 
 
 def get_http_formatted_sensor_address(sensor_address):
@@ -203,6 +204,9 @@ def get_http_formatted_sensor_address(sensor_address):
         sensor_address = sensor_address[:-1]
     if check_for_port_in_address(sensor_address):
         sensor_address, http_port = get_ip_and_port_split(sensor_address)
+    else:
+        if len(sensor_address.split(":")) > 2:
+            sensor_address = "[" + sensor_address + "]"
     final_http_sensor_address = start_url + sensor_address + ":" + http_port + "/"
     return final_http_sensor_address
 
